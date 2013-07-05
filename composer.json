@@ -1,0 +1,17 @@
+{
+    "name": "nexmo/php-sdk",
+    "description": "PHP Client / SDK for using Nexmo's API.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Tim Lytle",
+            "email": "tim.lytle@nexmo.com"
+        }
+    ],
+    "require": {
+        "guzzle/guzzle": "v3.7.0"
+    },
+    "autoload": {
+        "psr-0": {"Nexmo\\": "src/"}
+    }    
+}
