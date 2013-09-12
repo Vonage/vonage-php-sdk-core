@@ -4,39 +4,48 @@ use Nexmo\MessageAbstract;
 use Nexmo\MessageInterface;
 
 /**
- * SMS Text Message
+ * SMS Binary Message
  * @author Tim Lytle <tim.lytle@nexmo.com>
  */
-class Text extends MessageAbstract implements MessageInterface
+class Binary extends MessageAbstract implements MessageInterface 
 {
-    const TYPE = 'text';
+    const TYPE = 'binary';
     
     /**
      * Message Body
      * @var string
      */
-    protected $text;
+    protected $body;
+    
+    /**
+     * Message UDH
+     * @var string
+     */
+    protected $udh;
     
     /**
      * Create a new SMS text message.
      * 
      * @param string $to
      * @param string $from
-     * @param string $text
+     * @param string $body
+     * @param string $udh
      */
-    public function __construct($to, $from, $text)
+    public function __construct($to, $from, $body, $udh)
     {
         parent::__construct($to, $from);
-        $this->text = (string) $text;
+        $this->body = (string) $body;
+        $this->udh =  (string) $udh;
     }
-    
+
     /**
      * Get an array of params to use in an API request.
      */
     public function getParams()
     {
         return array_merge(parent::getParams(), array(
-            'text' => $this->text
+            'body' => $this->body,
+            'udh'  => $this->udh,
         ));
     }
 }

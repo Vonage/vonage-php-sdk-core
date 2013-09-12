@@ -7,9 +7,9 @@ use Nexmo\MessageInterface;
  * SMS Text Message
  * @author Tim Lytle <tim.lytle@nexmo.com>
  */
-class Text extends MessageAbstract implements MessageInterface
+class Unicode extends MessageAbstract implements MessageInterface
 {
-    const TYPE = 'text';
+    const TYPE = 'unicode';
     
     /**
      * Message Body
@@ -37,6 +37,6 @@ class Text extends MessageAbstract implements MessageInterface
     {
         return array_merge(parent::getParams(), array(
             'text' => $this->text
-        ));
+        ));        
     }
 }

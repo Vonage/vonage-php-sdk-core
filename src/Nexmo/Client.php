@@ -46,7 +46,7 @@ class Client
     /**
      * Send a message via SMS.
 
-     * @param Nexmo\MessageInterface $message
+     * @param \Nexmo\MessageInterface $message
      * @param string $url
      */
     public function sendSMS(MessageInterface $message, $url = self::URL_SMS)
@@ -61,7 +61,7 @@ class Client
     
     /**
      * Check a response for errors, and get return value.
-     * @param Guzzle\Http\Message\Response $response
+     * @param \Guzzle\Http\Message\Response $response
      */
     private function parseResponse(\Guzzle\Http\Message\Response $response)
     {
@@ -97,7 +97,7 @@ class Client
     
     /**
      * Get the current HTTP client.
-     * @return Guzzle\Http\Client
+     * @return \Guzzle\Http\Client
      */
     public function getClient()
     {
@@ -111,7 +111,7 @@ class Client
     
     /**
      * Set the HTTP Client for making requests.
-     * @param Guzzle\Http\Client $client
+     * @param \Guzzle\Http\Client $client
      * 
      * @todo Currently only supporting Guzzle, should use an interface to 
      * support multiple http clients (or allow custom clients).

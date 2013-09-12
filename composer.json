@@ -9,7 +9,8 @@
         }
     ],
     "require": {
-        "guzzle/guzzle": "v3.7.0"
+        "guzzle/guzzle": "v3.7.0",
+        "phpunit/phpunit": "3.7.22"
     },
     "autoload": {
         "psr-0": {"Nexmo\\": "src/"}

@@ -7,27 +7,27 @@ use Nexmo\MessageInterface;
  * SMS Text Message
  * @author Tim Lytle <tim.lytle@nexmo.com>
  */
-class Text extends MessageAbstract implements MessageInterface
+class Vcal extends MessageAbstract implements MessageInterface
 {
-    const TYPE = 'text';
+    const TYPE = 'vcal';
     
     /**
      * Message Body
      * @var string
      */
-    protected $text;
+    protected $vcal;
     
     /**
      * Create a new SMS text message.
      * 
      * @param string $to
      * @param string $from
-     * @param string $text
+     * @param string $vcal
      */
-    public function __construct($to, $from, $text)
+    public function __construct($to, $from, $vcal)
     {
         parent::__construct($to, $from);
-        $this->text = (string) $text;
+        $this->text = (string) $vcal;
     }
     
     /**
@@ -36,7 +36,7 @@ class Text extends MessageAbstract implements MessageInterface
     public function getParams()
     {
         return array_merge(parent::getParams(), array(
-            'text' => $this->text
-        ));
+            'vcal' => $this->vcal
+        ));        
     }
 }

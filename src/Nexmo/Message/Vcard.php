@@ -7,36 +7,36 @@ use Nexmo\MessageInterface;
  * SMS Text Message
  * @author Tim Lytle <tim.lytle@nexmo.com>
  */
-class Text extends MessageAbstract implements MessageInterface
+class Vcard extends MessageAbstract implements MessageInterface
 {
-    const TYPE = 'text';
-    
+    const TYPE = 'vcard';
+
     /**
      * Message Body
      * @var string
      */
-    protected $text;
-    
+    protected $vcard;
+
     /**
      * Create a new SMS text message.
-     * 
+     *
      * @param string $to
      * @param string $from
-     * @param string $text
+     * @param string $vcard
      */
-    public function __construct($to, $from, $text)
+    public function __construct($to, $from, $vcard)
     {
         parent::__construct($to, $from);
-        $this->text = (string) $text;
+        $this->vcard = (string) $vcard;
     }
-    
+
     /**
      * Get an array of params to use in an API request.
      */
     public function getParams()
     {
         return array_merge(parent::getParams(), array(
-            'text' => $this->text
+            'vcard' => $this->vcard
         ));
     }
 }
