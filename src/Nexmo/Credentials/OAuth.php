@@ -17,7 +17,7 @@ class OAuth implements CredentialsInterface
     public function __construct($appToken, $appSecret, $clientToken, $clientSecret)
     {
         //using keys that match guzzle 
-        $this->credentials = array_combine(array('token', 'token_secret', 'consumer_key', 'consumer_secret'), func_get_args());
+        $this->credentials = array_combine(array('consumer_key', 'consumer_secret', 'token', 'token_secret'), func_get_args());
     }
     
     /**

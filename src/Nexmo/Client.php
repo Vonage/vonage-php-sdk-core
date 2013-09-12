@@ -48,6 +48,7 @@ class Client
 
      * @param \Nexmo\MessageInterface $message
      * @param string $url
+     * @return \Nexmo\Response
      */
     public function sendSMS(MessageInterface $message, $url = self::URL_SMS)
     {
@@ -69,7 +70,7 @@ class Client
             throw new \RuntimeException('http request error: ' . $response->getStatusCode());
         }
         
-        return new Response(json_decode($response->getBody(true), true));
+        return new Response($response->getBody(true));
     }
 
     /**
