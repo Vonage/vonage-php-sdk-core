@@ -1,6 +1,12 @@
 Nexmo PHP Client Library
 ========================
 
+## Setup
+
+Currently requires Guzzle via [Composer](https://github.com/composer/composer). 
+  
+    $ composer install
+
 ## Creating a Client
 
 Client currently supports OAuth, or API credentials:
