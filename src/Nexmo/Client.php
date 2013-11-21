@@ -12,7 +12,7 @@ class Client
     
     /**
      * API Credentials
-     * @var Nexmo\CredentialsInterface
+     * @var CredentialsInterface
      */
     protected $credentials;
     
@@ -26,10 +26,19 @@ class Client
      * @var string
      */
     protected $base;
-    
+
+    /**
+     * Secret for Signing Requests
+     * @var string
+     */
+    protected $secret;
+
     /**
      * Create a new API client using the provided credentials.
-     * @param Credentials\Generic $credentials
+     *
+     * @param CredentialsInterface $credentials
+     * @param string $endpont
+     * @throws \RuntimeException
      */
     public function __construct(CredentialsInterface $credentials, $endpont = self::URL_BASE)
     {
@@ -42,27 +51,63 @@ class Client
         
         $this->base = $endpont;
     }
-    
+
+    /**
+     * Set a secret used in signing requests.
+     *
+     * @param $secret
+     * @return $this
+     */
+    public function setSecret($secret)
+    {
+        $this->secret = (string) $secret;
+        return $this;
+    }
+
+    /**
+     * Clear the Signing Secret
+     *
+     * @return $this
+     */
+    public function clearSecret()
+    {
+        $this->secret = null;
+        return $this;
+    }
+
     /**
      * Send a message via SMS.
 
-     * @param \Nexmo\MessageInterface $message
+     * @param MessageInterface $message
      * @param string $url
-     * @return \Nexmo\Response
+     * @return Response
      */
     public function sendSMS(MessageInterface $message, $url = self::URL_SMS)
     {
         $request = $this->getClient()->post($this->base . $url);
         $this->authRequest($request);
-        $request->addPostFields($message->getParams());
-       
+
+        $params = $message->getParams();
+
+        //if we have a secret, use it to sign the request
+        if($this->secret){
+            //include any query params auth might have added
+            $signature = new Signature(array_merge($params, $request->getQuery()->getAll()), $this->secret);
+            //filter any params that were in the query
+            $params = array_diff_assoc($signature->getSignedParams(), $request->getQuery()->getAll());
+        }
+
+        $request->addPostFields($params);
+
         $response = $request->send();
         return $this->parseResponse($response);
     }
-    
+
     /**
      * Check a response for errors, and get return value.
      * @param \Guzzle\Http\Message\Response $response
+     * @throws \RuntimeException
+     * @return Response
      */
     private function parseResponse(\Guzzle\Http\Message\Response $response)
     {
@@ -76,8 +121,7 @@ class Client
     /**
      * Auth a request object.
      *  
-     * @todo if multiple HTTP clients are supported, this concept may not be 
-     * universal, better to push this to a http client wrapper.
+     * @TODO if multiple HTTP clients are supported, this concept may not be universal, better to push this to a http client wrapper.
      */
     private function authRequest(\Guzzle\Http\Message\Request $request)
     {
@@ -114,8 +158,7 @@ class Client
      * Set the HTTP Client for making requests.
      * @param \Guzzle\Http\Client $client
      * 
-     * @todo Currently only supporting Guzzle, should use an interface to 
-     * support multiple http clients (or allow custom clients).
+     * @TODO Currently only supporting Guzzle, should use an interface to support multiple http clients (or allow custom clients).
      */
     public function setClient(\Guzzle\Http\Client $client)
     {

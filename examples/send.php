@@ -3,6 +3,7 @@
 require_once '../vendor/autoload.php';
 
 $client = new Nexmo\Client(new Nexmo\Credentials\Basic(API_KEY, API_SECRET));
+//$client->setSecret(SIGNATURE_SECRET); //optional secret for signing requests
 
 //a valid request
 $response = $client->sendSMS(new Nexmo\Message\Text(NEXMO_TO, NEXMO_FROM, 'Test message from the Nexmo PHP Client'));
