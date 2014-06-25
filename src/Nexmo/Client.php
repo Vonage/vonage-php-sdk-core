@@ -1,5 +1,8 @@
 <?php
 namespace Nexmo;
+use Nexmo\Client\Request\RequestInterface;
+use Nexmo\Client\Request\WrapResponseInterface;
+use Nexmo\Client\Response\Response;
 
 /**
  * Nexmo API Client, allows access to the API from PHP.
@@ -76,8 +79,43 @@ class Client
     }
 
     /**
-     * Send a message via SMS.
+     * @param RequestInterface $request
+     * @return Client\Response\ResponseInterface
+     */
+    public function send(RequestInterface $request)
+    {
+        $httpRequest = $this->getClient()->post($this->base . $request->getURI());
+        $this->authRequest($httpRequest);
 
+        $params = $request->getParams();
+
+        //if we have a secret, use it to sign the request
+        if($this->secret){
+            //include any query params auth might have added
+            $signature = new Signature(array_merge($params, $httpRequest->getQuery()->getAll()), $this->secret);
+            //filter any params that were in the query
+            $params = array_diff_assoc($signature->getSignedParams(), $httpRequest->getQuery()->getAll());
+        }
+
+        $httpRequest->addPostFields($params);
+
+        $response = $httpRequest->send();
+
+        if($response->isError()){
+            throw new \RuntimeException('http request error: ' . $response->getStatusCode());
+        }
+
+        $response = new \Nexmo\Client\Response\Response($response->json());
+
+        if($request instanceof WrapResponseInterface){
+            $response = $request->wrapResponse($response);
+        }
+
+        return $response;
+    }
+
+    /**
+     * Send a message via SMS.
      * @param MessageInterface $message
      * @param string $url
      * @return Response

@@ -32,3 +32,43 @@ The response object also allows iteration over each part:
     foreach($response as $message){
         $message->getStatus();
     }
+
+## Number Insight
+
+Create a new request:
+
+`$request = new Nexmo\Network\Number\Request(NUMBER, CALLBACK_URL);`
+
+Send the request, and get a response:
+
+    $response = $client->send($request);
+    if($response->isError(){
+        // handle error
+    }
+    
+    $id = $response->getId(); // id of request
+    
+Process an inbound callback
+
+    try{
+        $callback = Nexmo\Network\Number\Callback::fromEnv();
+    } catch (Exception $e) {
+        error_log('not a valid NI callback: ' . $e->getMessage());
+        return;
+    }
+
+    if($callback->hasType()){
+        echo $callback->getNumber() . ' is a ' . $callback->getType() . ' number';
+    }
+    
+Combine request and callback data
+
+    $response = $memcached->get($callback->id());
+    
+    // this will create a new response object with both the API response data, and the callback data (appending the 
+    // callback data if another callback has already been added to the response)
+    $response = Nexmo\Network\Number\Request::addCallback($response, $callback);
+    
+    if($response->isComplete()){
+        //store the data
+    }
