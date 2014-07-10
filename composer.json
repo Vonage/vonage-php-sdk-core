@@ -9,7 +9,9 @@
         }
     ],
     "require": {
-        "guzzle/guzzle": "v3.7.0",
+        "guzzle/guzzle": "v3.7.0"
+    },
+    "require-dev": {
         "phpunit/phpunit": "3.7.22"
     },
     "autoload": {
