@@ -15,7 +15,7 @@ class Response extends BaseResponse implements ResponseInterface
     {
         //add expected keys
         $this->expected = array_merge($this->expected, array(
-           'request_id', 'number', 'request_price', 'remaining_balance', 'callback_total'
+           'request_id', 'number', 'request_price', 'remaining_balance', 'callback_total_parts'
         ));
 
         parent::__construct($data);
@@ -35,7 +35,7 @@ class Response extends BaseResponse implements ResponseInterface
 
     public function getCallbackTotal()
     {
-        return $this->data['callback_total'];
+        return $this->data['callback_total_parts'];
     }
 
     public function isComplete()

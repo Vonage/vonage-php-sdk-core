@@ -10,11 +10,10 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
     protected $data = array(
         'request_id' => '12345',
         'number' => '14443332121',
-        'status' => 0,
-        'message' => 'okay',
-        'request_price' => 0.05,
         'remaining_balance' => 123.45,
-        'callback_total' => 2
+        'request_price' => 0.05,
+        'callback_total_parts' => 2,
+        'status' => 0,
     );
 
     /**
@@ -33,9 +32,8 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($this->data['number'], $this->response->getNumber());
         $this->assertEquals($this->data['request_price'], $this->response->getPrice());
         $this->assertEquals($this->data['remaining_balance'], $this->response->getBalance());
-        $this->assertEquals($this->data['callback_total'], $this->response->getCallbackTotal());
+        $this->assertEquals($this->data['callback_total_parts'], $this->response->getCallbackTotal());
         $this->assertEquals($this->data['status'], $this->response->getStatus());
-        //$this->assertEquals($this->data['message'], $this->response->getStatusMessage());
     }
 
     /**
