@@ -84,7 +84,7 @@ class Client
      */
     public function send(RequestInterface $request)
     {
-        $httpRequest = $this->getClient()->post(implode('/', array($this->base, $request->getURI())));
+        $httpRequest = $this->getClient()->post(implode('/', array(trim($this->base, '/'), trim($request->getURI(), '/'))));
         $this->authRequest($httpRequest);
 
         $params = $request->getParams();
@@ -104,6 +104,7 @@ class Client
         if($response->isError()){
             throw new \RuntimeException('http request error: ' . $response->getStatusCode());
         }
+
 
         $response = new \Nexmo\Client\Response\Response($response->json());
 
