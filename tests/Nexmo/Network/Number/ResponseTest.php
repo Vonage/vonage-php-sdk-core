@@ -34,6 +34,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($this->data['remaining_balance'], $this->response->getBalance());
         $this->assertEquals($this->data['callback_total_parts'], $this->response->getCallbackTotal());
         $this->assertEquals($this->data['status'], $this->response->getStatus());
+
     }
 
     /**

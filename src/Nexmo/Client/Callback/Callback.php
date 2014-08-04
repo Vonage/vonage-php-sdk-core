@@ -12,11 +12,19 @@ class Callback implements CallbackInterface
     const ENV_POST = 'post';
     const ENV_GET  = 'get';
 
+    protected $expected = array();
     protected $data;
 
 
     public function __construct(array $data)
     {
+        $keys = array_keys($data);
+        $missing = array_diff($this->expected, $keys);
+
+        if($missing){
+            throw new \RuntimeException('missing expected callback keys: ' . implode(', ', $missing));
+        }
+
         $this->data = $data;
     }
 

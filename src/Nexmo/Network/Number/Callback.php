@@ -42,18 +42,6 @@ class Callback extends BaseCallback implements CallbackInterface
         'RoamingNetwork' => 'roaming_network_code',
     );
 
-    public function __construct(array $data)
-    {
-        $keys = array_keys($data);
-        $missing = array_diff($this->expected, $keys);
-
-        if($missing){
-            throw new \RuntimeException('missing expected callback keys: ' . implode(', ', $missing));
-        }
-
-        parent::__construct($data);
-    }
-
     public function getId()
     {
         return $this->data['request_id'];

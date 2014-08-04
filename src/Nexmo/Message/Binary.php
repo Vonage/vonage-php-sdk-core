@@ -1,13 +1,12 @@
 <?php
 namespace Nexmo\Message;
-use Nexmo\MessageAbstract;
-use Nexmo\MessageInterface;
+use Nexmo\Message\MessageAbstract;
 
 /**
  * SMS Binary Message
  * @author Tim Lytle <tim.lytle@nexmo.com>
  */
-class Binary extends MessageAbstract implements MessageInterface 
+class Binary extends MessageAbstract
 {
     const TYPE = 'binary';
     

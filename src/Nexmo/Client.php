@@ -84,7 +84,7 @@ class Client
      */
     public function send(RequestInterface $request)
     {
-        $httpRequest = $this->getClient()->post($this->base . $request->getURI());
+        $httpRequest = $this->getClient()->post(implode('/', array($this->base, $request->getURI())));
         $this->authRequest($httpRequest);
 
         $params = $request->getParams();
@@ -112,33 +112,6 @@ class Client
         }
 
         return $response;
-    }
-
-    /**
-     * Send a message via SMS.
-     * @param MessageInterface $message
-     * @param string $url
-     * @return Response
-     */
-    public function sendSMS(MessageInterface $message, $url = self::URL_SMS)
-    {
-        $request = $this->getClient()->post($this->base . $url);
-        $this->authRequest($request);
-
-        $params = $message->getParams();
-
-        //if we have a secret, use it to sign the request
-        if($this->secret){
-            //include any query params auth might have added
-            $signature = new Signature(array_merge($params, $request->getQuery()->getAll()), $this->secret);
-            //filter any params that were in the query
-            $params = array_diff_assoc($signature->getSignedParams(), $request->getQuery()->getAll());
-        }
-
-        $request->addPostFields($params);
-
-        $response = $request->send();
-        return $this->parseResponse($response);
     }
 
     /**

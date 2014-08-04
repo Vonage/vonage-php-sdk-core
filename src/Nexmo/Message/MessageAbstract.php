@@ -1,6 +1,8 @@
 <?php
-namespace Nexmo;
-use Nexmo\MessageInterface;
+namespace Nexmo\Message;
+use Nexmo\Client\Request\RequestInterface;
+use Nexmo\Client\Request\WrapResponseInterface;
+use Nexmo\Client\Response\ResponseInterface;
 
 /**
  * SMS Text Message
@@ -9,7 +11,7 @@ use Nexmo\MessageInterface;
  * @todo Should implement from some interface / extend an abstract. Will know
  * better what that should look like once all the message types are built.
  */
-class MessageAbstract implements MessageInterface
+class MessageAbstract implements RequestInterface, WrapResponseInterface
 {
     const TYPE = 'abstract';
 
@@ -98,7 +100,7 @@ class MessageAbstract implements MessageInterface
         return $params;
     }
 
-    public function requestDLR($dlr)
+    public function requestDLR($dlr = true)
     {
         $this->dlr = $dlr ? 1 : 0;
     }
@@ -121,5 +123,19 @@ class MessageAbstract implements MessageInterface
     public function setClass($class)
     {
         $this->class = $class;
+    }
+
+    public function getUri()
+    {
+        return 'sms/json';
+    }
+
+    /**
+     * @param ResponseInterface $response
+     * @return ResponseInterface
+     */
+    public function wrapResponse(ResponseInterface $response)
+    {
+        return new Response\Collection($response->getData());
     }
 }

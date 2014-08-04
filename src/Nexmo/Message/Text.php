@@ -1,13 +1,12 @@
 <?php
 namespace Nexmo\Message;
-use Nexmo\MessageAbstract;
-use Nexmo\MessageInterface;
+use Nexmo\Message\MessageAbstract;
 
 /**
  * SMS Text Message
  * @author Tim Lytle <tim.lytle@nexmo.com>
  */
-class Text extends MessageAbstract implements MessageInterface
+class Text extends MessageAbstract
 {
     const TYPE = 'text';
     

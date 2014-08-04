@@ -7,7 +7,11 @@ namespace Nexmo\Client\Response;
 
 class Response extends AbstractResponse implements ResponseInterface
 {
-    protected $expected = array('status');
+    /**
+     * Allow specific responses to easily define required parameters.
+     * @var array
+     */
+    protected $expected = array();
 
     public function __construct(array $data)
     {

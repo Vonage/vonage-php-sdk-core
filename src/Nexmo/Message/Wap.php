@@ -1,13 +1,12 @@
 <?php
 namespace Nexmo\Message;
-use Nexmo\MessageAbstract;
-use Nexmo\MessageInterface;
+use Nexmo\Message\MessageAbstract;
 
 /**
  * SMS Binary Message
  * @author Tim Lytle <tim.lytle@nexmo.com>
  */
-class Wap extends MessageAbstract implements MessageInterface 
+class Wap extends MessageAbstract
 {
     const TYPE = 'wappush';
     

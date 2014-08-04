@@ -8,6 +8,7 @@ namespace Nexmo\Network\Number;
 use Nexmo\Client\Request\AbstractRequest;
 use Nexmo\Client\Request\RequestInterface;
 use Nexmo\Client\Request\WrapResponseInterface;
+use Nexmo\Client\Response\Error;
 use Nexmo\Client\Response\ResponseInterface;
 
 class Request extends AbstractRequest implements RequestInterface, WrapResponseInterface
@@ -47,7 +48,7 @@ class Request extends AbstractRequest implements RequestInterface, WrapResponseI
     public function wrapResponse(ResponseInterface $response)
     {
         if($response->isError()){
-            return $response;
+            return new Error($response->getData());
         }
 
         return new Response($response->getData());

@@ -17,7 +17,7 @@ abstract class AbstractResponse implements ResponseInterface
 
     public function isSuccess()
     {
-        return $this->data['status'] == 0;
+        return isset($this->data['status']) AND $this->data['status'] == 0;
     }
 
     public function isError()

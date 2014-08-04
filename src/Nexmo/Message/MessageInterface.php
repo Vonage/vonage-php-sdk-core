@@ -1,5 +1,5 @@
 <?php
-namespace Nexmo;
+namespace Nexmo\Message;
 
 interface MessageInterface
 {
