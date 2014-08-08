@@ -21,16 +21,38 @@ class Message extends AbstractRequest implements RequestInterface
     public function setLanguage($lang)
     {
         $this->params['lg'] = $lang;
+        return $this;
     }
 
     public function setVoice($voice)
     {
         $this->params['voice'] = $voice;
+        return $this;
     }
 
     public function setRepeat($count)
     {
         $this->params['repeat'] = (int) $count;
+        return $this;
+    }
+    public function setCallback($url, $method = null)
+    {
+        $this->params['callback'] = $url;
+        if(!is_null($method)){
+            $this->params['callback_method'] = $method;
+        }
+
+        return $this;
+    }
+
+    public function setMachineDetection($hangup = true, $timeout = null)
+    {
+        $this->params['machine_detection'] = ($hangup ? 'hangup' : 'true');
+        if(!is_null($timeout)){
+            $this->params['machine_timeout'] = (int) $timeout;
+        }
+
+        return $this;
     }
 
     /**
