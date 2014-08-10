@@ -56,17 +56,17 @@ class Callback extends BaseCallback implements CallbackInterface
 
     public function getCreated()
     {
-        \DateTime::createFromFormat(self::TIME_FORMAT, $this->data['call-request']);
+        return \DateTime::createFromFormat(self::TIME_FORMAT, $this->data['call-request']);
     }
 
     public function getStart()
     {
-        \DateTime::createFromFormat(self::TIME_FORMAT, $this->data['call-start']);
+        return \DateTime::createFromFormat(self::TIME_FORMAT, $this->data['call-start']);
     }
 
     public function getEnd()
     {
-        \DateTime::createFromFormat(self::TIME_FORMAT, $this->data['call-end']);
+        return \DateTime::createFromFormat(self::TIME_FORMAT, $this->data['call-end']);
     }
 
     public function getNetwork()

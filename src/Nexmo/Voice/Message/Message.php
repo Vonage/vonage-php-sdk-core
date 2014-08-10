@@ -40,6 +40,8 @@ class Message extends AbstractRequest implements RequestInterface
         $this->params['callback'] = $url;
         if(!is_null($method)){
             $this->params['callback_method'] = $method;
+        } else {
+            unset($this->params['callback_method']);
         }
 
         return $this;
@@ -50,6 +52,8 @@ class Message extends AbstractRequest implements RequestInterface
         $this->params['machine_detection'] = ($hangup ? 'hangup' : 'true');
         if(!is_null($timeout)){
             $this->params['machine_timeout'] = (int) $timeout;
+        } else {
+            unset($this->params['machine_timeout']);
         }
 
         return $this;
