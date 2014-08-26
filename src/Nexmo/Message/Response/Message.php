@@ -21,13 +21,12 @@ class Message extends Response implements ResponseInterface
             'status',
             'message-id',
             'to',
-            'remaining-balance',
             'message-price',
             'network'
         );
 
         //default value
-        $data = array_merge(array('client-ref' => null), $data);
+        $data = array_merge(array('client-ref' => null, 'remaining-balance' => null), $data);
 
         $return = parent::__construct($data);
 
