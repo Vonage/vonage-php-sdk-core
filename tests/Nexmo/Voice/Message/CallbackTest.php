@@ -39,6 +39,16 @@ class CallbackTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($this->data['to'], $this->callback->getTo());
         $this->assertEquals($this->data['network-code'], $this->callback->getNetwork());
     }
+    public function testStartAndEndOptional()
+    {
+        unset($this->data['call-start']);
+        unset($this->data['call-end']);
+
+        $this->callback = new Callback($this->data);
+
+        $this->assertNull($this->callback->getStart());
+        $this->assertNull($this->callback->getEnd());
+    }
 
     public function testDateValues()
     {

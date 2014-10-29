@@ -20,8 +20,6 @@ class Callback extends BaseCallback implements CallbackInterface
         'to',
         'call-request',
         'network-code',
-        'call-start',
-        'call-end'
     );
 
     public function getId()
@@ -61,11 +59,19 @@ class Callback extends BaseCallback implements CallbackInterface
 
     public function getStart()
     {
+        if(!isset($this->data['call-start'])){
+            return null;
+        }
+
         return \DateTime::createFromFormat(self::TIME_FORMAT, $this->data['call-start']);
     }
 
     public function getEnd()
     {
+        if(!isset($this->data['call-end'])){
+            return null;
+        }
+
         return \DateTime::createFromFormat(self::TIME_FORMAT, $this->data['call-end']);
     }
 
