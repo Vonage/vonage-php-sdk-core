@@ -1,11 +1,17 @@
 <?php
+/**
+ * Nexmo Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
+ * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ */
+
 namespace Nexmo\Message;
-use Nexmo\Message\MessageAbstract;
+
 /**
  * SMS Text Message
- * @author Tim Lytle <tim.lytle@nexmo.com>
  */
-class Vcal extends MessageAbstract
+class Vcal extends Message
 {
     const TYPE = 'vcal';
     
@@ -31,9 +37,9 @@ class Vcal extends MessageAbstract
     /**
      * Get an array of params to use in an API request.
      */
-    public function getParams()
+    public function getRequestData()
     {
-        return array_merge(parent::getParams(), array(
+        return array_merge(parent::getRequestData(), array(
             'vcal' => $this->vcal
         ));        
     }

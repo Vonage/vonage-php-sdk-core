@@ -1,74 +1,140 @@
-Nexmo PHP Client Library
-========================
+Nexmo Client Library for PHP 
+============================
 
-## Setup
+[Installation](#Installation) | [Usage](#Usage) |  [Examples](#Examples) | [Coverage](#API-Coverage) | [Contributing](#Contributing)  
 
-Currently requires Guzzle via [Composer](https://github.com/composer/composer). 
-  
-    $ composer install
+This is the PHP client library for use Nexmo's API. To use this, you'll need a Nexmo account. Sign up [for free at 
+nexmo.com][signup].
 
-## Creating a Client
+Installation
+------------
 
-Client currently supports OAuth, or API credentials:
+To install the PHP client library using Composer:
 
-`$client = new Nexmo\Client(new Nexmo\Credentials\Basic(API_KEY, API_SECRET));`
+    composer require nexmo/client
 
-`$client = new Nexmo\Client(new Nexmo\Credentials\OAuth(CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_SECRET));`
+Alternatively you can clone the repository, however, you'll need to ensure the library is autoloaded by a PSR-0 or PSR-4
+compatible autoloader.
 
-## Making a Request
+    git clone git@github.com:Nexmo/nexmo-php.git
 
-Nexmo supports multiple types of SMS message, any can be passed to `$client->sendSMS()` to send the message.
+Usage
+-----
 
-`$response = $client->sendSMS(new Nexmo\Message\Text(NEXMO_TO, NEXMO_FROM, 'Test message from the Nexmo PHP Client'));`
+If you're using composer, make sure the autoloader is included in your project's bootstrap file:
 
-## Checking Response Status
+    require_once "vendor/autoload.php";
+    
+Create a client with your API key and secret:
 
-Larger messages may be broken into multiple parts.
+    $client = new Nexmo\Client(new Nexmo\Credentials\Basic(API_KEY, API_SECRET));     
 
-`$messages = $response->getMessages();`
+Examples
+--------
 
-The response object also allows iteration over each part:
+### Sending A Message
 
-    foreach($response as $message){
-        $message->getStatus();
+To use [Nexmo's SMS API][doc_sms] to send an SMS message, call the `$client->message()->send()` method.
+
+The API can be called directly, using a simple array of parameters, the keys match the [parameters of the API][doc_sms].
+
+    $message = $client->message()->send([
+        'to' => NEXMO_TO,
+        'from' => NEXMO_FROM,
+        'text' => 'Test message from the Nexmo PHP Client'
+    ]);
+    
+The API response data can be accessed as array properties of the message. 
+
+    echo "Sent message to " . $message['to'] . ". Balance is now " . $message['remaining-balance'] . PHP_EOL;
+    
+The message objects is a more expressive way to create and send messages. Each message type can be constructed with the 
+required parameters, and a fluent interface provides access to optional parameters.
+
+    $text = new \Nexmo\Message\Text(NEXMO_TO, NEXMO_FROM, 'Test message using PHP client library');
+    $text->setClientRef('test-message')
+         ->setClass(\Nexmo\Message\Text::CLASS_FLASH);
+
+The message object is passed to the same `send` method:
+
+    $client->message()->send($text);
+    
+Once sent, the message object can be used to access the response data.
+
+    echo "Sent message to " . $text->getTo() . ". Balance is now " . $text->getRemainingBalance() . PHP_EOL;
+    
+Array access can still be used:
+
+    echo "Sent message to " . $text['to'] . ". Balance is now " . $text['remaining-balance'] . PHP_EOL;
+    
+If the message text had to be sent as multiple messages, by default, the data of the last message is returned. However,
+specific message data can be accessed using array notation, passing an index to a getter, or iterating over the object.
+
+    $text[0]['remaining-balance']
+    $text->getRemainingBalance(0);
+    foreach($text as $index => $data){
+        $data['remaining-balance'];
     }
 
-## Number Insight
+The [send example][send_example] also has full working examples.
 
-Create a new request:
+API Coverage
+------------
 
-`$request = new Nexmo\Network\Number\Request(NUMBER, CALLBACK_URL);`
+* Account
+    * [ ] Balance
+    * [ ] Pricing
+    * [ ] Settings
+    * [ ] Top Up
+    * [ ] Numbers
+* Number
+    * [ ] Search
+    * [ ] Buy
+    * [ ] Cancel
+    * [ ] Update
+* NumberInsight
+    * [ ] Request
+    * [ ] Response
+* NumberVerify
+    * [ ] Verify
+    * [ ] Check
+    * [ ] Search
+    * [ ] Control
+* Search
+    * [ ] Message
+    * [ ] Messages
+    * [ ] Rejections
+* Short Code
+    * [ ] 2FA
+    * [ ] Alerts
+    * [ ] Marketing
+* SMS
+    * [X] Send
+    * [ ] Receipt
+    * [ ] Inbound
+* Voice
+    * [ ] Call
+    * [ ] TTS/TTS Prompt
+    * [ ] SIP
 
-Send the request, and get a response:
+Contributing
+------------
 
-    $response = $client->send($request);
-    if($response->isError(){
-        // handle error
-    }
-    
-    $id = $response->getId(); // id of request
-    
-Process an inbound callback
+This library is currently being refactored from an earlier prototype to match the current [client library spec][spec].
+The `legacy` branch can be used to require that earlier version. During the transition the `develop` and `master` 
+branches will have both new and legacy code. The [API coverage](#API-Coverage) section identifies what features are 
+currently implemented and up to date. 
 
-    try{
-        $callback = Nexmo\Network\Number\Callback::fromEnv();
-    } catch (Exception $e) {
-        error_log('not a valid NI callback: ' . $e->getMessage());
-        return;
-    }
+To contribute to the library, docs, or examples, [create an issue][issues] or a pull request. Please only raise issues
+about features marked as working in the [API coverage](#API-Coverage) as the rest of the code is being updated.
 
-    if($callback->hasType()){
-        echo $callback->getNumber() . ' is a ' . $callback->getType() . ' number';
-    }
-    
-Combine request and callback data
+License
+-------
 
-    $response = $memcached->get($callback->id());
-    
-    // this will create a new response object with both the API response data, and the callback data (appending the 
-    // callback data if another callback has already been added to the response)
-    $response = Nexmo\Network\Number\Request::addCallback($response, $callback);
-    
-    if($response->isComplete()){
-        //store the data
-    }
+This library is released under the [MIT License][license]
+
+[signup]: http://nexmo.com
+[doc_sms]: https://docs.nexmo.com/api-ref/sms-api
+[license]: LICENSE.txt
+[send_example]: examples/send.php
+[spec]: https://github.com/Nexmo/client-library-specification

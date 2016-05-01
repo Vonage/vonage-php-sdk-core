@@ -1,181 +1,189 @@
 <?php
+/**
+ * Nexmo Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
+ * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ */
+
 namespace Nexmo;
-use Nexmo\Client\Request\RequestInterface;
-use Nexmo\Client\Request\WrapResponseInterface;
+use Http\Client\HttpClient;
+use Nexmo\Client\Credentials\Basic;
+use Nexmo\Client\Credentials\CredentialsInterface;
+use Nexmo\Client\Credentials\OAuth;
+use Nexmo\Client\Factory\FactoryInterface;
+use Nexmo\Client\Factory\MapFactory;
 use Nexmo\Client\Response\Response;
+use Nexmo\Client\Signature;
+use Zend\Diactoros\Uri;
 
 /**
  * Nexmo API Client, allows access to the API from PHP.
- * @author Tim Lytle <tim.lytle@nexmo.com>
+ *
+ * @property \Nexmo\Message\Client $message
+ * @method \Nexmo\Message\Client message()
  */
 class Client
 {
-    const URL_BASE = 'https://rest.nexmo.com';
-    const URL_SMS  = '/sms/json';
-    
+    const BASE_API  = 'https://api.nexmo.com';
+    const BASE_REST = 'https://rest.nexmo.com';
+
+
     /**
      * API Credentials
      * @var CredentialsInterface
      */
     protected $credentials;
-    
+
     /**
-     * HTTP Client
+     * Http Client
+     * @var HttpClient
      */
     protected $client;
-    
+
     /**
-     * API Endpoint
-     * @var string
+     * @var FactoryInterface
      */
-    protected $base;
+    protected $factory;
+
+    /**
+     * @var array
+     */
+    protected $options = [];
 
     /**
      * Secret for Signing Requests
      * @var string
      */
-    protected $secret;
+    protected $signatureSecret;
 
     /**
      * Create a new API client using the provided credentials.
-     *
-     * @param CredentialsInterface $credentials
-     * @param string $endpont
-     * @throws \RuntimeException
      */
-    public function __construct(CredentialsInterface $credentials, $endpont = self::URL_BASE)
+    public function __construct(CredentialsInterface $credentials, $options = array(), HttpClient $client = null)
     {
+        if(is_null($client)){
+            $client = new \Http\Adapter\Guzzle6\Client();
+        }
+
+        $this->setHttpClient($client);
+
         //make sure we know how to use the credentials
-        if(!($credentials instanceof Credentials\Basic) AND !($credentials instanceof Credentials\OAuth)){
+        if(!($credentials instanceof Basic) AND !($credentials instanceof OAuth)){
             throw new \RuntimeException('unknown credentials type: ' . get_class($credentials));
         }
-        
+
         $this->credentials = $credentials;
-        
-        $this->base = $endpont;
+
+        if(isset($options['signature_secret'])){
+            $this->signatureSecret = $options['signature_secret'];
+        }
+
+        $this->options = $options;
+
+        $this->setFactory(new MapFactory([
+            'message' => 'Nexmo\Message\Client'
+        ], $this));
     }
 
     /**
-     * Set a secret used in signing requests.
+     * Set the Http Client to used to make API requests.
      *
-     * @param $secret
+     * This allows the default http client to be swapped out for a HTTPlug compatible
+     * replacement.
+     *
+     * @param HttpClient $client
      * @return $this
      */
-    public function setSecret($secret)
+    public function setHttpClient(HttpClient $client)
     {
-        $this->secret = (string) $secret;
+        $this->client = $client;
         return $this;
     }
 
     /**
-     * Clear the Signing Secret
+     * Get the Http Client used to make API requests.
      *
+     * @return HttpClient
+     */
+    public function getHttpClient()
+    {
+        return $this->client;
+    }
+
+    /**
+     * Set the factory used to create API specific clients.
+     *
+     * @param FactoryInterface $factory
      * @return $this
      */
-    public function clearSecret()
+    public function setFactory(FactoryInterface $factory)
     {
-        $this->secret = null;
+        $this->factory = $factory;
         return $this;
     }
 
     /**
-     * @param RequestInterface $request
-     * @return Client\Response\ResponseInterface
+     * Get the secret  used for request signing.
+     *
+     * The client uses it internally to sign outbound requests, but webhooks can be checked
+     * using the same secret.
+     *
+     * @return string
      */
-    public function send(RequestInterface $request)
+    public function getSignatureSecret()
     {
-        $httpRequest = $this->getClient()->post(implode('/', array(trim($this->base, '/'), trim($request->getURI(), '/'))));
-        $this->authRequest($httpRequest);
+        return $this->signatureSecret;
+    }
 
-        $params = $request->getParams();
-
-        //if we have a secret, use it to sign the request
-        if($this->secret){
-            //include any query params auth might have added
-            $signature = new Signature(array_merge($params, $httpRequest->getQuery()->getAll()), $this->secret);
-            //filter any params that were in the query
-            $params = array_diff_assoc($signature->getSignedParams(), $httpRequest->getQuery()->getAll());
+    /**
+     * Wraps the HTTP Client, creates a new PSR-7 request adding authentication, signatures, etc.
+     *
+     * @param \Psr\Http\Message\RequestInterface $request
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function send(\Psr\Http\Message\RequestInterface $request)
+    {
+        //add key / secret to query string
+        if($this->credentials instanceof Basic){
+            $query = [];
+            parse_str($request->getUri()->getQuery(), $query);
+            $query = array_merge($query, $this->credentials->asArray());
+            $request = $request->withUri($request->getUri()->withQuery(http_build_query($query)));
         }
 
-        $httpRequest->addPostFields($params);
+        //todo: add oauth to request
 
-        $response = $httpRequest->send();
-
-        if($response->isError()){
-            throw new \RuntimeException('http request error: ' . $response->getStatusCode());
+        //add signature to request
+        if($this->signatureSecret){
+            $query = [];
+            parse_str($request->getUri()->getQuery(), $query);
+            $signature = new Signature($query, $this->signatureSecret);
+            $request = $request->withUri($request->getUri()->withQuery(http_build_query($signature->getSignedParams())));
         }
 
+        //allow any part of the URI to be replaced with a simple search
+        if(isset($this->options['url'])){
+            foreach($this->options['url'] as $search => $replace){
+                $uri = (string) $request->getUri();
 
-        $response = new \Nexmo\Client\Response\Response($response->json());
-
-        if($request instanceof WrapResponseInterface){
-            $response = $request->wrapResponse($response);
+                $new = str_replace($search, $replace, $uri);
+                if($uri !== $new){
+                    $request = $request->withUri(new Uri($new));
+                }
+            }
         }
 
+        $response = $this->client->sendRequest($request);
         return $response;
     }
 
-    /**
-     * Check a response for errors, and get return value.
-     * @param \Guzzle\Http\Message\Response $response
-     * @throws \RuntimeException
-     * @return Response
-     */
-    private function parseResponse(\Guzzle\Http\Message\Response $response)
+    public function __call($name, $args)
     {
-        if($response->isError()){
-            throw new \RuntimeException('http request error: ' . $response->getStatusCode());
+        if(!$this->factory->hasApi($name)){
+            throw new \RuntimeException('no api namespace found: ' . $name);
         }
-        
-        return new Response($response->getBody(true));
-    }
 
-    /**
-     * Auth a request object.
-     *  
-     * @TODO if multiple HTTP clients are supported, this concept may not be universal, better to push this to a http client wrapper.
-     */
-    private function authRequest(\Guzzle\Http\Message\Request $request)
-    {
-        
-        if($this->credentials instanceof Credentials\OAuth){
-            $oauth = new \Guzzle\Plugin\Oauth\OauthPlugin(
-                $this->credentials->getCredentials()
-            );
-            $this->getClient()->addSubscriber($oauth);
-        }
-        
-        if($this->credentials instanceof Credentials\Basic){
-            $credentials = $this->credentials->getCredentials();
-            $request->getQuery()->set('api_key', $credentials['key'])
-                                ->set('api_secret', $credentials['secret']);
-        }
-    }
-    
-    /**
-     * Get the current HTTP client.
-     * @return \Guzzle\Http\Client
-     */
-    public function getClient()
-    {
-        //lazy load client
-        if(empty($this->client)){
-            $this->setClient(new \Guzzle\Http\Client());
-        }
-        
-        return $this->client;
-    }
-    
-    /**
-     * Set the HTTP Client for making requests.
-     * @param \Guzzle\Http\Client $client
-     * 
-     * @TODO Currently only supporting Guzzle, should use an interface to support multiple http clients (or allow custom clients).
-     */
-    public function setClient(\Guzzle\Http\Client $client)
-    {
-        //TODO: add version number from source
-        $client->setUserAgent('NexmoSDK/0', true);
-        $this->client = $client;
+        return $this->factory->getApi($name);
     }
 }

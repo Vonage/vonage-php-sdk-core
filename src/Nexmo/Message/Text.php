@@ -1,12 +1,17 @@
 <?php
+/**
+ * Nexmo Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
+ * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ */
+
 namespace Nexmo\Message;
-use Nexmo\Message\MessageAbstract;
 
 /**
  * SMS Text Message
- * @author Tim Lytle <tim.lytle@nexmo.com>
  */
-class Text extends MessageAbstract
+class Text extends Message
 {
     const TYPE = 'text';
     
@@ -22,20 +27,11 @@ class Text extends MessageAbstract
      * @param string $to
      * @param string $from
      * @param string $text
+     * @param array  $additional
      */
-    public function __construct($to, $from, $text)
+    public function __construct($to, $from, $text, $additional = [])
     {
-        parent::__construct($to, $from);
-        $this->text = (string) $text;
-    }
-    
-    /**
-     * Get an array of params to use in an API request.
-     */
-    public function getParams()
-    {
-        return array_merge(parent::getParams(), array(
-            'text' => $this->text
-        ));
+        parent::__construct($to, $from, $additional);
+        $this->requestData['text'] = (string) $text;
     }
 }
