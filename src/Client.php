@@ -80,6 +80,7 @@ class Client
         $this->setFactory(new MapFactory([
             'message' => 'Nexmo\Message\Client',
             'verify'  => 'Nexmo\Verify\Client'
+            'application' => 'Nexmo\Account\Application\Client'
         ], $this));
     }
 

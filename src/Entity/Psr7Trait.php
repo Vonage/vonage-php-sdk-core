@@ -28,11 +28,14 @@ trait Psr7Trait
     public function setResponse(\Psr\Http\Message\ResponseInterface $response)
     {
         $this->response = $response;
+        //todo: need to better manage request data (local values) and response data (state from API)
+        $this->requestData = [];
     }
 
     public function setRequest(\Psr\Http\Message\RequestInterface $request)
     {
         $this->request = $request;
+
     }
 
     public function getRequest()

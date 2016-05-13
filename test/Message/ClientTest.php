@@ -27,6 +27,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
      * @var Client
      */
     protected $messageClient;
+    
     /**
      * Create the Message API Client, and mock the Nexmo Client
      */

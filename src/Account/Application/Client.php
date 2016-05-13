@@ -6,11 +6,13 @@
  * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
  */
 
-namespace Nexmo\Entity;
+namespace Nexmo\Account\Application;
 
-trait ArrayAccessTrait
+
+use Nexmo\Client\ClientAwareInterface;
+use Nexmo\Client\ClientAwareTrait;
+
+class Client implements ClientAwareInterface
 {
-    public abstract function getResponseData();
-    
-    public abstract function getRequestData();
+    use ClientAwareTrait;
 }
