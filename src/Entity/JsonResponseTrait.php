@@ -16,11 +16,19 @@ trait JsonResponseTrait
 
     public function getResponseData()
     {
+        if(!($this instanceof EntityInterface)){
+            throw new \Exception(sprintf(
+                '%s can only be used if the class implements %s',
+                __TRAIT__,
+                EntityInterface::class
+            ));
+        }
+
         if(isset($this->responseJson)){
             return $this->responseJson;
         }
 
-        if(isset($this->response) && ($this->response instanceof ResponseInterface)){
+        if(($response = $this->getResponse()) && ($response instanceof ResponseInterface)){
             $body = $this->response->getBody()->getContents();
             $this->responseJson = json_decode($body, true);
             return $this->responseJson;

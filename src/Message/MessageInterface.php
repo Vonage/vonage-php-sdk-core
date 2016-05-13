@@ -8,20 +8,8 @@
 
 namespace Nexmo\Message;
 
-interface MessageInterface extends \Countable, \ArrayAccess, \Iterator
+interface MessageInterface extends \Countable, \ArrayAccess, \Iterator, \Nexmo\Entity\EntityInterface
 {
-    public function getRequest();
-
-    public function getRequestData($sent = true);
-
-    public function getResponse();
-
-    public function getResponseData();
-
-    public function setResponse(\Psr\Http\Message\ResponseInterface $response);
-
-    public function setRequest(\Psr\Http\Message\RequestInterface $request);
-
     public function requestDLR($dlr = true);
 
     public function setClientRef($ref);

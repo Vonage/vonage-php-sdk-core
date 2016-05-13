@@ -23,9 +23,17 @@ trait RequestArrayTrait
      */
     public function getRequestData($sent = true)
     {
-        if($sent && isset($this->request)){
+        if(!($this instanceof EntityInterface)){
+            throw new \Exception(sprintf(
+                '%s can only be used if the class implements %s',
+                __TRAIT__,
+                EntityInterface::class
+            ));
+        }
+
+        if($sent && ($request = $this->getRequest())){
             $query = [];
-            parse_str($this->request->getUri()->getQuery(), $query);
+            parse_str($request->getUri()->getQuery(), $query);
             return $query;
         }
 
@@ -34,7 +42,15 @@ trait RequestArrayTrait
     
     protected function setRequestData($name, $value)
     {
-        if(isset($this->response)){
+        if(!($this instanceof EntityInterface)){
+            throw new \Exception(sprintf(
+                '%s can only be used if the class implements %s',
+                __TRAIT__,
+                EntityInterface::class
+            ));
+        }
+
+        if($this->getResponse()){
             throw new \RuntimeException(sprintf(
                 'can not set request parameter `%s` for `%s` after API request has be made',
                 $name,
