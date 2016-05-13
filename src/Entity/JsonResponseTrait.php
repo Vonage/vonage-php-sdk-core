@@ -12,11 +12,6 @@ use Psr\Http\Message\ResponseInterface;
 
 trait JsonResponseTrait
 {
-    /**
-     * @var \Psr\Http\Message\ResponseInterface
-     */
-    protected $response;
-
     protected $responseJson;
 
     public function getResponseData()
