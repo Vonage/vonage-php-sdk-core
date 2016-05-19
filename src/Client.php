@@ -66,7 +66,7 @@ class Client
         $this->setHttpClient($client);
 
         //make sure we know how to use the credentials
-        if(!($credentials instanceof Basic) AND !($credentials instanceof OAuth)){
+        if(!($credentials instanceof Basic) && !($credentials instanceof SharedSecret) && !($credentials instanceof OAuth)){
             throw new \RuntimeException('unknown credentials type: ' . get_class($credentials));
         }
 
@@ -118,28 +118,11 @@ class Client
     }
 
     /**
-     * Get the secret  used for request signing.
-     *
-     * The client uses it internally to sign outbound requests, but webhooks can be checked
-     * using the same secret.
-     *
-     * @return string
-     */
-    public function getSignatureSecret()
-    {
-        if($this->credentials instanceof SharedSecret){
-            return $this->credentials['shared_secret'];
-        }
-
-        throw new \RuntimeException('can only get signature secret when using `' . SharedSecret::class . '` credentials`');
-    }
-
-    /**
      * @param RequestInterface $request
      * @param Signature $signature
      * @return RequestInterface
      */
-    public function signRequest(RequestInterface $request)
+    public static function signRequest(RequestInterface $request, SharedSecret $credentials)
     {
         switch($request->getHeaderLine('content-type')){
             case 'application/json':
@@ -147,8 +130,8 @@ class Client
                 $body->rewind();
                 $content = $body->getContents();
                 $params = json_decode($content, true);
-                $params['api_key'] = $this->credentials['api_key'];
-                $signature = new Signature($params, $this->getSignatureSecret());
+                $params['api_key'] = $credentials['api_key'];
+                $signature = new Signature($params, $credentials['shared_secret']);
                 $body->rewind();
                 $body->write(json_encode($signature->getSignedParams()));
                 break;
@@ -158,8 +141,8 @@ class Client
                 $content = $body->getContents();
                 $params = [];
                 parse_str($content, $params);
-                $params['api_key'] = $this->credentials['api_key'];
-                $signature = new Signature($params, $this->getSignatureSecret());
+                $params['api_key'] = $credentials['api_key'];
+                $signature = new Signature($params, $credentials['shared_secret']);
                 $params = $signature->getSignedParams();
                 $body->rewind();
                 $body->write(http_build_query($params, null, '&'));
@@ -167,8 +150,8 @@ class Client
             default:
                 $query = [];
                 parse_str($request->getUri()->getQuery(), $query);
-                $query['api_key'] = $this->credentials['api_key'];
-                $signature = new Signature($query, $this->getSignatureSecret());
+                $query['api_key'] = $credentials['api_key'];
+                $signature = new Signature($query, $credentials['shared_secret']);
                 $request = $request->withUri($request->getUri()->withQuery(http_build_query($signature->getSignedParams())));
                 break;
         }
@@ -176,6 +159,39 @@ class Client
         return $request;
     }
 
+    public static function authRequest(RequestInterface $request, Basic $credentials)
+    {
+        switch($request->getHeaderLine('content-type')){
+            case 'application/json':
+                $body = $request->getBody();
+                $body->rewind();
+                $content = $body->getContents();
+                $params = json_decode($content, true);
+                $params = array_merge($params, $credentials->asArray());
+                $body->rewind();
+                $body->write(json_encode($params));
+                break;
+            case 'application/x-www-form-urlencoded':
+                $body = $request->getBody();
+                $body->rewind();
+                $content = $body->getContents();
+                $params = [];
+                parse_str($content, $params);
+                $params = array_merge($params, $credentials->asArray());
+                $body->rewind();
+                $body->write(http_build_query($params, null, '&'));
+                break;
+            default:
+                $query = [];
+                parse_str($request->getUri()->getQuery(), $query);
+                $query = array_merge($query, $credentials->asArray());
+                $request = $request->withUri($request->getUri()->withQuery(http_build_query($query)));
+                break;
+        }
+
+        return $request;
+    }
+    
     /**
      * Wraps the HTTP Client, creates a new PSR-7 request adding authentication, signatures, etc.
      *
@@ -186,12 +202,9 @@ class Client
     {
         //also an instance of Basic, so checked first
         if($this->credentials instanceof SharedSecret){
-            $request = $this->signRequest($request);
+            $request = self::signRequest($request, $this->credentials);
         } elseif($this->credentials instanceof Basic){
-            $query = [];
-            parse_str($request->getUri()->getQuery(), $query);
-            $query = array_merge($query, $this->credentials->asArray());
-            $request = $request->withUri($request->getUri()->withQuery(http_build_query($query)));
+            $request = self::authRequest($request, $this->credentials);
         }
 
         //todo: add oauth support

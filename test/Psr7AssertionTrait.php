@@ -21,6 +21,14 @@ trait Psr7AssertionTrait
         self::assertSame($value, $params[$key], 'query string does not have value: ' . $value);
     }
 
+    public static function assertRequestQueryHas($key, RequestInterface $request)
+    {
+        $query = $request->getUri()->getQuery();
+        $params = [];
+        parse_str($query, $params);
+        self::assertArrayHasKey($key, $params, 'query string does not have key: ' . $key);
+    }
+
     public static function assertRequestFormBodyContains($key, $value, RequestInterface $request)
     {
         self::assertEquals('application/x-www-form-urlencoded', $request->getHeaderLine('content-type'), 'incorrect `Content-Type` for POST body');
