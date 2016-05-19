@@ -144,6 +144,9 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($this->api_key, $data['api_key']);
         $signature = new Signature($data, $this->secret);
         $this->assertTrue($signature->check($data));
+
+        //signing should not change query string
+        $this->assertEmpty($signed->getUri()->getQuery());
     }
 
     public function testSignJsonData()
@@ -175,6 +178,27 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($this->api_key, $data['api_key']);
         $signature = new Signature($data, $this->secret);
         $this->assertTrue($signature->check($data));
+
+        //signing should not change query string
+        $this->assertEmpty($signed->getUri()->getQuery());
+    }
+
+    public function testBodySignatureDoesNotChangeQuery()
+    {
+        $client = new Client(new Client\Credentials\SharedSecret($this->api_key, $this->secret), [], $this->http);
+
+        $params = [
+            'name' => 'bob',
+            'friend' => 'alice'
+        ];
+
+        $request = new Request('http://example.com/', 'POST');
+        $request = $request->withHeader('content-type', 'application/json');
+        $request->getBody()->write(json_encode($params));
+
+        $client->send($request);
+        $request = $this->http->getRequests()[0];
+        $this->assertEmpty($request->getUri()->getQuery());
     }
 
     public function testSharedSecret()

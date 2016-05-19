@@ -184,17 +184,14 @@ class Client
      */
     public function send(\Psr\Http\Message\RequestInterface $request)
     {
-        //add key / secret to query string
-        if($this->credentials instanceof Basic){
+        //also an instance of Basic, so checked first
+        if($this->credentials instanceof SharedSecret){
+            $request = $this->signRequest($request);
+        } elseif($this->credentials instanceof Basic){
             $query = [];
             parse_str($request->getUri()->getQuery(), $query);
             $query = array_merge($query, $this->credentials->asArray());
             $request = $request->withUri($request->getUri()->withQuery(http_build_query($query)));
-        }
-
-        //add signature to request
-        if($this->credentials instanceof SharedSecret){
-            $request = $this->signRequest($request);
         }
 
         //todo: add oauth support
