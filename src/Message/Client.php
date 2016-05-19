@@ -37,8 +37,10 @@ class Client implements ClientAwareInterface
         $params = $message->getRequestData();
         
         $request = new Request(
-            \Nexmo\Client::BASE_REST . '/sms/json?' . http_build_query($params)
-            ,'POST'
+            \Nexmo\Client::BASE_REST . '/sms/json'
+            ,'POST',
+            'php://temp',
+            ['content-type' => 'application/json']
         );
 
         $request->getBody()->write(json_encode($params));

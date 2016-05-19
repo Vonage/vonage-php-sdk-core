@@ -23,6 +23,7 @@ trait Psr7AssertionTrait
 
     public static function assertRequestFormBodyContains($key, $value, RequestInterface $request)
     {
+        self::assertEquals('application/x-www-form-urlencoded', $request->getHeaderLine('content-type'), 'incorrect `Content-Type` for POST body');
         $request->getBody()->rewind();
         $data = $request->getBody()->getContents();
         $params = [];
@@ -33,6 +34,7 @@ trait Psr7AssertionTrait
 
     public static function assertRequestJsonBodyContains($key, $value, RequestInterface $request)
     {
+        self::assertEquals('application/json', $request->getHeaderLine('content-type'), 'incorrect `Content-Type` for JSON body');
         $request->getBody()->rewind();
         $params = json_decode($request->getBody()->getContents(), true);
         self::assertArrayHasKey($key, $params, 'body does not have key: ' . $key);

@@ -10,6 +10,7 @@ namespace NexmoTest\Message;
 
 use Nexmo\Message\Client;
 use Nexmo\Message\Text;
+use NexmoTest\Psr7AssertionTrait;
 use Prophecy\Argument;
 use Psr\Http\Message\RequestInterface;
 use Zend\Diactoros\Request;
@@ -17,6 +18,8 @@ use Zend\Diactoros\Response;
 
 class ClientTest extends \PHPUnit_Framework_TestCase
 {
+    use Psr7AssertionTrait;
+
     protected $nexmoClient;
 
     /**
@@ -42,9 +45,9 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         ];
 
         $this->nexmoClient->send(Argument::that(function(Request $request) use ($args){
-            $this->assertRequestQueryContains('to', $args['to'], $request);
-            $this->assertRequestQueryContains('from', $args['from'], $request);
-            $this->assertRequestQueryContains('text', $args['text'], $request);
+            $this->assertRequestJsonBodyContains('to', $args['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $args['from'], $request);
+            $this->assertRequestJsonBodyContains('text', $args['text'], $request);
             return true;
         }))->willReturn($this->getResponse());
 
@@ -61,9 +64,9 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         ];
 
         $this->nexmoClient->send(Argument::that(function(Request $request) use ($args){
-            $this->assertRequestQueryContains('to', $args['to'], $request);
-            $this->assertRequestQueryContains('from', $args['from'], $request);
-            $this->assertRequestQueryContains('text', $args['text'], $request);
+            $this->assertRequestJsonBodyContains('to', $args['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $args['from'], $request);
+            $this->assertRequestJsonBodyContains('text', $args['text'], $request);
             return true;
         }))->willReturn($this->getResponse());
 
@@ -122,14 +125,5 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     protected function getResponse($type = 'success')
     {
         return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'r'));
-    }
-
-    public static function assertRequestQueryContains($key, $value, Request $request)
-    {
-        $query = $request->getUri()->getQuery();
-        $params = [];
-        parse_str($query, $params);
-        self::assertArrayHasKey($key, $params, 'query string does not have key: ' . $key);
-        self::assertSame($value, $params[$key], 'query string does not have value: ' . $value);
     }
 }
