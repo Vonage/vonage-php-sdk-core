@@ -10,6 +10,8 @@ namespace Nexmo\Verify;
 
 use Nexmo\Client\ClientAwareTrait;
 use Nexmo\Client\Exception;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Zend\Diactoros\Request;
 
 class Client
@@ -24,35 +26,11 @@ class Client
 
         $params = $verification->getRequestData(false);
 
-        $request = new Request(
-            \Nexmo\Client::BASE_API . '/verify/json?' . http_build_query($params)
-            ,'POST'
-        );
-
-        $verification->setRequest($request);
+        $request = $this->getRequest($params);
         $response = $this->client->send($request);
-        $verification->setResponse($response);
 
-        //check for valid data, as well as an error response from the API
-        $data = $verification->getResponseData();
-        if(!isset($data['status'])){
-            throw new Exception\Exception('unexpected response from API');
-        }
-
-        //normalize errors (client vrs server)
-        switch($data['status']){
-            case '0':
-                return $verification;
-            case '5':
-                $e = new Exception\Server($data['error_text'], $data['status']);
-                break;
-            default:
-                $e = new Exception\Request($data['error_text'], $data['status']);
-                break;
-        }
-
-        $e->setEntity($verification);
-        throw $e;
+        $data = $this->processReqRes($verification, $request, $response, true);
+        return $this->checkError($verification, $data);
     }
 
     public function search($verification)
@@ -61,19 +39,15 @@ class Client
             $verification = new Verification($verification);
         }
 
-        $request = new Request(
-            \Nexmo\Client::BASE_API . '/verify/search/json?' . http_build_query([
-                'request_id' => $verification->getRequestId()
-            ]),
-            'POST'
-        );
+        $params = [
+            'request_id' => $verification->getRequestId()
+        ];
 
-        $verification->setRequest($request);
+        $request = $this->getRequest($params, 'search');
         $response = $this->client->send($request);
-        $verification->setResponse($response);
 
-        //check for valid data, as well as an error response from the API
-        $data = $verification->getResponseData();
+        $data = $this->processReqRes($verification, $request, $response, true);
+
         if(!isset($data['status'])){
             throw new Exception\Exception('unexpected response from API');
         }
@@ -122,27 +96,33 @@ class Client
             $params['ip'] = $ip;
         }
 
-        $request = new Request(
-            \Nexmo\Client::BASE_API . '/verify/check/json?' . http_build_query($params),
-            'POST'
-        );
-
+        $request = $this->getRequest($params, 'check');
         $response = $this->client->send($request);
 
-        if(!$verification->getRequest()){
-            $verification->setRequest($request);
+        $data = $this->processReqRes($verification, $request, $response, false);
+        return $this->checkError($verification, $data);
+    }
+
+    protected function control($verification, $cmd)
+    {
+        if(!($verification instanceof Verification)){
+            $verification = new Verification($verification);
         }
 
-        if(!$verification->getResponse()) {
-            $verification->setResponse($response);
-        }
+        $params = [
+            'request_id' => $verification->getRequestId(),
+            'cmd' => $cmd
+        ];
 
-        if($response->getBody()->isSeekable()){
-            $response->getBody()->rewind();
-        }
+        $request = $this->getRequest($params, 'control');
+        $response = $this->client->send($request);
 
-        //check for valid data, as well as an error response from the API
-        $data = json_decode($response->getBody()->getContents(), true);
+        $data = $this->processReqRes($verification, $request, $response, false);
+        return $this->checkError($verification, $data);
+    }
+
+    protected function checkError(Verification $verification, $data)
+    {
         if(!isset($data['status'])){
             throw new Exception\Exception('unexpected response from API');
         }
@@ -163,54 +143,36 @@ class Client
         throw $e;
     }
 
-    protected function control($verification, $cmd)
+    protected function processReqRes(Verification $verification, RequestInterface $req, ResponseInterface $res, $replace = true)
     {
-        if(!($verification instanceof Verification)){
-            $verification = new Verification($verification);
+        if($replace || !$verification->getRequest()){
+            $verification->setRequest($req);
         }
 
-        $request = new Request(
-            \Nexmo\Client::BASE_API . '/verify/control/json?' . http_build_query([
-                'request_id' => $verification->getRequestId(),
-                'cmd' => $cmd
-            ]),
+        if($replace || !$verification->getResponse()) {
+            $verification->setResponse($res);
+            return $verification->getResponseData();
+        }
+
+        if($res->getBody()->isSeekable()){
+            $res->getBody()->rewind();
+        }
+
+        return json_decode($res->getBody()->getContents(), true);
+    }
+
+    protected function getRequest($params, $path = null)
+    {
+        if(!is_null($path)){
+            $path = '/verify/' . $path . '/json?';
+        } else {
+            $path = '/verify/json?';
+        }
+
+        return new Request(
+            \Nexmo\Client::BASE_API . $path . http_build_query($params),
             'POST'
         );
-
-        $response = $this->client->send($request);
-
-        if(!$verification->getRequest()){
-            $verification->setRequest($request);
-        }
-
-        if(!$verification->getResponse()) {
-            $verification->setResponse($response);
-        }
-
-        if($response->getBody()->isSeekable()){
-            $response->getBody()->rewind();
-        }
-
-        //check for valid data, as well as an error response from the API
-        $data = json_decode($response->getBody()->getContents(), true);
-        if(!isset($data['status'])){
-            throw new Exception\Exception('unexpected response from API');
-        }
-
-        //normalize errors (client vrs server)
-        switch($data['status']){
-            case '0':
-                return $verification;
-            case '5':
-                $e = new Exception\Server($data['error_text'], $data['status']);
-                break;
-            default:
-                $e = new Exception\Request($data['error_text'], $data['status']);
-                break;
-        }
-
-        $e->setEntity($verification);
-        throw $e;
     }
 
     /**
