@@ -11,10 +11,12 @@ use Http\Client\HttpClient;
 use Nexmo\Client\Credentials\Basic;
 use Nexmo\Client\Credentials\CredentialsInterface;
 use Nexmo\Client\Credentials\OAuth;
+use Nexmo\Client\Credentials\SharedSecret;
 use Nexmo\Client\Factory\FactoryInterface;
 use Nexmo\Client\Factory\MapFactory;
 use Nexmo\Client\Response\Response;
 use Nexmo\Client\Signature;
+use Psr\Http\Message\RequestInterface;
 use Zend\Diactoros\Uri;
 
 /**
@@ -53,12 +55,6 @@ class Client
     protected $options = [];
 
     /**
-     * Secret for Signing Requests
-     * @var string
-     */
-    protected $signatureSecret;
-
-    /**
      * Create a new API client using the provided credentials.
      */
     public function __construct(CredentialsInterface $credentials, $options = array(), HttpClient $client = null)
@@ -75,10 +71,6 @@ class Client
         }
 
         $this->credentials = $credentials;
-
-        if(isset($options['signature_secret'])){
-            $this->signatureSecret = $options['signature_secret'];
-        }
 
         $this->options = $options;
 
@@ -135,7 +127,53 @@ class Client
      */
     public function getSignatureSecret()
     {
-        return $this->signatureSecret;
+        if($this->credentials instanceof SharedSecret){
+            return $this->credentials['shared_secret'];
+        }
+
+        throw new \RuntimeException('can only get signature secret when using `' . SharedSecret::class . '` credentials`');
+    }
+
+    /**
+     * @param RequestInterface $request
+     * @param Signature $signature
+     * @return RequestInterface
+     */
+    public function signRequest(RequestInterface $request)
+    {
+        switch($request->getHeaderLine('content-type')){
+            case 'application/json':
+                $body = $request->getBody();
+                $body->rewind();
+                $content = $body->getContents();
+                $params = json_decode($content, true);
+                $params['api_key'] = $this->credentials['api_key'];
+                $signature = new Signature($params, $this->getSignatureSecret());
+                $body->rewind();
+                $body->write(json_encode($signature->getSignedParams()));
+                break;
+            case 'application/x-www-form-urlencoded':
+                $body = $request->getBody();
+                $body->rewind();
+                $content = $body->getContents();
+                $params = [];
+                parse_str($content, $params);
+                $params['api_key'] = $this->credentials['api_key'];
+                $signature = new Signature($params, $this->getSignatureSecret());
+                $params = $signature->getSignedParams();
+                $body->rewind();
+                $body->write(http_build_query($params, null, '&'));
+                break;
+            default:
+                $query = [];
+                parse_str($request->getUri()->getQuery(), $query);
+                $query['api_key'] = $this->credentials['api_key'];
+                $signature = new Signature($query, $this->getSignatureSecret());
+                $request = $request->withUri($request->getUri()->withQuery(http_build_query($signature->getSignedParams())));
+                break;
+        }
+
+        return $request;
     }
 
     /**
@@ -154,15 +192,12 @@ class Client
             $request = $request->withUri($request->getUri()->withQuery(http_build_query($query)));
         }
 
-        //todo: add oauth to request
-
         //add signature to request
-        if($this->signatureSecret){
-            $query = [];
-            parse_str($request->getUri()->getQuery(), $query);
-            $signature = new Signature($query, $this->signatureSecret);
-            $request = $request->withUri($request->getUri()->withQuery(http_build_query($signature->getSignedParams())));
+        if($this->credentials instanceof SharedSecret){
+            $request = $this->signRequest($request);
         }
+
+        //todo: add oauth support
 
         //allow any part of the URI to be replaced with a simple search
         if(isset($this->options['url'])){

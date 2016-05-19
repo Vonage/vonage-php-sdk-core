@@ -30,6 +30,10 @@ class ClientTest extends \PHPUnit_Framework_TestCase
      */
     protected $request;
 
+    protected $secret     = 'reallyreallysecret';
+    protected $api_key    = 'api_key';
+    protected $api_secret = 'api_secret';
+
     public function setUp()
     {
         $this->http = $this->getMockHttp();
@@ -86,13 +90,98 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertNotSame($construct, $client->getHttpClient());
     }
 
+    public function testSignQueryString()
+    {
+        $client = new Client(new Client\Credentials\SharedSecret($this->api_key, $this->secret));
+
+        $params = [
+            'name' => 'bob',
+            'friend' => 'alice'
+        ];
+
+        $request = new Request('http://example.com/?' . http_build_query($params));
+        $signed  = $client->signRequest($request);
+        
+        $query = [];
+        parse_str($signed->getUri()->getQuery(), $query);
+        
+        //request should now have signature
+        $this->assertArrayHasKey('sig', $query);
+        $this->assertArrayHasKey('timestamp', $query);
+        $this->assertArrayHasKey('api_key', $query);
+
+        //params should be correctly signed
+        $this->assertEquals($this->api_key, $query['api_key']);
+        $signature = new Signature($query, $this->secret);
+        $this->assertTrue($signature->check($query));
+    }
+
+    public function testSignBodyData()
+    {
+        $client = new Client(new Client\Credentials\SharedSecret($this->api_key, $this->secret));
+
+        $params = [
+            'name' => 'bob',
+            'friend' => 'alice'
+        ];
+
+        $request = new Request('http://example.com/', 'POST');
+        $request = $request->withHeader('content-type', 'application/x-www-form-urlencoded');
+        $request->getBody()->write(http_build_query($params, null, '&'));
+        
+        $signed  = $client->signRequest($request);
+
+        $data = [];
+        $signed->getBody()->rewind();
+        parse_str($signed->getBody()->getContents(), $data);
+
+        //request should now have signature
+        $this->assertArrayHasKey('sig', $data);
+        $this->assertArrayHasKey('timestamp', $data);
+        $this->assertArrayHasKey('api_key', $data);
+
+        //params should be correctly signed
+        $this->assertEquals($this->api_key, $data['api_key']);
+        $signature = new Signature($data, $this->secret);
+        $this->assertTrue($signature->check($data));
+    }
+
+    public function testSignJsonData()
+    {
+        $client = new Client(new Client\Credentials\SharedSecret($this->api_key, $this->secret));
+
+        $params = [
+            'name' => 'bob',
+            'friend' => 'alice'
+        ];
+
+        $request = new Request('http://example.com/', 'POST');
+        $request = $request->withHeader('content-type', 'application/json');
+        $request->getBody()->write(json_encode($params));
+
+        $signed  = $client->signRequest($request);
+
+        $signed->getBody()->rewind();
+        $data = json_decode($signed->getBody()->getContents(), true);
+
+        $this->assertNotNull($data);
+
+        //request should now have signature
+        $this->assertArrayHasKey('sig', $data);
+        $this->assertArrayHasKey('timestamp', $data);
+        $this->assertArrayHasKey('api_key', $data);
+
+        //params should be correctly signed
+        $this->assertEquals($this->api_key, $data['api_key']);
+        $signature = new Signature($data, $this->secret);
+        $this->assertTrue($signature->check($data));
+    }
+
     public function testSharedSecret()
     {
         $secret = 'reallyreallysecret';
 
-        $client = new Client(new Basic('key', 'secret'), [
-            'signature_secret' => $secret
-        ], $this->http);
+        $client = new Client(new Client\Credentials\SharedSecret($this->api_key, $secret), [], $this->http);
 
         $this->assertSame($secret, $client->getSignatureSecret());
 
