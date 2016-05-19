@@ -175,11 +175,11 @@ class Client implements ClientAwareInterface
             'POST',
             'php://temp',
             [
-                'content-type' => 'application/x-www-form-urlencoded'
+                'content-type' => 'application/json'
             ]
         );
         
-        $request->getBody()->write(http_build_query($params, null, '&'));
+        $request->getBody()->write(json_encode($params));
         return $request;
     }
 
