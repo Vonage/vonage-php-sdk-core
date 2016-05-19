@@ -16,7 +16,7 @@ use Nexmo\Entity\RequestArrayTrait;
  *
  * Extended by concrete message types (text, binary, etc).
  */
-class Message implements MessageInterface
+class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
 {
     use Psr7Trait;
     use JsonResponseTrait;

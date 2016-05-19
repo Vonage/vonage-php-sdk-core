@@ -52,6 +52,7 @@ class Client implements ClientAwareInterface
             throw new Exception\Exception('unexpected response from API');
         }
 
+        //normalize errors (client vrs server)
         foreach($data['messages'] as $part){
             switch($part['status']){
                 case '0':

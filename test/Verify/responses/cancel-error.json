@@ -1,0 +1,4 @@
+{
+  "status": "19",
+  "error_text": "Verification request  ['c1878c7451f94c1992d52797df57658e'] can't be cancelled now. Too many attempts to re-deliver have already been made."
+}

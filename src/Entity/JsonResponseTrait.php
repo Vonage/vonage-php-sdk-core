@@ -24,12 +24,12 @@ trait JsonResponseTrait
             ));
         }
 
-        if(isset($this->responseJson)){
-            return $this->responseJson;
-        }
-
         if(($response = $this->getResponse()) && ($response instanceof ResponseInterface)){
-            $body = $this->response->getBody()->getContents();
+            if($response->getBody()->isSeekable()){
+                $response->getBody()->rewind();
+            }
+
+            $body = $response->getBody()->getContents();
             $this->responseJson = json_decode($body, true);
             return $this->responseJson;
         }

@@ -8,7 +8,7 @@
 
 namespace Nexmo\Message;
 
-interface MessageInterface extends \Countable, \ArrayAccess, \Iterator, \Nexmo\Entity\EntityInterface
+interface MessageInterface extends \Nexmo\Entity\EntityInterface
 {
     public function requestDLR($dlr = true);
 
