@@ -215,7 +215,8 @@ class MessageTest extends \PHPUnit_Framework_TestCase
     public function testCanNotChangeRequestAfterResponse()
     {
         $data = ['test' => 'test'];
-        $response = new \Zend\Diactoros\Response(json_encode($data));
+        $response = new \Zend\Diactoros\Response();
+        $response->getBody()->write(json_encode($data));
         $this->message->setResponse($response);
 
         $methods = [

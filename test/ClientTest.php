@@ -123,7 +123,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     public function testSendProxiesClient()
     {
         //get a mock response to test
-        $response = new Response('test response', 200);
+        $response = new Response();
+        $response->getBody()->write('test response');
         $this->http->addResponse($response);
 
         $client = new Client(new Basic('key', 'secret'), [], $this->http);
