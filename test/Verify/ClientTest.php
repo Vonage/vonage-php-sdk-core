@@ -96,8 +96,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     {
         $response = $this->getResponse($response);
         $this->nexmoClient->send(Argument::that(function(RequestInterface $request) {
-            $this->assertRequestQueryContains('number', '14845551212', $request);
-            $this->assertRequestQueryContains('brand', 'Test Verify', $request);
+            $this->assertRequestFormBodyContains('number', '14845551212', $request);
+            $this->assertRequestFormBodyContains('brand', 'Test Verify', $request);
             $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/json', $request);
             return true;
         }))->willReturn($response)
@@ -169,7 +169,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     {
         $response = $this->getResponse($response);
         $this->nexmoClient->send(Argument::that(function(RequestInterface $request) {
-            $this->assertRequestQueryContains('request_id', '44a5279b27dd4a638d614d265ad57a77', $request);
+            $this->assertRequestFormBodyContains('request_id', '44a5279b27dd4a638d614d265ad57a77', $request);
             $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/search/json', $request);
             return true;
         }))->willReturn($response)
@@ -301,8 +301,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     {
         $response = $this->getResponse($response);
         $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($cmd) {
-            $this->assertRequestQueryContains('request_id', '44a5279b27dd4a638d614d265ad57a77', $request);
-            $this->assertRequestQueryContains('cmd', $cmd, $request);
+            $this->assertRequestFormBodyContains('request_id', '44a5279b27dd4a638d614d265ad57a77', $request);
+            $this->assertRequestFormBodyContains('cmd', $cmd, $request);
             $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/control/json', $request);
             return true;
         }))->willReturn($response)
@@ -374,11 +374,11 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     {
         $response = $this->getResponse($response);
         $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($code, $ip) {
-            $this->assertRequestQueryContains('request_id', '44a5279b27dd4a638d614d265ad57a77', $request);
-            $this->assertRequestQueryContains('code', $code, $request);
+            $this->assertRequestFormBodyContains('request_id', '44a5279b27dd4a638d614d265ad57a77', $request);
+            $this->assertRequestFormBodyContains('code', $code, $request);
 
             if($ip){
-                $this->assertRequestQueryContains('ip_address', $ip, $request);
+                $this->assertRequestFormBodyContains('ip_address', $ip, $request);
             }
 
             $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/check/json', $request);

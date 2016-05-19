@@ -8,13 +8,14 @@
 
 namespace Nexmo\Verify;
 
+use Nexmo\Client\ClientAwareInterface;
 use Nexmo\Client\ClientAwareTrait;
 use Nexmo\Client\Exception;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Zend\Diactoros\Request;
 
-class Client
+class Client implements ClientAwareInterface
 {
     use ClientAwareTrait;
 
@@ -164,15 +165,22 @@ class Client
     protected function getRequest($params, $path = null)
     {
         if(!is_null($path)){
-            $path = '/verify/' . $path . '/json?';
+            $path = '/verify/' . $path . '/json';
         } else {
-            $path = '/verify/json?';
+            $path = '/verify/json';
         }
 
-        return new Request(
-            \Nexmo\Client::BASE_API . $path . http_build_query($params),
-            'POST'
+        $request = new Request(
+            \Nexmo\Client::BASE_API . $path,
+            'POST',
+            'php://temp',
+            [
+                'content-type' => 'application/x-www-form-urlencoded'
+            ]
         );
+        
+        $request->getBody()->write(http_build_query($params, null, '&'));
+        return $request;
     }
 
     /**
