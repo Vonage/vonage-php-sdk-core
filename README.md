@@ -1,5 +1,6 @@
 Nexmo Client Library for PHP 
 ============================
+[![Build Status](https://api.travis-ci.org/Nexmo/nexmo-php.svg?branch=master)](https://travis-ci.org/Nexmo/nexmo-php)
 
 [Installation](#Installation) | [Usage](#Usage) |  [Examples](#Examples) | [Coverage](#API-Coverage) | [Contributing](#Contributing)  
 
