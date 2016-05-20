@@ -2,13 +2,19 @@ Nexmo Client Library for PHP
 ============================
 [![Build Status](https://api.travis-ci.org/Nexmo/nexmo-php.svg?branch=master)](https://travis-ci.org/Nexmo/nexmo-php)
 
-[Installation](#Installation) | [Usage](#Usage) |  [Examples](#Examples) | [Coverage](#API-Coverage) | [Contributing](#Contributing)  
-
 This is the PHP client library for use Nexmo's API. To use this, you'll need a Nexmo account. Sign up [for free at 
 nexmo.com][signup].
 
+ * [Installation](#installation)
+ * [Usage](#usage)
+ * [Examples](#examples)
+ * [Coverage](#api-coverage)
+ * [Contributing](#contributing) 
+
 Installation
 ------------
+
+To use the client library you'll need to have [created a Nexmo account][signup]. 
 
 To install the PHP client library using Composer:
 
@@ -88,35 +94,38 @@ API Coverage
     * [ ] Settings
     * [ ] Top Up
     * [ ] Numbers
-* Number
-    * [ ] Search
-    * [ ] Buy
-    * [ ] Cancel
-    * [ ] Update
-* NumberInsight
-    * [ ] Request
-    * [ ] Response
-* NumberVerify
-    * [ ] Verify
-    * [ ] Check
-    * [ ] Search
-    * [ ] Control
-* Search
-    * [ ] Message
-    * [ ] Messages
-    * [ ] Rejections
-* Short Code
-    * [ ] 2FA
-    * [ ] Alerts
-    * [ ] Marketing
-* SMS
+        * [ ] Search
+        * [ ] Buy
+        * [ ] Cancel
+        * [ ] Update
+* Number Insight
+    * [ ] Basic
+    * [ ] Standard
+    * [ ] Advanced
+    * [ ] Webhook Notification
+* Verify
+    * [X] Verify
+    * [X] Check
+    * [X] Search
+    * [X] Control
+* Messaging 
     * [X] Send
-    * [ ] Receipt
-    * [ ] Inbound
+    * [ ] Delivery Receipt
+    * [ ] Inbound Messages
+    * [ ] Search
+        * [ ] Message
+        * [ ] Messages
+        * [ ] Rejections
+    * US Short Codes
+        * [ ] Two-Factor Authentication
+        * [ ] Event Based Alerts
+            * [ ] Sending Alerts
+            * [ ] Campaign Subscription Management
 * Voice
-    * [ ] Call
-    * [ ] TTS/TTS Prompt
-    * [ ] SIP
+    * [ ] Outbound Calls
+    * [ ] Inbound Call
+    * [ ] Text-To-Speech Call
+    * [ ] Text-To-Speech Prompt
 
 Contributing
 ------------
@@ -134,8 +143,8 @@ License
 
 This library is released under the [MIT License][license]
 
-[signup]: http://nexmo.com
-[doc_sms]: https://docs.nexmo.com/api-ref/sms-api
+[signup]: https://dashboard.nexmo.com/sign-up?utm_source=DEV_REL&utm_medium=github&utm_campaign=[LANGUAGE]-client-library
+[doc_sms]: https://docs.nexmo.com/api-ref/sms-api?utm_source=DEV_REL&utm_medium=github&utm_campaign=[LANGUAGE]-client-library
 [license]: LICENSE.txt
 [send_example]: examples/send.php
 [spec]: https://github.com/Nexmo/client-library-specification
