@@ -37,6 +37,39 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->client->setClient($this->nexmoClient->reveal());
     }
 
+    /**
+     * @dataProvider getApiMethods
+     */
+    public function testClientSetsSelf($method, $response, $construct, $args = [])
+    {
+        $client = $this->prophesize('Nexmo\Client');
+        $client->send(Argument::cetera())->willReturn($this->getResponse($response));
+
+        $this->client->setClient($client->reveal());
+
+        $mock = $this->getMockBuilder('Nexmo\Verify\Verification')
+                     ->setConstructorArgs($construct)
+                     ->setMethods(['setClient'])
+                     ->getMock();
+
+        $mock->expects($this->once())->method('setClient')->with($this->client);
+
+        array_unshift($args, $mock);
+        call_user_func_array([$this->client, $method], $args);
+    }
+
+    public function getApiMethods()
+    {
+        return [
+            ['start',   'start',   ['14845551212', 'Test Verify']],
+            ['cancel',  'cancel',  ['44a5279b27dd4a638d614d265ad57a77']],
+            ['trigger', 'trigger', ['44a5279b27dd4a638d614d265ad57a77']],
+            ['search',  'search',  ['44a5279b27dd4a638d614d265ad57a77']],
+            ['check',   'check',   ['44a5279b27dd4a638d614d265ad57a77'], ['1234']],
+        ];
+    }
+
+
     public function testCanStartVerification()
     {
         $success = $this->setupClientForStart('start');

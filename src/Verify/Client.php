@@ -146,6 +146,8 @@ class Client implements ClientAwareInterface
 
     protected function processReqRes(Verification $verification, RequestInterface $req, ResponseInterface $res, $replace = true)
     {
+        $verification->setClient($this);
+
         if($replace || !$verification->getRequest()){
             $verification->setRequest($req);
         }

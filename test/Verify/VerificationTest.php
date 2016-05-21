@@ -10,6 +10,7 @@ namespace NexmoTest\Verify;
 
 use Nexmo\Verify\Check;
 use Nexmo\Verify\Verification;
+use Prophecy\Argument;
 use Zend\Diactoros\Response;
 
 class VerificationTest extends \PHPUnit_Framework_TestCase
@@ -186,6 +187,96 @@ class VerificationTest extends \PHPUnit_Framework_TestCase
         return [
             ['search'],
             ['start']
+        ];
+    }
+
+    /**
+     * @dataProvider getClientProxyMethods
+     */
+    public function testMethodsProxyClient($method, $proxy, $code = null, $ip = null)
+    {
+        $client = $this->prophesize('Nexmo\Verify\Client');
+        if(!is_null($ip)){
+            $prediction = $client->$proxy($this->exsisting, $code, $ip);
+        } elseif(!is_null($code)){
+            $prediction = $client->$proxy($this->exsisting, $code, Argument::cetera());
+        } else {
+            $prediction = $client->$proxy($this->exsisting);
+        }
+
+        $prediction->shouldBeCalled()->willReturn($this->exsisting);
+
+        $this->exsisting->setClient($client->reveal());
+
+        if(!is_null($ip)){
+            $this->exsisting->$method($code, $ip);
+        } elseif(!is_null($code)){
+            $this->exsisting->$method($code);
+        } else {
+            $this->exsisting->$method();
+        }
+    }
+
+    public function testCheckReturnsBoolForInvalidCode()
+    {
+        $client = $this->prophesize('Nexmo\Verify\Client');
+        $client->check($this->exsisting, '1234', Argument::cetera())->willReturn($this->exsisting);
+        $client->check($this->exsisting, '4321', Argument::cetera())->willThrow(new \Nexmo\Client\Exception\Request('dummy', '16'));
+
+        $this->exsisting->setClient($client->reveal());
+
+        $this->assertFalse($this->exsisting->check('4321'));
+        $this->assertTrue($this->exsisting->check('1234'));
+    }
+
+    public function testCheckReturnsBoolForTooManyAttempts()
+    {
+        $client = $this->prophesize('Nexmo\Verify\Client');
+        $client->check($this->exsisting, '1234', Argument::cetera())->willReturn($this->exsisting);
+        $client->check($this->exsisting, '4321', Argument::cetera())->willThrow(new \Nexmo\Client\Exception\Request('dummy', '17'));
+
+        $this->exsisting->setClient($client->reveal());
+
+        $this->assertFalse($this->exsisting->check('4321'));
+        $this->assertTrue($this->exsisting->check('1234'));
+    }
+
+    public function testExceptionForCheckFail()
+    {
+        $client = $this->prophesize('Nexmo\Verify\Client');
+        $client->check($this->exsisting, '1234', Argument::cetera())->willReturn($this->exsisting);
+        $client->check($this->exsisting, '4321', Argument::cetera())->willThrow(new \Nexmo\Client\Exception\Request('dummy', '6'));
+
+        $this->exsisting->setClient($client->reveal());
+
+        $this->expectException('Nexmo\Client\Exception\Request');
+        $this->exsisting->check('4321');
+    }
+
+    /**
+     * @dataProvider getClientProxyMethods
+     */
+    public function testMissingClientException($method, $proxy, $code = null, $ip = null)
+    {
+        $this->expectException('RuntimeException');
+
+        if(!is_null($ip)){
+            $this->exsisting->$method($code, $ip);
+        } elseif(!is_null($code)){
+            $this->exsisting->$method($code);
+        } else {
+            $this->exsisting->$method();
+        }
+    }
+
+    public function getClientProxyMethods()
+    {
+        return [
+            ['cancel', 'cancel'],
+            ['trigger', 'trigger'],
+            ['sync', 'search'],
+            ['check', 'check', '1234'],
+            ['check', 'check', '1234', '192.168.1.1'],
         ];
     }
 

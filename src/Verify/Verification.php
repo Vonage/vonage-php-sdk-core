@@ -8,6 +8,7 @@
 
 namespace Nexmo\Verify;
 
+use Nexmo\Client\Exception\Request as RequestException;
 use Nexmo\Entity\JsonResponseTrait;
 use Nexmo\Entity\Psr7Trait;
 use Nexmo\Entity\RequestArrayTrait;
@@ -29,6 +30,11 @@ class Verification implements VerificationInterface, \ArrayAccess
     protected $dirty = true;
 
     /**
+     * @var Client;
+     */
+    protected $client;
+
+    /**
      * Create a verification with a number and brand, or the `request_id` of an existing verification.
      *
      * @param string $number The number to verify, or the `request_id` of an exsisting verification.
@@ -46,6 +52,83 @@ class Verification implements VerificationInterface, \ArrayAccess
             $this->requestData['brand']  = $brand;
             $this->requestData = array_merge($this->requestData, $additional);
         }
+    }
+
+    /**
+     * Allow Verification to have actions.
+     *
+     * @param Client $client Verify Client
+     * @return $this
+     */
+    public function setClient(Client $client)
+    {
+        $this->client = $client;
+        return $this;
+    }
+
+    /**
+     * @return Client
+     */
+    protected function useClient()
+    {
+        if(isset($this->client)){
+            return $this->client;
+        }
+
+        throw new \RuntimeException('can not act on the verification directly unless a verify client has been set');
+    }
+
+    /**
+     * Check if the code is correct. Unlike the method it proxies, an invalid code does not throw an exception.
+     *
+     * @uses \Nexmo\Verify\Client::check()
+     * @param string $code Numeric code provided by the user.
+     * @param null|string $ip IP address to be used for the verification.
+     * @return bool Code is valid.
+     * @throws RequestException
+     */
+    public function check($code, $ip = null)
+    {
+        try {
+            $this->useClient()->check($this, $code, $ip);
+            return true;
+        } catch(RequestException $e) {
+            if($e->getCode() == 16 || $e->getCode() == 17){
+                return false;
+            }
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Cancel the verification.
+     *
+     * @uses \Nexmo\Verify\Client::cancel()
+     */
+    public function cancel()
+    {
+        $this->useClient()->cancel($this);
+    }
+
+    /**
+     * Trigger the next verification.
+     *
+     * @uses \Nexmo\Verify\Client::trigger()
+     */
+    public function trigger()
+    {
+        $this->useClient()->trigger($this);
+    }
+
+    /**
+     * Update Verification from the API.
+     *
+     * @uses \Nexmo\Verify\Client::search()
+     */
+    public function sync()
+    {
+        $this->useClient()->search($this);
     }
 
     /**
