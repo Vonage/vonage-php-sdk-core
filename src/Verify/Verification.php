@@ -37,18 +37,18 @@ class Verification implements VerificationInterface, \ArrayAccess
     /**
      * Create a verification with a number and brand, or the `request_id` of an existing verification.
      *
-     * @param string $number The number to verify, or the `request_id` of an exsisting verification.
+     * @param string $idOrNumber The number to verify, or the `request_id` of an exsisting verification.
      * @param null|string $brand The brand that identifies your application to the user.
      * @param array $additional Additional parameters can be set as keys / values.
      */
-    public function __construct($number, $brand = null, $additional = [])
+    public function __construct($idOrNumber, $brand = null, $additional = [])
     {
         if(is_null($brand)){
             $this->dirty = false;
-            $this->requestData['request_id'] = $number;
+            $this->requestData['request_id'] = $idOrNumber;
         } else {
             $this->dirty = true;
-            $this->requestData['number'] = $number;
+            $this->requestData['number'] = $idOrNumber;
             $this->requestData['brand']  = $brand;
             $this->requestData = array_merge($this->requestData, $additional);
         }

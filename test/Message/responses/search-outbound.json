@@ -1,0 +1,14 @@
+{
+  "message-id": "02000000D912945A",
+  "account-id": "6cff3913",
+  "network": "310260",
+  "from": "16105553980",
+  "to": "14845551212",
+  "body": "test with signature",
+  "price": "0.00570000",
+  "date-received": "2016-05-19 17:44:06",
+  "status": "ACCEPTD",
+  "error-code": "1",
+  "error-code-label": "Unknown",
+  "type": "MT"
+}

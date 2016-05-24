@@ -1,0 +1,1 @@
+msisdn=14845552121&to=16105553939&messageId=02000000DA7C52E7&text=Test+this.&type=text&keyword=TEST&message-timestamp=2016-05-24+11%3A12%3A01&timestamp=1464088321&nonce=51a87f47-476f-447c-bffe-c18600fd12ad&sig=8cfbb03967d8d6339c82736d7781a7fd

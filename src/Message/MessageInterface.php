@@ -10,13 +10,5 @@ namespace Nexmo\Message;
 
 interface MessageInterface extends \Nexmo\Entity\EntityInterface
 {
-    public function requestDLR($dlr = true);
-
-    public function setClientRef($ref);
-
-    public function setNetwork($network);
-
-    public function setTTL($ttl);
-
-    public function setClass($class);
+    
 }

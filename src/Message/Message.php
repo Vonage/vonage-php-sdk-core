@@ -37,14 +37,21 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
 
     protected $current = 0;
 
+    protected $id;
+
     /**
-     * @param string $to E.164 (international) formatted number
-     * @param string $from Number or name the message is from
+     * @param string $idOrTo Message ID or E.164 (international) formatted number to send the message
+     * @param null|string $from Number or name the message is from
      * @param array  $additional Additional API Params
      */
-    public function __construct($to, $from, $additional = [])
+    public function __construct($idOrTo, $from = null, $additional = [])
     {
-        $this->requestData['to'] = (string) $to;
+        if(is_null($from)){
+            $this->id = $idOrTo;
+            return;
+        }
+
+        $this->requestData['to'] = (string) $idOrTo;
         $this->requestData['from'] = (string) $from;
         if(static::TYPE){
             $this->requestData['type'] = static::TYPE;
@@ -88,8 +95,12 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
         return count($data['messages']);
     }
 
-    public function getId($index = null)
+    public function getMessageId($index = null)
     {
+        if(isset($this->id)){
+            return $this->id;
+        }
+
         return $this->getMessageData('message-id', $index);
     }
 
@@ -100,7 +111,15 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
 
     public function getTo($index = null)
     {
-        return $this->getMessageData('to', $index);
+        $data = $this->getResponseData();
+
+        //check if this is data from a send request
+        //(which also has a status, but it's not the same)
+        if(isset($data['messages'])){
+            return $this->getMessageData('to', $index);
+        }
+
+        return $this['to'];
     }
 
     public function getRemainingBalance($index = null)
@@ -110,14 +129,60 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
 
     public function getPrice($index = null)
     {
-        return $this->getMessageData('message-price', $index);
+        $data = $this->getResponseData();
+
+        //check if this is data from a send request
+        //(which also has a status, but it's not the same)
+        if(isset($data['messages'])){
+            return $this->getMessageData('message-price', $index);
+        }
+
+        return $this['price'];
     }
 
     public function getNetwork($index = null)
     {
         return $this->getMessageData('network', $index);
     }
-    
+
+    public function getDeliveryStatus()
+    {
+        $data = $this->getResponseData();
+
+        //check if this is data from a send request
+        //(which also has a status, but it's not the same)
+        if(isset($data['messages'])){
+            return;
+        }
+
+        return $this['status'];
+    }
+
+    public function getFrom()
+    {
+        return $this['from'];
+    }
+
+    public function getBody()
+    {
+        return $this['body'];
+    }
+
+    public function getDateReceived()
+    {
+        return new \DateTime($this['date-received']);
+    }
+
+    public function getDeliveryError()
+    {
+        return $this['error-code'];
+    }
+
+    public function getDeliveryLabel()
+    {
+        return $this['error-code-label'];
+    }
+
     protected function getMessageData($name, $index = null)
     {
         if(!isset($this->response)){
@@ -133,10 +198,14 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
 
     public function offsetExists($offset)
     {
-        if(in_array($offset, $this->responseParams)){
+        $response = $this->getResponseData();
+        $request  = $this->getRequestData();
+        $dirty    = $this->getRequestData(false);
+        if(isset($response[$offset]) || isset($request[$offset]) || isset($dirty[$offset])){
             return true;
         }
 
+        //provide access to split messages by virtual index
         if(is_int($offset) && $offset < $this->count()){
             return true;
         }
@@ -146,18 +215,35 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
 
     public function offsetGet($offset)
     {
-        if(!isset($this->response)){
-            return null;
+        $response = $this->getResponseData();
+        $request  = $this->getRequestData();
+        $dirty    = $this->getRequestData(false);
+
+        if(isset($response[$offset])){
+            return $response[$offset];
         }
 
-        $data = $this->getResponseData();
+        //provide access to split messages by virtual index, if there is data
+        if(isset($response['messages'])){
+            if(is_int($offset) && isset($response['messages'][$offset])){
+                return $response['messages'][$offset];
+            }
 
-        if(is_int($offset)){
-            return $data['messages'][$offset];
+            $index = $this->count() -1;
+
+            if(isset($response['messages'][$index]) && isset($response['messages'][$index][$offset])){
+                return $response['messages'][$index][$offset];
+            }
+
         }
 
-        $index = $this->count() -1;
-        return $data['messages'][$index][$offset];
+        if(isset($request[$offset])){
+            return $request[$offset];
+        }
+
+        if(isset($dirty[$offset])){
+            return $dirty[$offset];
+        }
     }
 
     public function offsetSet($offset, $value)
@@ -216,6 +302,7 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
     {
         $this->current = 0;
     }
+
 
 
 }
