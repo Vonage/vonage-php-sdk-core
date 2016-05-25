@@ -91,7 +91,7 @@ class InboundMessage implements MessageInterface, \ArrayAccess
         return $this['messageId'];
     }
 
-    public function getText()
+    public function getBody()
     {
         if($this->getRequest()){
             return $this['text'];

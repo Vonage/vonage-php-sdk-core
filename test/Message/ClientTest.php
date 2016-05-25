@@ -9,6 +9,7 @@
 namespace NexmoTest\Message;
 
 use Nexmo\Message\Client;
+use Nexmo\Message\Message;
 use Nexmo\Message\Text;
 use NexmoTest\Psr7AssertionTrait;
 use Prophecy\Argument;
@@ -113,6 +114,50 @@ class ClientTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals('5', $e->getCode());
             $this->assertEquals('Server Error', $e->getMessage());
         }
+    }
+
+    public function testCanSearchByMessage()
+    {
+        $message = new Message('02000000D912945A');
+        $response = $this->getResponse('search-outbound');
+
+        $this->nexmoClient->send(Argument::that(function(Request $request) {
+            $this->assertRequestQueryContains('id', '02000000D912945A', $request);
+            return true;
+        }))->willReturn($response);
+
+        $this->messageClient->search($message);
+        $this->assertSame($response, $message->getResponse());
+    }
+
+    public function testCanSearchBySingleOutboundId()
+    {
+        $response = $this->getResponse('search-outbound');
+
+        $this->nexmoClient->send(Argument::that(function(Request $request) {
+            $this->assertRequestQueryContains('id', '02000000D912945A', $request);
+            return true;
+        }))->willReturn($response);
+
+        $message = $this->messageClient->search('02000000D912945A');
+
+        $this->assertInstanceOf('Nexmo\Message\Message', $message);
+        $this->assertSame($response, $message->getResponse());
+    }
+
+    public function testCanSearchBySingleInboundId()
+    {
+        $response = $this->getResponse('search-inbound');
+
+        $this->nexmoClient->send(Argument::that(function(Request $request) {
+            $this->assertRequestQueryContains('id', '02000000DA7C52E7', $request);
+            return true;
+        }))->willReturn($response);
+
+        $message = $this->messageClient->search('02000000DA7C52E7');
+
+        $this->assertInstanceOf('Nexmo\Message\InboundMessage', $message);
+        $this->assertSame($response, $message->getResponse());
     }
 
     /**

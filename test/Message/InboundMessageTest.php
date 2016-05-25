@@ -42,7 +42,7 @@ class InboundMessageTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('14845552121', $message->getFrom());
         $this->assertEquals('16105553939', $message->getTo());
         $this->assertEquals('02000000DA7C52E7', $message->getMessageId());
-        $this->assertEquals('Test this.', $message->getText());
+        $this->assertEquals('Test this.', $message->getBody());
         $this->assertEquals('text', $message->getType());
     }
 
@@ -74,7 +74,7 @@ class InboundMessageTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('14845552121', $message->getFrom());
         $this->assertEquals('16105553939', $message->getTo());
         $this->assertEquals('02000000DA7C52E7', $message->getMessageId());
-        $this->assertEquals('Test this.', $message->getText());
+        $this->assertEquals('Test this.', $message->getBody());
         $this->assertEquals('6cff3913', $message->getAccountId());
         $this->assertEquals('US-VIRTUAL-BANDWIDTH', $message->getNetwork());
     }

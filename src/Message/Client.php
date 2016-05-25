@@ -74,6 +74,69 @@ class Client implements ClientAwareInterface
     }
 
     /**
+     * @param string|MessageInterface $idOrMessage
+     */
+    public function search($idOrMessage)
+    {
+        if($idOrMessage instanceof MessageInterface){
+            $id = $idOrMessage->getMessageId();
+            $message = $idOrMessage;
+        } else {
+            $id = $idOrMessage;
+        }
+
+        $request = new Request(
+            \Nexmo\Client::BASE_REST . '/search/message?' . http_build_query(['id' => $id]),
+            'GET',
+            'php://temp',
+            ['Accept' => 'application/json']
+        );
+
+        $response = $this->client->send($request);
+
+        $response->getBody()->rewind();
+        
+        $data = json_decode($response->getBody()->getContents(), true);
+
+        if(!$data){
+            throw new Exception\Request('no message found for `' . $id . '`');
+        }
+
+        if($response->getStatusCode() != '200' && isset($data['error-code'])){
+            throw new Exception\Request($data['error-code-label'], $data['error-code']);
+        } elseif($response->getStatusCode() != '200'){
+            throw new Exception\Request('error status from API', $response->getStatusCode());
+        }
+
+
+        switch($data['type']){
+            case 'MT':
+                $new = new Message($data['message-id']);
+                break;
+            case 'MO':
+                $new = new InboundMessage($data['message-id']);
+                break;
+            default:
+                throw new Exception\Exception('unexpected response from API');
+        }
+
+        if(isset($message) && !($message instanceof $new)){
+            throw new Exception\Exception(sprintf(
+                'searched for message with type `%s` but message of type `%s`',
+                get_class($message),
+                get_class($new)
+            ));
+        }
+
+        if(!isset($message)){
+            $message = $new;
+        }
+
+        $message->setResponse($response);
+        return $message;
+    }
+
+    /**
      * @param array $message
      * @return Message
      */
@@ -97,7 +160,7 @@ class Client implements ClientAwareInterface
 
         return new Message($to, $from, $message);
     }
-
+    
     /**
      * Convenience feature allowing messages to be sent without creating a message object first.
      *
