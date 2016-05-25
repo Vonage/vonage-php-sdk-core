@@ -27,10 +27,22 @@ class InboundMessageTest extends \PHPUnit_Framework_TestCase
      */
     public function testCanCreateWithServerRequest($request)
     {
-        $request = $this->getServerRequest('inbound-get');
         $message = new InboundMessage($request);
     }
 
+    public function testCanCheckValid()
+    {
+        $request = $this->getServerRequest();
+        $message = new InboundMessage($request);
+        
+        $this->assertTrue($message->isValid());
+        
+        $request = $this->getServerRequest('http://example.com', 'GET', 'invalid');
+        $message = new InboundMessage($request);
+
+        $this->assertFalse($message->isValid());
+    }
+    
     /**
      * Can access expected params via getters.
      * @dataProvider getRequests

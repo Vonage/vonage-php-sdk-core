@@ -91,6 +91,11 @@ class InboundMessage implements MessageInterface, \ArrayAccess
         return $this['messageId'];
     }
 
+    public function isValid()
+    {
+        return (bool) $this->getMessageId();
+    }
+
     public function getBody()
     {
         if($this->getRequest()){
