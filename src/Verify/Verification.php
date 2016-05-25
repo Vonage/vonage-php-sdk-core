@@ -381,7 +381,7 @@ class Verification implements VerificationInterface, \ArrayAccess
     {
         $checks = $this->proxyArrayAccess('checks');
         if(!$checks){
-            return;
+            return [];
         }
 
         foreach($checks as $i => $check) {
