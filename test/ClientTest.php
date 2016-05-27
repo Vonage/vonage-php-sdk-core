@@ -239,6 +239,36 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($api, $client->sms());
     }
 
+    public function testUserAgentString()
+    {
+        $version = Client::VERSION;
+        $php = 'PHP-' . implode('.', [
+            PHP_MAJOR_VERSION,
+            PHP_MINOR_VERSION
+        ]);
+
+        //get a mock response to test
+        $response = new Response();
+        $response->getBody()->write('test response');
+        $this->http->addResponse($response);
+
+        $client = new Client(new Basic('key', 'secret'), [], $this->http);
+        $request = $this->getRequest();
+
+        //api client should simply pass back the http response
+        $client->send($request);
+
+        //useragent should match the expected format
+        $agent = $this->http->getRequests()[0]->getHeaderLine('user-agent');
+        $expected = implode('/', [
+            'nexmo-php',
+            $version,
+            $php
+        ]);
+
+        $this->assertEquals($expected, $agent);
+    }
+
     /**
      * Allow tests to check that the API client is correctly forming the HTTP request before sending it to the HTTP
      * client.

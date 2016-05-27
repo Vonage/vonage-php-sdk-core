@@ -28,9 +28,10 @@ use Zend\Diactoros\Uri;
  */
 class Client
 {
+    const VERSION = '1.0.0-beta1';
+
     const BASE_API  = 'https://api.nexmo.com';
     const BASE_REST = 'https://rest.nexmo.com';
-
 
     /**
      * API Credentials
@@ -220,6 +221,13 @@ class Client
                 }
             }
         }
+
+        //set the user-agent
+        $request = $request->withHeader('user-agent', implode('/', [
+            'nexmo-php',
+            self::VERSION,
+            'PHP-' . implode('.', [PHP_MAJOR_VERSION, PHP_MINOR_VERSION])
+        ]));
 
         $response = $this->client->sendRequest($request);
         return $response;
