@@ -47,6 +47,17 @@ class InboundMessage implements MessageInterface, \ArrayAccess
         return new self($serverRequest);
     }
 
+    /**
+     * Create a matching reply to the inbound message. Currently only supports text replies.
+     *
+     * @param string $body
+     * @return Text
+     */
+    public function createReply($body)
+    {
+        return new Text($this->getFrom(), $this->getTo(), $body);
+    }
+
     public function getRequestData($sent = true)
     {
         $request = $this->getRequest();

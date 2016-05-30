@@ -109,6 +109,20 @@ class InboundMessageTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('US-VIRTUAL-BANDWIDTH', $message['network']);
     }
 
+    public function testCanCreateReply()
+    {
+        $message = new InboundMessage($this->getServerRequest());
+
+        $reply = $message->createReply('this is a reply');
+        $this->assertInstanceOf('Nexmo\Message\Message', $reply);
+
+        $params = $reply->getRequestData(false);
+
+        $this->assertEquals('14845552121', $params['to']);
+        $this->assertEquals('16105553939', $params['from']);
+        $this->assertEquals('this is a reply', $params['text']);
+    }
+
     public function getResponses()
     {
         return [
