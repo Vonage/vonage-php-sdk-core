@@ -234,10 +234,10 @@ License
 
 This library is released under the [MIT License][license]
 
-[signup]: https://dashboard.nexmo.com/sign-up?utm_source=DEV_REL&utm_medium=github&utm_campaign=[LANGUAGE]-client-library
-[doc_sms]: https://docs.nexmo.com/api-ref/sms-api?utm_source=DEV_REL&utm_medium=github&utm_campaign=[LANGUAGE]-client-library
-[doc_inbound]: https://docs.nexmo.com/messaging/sms-api/api-reference#inbound?utm_source=DEV_REL&utm_medium=github&utm_campaign=[LANGUAGE]-client-library
-[doc_verify]: https://docs.nexmo.com/verify/api-reference?utm_source=DEV_REL&utm_medium=github&utm_campaign=[LANGUAGE]-client-library
+[signup]: https://dashboard.nexmo.com/sign-up?utm_source=DEV_REL&utm_medium=github&utm_campaign=php-client-library
+[doc_sms]: https://docs.nexmo.com/api-ref/sms-api?utm_source=DEV_REL&utm_medium=github&utm_campaign=php-client-library
+[doc_inbound]: https://docs.nexmo.com/messaging/sms-api/api-reference#inbound?utm_source=DEV_REL&utm_medium=github&utm_campaign=php-client-library
+[doc_verify]: https://docs.nexmo.com/verify/api-reference?utm_source=DEV_REL&utm_medium=github&utm_campaign=php-client-library
 [license]: LICENSE.txt
 [send_example]: examples/send.php
 [spec]: https://github.com/Nexmo/client-library-specification
