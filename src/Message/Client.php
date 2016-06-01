@@ -34,7 +34,7 @@ class Client implements ClientAwareInterface
             $message = $this->createMessageFromArray($message);
         }
 
-        $params = $message->getRequestData();
+        $params = $message->getRequestData(false);
         
         $request = new Request(
             \Nexmo\Client::BASE_REST . '/sms/json'
@@ -59,6 +59,14 @@ class Client implements ClientAwareInterface
             switch($part['status']){
                 case '0':
                     continue; //all okay
+                case '1':
+                    if(preg_match('#\[\s+(\d+)\s+\]#', $part['error-text'], $match)){
+                        usleep($match[1] + 1);
+                    } else {
+                        sleep(1);
+                    }
+
+                    return $this->send($message);
                 case '5':
                     $e = new Exception\Server($part['error-text'], $part['status']);
                     $e->setEntity($message);

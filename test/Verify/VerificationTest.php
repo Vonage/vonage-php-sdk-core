@@ -254,6 +254,34 @@ class VerificationTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @dataProvider getSerializeResponses
+     */
+    public function testSerialize($response)
+    {
+        $this->exsisting->setResponse($response);
+        $this->exsisting->getResponse()->getBody()->rewind();
+        $this->exsisting->getResponse()->getBody()->getContents();
+        $serialized   = serialize($this->exsisting);
+        /* @var $unserialized Verification */
+        $unserialized = unserialize($serialized);
+
+        $this->assertInstanceOf(get_class($this->exsisting), $unserialized);
+
+        $this->assertEquals($this->exsisting->getAccountId(), $unserialized->getAccountId());
+        $this->assertEquals($this->exsisting->getStatus(), $unserialized->getStatus());
+
+        $this->assertEquals($this->exsisting->getResponseData(), $unserialized->getResponseData());
+    }
+
+    public function getSerializeResponses()
+    {
+        return [
+            [$this->getResponse('search')],
+            [$this->getResponse('start')],
+        ];
+    }
+
+    /**
      * @dataProvider getClientProxyMethods
      */
     public function testMissingClientException($method, $proxy, $code = null, $ip = null)

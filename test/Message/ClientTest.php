@@ -160,6 +160,28 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($response, $message->getResponse());
     }
 
+    public function testRateLimitRetires()
+    {
+        $rate    = $this->getResponse('ratelimit');
+        $success = $this->getResponse('success');
+
+        $args = [
+            'to' => '14845551345',
+            'from' => '1105551334',
+            'text' => 'test message'
+        ];
+
+        $this->nexmoClient->send(Argument::that(function(Request $request) use ($args){
+            $this->assertRequestJsonBodyContains('to', $args['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $args['from'], $request);
+            $this->assertRequestJsonBodyContains('text', $args['text'], $request);
+            return true;
+        }))->willReturn($rate, $rate, $success);
+
+        $message = $this->messageClient->send(new Text($args['to'], $args['from'], $args['text']));
+        $this->assertEquals($success, $message->getResponse());
+    }
+
     /**
      * Get the API response we'd expect for a call to the API. Message API currently returns 200 all the time, so only
      * change between success / fail is body of the message.

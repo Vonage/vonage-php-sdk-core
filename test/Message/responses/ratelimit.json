@@ -1,0 +1,11 @@
+{
+  "message-count": "1",
+  "messages": [
+    {
+      "to": "14843472194",
+      "status": "1",
+      "error-text": "Throughput Rate Exceeded - please wait [ 97 ] and retry",
+      "network": "310260"
+    }
+  ]
+}

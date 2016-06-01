@@ -13,7 +13,7 @@ use Nexmo\Entity\JsonResponseTrait;
 use Nexmo\Entity\Psr7Trait;
 use Nexmo\Entity\RequestArrayTrait;
 
-class Verification implements VerificationInterface, \ArrayAccess
+class Verification implements VerificationInterface, \ArrayAccess, \Serializable
 {
     use Psr7Trait;
     use RequestArrayTrait;
@@ -559,4 +559,38 @@ class Verification implements VerificationInterface, \ArrayAccess
             $offset
         ));
     }
+
+    public function serialize()
+    {
+        $data = [
+            'requestData'  => $this->requestData
+        ];
+
+        if($request = $this->getRequest()){
+            $data['request'] = \Zend\Diactoros\Request\Serializer::toString($request);
+        }
+
+        if($response = $this->getResponse()){
+            $data['response'] = \Zend\Diactoros\Response\Serializer::toString($response);
+        }
+
+        return serialize($data);
+    }
+
+    public function unserialize($serialized)
+    {
+        $data = unserialize($serialized);
+
+        $this->requestData = $data['requestData'];
+
+        if(isset($data['request'])){
+            $this->request = \Zend\Diactoros\Request\Serializer::fromString($data['request']);
+        }
+
+        if(isset($data['response'])){
+            $this->response = \Zend\Diactoros\Response\Serializer::fromString($data['response']);
+        }
+    }
+
+
 }
