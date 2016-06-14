@@ -207,7 +207,7 @@ API Coverage
         * [X] Message
         * [ ] Messages
         * [ ] Rejections
-    * US Short Codes
+    * [ ] US Short Codes
         * [ ] Two-Factor Authentication
         * [ ] Event Based Alerts
             * [ ] Sending Alerts
