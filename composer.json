@@ -14,7 +14,6 @@
   "support": {
     "email": "devrel@nexmo.com"
   },
-  "minimum-stability": "dev",
   "require": {
     "php": ">=5.4",
     "php-http/client-implementation": "^1.0",
