@@ -104,6 +104,25 @@ class Client implements ClientAwareInterface
         return $this->checkError($verification, $data);
     }
 
+    public function serialize(Verification $verification)
+    {
+        return serialize($verification);
+    }
+
+    public function unserialize($verification)
+    {
+        if(is_string($verification)){
+            $verification = unserialize($verification);
+        }
+
+        if(!($verification instanceof Verification)){
+            throw new \InvalidArgumentException('expected verification object or serialize verification object');
+        }
+
+        $verification->setClient($this);
+        return $verification;
+    }
+
     protected function control($verification, $cmd)
     {
         if(!($verification instanceof Verification)){

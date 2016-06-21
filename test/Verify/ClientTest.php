@@ -69,6 +69,41 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
+    public function testUnserializeAcceptsObject()
+    {
+        $mock = $this->getMockBuilder('Nexmo\Verify\Verification')
+            ->setConstructorArgs(['14845551212', 'Test Verify'])
+            ->setMethods(['setClient'])
+            ->getMock();
+
+        $mock->expects($this->once())->method('setClient')->with($this->client);
+
+        $this->client->unserialize($mock);
+    }
+
+    public function testUnserializeSetsClient()
+    {
+        $verification = new Verification('14845551212', 'Test Verify');
+        $verification->setResponse($this->getResponse('start'));
+
+        $string = serialize($verification);
+        $object = $this->client->unserialize($string);
+
+        $this->assertInstanceOf('Nexmo\Verify\Verification', $object);
+
+        $search = $this->setupClientForSearch('search');
+        $object->sync();
+        $this->assertSame($search, $object->getResponse());
+    }
+
+    public function testSerializeMatchesEntity()
+    {
+        $verification = new Verification('14845551212', 'Test Verify');
+        $verification->setResponse($this->getResponse('start'));
+
+        $string = serialize($verification);
+        $this->assertSame($string, $this->client->serialize($verification));
+    }
 
     public function testCanStartVerification()
     {
@@ -402,7 +437,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->client->check($verification, '1234');
         $this->assertSame($old, $verification->getResponse());
     }
-
+    
     protected function setupClientForCheck($response, $code, $ip = null)
     {
         $response = $this->getResponse($response);
