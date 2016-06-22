@@ -16,6 +16,8 @@ use Nexmo\Client\Factory\FactoryInterface;
 use Nexmo\Client\Factory\MapFactory;
 use Nexmo\Client\Response\Response;
 use Nexmo\Client\Signature;
+use Nexmo\Entity\EntityInterface;
+use Nexmo\Verify\Verification;
 use Psr\Http\Message\RequestInterface;
 use Zend\Diactoros\Uri;
 
@@ -231,6 +233,28 @@ class Client
 
         $response = $this->client->sendRequest($request);
         return $response;
+    }
+
+    public function serialize(EntityInterface $entity)
+    {
+        if($entity instanceof Verification){
+            return $this->verify()->serialize($entity);
+        }
+
+        throw new \RuntimeException('unknown class `' . get_class($entity) . '``');
+    }
+
+    public function unserialize($entity)
+    {
+        if(is_string($entity)){
+            $entity = unserialize($entity);
+        }
+
+        if($entity instanceof Verification){
+            return $this->verify()->unserialize($entity);
+        }
+
+        throw new \RuntimeException('unknown class `' . get_class($entity) . '``');
     }
 
     public function __call($name, $args)

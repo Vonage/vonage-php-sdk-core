@@ -15,6 +15,7 @@ use Nexmo\Client;
 use Nexmo\Client\Credentials\Basic;
 use Nexmo\Client\Credentials\OAuth;
 use Nexmo\Client\Signature;
+use Nexmo\Verify\Verification;
 use Zend\Diactoros\Request;
 use Zend\Diactoros\Response;
 
@@ -267,6 +268,25 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $this->assertEquals($expected, $agent);
+    }
+
+    public function testSerializationProxiesVerify()
+    {
+        $verify = $this->prophesize('Nexmo\Verify\Client');
+        $factory = $this->prophesize('Nexmo\Client\Factory\FactoryInterface');
+
+        $factory->hasApi('verify')->willReturn(true);
+        $factory->getApi('verify')->willReturn($verify->reveal());
+
+        $client = new Client($this->basic);
+        $client->setFactory($factory->reveal());
+
+        $verification = new Verification('15554441212', 'test app');
+        $verify->serialize($verification)->willReturn('string data')->shouldBeCalled();
+        $verify->unserialize($verification)->willReturn($verification)->shouldBeCalled();
+
+        $this->assertEquals('string data', $client->serialize($verification));
+        $this->assertEquals($verification, $client->unserialize(serialize($verification)));
     }
 
     /**
