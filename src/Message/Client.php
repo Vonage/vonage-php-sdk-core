@@ -82,6 +82,74 @@ class Client implements ClientAwareInterface
     }
 
     /**
+     * @param $query
+     * @return MessageInterface[]
+     * @throws Exception\Exception
+     * @throws Exception\Request
+     */
+    public function get($query)
+    {
+        if($query instanceof Query){
+            $params = $query->getParams();
+        } else if($query instanceof MessageInterface){
+            $params = ['ids' => [$query->getMessageId()]];
+        } else if(is_string($query)) {
+            $params = ['ids' => [$query]];
+        } else if(is_array($query)){
+            $params = ['ids' => $query];
+        } else {
+            throw new \InvalidArgumentException('query must be an instance of Query, MessageInterface, string ID, or array of IDs.');
+        }
+
+        $request = new Request(
+            \Nexmo\Client::BASE_REST . '/search/messages?' . http_build_query($params),
+            'GET',
+            'php://temp',
+            ['Accept' => 'application/json']
+        );
+
+        $response = $this->client->send($request);
+        $response->getBody()->rewind();
+        $data = json_decode($response->getBody()->getContents(), true);
+
+        if($response->getStatusCode() != '200' && isset($data['error-code'])){
+            throw new Exception\Request($data['error-code-label'], $data['error-code']);
+        } elseif($response->getStatusCode() != '200'){
+            throw new Exception\Request('error status from API', $response->getStatusCode());
+        }
+
+        if(!isset($data['items'])){
+            throw new Exception\Exception('unexpected response from API');
+        }
+
+        if(count($data['items']) == 0){
+            return [];
+        }
+
+        $collection = [];
+
+        foreach($data['items'] as $index => $item){
+            switch($item['type']){
+                case 'MT':
+                    $new = new Message($item['message-id']);
+                    break;
+                case 'MO':
+                    $new = new InboundMessage($item['message-id']);
+                    break;
+                default:
+                    throw new Exception\Exception('unexpected response from API');
+            }
+
+            $new->setResponse($response);
+            $new->setIndex($index);
+            $collection[] = $new;
+
+        }
+
+        return $collection;
+    }
+
+    /**
      * @param string|MessageInterface $idOrMessage
      */
     public function search($idOrMessage)

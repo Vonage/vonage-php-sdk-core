@@ -16,6 +16,7 @@ class InboundMessage implements MessageInterface, \ArrayAccess
 {
     use Psr7Trait;
     use JsonResponseTrait;
+    use CollectionTrait;
 
     protected $id;
 
@@ -148,6 +149,11 @@ class InboundMessage implements MessageInterface, \ArrayAccess
     public function offsetExists($offset)
     {
         $response = $this->getResponseData();
+
+        if(isset($this->index)){
+            $response = $response['items'][$this->index];
+        }
+
         $request  = $this->getRequestData();
         $dirty    = $this->getRequestData(false);
         return isset($response[$offset]) || isset($request[$offset]) || isset($dirty[$offset]);
@@ -164,6 +170,11 @@ class InboundMessage implements MessageInterface, \ArrayAccess
     public function offsetGet($offset)
     {
         $response = $this->getResponseData();
+
+        if(isset($this->index)){
+            $response = $response['items'][$this->index];
+        }
+
         $request  = $this->getRequestData();
         $dirty    = $this->getRequestData(false);
 

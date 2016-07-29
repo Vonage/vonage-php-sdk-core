@@ -21,6 +21,7 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
     use Psr7Trait;
     use JsonResponseTrait;
     use RequestArrayTrait;
+    use CollectionTrait;
 
     const TYPE = null;
 
@@ -199,6 +200,11 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
     public function offsetExists($offset)
     {
         $response = $this->getResponseData();
+
+        if(isset($this->index)){
+            $response = $response['items'][$this->index];
+        }
+
         $request  = $this->getRequestData();
         $dirty    = $this->getRequestData(false);
         if(isset($response[$offset]) || isset($request[$offset]) || isset($dirty[$offset])){
@@ -216,6 +222,11 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
     public function offsetGet($offset)
     {
         $response = $this->getResponseData();
+
+        if(isset($this->index)){
+            $response = $response['items'][$this->index];
+        }
+
         $request  = $this->getRequestData();
         $dirty    = $this->getRequestData(false);
 
