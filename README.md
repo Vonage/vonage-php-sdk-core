@@ -41,7 +41,7 @@ require_once "vendor/autoload.php";
 Create a client with your API key and secret:
 
 ```php
-$client = new Nexmo\Client(new Nexmo\Credentials\Basic(API_KEY, API_SECRET));     
+$client = new Nexmo\Client(new Nexmo\Client\Credentials\Basic(API_KEY, API_SECRET));     
 ```
 
 Examples
