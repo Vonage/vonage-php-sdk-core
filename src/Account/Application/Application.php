@@ -9,11 +9,12 @@
 namespace Nexmo\Account\Application;
 
 
+use Nexmo\Entity\EntityInterface;
 use Nexmo\Entity\JsonResponseTrait;
 use Nexmo\Entity\Psr7Trait;
 use Nexmo\Entity\RequestArrayTrait;
 
-class Application
+class Application implements EntityInterface
 {
     use RequestArrayTrait {
         getRequestData as _getRequestData;

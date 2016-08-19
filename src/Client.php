@@ -27,6 +27,7 @@ use Zend\Diactoros\Uri;
  * @property \Nexmo\Message\Client $message
  * @method \Nexmo\Message\Client message()
  * @method \Nexmo\Verify\Client  verify()
+ * @method \Nexmo\Account\Application\Client application()
  */
 class Client
 {
@@ -79,7 +80,7 @@ class Client
 
         $this->setFactory(new MapFactory([
             'message' => 'Nexmo\Message\Client',
-            'verify'  => 'Nexmo\Verify\Client'
+            'verify'  => 'Nexmo\Verify\Client',
             'application' => 'Nexmo\Account\Application\Client'
         ], $this));
     }
