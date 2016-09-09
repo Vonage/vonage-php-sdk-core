@@ -9,7 +9,10 @@
 namespace Nexmo\Entity;
 
 /**
- * Store request data in an array, and lock once a request object has been set.
+ * Implements getRequestData from EntityInterface with a simple array. Request data stored in an array, and locked once
+ * a request object has been set.
+ *
+ * @see EntityInterface::getRequestData()
  */
 trait RequestArrayTrait
 {

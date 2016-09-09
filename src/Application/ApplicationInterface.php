@@ -6,13 +6,11 @@
  * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
  */
 
-namespace Nexmo\Account\Application;
+namespace Nexmo\Application;
 
+use Nexmo\Entity\EntityInterface;
 
-use Nexmo\Client\ClientAwareInterface;
-use Nexmo\Client\ClientAwareTrait;
-
-class Client implements ClientAwareInterface
+interface ApplicationInterface extends EntityInterface
 {
-    use ClientAwareTrait;
+    public function getId();
 }

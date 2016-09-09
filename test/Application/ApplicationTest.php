@@ -6,11 +6,10 @@
  * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
  */
 
-namespace NexmoTest\Account\Application;
+namespace NexmoTest\Application;
 
-
-use Nexmo\Account\Application\Application;
-use Nexmo\Account\Application\VoiceConfig;
+use Nexmo\Application\Application;
+use Nexmo\Application\VoiceConfig;
 use Zend\Diactoros\Response;
 
 class ApplicationTest extends \PHPUnit_Framework_TestCase
@@ -22,7 +21,14 @@ class ApplicationTest extends \PHPUnit_Framework_TestCase
     
     public function setUp()
     {
-        $this->app = new Application('test');
+        $this->app = new Application();
+        $this->app->setName('test');
+    }
+
+    public function testConstructWithId()
+    {
+        $app = new Application('1a20a124-1775-412b-b623-e6985f4aace0');
+        $this->assertEquals('1a20a124-1775-412b-b623-e6985f4aace0', $app->getId());
     }
 
     public function testNameIsSet()
@@ -75,10 +81,9 @@ class ApplicationTest extends \PHPUnit_Framework_TestCase
     {
         $this->app->setResponse($this->getResponse());
         $this->assertEquals('client_test', $this->app->getName());
+
         $this->app->setName('new');
         $this->assertEquals('new', $this->app->getName());
-        //$this->assertTrue($this->app->isDirty());
-        //$this->assertEquals('client_test', $this->app->getName(true));
 
         $webhook = $this->app->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER);
         $this->assertEquals('http://test.runscope.net/answer', (string) $webhook);
@@ -86,16 +91,15 @@ class ApplicationTest extends \PHPUnit_Framework_TestCase
         $this->app->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'http://example.com');
         $webhook = $this->app->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER);
         $this->assertEquals('http://example.com', (string) $webhook);
-
-        //$webhook = $this->app->getVoiceConfig(true)->getWebhook(VoiceConfig::ANSWER);
-        //$this->assertEquals('http://test.runscope.net/answer', (string) $webhook);
     }
 
     public function testConfigCanBeCopied()
     {
         $this->app->setResponse($this->getResponse());
 
-        $otherapp = new Application('new app');
+        $otherapp = new Application();
+        $otherapp->setName('new app');
+
         $otherapp->setVoiceConfig($this->app->getVoiceConfig());
 
         $webhook = $otherapp->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER);

@@ -21,7 +21,7 @@
   },
   "_links": {
     "self": {
-      "href": "/applications/7568c82a-0852-4974-b5c7-19078a4020c3"
+      "href": "/v1/applications/7568c82a-0852-4974-b5c7-19078a4020c3"
     }
   }
 }

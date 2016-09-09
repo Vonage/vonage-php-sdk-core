@@ -6,7 +6,7 @@
  * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
  */
 
-namespace Nexmo\Account\Application;
+namespace Nexmo\Application;
 
 class Webhook
 {

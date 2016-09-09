@@ -6,7 +6,7 @@
  * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
  */
 
-namespace Nexmo\Account\Application;
+namespace Nexmo\Application;
 
 class VoiceConfig
 {
@@ -22,6 +22,7 @@ class VoiceConfig
         }
 
         $this->webhooks[$type] = $url;
+        return $this;
     }
 
     public function getWebhook($type)

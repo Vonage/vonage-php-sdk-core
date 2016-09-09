@@ -11,7 +11,7 @@ namespace Nexmo\Entity;
 /**
  * Class Psr7Trait
  *
- * Allow an entity to contain request / response objects.
+ * Allow an entity to contain last request / response objects.
  */
 trait Psr7Trait
 {
@@ -28,14 +28,17 @@ trait Psr7Trait
     public function setResponse(\Psr\Http\Message\ResponseInterface $response)
     {
         $this->response = $response;
-        //todo: need to better manage request data (local values) and response data (state from API)
-        $this->requestData = [];
+
+        $status = $response->getStatusCode();
+
+        if($this instanceof JsonUnserializableInterface AND ((200 == $status) OR (201 == $status))){
+            $this->jsonUnserialize($this->getResponseData());
+        }
     }
 
     public function setRequest(\Psr\Http\Message\RequestInterface $request)
     {
         $this->request = $request;
-
     }
 
     public function getRequest()

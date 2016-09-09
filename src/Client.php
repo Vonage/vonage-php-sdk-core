@@ -27,7 +27,7 @@ use Zend\Diactoros\Uri;
  * @property \Nexmo\Message\Client $message
  * @method \Nexmo\Message\Client message()
  * @method \Nexmo\Verify\Client  verify()
- * @method \Nexmo\Account\Application\Client application()
+ * @method \Nexmo\Application\Client applications()
  */
 class Client
 {
@@ -81,7 +81,7 @@ class Client
         $this->setFactory(new MapFactory([
             'message' => 'Nexmo\Message\Client',
             'verify'  => 'Nexmo\Verify\Client',
-            'application' => 'Nexmo\Account\Application\Client'
+            'applications' => 'Nexmo\Application\Client'
         ], $this));
     }
 
@@ -166,6 +166,17 @@ class Client
 
     public static function authRequest(RequestInterface $request, Basic $credentials)
     {
+        $path = $request->getUri()->getPath();
+
+        //todo: needs to be tested
+        if(0 === strpos($path, '/v1/applications')){
+            $query = [];
+            parse_str($request->getUri()->getQuery(), $query);
+            $query = array_merge($query, $credentials->asArray());
+            $request = $request->withUri($request->getUri()->withQuery(http_build_query($query)));
+            return $request;
+        }
+
         switch($request->getHeaderLine('content-type')){
             case 'application/json':
                 $body = $request->getBody();
