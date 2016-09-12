@@ -371,45 +371,6 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         if($payload instanceof Application){
             $this->assertSame($payload, $application);
         }
-
-        return;
-
-        $this->applicationClient;
-
-        $client->applications();
-        $client->applciations('unique id');
-        $client->applcaitions()->create($application);
-        $client->applicaitons()->delete($application);
-        $client->applicaitons()->update($application);
-        $client->applications()->get('id');
-
-        foreach($client->applications() as $application)
-        {
-
-        }
-
-        foreach($client->applications()->filter(new Filter(new \DateTime(), new \DateTime()))->disablePaging() as $app){
-
-        }
-
-
-
-        $client->applcaitions()->create($application);
-        $client->applicaitons('ap1234')->delete();
-        $client->applicaitons('as1234')->update($application);
-
-        $iterator = $client->applciations(new Filter());
-
-        $client->messages()->send(); //post
-        $client->messages()->reportConversion(); //message('ms1234')->convert(true)
-        $client->messages()->reportConversion('ms1234', true, new \DateTime());
-        $client->messages('ms1234')->convert(false);
-        $client->messages()->get('ms1234')->convert(false);
-        $client->messages()->sendConversion($message);
-        $client->messages()->delivered($message);
-        $client->messages()->failed($message);
-        $client->messages()->find('1234abcd');
-
     }
 
     public function createApplication()
