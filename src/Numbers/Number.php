@@ -178,4 +178,9 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
 
         return $json;
     }
+
+    public function __toString()
+    {
+        return (string) $this->getId();
+    }
 }

@@ -113,4 +113,9 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
             'type' => 'voice' //currently the only type
         ];
     }
+
+    public function __toString()
+    {
+        return (string) $this->getId();
+    }
 }
