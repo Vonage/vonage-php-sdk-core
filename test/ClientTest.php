@@ -39,6 +39,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
     protected $sharedsecret;
     protected $basic;
+    protected $key;
+    protected $container;
 
     public function setUp()
     {
@@ -46,6 +48,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->request      = $this->getRequest();
         $this->sharedsecret = new Client\Credentials\SharedSecret($this->api_key, $this->secret);
         $this->basic        = new Client\Credentials\Basic($this->api_key, $this->api_secret);
+        $this->key          = new Client\Credentials\Keypair(file_get_contents(__DIR__  . '/Client/Credentials/test.key', 'app'));
+        $this->container    = new Client\Credentials\Container($this->key, $this->basic, $this->sharedsecret);
     }
 
     public function testBasicCredentialsQuery()
@@ -70,6 +74,33 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertEmpty($request->getUri()->getQuery());
         $this->assertRequestFormBodyContains('api_key', $this->api_key, $request);
         $this->assertRequestFormBodyContains('api_secret', $this->api_secret, $request);
+    }
+
+    public function testCredentialContainerDefaultsBasic()
+    {
+        $client = new Client($this->container, [], $this->http);
+        $request = $this->getRequest('json');
+
+        $client->send($request);
+
+        $request = $this->http->getRequests()[0];
+        $this->assertEmpty($request->getUri()->getQuery());
+        $this->assertRequestJsonBodyContains('api_key', $this->api_key, $request);
+        $this->assertRequestJsonBodyContains('api_secret', $this->api_secret, $request);
+    }
+
+    public function testCredentialContainerUsesKeypairForVoice()
+    {
+        $client = new Client($this->container, [], $this->http);
+        $request = $this->getRequest('json', ['test' => 'body'], 'https://api.nexmo.com/v1/calls');
+
+        $client->send($request);
+
+        $request = $this->http->getRequests()[0];
+        $this->assertEmpty($request->getUri()->getQuery());
+        $auth = $request->getHeaderLine('Authorization');
+        $this->assertStringStartsWith('Bearer ', $auth);
+        $this->markTestIncomplete('Has correct format, but not tested as output of JWT generation');
     }
 
     public function testBasicCredentialsJson()
@@ -305,13 +336,13 @@ class ClientTest extends \PHPUnit_Framework_TestCase
      * Create a simple PSR-7 request to send through the API client.
      * @return Request
      */
-    protected function getRequest($type = 'query', $params = ['name' => 'bob', 'friend' => 'alice'])
+    protected function getRequest($type = 'query', $params = ['name' => 'bob', 'friend' => 'alice'], $url = 'http://example.com')
     {
         if('query' == $type){
-            return new Request('http://example.com?' . http_build_query($params));
+            return new Request($url . '?' . http_build_query($params));
         }
 
-        $request = new Request('http://exmaple.com', 'POST');
+        $request = new Request($url, 'POST');
 
         switch($type){
             case 'form':

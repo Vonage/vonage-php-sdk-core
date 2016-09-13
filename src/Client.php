@@ -9,7 +9,9 @@
 namespace Nexmo;
 use Http\Client\HttpClient;
 use Nexmo\Client\Credentials\Basic;
+use Nexmo\Client\Credentials\Container;
 use Nexmo\Client\Credentials\CredentialsInterface;
+use Nexmo\Client\Credentials\Keypair;
 use Nexmo\Client\Credentials\OAuth;
 use Nexmo\Client\Credentials\SharedSecret;
 use Nexmo\Client\Factory\FactoryInterface;
@@ -71,7 +73,7 @@ class Client
         $this->setHttpClient($client);
 
         //make sure we know how to use the credentials
-        if(!($credentials instanceof Basic) && !($credentials instanceof SharedSecret) && !($credentials instanceof OAuth)){
+        if(!($credentials instanceof Container) && !($credentials instanceof Basic) && !($credentials instanceof SharedSecret) && !($credentials instanceof OAuth)){
             throw new \RuntimeException('unknown credentials type: ' . get_class($credentials));
         }
 
@@ -218,8 +220,15 @@ class Client
      */
     public function send(\Psr\Http\Message\RequestInterface $request)
     {
-        //also an instance of Basic, so checked first
-        if($this->credentials instanceof SharedSecret){
+        if($this->credentials instanceof Container) {
+            if (strpos($request->getUri()->getPath(), '/v1/calls') === 0) {
+                $request = $request->withHeader('Authorization', 'Bearer ' . $this->credentials->get(Keypair::class)->getJwt());
+            } else {
+                $request = self::authRequest($request, $this->credentials->get(Basic::class));
+            }
+        } elseif($this->credentials instanceof Keypair){
+            $request = $request->withHeader('Authorization', 'Bearer ' . $this->credentials->get(Keypair::class)->getJwt());
+        } elseif($this->credentials instanceof SharedSecret){
             $request = self::signRequest($request, $this->credentials);
         } elseif($this->credentials instanceof Basic){
             $request = self::authRequest($request, $this->credentials);
