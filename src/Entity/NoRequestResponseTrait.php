@@ -13,41 +13,25 @@ namespace Nexmo\Entity;
  *
  * Allow an entity to contain last request / response objects.
  */
-trait Psr7Trait
+trait NoRequestResponseTrait
 {
-    /**
-     * @var \Psr\Http\Message\RequestInterface
-     */
-    protected $request;
-
-    /**
-     * @var \Psr\Http\Message\ResponseInterface
-     */
-    protected $response;
-
     public function setResponse(\Psr\Http\Message\ResponseInterface $response)
     {
-        $this->response = $response;
-
-        $status = $response->getStatusCode();
-
-        if($this instanceof JsonUnserializableInterface AND ((200 == $status) OR (201 == $status))){
-            $this->jsonUnserialize($this->getResponseData());
-        }
+        throw new \RuntimeException(__CLASS__ . ' does not support request / response');
     }
 
     public function setRequest(\Psr\Http\Message\RequestInterface $request)
     {
-        $this->request = $request;
+        throw new \RuntimeException(__CLASS__ . ' does not support request / response');
     }
 
     public function getRequest()
     {
-        return $this->request;
+        return null;
     }
 
     public function getResponse()
     {
-        return $this->response;
+        return null;
     }
 }

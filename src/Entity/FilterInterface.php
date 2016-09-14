@@ -8,9 +8,8 @@
 
 namespace Nexmo\Entity;
 
-trait ArrayAccessTrait
+
+interface FilterInterface
 {
-    public abstract function getResponseData();
-    
-    public abstract function getRequestData();
+    public function getQuery();
 }

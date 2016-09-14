@@ -8,9 +8,16 @@
 
 namespace Nexmo\Entity;
 
-trait ArrayAccessTrait
+
+interface CollectionInterface extends \Countable, \Iterator
 {
-    public abstract function getResponseData();
-    
-    public abstract function getRequestData();
+    /**
+     * @return string
+     */
+    public function getCollectionName();
+
+    /**
+     * @return string
+     */
+    public function getCollectionPath();
 }

@@ -8,9 +8,11 @@
 
 namespace Nexmo\Entity;
 
-trait ArrayAccessTrait
+
+class EmptyFilter implements FilterInterface
 {
-    public abstract function getResponseData();
-    
-    public abstract function getRequestData();
+    public function getQuery()
+    {
+        return [];
+    }
 }

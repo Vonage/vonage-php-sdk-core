@@ -6,11 +6,11 @@
  * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
  */
 
-namespace Nexmo\Entity;
+namespace Nexmo\Application;
 
-trait ArrayAccessTrait
+use Nexmo\Entity\EntityInterface;
+
+interface ApplicationInterface extends EntityInterface
 {
-    public abstract function getResponseData();
-    
-    public abstract function getRequestData();
+    public function getId();
 }

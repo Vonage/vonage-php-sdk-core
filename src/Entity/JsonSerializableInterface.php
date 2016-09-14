@@ -8,9 +8,7 @@
 
 namespace Nexmo\Entity;
 
-trait ArrayAccessTrait
-{
-    public abstract function getResponseData();
-    
-    public abstract function getRequestData();
-}
+/**
+ * Identifies the Entity as using JsonSerializable to prepare request data.
+ */
+interface JsonSerializableInterface extends \JsonSerializable {}

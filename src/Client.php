@@ -9,7 +9,9 @@
 namespace Nexmo;
 use Http\Client\HttpClient;
 use Nexmo\Client\Credentials\Basic;
+use Nexmo\Client\Credentials\Container;
 use Nexmo\Client\Credentials\CredentialsInterface;
+use Nexmo\Client\Credentials\Keypair;
 use Nexmo\Client\Credentials\OAuth;
 use Nexmo\Client\Credentials\SharedSecret;
 use Nexmo\Client\Factory\FactoryInterface;
@@ -27,6 +29,9 @@ use Zend\Diactoros\Uri;
  * @property \Nexmo\Message\Client $message
  * @method \Nexmo\Message\Client message()
  * @method \Nexmo\Verify\Client  verify()
+ * @method \Nexmo\Application\Client applications()
+ * @method \Nexmo\Calls\Client calls()
+ * @method \Nexmo\Numbers\Client numbers()
  */
 class Client
 {
@@ -69,7 +74,7 @@ class Client
         $this->setHttpClient($client);
 
         //make sure we know how to use the credentials
-        if(!($credentials instanceof Basic) && !($credentials instanceof SharedSecret) && !($credentials instanceof OAuth)){
+        if(!($credentials instanceof Container) && !($credentials instanceof Basic) && !($credentials instanceof SharedSecret) && !($credentials instanceof OAuth)){
             throw new \RuntimeException('unknown credentials type: ' . get_class($credentials));
         }
 
@@ -79,7 +84,10 @@ class Client
 
         $this->setFactory(new MapFactory([
             'message' => 'Nexmo\Message\Client',
-            'verify'  => 'Nexmo\Verify\Client'
+            'verify'  => 'Nexmo\Verify\Client',
+            'applications' => 'Nexmo\Application\Client',
+            'numbers' => 'Nexmo\Numbers\Client',
+            'calls' => 'Nexmo\Calls\Client',
         ], $this));
     }
 
@@ -164,6 +172,17 @@ class Client
 
     public static function authRequest(RequestInterface $request, Basic $credentials)
     {
+        $path = $request->getUri()->getPath();
+
+        //todo: needs to be tested
+        if(0 === strpos($path, '/v1/applications')){
+            $query = [];
+            parse_str($request->getUri()->getQuery(), $query);
+            $query = array_merge($query, $credentials->asArray());
+            $request = $request->withUri($request->getUri()->withQuery(http_build_query($query)));
+            return $request;
+        }
+
         switch($request->getHeaderLine('content-type')){
             case 'application/json':
                 $body = $request->getBody();
@@ -203,8 +222,15 @@ class Client
      */
     public function send(\Psr\Http\Message\RequestInterface $request)
     {
-        //also an instance of Basic, so checked first
-        if($this->credentials instanceof SharedSecret){
+        if($this->credentials instanceof Container) {
+            if (strpos($request->getUri()->getPath(), '/v1/calls') === 0) {
+                $request = $request->withHeader('Authorization', 'Bearer ' . $this->credentials->get(Keypair::class)->getJwt());
+            } else {
+                $request = self::authRequest($request, $this->credentials->get(Basic::class));
+            }
+        } elseif($this->credentials instanceof Keypair){
+            $request = $request->withHeader('Authorization', 'Bearer ' . $this->credentials->get(Keypair::class)->getJwt());
+        } elseif($this->credentials instanceof SharedSecret){
             $request = self::signRequest($request, $this->credentials);
         } elseif($this->credentials instanceof Basic){
             $request = self::authRequest($request, $this->credentials);
