@@ -46,7 +46,7 @@ trait Psr7AssertionTrait
         $request->getBody()->rewind();
         $params = json_decode($request->getBody()->getContents(), true);
         self::assertArrayHasKey($key, $params, 'body does not have key: ' . $key);
-        self::assertSame($value, $params[$key], 'body does not have value: ' . $value);
+        self::assertSame($value, $params[$key]);
     }
 
     public static function assertRequestMatchesUrl($url, RequestInterface $request)

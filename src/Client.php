@@ -30,6 +30,7 @@ use Zend\Diactoros\Uri;
  * @method \Nexmo\Message\Client message()
  * @method \Nexmo\Verify\Client  verify()
  * @method \Nexmo\Application\Client applications()
+ * @method \Nexmo\Calls\Client calls()
  * @method \Nexmo\Numbers\Client numbers()
  */
 class Client
@@ -86,6 +87,7 @@ class Client
             'verify'  => 'Nexmo\Verify\Client',
             'applications' => 'Nexmo\Application\Client',
             'numbers' => 'Nexmo\Numbers\Client',
+            'calls' => 'Nexmo\Calls\Client',
         ], $this));
     }
 
