@@ -219,6 +219,126 @@ $verification = new \Nexmo\Verify\Verification('00e6c3377e5348cdaf567e1417c707a5
 $client->verify()->search($verification);
 echo "Verification cost was: " . $verification['price'] . PHP_EOL;
 ```
+
+### Making A Call 
+
+All `$client->calls()` methods require the client to be constructed with a `Nexmo\Client\Credentials\Keypair`, or a 
+`Nexmo\Client\Credentials\Container` that includes the `Keypair` credentials:
+
+```php
+$basic  = new \Nexmo\Client\Credentials\Basic('key', 'secret');
+$keypair = new \Nexmo\Client\Credentials\Keypair(file_get_contents(__DIR__ . '/application.key'), 'application_id');
+
+$client = new \Nexmo\Client(new \Nexmo\Client\Credentials\Container($basic, $keypair));
+```
+
+You can start a call using an array as the structure:
+
+```php
+$client->calls()->create([
+    'to' => [[
+        'type' => 'phone',
+        'number' => '14843331234'
+    ]],
+    'from' => [
+        'type' => 'phone',
+        'number' => '14843335555'
+    ],
+    'answer_url' => ['https://example.com/answer'],
+    'event_url' => ['https://example.com/event'],
+]);
+```
+
+Or you can create a `Nexmo\Calls\Call` object, and use that:
+
+```php
+use Nexmo\Calls\Call;
+$call = new Call();
+$call->setTo('14843331234')
+     ->setFrom('14843335555')
+     ->setWebhook(Call::WEBHOOK_ANSWER, 'https://example.com/answer')
+     ->setWebhook(Call::WEBHOOK_EVENT, 'https://example.com/event');
+
+$client->calls()->create($call);
+```
+
+### Fetching A Call
+
+You can fetch a call using a `Nexmo\Calls\Call` object, or the call's UUID as a string:
+
+```php
+$call = $client->calls()->get('3fd4d839-493e-4485-b2a5-ace527aacff3');
+
+$call = new Nexmo\Calls\Call('3fd4d839-493e-4485-b2a5-ace527aacff3');
+$client->calls()->get($call);
+
+echo $call->getDirection();
+```
+
+### Creating An Application
+
+Application are configuration containers, and you can create one using a simple array structure:
+
+```php
+$application = $client->applications()->create([
+    'name' => 'My Application',
+    'answer_url' => 'https://example.com/answer',
+    'event_url' => 'https://example.com/event'
+])
+```
+
+You can also pass the client an application object:
+
+```php
+$application = new Nexmo\Application\Application();
+$application->setName('My Application');
+$application->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'https://example.com/answer');
+$application->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'https://example.com/event');
+
+$client->appliations()->create($application);
+```
+
+### Fetching Applications
+
+You can iterate over all your applications:
+
+```php
+foreach($client->applications() as $application){
+    echo $application->getName() . PHP_EOL;
+}
+```
+
+Or you can fetch an application using a string UUID, or an application object.
+
+```php
+$application = $client->applications()->get('1a20a124-1775-412b-b623-e6985f4aace0');
+
+$application = new Application('1a20a124-1775-412b-b623-e6985f4aace0');
+$client->applications()->get($application);
+```
+
+### Updating an Application
+
+Once you have an application object, you can modify and save it. 
+
+```php
+$application = $client->applications()->get('1a20a124-1775-412b-b623-e6985f4aace0');
+
+$application->setName('Updated Application');
+$client->applications()->update($application);
+```
+
+You can also pass an array and the application UUID to the client:
+
+```php
+$application = $client->applications()->update([
+    'name' => 'Updated Application',
+    'answer_url' => 'https://example.com/v2/answer',
+    'event_url' => 'https://example.com/v2/event'
+], '1a20a124-1775-412b-b623-e6985f4aace0');
+```
+
+
     
 API Coverage
 ------------
@@ -228,11 +348,11 @@ API Coverage
     * [ ] Pricing
     * [ ] Settings
     * [ ] Top Up
-    * [ ] Numbers
-        * [ ] Search
+    * [X] Numbers
+        * [X] Search
         * [ ] Buy
         * [ ] Cancel
-        * [ ] Update
+        * [X] Update
 * Number Insight
     * [ ] Basic
     * [ ] Standard
@@ -257,7 +377,7 @@ API Coverage
             * [ ] Sending Alerts
             * [ ] Campaign Subscription Management
 * Voice
-    * [ ] Outbound Calls
+    * [X] Outbound Calls
     * [ ] Inbound Call
     * [ ] Text-To-Speech Call
     * [ ] Text-To-Speech Prompt
