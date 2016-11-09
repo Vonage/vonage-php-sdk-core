@@ -20,17 +20,25 @@ class CallTest extends \PHPUnit_Framework_TestCase
      */
     protected $call;
 
+    protected $class;
+
     public function setUp()
     {
         $this->call = new Call();
+        $this->class = Call::class;
     }
 
+    /**
+     * Entities should be constructable with an ID.
+     */
     public function testConstructWithId()
     {
-        $call = new Call('3fd4d839-493e-4485-b2a5-ace527aacff3');
-        $this->assertSame('3fd4d839-493e-4485-b2a5-ace527aacff3', $call->getId());
+        $class = $this->class;
+        $entity = new $class('3fd4d839-493e-4485-b2a5-ace527aacff3');
+        $this->assertSame('3fd4d839-493e-4485-b2a5-ace527aacff3', $entity->getId());
     }
 
+    //split into descrete tests, use trait as can be useful elsewhere for consistency
     public function testToIsSet()
     {
         $this->call->setTo('14845551212');

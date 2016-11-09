@@ -8,6 +8,7 @@
 
 namespace NexmoTest\Calls;
 
+use Nexmo\Calls\Update\Transfer;
 use Nexmo\Calls\Call;
 use Nexmo\Calls\Client;
 use NexmoTest\Psr7AssertionTrait;
@@ -34,9 +35,63 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider getClient
+     * @dataProvider updateCall
      */
-    public function testGetClient($payload, $id)
+    public function testUpdateCall($expectedId, $id, $payload)
+    {
+        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($expectedId, $payload){
+            $this->assertEquals('/v1/calls/' . $expectedId, $request->getUri()->getPath());
+            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('PUT', $request->getMethod());
+
+            $expected = json_decode(json_encode($payload), true);
+
+            $request->getBody()->rewind();
+            $body = json_decode($request->getBody()->getContents(), true);
+            $request->getBody()->rewind();
+
+            $this->assertEquals($expected, $body);
+
+            return true;
+        }))->willReturn($this->getResponse('updated'));
+
+        $call = $this->callClient->put($payload, $id);
+
+        $this->assertInstanceOf('Nexmo\Calls\Call', $call);
+
+        if($id instanceof Call){
+            $this->assertSame($id, $call);
+        } else {
+            $this->assertEquals($id, $call->getId());
+        }
+    }
+
+    public function updateCall()
+    {
+        $id = '1234abcd';
+        $payload = [
+            'action' => 'transfer',
+            'destination' => [
+                'type' => 'ncco',
+                'url' => ['http://example.com']
+            ]
+        ];
+
+        $call = new Call($id);
+        $transfer = new Transfer('http://example.com');
+
+        return [
+            [$id, $id, $payload],
+            [$id, $call, $payload],
+            [$id, $id, $transfer],
+            [$id, $call, $transfer]
+        ];
+    }
+
+    /**
+     * @dataProvider getCall
+     */
+    public function testGetCall($payload, $id)
     {
         $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($id){
             $this->assertEquals('/v1/calls/' . $id, $request->getUri()->getPath());
@@ -53,7 +108,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    public function getClient()
+    public function getCall()
     {
 
         return [

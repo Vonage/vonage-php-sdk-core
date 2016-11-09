@@ -23,7 +23,8 @@
   },
   "require-dev": {
     "phpunit/phpunit": "^5.3",
-    "php-http/mock-client": "^0.3.0"
+    "php-http/mock-client": "^0.3.0",
+    "estahn/phpunit-json-assertions": "@stable"
   },
   "autoload": {
     "psr-4": {

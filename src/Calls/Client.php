@@ -37,6 +37,29 @@ class Client implements ClientAwareInterface, CollectionInterface
         return $this->post($call);
     }
 
+    public function put($payload, $call)
+    {
+        if(!($call instanceof Call)){
+            $call = new Call($call);
+        }
+
+        $request = new Request(
+            \Nexmo\Client::BASE_API . $this->getCollectionPath() . '/' . $call->getId()
+            ,'PUT',
+            'php://temp',
+            ['content-type' => 'application/json']
+        );
+
+        $request->getBody()->write(json_encode($payload));
+        $response = $this->client->send($request);
+
+        if($response->getStatusCode() != '200'){
+            throw $this->getException($response);
+        }
+
+        return $call;
+    }
+
     public function post($call)
     {
         if($call instanceof Call){
