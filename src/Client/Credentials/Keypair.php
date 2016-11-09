@@ -35,7 +35,7 @@ class Keypair extends AbstractCredentials  implements CredentialsInterface
         $this->signer = new Sha256();
     }
 
-    public function getJwt($exp = null, $nfb = null, $jti = null, $iat = null)
+    public function generateJwt($exp = null, $nfb = null, $jti = null, $iat = null)
     {
         if(is_null($exp)){
             $exp = time() + 60;

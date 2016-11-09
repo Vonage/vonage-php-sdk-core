@@ -47,7 +47,7 @@ class KeypairTest extends \PHPUnit_Framework_TestCase
     public function testGetJWT()
     {
         $credentials = new Keypair($this->key, $this->application);
-        $jwt = $credentials->getJwt();
+        $jwt = $credentials->generateJwt();
         $this->markTestIncomplete('generated JWT, but not tested as valid');
     }
 }

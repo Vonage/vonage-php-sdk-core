@@ -172,17 +172,6 @@ class Client
 
     public static function authRequest(RequestInterface $request, Basic $credentials)
     {
-        $path = $request->getUri()->getPath();
-
-        //todo: needs to be tested
-        if(0 === strpos($path, '/v1/applications')){
-            $query = [];
-            parse_str($request->getUri()->getQuery(), $query);
-            $query = array_merge($query, $credentials->asArray());
-            $request = $request->withUri($request->getUri()->withQuery(http_build_query($query)));
-            return $request;
-        }
-
         switch($request->getHeaderLine('content-type')){
             case 'application/json':
                 $body = $request->getBody();
@@ -224,12 +213,12 @@ class Client
     {
         if($this->credentials instanceof Container) {
             if (strpos($request->getUri()->getPath(), '/v1/calls') === 0) {
-                $request = $request->withHeader('Authorization', 'Bearer ' . $this->credentials->get(Keypair::class)->getJwt());
+                $request = $request->withHeader('Authorization', 'Bearer ' . $this->credentials->get(Keypair::class)->generateJwt());
             } else {
                 $request = self::authRequest($request, $this->credentials->get(Basic::class));
             }
         } elseif($this->credentials instanceof Keypair){
-            $request = $request->withHeader('Authorization', 'Bearer ' . $this->credentials->get(Keypair::class)->getJwt());
+            $request = $request->withHeader('Authorization', 'Bearer ' . $this->credentials->get(Keypair::class)->generateJwt());
         } elseif($this->credentials instanceof SharedSecret){
             $request = self::signRequest($request, $this->credentials);
         } elseif($this->credentials instanceof Basic){
