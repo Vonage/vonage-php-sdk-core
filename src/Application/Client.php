@@ -31,6 +31,13 @@ class Client implements ClientAwareInterface, CollectionInterface
         return '/v1/' . $this->getCollectionName();
     }
 
+    public function hydrateEntity($data, $id)
+    {
+        $application = new Application($id);
+        $application->jsonUnserialize($data);
+        return $application;
+    }
+
     public function get($application)
     {
         if(!($application instanceof Application)){

@@ -8,13 +8,17 @@
 
 namespace NexmoTest\Calls;
 
-
 use Nexmo\Calls\Call;
 use Nexmo\Calls\Endpoint;
+use Nexmo\Calls\Update\Transfer;
 use Nexmo\Calls\Webhook;
+use Prophecy\Argument;
+use EnricoStahn\JsonAssert\Assert as JsonAssert;
 
 class CallTest extends \PHPUnit_Framework_TestCase
 {
+    use JsonAssert;
+
     /**
      * @var Call
      */
@@ -38,7 +42,50 @@ class CallTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('3fd4d839-493e-4485-b2a5-ace527aacff3', $entity->getId());
     }
 
-    //split into descrete tests, use trait as can be useful elsewhere for consistency
+    public function testGetProxiesCollection()
+    {
+        $collection = $this->prophesize('Nexmo\Calls\Collection');
+        $this->call->setCollection($collection->reveal());
+        $collection->get(Argument::is($this->call))
+                   ->shouldBeCalledTimes(1)
+                   ->willReturn($this->call);
+
+        $return = $this->call->get();
+        $this->assertSame($this->call, $return);
+    }
+
+    public function testPutProxiesCollection()
+    {
+        $collection = $this->prophesize('Nexmo\Calls\Collection');
+        $this->call->setCollection($collection->reveal());
+        $transfer = new Transfer('http://example.com');
+        $collection->put(Argument::is($transfer), Argument::is($this->call))
+            ->shouldBeCalledTimes(1)
+            ->willReturn($this->call);
+
+        $return = $this->call->put($transfer);
+        $this->assertSame($this->call, $return);
+    }
+
+    public function testLazyLoad()
+    {
+        $collection = $this->prophesize('Nexmo\Calls\Collection');
+
+        $call = new Call('id');
+        $call->setCollection($collection->reveal());
+
+        $collection->get(Argument::is($call))
+            ->shouldBeCalledTimes(1)
+            ->will(function() use ($call){
+                $data = json_decode(file_get_contents(__DIR__ . '/responses/call.json'), true);
+                $call->JsonUnserialize($data);
+            });
+
+        $return = $call->getStatus();
+        $this->assertSame('completed', $return);
+    }
+
+    //split into discrete tests, use trait as can be useful elsewhere for consistency
     public function testToIsSet()
     {
         $this->call->setTo('14845551212');
@@ -168,7 +215,5 @@ class CallTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('Nexmo\Conversations\Conversation', $this->call->getConversation());
         $this->assertEquals('0f9f56dd-9c90-4fd0-a40e-d075f009d2ee', $this->call->getConversation()->getId());
-
-
     }
 }

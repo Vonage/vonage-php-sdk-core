@@ -20,4 +20,11 @@ interface CollectionInterface extends \Countable, \Iterator
      * @return string
      */
     public function getCollectionPath();
+
+    /**
+     * @param $data
+     * @param $id
+     * @return mixed
+     */
+    public function hydrateEntity($data, $id);
 }

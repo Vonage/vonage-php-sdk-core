@@ -17,7 +17,7 @@ use Psr\Http\Message\ResponseInterface;
 use Zend\Diactoros\Request;
 use Nexmo\Client\Exception;
 
-class Client implements ClientAwareInterface, CollectionInterface
+class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAccess
 {
     use ClientAwareTrait;
     use CollectionTrait;
@@ -32,19 +32,58 @@ class Client implements ClientAwareInterface, CollectionInterface
         return '/v1/' . $this->getCollectionName();
     }
 
-    public function create($call)
-    {
-        return $this->post($call);
-    }
-
-    public function put($payload, $call)
+    public function hydrateEntity($data, $call)
     {
         if(!($call instanceof Call)){
             $call = new Call($call);
         }
 
+        $call->JsonUnserialize($data);
+        $call->setCollection($this);
+
+        return $call;
+    }
+
+    /**
+     * @param null $callOrFilter
+     * @return $this|Call
+     */
+    public function __invoke(Filter $filter = null)
+    {
+        if(!is_null($filter)){
+            $this->setFilter($filter);
+        }
+
+        return $this;
+    }
+
+    public function create($call)
+    {
+        return $this->post($call);
+    }
+
+    public function put($payload, $call = null, $type = 'call')
+    {
+        if(is_null($call) AND is_object($payload) AND is_callable([$payload, 'getId'])){
+            $call = $payload->getId();
+        }
+
+        if(is_null($call)){
+            throw new \RuntimeException('missing required parameter: call');
+        }
+
+        if(!($call instanceof Call)){
+            $call = new Call($call);
+        }
+
+        if('call' !== $type){
+            $resource = '/' . $type;
+        } else {
+            $resource = '';
+        }
+
         $request = new Request(
-            \Nexmo\Client::BASE_API . $this->getCollectionPath() . '/' . $call->getId()
+            \Nexmo\Client::BASE_API . $this->getCollectionPath() . '/' . $call->getId() . $resource
             ,'PUT',
             'php://temp',
             ['content-type' => 'application/json']
@@ -54,6 +93,30 @@ class Client implements ClientAwareInterface, CollectionInterface
         $response = $this->client->send($request);
 
         if($response->getStatusCode() != '200'){
+            throw $this->getException($response);
+        }
+
+        return $call;
+    }
+
+    public function delete($call = null, $type)
+    {
+        if(is_object($call) AND is_callable([$call, 'getId'])){
+            $call = $call->getId();
+        }
+
+        if(!($call instanceof Call)){
+            $call = new Call($call);
+        }
+
+        $request = new Request(
+            \Nexmo\Client::BASE_API . $this->getCollectionPath() . '/' . $call->getId() . '/' . $type
+            ,'DELETE'
+        );
+
+        $response = $this->client->send($request);
+
+        if($response->getStatusCode() != '204'){
             throw $this->getException($response);
         }
 
@@ -103,10 +166,10 @@ class Client implements ClientAwareInterface, CollectionInterface
             throw $this->getException($response, $call);
         }
 
-        $body = json_decode($response->getBody()->getContents(), true);
-        $call->JsonUnserialize($body);
-
-        return $call;
+        return $this->hydrateEntity(
+            json_decode($response->getBody()->getContents(), true),
+            $call
+        );
     }
 
     protected function getException(ResponseInterface $response)
@@ -125,5 +188,36 @@ class Client implements ClientAwareInterface, CollectionInterface
 
         return $e;
     }
+
+    public function offsetExists($offset)
+    {
+        //todo: validate form of id
+        return true;
+    }
+
+    /**
+     * @param mixed $call
+     * @return Call
+     */
+    public function offsetGet($call)
+    {
+        if(!($call instanceof Call)){
+            $call = new Call($call);
+        }
+
+        $call->setCollection($this);
+        return $call;
+    }
+
+    public function offsetSet($offset, $value)
+    {
+        throw new \RuntimeException('can not set collection properties');
+    }
+
+    public function offsetUnset($offset)
+    {
+        throw new \RuntimeException('can not unset collection properties');
+    }
+
 
 }

@@ -12,6 +12,13 @@ use Psr\Http\Message\RequestInterface;
 
 trait Psr7AssertionTrait
 {
+    public static function assertRequestUrl($host, $path, $method, RequestInterface $request)
+    {
+        self::assertEquals($host,   $request->getUri()->getHost());
+        self::assertEquals($path,   $request->getUri()->getPath());
+        self::assertEquals($method, $request->getMethod());
+    }
+
     public static function assertRequestQueryContains($key, $value, RequestInterface $request)
     {
         $query = $request->getUri()->getQuery();

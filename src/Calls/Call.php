@@ -8,8 +8,9 @@
 
 namespace Nexmo\Calls;
 
-
 use Nexmo\Conversations\Conversation;
+use Nexmo\Entity\CollectionAwareInterface;
+use Nexmo\Entity\CollectionAwareTrait;
 use Nexmo\Entity\EntityInterface;
 use Nexmo\Entity\JsonResponseTrait;
 use Nexmo\Entity\JsonSerializableTrait;
@@ -17,11 +18,16 @@ use Nexmo\Entity\JsonUnserializableInterface;
 use Nexmo\Entity\NoRequestResponseTrait;
 use Nexmo\Entity\Psr7Trait;
 
-class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInterface
+/**
+ * Class Call
+ * @method Collection getCollection()
+ */
+class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInterface, CollectionAwareInterface
 {
     use NoRequestResponseTrait;
     use JsonSerializableTrait;
     use JsonResponseTrait;
+    use CollectionAwareTrait;
 
     const WEBHOOK_ANSWER = 'answer';
     const WEBHOOK_EVENT  = 'event';
@@ -49,6 +55,16 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
         $this->id = $id;
     }
 
+    public function get()
+    {
+        return $this->getCollection()->get($this);
+    }
+
+    public function put($payload)
+    {
+        return $this->getCollection()->put($payload, $this);
+    }
+
     public function getId()
     {
         return $this->id;
@@ -69,7 +85,7 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
      */
     public function getTo()
     {
-        if(!empty($this->data)){
+        if($this->lazyLoad()){
             return new Endpoint($this->data['to']['number'], $this->data['to']['type']);
         }
 
@@ -91,7 +107,7 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
      */
     public function getFrom()
     {
-        if(!empty($this->data)){
+        if($this->lazyLoad()){
             return new Endpoint($this->data['from']['number'], $this->data['from']['type']);
         }
 
@@ -125,26 +141,40 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
 
     public function getStatus()
     {
-        if(!empty($this->data)){
+        if($this->lazyLoad()){
             return $this->data['status'];
         }
     }
 
     public function getDirection()
     {
-        if(!empty($this->data)){
+        if($this->lazyLoad()){
             return $this->data['direction'];
         }
     }
 
     public function getConversation()
     {
-        if(!empty($this->data)){
+        if($this->lazyLoad()){
             return new Conversation($this->data['conversation_uuid']);
         }
     }
 
-    function jsonSerialize()
+    protected function lazyLoad()
+    {
+        if(!empty($this->data)){
+            return true;
+        }
+
+        if(isset($this->id)){
+            $this->getCollection()->get($this);
+            return true;
+        }
+
+        return false;
+    }
+
+    public function jsonSerialize()
     {
         $data = $this->data;
 

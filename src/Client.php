@@ -27,10 +27,12 @@ use Zend\Diactoros\Uri;
  * Nexmo API Client, allows access to the API from PHP.
  *
  * @property \Nexmo\Message\Client $message
+ * @property \Nexmo\Calls\Collection|\Nexmo\Calls\Call[] $calls
+ *
  * @method \Nexmo\Message\Client message()
  * @method \Nexmo\Verify\Client  verify()
  * @method \Nexmo\Application\Client applications()
- * @method \Nexmo\Calls\Client calls()
+ * @method \Nexmo\Calls\Collection calls()
  * @method \Nexmo\Numbers\Client numbers()
  */
 class Client
@@ -87,7 +89,7 @@ class Client
             'verify'  => 'Nexmo\Verify\Client',
             'applications' => 'Nexmo\Application\Client',
             'numbers' => 'Nexmo\Numbers\Client',
-            'calls' => 'Nexmo\Calls\Client',
+            'calls' => 'Nexmo\Calls\Collection',
         ], $this));
     }
 
@@ -273,6 +275,21 @@ class Client
     }
 
     public function __call($name, $args)
+    {
+        if(!$this->factory->hasApi($name)){
+            throw new \RuntimeException('no api namespace found: ' . $name);
+        }
+
+        $collection = $this->factory->getApi($name);
+
+        if(empty($args)){
+            return $collection;
+        }
+
+        return call_user_func_array($collection, $args);
+    }
+
+    public function __get($name)
     {
         if(!$this->factory->hasApi($name)){
             throw new \RuntimeException('no api namespace found: ' . $name);

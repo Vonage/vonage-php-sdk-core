@@ -50,12 +50,11 @@ trait CollectionTrait
 
     abstract public function getCollectionName();
     abstract public function getCollectionPath();
+    abstract public function hydrateEntity($data, $id);
 
     public function current()
     {
-        $application = new Application($this->key());
-        $application->jsonUnserialize($this->page['_embedded'][$this->getCollectionName()][$this->current]);
-        return $application;
+        return $this->hydrateEntity($this->page['_embedded'][$this->getCollectionName()][$this->current], $this->key());
     }
 
     public function next()
@@ -65,7 +64,13 @@ trait CollectionTrait
 
     public function key()
     {
-        return $this->page['_embedded'][$this->getCollectionName()][$this->current]['id'];
+        if(isset($this->page['_embedded'][$this->getCollectionName()][$this->current]['id'])){
+            return $this->page['_embedded'][$this->getCollectionName()][$this->current]['id'];
+        } elseif(isset($this->page['_embedded'][$this->getCollectionName()][$this->current]['uuid'])) {
+            return $this->page['_embedded'][$this->getCollectionName()][$this->current]['uuid'];
+        }
+
+        return $this->current;
     }
 
     public function valid()
