@@ -34,7 +34,11 @@ class Stream implements JsonSerializableInterface, CollectionAwareInterface
 
     public function setUrl($url)
     {
-        $this->data['stream_url'] = (string) $url;
+        if(!is_array($url)){
+            $url = array($url);
+        }
+
+        $this->data['stream_url'] = $url;
     }
 
     public function setLoop($times)
