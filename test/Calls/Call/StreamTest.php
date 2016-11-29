@@ -59,6 +59,19 @@ class StreamTest extends \PHPUnit_Framework_TestCase
 
         $data = $this->stream->jsonSerialize();
 
+        $this->assertSame([$url], $data['stream_url']);
+    }
+
+    public function testSetUrlArray()
+    {
+        $url = [
+            'http://example.com',
+            'http://backup.example.com'
+        ];
+        $this->stream->setUrl($url);
+
+        $data = $this->stream->jsonSerialize();
+
         $this->assertSame($url, $data['stream_url']);
     }
 
