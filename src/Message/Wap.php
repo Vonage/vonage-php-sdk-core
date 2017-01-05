@@ -53,9 +53,9 @@ class Wap extends Message
     /**
      * Get an array of params to use in an API request.
      */
-    public function getRequestData()
+    public function getRequestData($sent = true)
     {
-        return array_merge(parent::getRequestData(), array(
+        return array_merge(parent::getRequestData($sent), array(
             'title'      => $this->title,
             'url'        => $this->url,
             'validity'   => $this->validity,
