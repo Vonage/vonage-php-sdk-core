@@ -30,6 +30,16 @@ class Signature
      */
     public function __construct(array $params, $secret)
     {
+        // The & and = characters in the parameter values have to be
+        // replaced with an underscore ("_") so parameter injection is
+        // not possible.
+        // Not replacing characters in key as there should not be dynamic
+        // keys so no need for that.
+        // This is required, otherwise in case a value contains the & and =
+        // characters the signature will be rejected by the server.
+        foreach ($params as $key => $value) {
+            $params[$key] = str_replace(array("&", "="), "_", $value);
+        }
         $this->params = $params;
         $this->signed = $params;
 
@@ -45,9 +55,10 @@ class Signature
 
         //create base string
         $base = '&'.urldecode(http_build_query($this->signed));
+        print $base . "\n";
 
         //append the secret
-        $base .=  $secret;
+        $base .= $secret;
 
         //create hash
         $this->signed['sig'] = md5($base);
