@@ -55,7 +55,6 @@ class Signature
 
         //create base string
         $base = '&'.urldecode(http_build_query($this->signed));
-        print $base . "\n";
 
         //append the secret
         $base .= $secret;
