@@ -35,39 +35,46 @@ class Keypair extends AbstractCredentials  implements CredentialsInterface
         $this->signer = new Sha256();
     }
 
-    public function generateJwt($exp = null, $nfb = null, $jti = null, $iat = null)
+    public function generateJwt(array $claims = [])
     {
-        if(is_null($exp)){
-            $exp = time() + 60;
+        $exp = time() + 60;
+        $iat = time();
+        $jti = base64_encode(mt_rand());
+
+        if(isset($claims['exp'])){
+            $exp = $claims['exp'];
+            unset($claims['exp']);
         }
 
-        if(is_null($iat)){
-            $iat = time();
+        if(isset($claims['iat'])){
+            $iat = $claims['iat'];
+            unset($claims['iat']);
         }
 
-        if(is_null($jti)){
-            $jti = base64_encode(mt_rand());
+        if(isset($claims['jti'])){
+            $jti = $claims['jti'];
+            unset($claims['jti']);
         }
 
         $builder = new Builder();
         $builder->setIssuedAt($iat)
-                ->setExpiration($exp);
+                ->setExpiration($exp)
+                ->setId($jti);
 
 
-        if(isset($this->credentials['application'])){
-            $builder->set('application_id', $this->credentials['application']);
-        }
-
-        if(!is_null($nfb)){
-            $builder->setNotBefore($nfb);
-        }
-
-        if(!is_null($jti)){
-            $builder->setId($jti);
+        if(isset($claims['nbf'])){
+            $builder->setNotBefore($claims['nbf']);
+            unset($claims['nbf']);
         }
 
         if(isset($this->credentials['application'])){
             $builder->set('application_id', $this->credentials['application']);
+        }
+
+        if(!empty($claims)){
+            foreach($claims as $claim => $value){
+                $builder->set($claim, $value);
+            }
         }
 
         return $builder->sign($this->signer, $this->key)->getToken();

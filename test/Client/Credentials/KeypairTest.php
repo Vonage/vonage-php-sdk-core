@@ -44,10 +44,64 @@ class KeypairTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($this->application, $credentials->application);
     }
 
-    public function testGetJWT()
+    public function testDefaultJWT()
     {
         $credentials = new Keypair($this->key, $this->application);
-        $jwt = $credentials->generateJwt();
-        $this->markTestIncomplete('generated JWT, but not tested as valid');
+
+        //could use the JWT object, but hope to remove as a dependency
+        $jwt = (string) $credentials->generateJwt();
+
+        list($header, $payload, $sig) = $this->decodeJWT($jwt);
+
+        $this->assertArrayHasKey('typ', $header);
+        $this->assertArrayHasKey('alg', $header);
+
+        $this->assertEquals('JWT', $header['typ']);
+        $this->assertEquals('RS256', $header['alg']);
+
+        $this->assertArrayHasKey('application_id', $payload);
+        $this->assertArrayHasKey('jti', $payload);
+
+        $this->assertEquals($this->application, $payload['application_id']);
+    }
+
+    public function testAdditionalClaims()
+    {
+        $credentials = new Keypair($this->key, $this->application);
+
+        $claims = [
+            'arbitrary' => [
+                'nested' => [
+                    'data' => "something"
+                ]
+            ],
+            'nbf' => 900
+        ];
+
+        $jwt = $credentials->generateJwt($claims);
+
+        list($header, $payload, $sig) = $this->decodeJWT($jwt);
+
+        $this->assertArrayHasKey('arbitrary', $payload);
+        $this->assertEquals($claims['arbitrary'], $payload['arbitrary']);
+
+        $this->assertArrayHasKey('nbf', $payload);
+        $this->assertEquals(900, $payload['nbf']);
+    }
+
+    protected function decodeJWT($jwt)
+    {
+        $parts = explode('.', $jwt);
+        $this->assertCount(3, $parts);
+
+        $header  = json_decode(base64_decode($parts[0]), true);
+        $payload = json_decode(base64_decode($parts[1]), true);
+        $sig     = $parts[2];
+
+        return [
+            $header,
+            $payload,
+            $sig
+        ];
     }
 }
