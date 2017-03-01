@@ -2,14 +2,13 @@
 /**
  * Nexmo Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
+ * @copyright Copyright (c) 2017 Nexmo, Inc. (http://nexmo.com)
  * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
  */
 
-namespace NexmoTest\Calls\Call;
+namespace NexmoTest\Call;
 
-use Nexmo\Calls\Call\Stream;
-use Nexmo\Calls\Collection;
+use Nexmo\Call\Stream;
 use NexmoTest\Psr7AssertionTrait;
 use Prophecy\Argument;
 use Psr\Http\Message\RequestInterface;
@@ -19,45 +18,49 @@ class StreamTest extends \PHPUnit_Framework_TestCase
 {
     use Psr7AssertionTrait;
 
+    protected $id;
+
+    /**
+     * @var Stream
+     */
+    protected $entity;
+
+    /**
+     * @var Stream
+     */
+    protected $new;
+
+    protected $class;
+
     /**
      * @var \Prophecy\Prophecy\ObjectProphecy
      */
     protected $nexmoClient;
 
-    /**
-     * @var Collection
-     */
-    protected $collection;
-
-    protected $callId = '1234';
-
-    /**
-     * @var Stream
-     */
-    protected $stream;
-
     public function setUp()
     {
-        $this->stream = new Stream($this->callId);
-        $this->nexmoClient = $this->prophesize('Nexmo\Client');
-        $this->collection = new Collection();
-        $this->collection->setClient($this->nexmoClient->reveal());
+        $this->id = '3fd4d839-493e-4485-b2a5-ace527aacff3';
+        $this->class = Stream::class;
 
-        //needed until entities have access to client
-        $this->stream->setCollection($this->collection);
+        $this->entity = new Stream('3fd4d839-493e-4485-b2a5-ace527aacff3');
+        $this->new = new Stream();
+
+        $this->nexmoClient = $this->prophesize('Nexmo\Client');
+        $this->entity->setClient($this->nexmoClient->reveal());
+        $this->new->setClient($this->nexmoClient->reveal());
     }
 
     public function testHasId()
     {
-        $this->assertSame($this->callId, $this->stream->getId());
+        $this->assertSame($this->id, $this->entity->getId());
     }
 
     public function testSetUrl()
     {
         $url = 'http://example.com';
-        $this->stream->setUrl($url);
+        $this->entity->setUrl($url);
 
-        $data = $this->stream->jsonSerialize();
+        $data = $this->entity->jsonSerialize();
 
         $this->assertSame([$url], $data['stream_url']);
     }
@@ -68,30 +71,29 @@ class StreamTest extends \PHPUnit_Framework_TestCase
             'http://example.com',
             'http://backup.example.com'
         ];
-        $this->stream->setUrl($url);
 
-        $data = $this->stream->jsonSerialize();
-
+        $this->entity->setUrl($url);
+        $data = $this->entity->jsonSerialize();
         $this->assertSame($url, $data['stream_url']);
     }
 
     public function testSetLoop()
     {
         $loop = 10;
-        $this->stream->setLoop($loop);
+        $this->entity->setLoop($loop);
 
-        $data = $this->stream->jsonSerialize();
+        $data = $this->entity->jsonSerialize();
 
         $this->assertSame($loop, $data['loop']);
     }
 
     public function testPutMakesRequest()
     {
-        $this->stream->setUrl('http://example.com');
-        $this->stream->setLoop(10);
+        $this->entity->setUrl('http://example.com');
+        $this->entity->setLoop(10);
 
-        $callId = $this->callId;
-        $stream = $this->stream;
+        $callId = $this->id;
+        $stream = $this->entity;
 
         $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($callId, $stream){
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/stream', 'PUT', $request);
@@ -105,7 +107,11 @@ class StreamTest extends \PHPUnit_Framework_TestCase
             return true;
         }))->willReturn($this->getResponse('stream', '200'));
 
-        $this->stream->put();
+        $event = $this->entity->put();
+
+        $this->assertInstanceOf('Nexmo\Call\Event', $event);
+        $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
+        $this->assertSame('Stream started', $event['message']);
     }
 
     public function testPutCanReplace()
@@ -114,7 +120,7 @@ class StreamTest extends \PHPUnit_Framework_TestCase
         $stream->setUrl('http://example.com');
         $stream->setLoop(10);
 
-        $callId = $this->callId;
+        $callId = $this->id;
 
         $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($callId, $stream){
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/stream', 'PUT', $request);
@@ -128,22 +134,52 @@ class StreamTest extends \PHPUnit_Framework_TestCase
             return true;
         }))->willReturn($this->getResponse('stream', '200'));
 
-        $this->stream->put($stream);
+        $event = $this->entity->put($stream);
+
+        $this->assertInstanceOf('Nexmo\Call\Event', $event);
+        $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
+        $this->assertSame('Stream started', $event['message']);
+    }
+
+    public function testInvokeProxiesPutWithArgument()
+    {
+        $object = $this->entity;
+
+        $this->nexmoClient->send(Argument::any())->willReturn($this->getResponse('stream', '200'));
+        $test = $object();
+        $this->assertSame($this->entity, $test);
+
+        $this->nexmoClient->send(Argument::any())->shouldNotHaveBeenCalled();
+
+        $stream = new Stream();
+        $stream->setUrl('http://example.com');
+
+        $event = $object($stream);
+
+        $this->assertInstanceOf('Nexmo\Call\Event', $event);
+        $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
+        $this->assertSame('Stream started', $event['message']);
+
+        $this->nexmoClient->send(Argument::any())->shouldHaveBeenCalled();
     }
 
     public function testDeleteMakesRequest()
     {
-        $this->stream;
-        $this->stream;
+        $this->entity;
+        $this->entity;
 
-        $callId = $this->callId;
+        $callId = $this->id;
 
         $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($callId){
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/stream', 'DELETE', $request);
             return true;
-        }))->willReturn($this->getResponse('stream-delete', '204'));
+        }))->willReturn($this->getResponse('stream-delete', '200'));
 
-        $this->stream->delete();
+        $event = $this->entity->delete();
+
+        $this->assertInstanceOf('Nexmo\Call\Event', $event);
+        $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
+        $this->assertSame('Stream stopped', $event['message']);
     }
 
     /**

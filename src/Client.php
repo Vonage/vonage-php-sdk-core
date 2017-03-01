@@ -27,12 +27,12 @@ use Zend\Diactoros\Uri;
  * Nexmo API Client, allows access to the API from PHP.
  *
  * @property \Nexmo\Message\Client $message
- * @property \Nexmo\Calls\Collection|\Nexmo\Calls\Call[] $calls
+ * @property \Nexmo\Call\Collection|\Nexmo\Call\Call[] $calls
  *
  * @method \Nexmo\Message\Client message()
  * @method \Nexmo\Verify\Client  verify()
  * @method \Nexmo\Application\Client applications()
- * @method \Nexmo\Calls\Collection calls()
+ * @method \Nexmo\Call\Collection calls()
  * @method \Nexmo\Numbers\Client numbers()
  */
 class Client
@@ -89,7 +89,7 @@ class Client
             'verify'  => 'Nexmo\Verify\Client',
             'applications' => 'Nexmo\Application\Client',
             'numbers' => 'Nexmo\Numbers\Client',
-            'calls' => 'Nexmo\Calls\Collection',
+            'calls' => 'Nexmo\Call\Collection',
         ], $this));
     }
 

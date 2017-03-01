@@ -6,7 +6,7 @@
  * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
  */
 
-namespace Nexmo\Calls;
+namespace Nexmo\Call;
 
 use Nexmo\Client\ClientAwareInterface;
 use Nexmo\Client\ClientAwareTrait;
@@ -22,26 +22,26 @@ class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAcc
     use ClientAwareTrait;
     use CollectionTrait;
 
-    public function getCollectionName()
+    public static function getCollectionName()
     {
         return 'calls';
     }
 
-    public function getCollectionPath()
+    public static function getCollectionPath()
     {
-        return '/v1/' . $this->getCollectionName();
+        return '/v1/' . self::getCollectionName();
     }
 
-    public function hydrateEntity($data, $call)
+    public function hydrateEntity($data, $idOrCall)
     {
-        if(!($call instanceof Call)){
-            $call = new Call($call);
+        if(!($idOrCall instanceof Call)){
+            $idOrCall = new Call($idOrCall);
         }
 
-        $call->JsonUnserialize($data);
-        $call->setCollection($this);
+        $idOrCall->setClient($this->getClient());
+        $idOrCall->jsonUnserialize($data);
 
-        return $call;
+        return $idOrCall;
     }
 
     /**
@@ -62,41 +62,15 @@ class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAcc
         return $this->post($call);
     }
 
-    public function put($payload, $call = null, $type = 'call')
+    public function put($payload, $idOrCall)
     {
-        if(is_null($call) AND is_object($payload) AND is_callable([$payload, 'getId'])){
-            $call = $payload->getId();
+        if(!($idOrCall instanceof Call)){
+            $idOrCall = new Call($idOrCall);
         }
 
-        if(is_null($call)){
-            throw new \RuntimeException('missing required parameter: call');
-        }
-
-        if(!($call instanceof Call)){
-            $call = new Call($call);
-        }
-
-        if('call' !== $type){
-            $resource = '/' . $type;
-        } else {
-            $resource = '';
-        }
-
-        $request = new Request(
-            \Nexmo\Client::BASE_API . $this->getCollectionPath() . '/' . $call->getId() . $resource
-            ,'PUT',
-            'php://temp',
-            ['content-type' => 'application/json']
-        );
-
-        $request->getBody()->write(json_encode($payload));
-        $response = $this->client->send($request);
-
-        if($response->getStatusCode() != '200'){
-            throw $this->getException($response);
-        }
-
-        return $call;
+        $idOrCall->setClient($this->getClient());
+        $idOrCall->put($payload);
+        return $idOrCall;
     }
 
     public function delete($call = null, $type)
@@ -146,7 +120,11 @@ class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAcc
         }
 
         $body = json_decode($response->getBody()->getContents(), true);
-        return new Conversation($body['conversation_uuid']);
+        $call = new Call($body['uuid']);
+        $call->jsonUnserialize($body);
+        $call->setClient($this->getClient());
+
+        return $call;
     }
 
     public function get($call)
@@ -155,21 +133,10 @@ class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAcc
             $call = new Call($call);
         }
 
-        $request = new Request(
-            \Nexmo\Client::BASE_API . $this->getCollectionPath() . '/' . $call->getId()
-            ,'GET'
-        );
+        $call->setClient($this->getClient());
+        $call->get();
 
-        $response = $this->client->send($request);
-
-        if($response->getStatusCode() != '200'){
-            throw $this->getException($response, $call);
-        }
-
-        return $this->hydrateEntity(
-            json_decode($response->getBody()->getContents(), true),
-            $call
-        );
+        return $call;
     }
 
     protected function getException(ResponseInterface $response)
@@ -205,7 +172,7 @@ class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAcc
             $call = new Call($call);
         }
 
-        $call->setCollection($this);
+        $call->setClient($this->getClient());
         return $call;
     }
 
@@ -218,6 +185,4 @@ class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAcc
     {
         throw new \RuntimeException('can not unset collection properties');
     }
-
-
 }

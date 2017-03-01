@@ -18,5 +18,5 @@ interface JsonUnserializableInterface
      * @param $json
      * @return null
      */
-    public function JsonUnserialize(array $json);
+    public function jsonUnserialize(array $json);
 }

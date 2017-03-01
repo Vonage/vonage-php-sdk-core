@@ -9,7 +9,7 @@
 namespace NexmoTest\Calls;
 
 
-use Nexmo\Calls\Filter;
+use Nexmo\Call\Filter;
 use Nexmo\Conversations\Conversation;
 
 class FilterTest extends \PHPUnit_Framework_TestCase

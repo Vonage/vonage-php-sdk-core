@@ -8,10 +8,10 @@
 
 namespace NexmoTest\Calls;
 
-use Nexmo\Calls\Filter;
-use Nexmo\Calls\Update\Transfer;
-use Nexmo\Calls\Call;
-use Nexmo\Calls\Collection;
+use Nexmo\Call\Filter;
+use Nexmo\Call\Transfer;
+use Nexmo\Call\Call;
+use Nexmo\Call\Collection;
 use NexmoTest\Psr7AssertionTrait;
 use Prophecy\Argument;
 use Psr\Http\Message\RequestInterface;
@@ -39,26 +39,11 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Getting an entity from the collection should not fetch it if we use the fluent interface.
+     * Collection can be invoked as a method. This allows a fluent inerface from the main client. When invoked with a
+     * filter, the collection should use that filter.
      *
-     * @dataProvider getCall
+     *     $nexmo->calls($filter)
      */
-    public function testArrayIsLazy($payload, $id)
-    {
-        $collection = $this->collection;
-        $call = $collection[$payload];
-
-        $this->assertInstanceOf('Nexmo\Calls\Call', $call);
-        $this->nexmoClient->send()->shouldNotHaveBeenCalled();
-        $this->assertEquals($id, $call->getId());
-
-        if($payload instanceof Call){
-            $this->assertSame($payload, $call);
-        }
-
-        $this->assertSame($this->collection, $call->getCollection());
-    }
-
     public function testInvokeWithFilter()
     {
         $collection = $this->collection;
@@ -70,6 +55,46 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Hydrate is used by the common collection paging.
+     */
+    public function testHydrateSetsDataAndClient()
+    {
+        $call = $this->prophesize('Nexmo\Call\Call');
+
+        $data = ['test' => 'data'];
+
+        $this->collection->hydrateEntity($data, $call->reveal());
+
+        $call->setClient($this->nexmoClient->reveal())->shouldHaveBeenCalled();
+        $call->jsonUnserialize($data)->shouldHaveBeenCalled();
+    }
+
+    /**
+     * Getting an entity from the collection should not fetch it if we use the array interface.
+     *
+     * @dataProvider getCall
+     */
+    public function testArrayIsLazy($payload, $id)
+    {
+        //not testing the call resource, just making sure it uses the same client as the collection
+        $this->nexmoClient->send(Argument::any())->willReturn($this->getResponse('call'));
+
+        $collection = $this->collection;
+        $call = $collection[$payload];
+
+        $this->assertInstanceOf('Nexmo\Call\Call', $call);
+        $this->nexmoClient->send(Argument::any())->shouldNotHaveBeenCalled();
+        $this->assertEquals($id, $call->getId());
+
+        if($payload instanceof Call){
+            $this->assertSame($payload, $call);
+        }
+
+        $call->get();
+        $this->nexmoClient->send(Argument::any())->shouldHaveBeenCalled();
+    }
+
+    /**
      * Using `get()` should fetch the call data. Will accept both a string id and an object. Must return the same object
      * if that's the input.
      *
@@ -77,42 +102,35 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetIsNotLazy($payload, $id)
     {
+        //this generally proxies the call resource, but we're testing the correct request, not the proxy
         $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($id){
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'GET', $request);
             return true;
-        }))->willReturn($this->getResponse('call'));
+        }))->willReturn($this->getResponse('call'))->shouldBeCalled();
 
         $call = $this->collection->get($payload);
 
-        $this->assertInstanceOf('Nexmo\Calls\Call', $call);
+        $this->assertInstanceOf('Nexmo\Call\Call', $call);
         if($payload instanceof Call){
             $this->assertSame($payload, $call);
         }
-
-        $this->assertSame($this->collection, $call->getCollection());
     }
 
     /**
      * @dataProvider postCall
      */
-    public function testCreatPostCall($payload, $method)
+    public function testCreatePostCall($payload, $method)
     {
         $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($payload){
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
-            $expected = json_decode(json_encode($payload), true);
-
-            $request->getBody()->rewind();
-            $body = json_decode($request->getBody()->getContents(), true);
-            $request->getBody()->rewind();
-
-            $this->assertEquals($expected, $body);
+            $this->assertRequestBodyIsJson(json_encode($payload), $request);
             return true;
         }))->willReturn($this->getResponse('created', '201'));
 
-        $conversation = $this->collection->$method($payload);
+        $call = $this->collection->$method($payload);
 
-        $this->assertInstanceOf('Nexmo\Conversations\Conversation', $conversation);
-        $this->assertEquals('f9116360-cb27-4341-805c-b31af792833d', $conversation->getId());
+        $this->assertInstanceOf('Nexmo\Call\Call', $call);
+        $this->assertEquals('e46fd8bd-504d-4044-9600-26dd18b41111', $call->getId());
     }
 
     /**
@@ -120,25 +138,15 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testPutCall($expectedId, $id, $payload)
     {
+        //this generally proxies the call resource, but we're testing the correct request, not the proxy
         $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($expectedId, $payload){
-            $this->assertEquals('/v1/calls/' . $expectedId, $request->getUri()->getPath());
-            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('PUT', $request->getMethod());
-
-            $expected = json_decode(json_encode($payload), true);
-
-            $request->getBody()->rewind();
-            $body = json_decode($request->getBody()->getContents(), true);
-            $request->getBody()->rewind();
-
-            $this->assertEquals($expected, $body);
-
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $expectedId, 'PUT', $request);
+            $this->assertRequestBodyIsJson(json_encode($payload), $request);
             return true;
-        }))->willReturn($this->getResponse('updated'));
+        }))->willReturn($this->getResponse('updated'))->shouldBeCalled();
 
         $call = $this->collection->put($payload, $id);
-
-        $this->assertInstanceOf('Nexmo\Calls\Call', $call);
+        $this->assertInstanceOf('Nexmo\Call\Call', $call);
 
         if($id instanceof Call){
             $this->assertSame($id, $call);

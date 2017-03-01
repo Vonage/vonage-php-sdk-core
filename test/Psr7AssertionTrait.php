@@ -8,10 +8,20 @@
 
 namespace NexmoTest;
 
+use GuzzleHttp\Psr7\Request;
 use Psr\Http\Message\RequestInterface;
 
 trait Psr7AssertionTrait
 {
+    public static function assertRequestBodyIsJson($expected, RequestInterface $request)
+    {
+        $request->getBody()->rewind();
+        $body = $request->getBody()->getContents();
+        $request->getBody()->rewind();
+
+        self::assertJsonStringEqualsJsonString($expected, $body);
+    }
+
     public static function assertRequestUrl($host, $path, $method, RequestInterface $request)
     {
         self::assertEquals($host,   $request->getUri()->getHost());

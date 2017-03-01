@@ -6,28 +6,37 @@
  * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
  */
 
-namespace Nexmo\Calls;
+namespace Nexmo\Call;
 
+use Nexmo\Client\ClientAwareInterface;
+use Nexmo\Client\ClientAwareTrait;
 use Nexmo\Conversations\Conversation;
-use Nexmo\Entity\CollectionAwareInterface;
-use Nexmo\Entity\CollectionAwareTrait;
 use Nexmo\Entity\EntityInterface;
 use Nexmo\Entity\JsonResponseTrait;
 use Nexmo\Entity\JsonSerializableTrait;
 use Nexmo\Entity\JsonUnserializableInterface;
 use Nexmo\Entity\NoRequestResponseTrait;
-use Nexmo\Entity\Psr7Trait;
+use Psr\Http\Message\ResponseInterface;
+use Nexmo\Client\Exception;
+use Zend\Diactoros\Request;
 
 /**
  * Class Call
- * @method Collection getCollection()
+ *
+ * @property \Nexmo\Call\Stream $stream
+ * @property \Nexmo\Call\Talk   $talk
+ * @property \Nexmo\Call\Dtmf   $dtmf
+ *
+ * @method \Nexmo\Call\Stream stream()
+ * @method \Nexmo\Call\Talk   talk()
+ * @method \Nexmo\Call\Dtmf   dtmf()
  */
-class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInterface, CollectionAwareInterface
+class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInterface, ClientAwareInterface
 {
     use NoRequestResponseTrait;
     use JsonSerializableTrait;
     use JsonResponseTrait;
-    use CollectionAwareTrait;
+    use ClientAwareTrait;
 
     const WEBHOOK_ANSWER = 'answer';
     const WEBHOOK_EVENT  = 'event';
@@ -50,6 +59,8 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
 
     protected $data = [];
 
+    protected $subresources = [];
+
     public function __construct($id = null)
     {
         $this->id = $id;
@@ -57,12 +68,56 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
 
     public function get()
     {
-        return $this->getCollection()->get($this);
+        $request = new Request(
+            \Nexmo\Client::BASE_API . Collection::getCollectionPath() . '/' . $this->getId()
+            ,'GET'
+        );
+
+        $response = $this->getClient()->send($request);
+
+        if($response->getStatusCode() != '200'){
+            throw $this->getException($response);
+        }
+
+        $data = json_decode($response->getBody()->getContents(), true);
+        $this->jsonUnserialize($data);
+
+        return $this;
+    }
+
+    protected function getException(ResponseInterface $response)
+    {
+        $body = json_decode($response->getBody()->getContents(), true);
+        $status = $response->getStatusCode();
+
+        if($status >= 400 AND $status < 500) {
+            $e = new Exception\Request($body['error_title'], $status);
+        } elseif($status >= 500 AND $status < 600) {
+            $e = new Exception\Server($body['error_title'], $status);
+        } else {
+            $e = new Exception\Exception('Unexpected HTTP Status Code');
+        }
+
+        return $e;
     }
 
     public function put($payload)
     {
-        return $this->getCollection()->put($payload, $this);
+        $request = new Request(
+            \Nexmo\Client::BASE_API . Collection::getCollectionPath() . '/' . $this->getId()
+            ,'PUT',
+            'php://temp',
+            ['content-type' => 'application/json']
+        );
+
+        $request->getBody()->write(json_encode($payload));
+        $response = $this->client->send($request);
+
+        if($response->getStatusCode() != '200'){
+            throw $this->getException($response);
+        }
+
+        return $this;
     }
 
     public function getId()
@@ -122,7 +177,7 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
         }
 
         if(is_null($url)){
-            throw new \InvalidArgumentException('must provide `Nexmo\Calls\Webhook` object, or a type and url: missing url' );
+            throw new \InvalidArgumentException('must provide `Nexmo\Call\Webhook` object, or a type and url: missing url' );
         }
 
         $this->webhooks[$type] = new Webhook($type, $url, $method);
@@ -160,6 +215,13 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
         }
     }
 
+    /**
+     * Returns true if the resource data is loaded.
+     *
+     * Will attempt to load the data if it's not already.
+     *
+     * @return bool
+     */
     protected function lazyLoad()
     {
         if(!empty($this->data)){
@@ -167,11 +229,48 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
         }
 
         if(isset($this->id)){
-            $this->getCollection()->get($this);
+            $this->get($this);
             return true;
         }
 
         return false;
+    }
+
+    public function __get($name)
+    {
+        switch($name){
+            case 'stream':
+            case 'talk':
+            case 'dtmf':
+                return $this->lazySubresource(ucfirst($name));
+            default:
+                throw new \RuntimeException('property does not exist: ' . $name);
+        }
+    }
+
+    public function __call($name, $arguments)
+    {
+        switch($name){
+            case 'stream':
+            case 'talk':
+            case 'dtmf':
+                $entity = $this->lazySubresource(ucfirst($name));
+                return call_user_func_array($entity, $arguments);
+            default:
+                throw new \RuntimeException('method does not exist: ' . $name);
+        }
+    }
+
+    protected function lazySubresource($type)
+    {
+        if(!isset($this->subresources[$type])){
+            $class = 'Nexmo\Call\\' . $type;
+            $instance = new $class($this->getId());
+            $instance->setClient($this->getClient());
+            $this->subresources[$type] = $instance;
+        }
+
+        return $this->subresources[$type];
     }
 
     public function jsonSerialize()
@@ -193,7 +292,7 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
         return $data;
     }
 
-    public function JsonUnserialize(array $json)
+    public function jsonUnserialize(array $json)
     {
         $this->data = $json;
         $this->id = $json['uuid'];
