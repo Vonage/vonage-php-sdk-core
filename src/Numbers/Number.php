@@ -70,6 +70,11 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
         return $this->fromData('type');
     }
 
+    public function getCost()
+    {
+        return $this->fromData('cost');
+    }
+
     public function hasFeature($feature)
     {
         if(!isset($this->data['features'])){

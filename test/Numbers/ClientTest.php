@@ -159,6 +159,81 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @dataProvider searchNumbers
+     */
+    public function testSearch($country, $pattern = null, $searchPattern = null, $features = null, $size = null, $index = null)
+    {
+        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($country, $pattern, $searchPattern, $features, $size, $index) {
+            $this->assertEquals('/number/search/'.$country, $request->getUri()->getPath());
+            $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('GET', $request->getMethod());
+            if ($pattern) {
+                $this->assertRequestQueryContains('pattern', $pattern, $request);
+            }
+            if ($searchPattern) {
+                $this->assertRequestQueryContains('search_pattern', $searchPattern, $request);
+            }
+            if ($features) {
+                if (is_array($features)) {
+                    $features = implode($features, ',');
+                }
+                $this->assertRequestQueryContains('features', $features, $request);
+            }
+            if ($size) {
+                $this->assertRequestQueryContains('size', $size, $request);
+            }
+            if ($index) {
+                $this->assertRequestQueryContains('index', $index, $request);
+            }
+
+            return true;
+        }))->willReturn($this->getResponse('search'));
+
+        $collection = $this->numberClient->search($country, $pattern, $searchPattern, $features, $size, $index);
+        $this->assertCount(2, $collection);
+
+        $n1 = $collection[0];
+        $n2 = $collection[1];
+
+        $this->assertEquals('FR', $n1->getCountry());
+        $this->assertEquals('33644630604', $n1->getId());
+        $this->assertEquals('0.50', $n1->getCost());
+        $this->assertEquals('mobile-lvn', $n1->getType());
+        $this->assertEquals(['VOICE', 'SMS'], $n1->getFeatures());
+
+        $this->assertEquals('FR', $n2->getCountry());
+        $this->assertEquals('33644630605', $n2->getId());
+        $this->assertEquals('0.50', $n2->getCost());
+        $this->assertEquals('mobile-lvn', $n2->getType());
+        $this->assertEquals(['VOICE', 'SMS'], $n2->getFeatures());
+    }
+
+    public function searchNumbers()
+    {
+        return [
+            ['FR'],
+            ['FR', '54', '345', Number::FEATURE_SMS, '20', '10'],
+            ['FR', null, null, [Number::FEATURE_SMS]],
+            ['FR', null, null, [Number::FEATURE_SMS, Number::FEATURE_VOICE]],
+        ];
+    }
+
+    public function testBuy()
+    {
+        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) {
+            $this->assertEquals('/number/buy', $request->getUri()->getPath());
+            $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('POST', $request->getMethod());
+            $this->assertRequestQueryContains('country', 'FR', $request);
+            $this->assertRequestQueryContains('msisdn', '33644630605', $request);
+
+            return true;
+        }))->willReturn($this->getResponse('empty'));
+
+        $collection = $this->numberClient->buy('FR', '33644630605');
+    }
+
+    /**
      * Get the API response we'd expect for a call to the API.
      *
      * @param string $type

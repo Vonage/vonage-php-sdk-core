@@ -350,7 +350,7 @@ API Coverage
     * [ ] Top Up
     * [X] Numbers
         * [X] Search
-        * [ ] Buy
+        * [X] Buy
         * [ ] Cancel
         * [X] Update
 * Number Insight
