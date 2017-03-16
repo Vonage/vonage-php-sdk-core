@@ -90,6 +90,26 @@ class Client implements ClientAwareInterface
             'php://temp',
             [
                 'Accept' => 'application/json',
+                'Content-Type' => 'application/x-www-form-urlencoded',
+            ]
+        );
+
+        $response = $this->client->send($request);
+
+        if('200' != $response->getStatusCode()){
+            throw $this->getException($response);
+        }
+    }
+
+    public function cancel($country, $msisdn)
+    {
+        $request = new Request(
+            \Nexmo\Client::BASE_REST . sprintf('/number/cancel/%s/%s', $country, $msisdn),
+            'POST',
+            'php://temp',
+            [
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/x-www-form-urlencoded',
             ]
         );
 

@@ -230,7 +230,20 @@ class ClientTest extends \PHPUnit_Framework_TestCase
             return true;
         }))->willReturn($this->getResponse('empty'));
 
-        $collection = $this->numberClient->buy('FR', '33644630605');
+        $this->numberClient->buy('FR', '33644630605');
+    }
+
+    public function testCancel()
+    {
+        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) {
+            $this->assertEquals('/number/cancel/FR/33644630605', $request->getUri()->getPath());
+            $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('empty'));
+
+        $this->numberClient->cancel('FR', '33644630605');
     }
 
     /**

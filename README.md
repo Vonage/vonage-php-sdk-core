@@ -351,7 +351,7 @@ API Coverage
     * [X] Numbers
         * [X] Search
         * [X] Buy
-        * [ ] Cancel
+        * [X] Cancel
         * [X] Update
 * Number Insight
     * [ ] Basic
