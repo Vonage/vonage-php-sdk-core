@@ -41,14 +41,10 @@ class Client implements ClientAwareInterface
         if ($index) {
             $query['index'] = $index;
         }
-
-        $queryString = "";
-        if (!empty($query)) {
-            $queryString = "?".http_build_query($query);
-        }
+        $query['country'] = $country;
 
         $request = new Request(
-            \Nexmo\Client::BASE_REST . sprintf('/number/search/%s%s', $country, $queryString),
+            \Nexmo\Client::BASE_REST . sprintf('/number/search?%s', http_build_query($query)),
             'GET',
             'php://temp',
             [
@@ -57,7 +53,6 @@ class Client implements ClientAwareInterface
         );
 
         $response = $this->client->send($request);
-
         if ('200' != $response->getStatusCode()) {
             throw $this->getException($response);
         }
@@ -103,8 +98,13 @@ class Client implements ClientAwareInterface
 
     public function cancel($country, $msisdn)
     {
+        $query = [
+            'country' => $country,
+            'msisdn' => $msisdn,
+        ];
+
         $request = new Request(
-            \Nexmo\Client::BASE_REST . sprintf('/number/cancel/%s/%s', $country, $msisdn),
+            \Nexmo\Client::BASE_REST . sprintf('/number/cancel?%s', http_build_query($query)),
             'POST',
             'php://temp',
             [

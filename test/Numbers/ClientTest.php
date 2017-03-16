@@ -164,9 +164,10 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     public function testSearch($country, $pattern = null, $searchPattern = null, $features = null, $size = null, $index = null)
     {
         $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($country, $pattern, $searchPattern, $features, $size, $index) {
-            $this->assertEquals('/number/search/'.$country, $request->getUri()->getPath());
+            $this->assertEquals('/number/search', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
+            $this->assertRequestQueryContains('country', $country, $request);
             if ($pattern) {
                 $this->assertRequestQueryContains('pattern', $pattern, $request);
             }
@@ -236,9 +237,11 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     public function testCancel()
     {
         $this->nexmoClient->send(Argument::that(function(RequestInterface $request) {
-            $this->assertEquals('/number/cancel/FR/33644630605', $request->getUri()->getPath());
+            $this->assertEquals('/number/cancel', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('POST', $request->getMethod());
+            $this->assertRequestQueryContains('country', 'FR', $request);
+            $this->assertRequestQueryContains('msisdn', '33644630605', $request);
 
             return true;
         }))->willReturn($this->getResponse('empty'));
