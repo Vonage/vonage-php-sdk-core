@@ -85,7 +85,15 @@ class SignatureTest extends \PHPUnit_Framework_TestCase
                 'to' => '14849970568',
                 'type' => 'text',
                 'sig' => '83c052a82906ec7c116e16f6d92f7eee'
-            ), 'my_secret_key_for_testing')
+            ), 'my_secret_key_for_testing'),
+            array('17f5e3b22f778ec73464c01d180e9d0f', array(
+                'api_key' => 'not_a_key',
+                'from' => '12192259404',
+                'text' => '14843472194',
+                'text' => 'Test&test=something',
+                'timestamp' => '1490638615',
+                'to' => '14843472194',
+            ), 'my_secret_key_for_testing'),
         );
     }
 
