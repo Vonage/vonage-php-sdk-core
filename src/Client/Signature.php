@@ -43,11 +43,16 @@ class Signature
         //sort params
         ksort($this->signed);
 
+        $signed = [];
+        foreach ($this->signed as $key => $value) {
+            $signed[$key] = str_replace(array("&", "="), "_", $value);
+        }
+
         //create base string
-        $base = '&'.urldecode(http_build_query($this->signed));
+        $base = '&'.urldecode(http_build_query($signed));
 
         //append the secret
-        $base .=  $secret;
+        $base .= $secret;
 
         //create hash
         $this->signed['sig'] = md5($base);
