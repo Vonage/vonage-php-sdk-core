@@ -44,7 +44,7 @@ class SignatureTest extends \PHPUnit_Framework_TestCase
     public function signatures()
     {
         return array(
-            //real signature
+            //inbound
             array('d2e7b1dc968737c5998ad624e02f90b7', array(
                 'message-timestamp' => '2013-11-21 15:27:30',
                 'messageId' => '020000001B0FE827',
@@ -85,7 +85,43 @@ class SignatureTest extends \PHPUnit_Framework_TestCase
                 'to' => '14849970568',
                 'type' => 'text',
                 'sig' => '83c052a82906ec7c116e16f6d92f7eee'
-            ), 'my_secret_key_for_testing')
+            ), 'my_secret_key_for_testing'),
+
+            array('ff933bf31c79ab3fc6a38d100191c48f', array(
+                'keyword' => 'TESTINGS',
+                'message-timestamp' => '2017-04-04 23:05:22',
+                'messageId' => '0C00000027217D5B',
+                'msisdn' => '14843472194',
+                'nonce' => 'c4ab6ed2-9bf5-48a0-af91-107e29bdd399',
+                'sig' => 'ff933bf31c79ab3fc6a38d100191c48f',
+                'text' => 'Testings',
+                'timestamp' => '1491347122',
+                'to' => '12192259404',
+                'type' => 'text',
+            ), 'my_secret_key_for_testing'),
+
+            array('e06d9763e3fd0b9c31beb5fc2fcb011c', array(
+                'keyword' => 'TEST',
+                'message-timestamp' => '2017-04-04 22:57:47',
+                'messageId' => '0B00000042AC53BD',
+                'msisdn' => '14843472194',
+                'nonce' => '929d6744-bd28-42c8-b6cf-31d5b4f43732',
+                'sig' => 'e06d9763e3fd0b9c31beb5fc2fcb011c',
+                'text' => 'Test with & and =',
+                'timestamp' => '1491346667',
+                'to' => '12192259404',
+                'type' => 'text'
+            ), 'my_secret_key_for_testing'),
+
+            //outbound
+            array('17f5e3b22f778ec73464c01d180e9d0f', array(
+                'api_key' => 'not_a_key',
+                'from' => '12192259404',
+                'text' => '14843472194',
+                'text' => 'Test&test=something',
+                'timestamp' => '1490638615',
+                'to' => '14843472194',
+            ), 'my_secret_key_for_testing'),
         );
     }
 
