@@ -42,7 +42,7 @@ class NumberTest extends \PHPUnit_Framework_TestCase
     public function testHydrate()
     {
         $data = json_decode(file_get_contents(__DIR__ . '/responses/single.json'), true);
-        $this->number->JsonUnserialize($data['numbers'][0]);
+        $this->number->jsonUnserialize($data['numbers'][0]);
 
         $this->assertEquals('US', $this->number->getCountry());
         $this->assertEquals('12404284163', $this->number->getNumber());

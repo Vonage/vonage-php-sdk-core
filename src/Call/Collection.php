@@ -6,7 +6,7 @@
  * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
  */
 
-namespace Nexmo\Calls;
+namespace Nexmo\Call;
 
 use Nexmo\Client\ClientAwareInterface;
 use Nexmo\Client\ClientAwareTrait;
@@ -17,19 +17,44 @@ use Psr\Http\Message\ResponseInterface;
 use Zend\Diactoros\Request;
 use Nexmo\Client\Exception;
 
-class Client implements ClientAwareInterface, CollectionInterface
+class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAccess
 {
     use ClientAwareTrait;
     use CollectionTrait;
 
-    public function getCollectionName()
+    public static function getCollectionName()
     {
         return 'calls';
     }
 
-    public function getCollectionPath()
+    public static function getCollectionPath()
     {
-        return '/v1/' . $this->getCollectionName();
+        return '/v1/' . self::getCollectionName();
+    }
+
+    public function hydrateEntity($data, $idOrCall)
+    {
+        if(!($idOrCall instanceof Call)){
+            $idOrCall = new Call($idOrCall);
+        }
+
+        $idOrCall->setClient($this->getClient());
+        $idOrCall->jsonUnserialize($data);
+
+        return $idOrCall;
+    }
+
+    /**
+     * @param null $callOrFilter
+     * @return $this|Call
+     */
+    public function __invoke(Filter $filter = null)
+    {
+        if(!is_null($filter)){
+            $this->setFilter($filter);
+        }
+
+        return $this;
     }
 
     public function create($call)
@@ -37,23 +62,35 @@ class Client implements ClientAwareInterface, CollectionInterface
         return $this->post($call);
     }
 
-    public function put($payload, $call)
+    public function put($payload, $idOrCall)
     {
+        if(!($idOrCall instanceof Call)){
+            $idOrCall = new Call($idOrCall);
+        }
+
+        $idOrCall->setClient($this->getClient());
+        $idOrCall->put($payload);
+        return $idOrCall;
+    }
+
+    public function delete($call = null, $type)
+    {
+        if(is_object($call) AND is_callable([$call, 'getId'])){
+            $call = $call->getId();
+        }
+
         if(!($call instanceof Call)){
             $call = new Call($call);
         }
 
         $request = new Request(
-            \Nexmo\Client::BASE_API . $this->getCollectionPath() . '/' . $call->getId()
-            ,'PUT',
-            'php://temp',
-            ['content-type' => 'application/json']
+            \Nexmo\Client::BASE_API . $this->getCollectionPath() . '/' . $call->getId() . '/' . $type
+            ,'DELETE'
         );
 
-        $request->getBody()->write(json_encode($payload));
         $response = $this->client->send($request);
 
-        if($response->getStatusCode() != '200'){
+        if($response->getStatusCode() != '204'){
             throw $this->getException($response);
         }
 
@@ -83,7 +120,11 @@ class Client implements ClientAwareInterface, CollectionInterface
         }
 
         $body = json_decode($response->getBody()->getContents(), true);
-        return new Conversation($body['conversation_uuid']);
+        $call = new Call($body['uuid']);
+        $call->jsonUnserialize($body);
+        $call->setClient($this->getClient());
+
+        return $call;
     }
 
     public function get($call)
@@ -92,19 +133,8 @@ class Client implements ClientAwareInterface, CollectionInterface
             $call = new Call($call);
         }
 
-        $request = new Request(
-            \Nexmo\Client::BASE_API . $this->getCollectionPath() . '/' . $call->getId()
-            ,'GET'
-        );
-
-        $response = $this->client->send($request);
-
-        if($response->getStatusCode() != '200'){
-            throw $this->getException($response, $call);
-        }
-
-        $body = json_decode($response->getBody()->getContents(), true);
-        $call->JsonUnserialize($body);
+        $call->setClient($this->getClient());
+        $call->get();
 
         return $call;
     }
@@ -126,4 +156,33 @@ class Client implements ClientAwareInterface, CollectionInterface
         return $e;
     }
 
+    public function offsetExists($offset)
+    {
+        //todo: validate form of id
+        return true;
+    }
+
+    /**
+     * @param mixed $call
+     * @return Call
+     */
+    public function offsetGet($call)
+    {
+        if(!($call instanceof Call)){
+            $call = new Call($call);
+        }
+
+        $call->setClient($this->getClient());
+        return $call;
+    }
+
+    public function offsetSet($offset, $value)
+    {
+        throw new \RuntimeException('can not set collection properties');
+    }
+
+    public function offsetUnset($offset)
+    {
+        throw new \RuntimeException('can not unset collection properties');
+    }
 }

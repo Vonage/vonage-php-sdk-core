@@ -14,10 +14,17 @@ interface CollectionInterface extends \Countable, \Iterator
     /**
      * @return string
      */
-    public function getCollectionName();
+    public static function getCollectionName();
 
     /**
      * @return string
      */
-    public function getCollectionPath();
+    public static function getCollectionPath();
+
+    /**
+     * @param $data
+     * @param $idOrEntity
+     * @return mixed
+     */
+    public function hydrateEntity($data, $idOrEntity);
 }

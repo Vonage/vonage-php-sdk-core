@@ -164,7 +164,7 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
         return $this->data[$name];
     }
 
-    public function JsonUnserialize(array $json)
+    public function jsonUnserialize(array $json)
     {
         $this->data = $json;
     }

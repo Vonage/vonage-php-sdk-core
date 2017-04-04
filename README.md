@@ -249,10 +249,10 @@ $client->calls()->create([
 ]);
 ```
 
-Or you can create a `Nexmo\Calls\Call` object, and use that:
+Or you can create a `Nexmo\Call\Call` object, and use that:
 
 ```php
-use Nexmo\Calls\Call;
+use Nexmo\Call\Call;
 $call = new Call();
 $call->setTo('14843331234')
      ->setFrom('14843335555')
@@ -264,15 +264,38 @@ $client->calls()->create($call);
 
 ### Fetching A Call
 
-You can fetch a call using a `Nexmo\Calls\Call` object, or the call's UUID as a string:
+You can fetch a call using a `Nexmo\Call\Call` object, or the call's UUID as a string:
 
 ```php
 $call = $client->calls()->get('3fd4d839-493e-4485-b2a5-ace527aacff3');
 
-$call = new Nexmo\Calls\Call('3fd4d839-493e-4485-b2a5-ace527aacff3');
+$call = new Nexmo\Call\Call('3fd4d839-493e-4485-b2a5-ace527aacff3');
 $client->calls()->get($call);
 
 echo $call->getDirection();
+```
+
+The call collection can also be treated as an array:
+ 
+```php
+echo $client->calls['3fd4d839-493e-4485-b2a5-ace527aacff3']->getDirection();
+```
+
+And iterated over:
+
+```php
+foreach($client->calls as $call){
+    echo $call->getDirection();
+}
+```
+
+With an optional filter:
+
+```php
+$filter = new \Nexmo\Call\Filter()->setStatus('completed');
+foreach($client->calls($filter) as $call){
+    echo $call->getDirection();
+}
 ```
 
 ### Creating An Application
@@ -377,7 +400,7 @@ API Coverage
             * [ ] Sending Alerts
             * [ ] Campaign Subscription Management
 * Voice
-    * [X] Outbound Calls
+    * [X] Outbound Call
     * [ ] Inbound Call
     * [ ] Text-To-Speech Call
     * [ ] Text-To-Speech Prompt

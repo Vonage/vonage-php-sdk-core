@@ -21,14 +21,21 @@ class Client implements ClientAwareInterface, CollectionInterface
     use ClientAwareTrait;
     use CollectionTrait;
 
-    public function getCollectionName()
+    public static function getCollectionName()
     {
         return 'applications';
     }
 
-    public function getCollectionPath()
+    public static function getCollectionPath()
     {
-        return '/v1/' . $this->getCollectionName();
+        return '/v1/' . self::getCollectionName();
+    }
+
+    public function hydrateEntity($data, $id)
+    {
+        $application = new Application($id);
+        $application->jsonUnserialize($data);
+        return $application;
     }
 
     public function get($application)

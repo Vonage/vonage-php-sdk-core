@@ -21,4 +21,13 @@ trait ClientAwareTrait
     {
         $this->client = $client;
     }
+
+    protected function getClient()
+    {
+        if(isset($this->client)){
+            return $this->client;
+        }
+
+        throw new \RuntimeException('Nexmo\Client not set');
+    }
 }

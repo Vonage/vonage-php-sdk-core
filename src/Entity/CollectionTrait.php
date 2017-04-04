@@ -11,6 +11,9 @@ use Psr\Http\Message\ResponseInterface;
 use Zend\Diactoros\Request;
 use Nexmo\Application\Application;
 
+/**
+ * Common code for iterating over a collection, and using the collection class to discover the API path.
+ */
 trait CollectionTrait
 {
     /**
@@ -50,42 +53,67 @@ trait CollectionTrait
 
     abstract public function getCollectionName();
     abstract public function getCollectionPath();
+    abstract public function hydrateEntity($data, $id);
 
+    /**
+     * Return the current item, expects concrete collection to handle creating the object.
+     * @return mixed
+     */
     public function current()
     {
-        $application = new Application($this->key());
-        $application->jsonUnserialize($this->page['_embedded'][$this->getCollectionName()][$this->current]);
-        return $application;
+        return $this->hydrateEntity($this->page['_embedded'][$this->getCollectionName()][$this->current], $this->key());
     }
 
+    /**
+     * No checks here, just advance the index.
+     */
     public function next()
     {
         $this->current++;
     }
 
+    /**
+     * Return the ID of the resource, in some cases this is `id`, in others `uuid`.
+     * @return string
+     */
     public function key()
     {
-        return $this->page['_embedded'][$this->getCollectionName()][$this->current]['id'];
+        if(isset($this->page['_embedded'][$this->getCollectionName()][$this->current]['id'])){
+            return $this->page['_embedded'][$this->getCollectionName()][$this->current]['id'];
+        } elseif(isset($this->page['_embedded'][$this->getCollectionName()][$this->current]['uuid'])) {
+            return $this->page['_embedded'][$this->getCollectionName()][$this->current]['uuid'];
+        }
+
+        return $this->current;
     }
 
+    /**
+     * Handle pagination automatically (unless configured not to).
+     * @return bool
+     */
     public function valid()
     {
+        //can't be valid if there's not a page (rewind sets this)
         if(!isset($this->page)){
             return false;
         }
 
+        //all hal collections have an `_embedded` object, we expect there to be a property matching the collection name
         if(!isset($this->page['_embedded']) OR !isset($this->page['_embedded'][$this->getCollectionName()])){
             return false;
         }
 
+        //if we have a page with no items, we've gone beyond the end of the collection
         if(!count($this->page['_embedded'][$this->getCollectionName()])){
             return false;
         }
 
+        //index the start of a page at 0
         if(is_null($this->current)){
             $this->current = 0;
         }
 
+        //if our current index is past the current page, fetch the next page if possible and reset the index
         if(!isset($this->page['_embedded'][$this->getCollectionName()][$this->current])){
             if(isset($this->page['_links']) AND isset($this->page['_links']['next'])){
                 $this->fetchPage($this->page['_links']['next']['href']);
@@ -100,15 +128,22 @@ trait CollectionTrait
         return true;
     }
 
+    /**
+     * Fetch the initial page
+     */
     public function rewind()
     {
         $this->fetchPage($this->getCollectionPath());
     }
 
+    /**
+     * Count of total items
+     * @return integer
+     */
     public function count()
     {
         if(isset($this->page)){
-            return $this->page['count'];
+            return (int) $this->page['count'];
         }
     }
 
@@ -151,6 +186,8 @@ trait CollectionTrait
     }
 
     /**
+     * Filters reduce to query params and include paging settings.
+     *
      * @param FilterInterface $filter
      * @return $this
      */
@@ -169,8 +206,14 @@ trait CollectionTrait
         return $this->filter;
     }
 
+    /**
+     * Fetch a page using the current filter if no query is provided.
+     *
+     * @param $absoluteUri
+     */
     protected function fetchPage($absoluteUri)
     {
+        //use filter if no query provided
         if(false === strpos($absoluteUri, '?')){
             $query = [];
 
@@ -189,6 +232,7 @@ trait CollectionTrait
             $absoluteUri .= '?' . http_build_query($query);
         }
 
+        //
         $request = new Request(
             \Nexmo\Client::BASE_API . $absoluteUri,
             'GET'

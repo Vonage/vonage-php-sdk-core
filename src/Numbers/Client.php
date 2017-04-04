@@ -106,7 +106,7 @@ class Client implements ClientAwareInterface
             $number = new Number();
         }
 
-        $number->JsonUnserialize($body['numbers'][0]);
+        $number->jsonUnserialize($body['numbers'][0]);
 
         return $number;
     }

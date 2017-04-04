@@ -6,8 +6,14 @@
  * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
  */
 
-namespace Nexmo\Calls;
+namespace Nexmo\Call;
 
+/**
+ * Class Endpoint
+ * Represents a call destination / origin.
+ *
+ * TODO: Try to unify this and other (message, etc) endpoint identifiers.
+ */
 class Endpoint implements \JsonSerializable
 {
     const PHONE = 'phone';
@@ -78,6 +84,4 @@ class Endpoint implements \JsonSerializable
                 throw new \RuntimeException('unknown type: ' . $this->type);
         }
     }
-
-
 }
