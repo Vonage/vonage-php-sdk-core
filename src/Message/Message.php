@@ -66,6 +66,10 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
         return $this->setRequestData('status-report-req', $dlr ? 1 : 0);
     }
 
+    public function setCallback($callback) {
+        return $this->setRequestData('callback', (string) $callback);
+    }    
+    
     public function setClientRef($ref)
     {
         return $this->setRequestData('client-ref', (string) $ref);
