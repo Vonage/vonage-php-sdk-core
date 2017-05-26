@@ -56,6 +56,7 @@ class InboundMessageTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('02000000DA7C52E7', $message->getMessageId());
         $this->assertEquals('Test this.', $message->getBody());
         $this->assertEquals('text', $message->getType());
+        $this->assertEquals('2016-05-24 11:12:01', $message->getMessageTimestamp());
     }
 
 
@@ -72,6 +73,7 @@ class InboundMessageTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('02000000DA7C52E7', $message['messageId']);
         $this->assertEquals('Test this.', $message['text']);
         $this->assertEquals('text', $message['type']);
+        $this->assertEquals('2016-05-24 11:12:01', $message['message-timestamp']);
     }
 
     /**
@@ -89,6 +91,7 @@ class InboundMessageTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('Test this.', $message->getBody());
         $this->assertEquals('6cff3913', $message->getAccountId());
         $this->assertEquals('US-VIRTUAL-BANDWIDTH', $message->getNetwork());
+        $this->assertEquals('2016-05-24 11:12:01', $message->getMessageTimestamp());
     }
 
     /**
@@ -107,6 +110,7 @@ class InboundMessageTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('MO', $message['type']);
         $this->assertEquals('6cff3913', $message['account-id']);
         $this->assertEquals('US-VIRTUAL-BANDWIDTH', $message['network']);
+        $this->assertEquals('2016-05-24 11:12:01', $message['message-timestamp']);
     }
 
     public function testCanCreateReply()

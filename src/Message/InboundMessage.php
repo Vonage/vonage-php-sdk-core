@@ -138,6 +138,11 @@ class InboundMessage implements MessageInterface, \ArrayAccess
         return $this['network'];
     }
 
+    public function getMessageTimestamp()
+    {
+        return $this['message-timestamp'];
+    }
+
     /**
      * Allow the object to access the data from the API response, a sent API request, or the user set data that the
      * request will be created from - in that order.
