@@ -8,7 +8,7 @@
 
 namespace Nexmo\Client\Credentials;
 
-class SharedSecret extends AbstractCredentials implements CredentialsInterface
+class SignatureSecret extends AbstractCredentials implements CredentialsInterface
 {
     /**
      * Create a credential set with an API key and shared secret.
@@ -19,6 +19,6 @@ class SharedSecret extends AbstractCredentials implements CredentialsInterface
     public function __construct($key, $secret)
     {
         $this->credentials['api_key'] = $key;
-        $this->credentials['shared_secret'] = $secret;
+        $this->credentials['signature_secret'] = $secret;
     }
 }

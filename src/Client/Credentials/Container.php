@@ -12,7 +12,7 @@ class Container extends AbstractCredentials implements CredentialsInterface
 {
     protected $types = [
         Basic::class,
-        SharedSecret::class,
+        SignatureSecret::class,
         Keypair::class
     ];
 
