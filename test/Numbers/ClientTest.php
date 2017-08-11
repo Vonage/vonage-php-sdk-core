@@ -140,8 +140,10 @@ class ClientTest extends \PHPUnit_Framework_TestCase
             return true;
         }))->willReturn($this->getResponse('single'));
 
-        $number = $this->numberClient->get($payload);
+        $numbers = $this->numberClient->get($payload);
+        $number = $numbers[0];
 
+        $this->assertInternalType('array', $numbers);
         $this->assertInstanceOf('Nexmo\Numbers\Number', $number);
         if($payload instanceof Number){
             $this->assertSame($payload, $number);
@@ -157,6 +159,27 @@ class ClientTest extends \PHPUnit_Framework_TestCase
             [new Number('12404284163'), '12404284163'],
         ];
     }
+
+    public function testListNumbers()
+    {
+        $this->nexmoClient->send(Argument::that(function(RequestInterface $request){
+            $this->assertEquals('/account/numbers', $request->getUri()->getPath());
+            $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('GET', $request->getMethod());
+            return true;
+        }))->willReturn($this->getResponse('list'));
+
+        $numbers = $this->numberClient->get();
+
+        $this->assertInternalType('array', $numbers);
+        $this->assertInstanceOf('Nexmo\Numbers\Number', $numbers[0]);
+        $this->assertInstanceOf('Nexmo\Numbers\Number', $numbers[1]);
+
+        $this->assertSame('12404284163', $numbers[0]->getId());
+        $this->assertSame('12404284199', $numbers[1]->getId());
+    }
+
+
 
     /**
      * Get the API response we'd expect for a call to the API.
