@@ -13,14 +13,14 @@ use Nexmo\Client\Credentials\Container;
 use Nexmo\Client\Credentials\Keypair;
 use Nexmo\Client\Credentials\Basic;
 use Nexmo\Client\Credentials\OAuth;
-use Nexmo\Client\Credentials\SharedSecret;
+use Nexmo\Client\Credentials\SignatureSecret;
 use Webmozart\Expression\Selector\Key;
 
 class ContainerTest extends \PHPUnit_Framework_TestCase
 {
     protected $types = [
         Basic::class,
-        SharedSecret::class,
+        SignatureSecret::class,
         Keypair::class
     ];
 
@@ -31,7 +31,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->basic = new Basic('key', 'secret');
-        $this->secret = new SharedSecret('key', 'secret');
+        $this->secret = new SignatureSecret('key', 'secret');
         $this->keypair = new Keypair('key', 'app');
     }
 
@@ -80,7 +80,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
     {
         return [
             [new Basic('key', 'secret'), Basic::class],
-            [new SharedSecret('key', 'secret'), SharedSecret::class],
+            [new SignatureSecret('key', 'secret'), SignatureSecret::class],
             [new Keypair('key', 'app'), Keypair::class]
         ];
     }

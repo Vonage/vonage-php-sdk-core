@@ -37,7 +37,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     protected $api_key    = 'key12345';
     protected $api_secret = 'secret12345';
 
-    protected $sharedsecret;
+    protected $signature_secret;
     protected $basic;
     protected $key;
     protected $container;
@@ -46,10 +46,10 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     {
         $this->http         = $this->getMockHttp();
         $this->request      = $this->getRequest();
-        $this->sharedsecret = new Client\Credentials\SharedSecret($this->api_key, $this->secret);
+        $this->signature_secret = new Client\Credentials\SignatureSecret($this->api_key, $this->secret);
         $this->basic        = new Client\Credentials\Basic($this->api_key, $this->api_secret);
         $this->key          = new Client\Credentials\Keypair(file_get_contents(__DIR__  . '/Client/Credentials/test.key', 'app'));
-        $this->container    = new Client\Credentials\Container($this->key, $this->basic, $this->sharedsecret);
+        $this->container    = new Client\Credentials\Container($this->key, $this->basic, $this->signature_secret);
     }
 
     public function testBasicCredentialsQuery()
@@ -159,7 +159,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     public function testSignQueryString()
     {
         $request = $this->getRequest();
-        $signed = Client::signRequest($request, $this->sharedsecret);
+        $signed = Client::signRequest($request, $this->signature_secret);
 
         $query = [];
         parse_str($signed->getUri()->getQuery(), $query);
@@ -172,7 +172,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     public function testSignBodyData()
     {
         $request = $this->getRequest('form');
-        $signed = Client::signRequest($request, $this->sharedsecret);
+        $signed = Client::signRequest($request, $this->signature_secret);
 
         $data = [];
         $signed->getBody()->rewind();
@@ -189,7 +189,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     public function testSignJsonData()
     {
         $request = $this->getRequest('json');
-        $signed = Client::signRequest($request, $this->sharedsecret);
+        $signed = Client::signRequest($request, $this->signature_secret);
 
         $signed->getBody()->rewind();
         $data = json_decode($signed->getBody()->getContents(), true);
@@ -205,7 +205,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
     public function testBodySignatureDoesNotChangeQuery()
     {
-        $client = new Client($this->sharedsecret, [], $this->http);
+        $client = new Client($this->signature_secret, [], $this->http);
         $request = $this->getRequest('json');
 
         $client->send($request);
@@ -213,9 +213,9 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertEmpty($request->getUri()->getQuery());
     }
 
-    public function testSharedSecret()
+    public function testsignature_secret()
     {
-        $client = new Client($this->sharedsecret, [], $this->http);
+        $client = new Client($this->signature_secret, [], $this->http);
 
         //check that signature is now added to request
         $client->send(new Request('http://example.com?test=value'));
