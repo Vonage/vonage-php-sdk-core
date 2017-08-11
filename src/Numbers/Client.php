@@ -22,13 +22,13 @@ class Client implements ClientAwareInterface
     public function update($number, $id = null)
     {
         if(!is_null($id)){
-            $update = $this->get($id);
+            $update = $this->get($id, true);
         }
 
         if($number instanceof Number){
             $body = $number->getRequestData();
             if(!isset($update) AND !isset($body['country'])){
-                $data = $this->get($number->getId());
+                $data = $this->get($number->getId(), true);
                 $body['msisdn'] = $data->getId();
                 $body['country'] = $data->getCountry();
             }
@@ -59,26 +59,31 @@ class Client implements ClientAwareInterface
         }
 
         if(isset($update) AND ($number instanceof Number)){
-            return $this->get($number);
+            return $this->get($number, true);
         }
 
         if($number instanceof Number){
-            return $this->get($number);
+            return $this->get($number, true);
         }
 
-        return $this->get($body['msisdn']);
+        return $this->get($body['msisdn'], true);
     }
 
-    public function get($number)
+    public function get($number = null, $returnSingle = false)
     {
-        if($number instanceof Number){
-            $query = ['pattern' => $number->getId()];
-        } else {
-            $query = ['pattern' => $number];
+        $queryString = '';
+        if ($number !== null) {
+            if($number instanceof Number){
+                $query = ['pattern' => $number->getId()];
+            } else {
+                $query = ['pattern' => $number];
+            }
+
+            $queryString = http_build_query($query);
         }
 
         $request = new Request(
-            \Nexmo\Client::BASE_REST . '/account/numbers?' . http_build_query($query),
+            \Nexmo\Client::BASE_REST . '/account/numbers?' . $queryString,
             'GET',
             'php://temp'
         );
@@ -98,20 +103,37 @@ class Client implements ClientAwareInterface
             throw new Exception\Exception('unexpected response format');
         }
 
-        if($body['count'] != '1'){
-            throw new Exception\Request('number not found', 404);
+        // If they provided a number and we got multiple matches back,
+        // something went wrong
+        if($body['count'] != '1' && $number !== null){
+            throw new Exception\Request('multiple numbers found unexpectedly', 400);
         }
 
-        if(!($number instanceof Number)){
-            $number = new Number();
+        // We're going to return a list of numbers
+        $numbers = [];
+
+        // If they provided a number initially, we'll only get one response
+        // so let's reuse the object
+        if($number instanceof Number){
+            $number->jsonUnserialize($body['numbers'][0]);
+            $numbers[] = $number;
+        } else {
+            // Otherwise, we return everything that matches
+            foreach ($body['numbers'] as $n) {
+                $number = new Number();
+                $number->jsonUnserialize($n);
+                $numbers[] = $number;
+            }
         }
 
-        $number->jsonUnserialize($body['numbers'][0]);
+        // If they've explicitly asked for a single number e.g. Numbers::Update
+        // then give them the entity instance that they're looking for
+        if ($returnSingle) {
+            return $numbers[0];
+        }
 
-        return $number;
+        return $numbers;
     }
-
-
 
     protected function getException(ResponseInterface $response)
     {

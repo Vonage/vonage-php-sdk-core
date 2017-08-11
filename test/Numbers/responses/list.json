@@ -1,0 +1,30 @@
+{
+  "count": 2,
+  "numbers": [
+    {
+      "country": "US",
+      "msisdn": "12404284163",
+      "moHttpUrl": "http://example.com/message",
+      "type": "mobile-lvn",
+      "features": [
+        "VOICE",
+        "SMS"
+      ],
+      "voiceCallbackType": "vxml",
+      "voiceCallbackValue": "http://example.com/voice",
+      "voiceStatusCallbackUrl": "http://example.com/status"
+    },
+    {
+      "country": "US",
+      "msisdn": "12404284199",
+      "moHttpUrl": "http://example.com/second_message",
+      "type": "mobile-lvn",
+      "features": [
+        "VOICE"
+      ],
+      "voiceCallbackType": "vxml",
+      "voiceCallbackValue": "http://example.com/second_voice",
+      "voiceStatusCallbackUrl": "http://example.com/second_status"
+    }
+  ]
+}
