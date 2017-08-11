@@ -117,6 +117,25 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    public function testThrowConcurrentRequestsException()
+    {
+        try{
+            $message = new Message('02000000D912945A');
+            $response = $this->getResponse('empty', 429);
+
+            $this->nexmoClient->send(Argument::that(function(Request $request) {
+                $this->assertRequestQueryContains('id', '02000000D912945A', $request);
+                return true;
+            }))->willReturn($response);
+
+            $this->messageClient->search($message);
+            $this->fail('did not throw exception');
+        } catch (\Nexmo\Client\Exception\Request $e) {
+            $this->assertEquals('429', $e->getCode());
+            $this->assertEquals('too many concurrent requests', $e->getMessage());
+        }
+    }
+
     public function testCanSearchByMessage()
     {
         $message = new Message('02000000D912945A');
@@ -190,8 +209,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase
      * @param string $type
      * @return Response
      */
-    protected function getResponse($type = 'success')
+    protected function getResponse($type = 'success', $code = 200)
     {
-        return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'r'));
+        return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'r'), $code);
     }
 }
