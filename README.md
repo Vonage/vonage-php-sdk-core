@@ -2,6 +2,8 @@ Nexmo Client Library for PHP
 ============================
 [![Build Status](https://api.travis-ci.org/Nexmo/nexmo-php.svg?branch=master)](https://travis-ci.org/Nexmo/nexmo-php)
 
+*This library requires a minimum PHP version of 5.5*
+
 This is the PHP client library for use Nexmo's API. To use this, you'll need a Nexmo account. Sign up [for free at 
 nexmo.com][signup]. This is currently a beta release, see [contributing](#contributing) for more information.
 
