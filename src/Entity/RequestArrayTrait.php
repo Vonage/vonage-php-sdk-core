@@ -40,6 +40,13 @@ trait RequestArrayTrait
             return $query;
         }
 
+        // Trigger a pre-getRequestData() hook for any last minute
+        // decision making that needs to be done, but only if
+        // it hasn't been sent already
+        if (method_exists($this, 'preGetRequestDataHook')) {
+            $this->preGetRequestDataHook();
+        }
+
         return $this->requestData;
     }    
     
