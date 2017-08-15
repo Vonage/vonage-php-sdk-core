@@ -140,10 +140,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase
             return true;
         }))->willReturn($this->getResponse('single'));
 
-        $numbers = $this->numberClient->get($payload);
-        $number = $numbers[0];
+        $number = $this->numberClient->get($payload);
 
-        $this->assertInternalType('array', $numbers);
         $this->assertInstanceOf('Nexmo\Numbers\Number', $number);
         if($payload instanceof Number){
             $this->assertSame($payload, $number);
@@ -169,14 +167,14 @@ class ClientTest extends \PHPUnit_Framework_TestCase
             return true;
         }))->willReturn($this->getResponse('list'));
 
-        $numbers = $this->numberClient->get();
+        $numbers = $this->numberClient->search();
 
         $this->assertInternalType('array', $numbers);
         $this->assertInstanceOf('Nexmo\Numbers\Number', $numbers[0]);
         $this->assertInstanceOf('Nexmo\Numbers\Number', $numbers[1]);
 
-        $this->assertSame('12404284163', $numbers[0]->getId());
-        $this->assertSame('12404284199', $numbers[1]->getId());
+        $this->assertSame('14155550100', $numbers[0]->getId());
+        $this->assertSame('14155550101', $numbers[1]->getId());
     }
 
 
