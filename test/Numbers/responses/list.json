@@ -3,28 +3,28 @@
   "numbers": [
     {
       "country": "US",
-      "msisdn": "12404284163",
-      "moHttpUrl": "http://example.com/message",
+      "msisdn": "14155550100",
+      "moHttpUrl": "https://example.com/message",
       "type": "mobile-lvn",
       "features": [
         "VOICE",
         "SMS"
       ],
       "voiceCallbackType": "vxml",
-      "voiceCallbackValue": "http://example.com/voice",
-      "voiceStatusCallbackUrl": "http://example.com/status"
+      "voiceCallbackValue": "https://example.com/voice",
+      "voiceStatusCallbackUrl": "https://example.com/status"
     },
     {
       "country": "US",
-      "msisdn": "12404284199",
-      "moHttpUrl": "http://example.com/second_message",
+      "msisdn": "14155550101",
+      "moHttpUrl": "https://example.com/second_message",
       "type": "mobile-lvn",
       "features": [
         "VOICE"
       ],
       "voiceCallbackType": "vxml",
-      "voiceCallbackValue": "http://example.com/second_voice",
-      "voiceStatusCallbackUrl": "http://example.com/second_status"
+      "voiceCallbackValue": "https://example.com/second_voice",
+      "voiceStatusCallbackUrl": "https://example.com/second_status"
     }
   ]
 }
