@@ -71,9 +71,18 @@ class InboundMessage implements MessageInterface, \ArrayAccess
             throw new \RuntimeException('inbound message request should only ever be `' . ServerRequestInterface::class . '`');
         }
 
+        // Check our incoming content type
+        $isApplicationJson = false;
+        $contentTypes = $request->getHeader('Content-Type');
+        // We only respect application/json if it's the first entry without any preference weighting
+        // as that's what Nexmo send
+        if (count($contentTypes) && $contentTypes[0] === 'application/json') {
+            $isApplicationJson = true;
+        }
+
         switch($request->getMethod()){
             case 'POST':
-                $params = $request->getParsedBody();
+                $params = $isApplicationJson ? json_decode((string)$request->getBody(), true) : $request->getParsedBody();
                 break;
             case 'GET':
                 $params = $request->getQueryParams();
