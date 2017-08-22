@@ -133,8 +133,9 @@ class InboundMessageTest extends \PHPUnit_Framework_TestCase
     public function getRequests()
     {
         return [
-            [$this->getServerRequest('https://ohyt2ctr9l0z.runscope.net/sms_post', 'POST', 'inbound')],
-            [$this->getServerRequest('https://ohyt2ctr9l0z.runscope.net/sms_post', 'GET',  'inbound')],
+            'post, application/json' => [$this->getServerRequest('https://ohyt2ctr9l0z.runscope.net/sms_post', 'POST', 'json', ['Content-Type' => 'application/json'])],
+            'post, form-encoded' => [$this->getServerRequest('https://ohyt2ctr9l0z.runscope.net/sms_post', 'POST', 'inbound')],
+            'get, form-encoded' => [$this->getServerRequest('https://ohyt2ctr9l0z.runscope.net/sms_post', 'GET',  'inbound')],
         ];
     }
 
@@ -144,7 +145,7 @@ class InboundMessageTest extends \PHPUnit_Framework_TestCase
      * @param null $file
      * @return ServerRequest
      */
-    protected function getServerRequest($url = 'https://ohyt2ctr9l0z.runscope.net/sms_post', $method = 'GET', $type = 'inbound')
+    protected function getServerRequest($url = 'https://ohyt2ctr9l0z.runscope.net/sms_post', $method = 'GET', $type = 'inbound', $headers = [])
     {
         $data = file_get_contents(__DIR__ . '/requests/' . $type . '.txt');
         $params = [];
@@ -162,10 +163,14 @@ class InboundMessageTest extends \PHPUnit_Framework_TestCase
                 $body = fopen(__DIR__ . '/requests/' . $type . '.txt', 'r');
                 $query = [];
                 $parsed = $params;
+                if (isset($headers['Content-Type']) && $headers['Content-Type'] === 'application/json')
+                {
+                    $parsed = null;
+                }
                 break;
         }
 
-        return new ServerRequest([], [], $url, $method, $body, [], [], $query, $parsed);
+        return new ServerRequest([], [], $url, $method, $body, $headers, [], $query, $parsed);
     }
 
     /**
