@@ -321,6 +321,107 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @dataProvider genericGetProvider
+     */
+    public function testGenericGetMethod($url, $params, $expected)
+    {
+        $client = new Client($this->basic_credentials, [], $this->http);
+        $request = $client->get($url, $params);
+
+        $request = $this->http->getRequests()[0];
+        $this->assertRequestMethod("GET", $request);
+        // We can't use assertRequestQueryContains here as $params may be a multi-level array
+        $this->assertRequestMatchesUrlWithQueryString($expected, $request);
+    }
+
+    public function genericGetProvider()
+    {
+        $baseUrl = 'https://rest.nexmo.com';
+        return [
+            'simple url, no query string' => [$baseUrl.'/example', [], $baseUrl.'/example'],
+            'simple query string' => [$baseUrl.'/example', ['foo' => 'bar', 'a' => 'b'], $baseUrl.'/example?foo=bar&a=b'],
+            'complex query string' => [$baseUrl.'/example', ['foo' => ['bar' => 'baz']], $baseUrl.'/example?foo%5Bbar%5D=baz'],
+            'numeric query string' => [$baseUrl.'/example', ['a','b','c'], $baseUrl.'/example?0=a&1=b&2=c'],
+        ];
+    }
+
+    /**
+     * @dataProvider genericPostOrPutProvider
+     */
+    public function testGenericPostMethod($url, $params)
+    {
+        $client = new Client($this->basic_credentials, [], $this->http);
+        $client->post($url, $params);
+
+        // Add our authentication parameters as they'll always be there
+        $expectedBody = json_encode($params + [
+            'api_key' => 'key12345',
+            'api_secret' => 'secret12345'
+        ]);
+
+        $request = $this->http->getRequests()[0];
+        $this->assertRequestMethod("POST", $request);
+        $this->assertRequestMatchesUrl($url, $request);
+        $this->assertRequestBodyIsJson($expectedBody, $request);
+    }
+
+    /**
+     * @dataProvider genericPostOrPutProvider
+     */
+    public function testGenericPutMethod($url, $params)
+    {
+        $client = new Client($this->basic_credentials, [], $this->http);
+        $client->put($url, $params);
+
+        // Add our authentication parameters as they'll always be there
+        $expectedBody = json_encode($params + [
+                'api_key' => 'key12345',
+                'api_secret' => 'secret12345'
+            ]);
+
+        $request = $this->http->getRequests()[0];
+        $this->assertRequestMethod("PUT", $request);
+        $this->assertRequestMatchesUrl($url, $request);
+        $this->assertRequestBodyIsJson($expectedBody, $request);
+    }
+
+    public function genericPostOrPutProvider()
+    {
+        $baseUrl = 'https://rest.nexmo.com';
+        return [
+            'simple url, no body' => [$baseUrl.'/posting', []],
+            'simple body' => [$baseUrl.'/posting', ['foo' => 'bar']],
+            'complex body' => [$baseUrl.'/posting', ['foo' => ['bar' => 'baz']]],
+            'numeric body' => [$baseUrl.'/posting', ['a','b','c']],
+        ];
+    }
+
+    /**
+     * @dataProvider genericDeleteProvider
+     */
+    public function testGenericDeleteMethod($url, $params)
+    {
+        $client = new Client($this->basic_credentials, [], $this->http);
+        // Delete only takes one parameter, but we test passing two here to make sure that
+        // the test breaks if anyone adds support for sending body parameters at a later date.
+        // See https://stackoverflow.com/questions/299628/is-an-entity-body-allowed-for-an-http-delete-request/299696#299696
+        $client->delete($url, $params);
+
+        $request = $this->http->getRequests()[0];
+        $this->assertRequestMethod("DELETE", $request);
+        $this->assertRequestBodyIsEmpty($request);
+    }
+
+    public function genericDeleteProvider()
+    {
+        $baseUrl = 'https://rest.nexmo.com';
+        return [
+            'simple delete' => [$baseUrl.'/deleting', []],
+            'post body must be ignored' => [$baseUrl.'/deleting', ['foo' => 'bar']],
+        ];
+    }
+
+    /**
      * Allow tests to check that the API client is correctly forming the HTTP request before sending it to the HTTP
      * client.
      *
