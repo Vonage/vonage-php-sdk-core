@@ -22,6 +22,7 @@ use Nexmo\Entity\EntityInterface;
 use Nexmo\Verify\Verification;
 use Psr\Http\Message\RequestInterface;
 use Zend\Diactoros\Uri;
+use Zend\Diactoros\Request;
 
 /**
  * Nexmo API Client, allows access to the API from PHP.
@@ -206,6 +207,83 @@ class Client
     }
     
     /**
+     * Takes a URL and a key=>value array to generate a GET PSR-7 request object
+     *
+     * @param string $url The URL to make a request to
+     * @param array $params Key=>Value array of data to use as the query string
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function get($url, array $params = [])
+    {
+       $queryString = '?' . http_build_query($params);
+
+       $url = $url . $queryString;
+
+       $request = new Request(
+            $url,
+            'GET'
+        );
+
+        return $this->send($request);
+    }
+
+    /**
+     * Takes a URL and a key=>value array to generate a POST PSR-7 request object
+     *
+     * @param string $url The URL to make a request to
+     * @param array $params Key=>Value array of data to send
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function post($url, array $params)
+    {
+        $request = new Request(
+            $url,
+            'POST',
+            'php://temp',
+            ['content-type' => 'application/json']
+        );
+
+        $request->getBody()->write(json_encode($params));
+        return $this->send($request);
+    }
+
+    /**
+     * Takes a URL and a key=>value array to generate a PUT PSR-7 request object
+     *
+     * @param string $url The URL to make a request to
+     * @param array $params Key=>Value array of data to send
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function put($url, array $params)
+    {
+        $request = new Request(
+            $url,
+            'PUT',
+            'php://temp',
+            ['content-type' => 'application/json']
+        );
+
+        $request->getBody()->write(json_encode($params));
+        return $this->send($request);
+    }
+
+    /**
+     * Takes a URL and a key=>value array to generate a DELETE PSR-7 request object
+     *
+     * @param string $url The URL to make a request to
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function delete($url)
+    {
+        $request = new Request(
+            $url,
+            'DELETE'
+        );
+
+        return $this->send($request);
+    }
+
+     /**
      * Wraps the HTTP Client, creates a new PSR-7 request adding authentication, signatures, etc.
      *
      * @param \Psr\Http\Message\RequestInterface $request

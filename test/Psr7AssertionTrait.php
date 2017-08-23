@@ -13,6 +13,19 @@ use Psr\Http\Message\RequestInterface;
 
 trait Psr7AssertionTrait
 {
+    public static function assertRequestMethod($expected, RequestInterface $request)
+    {
+        self::assertEquals($expected, $request->getMethod());
+    }
+
+    public static function assertRequestBodyIsEmpty(RequestInterface $request)
+    {
+        $request->getBody()->rewind();
+        $body = $request->getBody()->getContents();
+        $request->getBody()->rewind();
+        self::assertEmpty($body);
+    }
+
     public static function assertRequestBodyIsJson($expected, RequestInterface $request)
     {
         $request->getBody()->rewind();
@@ -69,5 +82,14 @@ trait Psr7AssertionTrait
     public static function assertRequestMatchesUrl($url, RequestInterface $request)
     {
         self::assertEquals($url, $request->getUri()->withQuery('')->__toString(), 'url did not match request');
+    }
+
+    public static function assertRequestMatchesUrlWithQueryString($url, RequestInterface $request)
+    {
+        $query = [];
+        parse_str($request->getUri()->getQuery(), $query);
+        unset($query['api_key'], $query['api_secret']);
+        $query = http_build_query($query);
+        self::assertEquals($url, $request->getUri()->withQuery($query)->__toString(), 'url did not match request');
     }
 }
