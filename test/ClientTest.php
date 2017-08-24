@@ -33,28 +33,28 @@ class ClientTest extends \PHPUnit_Framework_TestCase
      */
     protected $request;
 
-    protected $secret     = 'reallyreallysecret';
-    protected $api_key    = 'key12345';
+    protected $signature_secret = 'reallyreallysecret';
+    protected $api_key = 'key12345';
     protected $api_secret = 'secret12345';
 
-    protected $signature_secret;
-    protected $basic;
-    protected $key;
+    protected $signature_credentials;
+    protected $basic_credentials;
+    protected $key_credentials;
     protected $container;
 
     public function setUp()
     {
         $this->http         = $this->getMockHttp();
         $this->request      = $this->getRequest();
-        $this->signature_secret = new Client\Credentials\SignatureSecret($this->api_key, $this->secret);
-        $this->basic        = new Client\Credentials\Basic($this->api_key, $this->api_secret);
-        $this->key          = new Client\Credentials\Keypair(file_get_contents(__DIR__  . '/Client/Credentials/test.key', 'app'));
-        $this->container    = new Client\Credentials\Container($this->key, $this->basic, $this->signature_secret);
+        $this->signature_credentials = new Client\Credentials\SignatureSecret($this->api_key, $this->signature_secret);
+        $this->basic_credentials        = new Client\Credentials\Basic($this->api_key, $this->api_secret);
+        $this->key_credentials          = new Client\Credentials\Keypair(file_get_contents(__DIR__  . '/Client/Credentials/test.key', 'app'));
+        $this->container    = new Client\Credentials\Container($this->key_credentials, $this->basic_credentials, $this->signature_credentials);
     }
 
     public function testBasicCredentialsQuery()
     {
-        $client = new Client($this->basic, [], $this->http);
+        $client = new Client($this->basic_credentials, [], $this->http);
         $request = $this->getRequest();
         $client->send($request);
 
@@ -65,7 +65,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     
     public function testBasicCredentialsForm()
     {
-        $client = new Client($this->basic, [], $this->http);
+        $client = new Client($this->basic_credentials, [], $this->http);
         $request = $this->getRequest('form');
 
         $client->send($request);
@@ -105,7 +105,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
     public function testBasicCredentialsJson()
     {
-        $client = new Client($this->basic, [], $this->http);
+        $client = new Client($this->basic_credentials, [], $this->http);
         $request = $this->getRequest('json');
 
         $client->send($request);
@@ -159,20 +159,20 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     public function testSignQueryString()
     {
         $request = $this->getRequest();
-        $signed = Client::signRequest($request, $this->signature_secret);
+        $signed = Client::signRequest($request, $this->signature_credentials);
 
         $query = [];
         parse_str($signed->getUri()->getQuery(), $query);
 
         //request should now have signature
-        $this->assertValidSignature($query, $this->secret);
+        $this->assertValidSignature($query, $this->signature_secret);
         $this->assertRequestQueryContains('api_key', $this->api_key, $signed);
     }
 
     public function testSignBodyData()
     {
         $request = $this->getRequest('form');
-        $signed = Client::signRequest($request, $this->signature_secret);
+        $signed = Client::signRequest($request, $this->signature_credentials);
 
         $data = [];
         $signed->getBody()->rewind();
@@ -180,7 +180,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
         //request should now have signature
         $this->assertRequestFormBodyContains('api_key', $this->api_key, $request);
-        $this->assertValidSignature($data, $this->secret);
+        $this->assertValidSignature($data, $this->signature_secret);
 
         //signing should not change query string
         $this->assertEmpty($signed->getUri()->getQuery());
@@ -189,7 +189,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     public function testSignJsonData()
     {
         $request = $this->getRequest('json');
-        $signed = Client::signRequest($request, $this->signature_secret);
+        $signed = Client::signRequest($request, $this->signature_credentials);
 
         $signed->getBody()->rewind();
         $data = json_decode($signed->getBody()->getContents(), true);
@@ -197,7 +197,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
         //request should now have signature
         $this->assertRequestJsonBodyContains('api_key', $this->api_key, $request);
-        $this->assertValidSignature($data, $this->secret);
+        $this->assertValidSignature($data, $this->signature_secret);
 
         //signing should not change query string
         $this->assertEmpty($signed->getUri()->getQuery());
@@ -205,7 +205,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
     public function testBodySignatureDoesNotChangeQuery()
     {
-        $client = new Client($this->signature_secret, [], $this->http);
+        $client = new Client($this->signature_credentials, [], $this->http);
         $request = $this->getRequest('json');
 
         $client->send($request);
@@ -213,9 +213,9 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertEmpty($request->getUri()->getQuery());
     }
 
-    public function testsignature_secret()
+    public function testsignature_credentials()
     {
-        $client = new Client($this->signature_secret, [], $this->http);
+        $client = new Client($this->signature_credentials, [], $this->http);
 
         //check that signature is now added to request
         $client->send(new Request('http://example.com?test=value'));
@@ -224,7 +224,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $query = [];
         parse_str($request->getUri()->getQuery(), $query);
 
-        $this->assertValidSignature($query, $this->secret);
+        $this->assertValidSignature($query, $this->signature_secret);
     }
 
     public function testMultipleClients()
@@ -309,7 +309,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $factory->hasApi('verify')->willReturn(true);
         $factory->getApi('verify')->willReturn($verify->reveal());
 
-        $client = new Client($this->basic);
+        $client = new Client($this->basic_credentials);
         $client->setFactory($factory->reveal());
 
         $verification = new Verification('15554441212', 'test app');
