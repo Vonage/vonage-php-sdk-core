@@ -16,6 +16,7 @@ use NexmoTest\Psr7AssertionTrait;
 use Prophecy\Argument;
 use Psr\Http\Message\RequestInterface;
 use Zend\Diactoros\Response;
+use Nexmo\Client\Exception;
 
 class CollectionTest extends \PHPUnit_Framework_TestCase
 {
@@ -131,6 +132,63 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('Nexmo\Call\Call', $call);
         $this->assertEquals('e46fd8bd-504d-4044-9600-26dd18b41111', $call->getId());
+    }
+    
+    /**
+     * @dataProvider postCall
+     */
+    public function testCreatePostCallErrorFromVApi($payload, $method)
+    {
+        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($payload){
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
+            $this->assertRequestBodyIsJson(json_encode($payload), $request);
+            return true;
+        }))->willReturn($this->getResponse('error_vapi', '400'));
+
+        try {
+            $call = $this->collection->$method($payload);
+            $this->fail('Expected to throw request exception');
+        } catch (Exception\Request $e) {
+            $this->assertEquals($e->getMessage(), 'Bad Request');
+        }
+    }
+
+    /**
+     * @dataProvider postCall
+     */
+    public function testCreatePostCallErrorFromProxy($payload, $method)
+    {
+        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($payload){
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
+            $this->assertRequestBodyIsJson(json_encode($payload), $request);
+            return true;
+        }))->willReturn($this->getResponse('error_proxy', '400'));
+
+        try {
+            $call = $this->collection->$method($payload);
+            $this->fail('Expected to throw request exception');
+        } catch (Exception\Request $e) {
+            $this->assertEquals($e->getMessage(), 'Unsupported Media Type');
+        }
+    }
+
+    /**
+     * @dataProvider postCall
+     */
+    public function testCreatePostCallErrorUnknownFormat($payload, $method)
+    {
+        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($payload){
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
+            $this->assertRequestBodyIsJson(json_encode($payload), $request);
+            return true;
+        }))->willReturn($this->getResponse('error_unknown_format', '400'));
+
+        try {
+            $call = $this->collection->$method($payload);
+            $this->fail('Expected to throw request exception');
+        } catch (Exception\Request $e) {
+            $this->assertEquals($e->getMessage(), "Unexpected error");
+        }
     }
 
     /**
