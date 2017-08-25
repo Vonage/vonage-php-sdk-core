@@ -144,10 +144,25 @@ class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAcc
         $body = json_decode($response->getBody()->getContents(), true);
         $status = $response->getStatusCode();
 
+        // Error responses aren't consistent. Some are generated within the
+        // proxy and some are generated within voice itself. This handles
+        // both cases
+
+        // This message isn't very useful, but we shouldn't ever see it
+        $errorTitle = 'Unexpected error';
+
+        if (isset($body['title'])) {
+            $errorTitle = $body['title'];
+        }
+
+        if (isset($body['error_title'])) {
+            $errorTitle = $body['error_title'];
+        }
+
         if($status >= 400 AND $status < 500) {
-            $e = new Exception\Request($body['error_title'], $status);
+            $e = new Exception\Request($errorTitle, $status);
         } elseif($status >= 500 AND $status < 600) {
-            $e = new Exception\Server($body['error_title'], $status);
+            $e = new Exception\Server($errorTitle, $status);
         } else {
             $e = new Exception\Exception('Unexpected HTTP Status Code');
             throw $e;
