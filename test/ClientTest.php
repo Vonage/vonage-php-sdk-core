@@ -122,6 +122,20 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->markTestIncomplete('not yet implemented');
     }
 
+    public function testKeypairCredentials()
+    {
+        $client = new Client($this->key_credentials, [], $this->http);
+        $request = $this->getRequest('json');
+
+        $client->send($request);
+
+        $request = $this->http->getRequests()[0];
+        $this->assertEmpty($request->getUri()->getQuery());
+        $auth = $request->getHeaderLine('Authorization');
+        $this->assertStringStartsWith('Bearer ', $auth);
+        $this->markTestIncomplete('Has correct format, but not tested as output of JWT generation');
+    }
+
     public function testSettingBaseUrl()
     {
         $client = new Client(new Basic('key', 'secret'), [

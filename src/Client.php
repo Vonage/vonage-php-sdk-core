@@ -76,7 +76,7 @@ class Client
         $this->setHttpClient($client);
 
         //make sure we know how to use the credentials
-        if(!($credentials instanceof Container) && !($credentials instanceof Basic) && !($credentials instanceof SignatureSecret) && !($credentials instanceof OAuth)){
+        if(!($credentials instanceof Container) && !($credentials instanceof Basic) && !($credentials instanceof SignatureSecret) && !($credentials instanceof OAuth) && !($credentials instanceof Keypair)){
             throw new \RuntimeException('unknown credentials type: ' . get_class($credentials));
         }
 
@@ -220,7 +220,7 @@ class Client
                 $request = self::authRequest($request, $this->credentials->get(Basic::class));
             }
         } elseif($this->credentials instanceof Keypair){
-            $request = $request->withHeader('Authorization', 'Bearer ' . $this->credentials->get(Keypair::class)->generateJwt());
+            $request = $request->withHeader('Authorization', 'Bearer ' . $this->credentials->generateJwt());
         } elseif($this->credentials instanceof SignatureSecret){
             $request = self::signRequest($request, $this->credentials);
         } elseif($this->credentials instanceof Basic){
