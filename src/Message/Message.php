@@ -198,7 +198,12 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
         if(is_null($index)){
             $index = $this->count() -1;
         }
-        return $data['messages'][$index][$name];
+
+        if (isset($data['messages'])) {
+            return $data['messages'][$index][$name];
+        }
+
+        return $data[$name];
     }
 
     public function offsetExists($offset)
