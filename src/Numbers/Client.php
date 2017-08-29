@@ -69,16 +69,34 @@ class Client implements ClientAwareInterface
         return $this->get($body['msisdn']);
     }
 
-    public function get($number)
+    public function get($number = null)
     {
-        if($number instanceof Number){
-            $query = ['pattern' => $number->getId()];
-        } else {
-            $query = ['pattern' => $number];
+        $items =  $this->search($number);
+
+        // This is legacy behaviour, so we need to keep it even though
+        // it isn't technically the correct message
+        if (count($items) != 1) {
+            throw new Exception\Request('number not found', 404);
+        }
+
+        return $items[0];
+    }
+
+    public function search($number = null)
+    {
+        $queryString = '';
+        if ($number !== null) {
+            if($number instanceof Number){
+                $query = ['pattern' => $number->getId()];
+            } else {
+                $query = ['pattern' => $number];
+            }
+
+            $queryString = http_build_query($query);
         }
 
         $request = new Request(
-            \Nexmo\Client::BASE_REST . '/account/numbers?' . http_build_query($query),
+            \Nexmo\Client::BASE_REST . '/account/numbers?' . $queryString,
             'GET',
             'php://temp'
         );
@@ -89,29 +107,34 @@ class Client implements ClientAwareInterface
             throw $this->getException($response);
         }
 
-        $body = json_decode($response->getBody()->getContents(), true);
-        if(empty($body)){
+        $searchResults = json_decode($response->getBody()->getContents(), true);
+        if(empty($searchResults)){
             throw new Exception\Request('number not found', 404);
         }
 
-        if(!isset($body['count']) OR !isset($body['numbers'])){
+        if(!isset($searchResults['count']) OR !isset($searchResults['numbers'])){
             throw new Exception\Exception('unexpected response format');
         }
 
-        if($body['count'] != '1'){
-            throw new Exception\Request('number not found', 404);
+        // We're going to return a list of numbers
+        $numbers = [];
+
+        // If they provided a number initially, we'll only get one response
+        // so let's reuse the object
+        if($number instanceof Number){
+            $number->jsonUnserialize($searchResults['numbers'][0]);
+            $numbers[] = $number;
+        } else {
+            // Otherwise, we return everything that matches
+            foreach ($searchResults['numbers'] as $returnedNumber) {
+                $number = new Number();
+                $number->jsonUnserialize($returnedNumber);
+                $numbers[] = $number;
+            }
         }
 
-        if(!($number instanceof Number)){
-            $number = new Number();
-        }
-
-        $number->jsonUnserialize($body['numbers'][0]);
-
-        return $number;
+        return $numbers;
     }
-
-
 
     protected function getException(ResponseInterface $response)
     {

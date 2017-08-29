@@ -158,6 +158,27 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
+    public function testListNumbers()
+    {
+        $this->nexmoClient->send(Argument::that(function(RequestInterface $request){
+            $this->assertEquals('/account/numbers', $request->getUri()->getPath());
+            $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('GET', $request->getMethod());
+            return true;
+        }))->willReturn($this->getResponse('list'));
+
+        $numbers = $this->numberClient->search();
+
+        $this->assertInternalType('array', $numbers);
+        $this->assertInstanceOf('Nexmo\Numbers\Number', $numbers[0]);
+        $this->assertInstanceOf('Nexmo\Numbers\Number', $numbers[1]);
+
+        $this->assertSame('14155550100', $numbers[0]->getId());
+        $this->assertSame('14155550101', $numbers[1]->getId());
+    }
+
+
+
     /**
      * Get the API response we'd expect for a call to the API.
      *

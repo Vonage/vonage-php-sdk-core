@@ -7,6 +7,7 @@
  */
 
 namespace Nexmo\Message;
+use Nexmo\Message\EncodingDetector;
 use Nexmo\Entity\JsonResponseTrait;
 use Nexmo\Entity\Psr7Trait;
 use Nexmo\Entity\RequestArrayTrait;
@@ -40,6 +41,8 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
 
     protected $id;
 
+    protected $autodetectEncoding = false;
+
     /**
      * @param string $idOrTo Message ID or E.164 (international) formatted number to send the message
      * @param null|string $from Number or name the message is from
@@ -66,6 +69,10 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
         return $this->setRequestData('status-report-req', $dlr ? 1 : 0);
     }
 
+    public function setCallback($callback) {
+        return $this->setRequestData('callback', (string) $callback);
+    }    
+    
     public function setClientRef($ref)
     {
         return $this->setRequestData('client-ref', (string) $ref);
@@ -84,6 +91,16 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
     public function setClass($class)
     {
         return $this->setRequestData('message-class', $class);
+    }
+
+    public function enableEncodingDetection()
+    {
+        $this->autodetectEncoding = true;
+    }
+
+    public function disableEncodingDetection()
+    {
+        $this->autodetectEncoding = false;
     }
 
     public function count()
@@ -184,6 +201,11 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
         return $this['error-code-label'];
     }
 
+    public function isEncodingDetectionEnabled()
+    {
+        return $this->autodetectEncoding;
+    }
+
     protected function getMessageData($name, $index = null)
     {
         if(!isset($this->response)){
@@ -194,7 +216,36 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
         if(is_null($index)){
             $index = $this->count() -1;
         }
-        return $data['messages'][$index][$name];
+
+        if (isset($data['messages'])) {
+            return $data['messages'][$index][$name];
+        }
+
+        return $data[$name];
+    }
+
+    protected function preGetRequestDataHook()
+    {
+        // If $autodetectEncoding is true, we want to set the `type`
+        // field in our payload
+        if ($this->isEncodingDetectionEnabled()) {
+            $this->requestData['type'] = $this->detectEncoding();
+        }
+    }
+
+    protected function detectEncoding()
+    {
+        if (!isset($this->requestData['text'])) {
+            return static::TYPE;
+        }
+
+        // Auto detect unicode messages
+        $detector = new EncodingDetector;
+        if ($detector->requiresUnicodeEncoding($this->requestData['text'])){
+            return Unicode::TYPE;
+        }
+
+        return static::TYPE;
     }
 
     public function offsetExists($offset)

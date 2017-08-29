@@ -8,6 +8,7 @@
 
 namespace NexmoTest\Message;
 use Nexmo\Message\Message;
+use Nexmo\Message\Text;
 use Zend\Diactoros\Response;
 use Zend\Diactoros\ServerRequest;
 
@@ -67,6 +68,41 @@ class MessageTest extends \PHPUnit_Framework_TestCase
     {
         $message = new Message('00000123');
         $this->assertEquals('00000123', $message->getMessageId());
+    }
+
+    /**
+     * When creating a message, it should not auto-detect encoding by default
+     * @dataProvider messageEncodingProvider
+     */
+    public function testDoesNotAutodetectByDefault($msg, $encoding)
+    {
+        $message = new Text('to', 'from', $msg);
+        $this->assertFalse($message->isEncodingDetectionEnabled());
+        $d = $message->getRequestData(false);
+        $this->assertEquals($d['type'], 'text');
+    }
+
+    /**
+     * When creating a message, it should not auto-detect encoding by default
+     * @dataProvider messageEncodingProvider
+     */
+    public function testDoesAutodetectWhenEnabled($msg, $encoding)
+    {
+        $message = new Text('to', 'from', $msg);
+        $message->enableEncodingDetection();
+        $this->assertTrue($message->isEncodingDetectionEnabled());
+
+        $d = $message->getRequestData(false);
+        $this->assertEquals($d['type'], $encoding);
+    }
+
+    public function messageEncodingProvider() {
+
+        $r = [];
+        $r['text'] = ['Hello World', 'text'];
+        $r['emoji'] = ['Testing 💪', 'unicode'];
+        $r['kanji'] = ['漢字', 'unicode'];
+        return $r;
     }
 
     /**

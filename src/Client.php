@@ -13,7 +13,7 @@ use Nexmo\Client\Credentials\Container;
 use Nexmo\Client\Credentials\CredentialsInterface;
 use Nexmo\Client\Credentials\Keypair;
 use Nexmo\Client\Credentials\OAuth;
-use Nexmo\Client\Credentials\SharedSecret;
+use Nexmo\Client\Credentials\SignatureSecret;
 use Nexmo\Client\Factory\FactoryInterface;
 use Nexmo\Client\Factory\MapFactory;
 use Nexmo\Client\Response\Response;
@@ -22,6 +22,7 @@ use Nexmo\Entity\EntityInterface;
 use Nexmo\Verify\Verification;
 use Psr\Http\Message\RequestInterface;
 use Zend\Diactoros\Uri;
+use Zend\Diactoros\Request;
 
 /**
  * Nexmo API Client, allows access to the API from PHP.
@@ -76,7 +77,7 @@ class Client
         $this->setHttpClient($client);
 
         //make sure we know how to use the credentials
-        if(!($credentials instanceof Container) && !($credentials instanceof Basic) && !($credentials instanceof SharedSecret) && !($credentials instanceof OAuth)){
+        if(!($credentials instanceof Container) && !($credentials instanceof Basic) && !($credentials instanceof SignatureSecret) && !($credentials instanceof OAuth) && !($credentials instanceof Keypair)){
             throw new \RuntimeException('unknown credentials type: ' . get_class($credentials));
         }
 
@@ -135,7 +136,7 @@ class Client
      * @param Signature $signature
      * @return RequestInterface
      */
-    public static function signRequest(RequestInterface $request, SharedSecret $credentials)
+    public static function signRequest(RequestInterface $request, SignatureSecret $credentials)
     {
         switch($request->getHeaderLine('content-type')){
             case 'application/json':
@@ -144,7 +145,7 @@ class Client
                 $content = $body->getContents();
                 $params = json_decode($content, true);
                 $params['api_key'] = $credentials['api_key'];
-                $signature = new Signature($params, $credentials['shared_secret']);
+                $signature = new Signature($params, $credentials['signature_secret']);
                 $body->rewind();
                 $body->write(json_encode($signature->getSignedParams()));
                 break;
@@ -155,7 +156,7 @@ class Client
                 $params = [];
                 parse_str($content, $params);
                 $params['api_key'] = $credentials['api_key'];
-                $signature = new Signature($params, $credentials['shared_secret']);
+                $signature = new Signature($params, $credentials['signature_secret']);
                 $params = $signature->getSignedParams();
                 $body->rewind();
                 $body->write(http_build_query($params, null, '&'));
@@ -164,7 +165,7 @@ class Client
                 $query = [];
                 parse_str($request->getUri()->getQuery(), $query);
                 $query['api_key'] = $credentials['api_key'];
-                $signature = new Signature($query, $credentials['shared_secret']);
+                $signature = new Signature($query, $credentials['signature_secret']);
                 $request = $request->withUri($request->getUri()->withQuery(http_build_query($signature->getSignedParams())));
                 break;
         }
@@ -206,6 +207,83 @@ class Client
     }
     
     /**
+     * Takes a URL and a key=>value array to generate a GET PSR-7 request object
+     *
+     * @param string $url The URL to make a request to
+     * @param array $params Key=>Value array of data to use as the query string
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function get($url, array $params = [])
+    {
+       $queryString = '?' . http_build_query($params);
+
+       $url = $url . $queryString;
+
+       $request = new Request(
+            $url,
+            'GET'
+        );
+
+        return $this->send($request);
+    }
+
+    /**
+     * Takes a URL and a key=>value array to generate a POST PSR-7 request object
+     *
+     * @param string $url The URL to make a request to
+     * @param array $params Key=>Value array of data to send
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function post($url, array $params)
+    {
+        $request = new Request(
+            $url,
+            'POST',
+            'php://temp',
+            ['content-type' => 'application/json']
+        );
+
+        $request->getBody()->write(json_encode($params));
+        return $this->send($request);
+    }
+
+    /**
+     * Takes a URL and a key=>value array to generate a PUT PSR-7 request object
+     *
+     * @param string $url The URL to make a request to
+     * @param array $params Key=>Value array of data to send
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function put($url, array $params)
+    {
+        $request = new Request(
+            $url,
+            'PUT',
+            'php://temp',
+            ['content-type' => 'application/json']
+        );
+
+        $request->getBody()->write(json_encode($params));
+        return $this->send($request);
+    }
+
+    /**
+     * Takes a URL and a key=>value array to generate a DELETE PSR-7 request object
+     *
+     * @param string $url The URL to make a request to
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function delete($url)
+    {
+        $request = new Request(
+            $url,
+            'DELETE'
+        );
+
+        return $this->send($request);
+    }
+
+     /**
      * Wraps the HTTP Client, creates a new PSR-7 request adding authentication, signatures, etc.
      *
      * @param \Psr\Http\Message\RequestInterface $request
@@ -220,8 +298,8 @@ class Client
                 $request = self::authRequest($request, $this->credentials->get(Basic::class));
             }
         } elseif($this->credentials instanceof Keypair){
-            $request = $request->withHeader('Authorization', 'Bearer ' . $this->credentials->get(Keypair::class)->generateJwt());
-        } elseif($this->credentials instanceof SharedSecret){
+            $request = $request->withHeader('Authorization', 'Bearer ' . $this->credentials->generateJwt());
+        } elseif($this->credentials instanceof SignatureSecret){
             $request = self::signRequest($request, $this->credentials);
         } elseif($this->credentials instanceof Basic){
             $request = self::authRequest($request, $this->credentials);

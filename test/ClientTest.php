@@ -33,28 +33,28 @@ class ClientTest extends \PHPUnit_Framework_TestCase
      */
     protected $request;
 
-    protected $secret     = 'reallyreallysecret';
-    protected $api_key    = 'key12345';
+    protected $signature_secret = 'reallyreallysecret';
+    protected $api_key = 'key12345';
     protected $api_secret = 'secret12345';
 
-    protected $sharedsecret;
-    protected $basic;
-    protected $key;
+    protected $signature_credentials;
+    protected $basic_credentials;
+    protected $key_credentials;
     protected $container;
 
     public function setUp()
     {
         $this->http         = $this->getMockHttp();
         $this->request      = $this->getRequest();
-        $this->sharedsecret = new Client\Credentials\SharedSecret($this->api_key, $this->secret);
-        $this->basic        = new Client\Credentials\Basic($this->api_key, $this->api_secret);
-        $this->key          = new Client\Credentials\Keypair(file_get_contents(__DIR__  . '/Client/Credentials/test.key', 'app'));
-        $this->container    = new Client\Credentials\Container($this->key, $this->basic, $this->sharedsecret);
+        $this->signature_credentials = new Client\Credentials\SignatureSecret($this->api_key, $this->signature_secret);
+        $this->basic_credentials        = new Client\Credentials\Basic($this->api_key, $this->api_secret);
+        $this->key_credentials          = new Client\Credentials\Keypair(file_get_contents(__DIR__  . '/Client/Credentials/test.key', 'app'));
+        $this->container    = new Client\Credentials\Container($this->key_credentials, $this->basic_credentials, $this->signature_credentials);
     }
 
     public function testBasicCredentialsQuery()
     {
-        $client = new Client($this->basic, [], $this->http);
+        $client = new Client($this->basic_credentials, [], $this->http);
         $request = $this->getRequest();
         $client->send($request);
 
@@ -65,7 +65,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     
     public function testBasicCredentialsForm()
     {
-        $client = new Client($this->basic, [], $this->http);
+        $client = new Client($this->basic_credentials, [], $this->http);
         $request = $this->getRequest('form');
 
         $client->send($request);
@@ -105,7 +105,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
     public function testBasicCredentialsJson()
     {
-        $client = new Client($this->basic, [], $this->http);
+        $client = new Client($this->basic_credentials, [], $this->http);
         $request = $this->getRequest('json');
 
         $client->send($request);
@@ -120,6 +120,20 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     {
         $client = new Client(new OAuth('ctoken', 'ckey', 'token', 'key'));
         $this->markTestIncomplete('not yet implemented');
+    }
+
+    public function testKeypairCredentials()
+    {
+        $client = new Client($this->key_credentials, [], $this->http);
+        $request = $this->getRequest('json');
+
+        $client->send($request);
+
+        $request = $this->http->getRequests()[0];
+        $this->assertEmpty($request->getUri()->getQuery());
+        $auth = $request->getHeaderLine('Authorization');
+        $this->assertStringStartsWith('Bearer ', $auth);
+        $this->markTestIncomplete('Has correct format, but not tested as output of JWT generation');
     }
 
     public function testSettingBaseUrl()
@@ -159,20 +173,20 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     public function testSignQueryString()
     {
         $request = $this->getRequest();
-        $signed = Client::signRequest($request, $this->sharedsecret);
+        $signed = Client::signRequest($request, $this->signature_credentials);
 
         $query = [];
         parse_str($signed->getUri()->getQuery(), $query);
 
         //request should now have signature
-        $this->assertValidSignature($query, $this->secret);
+        $this->assertValidSignature($query, $this->signature_secret);
         $this->assertRequestQueryContains('api_key', $this->api_key, $signed);
     }
 
     public function testSignBodyData()
     {
         $request = $this->getRequest('form');
-        $signed = Client::signRequest($request, $this->sharedsecret);
+        $signed = Client::signRequest($request, $this->signature_credentials);
 
         $data = [];
         $signed->getBody()->rewind();
@@ -180,7 +194,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
         //request should now have signature
         $this->assertRequestFormBodyContains('api_key', $this->api_key, $request);
-        $this->assertValidSignature($data, $this->secret);
+        $this->assertValidSignature($data, $this->signature_secret);
 
         //signing should not change query string
         $this->assertEmpty($signed->getUri()->getQuery());
@@ -189,7 +203,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     public function testSignJsonData()
     {
         $request = $this->getRequest('json');
-        $signed = Client::signRequest($request, $this->sharedsecret);
+        $signed = Client::signRequest($request, $this->signature_credentials);
 
         $signed->getBody()->rewind();
         $data = json_decode($signed->getBody()->getContents(), true);
@@ -197,7 +211,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
         //request should now have signature
         $this->assertRequestJsonBodyContains('api_key', $this->api_key, $request);
-        $this->assertValidSignature($data, $this->secret);
+        $this->assertValidSignature($data, $this->signature_secret);
 
         //signing should not change query string
         $this->assertEmpty($signed->getUri()->getQuery());
@@ -205,7 +219,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
     public function testBodySignatureDoesNotChangeQuery()
     {
-        $client = new Client($this->sharedsecret, [], $this->http);
+        $client = new Client($this->signature_credentials, [], $this->http);
         $request = $this->getRequest('json');
 
         $client->send($request);
@@ -213,9 +227,9 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertEmpty($request->getUri()->getQuery());
     }
 
-    public function testSharedSecret()
+    public function testsignature_credentials()
     {
-        $client = new Client($this->sharedsecret, [], $this->http);
+        $client = new Client($this->signature_credentials, [], $this->http);
 
         //check that signature is now added to request
         $client->send(new Request('http://example.com?test=value'));
@@ -224,7 +238,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $query = [];
         parse_str($request->getUri()->getQuery(), $query);
 
-        $this->assertValidSignature($query, $this->secret);
+        $this->assertValidSignature($query, $this->signature_secret);
     }
 
     public function testMultipleClients()
@@ -309,7 +323,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $factory->hasApi('verify')->willReturn(true);
         $factory->getApi('verify')->willReturn($verify->reveal());
 
-        $client = new Client($this->basic);
+        $client = new Client($this->basic_credentials);
         $client->setFactory($factory->reveal());
 
         $verification = new Verification('15554441212', 'test app');
@@ -318,6 +332,107 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('string data', $client->serialize($verification));
         $this->assertEquals($verification, $client->unserialize(serialize($verification)));
+    }
+
+    /**
+     * @dataProvider genericGetProvider
+     */
+    public function testGenericGetMethod($url, $params, $expected)
+    {
+        $client = new Client($this->basic_credentials, [], $this->http);
+        $request = $client->get($url, $params);
+
+        $request = $this->http->getRequests()[0];
+        $this->assertRequestMethod("GET", $request);
+        // We can't use assertRequestQueryContains here as $params may be a multi-level array
+        $this->assertRequestMatchesUrlWithQueryString($expected, $request);
+    }
+
+    public function genericGetProvider()
+    {
+        $baseUrl = 'https://rest.nexmo.com';
+        return [
+            'simple url, no query string' => [$baseUrl.'/example', [], $baseUrl.'/example'],
+            'simple query string' => [$baseUrl.'/example', ['foo' => 'bar', 'a' => 'b'], $baseUrl.'/example?foo=bar&a=b'],
+            'complex query string' => [$baseUrl.'/example', ['foo' => ['bar' => 'baz']], $baseUrl.'/example?foo%5Bbar%5D=baz'],
+            'numeric query string' => [$baseUrl.'/example', ['a','b','c'], $baseUrl.'/example?0=a&1=b&2=c'],
+        ];
+    }
+
+    /**
+     * @dataProvider genericPostOrPutProvider
+     */
+    public function testGenericPostMethod($url, $params)
+    {
+        $client = new Client($this->basic_credentials, [], $this->http);
+        $client->post($url, $params);
+
+        // Add our authentication parameters as they'll always be there
+        $expectedBody = json_encode($params + [
+            'api_key' => 'key12345',
+            'api_secret' => 'secret12345'
+        ]);
+
+        $request = $this->http->getRequests()[0];
+        $this->assertRequestMethod("POST", $request);
+        $this->assertRequestMatchesUrl($url, $request);
+        $this->assertRequestBodyIsJson($expectedBody, $request);
+    }
+
+    /**
+     * @dataProvider genericPostOrPutProvider
+     */
+    public function testGenericPutMethod($url, $params)
+    {
+        $client = new Client($this->basic_credentials, [], $this->http);
+        $client->put($url, $params);
+
+        // Add our authentication parameters as they'll always be there
+        $expectedBody = json_encode($params + [
+                'api_key' => 'key12345',
+                'api_secret' => 'secret12345'
+            ]);
+
+        $request = $this->http->getRequests()[0];
+        $this->assertRequestMethod("PUT", $request);
+        $this->assertRequestMatchesUrl($url, $request);
+        $this->assertRequestBodyIsJson($expectedBody, $request);
+    }
+
+    public function genericPostOrPutProvider()
+    {
+        $baseUrl = 'https://rest.nexmo.com';
+        return [
+            'simple url, no body' => [$baseUrl.'/posting', []],
+            'simple body' => [$baseUrl.'/posting', ['foo' => 'bar']],
+            'complex body' => [$baseUrl.'/posting', ['foo' => ['bar' => 'baz']]],
+            'numeric body' => [$baseUrl.'/posting', ['a','b','c']],
+        ];
+    }
+
+    /**
+     * @dataProvider genericDeleteProvider
+     */
+    public function testGenericDeleteMethod($url, $params)
+    {
+        $client = new Client($this->basic_credentials, [], $this->http);
+        // Delete only takes one parameter, but we test passing two here to make sure that
+        // the test breaks if anyone adds support for sending body parameters at a later date.
+        // See https://stackoverflow.com/questions/299628/is-an-entity-body-allowed-for-an-http-delete-request/299696#299696
+        $client->delete($url, $params);
+
+        $request = $this->http->getRequests()[0];
+        $this->assertRequestMethod("DELETE", $request);
+        $this->assertRequestBodyIsEmpty($request);
+    }
+
+    public function genericDeleteProvider()
+    {
+        $baseUrl = 'https://rest.nexmo.com';
+        return [
+            'simple delete' => [$baseUrl.'/deleting', []],
+            'post body must be ignored' => [$baseUrl.'/deleting', ['foo' => 'bar']],
+        ];
     }
 
     /**

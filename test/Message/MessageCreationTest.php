@@ -79,6 +79,7 @@ class MessageCreationTest extends \PHPUnit_Framework_TestCase
         return array(
             array('requestDLR',   'status-report-req', array(true => 1, false => 0)),
             array('setClientRef', 'client-ref',        array('test' => 'test')),
+            array('setCallback',  'callback',          array('http://example.com/test-callback' => 'http://example.com/test-callback')),
             array('setNetwork',   'network-code',      array('test' => 'test')),
             array('setTTL',       'ttl',               array('1' => 1)),
             array('setClass',     'message-class',     array(\Nexmo\Message\Text::CLASS_FLASH => \Nexmo\Message\Text::CLASS_FLASH)),
