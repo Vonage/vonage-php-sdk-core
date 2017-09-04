@@ -103,6 +103,20 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->markTestIncomplete('Has correct format, but not tested as output of JWT generation');
     }
 
+    public function testCredentialContainerUsesKeypairForFiles()
+    {
+        $client = new Client($this->container, [], $this->http);
+        $request = $this->getRequest('query', [], 'https://api.nexmo.com/v1/files/AB-12-DC-34');
+
+        $client->send($request);
+
+        $request = $this->http->getRequests()[0];
+        $this->assertEmpty($request->getUri()->getQuery());
+        $auth = $request->getHeaderLine('Authorization');
+        $this->assertStringStartsWith('Bearer ', $auth);
+        $this->markTestIncomplete('Has correct format, but not tested as output of JWT generation');
+    }
+
     public function testBasicCredentialsJson()
     {
         $client = new Client($this->basic_credentials, [], $this->http);

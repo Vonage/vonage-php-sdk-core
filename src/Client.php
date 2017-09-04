@@ -292,7 +292,7 @@ class Client
     public function send(\Psr\Http\Message\RequestInterface $request)
     {
         if($this->credentials instanceof Container) {
-            if (strpos($request->getUri()->getPath(), '/v1/calls') === 0) {
+            if ($this->needsKeypairAuthentication($request)) {
                 $request = $request->withHeader('Authorization', 'Bearer ' . $this->credentials->get(Keypair::class)->generateJwt());
             } else {
                 $request = self::authRequest($request, $this->credentials->get(Basic::class));
@@ -374,5 +374,14 @@ class Client
         }
 
         return $this->factory->getApi($name);
+    }
+
+    protected function needsKeypairAuthentication(\Psr\Http\Message\RequestInterface $request)
+    {
+        $path = $request->getUri()->getPath();
+        $isCallEndpoint = strpos($path, '/v1/calls') === 0;
+        $isRecordingUrl = strpos($path, '/v1/files') === 0;
+
+        return $isCallEndpoint || $isRecordingUrl;
     }
 }
