@@ -38,7 +38,7 @@ use Zend\Diactoros\Request;
  */
 class Client
 {
-    const VERSION = '1.0.0-beta1';
+    const VERSION = '1.0.0';
 
     const BASE_API  = 'https://api.nexmo.com';
     const BASE_REST = 'https://rest.nexmo.com';
@@ -84,6 +84,11 @@ class Client
         $this->credentials = $credentials;
 
         $this->options = $options;
+
+        // If they've provided an app name, validate it
+        if (isset($options['app'])) {
+            $this->validateAppOptions($options['app']);
+        }
 
         $this->setFactory(new MapFactory([
             'message' => 'Nexmo\Message\Client',
@@ -319,15 +324,43 @@ class Client
             }
         }
 
-        //set the user-agent
-        $request = $request->withHeader('user-agent', implode('/', [
-            'nexmo-php',
-            self::VERSION,
-            'PHP-' . implode('.', [PHP_MAJOR_VERSION, PHP_MINOR_VERSION])
-        ]));
+        // The user agent must be in the following format:
+        // LIBRARY-NAME/LIBRARY-VERSION LANGUAGE-NAME/LANGUAGE-VERSION [APP-NAME/APP-VERSION]
+        // See https://github.com/Nexmo/client-library-specification/blob/master/SPECIFICATION.md#reporting
+        $userAgent = [];
+
+        // Library name
+        $userAgent[] = 'nexmo-php/'.self::VERSION;
+
+        // Language name
+        $userAgent[] = 'php/'.PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION;
+
+        // If we have an app set, add that to the UA
+        if (isset($this->options['app'])) {
+            $app = $this->options['app'];
+            $userAgent[] = $app['name'].'/'.$app['version'];
+        }
+
+        // Set the header. Build by joining all the parts we have with a space
+        $request = $request->withHeader('user-agent', implode(" ", $userAgent));
 
         $response = $this->client->sendRequest($request);
         return $response;
+    }
+
+    protected function validateAppOptions($app) {
+        $disallowedCharacters = ['/', ' ', "\t", "\n"];
+        foreach (['name', 'version'] as $key) {
+            if (!isset($app[$key])) {
+                throw new \InvalidArgumentException('app.'.$key.' has not been set');
+            }
+
+            foreach ($disallowedCharacters as $char) {
+                if (strpos($app[$key], $char) !== false) {
+                    throw new \InvalidArgumentException('app.'.$key.' cannot contain the '.$char.' character');
+                }
+            }
+        }
     }
 
     public function serialize(EntityInterface $entity)

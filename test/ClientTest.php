@@ -52,6 +52,43 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->container    = new Client\Credentials\Container($this->key_credentials, $this->basic_credentials, $this->signature_credentials);
     }
 
+    /**
+     * @dataProvider validateAppNameThrowsProvider
+     */
+    public function testValidateAppNameThrows($name, $version, $field, $invalidCharacter)
+    {
+        try {
+            new Client($this->basic_credentials, [
+                'app' => [
+                    'name' => $name,
+                    'version' => $version
+                ]
+            ], $this->http);
+
+            $this->fail('invalid app details provided, but no exception was thrown');
+        } catch (\InvalidArgumentException $e) {
+            $this->assertEquals('app.'.$field.' cannot contain the '.$invalidCharacter.' character', $e->getMessage());
+        }
+
+    }
+
+    public function validateAppNameThrowsProvider()
+    {
+        $r = [];
+
+        $r['/ name'] = ['foo/bar', '1.0', 'name', '/'];
+        $r['space name'] = ['foo bar', '1.0', 'name', ' '];
+        $r['tab name'] = ["foo\tbar", '1.0', 'name', "\t"];
+        $r['newline name'] = ["foo\nbar", '1.0', 'name', "\n"];
+
+        $r['/ version'] = ['foobar', '1/0', 'version', '/'];
+        $r['space version'] = ['foobar', '1 0', 'version', ' '];
+        $r['tab version'] = ["foobar", "1\t0", 'version', "\t"];
+        $r['newline version'] = ["foobar", "1\n0", 'version', "\n"];
+
+        return $r;
+    }
+
     public function testBasicCredentialsQuery()
     {
         $client = new Client($this->basic_credentials, [], $this->http);
@@ -285,10 +322,10 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($api, $client->sms());
     }
 
-    public function testUserAgentString()
+    public function testUserAgentStringAppNotProvided()
     {
         $version = Client::VERSION;
-        $php = 'PHP-' . implode('.', [
+        $php = 'php/' . implode('.', [
             PHP_MAJOR_VERSION,
             PHP_MINOR_VERSION
         ]);
@@ -306,10 +343,44 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
         //useragent should match the expected format
         $agent = $this->http->getRequests()[0]->getHeaderLine('user-agent');
-        $expected = implode('/', [
-            'nexmo-php',
-            $version,
+        $expected = implode(' ', [
+            'nexmo-php/'.$version,
             $php
+        ]);
+
+        $this->assertEquals($expected, $agent);
+    }
+
+    public function testUserAgentStringAppProvided()
+    {
+        $version = Client::VERSION;
+        $php = 'php/' . implode('.', [
+            PHP_MAJOR_VERSION,
+            PHP_MINOR_VERSION
+        ]);
+
+        //get a mock response to test
+        $response = new Response();
+        $response->getBody()->write('test response');
+        $this->http->addResponse($response);
+
+        $client = new Client(new Basic('key', 'secret'), [
+            'app' => [
+                'name' => 'TestApp',
+                'version' => '9.4.5'
+            ]
+        ], $this->http);
+        $request = $this->getRequest();
+
+        //api client should simply pass back the http response
+        $client->send($request);
+
+        //useragent should match the expected format
+        $agent = $this->http->getRequests()[0]->getHeaderLine('user-agent');
+        $expected = implode(' ', [
+            'nexmo-php/'.$version,
+            $php,
+            'TestApp/9.4.5'
         ]);
 
         $this->assertEquals($expected, $agent);
