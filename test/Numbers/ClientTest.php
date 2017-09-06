@@ -177,6 +177,58 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('14155550101', $numbers[1]->getId());
     }
 
+    public function testSearchAvailablePassesThroughWhitelistedOptions()
+    {
+
+        $allowedOptions = [
+            'pattern' => 'one',
+            'search_pattern' => '2',
+            'features' => 'SMS,VOICE',
+            'size' => '100',
+            'index' => '19'
+        ];
+        $invalidOptions = ['foo' => 'bananas'];
+
+        $options = array_merge($allowedOptions, $invalidOptions);
+
+        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($allowedOptions, $invalidOptions){
+            $this->assertEquals('/number/search', $request->getUri()->getPath());
+            $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('GET', $request->getMethod());
+
+            // Things that are whitelisted should be shown
+            foreach ($allowedOptions as $name => $value) {
+                $this->assertRequestQueryContains($name, $value, $request);
+            }
+
+            // Anything else should be dropped
+            foreach ($invalidOptions as $name => $value) {
+                $this->assertRequestQueryNotContains($name, $value, $request);
+            }
+            return true;
+        }))->willReturn($this->getResponse('available-numbers'));
+
+        $this->numberClient->searchAvailable('US', $options);
+    }
+
+    public function testSearchAvailableReturnsNumberList()
+    {
+        $this->nexmoClient->send(Argument::that(function(RequestInterface $request){
+            $this->assertEquals('/number/search', $request->getUri()->getPath());
+            $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('GET', $request->getMethod());
+            return true;
+        }))->willReturn($this->getResponse('available-numbers'));
+
+        $numbers = $this->numberClient->searchAvailable('US');
+
+        $this->assertInternalType('array', $numbers);
+        $this->assertInstanceOf('Nexmo\Numbers\Number', $numbers[0]);
+        $this->assertInstanceOf('Nexmo\Numbers\Number', $numbers[1]);
+
+        $this->assertSame('14155550100', $numbers[0]->getId());
+        $this->assertSame('14155550101', $numbers[1]->getId());
+    }
 
 
     /**

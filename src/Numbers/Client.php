@@ -82,7 +82,49 @@ class Client implements ClientAwareInterface
         return $items[0];
     }
 
+    /**
+     * @param null|string $number
+     * @return array []Number
+     * @deprecated Use `searchOwned` instead
+     */
     public function search($number = null)
+    {
+        return $this->searchOwned($number);
+    }
+
+    public function searchAvailable($country, $options = [])
+    {
+        $query = [
+            'country' => $country
+        ];
+
+        // These are all optional parameters
+        $possibleParameters = [
+            'pattern',
+            'search_pattern',
+            'features',
+            'size',
+            'index'
+        ];
+
+        foreach ($possibleParameters as $param) {
+            if (isset($options[$param])) {
+                $query[$param] = $options[$param];
+            }
+        }
+
+        $request = new Request(
+            \Nexmo\Client::BASE_REST . '/number/search?' . http_build_query($query),
+            'GET',
+            'php://temp'
+        );
+
+        $response = $this->client->send($request);
+
+        return $this->handleNumberSearchResult($response, null);
+    }
+
+    public function searchOwned($number = null)
     {
         $queryString = '';
         if ($number !== null) {
@@ -102,7 +144,11 @@ class Client implements ClientAwareInterface
         );
 
         $response = $this->client->send($request);
+        return $this->handleNumberSearchResult($response, $number);
+    }
 
+    private function handleNumberSearchResult($response, $number)
+    {
         if($response->getStatusCode() != '200'){
             throw $this->getException($response);
         }
