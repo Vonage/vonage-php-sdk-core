@@ -8,10 +8,12 @@
 
 namespace NexmoTest\Message;
 
+use Nexmo\Client\Exception;
 use Nexmo\Message\Client;
 use Nexmo\Message\Message;
 use Nexmo\Message\Text;
 use NexmoTest\Psr7AssertionTrait;
+use NexmoTest\MessageAssertionTrait;
 use Prophecy\Argument;
 use Psr\Http\Message\RequestInterface;
 use Zend\Diactoros\Request;
@@ -20,6 +22,7 @@ use Zend\Diactoros\Response;
 class ClientTest extends \PHPUnit_Framework_TestCase
 {
     use Psr7AssertionTrait;
+    use MessageAssertionTrait;
 
     protected $nexmoClient;
 
@@ -200,6 +203,53 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
         $message = $this->messageClient->send(new Text($args['to'], $args['from'], $args['text']));
         $this->assertEquals($success, $message->getResponse());
+    }
+
+    /**
+     * @dataProvider searchRejectionsProvider
+     */
+    public function testCanSearchRejections($date, $to, $responseFile, $expectedResponse, $expectedHttpCode, $expectedException)
+    {
+        $query = new \Nexmo\Message\Query($date, $to);
+
+        $apiResponse = $this->getResponse($responseFile, $expectedHttpCode);
+
+        $this->nexmoClient->send(Argument::that(function (Request $request) use ($to, $date) {
+            $this->assertRequestQueryContains('to', $to, $request);
+            $this->assertRequestQueryContains('date', $date->format('Y-m-d'), $request);
+            return true;
+        }))->willReturn($apiResponse);
+
+
+        // If we're expecting this to throw an exception, listen for it in advance
+        if ($expectedException !== null) {
+                $this->expectException($expectedException);
+                $this->expectExceptionMessage($expectedResponse);
+        }
+
+        // Make the request and assert that our responses match
+        $rejectionsResponse = $this->messageClient->searchRejections($query);
+        $this->assertListOfMessagesEqual($expectedResponse, $rejectionsResponse);
+    }
+
+    public function searchRejectionsProvider()
+    {
+        $r = [];
+
+        $r['no rejections found'] = [new \DateTime(), '123456', 'search-rejections-empty', [], 200, null];
+
+        // Build up our expected message object
+        $message = new Message('0C0000005BA0B864');
+        $message->setResponse($this->getResponse('search-rejections'));
+        $message->setIndex(0);
+        $r['rejection found'] = [new \DateTime(), '123456', 'search-rejections', [$message], 200, null];
+
+        $r['error-code provided (validation)'] = [new \DateTime(), '123456', 'search-rejections-error-provided-validation', 'Validation error: You forgot to do something', 400, Exception\Request::class];
+        $r['error-code provided (server error)'] = [new \DateTime(), '123456', 'search-rejections-error-provided-server-error', 'Gremlins! There are gremlins in the system!', 500, Exception\Request::class];
+        $r['error-code not provided'] = [new \DateTime(), '123456', 'empty', 'error status from API', 500, Exception\Request::class];
+        $r['missing items key in response on 200'] = [new \DateTime(), '123456', 'empty', 'unexpected response from API', 200, Exception\Exception::class];
+
+        return $r;
     }
 
     /**
