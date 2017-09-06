@@ -10,6 +10,7 @@ namespace NexmoTest\Numbers;
 
 use Nexmo\Numbers\Client;
 use Nexmo\Numbers\Number;
+use Nexmo\Client\Exception;
 use NexmoTest\Psr7AssertionTrait;
 use Prophecy\Argument;
 use Psr\Http\Message\RequestInterface;
@@ -177,6 +178,65 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('14155550101', $numbers[1]->getId());
     }
 
+
+    public function testPurchaseNumberWithNumberObject()
+    {
+        $this->nexmoClient->send(Argument::that(function(RequestInterface $request){
+            $this->assertEquals('/number/buy', $request->getUri()->getPath());
+            $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('POST', $request->getMethod());
+            return true;
+        }))->willReturn($this->getResponse('post'));
+
+        $number = new Number('1415550100', 'US');
+        $this->numberClient->purchase($number);
+
+        // There's nothing to assert here as we don't do anything with the response.
+        // If there's no exception thrown, everything is fine!
+    }
+
+    public function testPurchaseNumberWithNumberAndCountry()
+    {
+        $this->nexmoClient->send(Argument::that(function(RequestInterface $request){
+            $this->assertEquals('/number/buy', $request->getUri()->getPath());
+            $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('POST', $request->getMethod());
+            return true;
+        }))->willReturn($this->getResponse('post'));
+        $this->numberClient->purchase('1415550100', 'US');
+
+        // There's nothing to assert here as we don't do anything with the response.
+        // If there's no exception thrown, everything is fine!
+    }
+
+    /**
+     * @dataProvider purchaseNumberErrorProvider
+     */
+    public function testPurchaseNumberErrors($number, $country, $responseFile, $expectedHttpCode, $expectedException, $expectedExceptionMessage)
+    {
+        $this->nexmoClient->send(Argument::that(function(RequestInterface $request){
+            $this->assertEquals('/number/buy', $request->getUri()->getPath());
+            $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('POST', $request->getMethod());
+            return true;
+        }))->willReturn($this->getResponse($responseFile, $expectedHttpCode));
+
+        $this->expectException($expectedException);
+        $this->expectExceptionMessage($expectedExceptionMessage);
+
+        $this->numberClient->purchase($number, $country);
+    }
+
+    public function purchaseNumberErrorProvider()
+    {
+        $r = [];
+
+        $r['mismatched number/country'] = ['14155510100', 'GB', 'method-failed', 420, Exception\Request::class, 'method failed'];
+        $r['user already owns number'] = ['14155510100', 'GB', 'method-failed', 420, Exception\Request::class, 'method failed'];
+        $r['someone else owns the number'] = ['14155510100', 'GB', 'method-failed', 420, Exception\Request::class, 'method failed'];
+
+        return $r;
+    }
 
 
     /**
