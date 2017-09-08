@@ -1,0 +1,843 @@
+{
+  "dialingPrefix": "1",
+  "defaultPrice": "0.00570000",
+  "currency": "EUR",
+  "countryDisplayName": "United States",
+  "countryCode": "US",
+  "countryName": "United States",
+  "networks": [
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "311",
+      "mnc": "090",
+      "networkCode": "311090",
+      "networkName": "Flat Wireless, LLC"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "311",
+      "mnc": "370",
+      "networkCode": "311370",
+      "networkName": "NACS Wireless, Inc."
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "311",
+      "mnc": "650",
+      "networkCode": "311650",
+      "networkName": "United Wireless Communications, Inc."
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "310",
+      "mnc": "320",
+      "networkCode": "310320",
+      "networkName": "Smith Bagley Inc. dba Cellular One of Ne Arizona"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "310",
+      "mnc": "035",
+      "networkCode": "310035",
+      "networkName": "ETEX Communications L.P. dba ETEX Wireless"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "310",
+      "mnc": "311",
+      "networkCode": "310311",
+      "networkName": "Farmers Mutual Telephone Company, Inc."
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "310",
+      "mnc": "710",
+      "networkCode": "310710",
+      "networkName": "ASTAC Wireless LLC"
+    },
+    {
+      "type": "pager",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "311",
+      "mnc": "887",
+      "networkCode": "311887",
+      "networkName": "XO California, Inc."
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "311",
+      "mnc": "380",
+      "networkCode": "311380",
+      "networkName": "NEW DIMENSION WIRELESS LTD."
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "311",
+      "mnc": "140",
+      "networkCode": "311140",
+      "networkName": "MBO Wireless"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "310",
+      "mnc": "690",
+      "networkCode": "310690",
+      "networkName": "Limitless Mobile, LLC"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "311",
+      "mnc": "020",
+      "networkCode": "311020",
+      "networkName": "Chariton Valley Cellular"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "310",
+      "mnc": "570",
+      "networkCode": "310570",
+      "networkName": "MTPCS, LLC"
+    },
+    {
+      "type": "virtual",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "networkCode": "US-VIRTUAL-ONVOY",
+      "networkName": "Onvoy, Inc."
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "310",
+      "mnc": "450",
+      "networkCode": "310450",
+      "networkName": "N.E. Colorado Cellular, Inc."
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "312",
+      "mnc": "630",
+      "networkCode": "312630",
+      "networkName": "NETGENUITY INC."
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "311",
+      "mnc": "420",
+      "networkCode": "311420",
+      "networkName": "Northwest Missouri Cellular Limited Partnership"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "311",
+      "mnc": "410",
+      "networkCode": "311410",
+      "networkName": "Iowa RSA 2 Limited Partnership dba Chat Mobility"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "310",
+      "mnc": "840",
+      "networkCode": "310840",
+      "networkName": "Telecom North America Mobile Inc"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "311",
+      "mnc": "930",
+      "networkCode": "311930",
+      "networkName": "Syringa Wireless, LLC"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "311",
+      "mnc": "810",
+      "networkCode": "311810",
+      "networkName": "Bluegrass Wireless LLC"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "311",
+      "mnc": "00",
+      "networkCode": "31100",
+      "networkName": "Mid-Tex Cellular Ltd."
+    },
+    {
+      "type": "virtual",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "networkCode": "US-VIRTUAL-SKYPE",
+      "networkName": "Skype Communications"
+    },
+    {
+      "type": "virtual",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "networkCode": "US-VIRTUAL-INFOTELECOM",
+      "networkName": "INFOTELECOM, LLC - NC"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "316",
+      "mnc": "883",
+      "networkCode": "316883",
+      "networkName": "Virginia PCS Alliance, L.c."
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "312",
+      "mnc": "040",
+      "networkCode": "312040",
+      "networkName": "Custer Telephone Cooperative, Inc."
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "310",
+      "mnc": "260",
+      "networkCode": "310260",
+      "networkName": "T-mobile USA, Inc."
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "310",
+      "mnc": "020",
+      "networkCode": "310020",
+      "networkName": "Union Telephone Company"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "311",
+      "mnc": "230",
+      "networkCode": "311230",
+      "networkName": "Cellular South, Inc."
+    },
+    {
+      "type": "virtual",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "networkCode": "US-VIRTUAL-LEVEL3",
+      "networkName": "Level 3 Communications"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "311",
+      "mnc": "990",
+      "networkCode": "311990",
+      "networkName": "VTEL WIRELESS, INC."
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "316",
+      "mnc": "885",
+      "networkCode": "316885",
+      "networkName": "Sagebrush Cellular, Inc."
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "310",
+      "mnc": "023",
+      "networkCode": "310023",
+      "networkName": "Voicestream GSM I, LLC"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "310",
+      "mnc": "540",
+      "networkCode": "310540",
+      "networkName": "Oklahoma Western Telephone Company"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "316",
+      "mnc": "884",
+      "networkCode": "316884",
+      "networkName": "Kentucky RSA 4 Cellular General Partnership"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "311",
+      "mnc": "740",
+      "networkCode": "311740",
+      "networkName": "TelAlaska Cellular, Inc."
+    },
+    {
+      "type": "virtual",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "networkCode": "US-VIRTUAL-FULLNET",
+      "networkName": "Fullnet Advanced Communications, Inc."
+    },
+    {
+      "type": "virtual",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "networkCode": "US-VIRTUAL-VONAGE",
+      "networkName": "Vonage Network Inc."
+    },
+    {
+      "type": "virtual",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "networkCode": "US-VIRTUAL-4DVISION",
+      "networkName": "4Dvision, LLC"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "311",
+      "mnc": "080",
+      "networkCode": "311080",
+      "networkName": "Pine Telephone Co."
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "316",
+      "mnc": "011",
+      "networkCode": "316011",
+      "networkName": "Southern Communications Services"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "311",
+      "mnc": "240",
+      "networkCode": "311240",
+      "networkName": "Cordova Wireless Communications, Inc."
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "312",
+      "mnc": "210",
+      "networkCode": "312210",
+      "networkName": "ASPENTA, LLC"
+    },
+    {
+      "type": "virtual",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "networkCode": "US-VIRTUAL-BANDWIDTH",
+      "networkName": "Bandwidth.com CLEC, LLC"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "311",
+      "mnc": "640",
+      "networkCode": "311640",
+      "networkName": "Standing Rock Telecommunications, Inc."
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "310",
+      "mnc": "300",
+      "networkCode": "310300",
+      "networkName": "Smart Call, LLC"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "310",
+      "mnc": "940",
+      "networkCode": "310940",
+      "networkName": "Poka Lambro PCS, Inc."
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "311",
+      "mnc": "910",
+      "networkCode": "311910",
+      "networkName": "SI WIRELESS, LLC"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "311",
+      "mnc": "290",
+      "networkCode": "311290",
+      "networkName": "Pinpoint Wireless, Inc."
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "312",
+      "mnc": "380",
+      "networkCode": "312380",
+      "networkName": "Copper Valley Cellular, Inc."
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "311",
+      "mnc": "050",
+      "networkCode": "311050",
+      "networkName": "Wilkes Cellular, Inc."
+    },
+    {
+      "type": "virtual",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "networkCode": "US-VIRTUAL-BROADVOX",
+      "networkName": "Broadvox-CLEC, LLC - NJ"
+    },
+    {
+      "type": "pager",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "311",
+      "mnc": "690",
+      "networkCode": "311690",
+      "networkName": "Telebeeper of New Mexico"
+    },
+    {
+      "type": "virtual",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "networkCode": "US-VIRTUAL-YMAX",
+      "networkName": "YMAX Communications Corp. - NJ"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "310",
+      "mnc": "120",
+      "networkCode": "310120",
+      "networkName": "SPRINT Spectrum L.P."
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "311",
+      "mnc": "330",
+      "networkCode": "311330",
+      "networkName": "Michigan Wireless, LLC dba Bug Tussel Wireless"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "310",
+      "mnc": "880",
+      "networkCode": "310880",
+      "networkName": "Advantage Cellular Systems, Inc."
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "310",
+      "mnc": "760",
+      "networkCode": "310760",
+      "networkName": "Panhandle Telecommunications Systems, Inc."
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "310",
+      "mnc": "750",
+      "networkCode": "310750",
+      "networkName": "East Kentucky Netwrk, LLC dba Appalachian Wireless"
+    },
+    {
+      "type": "virtual",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "networkCode": "US-VIRTUAL-GOOGLE",
+      "networkName": "Google"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "310",
+      "mnc": "090",
+      "networkCode": "310090",
+      "networkName": "AT&T Mobility"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "312",
+      "mnc": "270",
+      "networkCode": "312270",
+      "networkName": "Cellular Network Partnership"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "312",
+      "mnc": "030",
+      "networkCode": "312030",
+      "networkName": "Cross Wireless, L.L.C."
+    },
+    {
+      "type": "virtual",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "networkCode": "US-VIRTUAL-TCG",
+      "networkName": "TCG Midsouth, Inc."
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "311",
+      "mnc": "580",
+      "networkCode": "311580",
+      "networkName": "United States Cellular Corp. - Maine"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "310",
+      "mnc": "130",
+      "networkCode": "310130",
+      "networkName": "Carolina West Wireless, Inc."
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "311",
+      "mnc": "340",
+      "networkCode": "311340",
+      "networkName": "Illinois Valley Cellular RSA 2-I Partnership"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "310",
+      "mnc": "011",
+      "networkCode": "310011",
+      "networkName": "Northstar Technology, LLC"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "310",
+      "mnc": "770",
+      "networkCode": "310770",
+      "networkName": "Iowa Wireless Services, Lp"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "311",
+      "mnc": "100",
+      "networkCode": "311100",
+      "networkName": "Nex-Tech Wireless, LLC"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "316",
+      "mnc": "995",
+      "networkCode": "316995",
+      "networkName": "Coral Wireless, LLC"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "311",
+      "mnc": "860",
+      "networkCode": "311860",
+      "networkName": "Uintah Basin Electronic Telecommunications"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "311",
+      "mnc": "730",
+      "networkCode": "311730",
+      "networkName": "Proximiti Mobility, Inc."
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "310",
+      "mnc": "004",
+      "networkCode": "310004",
+      "networkName": "Verizon Wireless"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "311",
+      "mnc": "610",
+      "networkCode": "311610",
+      "networkName": "North Dakota Network Co dba SRT Wireless"
+    },
+    {
+      "type": "virtual",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "networkCode": "US-VIRTUAL-CBC",
+      "networkName": "CBC Broadband Holdings, LLC"
+    },
+    {
+      "type": "virtual",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "networkCode": "US-VIRTUAL-MILLICORP",
+      "networkName": "Millicorp"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "310",
+      "mnc": "060",
+      "networkCode": "310060",
+      "networkName": "New Cell, Inc. dba CeLLCom"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "311",
+      "mnc": "030",
+      "networkCode": "311030",
+      "networkName": "Indigo Wireless, Inc."
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "310",
+      "mnc": "580",
+      "networkCode": "310580",
+      "networkName": "Inland Cellular"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "311",
+      "mnc": "670",
+      "networkCode": "311670",
+      "networkName": "Pine Belt Cellular, Inc."
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "310",
+      "mnc": "340",
+      "networkCode": "310340",
+      "networkName": "Westlink Communications, LLC"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "311",
+      "mnc": "430",
+      "networkCode": "311430",
+      "networkName": "RSA 1 Limited Partnership dba Chat Mobility"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "311",
+      "mnc": "310",
+      "networkCode": "311310",
+      "networkName": "New Mexico RSA 6-III Partnership dba Leaco Rural"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "310",
+      "mnc": "970",
+      "networkCode": "310970",
+      "networkName": "Globalstar USA, Inc."
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "310",
+      "mnc": "610",
+      "networkCode": "310610",
+      "networkName": "Epic Touch Co."
+    },
+    {
+      "type": "virtual",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "networkCode": "US-VOIP",
+      "networkName": "United States of America VoIP"
+    },
+    {
+      "type": "virtual",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "networkCode": "US-VIRTUAL-PEERLESS",
+      "networkName": "Peerless Network of New Jersey, LLC - NJ"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "311",
+      "mnc": "040",
+      "networkCode": "311040",
+      "networkName": "Commnet Wireless Subco, LLC"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "310",
+      "mnc": "990",
+      "networkCode": "310990",
+      "networkName": "Worldcall Interconnect Inc."
+    },
+    {
+      "type": "landline_tollfree",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "networkCode": "US-TOLL-FREE",
+      "networkName": "United States Toll Free"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "310",
+      "mnc": "860",
+      "networkCode": "310860",
+      "networkName": "Five Star Wireless"
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "310",
+      "mnc": "740",
+      "networkCode": "310740",
+      "networkName": "Tracy Corporation Ii"
+    },
+    {
+      "type": "virtual",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "networkCode": "US-VIRTUAL-NETWORK-BILLING-SYSTEMS",
+      "networkName": "Network Billing Systems, LC"
+    },
+    {
+      "type": "virtual",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "networkCode": "US-VIRTUAL-TRANSBEAM",
+      "networkName": "Transbeam, Inc."
+    },
+    {
+      "type": "mobile",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "mcc": "311",
+      "mnc": "710",
+      "networkCode": "311710",
+      "networkName": "NORTHEAST WIRELESS NETWORKS, LLC"
+    },
+    {
+      "type": "virtual",
+      "price": "0.00570000",
+      "currency": "EUR",
+      "networkCode": "US-VIRTUAL-TELIAX",
+      "networkName": "Teliax Colorado"
+    }
+  ]
+}
