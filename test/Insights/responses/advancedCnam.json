@@ -1,0 +1,45 @@
+{
+  "status": 0,
+  "status_message": "Success",
+  "lookup_outcome": 1,
+  "lookup_outcome_message": "Partial success - some fields populated",
+  "request_id": "b2b67863-7ca8-4d35-89af-ad652d7bbf23",
+  "international_format_number": "14155550100",
+  "national_format_number": "(415) 555-0100",
+  "country_code": "US",
+  "country_code_iso3": "USA",
+  "country_name": "United States of America",
+  "country_prefix": "1",
+  "request_price": "0.04000000",
+  "remaining_balance": "24.583075",
+  "current_carrier": {
+    "network_code": "310260",
+    "name": "T-mobile USA, Inc.",
+    "country": "US",
+    "network_type": "mobile"
+  },
+  "original_carrier": {
+    "network_code": "310260",
+    "name": "T-mobile USA, Inc.",
+    "country": "US",
+    "network_type": "mobile"
+  },
+  "valid_number": "valid",
+  "reachable": "unknown",
+  "ported": "not_ported",
+  "roaming": {
+    "status": "unknown"
+  },
+  "ip_warnings": "unknown",
+  "caller_identity": {
+    "caller_type": "consumer",
+    "caller_name": "Tony Tiger",
+    "first_name": "Tony",
+    "last_name": "Tiger",
+    "subscription_type": "unknown"
+  },
+  "caller_name": "Tony Tiger",
+  "last_name": "Tony",
+  "first_name": "Tiger",
+  "caller_type": "consumer"
+}

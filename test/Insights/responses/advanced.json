@@ -1,0 +1,32 @@
+{
+  "status": 0,
+  "status_message": "Success",
+  "request_id": "2efaa99c-0655-49f4-affa-1395f0df3e03",
+  "international_format_number": "14155550100",
+  "national_format_number": "(415) 555-0100",
+  "country_code": "US",
+  "country_code_iso3": "USA",
+  "country_name": "United States of America",
+  "country_prefix": "1",
+  "request_price": "0.03000000",
+  "remaining_balance": "25.978075",
+  "current_carrier": {
+    "network_code": "310260",
+    "name": "T-mobile USA, Inc.",
+    "country": "US",
+    "network_type": "mobile"
+  },
+  "original_carrier": {
+    "network_code": "310260",
+    "name": "T-mobile USA, Inc.",
+    "country": "US",
+    "network_type": "mobile"
+  },
+  "valid_number": "valid",
+  "reachable": "unknown",
+  "ported": "not_ported",
+  "roaming": {
+    "status": "unknown"
+  },
+  "ip_warnings": "unknown"
+}
