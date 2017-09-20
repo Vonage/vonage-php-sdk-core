@@ -41,7 +41,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     {
         //based on the id provided, may need to look up the number first
         if($lookup){
-            if(is_null($id) OR ('12404284163' == $id)){
+            if(is_null($id) OR ('1415550100' == $id)){
                 $first = $this->getResponse('single');
             } else {
                 $first = $this->getResponse('single-update');
@@ -101,30 +101,30 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         ];
 
         $rawId['country'] = 'US';
-        $rawId['msisdn'] = '12404284163';
+        $rawId['msisdn'] = '1415550100';
 
-        $number = new Number('12404284163');
+        $number = new Number('1415550100');
         $number->setWebhook(Number::WEBHOOK_MESSAGE, 'https://example.com/new_message');
         $number->setWebhook(Number::WEBHOOK_VOICE_STATUS, 'https://example.com/new_status');
         $number->setVoiceDestination('https://example.com/new_voice');
 
-        $noLookup = new Number('12404284163', 'US');
+        $noLookup = new Number('1415550100', 'US');
         $noLookup->setWebhook(Number::WEBHOOK_MESSAGE, 'https://example.com/new_message');
         $noLookup->setWebhook(Number::WEBHOOK_VOICE_STATUS, 'https://example.com/new_status');
         $noLookup->setVoiceDestination('https://example.com/new_voice');
 
-        $fresh = new Number('12404284163', 'US');
+        $fresh = new Number('1415550100', 'US');
         $fresh->setWebhook(Number::WEBHOOK_MESSAGE, 'https://example.com/new_message');
         $fresh->setWebhook(Number::WEBHOOK_VOICE_STATUS, 'https://example.com/new_status');
         $fresh->setVoiceDestination('https://example.com/new_voice');
         
         return [
-            [$raw, '12404284163', '12404284163', true],
-            [$rawId, null, '12404284163', false],
-            [clone $number, null, '12404284163', true],
-            [clone $number, '14845551212', '14845551212', true],
-            [clone $noLookup, null, '12404284163', false],
-            [clone $fresh, '12404284163', '12404284163', true],
+            [$raw, '1415550100', '1415550100', true],
+            [$rawId, null, '1415550100', false],
+            [clone $number, null, '1415550100', true],
+            [clone $number, '1415550100', '1415550100', true],
+            [clone $noLookup, null, '1415550100', false],
+            [clone $fresh, '1415550100', '1415550100', true],
         ];
     }
 
@@ -154,8 +154,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     public function numbers()
     {
         return [
-            ['12404284163', '12404284163'],
-            [new Number('12404284163'), '12404284163'],
+            ['1415550100', '1415550100'],
+            [new Number('1415550100'), '1415550100'],
         ];
     }
 
@@ -249,11 +249,20 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
     public function testPurchaseNumberWithNumberAndCountry()
     {
+        // When providing a number string, the first thing that happens is a GET request to fetch number details
         $this->nexmoClient->send(Argument::that(function(RequestInterface $request){
-            $this->assertEquals('/number/buy', $request->getUri()->getPath());
-            $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('POST', $request->getMethod());
-            return true;
+            return $request->getUri()->getPath() === '/account/numbers';
+        }))->willReturn($this->getResponse('single'));
+
+        // Then we purchase the number
+        $this->nexmoClient->send(Argument::that(function(RequestInterface $request){
+            if ($request->getUri()->getPath() === '/number/buy') {
+                $this->assertEquals('/number/buy', $request->getUri()->getPath());
+                $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
+                $this->assertEquals('POST', $request->getMethod());
+                return true;
+            }
+            return false;
         }))->willReturn($this->getResponse('post'));
         $this->numberClient->purchase('1415550100', 'US');
 
@@ -276,7 +285,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->expectException($expectedException);
         $this->expectExceptionMessage($expectedExceptionMessage);
 
-        $this->numberClient->purchase($number, $country);
+        $num = new Number($number, $country);
+        $this->numberClient->purchase($num);
     }
 
     public function purchaseNumberErrorProvider()
@@ -290,6 +300,62 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         return $r;
     }
 
+    public function testCancelNumberWithNumberObject()
+    {
+        $this->nexmoClient->send(Argument::that(function(RequestInterface $request){
+            $this->assertEquals('/number/cancel', $request->getUri()->getPath());
+            $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('POST', $request->getMethod());
+            return true;
+        }))->willReturn($this->getResponse('cancel'));
+
+        $number = new Number('1415550100', 'US');
+        $this->numberClient->cancel($number);
+
+        // There's nothing to assert here as we don't do anything with the response.
+        // If there's no exception thrown, everything is fine!
+    }
+
+    public function testCancelNumberWithNumberString()
+    {
+
+        // When providing a number string, the first thing that happens is a GET request to fetch number details
+        $this->nexmoClient->send(Argument::that(function(RequestInterface $request){
+            return $request->getUri()->getPath() === '/account/numbers';
+        }))->willReturn($this->getResponse('single'));
+
+
+        // Then we get a POST request to cancel
+        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) {
+            if ($request->getUri()->getPath() === '/number/cancel') {
+                $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
+                $this->assertEquals('POST', $request->getMethod());
+                return true;
+            }
+            return false;
+        }))->willReturn($this->getResponse('cancel'));
+
+        $this->numberClient->cancel('1415550100');
+
+        // There's nothing to assert here as we don't do anything with the response.
+        // If there's no exception thrown, everything is fine!
+    }
+
+    public function testCancelNumberError()
+    {
+        $this->nexmoClient->send(Argument::that(function(RequestInterface $request){
+            $this->assertEquals('/number/cancel', $request->getUri()->getPath());
+            $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('POST', $request->getMethod());
+            return true;
+        }))->willReturn($this->getResponse('method-failed', 420));
+
+        $this->expectException(Exception\Request::class);
+        $this->expectExceptionMessage('method failed');
+
+        $num = new Number('1415550100', 'US');
+        $this->numberClient->cancel($num);
+    }
 
     /**
      * Get the API response we'd expect for a call to the API.

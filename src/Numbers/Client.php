@@ -182,23 +182,17 @@ class Client implements ClientAwareInterface
         return $numbers;
     }
 
-    public function purchase($numberOrMsisdn, $country = null) {
-
-        if ($numberOrMsisdn instanceof Number) {
-            $body = [
-                'msisdn' => $numberOrMsisdn->getMsisdn(),
-                'country' => $numberOrMsisdn->getCountry()
-            ];
-        } else {
-            if (is_null($country)) {
-                throw new \InvalidArgumentException('Must provide a country when trying to purchase a number');
-            }
-
-            $body = [
-                'msisdn' => $numberOrMsisdn,
-                'country' => $country
-            ];
+    public function purchase($number) {
+        // We cheat here and fetch a number using the API so that we have the country code which is required
+        // to make a cancel request
+        if (!$number instanceof Number) {
+            $number = $this->get($number);
         }
+
+        $body = [
+            'msisdn' => $number->getMsisdn(),
+            'country' => $number->getCountry()
+        ];
 
         $request = new Request(
             \Nexmo\Client::BASE_REST . '/number/buy',
@@ -220,6 +214,38 @@ class Client implements ClientAwareInterface
         // Mismatch number/country :: 420 :: method failed
         // Already own number :: 420 :: method failed
         // Someone else owns the number :: 420 :: method failed
+        if('200' != $response->getStatusCode()){
+            throw $this->getException($response);
+        }
+    }
+
+    public function cancel($number) {
+        // We cheat here and fetch a number using the API so that we have the country code which is required
+        // to make a cancel request
+        if (!$number instanceof Number) {
+            $number = $this->get($number);
+        }
+
+        $body = [
+            'msisdn' => $number->getMsisdn(),
+            'country' => $number->getCountry()
+        ];
+
+        $request = new Request(
+            \Nexmo\Client::BASE_REST . '/number/cancel',
+            'POST',
+            'php://temp',
+            [
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/x-www-form-urlencoded'
+            ]
+        );
+
+        $request->getBody()->write(http_build_query($body));
+        $response = $this->client->send($request);
+
+        // Sadly we can't distinguish *why* purchasing fails, just that it
+        // has failed.
         if('200' != $response->getStatusCode()){
             throw $this->getException($response);
         }

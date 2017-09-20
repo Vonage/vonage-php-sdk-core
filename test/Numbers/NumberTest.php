@@ -45,7 +45,7 @@ class NumberTest extends \PHPUnit_Framework_TestCase
         $this->number->jsonUnserialize($data['numbers'][0]);
 
         $this->assertEquals('US', $this->number->getCountry());
-        $this->assertEquals('12404284163', $this->number->getNumber());
+        $this->assertEquals('1415550100', $this->number->getNumber());
         $this->assertEquals(Number::TYPE_MOBILE, $this->number->getType());
 
         $this->assertEquals('http://example.com/message', $this->number->getWebhook(Number::WEBHOOK_MESSAGE));
