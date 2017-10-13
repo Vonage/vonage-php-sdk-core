@@ -369,20 +369,20 @@ API Coverage
 ------------
 
 * Account
-    * [ ] Balance
-    * [ ] Pricing
+    * [X] Balance
+    * [X] Pricing
     * [ ] Settings
     * [ ] Top Up
     * [X] Numbers
         * [X] Search
         * [X] Buy
-        * [ ] Cancel
+        * [X] Cancel
         * [X] Update
 * Number Insight
-    * [ ] Basic
-    * [ ] Standard
-    * [ ] Advanced
-    * [ ] Webhook Notification
+    * [X] Basic
+    * [X] Standard
+    * [X] Advanced
+    * [X] Webhook Notification
 * Verify
     * [X] Verify
     * [X] Check
@@ -390,12 +390,12 @@ API Coverage
     * [X] Control
 * Messaging 
     * [X] Send
-    * [ ] Delivery Receipt
+    * [X] Delivery Receipt
     * [X] Inbound Messages
     * [X] Search
         * [X] Message
-        * [ ] Messages
-        * [ ] Rejections
+        * [X] Messages
+        * [X] Rejections
     * [ ] US Short Codes
         * [ ] Two-Factor Authentication
         * [ ] Event Based Alerts
