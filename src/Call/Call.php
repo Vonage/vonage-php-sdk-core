@@ -113,7 +113,8 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
         $request->getBody()->write(json_encode($payload));
         $response = $this->client->send($request);
 
-        if($response->getStatusCode() != '200'){
+        $responseCode = $response->getStatusCode();
+        if($responseCode != '200' && $responseCode != '204'){
             throw $this->getException($response);
         }
 
