@@ -91,7 +91,7 @@ class CallTest extends \PHPUnit_Framework_TestCase
      * @param $payload
      * @dataProvider putCall
      */
-    public function testPutMakesRequest($payload)
+    public function testPutMakesRequest($payload, $expectedHttpCode, $expectedResponse)
     {
         $id = $this->id;
         $expected = json_decode(json_encode($payload), true);
@@ -106,7 +106,7 @@ class CallTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals($expected, $body);
 
             return true;
-        }))->willReturn($this->getResponse('updated'));
+        }))->willReturn($this->getResponse($expectedResponse, $expectedHttpCode));
 
         $this->entity->put($payload);
     }
@@ -126,8 +126,9 @@ class CallTest extends \PHPUnit_Framework_TestCase
         ];
 
         return [
-            [$transfer],
-            [new Transfer('http://example.com')]
+            [$transfer, 200, 'updated'],
+            [new Transfer('http://example.com'), 200, 'updated'],
+            [new Transfer('http://example.com'), 204, 'empty']
         ];
     }
 
