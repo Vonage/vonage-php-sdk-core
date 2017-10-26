@@ -21,14 +21,7 @@ To use the client library you'll need to have [created a Nexmo account][signup].
 To install the PHP client library using Composer (Whilst the client is marked as a beta, the API is stable. The beta flag is due to the fact that the client does not cover the full Nexmo API yet.)
 
 ```bash
-composer require nexmo/client:@beta
-```
-
-Alternatively you can clone the repository, however, you'll need to ensure the library is autoloaded by a PSR-0 or PSR-4
-compatible autoloader.
-
-```bash
-git clone git@github.com:Nexmo/nexmo-php.git
+composer require nexmo/client
 ```
 
 Usage
