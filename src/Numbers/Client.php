@@ -124,9 +124,9 @@ class Client implements ClientAwareInterface
         return $this->handleNumberSearchResult($response, null);
     }
 
-    public function searchOwned($number = null)
+    public function searchOwned($number = null, $options = [])
     {
-        $queryString = '';
+        $query = [];
         if ($number !== null) {
             if($number instanceof Number){
                 $query = ['pattern' => $number->getId()];
@@ -134,8 +134,23 @@ class Client implements ClientAwareInterface
                 $query = ['pattern' => $number];
             }
 
-            $queryString = http_build_query($query);
         }
+
+        // These are all optional parameters
+        $possibleParameters = [
+            'search_pattern',
+            'size',
+            'index'
+        ];
+
+        foreach ($options as $param => $value) {
+            if (!in_array($param, $possibleParameters)) {
+                throw new Exception\Request("Unknown option: '".$param."'");
+            }
+            $query[$param] = $value;
+        }
+
+        $queryString = http_build_query($query);
 
         $request = new Request(
             \Nexmo\Client::BASE_REST . '/account/numbers?' . $queryString,
