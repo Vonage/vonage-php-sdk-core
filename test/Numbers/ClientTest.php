@@ -231,6 +231,51 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('14155550101', $numbers[1]->getId());
     }
 
+    public function testSearchOwnedErrorsOnUnknownSearchParameters()
+    {
+
+        $this->expectException(Exception\Request::class);
+        $this->expectExceptionMessage("Unknown option: 'foo'");
+        
+        $this->numberClient->searchOwned('1415550100', [
+            'foo' => 'bar',
+        ]);
+    }
+
+    public function testSearchOwnedPassesInAllowedAdditionalParameters()
+    {
+        $this->nexmoClient->send(Argument::that(function(RequestInterface $request){
+            $this->assertEquals('/account/numbers', $request->getUri()->getPath());
+            $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('GET', $request->getMethod());
+            $this->assertEquals('pattern=1415550100&index=1&size=100&search_pattern=0', $request->getUri()->getQuery());
+            return true;
+        }))->willReturn($this->getResponse('single'));
+
+        $this->numberClient->searchOwned('1415550100', [
+            'index' => 1,
+            'size' => '100',
+            'search_pattern' => 0
+        ]);
+    }
+
+    public function testSearchOwnedReturnsSingleNumber()
+    {
+        $this->nexmoClient->send(Argument::that(function(RequestInterface $request){
+            $this->assertEquals('/account/numbers', $request->getUri()->getPath());
+            $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('GET', $request->getMethod());
+            return true;
+        }))->willReturn($this->getResponse('single'));
+
+        $numbers = $this->numberClient->searchOwned('1415550100');
+
+        $this->assertInternalType('array', $numbers);
+        $this->assertInstanceOf('Nexmo\Numbers\Number', $numbers[0]);
+
+        $this->assertSame('1415550100', $numbers[0]->getId());
+    }
+
     public function testPurchaseNumberWithNumberObject()
     {
         $this->nexmoClient->send(Argument::that(function(RequestInterface $request){
