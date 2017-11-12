@@ -344,7 +344,7 @@ class Client
         }
 
         // Set the header. Build by joining all the parts we have with a space
-        $request = $request->withHeader('user-agent', implode(" ", $userAgent));
+        $request = $request->withHeader('User-Agent', implode(" ", $userAgent));
 
         $response = $this->client->sendRequest($request);
         return $response;
