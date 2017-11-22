@@ -38,7 +38,7 @@ use Zend\Diactoros\Request;
  */
 class Client
 {
-    const VERSION = '1.0.0';
+    const VERSION = '1.1.3';
 
     const BASE_API  = 'https://api.nexmo.com';
     const BASE_REST = 'https://rest.nexmo.com';
@@ -344,7 +344,7 @@ class Client
         }
 
         // Set the header. Build by joining all the parts we have with a space
-        $request = $request->withHeader('user-agent', implode(" ", $userAgent));
+        $request = $request->withHeader('User-Agent', implode(" ", $userAgent));
 
         $response = $this->client->sendRequest($request);
         return $response;
