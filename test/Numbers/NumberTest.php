@@ -63,6 +63,25 @@ class NumberTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(2, $this->number->getFeatures());
     }
 
+    public function testAvailableNumbers()
+    {
+        $data = json_decode(file_get_contents(__DIR__ . '/responses/available-numbers.json'), true);
+        $this->number->jsonUnserialize($data['numbers'][0]);
+
+        $this->assertEquals('US', $this->number->getCountry());
+        $this->assertEquals('14155550100', $this->number->getNumber());
+        $this->assertEquals(Number::TYPE_MOBILE, $this->number->getType());
+        $this->assertEquals('0.67', $this->number->getCost());
+
+        $this->assertTrue($this->number->hasFeature(Number::FEATURE_VOICE));
+        $this->assertTrue($this->number->hasFeature(Number::FEATURE_SMS));
+
+        $this->assertTrue(in_array(Number::FEATURE_VOICE, $this->number->getFeatures()));
+        $this->assertTrue(in_array(Number::FEATURE_SMS, $this->number->getFeatures()));
+
+        $this->assertCount(2, $this->number->getFeatures());
+    }
+
     public function testVoiceApplication()
     {
         $id = 'abcd-1234-edfg';
