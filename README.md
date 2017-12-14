@@ -356,6 +356,26 @@ $application = $client->applications()->update([
 ], '1a20a124-1775-412b-b623-e6985f4aace0');
 ```
 
+## Troubleshooting
+
+Some users have issues making requests due to the following error:
+
+```
+Fatal error: Uncaught exception 'GuzzleHttp\Exception\RequestException' with message 'cURL error 60: SSL certificate problem: unable to get local issuer certificate (see http://curl.haxx.se/libcurl/c/libcurl-errors.html)'
+```
+
+This is due to some PHP installations not shipping with a list of trusted CA certificates. This is a system configuration problem, and not specific to either cURL or Nexmo.
+
+> *IMPORTANT*: In the next paragraph we provide a link to a CA certificate bundle. Nexmo do not guarantee the safety of this bundle, and you should review it yourself before installing any CA bundle on your machine
+
+To resolve this issue, download a list of trusted CA certificates (e.g. the [curl](https://curl.haxx.se/ca/cacert.pem) bundle) and copy it on to your machine. once this is done, edit `php.ini` and set the `curl.cainfo` parameter:
+
+```
+# Linux/MacOS
+curl.cainfo = "/etc/pki/tls/cacert.pem"
+# Windows
+curl.cainfo = "C:\php\extras\ssl\cacert.pem"
+```
 
     
 API Coverage
