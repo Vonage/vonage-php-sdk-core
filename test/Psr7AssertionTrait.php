@@ -42,7 +42,7 @@ trait Psr7AssertionTrait
         self::assertEquals($method, $request->getMethod());
     }
 
-    public static function assertRequestQueryNotContains($key, $value, RequestInterface $request)
+    public static function assertRequestQueryNotContains($key, RequestInterface $request)
     {
         $query = $request->getUri()->getQuery();
         $params = [];

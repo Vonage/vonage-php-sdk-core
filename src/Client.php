@@ -98,6 +98,7 @@ class Client
             'applications' => 'Nexmo\Application\Client',
             'numbers' => 'Nexmo\Numbers\Client',
             'calls' => 'Nexmo\Call\Collection',
+            'conversion' => 'Nexmo\Conversion\Client',
         ], $this));
     }
 
@@ -251,6 +252,26 @@ class Client
         );
 
         $request->getBody()->write(json_encode($params));
+        return $this->send($request);
+    }
+
+    /**
+     * Takes a URL and a key=>value array to generate a POST PSR-7 request object
+     *
+     * @param string $url The URL to make a request to
+     * @param array $params Key=>Value array of data to send
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function postUrlEncoded($url, array $params)
+    {
+        $request = new Request(
+            $url,
+            'POST',
+            'php://temp',
+            ['content-type' => 'application/x-www-form-urlencoded']
+        );
+
+        $request->getBody()->write(http_build_query($params));
         return $this->send($request);
     }
 
