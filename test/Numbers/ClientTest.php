@@ -204,7 +204,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
             // Anything else should be dropped
             foreach ($invalidOptions as $name => $value) {
-                $this->assertRequestQueryNotContains($name, $value, $request);
+                $this->assertRequestQueryNotContains($name, $request);
             }
             return true;
         }))->willReturn($this->getResponse('available-numbers'));
