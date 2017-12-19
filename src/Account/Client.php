@@ -73,4 +73,42 @@ class Client implements ClientAwareInterface
         $balance = new Balance($body['value'], $body['autoReload']);
         return $balance;
     }
+
+    public function topUp($trx)
+    {
+        $body = [
+            'trx' => $trx
+        ];
+
+        $request = new Request(
+            \Nexmo\Client::BASE_REST . '/account/top-up'
+            ,'POST'
+            , 'php://temp'
+            , ['content-type' => 'application/x-www-form-urlencoded']
+        );
+
+        $request->getBody()->write(http_build_query($body));
+        $response = $this->client->send($request);
+
+        if($response->getStatusCode() != '200'){
+            throw $this->getException($response, $application);
+        }
+    }
+
+    protected function getException(ResponseInterface $response, $application = null)
+    {
+        $body = json_decode($response->getBody()->getContents(), true);
+        $status = $response->getStatusCode();
+
+        if($status >= 400 AND $status < 500) {
+            $e = new Exception\Request($body['error_title'], $status);
+        } elseif($status >= 500 AND $status < 600) {
+            $e = new Exception\Server($body['error_title'], $status);
+        } else {
+            $e = new Exception\Exception('Unexpected HTTP Status Code');
+        }
+
+        return $e;
+    }
+
 }
