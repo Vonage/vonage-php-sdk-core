@@ -38,7 +38,7 @@ use Zend\Diactoros\Request;
  */
 class Client
 {
-    const VERSION = '1.1.3';
+    const VERSION = '1.2.0';
 
     const BASE_API  = 'https://api.nexmo.com';
     const BASE_REST = 'https://rest.nexmo.com';
