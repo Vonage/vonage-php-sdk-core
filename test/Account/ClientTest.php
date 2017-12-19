@@ -35,10 +35,20 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->nexmoClient = $this->prophesize('Nexmo\Client');
         $this->accountClient = new Client();
         $this->accountClient->setClient($this->nexmoClient->reveal());
+    }
 
-        $basic  = new \Nexmo\Client\Credentials\Basic('7c9738e6','5e840647a5b710a011A');
-        $client = new \Nexmo\Client($basic);
-        //$this->accountClient->setClient($client);
+    public function testTopUp()
+    {
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('/account/top-up', $request->getUri()->getPath());
+            $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('POST', $request->getMethod());
+            $this->assertRequestFormBodyContains('trx', 'ABC123', $request);
+
+            return true;
+        }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('empty'));
+
+        $this->accountClient->topUp('ABC123');
     }
 
     public function testGetBalance()
