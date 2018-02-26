@@ -439,7 +439,9 @@ class Client
         $path = $request->getUri()->getPath();
         $isCallEndpoint = strpos($path, '/v1/calls') === 0;
         $isRecordingUrl = strpos($path, '/v1/files') === 0;
+        $isStitchEndpoint = strpos($path, '/beta/conversation') === 0;
+        $isUserEndpoint = strpos($path, '/beta/users') === 0;
 
-        return $isCallEndpoint || $isRecordingUrl;
+        return $isCallEndpoint || $isRecordingUrl || $isStitchEndpoint || $isUserEndpoint;
     }
 }
