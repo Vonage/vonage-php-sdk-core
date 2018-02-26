@@ -99,6 +99,8 @@ class Client
             'numbers' => 'Nexmo\Numbers\Client',
             'calls' => 'Nexmo\Call\Collection',
             'conversion' => 'Nexmo\Conversion\Client',
+            'conversation' => 'Nexmo\Conversations\Collection',
+            'user' => 'Nexmo\User\Collection',
         ], $this));
     }
 
