@@ -82,45 +82,6 @@ class User implements EntityInterface, \JsonSerializable, JsonUnserializableInte
         $this->data = $json;
     }
 
-     public function join(Conversation $con)
-    {
-        return $this->sendAction($con, 'join');
-    }
-
-    public function invite(Conversation $user)
-    {
-        return $this->sendAction($con, 'invite');
-    }
-
-    public function leave(Conversation $user)
-    {
-        return $this->sendAction($user, 'leave');
-    }
-
-    public function sendAction(Conversation $con, $action, $channel = 'app') {
-        $body = $this->getRequestDataForConversation();
-        $body['action'] = $action;
-        $body['channel'] = ['type' => $channel];
-
-        $response = $this->getClient()->post(
-            \Nexmo\Client::BASE_API . \Nexmo\Conversations\Collection::getCollectionPath() . '/' . $con->getId() .'/members',
-            $body
-        );
-
-        if($response->getStatusCode() != '200'){
-            throw $this->getException($response);
-        }
-
-        $body = json_decode($response->getBody()->getContents(), true);
-        print_r($body);die;
-        $user = new User($body['user_id']);
-        $user->jsonUnserialize($body);
-        $user->setClient($this->getClient());
-
-        return $user;
-
-    }
-
     public function getRequestDataForConversation()
     {
         return [

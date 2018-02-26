@@ -83,7 +83,7 @@ class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAcc
         );
 
         $request->getBody()->write(json_encode($body));
-        $response = $this->client->send($request);
+        $response = $this->getClient()->send($request);
 
         if($response->getStatusCode() != '200'){
             throw $this->getException($response);

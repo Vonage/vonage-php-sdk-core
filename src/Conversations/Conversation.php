@@ -17,7 +17,10 @@ use Nexmo\Entity\JsonSerializableTrait;
 use Nexmo\Entity\JsonUnserializableInterface;
 use Nexmo\Entity\NoRequestResponseTrait;
 use Nexmo\User\Collection as UserCollection;
+use Nexmo\User\User;
+use Psr\Http\Message\ResponseInterface;
 use Zend\Diactoros\Request;
+use Nexmo\Client\Exception;
 
 class Conversation implements EntityInterface, \JsonSerializable, JsonUnserializableInterface, ClientAwareInterface
 {
@@ -92,12 +95,7 @@ class Conversation implements EntityInterface, \JsonSerializable, JsonUnserializ
 
     public function members()
     {
-        $request = new Request(
-            \Nexmo\Client::BASE_API . Collection::getCollectionPath() . '/' . $this->getId() .'/members'
-            ,'GET'
-        );
-
-        $response = $this->getClient()->send($request);
+        $response = $this->getClient()->get(\Nexmo\Client::BASE_API . Collection::getCollectionPath() . '/' . $this->getId() .'/members');
 
         if($response->getStatusCode() != '200'){
             throw $this->getException($response);
@@ -106,6 +104,50 @@ class Conversation implements EntityInterface, \JsonSerializable, JsonUnserializ
         $data = json_decode($response->getBody()->getContents(), true);
         $memberCollection = new UserCollection();
         return $memberCollection->hydrateAll($data);
+    }
+
+    public function addMember(User $user)
+    {
+        return $this->sendPostAction($user, 'join');
+    }
+
+    public function inviteMember(User $user)
+    {
+        return $this->sendPostAction($user, 'invite');
+    }
+
+    public function removeMember(User $user)
+    {
+        $response = $this->getClient()->delete(
+            \Nexmo\Client::BASE_API . Collection::getCollectionPath() . '/' . $this->getId() .'/members/'. $user->getId()
+        );
+
+        if($response->getStatusCode() != '200'){
+            throw $this->getException($response);
+        }
+    }
+
+    public function sendPostAction(User $user, $action, $channel = 'app') {
+        $body = $user->getRequestDataForConversation();
+        $body['action'] = $action;
+        $body['channel'] = ['type' => $channel];
+
+        $response = $this->getClient()->post(
+            \Nexmo\Client::BASE_API . Collection::getCollectionPath() . '/' . $this->getId() .'/members',
+            $body
+        );
+
+        if($response->getStatusCode() != '200'){
+            throw $this->getException($response);
+        }
+
+        $body = json_decode($response->getBody()->getContents(), true);
+
+        $user = new User($body['user_id']);
+        $user->jsonUnserialize($body);
+        $user->setClient($this->getClient());
+
+        return $user;
     }
 
     protected function getException(ResponseInterface $response)
