@@ -6,22 +6,23 @@
  * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
  */
 
-namespace Nexmo\Conversations;
+namespace Nexmo\User;
 
 
 use Nexmo\Client\ClientAwareInterface;
 use Nexmo\Client\ClientAwareTrait;
+use Nexmo\Conversations\Conversation;
 use Nexmo\Entity\EntityInterface;
 use Nexmo\Entity\JsonResponseTrait;
 use Nexmo\Entity\JsonSerializableTrait;
 use Nexmo\Entity\JsonUnserializableInterface;
 use Nexmo\Entity\NoRequestResponseTrait;
-use Nexmo\User\Collection as UserCollection;
 use Zend\Diactoros\Request;
+use Nexmo\Client\Exception;
+use Psr\Http\Message\ResponseInterface;
 
-class Conversation implements EntityInterface, \JsonSerializable, JsonUnserializableInterface, ClientAwareInterface
+class User implements EntityInterface, \JsonSerializable, JsonUnserializableInterface, ClientAwareInterface
 {
-
     use NoRequestResponseTrait;
     use JsonSerializableTrait;
     use JsonResponseTrait;
@@ -40,17 +41,8 @@ class Conversation implements EntityInterface, \JsonSerializable, JsonUnserializ
         return $this;
     }
 
-    public function setDisplayName($name)
-    {
-        $this->data['display_name'] = $name;
-        return $this;
-    }
-
     public function getId()
     {
-        if (isset($this->data['uuid'])) {
-            return $this->data['uuid'];
-        }
         return $this->data['id'];
     }
 
@@ -90,22 +82,50 @@ class Conversation implements EntityInterface, \JsonSerializable, JsonUnserializ
         $this->data = $json;
     }
 
-    public function members()
+     public function join(Conversation $con)
     {
-        $request = new Request(
-            \Nexmo\Client::BASE_API . Collection::getCollectionPath() . '/' . $this->getId() .'/members'
-            ,'GET'
-        );
+        return $this->sendAction($con, 'join');
+    }
 
-        $response = $this->getClient()->send($request);
+    public function invite(Conversation $user)
+    {
+        return $this->sendAction($con, 'invite');
+    }
+
+    public function leave(Conversation $user)
+    {
+        return $this->sendAction($user, 'leave');
+    }
+
+    public function sendAction(Conversation $con, $action, $channel = 'app') {
+        $body = $this->getRequestDataForConversation();
+        $body['action'] = $action;
+        $body['channel'] = ['type' => $channel];
+
+        $response = $this->getClient()->post(
+            \Nexmo\Client::BASE_API . \Nexmo\Conversations\Collection::getCollectionPath() . '/' . $con->getId() .'/members',
+            $body
+        );
 
         if($response->getStatusCode() != '200'){
             throw $this->getException($response);
         }
 
-        $data = json_decode($response->getBody()->getContents(), true);
-        $memberCollection = new UserCollection();
-        return $memberCollection->hydrateAll($data);
+        $body = json_decode($response->getBody()->getContents(), true);
+        print_r($body);die;
+        $user = new User($body['user_id']);
+        $user->jsonUnserialize($body);
+        $user->setClient($this->getClient());
+
+        return $user;
+
+    }
+
+    public function getRequestDataForConversation()
+    {
+        return [
+            'user_id' => $this->getId()
+        ];
     }
 
     protected function getException(ResponseInterface $response)
@@ -116,7 +136,11 @@ class Conversation implements EntityInterface, \JsonSerializable, JsonUnserializ
         // This message isn't very useful, but we shouldn't ever see it
         $errorTitle = 'Unexpected error';
 
-        if (isset($body['description'])) {
+        if (isset($body['code'])) {
+            $errorTitle = $body['code'];
+        }
+
+        if (isset($body['description']) && $body['description']) {
             $errorTitle = $body['description'];
         }
 
