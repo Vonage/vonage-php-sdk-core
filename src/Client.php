@@ -14,6 +14,7 @@ use Nexmo\Client\Credentials\CredentialsInterface;
 use Nexmo\Client\Credentials\Keypair;
 use Nexmo\Client\Credentials\OAuth;
 use Nexmo\Client\Credentials\SignatureSecret;
+use Nexmo\Client\Exception\Exception;
 use Nexmo\Client\Factory\FactoryInterface;
 use Nexmo\Client\Factory\MapFactory;
 use Nexmo\Client\Response\Response;
@@ -220,8 +221,12 @@ class Client
      * @param array $claims
      * @return \Lcobucci\JWT\Token
      */
-    public function generateJwt($claims = []) {
-        return $this->credentials->generateJwt($claims);
+    public function generateJwt($claims = [])
+    {
+        if (method_exists($this->credentials, "generateJwt")) {
+            return $this->credentials->generateJwt($claims);
+        }
+        throw new Exception(get_class($this->credentials).' does not support JWT generation');
     }
     
     /**

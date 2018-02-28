@@ -62,4 +62,8 @@ class Container extends AbstractCredentials implements CredentialsInterface
         return isset($this->credentials[$type]);
     }
 
+    public function generateJwt($claims) {
+        return $this->credentials[Keypair::class]->generateJwt($claims);
+    }
+
 }
