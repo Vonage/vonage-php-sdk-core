@@ -49,6 +49,16 @@ class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAcc
         return $idOrConversation;
     }
 
+    public function hydrateAll($conversations)
+    {
+        $hydrated = [];
+        foreach ($conversations as $conversation) {
+            $hydrated[] = $this->hydrateEntity($conversation, $conversation['id']);
+        }
+
+        return $hydrated;
+    }
+
     /**
      * @param null $conversation
      * @return $this|Conversation

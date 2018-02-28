@@ -11,7 +11,6 @@ namespace Nexmo\User;
 
 use Nexmo\Client\ClientAwareInterface;
 use Nexmo\Client\ClientAwareTrait;
-use Nexmo\Conversations\Conversation;
 use Nexmo\Entity\EntityInterface;
 use Nexmo\Entity\JsonResponseTrait;
 use Nexmo\Entity\JsonSerializableTrait;
@@ -71,6 +70,20 @@ class User implements EntityInterface, \JsonSerializable, JsonUnserializableInte
         return $this;
     }
 
+    public function getConversations() {
+        $response = $this->getClient()->get(
+            \Nexmo\Client::BASE_API . Collection::getCollectionPath().'/'.$this->getId().'/conversations'
+        );
+
+        if($response->getStatusCode() != '200'){
+            throw $this->getException($response);
+        }
+
+        $data = json_decode($response->getBody()->getContents(), true);
+        $conversationCollection = $this->getClient()->conversation();
+
+        return $conversationCollection->hydrateAll($data);
+    }
 
     public function jsonSerialize()
     {
