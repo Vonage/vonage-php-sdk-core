@@ -215,6 +215,14 @@ class Client
 
         return $request;
     }
+
+    /**
+     * @param array $claims
+     * @return \Lcobucci\JWT\Token
+     */
+    public function generateJwt($claims = []) {
+        return $this->credentials->generateJwt($claims);
+    }
     
     /**
      * Takes a URL and a key=>value array to generate a GET PSR-7 request object
