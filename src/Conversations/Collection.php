@@ -100,7 +100,7 @@ class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAcc
         }
 
         $body = json_decode($response->getBody()->getContents(), true);
-        $conversation = new Conversation($body['uuid']);
+        $conversation = new Conversation($body['id']);
         $conversation->jsonUnserialize($body);
         $conversation->setClient($this->getClient());
 
