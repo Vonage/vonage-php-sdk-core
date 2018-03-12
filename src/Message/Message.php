@@ -126,7 +126,12 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
     {
         return $this->getMessageData('status', $index);
     }
-
+    
+    public function getFinalStatus($index = null)
+    {
+        return $this->getMessageData('final-status', $index);
+    }
+    
     public function getTo($index = null)
     {
         $data = $this->getResponseData();
@@ -221,7 +226,7 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
             return $data['messages'][$index][$name];
         }
 
-        return $data[$name];
+        return isset($data[$name]) ? $data[$name] : null;
     }
 
     protected function preGetRequestDataHook()
