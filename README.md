@@ -356,6 +356,29 @@ $application = $client->applications()->update([
 ], '1a20a124-1775-412b-b623-e6985f4aace0');
 ```
 
+### Search available numbers
+
+You can search for numbers available to purchase in a specific country
+
+```php
+$numbers = $client->numbers()->searchAvailable('US');
+```
+
+### Purchase number
+
+To purchase a number, you can pass in a value returned from number search
+
+```
+$numbers = $client->numbers()->searchAvailable('US');
+$client->numbers()->purchase($numbers[0]);
+```
+
+Or you can specify the number and country manually
+
+```php
+$client->numbers()->purchase('14155550100', 'US');
+```
+
 ## Troubleshooting
 
 Some users have issues making requests due to the following error:
