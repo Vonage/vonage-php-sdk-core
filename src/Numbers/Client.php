@@ -104,6 +104,7 @@ class Client implements ClientAwareInterface
             'search_pattern',
             'features',
             'size',
+            'type',
             'index'
         ];
 
