@@ -7,9 +7,12 @@
  */
 
 namespace NexmoTest\Client;
-use Nexmo\Client\Signature;
 
-class SignatureTest extends \PHPUnit_Framework_TestCase
+use Nexmo\Client\Signature;
+use PHPUnit\Framework\TestCase;
+
+
+class SignatureTest extends TestCase
 {
     /**
      * @dataProvider signatures

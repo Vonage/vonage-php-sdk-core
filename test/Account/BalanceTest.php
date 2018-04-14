@@ -9,8 +9,9 @@
 namespace NexmoTest\Account;
 
 use Nexmo\Account\Balance;
+use PHPUnit\Framework\TestCase;
 
-class BalanceTest extends \PHPUnit_Framework_TestCase
+class BalanceTest extends TestCase
 {
     public function setUp()
     {

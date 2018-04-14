@@ -11,8 +11,9 @@ namespace NexmoTest\Numbers;
 
 use Nexmo\Application\Application;
 use Nexmo\Numbers\Number;
+use PHPUnit\Framework\TestCase;
 
-class NumberTest extends \PHPUnit_Framework_TestCase
+class NumberTest extends TestCase
 {
     /**
      * @var \Nexmo\Numbers\Number;

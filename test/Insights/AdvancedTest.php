@@ -9,8 +9,9 @@
 namespace NexmoTest\Insights;
 
 use Nexmo\Insights\Advanced;
+use PHPUnit\Framework\TestCase;
 
-class AdvancedTest extends \PHPUnit_Framework_TestCase
+class AdvancedTest extends TestCase
 {
 
     /**

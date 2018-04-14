@@ -8,8 +8,9 @@
 
 namespace Nexmo\Message\Callback;
 
+use PHPUnit\Framework\TestCase;
 
-class ReceiptTest extends \PHPUnit_Framework_TestCase
+class ReceiptTest extends TestCase
 {
     protected $data = array(
         'err-code' => '0',

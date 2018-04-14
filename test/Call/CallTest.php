@@ -17,8 +17,9 @@ use Prophecy\Argument;
 use EnricoStahn\JsonAssert\Assert as JsonAssert;
 use Psr\Http\Message\RequestInterface;
 use Zend\Diactoros\Response;
+use PHPUnit\Framework\TestCase;
 
-class CallTest extends \PHPUnit_Framework_TestCase
+class CallTest extends TestCase
 {
     use JsonAssert;
     use Psr7AssertionTrait;

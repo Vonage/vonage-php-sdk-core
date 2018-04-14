@@ -10,8 +10,9 @@ namespace NexmoTest\Calls;
 
 use Nexmo\Call\Hangup;
 use EnricoStahn\JsonAssert\Assert as JsonAssert;
+use PHPUnit\Framework\TestCase;
 
-class HangupTest extends \PHPUnit_Framework_TestCase
+class HangupTest extends TestCase
 {
     use JsonAssert;
 

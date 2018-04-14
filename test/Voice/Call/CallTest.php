@@ -6,7 +6,10 @@
  * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
  */
 namespace Nexmo\Voice\Call;
-class CallTest extends \PHPUnit_Framework_TestCase
+
+use PHPUnit\Framework\TestCase;
+
+class CallTest extends TestCase
 {
     /**
      * @var Call

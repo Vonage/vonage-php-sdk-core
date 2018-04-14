@@ -7,7 +7,9 @@
  */
 namespace Nexmo\Voice\Message;
 
-class CallbackTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class CallbackTest extends TestCase
 {
     protected $data = [
         'call-id' => '1234abcd',

@@ -8,11 +8,11 @@
 
 namespace NexmoTest\Calls;
 
-
 use Nexmo\Call\Filter;
 use Nexmo\Conversations\Conversation;
+use PHPUnit\Framework\TestCase;
 
-class FilterTest extends \PHPUnit_Framework_TestCase
+class FilterTest extends TestCase
 {
     /**
      * @var Filter

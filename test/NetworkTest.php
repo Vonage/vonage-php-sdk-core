@@ -9,8 +9,9 @@
 namespace NexmoTest;
 
 use Nexmo\Network;
+use PHPUnit\Framework\TestCase;
 
-class NetworkTest extends \PHPUnit_Framework_TestCase
+class NetworkTest extends TestCase
 {
     public function testNetworkArrayAccess()
     {

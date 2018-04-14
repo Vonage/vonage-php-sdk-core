@@ -10,8 +10,9 @@ namespace NexmoTest\Client\Factory;
 
 use Nexmo\Client;
 use Nexmo\Client\Factory\MapFactory;
+use PHPUnit\Framework\TestCase;
 
-class MapFactoryTest extends \PHPUnit_Framework_TestCase
+class MapFactoryTest extends TestCase
 {
     /**
      * @var MapFactory

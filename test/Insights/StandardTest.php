@@ -10,8 +10,9 @@ namespace NexmoTest\Insights;
 
 use Nexmo\Insights\Basic;
 use Nexmo\Insights\Standard;
+use PHPUnit\Framework\TestCase;
 
-class StandardTest extends \PHPUnit_Framework_TestCase
+class StandardTest extends TestCase
 {
 
     /**

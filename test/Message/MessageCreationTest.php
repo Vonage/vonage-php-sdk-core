@@ -8,8 +8,9 @@
 
 namespace Message;
 
+use PHPUnit\Framework\TestCase;
 
-class MessageCreationTest extends \PHPUnit_Framework_TestCase
+class MessageCreationTest extends TestCase
 {
     protected $to   = '14845551212';
     protected $from = '16105551212';

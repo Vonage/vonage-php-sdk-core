@@ -7,12 +7,14 @@
  */
 
 namespace NexmoTest\Message;
+
 use Nexmo\Message\Message;
 use Nexmo\Message\Text;
 use Zend\Diactoros\Response;
 use Zend\Diactoros\ServerRequest;
+use PHPUnit\Framework\TestCase;
 
-class MessageTest extends \PHPUnit_Framework_TestCase
+class MessageTest extends TestCase
 {
     protected $to   = '14845551212';
     protected $from = '16105551212';

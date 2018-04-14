@@ -7,9 +7,11 @@
  */
 
 namespace NexmoTest\Client\Credentials;
-use \Nexmo\Client\Credentials\OAuth;
 
-class OAuthTest extends \PHPUnit_Framework_TestCase
+use \Nexmo\Client\Credentials\OAuth;
+use PHPUnit\Framework\TestCase;
+
+class OAuthTest extends TestCase
 {
     protected $appToken     = 'appToken';
     protected $appSecret    = 'appSecret';

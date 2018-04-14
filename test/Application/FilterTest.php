@@ -8,10 +8,10 @@
 
 namespace NexmoTest\Application;
 
-
 use Nexmo\Application\Filter;
+use PHPUnit\Framework\TestCase;
 
-class FilterTest extends \PHPUnit_Framework_TestCase
+class FilterTest extends TestCase
 {
     /**
      * @dataProvider ranges
