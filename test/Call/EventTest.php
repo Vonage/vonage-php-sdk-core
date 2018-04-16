@@ -10,8 +10,9 @@ namespace NexmoTest\Call;
 
 use Nexmo\Call\Event;
 use NexmoTest\Fixture\ResponseTrait;
+use PHPUnit\Framework\TestCase;
 
-class EventTest extends \PHPUnit_Framework_TestCase
+class EventTest extends TestCase
 {
     use ResponseTrait;
 

@@ -10,8 +10,9 @@ namespace NexmoTest\Account;
 
 use Nexmo\Network;
 use Nexmo\Account\SmsPrice;
+use PHPUnit\Framework\TestCase;
 
-class SmsPriceTest extends \PHPUnit_Framework_TestCase
+class SmsPriceTest extends TestCase
 {
     public function setUp()
     {

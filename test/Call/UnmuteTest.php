@@ -10,8 +10,9 @@ namespace NexmoTest\Calls;
 
 use Nexmo\Call\Unmute;
 use EnricoStahn\JsonAssert\Assert as JsonAssert;
+use PHPUnit\Framework\TestCase;
 
-class UnmuteTest extends \PHPUnit_Framework_TestCase
+class UnmuteTest extends TestCase
 {
     use JsonAssert;
 

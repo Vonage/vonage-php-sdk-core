@@ -18,9 +18,9 @@ use Prophecy\Argument;
 use Zend\Diactoros\Request;
 use Zend\Diactoros\Response;
 use Psr\Http\Message\RequestInterface;
+use PHPUnit\Framework\TestCase;
 
-
-class ClientTest extends \PHPUnit_Framework_TestCase
+class ClientTest extends TestCase
 {
     use Psr7AssertionTrait;
 

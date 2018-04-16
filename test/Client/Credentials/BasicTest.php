@@ -7,9 +7,11 @@
  */
 
 namespace NexmoTest\Client\Credentials;
-use \Nexmo\Client\Credentials\Basic;
 
-class BasicTest extends \PHPUnit_Framework_TestCase
+use \Nexmo\Client\Credentials\Basic;
+use PHPUnit\Framework\TestCase;
+
+class BasicTest extends TestCase
 {
     protected $key = 'key';
     protected $secret = 'secret';

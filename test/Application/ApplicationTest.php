@@ -11,8 +11,9 @@ namespace NexmoTest\Application;
 use Nexmo\Application\Application;
 use Nexmo\Application\VoiceConfig;
 use Zend\Diactoros\Response;
+use PHPUnit\Framework\TestCase;
 
-class ApplicationTest extends \PHPUnit_Framework_TestCase
+class ApplicationTest extends TestCase
 {
     /**
      * @var Application

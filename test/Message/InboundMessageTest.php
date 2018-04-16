@@ -11,8 +11,9 @@ namespace Message;
 use Nexmo\Message\InboundMessage;
 use Zend\Diactoros\Response;
 use Zend\Diactoros\ServerRequest;
+use PHPUnit\Framework\TestCase;
 
-class InboundMessageTest extends \PHPUnit_Framework_TestCase
+class InboundMessageTest extends TestCase
 {
 
     public function testConstructionWithId()

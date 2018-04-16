@@ -7,16 +7,18 @@
  */
 
 namespace NexmoTest\Message;
+
 use Nexmo\Message\Message;
 use Zend\Diactoros\Response;
 use Zend\Diactoros\ServerRequest;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Test that split messages allow access to all the underlying messages. The response from sending a message is the
  * only time a message may contain multiple 'parts'. When fetched from the API, each message is separate.
  *
  */
-class FetchedMessageTest extends \PHPUnit_Framework_TestCase
+class FetchedMessageTest extends TestCase
 {
     protected $to   = '14845551212';
     protected $from = '16105551212';

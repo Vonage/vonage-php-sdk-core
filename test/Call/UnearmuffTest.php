@@ -10,8 +10,9 @@ namespace NexmoTest\Calls;
 
 use Nexmo\Call\Unearmuff;
 use EnricoStahn\JsonAssert\Assert as JsonAssert;
+use PHPUnit\Framework\TestCase;
 
-class UnearmuffTest extends \PHPUnit_Framework_TestCase
+class UnearmuffTest extends TestCase
 {
     use JsonAssert;
 

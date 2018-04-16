@@ -10,8 +10,9 @@ namespace NexmoTest\Calls;
 
 use Nexmo\Call\Transfer;
 use EnricoStahn\JsonAssert\Assert as JsonAssert;
+use PHPUnit\Framework\TestCase;
 
-class TransferTest extends \PHPUnit_Framework_TestCase
+class TransferTest extends TestCase
 {
     use JsonAssert;
 

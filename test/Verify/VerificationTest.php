@@ -12,8 +12,9 @@ use Nexmo\Verify\Check;
 use Nexmo\Verify\Verification;
 use Prophecy\Argument;
 use Zend\Diactoros\Response;
+use PHPUnit\Framework\TestCase;
 
-class VerificationTest extends \PHPUnit_Framework_TestCase
+class VerificationTest extends TestCase
 {
     /**
      * @var string

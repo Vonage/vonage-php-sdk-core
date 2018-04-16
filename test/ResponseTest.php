@@ -7,8 +7,9 @@
  */
 
 use Nexmo\Response;
+use PHPUnit\Framework\TestCase;
 
-class ResponseTest extends PHPUnit_Framework_TestCase
+class ResponseTest extends TestCase
 {
     /**
      * @var Response

@@ -7,9 +7,11 @@
  */
 
 namespace NexmoTest\Client\Credentials;
-use Nexmo\Client\Credentials\Keypair;
 
-class KeypairTest extends \PHPUnit_Framework_TestCase
+use Nexmo\Client\Credentials\Keypair;
+use PHPUnit\Framework\TestCase;
+
+class KeypairTest extends TestCase
 {
     protected $key;
     protected $application = 'c90ddd99-9a5d-455f-8ade-dde4859e590e';

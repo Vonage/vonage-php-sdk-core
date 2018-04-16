@@ -7,9 +7,11 @@
  */
 
 namespace NexmoTest\Message;
-use Nexmo\Message\EncodingDetector;
 
-class EncodingDetectorTest extends \PHPUnit_Framework_TestCase
+use Nexmo\Message\EncodingDetector;
+use PHPUnit\Framework\TestCase;
+
+class EncodingDetectorTest extends TestCase
 {
 
     /**

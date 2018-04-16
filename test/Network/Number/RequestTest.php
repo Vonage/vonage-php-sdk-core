@@ -8,8 +8,9 @@
 
 namespace Nexmo\Network\Number;
 
+use PHPUnit\Framework\TestCase;
 
-class RequestTest extends \PHPUnit_Framework_TestCase
+class RequestTest extends TestCase
 {
     public function testNullValuesNotPresent()
     {

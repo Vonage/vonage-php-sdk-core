@@ -9,8 +9,9 @@
 namespace NexmoTest\Insights;
 
 use Nexmo\Insights\Standard;
+use PHPUnit\Framework\TestCase;
 
-class CnamTraitTest extends \PHPUnit_Framework_TestCase
+class CnamTraitTest extends TestCase
 {
 
     /**

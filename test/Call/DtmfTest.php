@@ -13,8 +13,9 @@ use NexmoTest\Psr7AssertionTrait;
 use Prophecy\Argument;
 use Psr\Http\Message\RequestInterface;
 use Zend\Diactoros\Response;
+use PHPUnit\Framework\TestCase;
 
-class DtmfTest extends \PHPUnit_Framework_TestCase
+class DtmfTest extends TestCase
 {
     use Psr7AssertionTrait;
 

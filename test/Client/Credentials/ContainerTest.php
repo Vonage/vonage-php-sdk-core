@@ -8,15 +8,15 @@
 
 namespace NexmoTest\Client\Credentials;
 
-
 use Nexmo\Client\Credentials\Container;
 use Nexmo\Client\Credentials\Keypair;
 use Nexmo\Client\Credentials\Basic;
 use Nexmo\Client\Credentials\OAuth;
 use Nexmo\Client\Credentials\SignatureSecret;
 use Webmozart\Expression\Selector\Key;
+use PHPUnit\Framework\TestCase;
 
-class ContainerTest extends \PHPUnit_Framework_TestCase
+class ContainerTest extends TestCase
 {
     protected $types = [
         Basic::class,

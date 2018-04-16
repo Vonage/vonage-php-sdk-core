@@ -8,7 +8,9 @@
 
 namespace Nexmo\Network\Number;
 
-class ResponseTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class ResponseTest extends TestCase
 {
     protected $data = array(
         'request_id' => '12345',

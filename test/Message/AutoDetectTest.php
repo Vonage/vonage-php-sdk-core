@@ -7,9 +7,11 @@
  */
 
 namespace NexmoTest\Message;
-use Nexmo\Message\AutoDetect;
 
-class AutoDetectTest extends \PHPUnit_Framework_TestCase
+use Nexmo\Message\AutoDetect;
+use PHPUnit\Framework\TestCase;
+
+class AutoDetectTest extends TestCase
 {
     /**
      * When creating a message, it should not auto-detect encoding by default
