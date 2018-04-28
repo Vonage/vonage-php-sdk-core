@@ -217,7 +217,7 @@ class Client implements ClientAwareInterface
 
         $params = $query->getParams();
         $request = new Request(
-            \Nexmo\Client::BASE_REST . '/search/messages?' . http_build_query($params),
+            \Nexmo\Client::BASE_REST . '/search/rejections?' . http_build_query($params),
             'GET',
             'php://temp',
             ['Accept' => 'application/json']
