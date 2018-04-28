@@ -1,0 +1,9 @@
+{
+  "message-count": "1",
+  "messages": [
+    {
+      "status": "101",
+      "error-text": "Invalid Account for Campaign"
+    }
+  ]
+}
