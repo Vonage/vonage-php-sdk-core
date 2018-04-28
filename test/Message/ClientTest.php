@@ -11,6 +11,7 @@ namespace NexmoTest\Message;
 use Nexmo\Client\Exception;
 use Nexmo\Message\Client;
 use Nexmo\Message\Message;
+use Nexmo\Message\Shortcode\TwoFactor;
 use Nexmo\Message\Text;
 use NexmoTest\Psr7AssertionTrait;
 use NexmoTest\MessageAssertionTrait;
@@ -253,6 +254,87 @@ class ClientTest extends TestCase
 
         return $r;
     }
+
+    public function testShortcodeWithObject()
+    {
+        $message = new TwoFactor('14155550100', [ 'link' => 'https://example.com' ], ['status-report-req' => 1]);
+
+        $this->nexmoClient->send(Argument::that(function(Request $request) {
+            $this->assertRequestJsonBodyContains('to', '14155550100', $request);
+            $this->assertRequestJsonBodyContains('link', 'https://example.com', $request);
+            $this->assertRequestJsonBodyContains('status-report-req', 1, $request);
+            return true;
+        }))->willReturn($this->getResponse('success-2fa'));
+
+        $response = $this->messageClient->sendShortcode($message);
+        $this->assertEquals([
+            'message-count' => '1',
+            'messages' =>[
+                [
+                    'status' => '0',
+                    'message-id' => '00000123',
+                    'to' => '14155550100',
+                    'client-ref' => 'client-ref',
+                    'remaining-balance' => '1.10',
+                    'message-price' => '0.05',
+                    'network' => '23410'
+                ]
+            ]
+        ], $response);
+    }
+
+    public function testShortcodeError()
+    {
+        $args = [
+            'to' => '14155550100',
+            'custom' => [ 'link' => 'https://example.com' ],
+            'options' => ['status-report-req' => 1],
+            'type' => '2fa'
+        ];
+
+        $this->nexmoClient->send(Argument::that(function(Request $request) use ($args){
+            return true;
+        }))->willReturn($this->getResponse('error-2fa'));
+
+        $this->expectException(Exception\Request::class);
+        $this->expectExceptionMessage('Invalid Account for Campaign');
+
+        $this->messageClient->sendShortcode($args);
+    }
+
+    public function testShortcodeWithArray()
+    {
+        $args = [
+            'to' => '14155550100',
+            'custom' => [ 'link' => 'https://example.com' ],
+            'options' => ['status-report-req' => 1],
+            'type' => '2fa'
+        ];
+
+        $this->nexmoClient->send(Argument::that(function(Request $request) use ($args){
+            $this->assertRequestJsonBodyContains('to', $args['to'], $request);
+            $this->assertRequestJsonBodyContains('link', $args['custom']['link'], $request);
+            $this->assertRequestJsonBodyContains('status-report-req', $args['options']['status-report-req'], $request);
+            return true;
+        }))->willReturn($this->getResponse('success-2fa'));
+
+        $response = $this->messageClient->sendShortcode($args);
+        $this->assertEquals([
+            'message-count' => '1',
+            'messages' =>[
+                [
+                    'status' => '0',
+                    'message-id' => '00000123',
+                    'to' => '14155550100',
+                    'client-ref' => 'client-ref',
+                    'remaining-balance' => '1.10',
+                    'message-price' => '0.05',
+                    'network' => '23410'
+                ]
+            ]
+        ], $response);
+    }
+
 
     /**
      * Get the API response we'd expect for a call to the API. Message API currently returns 200 all the time, so only
