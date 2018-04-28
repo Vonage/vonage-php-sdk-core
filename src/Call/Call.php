@@ -69,7 +69,7 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
     public function get()
     {
         $request = new Request(
-            \Nexmo\Client::BASE_API . Collection::getCollectionPath() . '/' . $this->getId()
+            $this->getClient()->getApiUrl() . Collection::getCollectionPath() . '/' . $this->getId()
             ,'GET'
         );
 
@@ -104,7 +104,7 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
     public function put($payload)
     {
         $request = new Request(
-            \Nexmo\Client::BASE_API . Collection::getCollectionPath() . '/' . $this->getId()
+            $this->getClient()->getApiUrl() . Collection::getCollectionPath() . '/' . $this->getId()
             ,'PUT',
             'php://temp',
             ['content-type' => 'application/json']

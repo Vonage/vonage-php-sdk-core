@@ -61,7 +61,7 @@ class Dtmf implements JsonSerializableInterface, ClientAwareInterface, \ArrayAcc
         }
 
         $request = new Request(
-            \Nexmo\Client::BASE_API . Collection::getCollectionPath() . '/' . $this->getId() . '/dtmf',
+            $this->getClient()->getApiUrl() . Collection::getCollectionPath() . '/' . $this->getId() . '/dtmf',
             'PUT',
             'php://temp',
             ['content-type' => 'application/json']

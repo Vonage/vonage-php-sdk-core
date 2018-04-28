@@ -66,7 +66,7 @@ class Stream implements JsonSerializableInterface, ClientAwareInterface
         }
 
         $request = new Request(
-            \Nexmo\Client::BASE_API . Collection::getCollectionPath() . '/' . $this->getId() . '/stream',
+            $this->getClient()->getApiUrl() . Collection::getCollectionPath() . '/' . $this->getId() . '/stream',
             'PUT',
             'php://temp',
             ['content-type' => 'application/json']
@@ -80,7 +80,7 @@ class Stream implements JsonSerializableInterface, ClientAwareInterface
     public function delete()
     {
         $request = new Request(
-            \Nexmo\Client::BASE_API . Collection::getCollectionPath() . '/' . $this->getId() . '/stream',
+            $this->getClient()->getApiUrl() . Collection::getCollectionPath() . '/' . $this->getId() . '/stream',
             'DELETE'
         );
 

@@ -28,7 +28,8 @@ class ClientTest extends TestCase
 
     public function setUp()
     {
-        $this->nexmoClient = $this->getMockBuilder('Nexmo\Client')->disableOriginalConstructor()->setMethods(['send'])->getMock();
+        $this->nexmoClient = $this->getMockBuilder('Nexmo\Client')->disableOriginalConstructor()->setMethods(['send', 'getApiUrl'])->getMock();
+        $this->nexmoClient->method('getApiUrl')->will($this->returnValue('https://api.nexmo.com'));
         $this->conversionClient = new Client();
         $this->conversionClient->setClient($this->nexmoClient);
     }

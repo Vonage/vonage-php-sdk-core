@@ -48,6 +48,18 @@ Create a client with your API key and secret:
 $client = new Nexmo\Client(new Nexmo\Client\Credentials\Basic(API_KEY, API_SECRET));     
 ```
 
+For testing purposes you may want to change the URL that `nexmo-php` makes requests to. You can do this by providing an array containing `base_url` as the second parameter when creating a `Nexmo\Client` instance.
+
+```php
+$client = new Nexmo\Client(
+    new Nexmo\Client\Credentials\Basic(API_KEY, API_SECRET),
+    [
+        'base_url' => 'https://example.com'
+    ]
+);
+
+```
+
 Examples
 --------
 

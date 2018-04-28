@@ -192,7 +192,7 @@ class Client implements ClientAwareInterface
         }
 
         $request = new Request(
-            \Nexmo\Client::BASE_API . $path,
+            $this->getClient()->getApiUrl() . $path,
             'POST',
             'php://temp',
             [
