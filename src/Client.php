@@ -91,6 +91,18 @@ class Client
             $this->validateAppOptions($options['app']);
         }
 
+        // Set the default URLs. Keep the constants for
+        // backwards compatibility
+        $this->apiUrl = static::BASE_API;
+        $this->restUrl = static::BASE_REST;
+
+        // If they've provided a base URL, use that instead
+        // of the defaults
+        if (isset($options['base_url'])) {
+            $this->restUrl = $options['base_url'];
+            $this->apiUrl = $options['base_url'];
+        }
+
         $this->setFactory(new MapFactory([
             'account' => 'Nexmo\Account\Client',
             'insights' => 'Nexmo\Insights\Client',
@@ -104,6 +116,14 @@ class Client
             'user' => 'Nexmo\User\Collection',
             'redact' => 'Nexmo\Redact\Client',
         ], $this));
+    }
+
+    public function getRestUrl() {
+        return $this->restUrl;
+    }
+
+    public function getApiUrl() {
+        return $this->apiUrl;
     }
 
     /**

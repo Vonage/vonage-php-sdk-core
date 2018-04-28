@@ -66,7 +66,7 @@ class Conversation implements EntityInterface, \JsonSerializable, JsonUnserializ
     public function get()
     {
         $request = new Request(
-            \Nexmo\Client::BASE_API . Collection::getCollectionPath() . '/' . $this->getId()
+            $this->getClient()->getApiUrl() . Collection::getCollectionPath() . '/' . $this->getId()
             ,'GET'
         );
 
@@ -95,7 +95,7 @@ class Conversation implements EntityInterface, \JsonSerializable, JsonUnserializ
 
     public function members()
     {
-        $response = $this->getClient()->get(\Nexmo\Client::BASE_API . Collection::getCollectionPath() . '/' . $this->getId() .'/members');
+        $response = $this->getClient()->get($this->getClient()->getApiUrl() . Collection::getCollectionPath() . '/' . $this->getId() .'/members');
 
         if($response->getStatusCode() != '200'){
             throw $this->getException($response);
@@ -119,7 +119,7 @@ class Conversation implements EntityInterface, \JsonSerializable, JsonUnserializ
     public function removeMember(User $user)
     {
         $response = $this->getClient()->delete(
-            \Nexmo\Client::BASE_API . Collection::getCollectionPath() . '/' . $this->getId() .'/members/'. $user->getId()
+            $this->getClient()->getApiUrl() . Collection::getCollectionPath() . '/' . $this->getId() .'/members/'. $user->getId()
         );
 
         if($response->getStatusCode() != '200'){
@@ -133,7 +133,7 @@ class Conversation implements EntityInterface, \JsonSerializable, JsonUnserializ
         $body['channel'] = ['type' => $channel];
 
         $response = $this->getClient()->post(
-            \Nexmo\Client::BASE_API . Collection::getCollectionPath() . '/' . $this->getId() .'/members',
+            $this->getClient()->getApiUrl() . Collection::getCollectionPath() . '/' . $this->getId() .'/members',
             $body
         );
 

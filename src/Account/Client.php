@@ -38,7 +38,7 @@ class Client implements ClientAwareInterface
         ]);
 
         $request = new Request(
-            \Nexmo\Client::BASE_REST . '/account/get-pricing/outbound/'.$pricingType.'?'.$queryString,
+            $this->getClient()->getRestUrl() . '/account/get-pricing/outbound/'.$pricingType.'?'.$queryString,
             'GET',
             'php://temp'
         );
@@ -57,7 +57,7 @@ class Client implements ClientAwareInterface
     {
 
         $request = new Request(
-            \Nexmo\Client::BASE_REST . '/account/get-balance',
+            $this->getClient()->getRestUrl() . '/account/get-balance',
             'GET',
             'php://temp'
         );
@@ -82,7 +82,7 @@ class Client implements ClientAwareInterface
         ];
 
         $request = new Request(
-            \Nexmo\Client::BASE_REST . '/account/top-up'
+            $this->getClient()->getRestUrl() . '/account/top-up'
             ,'POST'
             , 'php://temp'
             , ['content-type' => 'application/x-www-form-urlencoded']
@@ -98,13 +98,13 @@ class Client implements ClientAwareInterface
 
     public function listSecrets($apiKey)
     {
-        $body = $this->get( \Nexmo\Client::BASE_API . '/accounts/'.$apiKey.'/secrets');
+        $body = $this->get( $this->getClient()->getApiUrl() . '/accounts/'.$apiKey.'/secrets');
         return SecretCollection::fromApi($body);
     }
 
     public function getSecret($apiKey, $secretId)
     {
-        $body = $this->get( \Nexmo\Client::BASE_API . '/accounts/'.$apiKey.'/secrets/'. $secretId);
+        $body = $this->get( $this->getClient()->getApiUrl() . '/accounts/'.$apiKey.'/secrets/'. $secretId);
         return Secret::fromApi($body);
     }
 
@@ -115,7 +115,7 @@ class Client implements ClientAwareInterface
         ];
 
         $request = new Request(
-            \Nexmo\Client::BASE_API . '/accounts/'.$apiKey.'/secrets'
+            $this->getClient()->getApiUrl() . '/accounts/'.$apiKey.'/secrets'
             ,'POST'
             , 'php://temp'
             , ['content-type' => 'application/json']
@@ -134,7 +134,7 @@ class Client implements ClientAwareInterface
     public function deleteSecret($apiKey, $secretId)
     {
         $request = new Request(
-            \Nexmo\Client::BASE_API . '/accounts/'.$apiKey.'/secrets/'. $secretId
+            $this->getClient()->getApiUrl() . '/accounts/'.$apiKey.'/secrets/'. $secretId
             ,'DELETE'
             , 'php://temp'
             , ['content-type' => 'application/json']

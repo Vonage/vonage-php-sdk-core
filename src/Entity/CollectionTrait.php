@@ -234,7 +234,7 @@ trait CollectionTrait
 
         //
         $request = new Request(
-            \Nexmo\Client::BASE_API . $absoluteUri,
+            $this->getClient()->getApiUrl() . $absoluteUri,
             'GET'
         );
 

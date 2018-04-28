@@ -84,7 +84,7 @@ class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAcc
         }
 
         $request = new Request(
-            \Nexmo\Client::BASE_API . $this->getCollectionPath() . '/' . $call->getId() . '/' . $type
+            $this->getClient()->getApiUrl() . $this->getCollectionPath() . '/' . $call->getId() . '/' . $type
             ,'DELETE'
         );
 
@@ -106,7 +106,7 @@ class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAcc
         }
 
         $request = new Request(
-            \Nexmo\Client::BASE_API . $this->getCollectionPath()
+            $this->getClient()->getApiUrl() . $this->getCollectionPath()
             ,'POST',
             'php://temp',
             ['content-type' => 'application/json']

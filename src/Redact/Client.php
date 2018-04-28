@@ -17,7 +17,7 @@ class Client implements ClientAwareInterface
     public function transaction($id, $product, $options = [])
     {
         $request = new Request(
-            \Nexmo\Client::BASE_API . '/v1/redact/transaction',
+            $this->getClient()->getApiUrl() . '/v1/redact/transaction',
             'POST',
             'php://temp',
             [

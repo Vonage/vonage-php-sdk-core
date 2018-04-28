@@ -42,7 +42,7 @@ class Client implements ClientAwareInterface
         }
 
         $request = new Request(
-            \Nexmo\Client::BASE_REST . '/number/update',
+            $this->client->getRestUrl() . '/number/update',
             'POST',
             'php://temp',
             [
@@ -115,7 +115,7 @@ class Client implements ClientAwareInterface
         }
 
         $request = new Request(
-            \Nexmo\Client::BASE_REST . '/number/search?' . http_build_query($query),
+            $this->client->getRestUrl() . '/number/search?' . http_build_query($query),
             'GET',
             'php://temp'
         );
@@ -154,7 +154,7 @@ class Client implements ClientAwareInterface
         $queryString = http_build_query($query);
 
         $request = new Request(
-            \Nexmo\Client::BASE_REST . '/account/numbers?' . $queryString,
+            $this->client->getRestUrl() . '/account/numbers?' . $queryString,
             'GET',
             'php://temp'
         );
@@ -214,7 +214,7 @@ class Client implements ClientAwareInterface
         ];
 
         $request = new Request(
-            \Nexmo\Client::BASE_REST . '/number/buy',
+            $this->client->getRestUrl() . '/number/buy',
             'POST',
             'php://temp',
             [
@@ -251,7 +251,7 @@ class Client implements ClientAwareInterface
         ];
 
         $request = new Request(
-            \Nexmo\Client::BASE_REST . '/number/cancel',
+            $this->client->getRestUrl() . '/number/cancel',
             'POST',
             'php://temp',
             [

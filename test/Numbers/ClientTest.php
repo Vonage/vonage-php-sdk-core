@@ -31,6 +31,7 @@ class ClientTest extends TestCase
     public function setUp()
     {
         $this->nexmoClient = $this->prophesize('Nexmo\Client');
+        $this->nexmoClient->getRestUrl()->willReturn('https://rest.nexmo.com');
         $this->numberClient = new Client();
         $this->numberClient->setClient($this->nexmoClient->reveal());
     }
