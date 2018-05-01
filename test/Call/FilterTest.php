@@ -48,20 +48,38 @@ class FilterTest extends TestCase
 
     public function testStart()
     {
-        $date = new \DateTime();
+        $date = new \DateTime('2018-03-31 11:33:42');
         $this->filter->setStart($date);
         $query = $this->filter->getQuery();
         $this->assertArrayHasKey('date_start', $query);
-        $this->assertEquals($date->format('c'), $query['date_start']);
+        $this->assertEquals('2018-03-31T11:33:42Z', $query['date_start']);
+    }
+
+    public function testStartOtherTimezone()
+    {
+        $date = new \DateTime('2018-03-31 11:33:42-03:00');
+        $this->filter->setStart($date);
+        $query = $this->filter->getQuery();
+        $this->assertArrayHasKey('date_start', $query);
+        $this->assertEquals('2018-03-31T14:33:42Z', $query['date_start']);
     }
 
     public function testEnd()
     {
-        $date = new \DateTime();
+        $date = new \DateTime('2018-03-31 11:33:42');
         $this->filter->setEnd($date);
         $query = $this->filter->getQuery();
         $this->assertArrayHasKey('date_end', $query);
-        $this->assertEquals($date->format('c'), $query['date_end']);
+        $this->assertEquals('2018-03-31T11:33:42Z', $query['date_end']);
+    }
+
+    public function testEndOtherTimezone()
+    {
+        $date = new \DateTime('2018-03-31 11:33:42+03:00');
+        $this->filter->setEnd($date);
+        $query = $this->filter->getQuery();
+        $this->assertArrayHasKey('date_end', $query);
+        $this->assertEquals('2018-03-31T08:33:42Z', $query['date_end']);
     }
 
     public function testSize()

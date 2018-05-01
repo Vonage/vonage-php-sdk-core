@@ -38,13 +38,15 @@ class Filter implements FilterInterface
 
     public function setStart(\DateTime $start)
     {
-        $this->query['date_start'] = $start->format('c');
+        $start->setTimezone(new \DateTimeZone("UTC"));
+        $this->query['date_start'] = $start->format('Y-m-d\TH:i:s\Z');
         return $this;
     }
 
-    public function setEnd(\DateTime $start)
+    public function setEnd(\DateTime $end)
     {
-        $this->query['date_end'] = $start->format('c');
+        $end->setTimezone(new \DateTimeZone("UTC"));
+        $this->query['date_end'] = $end->format('Y-m-d\TH:i:s\Z');
         return $this;
     }
 
