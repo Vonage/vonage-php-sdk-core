@@ -1,0 +1,6 @@
+{
+  "type": "https://developer.nexmo.com/api-errors/redact#invalid-product",
+  "title": "Invalid Product",
+  "detail": "No product corresponding to supplied string sms2!",
+  "instance": "bf0ca0bf927b3b52e3cb03217e1a1ddf"
+}

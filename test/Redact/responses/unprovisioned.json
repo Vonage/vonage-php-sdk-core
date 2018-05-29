@@ -1,0 +1,6 @@
+{
+  "type": "https://developer.nexmo.com/api-errors#unprovisioned",
+  "title": "Authorisation error",
+  "detail": "User=ABC123 is not provisioned to redact product=SMS",
+  "instance": "bf0ca0bf927b3b52e3cb03217e1a1ddf"
+}

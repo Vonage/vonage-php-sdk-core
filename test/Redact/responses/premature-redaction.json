@@ -1,0 +1,6 @@
+{
+  "type": "https://developer.nexmo.com/api-errors/redact#premature-redaction",
+  "title": "Premature Redaction",
+  "detail": "You must wait 60 minutes before redacting ID '0A000000B0C9A1234'",
+  "instance": "bf0ca0bf927b3b52e3cb03217e1a1ddf"
+}
