@@ -102,6 +102,7 @@ class Client
             'conversion' => 'Nexmo\Conversion\Client',
             'conversation' => 'Nexmo\Conversations\Collection',
             'user' => 'Nexmo\User\Collection',
+            'redact' => 'Nexmo\Redact\Client',
         ], $this));
     }
 
@@ -187,7 +188,13 @@ class Client
     public static function authRequest(RequestInterface $request, Basic $credentials)
     {
         switch($request->getHeaderLine('content-type')){
-            case 'application/json':
+        case 'application/json':
+            if (static::requiresAuthInUrlNotBody($request)) {
+                $query = [];
+                parse_str($request->getUri()->getQuery(), $query);
+                $query = array_merge($query, $credentials->asArray());
+                $request = $request->withUri($request->getUri()->withQuery(http_build_query($query)));
+            } else {
                 $body = $request->getBody();
                 $body->rewind();
                 $content = $body->getContents();
@@ -195,6 +202,7 @@ class Client
                 $params = array_merge($params, $credentials->asArray());
                 $body->rewind();
                 $body->write(json_encode($params));
+            }
                 break;
             case 'application/x-www-form-urlencoded':
                 $body = $request->getBody();
@@ -445,6 +453,14 @@ class Client
         }
 
         return $this->factory->getApi($name);
+    }
+
+    protected static function requiresAuthInUrlNotBody(\Psr\Http\Message\RequestInterface $request)
+    {
+        $path = $request->getUri()->getPath();
+        $isRedactEndpoint = strpos($path, '/v1/redact') === 0;
+
+        return $isRedactEndpoint;
     }
 
     protected function needsKeypairAuthentication(\Psr\Http\Message\RequestInterface $request)

@@ -1,0 +1,6 @@
+{
+  "type": "https://developer.nexmo.com/api-errors#invalid-id",
+  "title": "Invalid ID",
+  "detail": "ID '0A000000B0C9A1234' could not be found (type=MT)",
+  "instance": "bf0ca0bf927b3b52e3cb03217e1a1ddf"
+}
