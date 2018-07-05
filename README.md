@@ -18,7 +18,7 @@ Installation
 
 To use the client library you'll need to have [created a Nexmo account][signup]. 
 
-To install the PHP client library using Composer (Whilst the client is marked as a beta, the API is stable. The beta flag is due to the fact that the client does not cover the full Nexmo API yet.)
+To install the PHP client library to your project, we recommend using [Composer](https://getcomposer.org/).
 
 ```bash
 composer require nexmo/client
@@ -27,7 +27,7 @@ composer require nexmo/client
 Usage
 -----
 
-If you're using composer, make sure the autoloader is included in your project's bootstrap file:
+If you're using Composer, make sure the autoloader is included in your project's bootstrap file:
 
 ```php
 require_once "vendor/autoload.php";
