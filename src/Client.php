@@ -387,11 +387,31 @@ class Client
             $userAgent[] = $app['name'].'/'.$app['version'];
         }
 
+        // Can we find out which framework we're running under too?
+        // For now, we only detect Laravel as:
+        // * Symfony version is read from the Kernel, which lots of things depend on
+        // * Slim doesn't expose a version in code in v4
+        //
+        // Once we drop PHP 5.6 support, we can read composer.json to find out which
+        // other libraries are installed and do it that way, but for now this gets
+        // us more information that we had before
+        $laravelVersion = $this->getLaravelVersion();
+        if ($laravelVersion) {
+            $userAgent[] = $laravelVersion;
+        }
+
         // Set the header. Build by joining all the parts we have with a space
         $request = $request->withHeader('User-Agent', implode(" ", $userAgent));
 
         $response = $this->client->sendRequest($request);
         return $response;
+    }
+
+    protected function getLaravelVersion() {
+        if (defined("LARAVEL_START")) {
+            $app = \app();
+            return 'laravel/'.$app::VERSION;
+        }
     }
 
     protected function validateAppOptions($app) {

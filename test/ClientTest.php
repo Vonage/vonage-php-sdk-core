@@ -400,6 +400,40 @@ class ClientTest extends TestCase
 
         $this->assertEquals($expected, $agent);
     }
+    
+    public function testUserAgentStringRunningUnderLaravel()
+    {
+
+        define("LARAVEL_START", 0);
+
+        $version = Client::VERSION;
+        $php = 'php/' . implode('.', [
+            PHP_MAJOR_VERSION,
+            PHP_MINOR_VERSION
+        ]);
+
+        //get a mock response to test
+        $response = new Response();
+        $response->getBody()->write('test response');
+        $this->http->addResponse($response);
+
+        $client = $this->getClient([ new Basic('key', 'secret'), [], $this->http ]);
+        
+        $request = $this->getRequest();
+
+        //api client should simply pass back the http response
+        $client->send($request);
+
+        //useragent should match the expected format
+        $agent = $this->http->getRequests()[0]->getHeaderLine('user-agent');
+        $expected = implode(' ', [
+            'nexmo-php/'.$version,
+            $php,
+            'laravel/9.4.7'
+        ]);
+
+        $this->assertEquals($expected, $agent);
+    }
 
     public function testSerializationProxiesVerify()
     {
@@ -425,7 +459,7 @@ class ClientTest extends TestCase
      */
     public function testGenericGetMethod($url, $params, $expected)
     {
-        $client = new Client($this->basic_credentials, [], $this->http);
+        $client = $this->getClient([$this->basic_credentials, [], $this->http]);
         $request = $client->get($url, $params);
 
         $request = $this->http->getRequests()[0];
@@ -450,7 +484,7 @@ class ClientTest extends TestCase
      */
     public function testGenericPostMethod($url, $params)
     {
-        $client = new Client($this->basic_credentials, [], $this->http);
+        $client = $this->getClient([$this->basic_credentials, [], $this->http]);
         $client->post($url, $params);
 
         // Add our authentication parameters as they'll always be there
@@ -470,7 +504,7 @@ class ClientTest extends TestCase
      */
     public function testGenericPutMethod($url, $params)
     {
-        $client = new Client($this->basic_credentials, [], $this->http);
+        $client = $this->getClient([$this->basic_credentials, [], $this->http]);
         $client->put($url, $params);
 
         // Add our authentication parameters as they'll always be there
@@ -501,7 +535,7 @@ class ClientTest extends TestCase
      */
     public function testGenericDeleteMethod($url, $params)
     {
-        $client = new Client($this->basic_credentials, [], $this->http);
+        $client = $this->getClient([ new Basic('key', 'secret'), [], $this->http ]);
         // Delete only takes one parameter, but we test passing two here to make sure that
         // the test breaks if anyone adds support for sending body parameters at a later date.
         // See https://stackoverflow.com/questions/299628/is-an-entity-body-allowed-for-an-http-delete-request/299696#299696
@@ -571,5 +605,17 @@ class ClientTest extends TestCase
         //params should be correctly signed
         $signature = new Signature($array, $secret);
         self::assertTrue($signature->check($array));
+    }
+
+    protected function getClient($constructorArgs){
+
+        $client = $this->getMockBuilder(Client::class)
+                       ->setMethods(['getLaravelVersion'])
+                       ->setConstructorArgs($constructorArgs)
+                       ->getMock();
+
+        $client->expects($this->once())->method('getLaravelVersion')->will($this->returnValue('laravel/9.4.7'));
+
+        return $client;
     }
 }
