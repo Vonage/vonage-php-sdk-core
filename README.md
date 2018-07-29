@@ -116,7 +116,7 @@ if($inbound->isValid()){
 }
 ```
     
-You can also access the webhook data as an arry:
+You can also access the webhook data as an array:
 
 ```php
 $inbound = \Nexmo\Message\InboundMessage::createFromGlobals();
