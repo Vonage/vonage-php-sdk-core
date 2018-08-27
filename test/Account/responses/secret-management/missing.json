@@ -1,0 +1,6 @@
+{
+  "type": "https://developer.nexmo.com/api-errors#invalid-api-key",
+  "title": "Invalid API Key",
+  "detail": "API key 'ABC123' does not exist, or you do not have access",
+  "instance": "797a8f199c45014ab7b08bfe9cc1c12c"
+}

@@ -187,9 +187,12 @@ class Client
 
     public static function authRequest(RequestInterface $request, Basic $credentials)
     {
-        switch($request->getHeaderLine('content-type')){
-        case 'application/json':
-            if (static::requiresAuthInUrlNotBody($request)) {
+        switch($request->getHeaderLine('content-type')) {
+            case 'application/json':
+            if (static::requiresBasicAuth($request)) {
+                $c = $credentials->asArray();
+                $request = $request->withHeader('Authorization', 'Basic ' . base64_encode($c['api_key'] . ':' . $c['api_secret']));
+            } else if (static::requiresAuthInUrlNotBody($request)) {
                 $query = [];
                 parse_str($request->getUri()->getQuery(), $query);
                 $query = array_merge($query, $credentials->asArray());
@@ -453,6 +456,14 @@ class Client
         }
 
         return $this->factory->getApi($name);
+    }
+
+    protected static function requiresBasicAuth(\Psr\Http\Message\RequestInterface $request)
+    {
+        $path = $request->getUri()->getPath();
+        $isSecretManagementEndpoint = strpos($path, '/accounts') === 0 && strpos($path, '/secrets') !== false;
+
+        return $isSecretManagementEndpoint;
     }
 
     protected static function requiresAuthInUrlNotBody(\Psr\Http\Message\RequestInterface $request)
