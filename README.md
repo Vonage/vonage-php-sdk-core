@@ -379,6 +379,36 @@ Or you can specify the number and country manually
 $client->numbers()->purchase('14155550100', 'US');
 ```
 
+### Managing Secrets
+
+An API is provided to allow you to rotate your API secrets. You can create a new secret (up to a maximum of two secrets) and delete the existing one once all applications have been updated.
+
+Get a list of the secrets:
+
+```php
+$secretCollection = $client->account()->listSecrets(API_KEY);
+
+foreach($secretCollection['secrets'] as $secret) {
+    echo "ID: " . $secret['id'] . " (created " . $secret['created_at'] .")\n";
+}
+```
+
+Create a new secret (the created dates will help you know which is which):
+
+```php
+$client->account()->createSecret(API_KEY, 'awes0meNewSekret!!;');
+```
+
+Delete the old secret (any application still using these credentials will stop working):
+
+```php
+try {
+    $response = $client->account()->deleteSecret(API_KEY, 'd0f40c7e-91f2-4fe0-8bc6-8942587b622c');
+} catch(\Nexmo\Client\Exception\Request $e) {
+    echo $e->getMessage();
+}
+```
+
 ## Troubleshooting
 
 Some users have issues making requests due to the following error:
@@ -400,7 +430,6 @@ curl.cainfo = "/etc/pki/tls/cacert.pem"
 curl.cainfo = "C:\php\extras\ssl\cacert.pem"
 ```
 
-    
 API Coverage
 ------------
 
@@ -409,6 +438,7 @@ API Coverage
     * [X] Pricing
     * [ ] Settings
     * [ ] Top Up
+    * [X] Secret Management
     * [X] Numbers
         * [X] Search
         * [X] Buy
