@@ -19,6 +19,107 @@ class Client implements ClientAwareInterface
 {
     use ClientAwareTrait;
 
+    public function search($country, $pattern = null, $searchPattern = null, $features = null, $size = null, $index = null)
+    {
+        $query = [];
+        if ($pattern) {
+            $query['pattern'] = $pattern;
+        }
+        if ($searchPattern) {
+            $query['search_pattern'] = $searchPattern;
+        }
+        if ($features) {
+            if (is_array($features)) {
+                $features = implode($features, ',');
+            }
+
+            $query['features'] = $features;
+        }
+        if ($size) {
+            $query['size'] = $size;
+        }
+        if ($index) {
+            $query['index'] = $index;
+        }
+        $query['country'] = $country;
+
+        $request = new Request(
+            \Nexmo\Client::BASE_REST . sprintf('/number/search?%s', http_build_query($query)),
+            'GET',
+            'php://temp',
+            [
+                'Accept' => 'application/json',
+            ]
+        );
+
+        $response = $this->client->send($request);
+        if ('200' != $response->getStatusCode()) {
+            throw $this->getException($response);
+        }
+
+        $data = json_decode($response->getBody()->getContents(), true);
+        if (!$data) {
+            throw new Exception\Exception('Unexpected response from API');
+        }
+
+        $collection = [];
+        foreach ($data['numbers'] as $number) {
+            $new = new Number();
+            $new->JsonUnserialize($number);
+            $collection[] = $new;
+        }
+
+        return $collection;
+    }
+
+    public function buy($country, $msisdn)
+    {
+        $query = [
+            'country' => $country,
+            'msisdn' => $msisdn,
+        ];
+
+        $request = new Request(
+            \Nexmo\Client::BASE_REST . sprintf('/number/buy?%s', http_build_query($query)),
+            'POST',
+            'php://temp',
+            [
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/x-www-form-urlencoded',
+            ]
+        );
+
+        $response = $this->client->send($request);
+
+        if('200' != $response->getStatusCode()){
+            throw $this->getException($response);
+        }
+    }
+
+    public function cancel($country, $msisdn)
+    {
+        $query = [
+            'country' => $country,
+            'msisdn' => $msisdn,
+        ];
+
+        $request = new Request(
+            \Nexmo\Client::BASE_REST . sprintf('/number/cancel?%s', http_build_query($query)),
+            'POST',
+            'php://temp',
+            [
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/x-www-form-urlencoded',
+            ]
+        );
+
+        $response = $this->client->send($request);
+
+        if('200' != $response->getStatusCode()){
+            throw $this->getException($response);
+        }
+    }
+
     public function update($number, $id = null)
     {
         if(!is_null($id)){

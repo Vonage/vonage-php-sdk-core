@@ -1,0 +1,25 @@
+{
+  "count": 2,
+  "numbers": [
+    {
+      "country": "FR",
+      "msisdn": "33644630604",
+      "cost": "0.50",
+      "type": "mobile-lvn",
+      "features": [
+        "VOICE",
+        "SMS"
+      ]
+    },
+    {
+      "country": "FR",
+      "msisdn": "33644630605",
+      "cost": "0.50",
+      "type": "mobile-lvn",
+      "features": [
+        "VOICE",
+        "SMS"
+      ]
+    }
+  ]
+}
