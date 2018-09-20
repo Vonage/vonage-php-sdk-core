@@ -1,0 +1,6 @@
+{
+  "type": "https://developer.nexmo.com/api-errors#internal-error",
+  "title": "Internal Error",
+  "detail": "An internal error occured. Please try again shortly",
+  "instance": "797a8f199c45014ab7b08bfe9cc1c12c"
+}
