@@ -168,7 +168,7 @@ echo "Started verification with an id of: " . $verification->getRequestId();
 ### Controlling a Verification
     
 To cancel an in-progress verification, or to trigger the next attempt to send the confirmation code, you can pass 
-either an exsisting verification object to the client library, or simply use a request ID:
+either an existing verification object to the client library, or simply use a request ID:
 
 ```php
 $client->verify()->trigger('00e6c3377e5348cdaf567e1417c707a5');
@@ -194,7 +194,7 @@ $client->verify()->check('00e6c3377e5348cdaf567e1417c707a5', '1234');
 
 ### Searching For A Verification
 
-You can check the status of a verification, or access the results of past verifications using either an exsisting 
+You can check the status of a verification, or access the results of past verifications using either an existing 
 verification object, or a request ID. The verification object will then provide a rich interface:
 
 ```php
