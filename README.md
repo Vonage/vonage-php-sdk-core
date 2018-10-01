@@ -190,13 +190,27 @@ In the same way, checking a verification requires the code the user provided, an
 
 ```php
 $verification = new \Nexmo\Verify\Verification('00e6c3377e5348cdaf567e1417c707a5');
-$client->verify()->check($verification, '1234');
+try {
+    $client->verify()->check($verification, '1234');
+    echo "Verification was successful (status: " . $verification['status'] . ")\n";
+} catch (Exception $e) {
+    $verification = $e->getEntity();
+    echo "Verification failed with status " . $verification['status']
+        . " and error text \"" . $verification['error_text'] . "\"\n";
+}
 ```
  
 Or a request ID:
 
 ```php
-$client->verify()->check('00e6c3377e5348cdaf567e1417c707a5', '1234');
+try {
+    $verification = $client->verify()->check('00e6c3377e5348cdaf567e1417c707a5', '1234');
+    echo "Verification was successful (status: " . $verification['status'] . ")\n";
+} catch (Exception $e) {
+    $verification = $e->getEntity();
+    echo "Verification failed with status " . $verification['status']
+        . " and error text \"" . $verification['error_text'] . "\"\n";
+}
 ```
 
 ### Searching For A Verification
