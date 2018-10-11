@@ -153,8 +153,8 @@ echo "The body of the message was: " . $message->getBody();
 
 ### Starting a Verification
 
-Nexmo's [Verify API][doc_verify] makes it easy to prove that a user has provided their own phone number during signup, 
-or implement second factor authentication during signin.
+Nexmo's [Verify API][doc_verify] makes it easy to prove that a user has provided their own phone number during sign up, 
+or implement second factor authentication during sign in.
 
 You can start a verification process using a simple array:
 
