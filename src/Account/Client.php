@@ -92,7 +92,7 @@ class Client implements ClientAwareInterface
         $response = $this->client->send($request);
 
         if($response->getStatusCode() != '200'){
-            throw $this->getException($response, $application);
+            throw $this->getException($response);
         }
     }
 
@@ -168,7 +168,7 @@ class Client implements ClientAwareInterface
         return $body;
     }
 
-    protected function getException(ResponseInterface $response, $application = null)
+    protected function getException(ResponseInterface $response)
     {
         $body = json_decode($response->getBody()->getContents(), true);
         $status = $response->getStatusCode();
