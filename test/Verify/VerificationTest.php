@@ -34,7 +34,7 @@ class VerificationTest extends TestCase
     /**
      * @var Verification
      */
-    protected $exsisting;
+    protected $existing;
 
     /**
      * Create a basic verification object
@@ -42,13 +42,13 @@ class VerificationTest extends TestCase
     public function setUp()
     {
         $this->verification = new Verification($this->number, $this->brand);
-        $this->exsisting    = new Verification('44a5279b27dd4a638d614d265ad57a77');
+        $this->existing     = new Verification('44a5279b27dd4a638d614d265ad57a77');
     }
 
-    public function testExsistingAndNew()
+    public function testExistingAndNew()
     {
         $this->assertTrue($this->verification->isDirty());
-        $this->assertFalse($this->exsisting->isDirty());
+        $this->assertFalse($this->existing->isDirty());
     }
 
     public function testConstructDataAsObject()
@@ -120,7 +120,7 @@ class VerificationTest extends TestCase
      */
     public function testRequestId()
     {
-        $this->assertEquals('44a5279b27dd4a638d614d265ad57a77', $this->exsisting->getRequestId());
+        $this->assertEquals('44a5279b27dd4a638d614d265ad57a77', $this->existing->getRequestId());
 
         $this->verification->setResponse($this->getResponse('search'));
         $this->assertEquals('44a5279b27dd4a638d614d265ad57a77', $this->verification->getRequestId());
@@ -131,20 +131,20 @@ class VerificationTest extends TestCase
      */
     public function testSearchParamsAsObject()
     {
-        $this->exsisting->setResponse($this->getResponse('search'));
+        $this->existing->setResponse($this->getResponse('search'));
 
-        $this->assertEquals('6cff3913', $this->exsisting->getAccountId());
-        $this->assertEquals('14845551212', $this->exsisting->getNumber());
-        $this->assertEquals('verify', $this->exsisting->getSenderId());
-        $this->assertEquals(new \DateTime("2016-05-15 03:55:05"), $this->exsisting->getSubmitted());
-        $this->assertEquals(null, $this->exsisting->getFinalized());
-        $this->assertEquals(new \DateTime("2016-05-15 03:55:05"), $this->exsisting->getFirstEvent());
-        $this->assertEquals(new \DateTime("2016-05-15 03:57:12"), $this->exsisting->getLastEvent());
-        $this->assertEquals('0.10000000', $this->exsisting->getPrice());
-        $this->assertEquals('EUR', $this->exsisting->getCurrency());
-        $this->assertEquals(Verification::FAILED, $this->exsisting->getStatus());
+        $this->assertEquals('6cff3913', $this->existing->getAccountId());
+        $this->assertEquals('14845551212', $this->existing->getNumber());
+        $this->assertEquals('verify', $this->existing->getSenderId());
+        $this->assertEquals(new \DateTime("2016-05-15 03:55:05"), $this->existing->getSubmitted());
+        $this->assertEquals(null, $this->existing->getFinalized());
+        $this->assertEquals(new \DateTime("2016-05-15 03:55:05"), $this->existing->getFirstEvent());
+        $this->assertEquals(new \DateTime("2016-05-15 03:57:12"), $this->existing->getLastEvent());
+        $this->assertEquals('0.10000000', $this->existing->getPrice());
+        $this->assertEquals('EUR', $this->existing->getCurrency());
+        $this->assertEquals(Verification::FAILED, $this->existing->getStatus());
 
-        $checks = $this->exsisting->getChecks();
+        $checks = $this->existing->getChecks();
         $this->assertInternalType('array', $checks);
         $this->assertCount(3, $checks);
 
@@ -175,11 +175,11 @@ class VerificationTest extends TestCase
      */
     public function testResponseDataAsArray($type)
     {
-        $this->exsisting->setResponse($this->getResponse($type));
-        $json = $this->exsisting->getResponseData();
+        $this->existing->setResponse($this->getResponse($type));
+        $json = $this->existing->getResponseData();
 
         foreach($json as $key => $value){
-            $this->assertEquals($value, $this->exsisting[$key], "Could not access `$key` as a property.");
+            $this->assertEquals($value, $this->existing[$key], "Could not access `$key` as a property.");
         }
     }
 
@@ -198,60 +198,60 @@ class VerificationTest extends TestCase
     {
         $client = $this->prophesize('Nexmo\Verify\Client');
         if(!is_null($ip)){
-            $prediction = $client->$proxy($this->exsisting, $code, $ip);
+            $prediction = $client->$proxy($this->existing, $code, $ip);
         } elseif(!is_null($code)){
-            $prediction = $client->$proxy($this->exsisting, $code, Argument::cetera());
+            $prediction = $client->$proxy($this->existing, $code, Argument::cetera());
         } else {
-            $prediction = $client->$proxy($this->exsisting);
+            $prediction = $client->$proxy($this->existing);
         }
 
-        $prediction->shouldBeCalled()->willReturn($this->exsisting);
+        $prediction->shouldBeCalled()->willReturn($this->existing);
 
-        $this->exsisting->setClient($client->reveal());
+        $this->existing->setClient($client->reveal());
 
         if(!is_null($ip)){
-            $this->exsisting->$method($code, $ip);
+            $this->existing->$method($code, $ip);
         } elseif(!is_null($code)){
-            $this->exsisting->$method($code);
+            $this->existing->$method($code);
         } else {
-            $this->exsisting->$method();
+            $this->existing->$method();
         }
     }
 
     public function testCheckReturnsBoolForInvalidCode()
     {
         $client = $this->prophesize('Nexmo\Verify\Client');
-        $client->check($this->exsisting, '1234', Argument::cetera())->willReturn($this->exsisting);
-        $client->check($this->exsisting, '4321', Argument::cetera())->willThrow(new \Nexmo\Client\Exception\Request('dummy', '16'));
+        $client->check($this->existing, '1234', Argument::cetera())->willReturn($this->existing);
+        $client->check($this->existing, '4321', Argument::cetera())->willThrow(new \Nexmo\Client\Exception\Request('dummy', '16'));
 
-        $this->exsisting->setClient($client->reveal());
+        $this->existing->setClient($client->reveal());
 
-        $this->assertFalse($this->exsisting->check('4321'));
-        $this->assertTrue($this->exsisting->check('1234'));
+        $this->assertFalse($this->existing->check('4321'));
+        $this->assertTrue($this->existing->check('1234'));
     }
 
     public function testCheckReturnsBoolForTooManyAttempts()
     {
         $client = $this->prophesize('Nexmo\Verify\Client');
-        $client->check($this->exsisting, '1234', Argument::cetera())->willReturn($this->exsisting);
-        $client->check($this->exsisting, '4321', Argument::cetera())->willThrow(new \Nexmo\Client\Exception\Request('dummy', '17'));
+        $client->check($this->existing, '1234', Argument::cetera())->willReturn($this->existing);
+        $client->check($this->existing, '4321', Argument::cetera())->willThrow(new \Nexmo\Client\Exception\Request('dummy', '17'));
 
-        $this->exsisting->setClient($client->reveal());
+        $this->existing->setClient($client->reveal());
 
-        $this->assertFalse($this->exsisting->check('4321'));
-        $this->assertTrue($this->exsisting->check('1234'));
+        $this->assertFalse($this->existing->check('4321'));
+        $this->assertTrue($this->existing->check('1234'));
     }
 
     public function testExceptionForCheckFail()
     {
         $client = $this->prophesize('Nexmo\Verify\Client');
-        $client->check($this->exsisting, '1234', Argument::cetera())->willReturn($this->exsisting);
-        $client->check($this->exsisting, '4321', Argument::cetera())->willThrow(new \Nexmo\Client\Exception\Request('dummy', '6'));
+        $client->check($this->existing, '1234', Argument::cetera())->willReturn($this->existing);
+        $client->check($this->existing, '4321', Argument::cetera())->willThrow(new \Nexmo\Client\Exception\Request('dummy', '6'));
 
-        $this->exsisting->setClient($client->reveal());
+        $this->existing->setClient($client->reveal());
 
         $this->expectException('Nexmo\Client\Exception\Request');
-        $this->exsisting->check('4321');
+        $this->existing->check('4321');
     }
 
     /**
@@ -259,19 +259,19 @@ class VerificationTest extends TestCase
      */
     public function testSerialize($response)
     {
-        $this->exsisting->setResponse($response);
-        $this->exsisting->getResponse()->getBody()->rewind();
-        $this->exsisting->getResponse()->getBody()->getContents();
-        $serialized   = serialize($this->exsisting);
+        $this->existing->setResponse($response);
+        $this->existing->getResponse()->getBody()->rewind();
+        $this->existing->getResponse()->getBody()->getContents();
+        $serialized   = serialize($this->existing);
         /* @var $unserialized Verification */
         $unserialized = unserialize($serialized);
 
-        $this->assertInstanceOf(get_class($this->exsisting), $unserialized);
+        $this->assertInstanceOf(get_class($this->existing), $unserialized);
 
-        $this->assertEquals($this->exsisting->getAccountId(), $unserialized->getAccountId());
-        $this->assertEquals($this->exsisting->getStatus(), $unserialized->getStatus());
+        $this->assertEquals($this->existing->getAccountId(), $unserialized->getAccountId());
+        $this->assertEquals($this->existing->getStatus(), $unserialized->getStatus());
 
-        $this->assertEquals($this->exsisting->getResponseData(), $unserialized->getResponseData());
+        $this->assertEquals($this->existing->getResponseData(), $unserialized->getResponseData());
     }
 
     public function getSerializeResponses()
@@ -290,11 +290,11 @@ class VerificationTest extends TestCase
         $this->expectException('RuntimeException');
 
         if(!is_null($ip)){
-            $this->exsisting->$method($code, $ip);
+            $this->existing->$method($code, $ip);
         } elseif(!is_null($code)){
-            $this->exsisting->$method($code);
+            $this->existing->$method($code);
         } else {
-            $this->exsisting->$method();
+            $this->existing->$method();
         }
     }
 
