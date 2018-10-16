@@ -168,7 +168,7 @@ class Client implements ClientAwareInterface
         return $body;
     }
 
-    protected function getException(ResponseInterface $response, $application = null)
+    protected function getException(ResponseInterface $response)
     {
         $body = json_decode($response->getBody()->getContents(), true);
         $status = $response->getStatusCode();
