@@ -31,7 +31,8 @@ class EncodingDetectorTest extends TestCase
         $r['german'] = ['Heizölrückstoßabdämpfung', false];
         $r['greek'] = ['  Γαζέες καὶ μυρτιὲς δὲν θὰ βρῶ πιὰ στὸ χρυσαφὶ ξέφωτο', true];
         $r['spanish'] = ['El pingüino Wenceslao hizo kilómetros bajo exhaustiva lluvia y frío, añoraba a su querido cachorro.', true];
-        $r['french'] = ['Le cœur déçu mais l\'âme plutôt naïve, Louÿs rêva de crapaüter en canoë au delà des îles, près du mälström où brûlent les novæ.', true];
+        $r['frenchWithUnicode'] = ['Le cœur déçu mais l\'âme plutôt naïve, Louÿs rêva de crapaüter en canoë au delà des îles, près du mälström où brûlent les novæ.', true];
+        $r['frenchWithOnlyGSM'] = ['j\'étais donc plein de songes ! L\'espérance en chantant me berçait de mensonges. J\'étais donc cet enfant, hélas !', false];
         $r['icelandic'] = ['Kæmi ný öxi hér ykist þjófum nú bæði víl og ádrepa ', true];
         $r['japanese-hiragana'] = ['いろはにほへとちりぬるを', true];
         $r['japanese-katakana'] = ['イロハニホヘト チリヌルヲ ワカヨタレソ ツネナラム', true];
@@ -40,6 +41,8 @@ class EncodingDetectorTest extends TestCase
         $r['russian'] = ['В чащах юга жил бы цитрус? Да, но фальшивый экземпляр!', true];
         $r['thai'] = ['กว่าบรรดาฝูงสัตว์เดรัจฉาน', true];
         $r['turkish'] = ['Pijamalı hasta, yağız şoföre çabucak güvendi.', true];
+        $r['LF'] = ["\n", false];
+        $r['CR'] = ["\r", false];
 
         return $r;
     }
