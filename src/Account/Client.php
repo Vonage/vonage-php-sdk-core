@@ -92,7 +92,7 @@ class Client implements ClientAwareInterface
         $response = $this->client->send($request);
 
         if($response->getStatusCode() != '200'){
-            throw $this->getException($response, $application);
+            throw $this->getException($response);
         }
     }
 
