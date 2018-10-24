@@ -188,7 +188,7 @@ $client->verify()->cancel($verification);
 
 ### Checking A Verification
 
-In the same way, checking a verification requires the code the user provided, and an exiting verification object:
+In the same way, checking a verification requires the code the user provided, and an existing verification object:
 
 ```php
 $verification = new \Nexmo\Verify\Verification('00e6c3377e5348cdaf567e1417c707a5');
@@ -217,7 +217,7 @@ try {
 
 ### Searching For A Verification
 
-You can check the status of a verification, or access the results of past verifications using either an exsisting 
+You can check the status of a verification, or access the results of past verifications using either an existing 
 verification object, or a request ID. The verification object will then provide a rich interface:
 
 ```php
@@ -318,14 +318,14 @@ foreach($client->calls($filter) as $call){
 
 ### Creating An Application
 
-Application are configuration containers, and you can create one using a simple array structure:
+Application are configuration containers. You can create one using a simple array structure:
 
 ```php
 $application = $client->applications()->create([
     'name' => 'My Application',
     'answer_url' => 'https://example.com/answer',
     'event_url' => 'https://example.com/event'
-])
+]);
 ```
 
 You can also pass the client an application object:
@@ -379,24 +379,24 @@ $application = $client->applications()->update([
 ], '1a20a124-1775-412b-b623-e6985f4aace0');
 ```
 
-### Search available numbers
+### Search Available Numbers
 
-You can search for numbers available to purchase in a specific country
+You can search for numbers available to purchase in a specific country:
 
 ```php
 $numbers = $client->numbers()->searchAvailable('US');
 ```
 
-### Purchase number
+### Purchase A Number
 
-To purchase a number, you can pass in a value returned from number search
+To purchase a number, you can pass in a value returned from number search:
 
-```
+```php
 $numbers = $client->numbers()->searchAvailable('US');
 $client->numbers()->purchase($numbers[0]);
 ```
 
-Or you can specify the number and country manually
+Or you can specify the number and country manually:
 
 ```php
 $client->numbers()->purchase('14155550100', 'US');
@@ -406,7 +406,7 @@ $client->numbers()->purchase('14155550100', 'US');
 
 An API is provided to allow you to rotate your API secrets. You can create a new secret (up to a maximum of two secrets) and delete the existing one once all applications have been updated.
 
-Get a list of the secrets:
+To get a list of the secrets:
 
 ```php
 $secretCollection = $client->account()->listSecrets(API_KEY);
@@ -416,13 +416,13 @@ foreach($secretCollection['secrets'] as $secret) {
 }
 ```
 
-Create a new secret (the created dates will help you know which is which):
+You can create a new secret (the created dates will help you know which is which):
 
 ```php
 $client->account()->createSecret(API_KEY, 'awes0meNewSekret!!;');
 ```
 
-Delete the old secret (any application still using these credentials will stop working):
+And delete the old secret (any application still using these credentials will stop working):
 
 ```php
 try {
@@ -442,9 +442,9 @@ Fatal error: Uncaught exception 'GuzzleHttp\Exception\RequestException' with mes
 
 This is due to some PHP installations not shipping with a list of trusted CA certificates. This is a system configuration problem, and not specific to either cURL or Nexmo.
 
-> *IMPORTANT*: In the next paragraph we provide a link to a CA certificate bundle. Nexmo do not guarantee the safety of this bundle, and you should review it yourself before installing any CA bundle on your machine
+> *IMPORTANT*: In the next paragraph we provide a link to a CA certificate bundle. Nexmo do not guarantee the safety of this bundle, and you should review it yourself before installing any CA bundle on your machine.
 
-To resolve this issue, download a list of trusted CA certificates (e.g. the [curl](https://curl.haxx.se/ca/cacert.pem) bundle) and copy it on to your machine. once this is done, edit `php.ini` and set the `curl.cainfo` parameter:
+To resolve this issue, download a list of trusted CA certificates (e.g. the [curl](https://curl.haxx.se/ca/cacert.pem) bundle) and copy it on to your machine. Once this is done, edit `php.ini` and set the `curl.cainfo` parameter:
 
 ```
 # Linux/MacOS
@@ -504,7 +504,7 @@ The `legacy` branch can be used to require that earlier version. During the tran
 branches will have both new and legacy code. The [API coverage](#API-Coverage) section identifies what features are 
 currently implemented and up to date. 
 
-To contribute to the library, docs, or examples, [create an issue][issues] or a pull request. Please only raise issues
+To contribute to the library, docs, or examples, [create an issue][issues] or [a pull request][pulls]. Please only raise issues
 about features marked as working in the [API coverage](#API-Coverage) as the rest of the code is being updated.
 
 License
@@ -519,3 +519,5 @@ This library is released under the [MIT License][license]
 [license]: LICENSE.txt
 [send_example]: examples/send.php
 [spec]: https://github.com/Nexmo/client-library-specification
+[issues]: https://github.com/Nexmo/nexmo-php/issues
+[pulls]: https://github.com/Nexmo/nexmo-php/pulls
