@@ -335,13 +335,13 @@ class ClientTest extends TestCase
         //todo: add server error
         return [
             //post / create are aliases
-            ['post', 'success', '200'], //should be 201
+            ['post', 'success', '201'],
             ['post', 'bad', '400'],
             ['post', 'unauthorized', '401'],
-            ['create', 'success', '200'], //should be 201
+            ['create', 'success', '201'],
             ['create', 'bad', '400'],
             ['create', 'unauthorized', '401'],
-            ['delete', 'success', '200'], //should be 204
+            ['delete', 'success', '204'],
             ['delete', 'bad', '400'],
             ['delete', 'unauthorized', '401'],
         ];
