@@ -157,7 +157,7 @@ class Client
                 $content = $body->getContents();
                 $params = json_decode($content, true);
                 $params['api_key'] = $credentials['api_key'];
-                $signature = new Signature($params, $credentials['signature_secret']);
+                $signature = new Signature($params, $credentials['signature_secret'], $credentials['signature_method']);
                 $body->rewind();
                 $body->write(json_encode($signature->getSignedParams()));
                 break;
@@ -168,7 +168,7 @@ class Client
                 $params = [];
                 parse_str($content, $params);
                 $params['api_key'] = $credentials['api_key'];
-                $signature = new Signature($params, $credentials['signature_secret']);
+                $signature = new Signature($params, $credentials['signature_secret'], $credentials['signature_method']);
                 $params = $signature->getSignedParams();
                 $body->rewind();
                 $body->write(http_build_query($params, null, '&'));
@@ -177,7 +177,7 @@ class Client
                 $query = [];
                 parse_str($request->getUri()->getQuery(), $query);
                 $query['api_key'] = $credentials['api_key'];
-                $signature = new Signature($query, $credentials['signature_secret']);
+                $signature = new Signature($query, $credentials['signature_secret'], $credentials['signature_method']);
                 $request = $request->withUri($request->getUri()->withQuery(http_build_query($signature->getSignedParams())));
                 break;
         }

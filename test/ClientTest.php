@@ -569,7 +569,7 @@ class ClientTest extends TestCase
         self::assertArrayHasKey('api_key', $array);
 
         //params should be correctly signed
-        $signature = new Signature($array, $secret);
+        $signature = new Signature($array, $secret, 'md5hash');
         self::assertTrue($signature->check($array));
     }
 }

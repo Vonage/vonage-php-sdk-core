@@ -8,6 +8,8 @@
 
 namespace Nexmo\Client;
 
+use Nexmo\Client\Exception\Exception;
+
 class Signature
 {
     /**
@@ -28,7 +30,7 @@ class Signature
      * @param array $params
      * @param $secret
      */
-    public function __construct(array $params, $secret)
+    public function __construct(array $params, $secret, $signatureMethod)
     {
         $this->params = $params;
         $this->signed = $params;
@@ -51,11 +53,25 @@ class Signature
         //create base string
         $base = '&'.urldecode(http_build_query($signed));
 
-        //append the secret
-        $base .= $secret;
+        $this->signed['sig'] = $this->sign($signatureMethod, $base, $secret);
+    }
 
-        //create hash
-        $this->signed['sig'] = md5($base);
+    protected function sign($signatureMethod, $data, $secret) {
+       switch($signatureMethod) {
+            case 'md5hash':
+                // md5hash needs the secret appended
+                $data .= $secret;
+                return md5($data);
+                break;
+            case 'md5':
+            case 'sha1':
+            case 'sha256':
+            case 'sha512':
+                return hash_hmac($signatureMethod, $data, $secret);
+                break;
+            default:
+                throw new Exception('Unknown signature algorithm: '.$signatureMethod.'. Expected: md5hash, md5, sha1, sha256, or sha512');
+        }
     }
 
     /**
