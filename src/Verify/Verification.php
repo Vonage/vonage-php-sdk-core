@@ -37,7 +37,7 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
     /**
      * Create a verification with a number and brand, or the `request_id` of an existing verification.
      *
-     * @param string $idOrNumber The number to verify, or the `request_id` of an exsisting verification.
+     * @param string $idOrNumber The number to verify, or the `request_id` of an existing verification.
      * @param null|string $brand The brand that identifies your application to the user.
      * @param array $additional Additional parameters can be set as keys / values.
      */
