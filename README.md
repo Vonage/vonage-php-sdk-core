@@ -51,7 +51,7 @@ $client = new Nexmo\Client(new Nexmo\Client\Credentials\Basic(API_KEY, API_SECRE
 Examples
 --------
 
-### Sending A Message
+### Sending a Message
 
 To use [Nexmo's SMS API][doc_sms] to send an SMS message, call the `$client->message()->send()` method.
 
@@ -111,7 +111,7 @@ foreach($text as $index => $data){
 
 The [send example][send_example] also has full working examples.
 
-### Receiving A Message
+### Receiving a Message
 
 Inbound messages are [sent to your application as a webhook][doc_inbound], and the client library provides a way to 
 create an inbound message object from a webhook:
@@ -132,7 +132,7 @@ $inbound = \Nexmo\Message\InboundMessage::createFromGlobals();
 error_log($inbound['to']);
 ```
 
-### Fetching A Message
+### Fetching a Message
 
 You can retrieve a message log from the API using the ID of the message:
 
@@ -153,7 +153,7 @@ echo "The body of the message was: " . $message->getBody();
 
 ### Starting a Verification
 
-Nexmo's [Verify API][doc_verify] makes it easy to prove that a user has provided their own phone number during signup, 
+Nexmo's [Verify API][doc_verify] makes it easy to prove that a user has provided their own phone number during signup,
 or implement second factor authentication during signin.
 
 You can start a verification process using a simple array:
@@ -186,7 +186,7 @@ $verification = new \Nexmo\Verify\Verification('00e6c3377e5348cdaf567e1417c707a5
 $client->verify()->cancel($verification);
 ```
 
-### Checking A Verification
+### Checking a Verification
 
 In the same way, checking a verification requires the code the user provided, and an existing verification object:
 
@@ -215,7 +215,7 @@ try {
 }
 ```
 
-### Searching For A Verification
+### Searching For a Verification
 
 You can check the status of a verification, or access the results of past verifications using either an existing 
 verification object, or a request ID. The verification object will then provide a rich interface:
@@ -238,7 +238,7 @@ $client->verify()->search($verification);
 echo "Verification cost was: " . $verification['price'] . PHP_EOL;
 ```
 
-### Making A Call 
+### Making a Call 
 
 All `$client->calls()` methods require the client to be constructed with a `Nexmo\Client\Credentials\Keypair`, or a 
 `Nexmo\Client\Credentials\Container` that includes the `Keypair` credentials:
@@ -280,7 +280,7 @@ $call->setTo('14843331234')
 $client->calls()->create($call);
 ```
 
-### Fetching A Call
+### Fetching a Call
 
 You can fetch a call using a `Nexmo\Call\Call` object, or the call's UUID as a string:
 
@@ -316,7 +316,7 @@ foreach($client->calls($filter) as $call){
 }
 ```
 
-### Creating An Application
+### Creating an Application
 
 Application are configuration containers. You can create one using a simple array structure:
 
@@ -387,7 +387,7 @@ You can search for numbers available to purchase in a specific country:
 $numbers = $client->numbers()->searchAvailable('US');
 ```
 
-### Purchase A Number
+### Purchase a Number
 
 To purchase a number, you can pass in a value returned from number search:
 
@@ -521,3 +521,4 @@ This library is released under the [MIT License][license]
 [spec]: https://github.com/Nexmo/client-library-specification
 [issues]: https://github.com/Nexmo/nexmo-php/issues
 [pulls]: https://github.com/Nexmo/nexmo-php/pulls
+
