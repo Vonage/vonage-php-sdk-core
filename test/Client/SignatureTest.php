@@ -10,10 +10,46 @@ namespace NexmoTest\Client;
 
 use Nexmo\Client\Signature;
 use PHPUnit\Framework\TestCase;
+use Nexmo\Client\Exception\Exception;
 
 
 class SignatureTest extends TestCase
 {
+    public function testInvalidSignatureMethod() {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Unknown signature algorithm: fake_algo. Expected: md5hash, md5, sha1, sha256, or sha512');
+        $signature = new Signature(['foo' => 'bar'], 'sig_secret', 'fake_algo');
+    }
+
+    /**
+     * @dataProvider hmacSignatureProvider
+     */
+    public function testHmacSignature($algorithm, $expected){
+        $data = [
+            'api_key' => 'fake_api_key',
+            'to' => '14155550100',
+            'from' => 'AcmeInc',
+            'text' => 'Test From Nexmo',
+            'type' => 'text',
+            'timestamp' => '1540924779'
+        ];
+        $secret = '71efab63122f1d179f51c46bac838fb5';
+        $signature = new Signature($data, $secret, $algorithm);
+
+        $this->assertEquals($expected, $signature->getSignature());
+    }
+
+    public function hmacSignatureProvider() {
+        $data = [];
+
+        $data['md5'] = ['md5', '51cdafebb4bbce9525b195c1617cb8d2'];
+        $data['sha1'] = ['sha1', '0162aec64bc183b2e1256545951fe5639dc98020'];
+        $data['sha256'] = ['sha256', '9fec5ef6d0f2b3d2bb7558b6e4042569823cab9ea0dd30503472b7b304601975'];
+        $data['sha512'] = ['sha512', '40bd12b9a4b6000ad1138eefd24ffe9fbd72aee13c3fa04b32bb69dbc256ad0a04a463b1a9af6660d10f6e1e769ee14b9cff6a635502e93afcd0bfab29f38f87'];
+
+        return $data;
+    }
+
     /**
      * @dataProvider signatures
      * @param $sig
@@ -23,7 +59,7 @@ class SignatureTest extends TestCase
     public function testSignature($sig, $params, $secret)
     {
         //a signature is created from a set of parameters and a secret
-        $signature = new Signature($params, $secret);
+        $signature = new Signature($params, $secret, 'md5hash');
 
         //the parameters should ne be changed
         $this->assertEquals($params, $signature->getParams());
