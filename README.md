@@ -151,6 +151,26 @@ $client->message()->search($message);
 echo "The body of the message was: " . $message->getBody();
 ```
 
+### Signing a Message
+
+The SMS API supports the ability to sign messages by generating and adding a signature using a "Signature Secret" rather than your API secret.  The algorithms supported are:
+
+* `md5hash1`
+* `md5`
+* `sha1`
+* `sha256`
+* `sha512`
+
+Both your application and Nexmo need to agree on which algorithm is used. In the [dashboard](https://dashboard.nexmo.com), visit your account settings page and under "API Settings" you can select the algorithm to use. This is also the location where you will find your "Signature Secret" (it's different from the API secret).
+
+Create a client using these credentials and the algorithm to use, for example:
+
+```php
+$client = new Nexmo\Client(new Nexmo\Client\Credentials\SignatureSecret(API_KEY, API_SECRET, 'sha256'));
+```
+
+Using this client, your SMS API messages will be sent as signed messages.
+
 ### Starting a Verification
 
 Nexmo's [Verify API][doc_verify] makes it easy to prove that a user has provided their own phone number during signup, 
