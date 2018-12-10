@@ -58,7 +58,7 @@ class Client implements ClientAwareInterface
         foreach($data['messages'] as $part){
             switch($part['status']){
                 case '0':
-                    continue; //all okay
+                    continue 2; //all okay
                 case '1':
                     if(preg_match('#\[\s+(\d+)\s+\]#', $part['error-text'], $match)){
                         usleep($match[1] + 1);
