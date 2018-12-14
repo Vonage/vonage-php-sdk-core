@@ -96,11 +96,14 @@ class Client
         $this->apiUrl = static::BASE_API;
         $this->restUrl = static::BASE_REST;
 
-        // If they've provided a base URL, use that instead
+        // If they've provided alternative URLs, use that instead
         // of the defaults
-        if (isset($options['base_url'])) {
-            $this->restUrl = $options['base_url'];
-            $this->apiUrl = $options['base_url'];
+        if (isset($options['base_rest_url'])) {
+            $this->restUrl = $options['base_rest_url'];
+        }
+
+        if (isset($options['base_api_url'])) {
+            $this->apiUrl = $options['base_api_url'];
         }
 
         $this->setFactory(new MapFactory([
