@@ -465,6 +465,25 @@ try {
     echo $e->getMessage();
 }
 ```
+### Pricing
+
+#### Prefix Pricing
+
+If you know the prefix of a country that you want to call, you can use the `prefix-pricing` endpoint to
+find out costs to call that number. Each prefix can return multiple countries (e.g. `1` returns `US`, `CA` and `UM`):
+
+```
+$results = $client->account()->getPrefixPricing('1');
+foreach ($results as $r) {
+    echo $r['country_code'].PHP_EOL;
+    echo $r['country_name'].PHP_EOL;
+    foreach ($r['networks'] as $n) {
+        echo $n->getName() .' :: '.$n->getCode().' :: '.$n->getPrefixPrice().PHP_EOL;
+    }
+    echo "----------------".PHP_EOL;
+}
+```
+
 
 ## Troubleshooting
 
@@ -494,8 +513,9 @@ API Coverage
     * [X] Balance
     * [X] Pricing
     * [ ] Settings
-    * [ ] Top Up
+    * [X] Top Up
     * [X] Secret Management
+    * [X] Pricing
     * [X] Numbers
         * [X] Search
         * [X] Buy
@@ -519,16 +539,16 @@ API Coverage
         * [X] Message
         * [X] Messages
         * [X] Rejections
-    * [ ] US Short Codes
-        * [ ] Two-Factor Authentication
-        * [ ] Event Based Alerts
-            * [ ] Sending Alerts
-            * [ ] Campaign Subscription Management
+    * [X] US Short Codes
+        * [X] Two-Factor Authentication
+        * [X] Event Based Alerts
+            * [X] Sending Alerts
+            * [X] Campaign Subscription Management
 * Voice
     * [X] Outbound Call
-    * [ ] Inbound Call
-    * [ ] Text-To-Speech Call
-    * [ ] Text-To-Speech Prompt
+    * [X] Inbound Call
+    * [X] Text-To-Speech Call
+    * [X] Text-To-Speech Prompt
 
 Contributing
 ------------
