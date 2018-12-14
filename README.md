@@ -41,24 +41,26 @@ If you're using Composer, make sure the autoloader is included in your project's
 ```php
 require_once "vendor/autoload.php";
 ```
-    
+
 Create a client with your API key and secret:
 
 ```php
 $client = new Nexmo\Client(new Nexmo\Client\Credentials\Basic(API_KEY, API_SECRET));     
 ```
 
-For testing purposes you may want to change the URL that `nexmo-php` makes requests to. You can do this by providing an array containing `base_url` as the second parameter when creating a `Nexmo\Client` instance.
+For testing purposes you may want to change the URL that `nexmo-php` makes requests to from `api.nexmo.com` to something else. You can do this by providing an array containing `base_api_url` as the second parameter when creating a `Nexmo\Client` instance.
 
 ```php
 $client = new Nexmo\Client(
     new Nexmo\Client\Credentials\Basic(API_KEY, API_SECRET),
     [
-        'base_url' => 'https://example.com'
+        'base_api_url' => 'https://example.com'
     ]
 );
 
 ```
+
+For APIs that would usually hit `rest.nexmo.com`, supplying a `base_rest_url` as an option to the constructor will change those requests.
 
 Examples
 --------
