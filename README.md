@@ -167,6 +167,8 @@ echo "The body of the message was: " . $message->getBody();
 
 ### Signing a Message
 
+_You may also like to read the [documentation about message signing](https://developer.nexmo.com/concepts/guides/signing-messages)._
+
 The SMS API supports the ability to sign messages by generating and adding a signature using a "Signature Secret" rather than your API secret.  The algorithms supported are:
 
 * `md5hash1`
@@ -180,10 +182,25 @@ Both your application and Nexmo need to agree on which algorithm is used. In the
 Create a client using these credentials and the algorithm to use, for example:
 
 ```php
-$client = new Nexmo\Client(new Nexmo\Client\Credentials\SignatureSecret(API_KEY, API_SECRET, 'sha256'));
+$client = new Nexmo\Client(new Nexmo\Client\Credentials\SignatureSecret(API_KEY, SIGNATURE_SECRET, 'sha256'));
 ```
 
 Using this client, your SMS API messages will be sent as signed messages.
+
+### Verifying an Incoming Message Signature
+
+_You may also like to read the [documentation about message signing](https://developer.nexmo.com/concepts/guides/signing-messages)._
+
+If you have message signing enabled for incoming messages, the SMS webhook will include the fields `sig`, `nonce` and `timestamp`. To verify the signature is from Nexmo, you create a Signature object using the incoming data, your signature secret and the signature method. Then use the `check()` method with the actual signature that was received (usually `_GET['sig']`) to make sure that it is correct.
+
+```php
+$signature = new \Nexmo\Client\Signature($_GET, SIGNATURE_SECRET, 'sha256');
+
+// is it valid? Will be true or false
+$isValid = $signature->check($_GET['sig']);
+```
+
+Using your signature secret and the other supplied parameters, the signature can be calculated and checked against the incoming signature value.
 
 ### Starting a Verification
 
