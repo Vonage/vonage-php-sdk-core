@@ -14,6 +14,7 @@ use Nexmo\Account\SecretCollection;
 use Nexmo\Network;
 use Nexmo\Account\SmsPrice;
 use Nexmo\Account\VoicePrice;
+use Nexmo\Account\PrefixPrice;
 use Nexmo\Account\Client;
 use Zend\Diactoros\Response;
 use NexmoTest\Psr7AssertionTrait;
@@ -100,6 +101,22 @@ class ClientTest extends TestCase
         $voicePrice = $this->accountClient->getVoicePrice('US');
         $this->assertInstanceOf(VoicePrice::class, $voicePrice);
         $this->assertInstanceOf(Network::class, $voicePrice['networks']['311310']);
+    }
+
+    public function testGetPrefixPricing()
+    {
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('/account/get-prefix-pricing/outbound', $request->getUri()->getPath());
+            $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('GET', $request->getMethod());
+            $this->assertRequestQueryContains('prefix', '263', $request);
+
+            return true;
+        }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('prefix-pricing'));
+
+        $prefixPrice = $this->accountClient->getPrefixPricing('263');
+        $this->assertInstanceOf(PrefixPrice::class, $prefixPrice[0]);
+        $this->assertInstanceOf(Network::class, $prefixPrice[0]['networks']['64804']);
     }
 
     public function testListSecrets()
