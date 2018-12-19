@@ -42,10 +42,10 @@ class SignatureTest extends TestCase
     public function hmacSignatureProvider() {
         $data = [];
 
-        $data['md5'] = ['md5', '51cdafebb4bbce9525b195c1617cb8d2'];
-        $data['sha1'] = ['sha1', '0162aec64bc183b2e1256545951fe5639dc98020'];
-        $data['sha256'] = ['sha256', '9fec5ef6d0f2b3d2bb7558b6e4042569823cab9ea0dd30503472b7b304601975'];
-        $data['sha512'] = ['sha512', '40bd12b9a4b6000ad1138eefd24ffe9fbd72aee13c3fa04b32bb69dbc256ad0a04a463b1a9af6660d10f6e1e769ee14b9cff6a635502e93afcd0bfab29f38f87'];
+        $data['md5'] = ['md5', '51CDAFEBB4BBCE9525B195C1617CB8D2'];
+        $data['sha1'] = ['sha1', '0162AEC64BC183B2E1256545951FE5639DC98020'];
+        $data['sha256'] = ['sha256', '9FEC5EF6D0F2B3D2BB7558B6E4042569823CAB9EA0DD30503472B7B304601975'];
+        $data['sha512'] = ['sha512', '40BD12B9A4B6000AD1138EEFD24FFE9FBD72AEE13C3FA04B32BB69DBC256AD0A04A463B1A9AF6660D10F6E1E769EE14B9CFF6A635502E93AFCD0BFAB29F38F87'];
 
         return $data;
     }

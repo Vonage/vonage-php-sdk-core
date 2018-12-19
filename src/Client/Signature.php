@@ -67,7 +67,7 @@ class Signature
             case 'sha1':
             case 'sha256':
             case 'sha512':
-                return hash_hmac($signatureMethod, $data, $secret);
+                return strtoupper(hash_hmac($signatureMethod, $data, $secret));
                 break;
             default:
                 throw new Exception('Unknown signature algorithm: '.$signatureMethod.'. Expected: md5hash, md5, sha1, sha256, or sha512');
