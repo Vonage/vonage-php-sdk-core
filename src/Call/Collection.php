@@ -10,7 +10,6 @@ namespace Nexmo\Call;
 
 use Nexmo\Client\ClientAwareInterface;
 use Nexmo\Client\ClientAwareTrait;
-use Nexmo\Conversations\Conversation;
 use Nexmo\Entity\CollectionInterface;
 use Nexmo\Entity\CollectionTrait;
 use Psr\Http\Message\ResponseInterface;
