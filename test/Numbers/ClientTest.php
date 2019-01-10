@@ -170,9 +170,9 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('list'));
 
-        $numbers = $this->numberClient->search();
+        $numbers = $this->numberClient->searchOwned();
 
-        $this->assertInternalType('array', $numbers);
+        $this->assertIsArray($numbers);
         $this->assertInstanceOf('Nexmo\Numbers\Number', $numbers[0]);
         $this->assertInstanceOf('Nexmo\Numbers\Number', $numbers[1]);
 

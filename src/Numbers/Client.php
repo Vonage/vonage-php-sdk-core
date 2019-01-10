@@ -8,7 +8,6 @@
 
 namespace Nexmo\Numbers;
 
-use Http\Client\Common\Exception\ClientErrorException;
 use Nexmo\Client\ClientAwareInterface;
 use Nexmo\Client\ClientAwareTrait;
 use Psr\Http\Message\ResponseInterface;
@@ -71,7 +70,7 @@ class Client implements ClientAwareInterface
 
     public function get($number = null)
     {
-        $items =  $this->search($number);
+        $items =  $this->searchOwned($number);
 
         // This is legacy behaviour, so we need to keep it even though
         // it isn't technically the correct message
@@ -80,16 +79,6 @@ class Client implements ClientAwareInterface
         }
 
         return $items[0];
-    }
-
-    /**
-     * @param null|string $number
-     * @return array []Number
-     * @deprecated Use `searchOwned` instead
-     */
-    public function search($number = null)
-    {
-        return $this->searchOwned($number);
     }
 
     public function searchAvailable($country, $options = [])
