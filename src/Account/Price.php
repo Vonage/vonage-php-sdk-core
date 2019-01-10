@@ -12,7 +12,8 @@ use Nexmo\Entity\JsonSerializableTrait;
 use Nexmo\Entity\NoRequestResponseTrait;
 use Nexmo\Entity\JsonUnserializableInterface;
 
-abstract class Price implements EntityInterface, JsonSerializableInterface, JsonUnserializableInterface, ArrayAccess {
+abstract class Price implements EntityInterface, JsonSerializableInterface, JsonUnserializableInterface, ArrayAccess
+{
     use JsonSerializableTrait;
     use NoRequestResponseTrait;
     use JsonResponseTrait;
@@ -117,7 +118,7 @@ abstract class Price implements EntityInterface, JsonSerializableInterface, Json
         $this->data = $data;
     }
 
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return $this->data;
     }
