@@ -103,7 +103,7 @@ class Client implements ClientAwareInterface
 
         $insightsResults = json_decode($response->getBody()->getContents(), true);
 
-        if('200' != $response->getStatusCode()){
+        if($response->getStatusCode() != '200'){
             throw $this->getException($response);
         }
 

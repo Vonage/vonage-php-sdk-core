@@ -53,7 +53,7 @@ class Client implements ClientAwareInterface
         $request->getBody()->write(http_build_query($body));
         $response = $this->client->send($request);
 
-        if('200' != $response->getStatusCode()){
+        if($response->getStatusCode() != '200'){
             throw $this->getException($response);
         }
 
@@ -222,7 +222,7 @@ class Client implements ClientAwareInterface
         // Mismatch number/country :: 420 :: method failed
         // Already own number :: 420 :: method failed
         // Someone else owns the number :: 420 :: method failed
-        if('200' != $response->getStatusCode()){
+        if($response->getStatusCode() != '200'){
             throw $this->getException($response);
         }
     }

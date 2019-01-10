@@ -32,7 +32,7 @@ class Client implements ClientAwareInterface
 
         $rawBody = $response->getBody()->getContents();
 
-        if('204' != $response->getStatusCode()){
+        if($response->getStatusCode() != '204'){
             throw $this->getException($response);
         }
 
