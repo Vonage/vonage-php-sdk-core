@@ -12,6 +12,7 @@ use Nexmo\Client\ClientAwareInterface;
 use Nexmo\Client\ClientAwareTrait;
 use Nexmo\Entity\CollectionInterface;
 use Nexmo\Entity\CollectionTrait;
+use Nexmo\Entity\FilterInterface;
 use Nexmo\Entity\JsonResponseTrait;
 use Nexmo\Entity\JsonSerializableTrait;
 use Nexmo\Entity\NoRequestResponseTrait;
@@ -60,10 +61,10 @@ class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAcc
     }
 
     /**
-     * @param null $conversation
+     * @param FilterInterface|null $filter
      * @return $this|Conversation
      */
-    public function __invoke(Filter $filter = null)
+    public function __invoke(FilterInterface $filter = null)
     {
         if(!is_null($filter)){
             $this->setFilter($filter);
