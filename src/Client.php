@@ -17,7 +17,6 @@ use Nexmo\Client\Credentials\SignatureSecret;
 use Nexmo\Client\Exception\Exception;
 use Nexmo\Client\Factory\FactoryInterface;
 use Nexmo\Client\Factory\MapFactory;
-use Nexmo\Client\Response\Response;
 use Nexmo\Client\Signature;
 use Nexmo\Entity\EntityInterface;
 use Nexmo\Verify\Verification;
@@ -370,12 +369,12 @@ class Client
     {
         if($this->credentials instanceof Container) {
             if ($this->needsKeypairAuthentication($request)) {
-                $request = $request->withHeader('Authorization', 'Bearer ' . $this->credentials->get(Keypair::class)->generateJwt());
+                $request = $request->withHeader('Authorization', 'Bearer ' . $this->credentials->get(Keypair::class)->generateJwt([]));
             } else {
                 $request = self::authRequest($request, $this->credentials->get(Basic::class));
             }
         } elseif($this->credentials instanceof Keypair){
-            $request = $request->withHeader('Authorization', 'Bearer ' . $this->credentials->generateJwt());
+            $request = $request->withHeader('Authorization', 'Bearer ' . $this->credentials->generateJwt([]));
         } elseif($this->credentials instanceof SignatureSecret){
             $request = self::signRequest($request, $this->credentials);
         } elseif($this->credentials instanceof Basic){
