@@ -11,6 +11,8 @@ namespace Nexmo\Insights;
 use Nexmo\Client\ClientAwareInterface;
 use Nexmo\Client\ClientAwareTrait;
 use Nexmo\Client\Exception;
+use Nexmo\Numbers\Number;
+use Psr\Http\Message\ResponseInterface;
 use Zend\Diactoros\Request;
 
 /**
@@ -68,6 +70,15 @@ class Client implements ClientAwareInterface
         $this->makeRequest('/ni/advanced/async/json', $number, ['callback' => $webhook]);
     }
 
+    /**
+     * @param string $path
+     * @param \Nexmo\Numbers\Number|string $number
+     * @param array $additionalParams
+     * @return array
+     * @throws Exception\Exception
+     * @throws Exception\Request
+     * @throws Exception\Server
+     */
     public function makeRequest($path, $number, $additionalParams = [])
     {
         if ($number instanceof Number)
@@ -99,6 +110,11 @@ class Client implements ClientAwareInterface
         return $insightsResults;
     }
 
+    /**
+     * @param \Psr\Http\Message\ResponseInterface $response
+     * @return Exception\Exception|Exception\Request|Exception\Server
+     * @throws Exception\Exception
+     */
     protected function getException(ResponseInterface $response)
     {
         $body = json_decode($response->getBody()->getContents(), true);
