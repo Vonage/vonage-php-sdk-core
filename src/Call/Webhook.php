@@ -8,7 +8,6 @@
 
 namespace Nexmo\Call;
 
-
 class Webhook implements \JsonSerializable
 {
     protected $urls;
@@ -38,7 +37,7 @@ class Webhook implements \JsonSerializable
         $this->urls[] = $url;
     }
 
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         $data = [
             $this->type . '_url' => $this->urls
@@ -50,6 +49,4 @@ class Webhook implements \JsonSerializable
 
         return $data;
     }
-
-
 }

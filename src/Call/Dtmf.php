@@ -7,6 +7,7 @@
  */
 
 namespace Nexmo\Call;
+
 use Nexmo\Call\Collection;
 use Nexmo\Client\ClientAwareInterface;
 use Nexmo\Client\ClientAwareTrait;
@@ -104,7 +105,7 @@ class Dtmf implements JsonSerializableInterface, ClientAwareInterface, \ArrayAcc
         return $e;
     }
 
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return $this->data;
     }

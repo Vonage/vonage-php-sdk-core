@@ -120,7 +120,7 @@ class Stream implements JsonSerializableInterface, ClientAwareInterface
         return $e;
     }
 
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return $this->data;
     }

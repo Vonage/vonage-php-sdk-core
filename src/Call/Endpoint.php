@@ -68,7 +68,7 @@ class Endpoint implements \JsonSerializable
         return (string) $this->getId();
     }
 
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         switch($this->type){
             case 'phone':

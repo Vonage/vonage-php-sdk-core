@@ -8,7 +8,6 @@
 
 namespace Nexmo\Call;
 
-
 class Transfer implements \JsonSerializable
 {
     protected $urls;
@@ -22,7 +21,7 @@ class Transfer implements \JsonSerializable
         $this->urls = $urls;
     }
 
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return [
             'action' => 'transfer',
