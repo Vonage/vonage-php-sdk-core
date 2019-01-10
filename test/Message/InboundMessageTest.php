@@ -25,6 +25,7 @@ class InboundMessageTest extends TestCase
     /**
      * Inbound messages can be created from a PSR-7 server request.
      * @dataProvider getRequests
+     * @doesNotPerformAssertions
      */
     public function testCanCreateWithServerRequest($request)
     {

@@ -11,6 +11,9 @@ use Nexmo\ApiErrorHandler;
 
 class ApiErrorHandlerTest extends TestCase
 {
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testDoesNotThrowOnSuccess()
     {
         ApiErrorHandler::check(['success' => true], 200);

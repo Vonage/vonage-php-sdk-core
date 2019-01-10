@@ -87,6 +87,9 @@ class MessageCreationTest extends TestCase
         );
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testCanNotChangeCreationAfterResponse()
     {
         $data = ['test' => 'test'];

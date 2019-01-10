@@ -21,7 +21,7 @@ class MuteTest extends TestCase
         $mute = new Mute();
 
         $json = json_decode(json_encode($mute));
-        $this->assertJsonMatchesSchema(__DIR__ . '/schema/mute.json', $json);
+        $this->assertJsonMatchesSchema($json, __DIR__ . '/schema/mute.json');
         $this->assertJsonValueEquals('mute', 'action', $json);
     }
 }

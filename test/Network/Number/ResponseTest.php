@@ -8,6 +8,7 @@
 
 namespace Nexmo\Network\Number;
 
+use BadMethodCallException;
 use PHPUnit\Framework\TestCase;
 
 class ResponseTest extends TestCase
@@ -48,7 +49,7 @@ class ResponseTest extends TestCase
      */
     public function testCantGetOptionalDataBeforeCallback($property)
     {
-        $this->setExpectedException('BadMethodCallException');
+        $this->expectException(BadMethodCallException::class);
         $get = 'get' . $property;
         $this->response->$get();
     }
@@ -59,7 +60,7 @@ class ResponseTest extends TestCase
      */
     public function testCantHasOptionalDataBeforeCallback($property)
     {
-        $this->setExpectedException('BadMethodCallException');
+        $this->expectException(BadMethodCallException::class);
         $has = 'has' . $property;
         $this->response->$has();
     }
