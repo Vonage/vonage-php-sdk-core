@@ -7,7 +7,7 @@ class PrefixPrice extends Price {
 
     public function getCurrency()
     {
-        throw new Exception('Currency is unavailable from this endpoint');
+        throw new \Exception('Currency is unavailable from this endpoint');
     }
 }
 
