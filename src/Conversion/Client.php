@@ -5,6 +5,7 @@ namespace Nexmo\Conversion;
 use Nexmo\Client\ClientAwareInterface;
 use Nexmo\Client\ClientAwareTrait;
 use Nexmo\Client\Exception;
+use Psr\Http\Message\ResponseInterface;
 
 
 class Client implements ClientAwareInterface
@@ -42,6 +43,10 @@ class Client implements ClientAwareInterface
         }
     }
 
+    /**
+     * @param ResponseInterface $response
+     * @return Exception\Exception|Exception\Request|Exception\Server
+     */
     protected function getException(ResponseInterface $response)
     {
         $body = json_decode($response->getBody()->getContents(), true);
