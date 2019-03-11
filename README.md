@@ -296,7 +296,10 @@ All `$client->calls()` methods require the client to be constructed with a `Nexm
 
 ```php
 $basic  = new \Nexmo\Client\Credentials\Basic('key', 'secret');
-$keypair = new \Nexmo\Client\Credentials\Keypair(file_get_contents(__DIR__ . '/application.key'), 'application_id');
+$keypair = new \Nexmo\Client\Credentials\Keypair(
+    file_get_contents((NEXMO_APPLICATION_PRIVATE_KEY_PATH),
+    NEXMO_APPLICATION_ID
+);
 
 $client = new \Nexmo\Client(new \Nexmo\Client\Credentials\Container($basic, $keypair));
 ```
