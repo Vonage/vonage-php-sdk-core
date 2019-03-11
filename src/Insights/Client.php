@@ -11,6 +11,7 @@ namespace Nexmo\Insights;
 use Nexmo\Client\ClientAwareInterface;
 use Nexmo\Client\ClientAwareTrait;
 use Nexmo\Client\Exception;
+use Psr\Http\Message\ResponseInterface;
 use Zend\Diactoros\Request;
 
 /**
@@ -90,13 +91,11 @@ class Client implements ClientAwareInterface
 
         $response = $this->client->send($request);
 
-        $insightsResults = json_decode($response->getBody()->getContents(), true);
-
         if('200' != $response->getStatusCode()){
             throw $this->getException($response);
         }
 
-        return $insightsResults;
+        return json_decode($response->getBody()->getContents(), true);
     }
 
     protected function getException(ResponseInterface $response)
