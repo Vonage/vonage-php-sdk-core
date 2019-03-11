@@ -119,6 +119,23 @@ class ClientTest extends TestCase
         $insightsStandard = $this->insightsClient->$methodToCall('14155550100');
     }
 
+    public function testUnexpectedErrorBody()
+    {
+        $empty_json_payload = '{}';
+        $http_status = 400;
+        $expected_exception_type = Exception\Request::class;
+        $expected_exception_msg = 'Unknown error';
+        $this->nexmoClient->send(Argument::type(RequestInterface::class))
+            // return a Response w/ http status 400, but no error-code-label element
+            ->willReturn(new Response(fopen('data://text/plain,' . $empty_json_payload, 'r'), $http_status));
+
+        $this->expectException($expected_exception_type);
+        $this->expectExceptionMessage($expected_exception_msg);
+        $this->expectExceptionCode($http_status);
+
+        $this->insightsClient->basic('');
+    }
+
     protected function checkInsightsRequest($methodToCall, $expectedPath, $expectedClass)
     {
         $this->nexmoClient->send(Argument::that(function (RequestInterface $request)  use ($expectedPath){
