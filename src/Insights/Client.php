@@ -101,12 +101,13 @@ class Client implements ClientAwareInterface
     protected function getException(ResponseInterface $response)
     {
         $body = json_decode($response->getBody()->getContents(), true);
+        $body_error = isset($body['error-code-label']) ? $body['error-code-label'] : 'Unknown error';
         $status = $response->getStatusCode();
 
         if($status >= 400 AND $status < 500) {
-            $e = new Exception\Request($body['error-code-label'], $status);
+            $e = new Exception\Request($body_error, $status);
         } elseif($status >= 500 AND $status < 600) {
-            $e = new Exception\Server($body['error-code-label'], $status);
+            $e = new Exception\Server($body_error, $status);
         } else {
             $e = new Exception\Exception('Unexpected HTTP Status Code');
             throw $e;
