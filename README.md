@@ -505,6 +505,34 @@ foreach ($results as $r) {
 ```
 
 
+### Check your Balance
+
+Check how much credit remains on your account:
+
+```php
+$response = $client->account()->getBalance();
+echo round($response->data['balance'], 2) . " EUR\n";
+```
+
+### View and Change Account Configuration
+
+Inspect the current settings on the account:
+
+```php
+$response = $client->account()->getConfig();
+print_r($response->data);
+```
+
+Update the default callback URLs for incoming SMS messages and delivery receipts:
+
+```php
+$response = $client->account()->updateConfig([
+    "sms_callback_url" => "http://example.com/webhooks/incoming-sms",
+    "dr_callback_url" => "http://example.com/webhooks/delivery-receipt"
+]);
+print_r($response->data);
+```
+
 ## Troubleshooting
 
 Some users have issues making requests due to the following error:
