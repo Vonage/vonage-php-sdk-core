@@ -23,7 +23,7 @@ To use the client library you'll need to have [created a Nexmo account][signup].
 To install the PHP client library to your project, we recommend using [Composer](https://getcomposer.org/).
 
 ```bash
-composer require nexmo/client
+composer require nexmo/client php-http/guzzle6-adapter
 ```
 
 > You don't need to clone this repository to use this library in your own projects. Use Composer to install it from Packagist.
