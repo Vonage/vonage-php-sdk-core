@@ -7,7 +7,8 @@
  */
 
 namespace Nexmo;
-use Http\Client\HttpClient;
+use Psr\Http\Client\ClientInterface;
+use Http\Discovery\Psr18ClientDiscovery;
 use Nexmo\Client\Credentials\Basic;
 use Nexmo\Client\Credentials\Container;
 use Nexmo\Client\Credentials\CredentialsInterface;
@@ -52,7 +53,7 @@ class Client
 
     /**
      * Http Client
-     * @var HttpClient
+     * @var ClientInterface
      */
     protected $client;
 
@@ -69,10 +70,10 @@ class Client
     /**
      * Create a new API client using the provided credentials.
      */
-    public function __construct(CredentialsInterface $credentials, $options = array(), HttpClient $client = null)
+    public function __construct(CredentialsInterface $credentials, $options = array(), ClientInterface $client = null)
     {
         if(is_null($client)){
-            $client = new \Http\Adapter\Guzzle6\Client();
+            $client = Psr18ClientDiscovery::find();
         }
 
         $this->setHttpClient($client);
@@ -135,10 +136,10 @@ class Client
      * This allows the default http client to be swapped out for a HTTPlug compatible
      * replacement.
      *
-     * @param HttpClient $client
+     * @param ClientInterface $client
      * @return $this
      */
-    public function setHttpClient(HttpClient $client)
+    public function setHttpClient(ClientInterface $client)
     {
         $this->client = $client;
         return $this;
@@ -147,7 +148,7 @@ class Client
     /**
      * Get the Http Client used to make API requests.
      *
-     * @return HttpClient
+     * @return ClientInterface
      */
     public function getHttpClient()
     {
@@ -262,7 +263,7 @@ class Client
         }
         throw new Exception(get_class($this->credentials).' does not support JWT generation');
     }
-    
+
     /**
      * Takes a URL and a key=>value array to generate a GET PSR-7 request object
      *
