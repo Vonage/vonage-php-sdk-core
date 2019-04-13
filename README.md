@@ -321,6 +321,27 @@ $client->calls()->create([
 ]);
 ```
 
+Or you can provide an NCCO directly in the POST request
+
+```
+$call = $client->calls()->create([
+    'to' => [[
+        'type' => 'phone',
+        'number' => '14843331234'
+    ]],
+    'from' => [
+        'type' => 'phone',
+        'number' => '14843335555'
+    ],
+    'ncco' => [
+        [
+            'action' => 'talk',
+            'text' => 'This is a text to speech call from Nexmo'
+        ]
+    ]
+]);
+```
+
 Or you can create a `Nexmo\Call\Call` object, and use that:
 
 ```php
@@ -330,6 +351,23 @@ $call->setTo('14843331234')
      ->setFrom('14843335555')
      ->setWebhook(Call::WEBHOOK_ANSWER, 'https://example.com/answer')
      ->setWebhook(Call::WEBHOOK_EVENT, 'https://example.com/event');
+
+$client->calls()->create($call);
+```
+
+The same example, providing an NCCO directly:
+
+```php
+use Nexmo\Call\Call;
+$call = new Call();
+$call->setTo('14843331234')
+     ->setFrom('14843335555')
+     ->setNcco([
+        [
+            'action' => 'talk',
+            'text' => 'This is a text to speech call from Nexmo'
+        ]
+      ]);
 
 $client->calls()->create($call);
 ```
@@ -594,6 +632,7 @@ API Coverage
             * [X] Campaign Subscription Management
 * Voice
     * [X] Outbound Call
+    * [X] Outbound Call with an NCCO
     * [X] Inbound Call
     * [X] Text-To-Speech Call
     * [X] Text-To-Speech Prompt
