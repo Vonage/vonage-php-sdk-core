@@ -135,6 +135,26 @@ class CollectionTest extends TestCase
         $this->assertInstanceOf('Nexmo\Call\Call', $call);
         $this->assertEquals('e46fd8bd-504d-4044-9600-26dd18b41111', $call->getId());
     }
+
+    /**
+     * @dataProvider postCallNcco
+     */
+    public function testCreatePostCallNcco($payload)
+    {
+        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($payload){
+            $ncco = [['action' => 'talk', 'text' => 'Hello World']];
+
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
+            $this->assertRequestBodyIsJson(json_encode($payload), $request);
+            $this->assertRequestJsonBodyContains('ncco', $ncco, $request);
+            return true;
+        }))->willReturn($this->getResponse('created', '201'));
+
+        $call = $this->collection->post($payload);
+
+        $this->assertInstanceOf('Nexmo\Call\Call', $call);
+        $this->assertEquals('e46fd8bd-504d-4044-9600-26dd18b41111', $call->getId());
+    }
     
     /**
      * @dataProvider postCall
@@ -228,6 +248,45 @@ class CollectionTest extends TestCase
         ];
     }
 
+    /**
+     * Creating a call with an NCCO can take a Call object or a simple array.
+     * @return array
+     */
+    public function postCallNcco()
+    {
+        $raw = [
+            'to' => [[
+                'type' => 'phone',
+                'number' => '14843331234'
+            ]],
+            'from' => [
+                'type' => 'phone',
+                'number' => '14843335555'
+            ],
+            'ncco' => [
+                [
+                    'action' => 'talk',
+                    'text' => 'Hello World'
+                ]
+            ]
+        ];
+
+
+        $call = new Call();
+        $call->setTo('14843331234')
+             ->setFrom('14843335555')
+             ->setNcco([
+                 [
+                     'action' => 'talk',
+                     'text' => 'Hello World'
+                 ]
+             ]);
+
+        return [
+            'object' => [clone $call],
+            'array' => [$raw]
+        ];
+    }
     /**
      * Creating a call can take a Call object or a simple array.
      * @return array

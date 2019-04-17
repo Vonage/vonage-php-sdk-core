@@ -9,6 +9,7 @@
 namespace NexmoTest\Account;
 
 use Nexmo\Account\Balance;
+use Nexmo\Account\Config;
 use Nexmo\Account\Secret;
 use Nexmo\Account\SecretCollection;
 use Nexmo\Network;
@@ -69,6 +70,35 @@ class ClientTest extends TestCase
 
         $balance = $this->accountClient->getBalance();
         $this->assertInstanceOf(Balance::class, $balance);
+    }
+
+    public function testGetConfig()
+    {
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('/account/settings', $request->getUri()->getPath());
+            $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('get-config'));
+
+        $config = $this->accountClient->getConfig();
+        $this->assertInstanceOf(Config::class, $config);
+    }
+
+    public function testUpdateConfig()
+    {
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('/account/settings', $request->getUri()->getPath());
+            $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('POST', $request->getMethod());
+            $this->assertRequestFormBodyContains('moCallBackUrl', 'https://example.com/other', $request);
+
+            return true;
+        }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('get-config'));
+
+        $config = $this->accountClient->updateConfig(["sms_callback_url" => "https://example.com/other"]);
+        $this->assertInstanceOf(Config::class, $config);
     }
 
     public function testGetSmsPricing()

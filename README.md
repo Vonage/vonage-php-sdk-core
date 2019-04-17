@@ -296,7 +296,10 @@ All `$client->calls()` methods require the client to be constructed with a `Nexm
 
 ```php
 $basic  = new \Nexmo\Client\Credentials\Basic('key', 'secret');
-$keypair = new \Nexmo\Client\Credentials\Keypair(file_get_contents(__DIR__ . '/application.key'), 'application_id');
+$keypair = new \Nexmo\Client\Credentials\Keypair(
+    file_get_contents((NEXMO_APPLICATION_PRIVATE_KEY_PATH),
+    NEXMO_APPLICATION_ID
+);
 
 $client = new \Nexmo\Client(new \Nexmo\Client\Credentials\Container($basic, $keypair));
 ```
@@ -318,6 +321,27 @@ $client->calls()->create([
 ]);
 ```
 
+Or you can provide an NCCO directly in the POST request
+
+```
+$call = $client->calls()->create([
+    'to' => [[
+        'type' => 'phone',
+        'number' => '14843331234'
+    ]],
+    'from' => [
+        'type' => 'phone',
+        'number' => '14843335555'
+    ],
+    'ncco' => [
+        [
+            'action' => 'talk',
+            'text' => 'This is a text to speech call from Nexmo'
+        ]
+    ]
+]);
+```
+
 Or you can create a `Nexmo\Call\Call` object, and use that:
 
 ```php
@@ -327,6 +351,23 @@ $call->setTo('14843331234')
      ->setFrom('14843335555')
      ->setWebhook(Call::WEBHOOK_ANSWER, 'https://example.com/answer')
      ->setWebhook(Call::WEBHOOK_EVENT, 'https://example.com/event');
+
+$client->calls()->create($call);
+```
+
+The same example, providing an NCCO directly:
+
+```php
+use Nexmo\Call\Call;
+$call = new Call();
+$call->setTo('14843331234')
+     ->setFrom('14843335555')
+     ->setNcco([
+        [
+            'action' => 'talk',
+            'text' => 'This is a text to speech call from Nexmo'
+        ]
+      ]);
 
 $client->calls()->create($call);
 ```
@@ -502,6 +543,34 @@ foreach ($results as $r) {
 ```
 
 
+### Check your Balance
+
+Check how much credit remains on your account:
+
+```php
+$response = $client->account()->getBalance();
+echo round($response->data['balance'], 2) . " EUR\n";
+```
+
+### View and Change Account Configuration
+
+Inspect the current settings on the account:
+
+```php
+$response = $client->account()->getConfig();
+print_r($response->data);
+```
+
+Update the default callback URLs for incoming SMS messages and delivery receipts:
+
+```php
+$response = $client->account()->updateConfig([
+    "sms_callback_url" => "http://example.com/webhooks/incoming-sms",
+    "dr_callback_url" => "http://example.com/webhooks/delivery-receipt"
+]);
+print_r($response->data);
+```
+
 ## Troubleshooting
 
 Some users have issues making requests due to the following error:
@@ -563,6 +632,7 @@ API Coverage
             * [X] Campaign Subscription Management
 * Voice
     * [X] Outbound Call
+    * [X] Outbound Call with an NCCO
     * [X] Inbound Call
     * [X] Text-To-Speech Call
     * [X] Text-To-Speech Prompt
