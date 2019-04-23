@@ -573,6 +573,9 @@ print_r($response->data);
 
 ## Troubleshooting
 
+
+### `unable to get local issuer certificate`
+
 Some users have issues making requests due to the following error:
 
 ```
@@ -590,6 +593,17 @@ To resolve this issue, download a list of trusted CA certificates (e.g. the [cur
 curl.cainfo = "/etc/pki/tls/cacert.pem"
 # Windows
 curl.cainfo = "C:\php\extras\ssl\cacert.pem"
+```
+
+### Pass custom Guzzle client
+
+We allow use of any HTTPlug adapter, so you can create a client with alternative configuration if you need it, for example to take account of a local proxy, or deal with something else specific to your setup.
+
+Here's an example, this one disables the verification step, which is not recommended but does make a good example!
+
+```
+$adapter_client = new Http\Adapter\Guzzle6\Client(new GuzzleHttp\Client(['verify' => false]));
+$nexmo_client = new Nexmo\Client(new Nexmo\Client\Credentials\Basic($api_key, $api_secret), [], $adapter_client);
 ```
 
 API Coverage
