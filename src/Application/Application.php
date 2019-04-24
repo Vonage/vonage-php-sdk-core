@@ -46,6 +46,10 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
         $this->usesVbc = true;
     }
 
+    public function disableVbc() {
+        $this->usesVbc = false;
+    }
+
     public function isVbcEnabled() {
         return $this->usesVbc;
     }

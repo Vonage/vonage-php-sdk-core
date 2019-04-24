@@ -235,7 +235,9 @@ trait ModernCollectionTrait
         //
         $request = new Request(
             $this->getClient()->getApiUrl() . $absoluteUri,
-            'GET'
+            'GET',
+            'php://memory',
+            ['Content-Type' => 'application/json']
         );
 
         $response = $this->client->send($request);

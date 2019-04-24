@@ -47,7 +47,9 @@ class Client implements ClientAwareInterface, CollectionInterface
 
         $request = new Request(
             $this->getClient()->getApiUrl() . $this->getCollectionPath() . '/' . $application->getId()
-            ,'GET'
+            ,'GET',
+            'php://memory',
+            ['Content-Type' => 'application/json']
         );
 
         $application->setRequest($request);
@@ -139,7 +141,9 @@ class Client implements ClientAwareInterface, CollectionInterface
 
         $request = new Request(
             $this->getClient()->getApiUrl(). $this->getCollectionPath() . '/' . $id
-            ,'DELETE'
+            ,'DELETE',
+            'php://temp',
+            ['content-type' => 'application/json']
         );
 
         if($application instanceof Application){
