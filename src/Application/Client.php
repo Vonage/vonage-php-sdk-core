@@ -8,10 +8,11 @@
 
 namespace Nexmo\Application;
 
+use Nexmo\ApiErrorHandler;
 use Nexmo\Client\ClientAwareInterface;
 use Nexmo\Client\ClientAwareTrait;
 use Nexmo\Entity\CollectionInterface;
-use Nexmo\Entity\CollectionTrait;
+use Nexmo\Entity\ModernCollectionTrait;
 use Psr\Http\Message\ResponseInterface;
 use Zend\Diactoros\Request;
 use Nexmo\Client\Exception;
@@ -19,7 +20,7 @@ use Nexmo\Client\Exception;
 class Client implements ClientAwareInterface, CollectionInterface
 {
     use ClientAwareTrait;
-    use CollectionTrait;
+    use ModernCollectionTrait;
 
     public static function getCollectionName()
     {
@@ -163,18 +164,15 @@ class Client implements ClientAwareInterface, CollectionInterface
         $body = json_decode($response->getBody()->getContents(), true);
         $status = $response->getStatusCode();
 
-        if($status >= 400 AND $status < 500) {
-            $e = new Exception\Request($body['error_title'], $status);
-        } elseif($status >= 500 AND $status < 600) {
-            $e = new Exception\Server($body['error_title'], $status);
-        } else {
-            $e = new Exception\Exception('Unexpected HTTP Status Code');
-            throw $e;
-        }
-
-        //todo use interfaces here
-        if(($application instanceof Application) AND (($e instanceof Exception\Request) OR ($e instanceof Exception\Server))){
-            $e->setEntity($application);
+        // Handle new style errors
+        $e = null;
+        try {
+            ApiErrorHandler::check($body, $status);
+        } catch (Exception\Exception $e) {
+            //todo use interfaces here
+            if(($application instanceof Application) AND (($e instanceof Exception\Request) OR ($e instanceof Exception\Server))){
+                $e->setEntity($application);
+            }
         }
 
         return $e;

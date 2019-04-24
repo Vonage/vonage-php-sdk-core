@@ -326,16 +326,24 @@ class ClientTest extends TestCase
             $data = json_decode($response->getBody()->getContents(), true);
             $class = substr($code, 0, 1);
 
+            if (!isset($data['title'])) {
+                print_r($data);die;
+            }
+            $msg = $data['title'];
+            if ($data['detail']) {
+                $msg .= ': '.$data['detail'].'. See '.$data['type'].' for more information';
+            }
+
             switch($class){
                 case '4':
                     $this->assertInstanceOf('Nexmo\Client\Exception\Request', $e);
-                    $this->assertEquals($data['error_title'], $e->getMessage());
+                    $this->assertEquals($msg, $e->getMessage());
                     $this->assertEquals($code, $e->getCode());
                     $this->assertSame($application, $e->getEntity());
                     break;
                 case '5':
                     $this->assertInstanceOf('Nexmo\Client\Exception\Server', $e);
-                    $this->assertEquals($data['error_title'], $e->getMessage());
+                    $this->assertEquals($msg, $e->getMessage());
                     $this->assertEquals($code, $e->getCode());
                     $this->assertSame($application, $e->getEntity());
                     break;
@@ -352,13 +360,10 @@ class ClientTest extends TestCase
         //todo: add server error
         return [
             //post / create are aliases
-            ['post', 'success', '200'], //should be 201
             ['post', 'bad', '400'],
             ['post', 'unauthorized', '401'],
-            ['create', 'success', '200'], //should be 201
             ['create', 'bad', '400'],
             ['create', 'unauthorized', '401'],
-            ['delete', 'success', '200'], //should be 204
             ['delete', 'bad', '400'],
             ['delete', 'unauthorized', '401'],
         ];
