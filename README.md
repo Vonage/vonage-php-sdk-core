@@ -413,22 +413,66 @@ foreach($client->calls($filter) as $call){
 Application are configuration containers. You can create one using a simple array structure:
 
 ```php
-$application = $client->applications()->create([
-    'name' => 'My Application',
-    'answer_url' => 'https://example.com/answer',
-    'event_url' => 'https://example.com/event'
-]);
+$application = [
+ 'name' => 'test application',
+ 'keys' => [
+     'public_key' => '-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSLcjxu33G\nd/vynKnlw9SENi+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xsO\nOUNhPx2LhuLmgwWSRS4L5W851Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n'
+ ],
+ 'capabilities' => [
+     'voice' => [
+         'webhooks' => [
+             'answer_url' => [
+                 'address' => 'https://example.com/answer',
+                 'http_method' => 'GET',
+             ],
+             'event_url' => [
+                 'address' => 'https://example.com/event',
+                 'http_method' => 'POST',
+             ],
+         ]
+     ],
+     'messages' => [
+         'webhooks' => [
+             'inbound_url' => [
+                 'address' => 'https://example.com/inbound',
+                 'http_method' => 'POST'
+
+             ],
+             'status_url' => [
+                 'address' => 'https://example.com/status',
+                 'http_method' => 'POST'
+             ]
+         ]
+     ],
+     'rtc' => [
+         'webhooks' => [
+             'event_url' => [
+                 'address' => 'https://example.com/event',
+                 'http_method' => 'POST',
+             ],
+         ]
+     ],
+     'vbc' => []
+ ]
+];
+
+$client->applications()->create($application);
 ```
 
 You can also pass the client an application object:
 
 ```php
-$application = new Nexmo\Application\Application();
-$application->setName('My Application');
-$application->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'https://example.com/answer');
-$application->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'https://example.com/event');
+$a = new Nexmo\Application\Application;
 
-$client->appliations()->create($application);
+$a->setName('PHP Client Example');
+$a->getVoiceConfig()->setWebhook('answer_url', 'https://example.com/answer', 'GET');
+$a->getVoiceConfig()->setWebhook('event_url', 'https://example.com/event', 'POST');
+$a->getMessagesConfig()->setWebhook('status_url', 'https://example.com/status', 'POST');
+$a->getMessagesConfig()->setWebhook('inbound_url', 'https://example.com/inbound', 'POST');
+$a->getRtcConfig()->setWebhook('event_url', 'https://example.com/event', 'POST');
+$a->disableVbc();
+
+$client->applications()->create($a);
 ```
 
 ### Fetching Applications
@@ -466,8 +510,6 @@ You can also pass an array and the application UUID to the client:
 ```php
 $application = $client->applications()->update([
     'name' => 'Updated Application',
-    'answer_url' => 'https://example.com/v2/answer',
-    'event_url' => 'https://example.com/v2/event'
 ], '1a20a124-1775-412b-b623-e6985f4aace0');
 ```
 
