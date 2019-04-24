@@ -388,8 +388,15 @@ class ClientTest extends TestCase
                         ]
                     ]
                 ],
+                'rtc' => [
+                    'webhooks' => [
+                        'event_url' => [
+                            'address' => 'https://example.com/event',
+                            'http_method' => 'POST',
+                        ],
+                    ]
+                ],
             ];
-
             $this->assertRequestJsonBodyContains('capabilities', $capabilities, $request);
             return true;
         }))->willReturn($this->getResponse('success', '201'));

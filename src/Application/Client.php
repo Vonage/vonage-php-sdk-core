@@ -246,16 +246,25 @@ class Client implements ClientAwareInterface, CollectionInterface
 
         // Handle messages
         if (isset($capabilities['messages'])) {
-            $voiceCapabilities = $capabilities['messages']['webhooks'];
+            $messagesCapabilities = $capabilities['messages']['webhooks'];
 
             foreach(['status', 'inbound'] as $type)
             $application->getMessagesConfig()->setWebhook($type.'_url', new Webhook(
-                $voiceCapabilities[$type.'_url']['address'],
-                $voiceCapabilities[$type.'_url']['http_method']
+                $messagesCapabilities[$type.'_url']['address'],
+                $messagesCapabilities[$type.'_url']['http_method']
             ));
         }
 
         // Handle RTC
+        if (isset($capabilities['rtc'])) {
+            $rtcCapabilities = $capabilities['rtc']['webhooks'];
+
+            foreach(['event'] as $type)
+            $application->getRtcConfig()->setWebhook($type.'_url', new Webhook(
+                $rtcCapabilities[$type.'_url']['address'],
+                $rtcCapabilities[$type.'_url']['http_method']
+            ));
+        }
 
         return $application;
     }

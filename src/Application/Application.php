@@ -22,6 +22,8 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
     use JsonResponseTrait;
 
     protected $voiceConfig;
+    protected $messagesConfig;
+    protected $rtcConfig;
 
     protected $name;
 
@@ -48,6 +50,12 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
     public function setMessagesConfig(MessagesConfig $config)
     {
         $this->messagesConfig = $config;
+        return $this;
+    }
+
+    public function setRtcConfig(RtcConfig $config)
+    {
+        $this->rtcConfig = $config;
         return $this;
     }
 
@@ -79,12 +87,30 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
             $data = $this->getResponseData();
             if(isset($data['messages']) AND isset($data['messages']['webhooks'])){
                 foreach($data['messages']['webhooks'] as $webhook){
-                    $this->voiceConfig->setWebhook($webhook['endpoint_type'], $webhook['endpoint'], $webhook['http_method']);
+                    $this->getMessagesConfig()->setWebhook($webhook['endpoint_type'], $webhook['endpoint'], $webhook['http_method']);
                 }
             }
         }
 
-        return $this->voiceConfig;
+        return $this->messagesConfig;
+    }
+
+    /**
+     * @return RtcConfig
+     */
+    public function getRtcConfig()
+    {
+        if(!isset($this->rtcConfig)){
+            $this->setRtcConfig(new RtcConfig());
+            $data = $this->getResponseData();
+            if(isset($data['rtc']) AND isset($data['rtc']['webhooks'])){
+                foreach($data['rtc']['webhooks'] as $webhook){
+                    $this->getRtcConfig()->setWebhook($webhook['endpoint_type'], $webhook['endpoint'], $webhook['http_method']);
+                }
+            }
+        }
+
+        return $this->rtcConfig;
     }
 
     public function getPublicKey()
@@ -133,6 +159,14 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
                 $this->messagesConfig->setWebhook($webhook['endpoint_type'], new Webhook($webhook['endpoint'], $webhook['http_method']));
             }
         }
+
+        //todo: make rtc  hydrate-able
+        $this->messagesConfig = new MessagesConfig();
+        if(isset($json['rtc']) AND isset($json['rtc']['webhooks'])){
+            foreach($json['rtc']['webhooks'] as $webhook){
+                $this->messagesConfig->setWebhook($webhook['endpoint_type'], new Webhook($webhook['endpoint'], $webhook['http_method']));
+            }
+        }
     }
 
     public function jsonSerialize()
@@ -165,6 +199,14 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
                             'address' => $this->getMessagesConfig()->getWebhook(MessagesConfig::STATUS)->getUrl(),
                             'http_method' => $this->getMessagesConfig()->getWebhook(MessagesConfig::STATUS)->getMethod(),
                         ]
+                    ]
+                ],
+                'rtc' => [
+                    'webhooks' => [
+                        'event_url' => [
+                            'address' => $this->getRtcConfig()->getWebhook(RtcConfig::EVENT)->getUrl(),
+                            'http_method' => $this->getRtcConfig()->getWebhook(RtcConfig::EVENT)->getMethod(),
+                        ],
                     ]
                 ]
             ]
