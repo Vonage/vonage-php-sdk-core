@@ -45,6 +45,12 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
         return $this;
     }
 
+    public function setMessagesConfig(MessagesConfig $config)
+    {
+        $this->messagesConfig = $config;
+        return $this;
+    }
+
     /**
      * @return VoiceConfig
      */
@@ -55,6 +61,24 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
             $data = $this->getResponseData();
             if(isset($data['voice']) AND isset($data['voice']['webhooks'])){
                 foreach($data['voice']['webhooks'] as $webhook){
+                    $this->voiceConfig->setWebhook($webhook['endpoint_type'], $webhook['endpoint'], $webhook['http_method']);
+                }
+            }
+        }
+
+        return $this->voiceConfig;
+    }
+
+    /**
+     * @return MessagesConfig
+     */
+    public function getMessagesConfig()
+    {
+        if(!isset($this->messagesConfig)){
+            $this->setMessagesConfig(new MessagesConfig());
+            $data = $this->getResponseData();
+            if(isset($data['messages']) AND isset($data['messages']['webhooks'])){
+                foreach($data['messages']['webhooks'] as $webhook){
                     $this->voiceConfig->setWebhook($webhook['endpoint_type'], $webhook['endpoint'], $webhook['http_method']);
                 }
             }
@@ -101,6 +125,14 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
                 $this->voiceConfig->setWebhook($webhook['endpoint_type'], new Webhook($webhook['endpoint'], $webhook['http_method']));
             }
         }
+
+        //todo: make messages  hydrate-able
+        $this->messagesConfig = new MessagesConfig();
+        if(isset($json['messages']) AND isset($json['messages']['webhooks'])){
+            foreach($json['messages']['webhooks'] as $webhook){
+                $this->messagesConfig->setWebhook($webhook['endpoint_type'], new Webhook($webhook['endpoint'], $webhook['http_method']));
+            }
+        }
     }
 
     public function jsonSerialize()
@@ -108,9 +140,35 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
         return [
             'name' => $this->getName(),
             //currently, the request data does not match the response data
-            'event_url' => (string) $this->getVoiceConfig()->getWebhook(VoiceConfig::EVENT),
-            'answer_url' => (string) $this->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER),
-            'type' => 'voice' //currently the only type
+            'capabilities' => [
+                'voice' =>
+                    [
+                        'webhooks' => [
+                            'answer_url' => [
+                                'address' => $this->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER)->getUrl(),
+                                'http_method' => $this->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER)->getMethod(),
+                            ],
+                            'event_url' => [
+                                'address' => $this->getVoiceConfig()->getWebhook(VoiceConfig::EVENT)->getUrl(),
+                                'http_method' => $this->getVoiceConfig()->getWebhook(VoiceConfig::EVENT)->getMethod(),
+                            ]
+                        ]
+                    ]
+                ,
+                'messages' => [
+                    'webhooks' => [
+                        'inbound_url' => [
+                            'address' => $this->getMessagesConfig()->getWebhook(MessagesConfig::INBOUND)->getUrl(),
+                            'http_method' => $this->getMessagesConfig()->getWebhook(MessagesConfig::INBOUND)->getMethod(),
+                        ],
+                        'status_url' => [
+                            'address' => $this->getMessagesConfig()->getWebhook(MessagesConfig::STATUS)->getUrl(),
+                            'http_method' => $this->getMessagesConfig()->getWebhook(MessagesConfig::STATUS)->getMethod(),
+                        ]
+                    ]
+                ]
+            ]
+            //'type' => 'voice' //currently the only type
         ];
     }
 

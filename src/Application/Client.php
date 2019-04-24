@@ -28,7 +28,7 @@ class Client implements ClientAwareInterface, CollectionInterface
 
     public static function getCollectionPath()
     {
-        return '/v1/' . self::getCollectionName();
+        return '/v2/' . self::getCollectionName();
     }
 
     public function hydrateEntity($data, $id)
@@ -245,6 +245,15 @@ class Client implements ClientAwareInterface, CollectionInterface
         }
 
         // Handle messages
+        if (isset($capabilities['messages'])) {
+            $voiceCapabilities = $capabilities['messages']['webhooks'];
+
+            foreach(['status', 'inbound'] as $type)
+            $application->getMessagesConfig()->setWebhook($type.'_url', new Webhook(
+                $voiceCapabilities[$type.'_url']['address'],
+                $voiceCapabilities[$type.'_url']['http_method']
+            ));
+        }
 
         // Handle RTC
 

@@ -11,6 +11,7 @@ namespace NexmoTest\Application;
 use Nexmo\Application\Application;
 use Nexmo\Application\Client;
 use Nexmo\Application\Filter;
+use Nexmo\Application\MessagesConfig;
 use Nexmo\Application\VoiceConfig;
 use Nexmo\Client\Exception\Exception;
 use NexmoTest\Psr7AssertionTrait;
@@ -354,14 +355,42 @@ class ClientTest extends TestCase
     public function testCreateApplication($payload, $method)
     {
         $this->nexmoClient->send(Argument::that(function(Request $request){
-            $this->assertEquals('/v1/applications', $request->getUri()->getPath());
+            $this->assertEquals('/v2/applications', $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('POST', $request->getMethod());
 
             $this->assertRequestJsonBodyContains('name', 'test application', $request);
-            $this->assertRequestJsonBodyContains('type', 'voice', $request);
-            $this->assertRequestJsonBodyContains('answer_url', 'https://example.com/answer', $request);
-            $this->assertRequestJsonBodyContains('event_url' , 'https://example.com/event' , $request);
+
+            $capabilities = [
+                'voice' => [
+                    'webhooks' => [
+                        'answer_url' => [
+                            'address' => 'https://example.com/answer',
+                            'http_method' => 'POST'
+
+                        ],
+                        'event_url' => [
+                            'address' => 'https://example.com/event',
+                            'http_method' => 'POST'
+                        ]
+                    ]
+                ],
+                'messages' => [
+                    'webhooks' => [
+                        'inbound_url' => [
+                            'address' => 'https://example.com/inbound',
+                            'http_method' => 'POST'
+
+                        ],
+                        'status_url' => [
+                            'address' => 'https://example.com/status',
+                            'http_method' => 'POST'
+                        ]
+                    ]
+                ],
+            ];
+
+            $this->assertRequestJsonBodyContains('capabilities', $capabilities, $request);
             return true;
         }))->willReturn($this->getResponse('success', '201'));
 
@@ -380,11 +409,15 @@ class ClientTest extends TestCase
         $application->setName('test application');
         $application->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'https://example.com/answer');
         $application->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'https://example.com/event');
+        $application->getMessagesConfig()->setWebhook(MessagesConfig::STATUS, 'https://example.com/status');
+        $application->getMessagesConfig()->setWebhook(MessagesConfig::INBOUND, 'https://example.com/inbound');
 
         $rawV1 = [
             'name' => 'test application',
             'answer_url' => 'https://example.com/answer',
-            'event_url' => 'https://example.com/event'
+            'event_url' => 'https://example.com/event',
+            'status_url' => 'https://example.com/status',
+            'inbound_url' => 'https://example.com/inbound'
         ];
 
         $rawV2 = [
