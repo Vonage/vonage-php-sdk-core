@@ -86,19 +86,19 @@
   },
   "_links": {
     "self": {
-      "href": "/v1/applications?page_size=3&page_index=2"
+      "href": "/v2/applications?page_size=3&page_index=2"
     },
     "first": {
-      "href": "/v1/applications?page_size=3"
+      "href": "/v2/applications?page_size=3"
     },
     "last": {
-      "href": "/v1/applications?page_size=3&page_index=3"
+      "href": "/v2/applications?page_size=3&page_index=3"
     },
     "next": {
-      "href": "/v1/applications?page_size=3&page_index=3"
+      "href": "/v2/applications?page_size=3&page_index=3"
     },
     "prev": {
-      "href": "/v1/applications?page_size=3&page_index=1"
+      "href": "/v2/applications?page_size=3&page_index=1"
     }
   }
 }

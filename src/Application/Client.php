@@ -203,12 +203,17 @@ class Client implements ClientAwareInterface, CollectionInterface
         $application = new Application();
         $application->setName($array['name']);
 
+        // Voice
         foreach(['event', 'answer'] as $type){
             if(isset($array[$type . '_url'])){
                 $method = isset($array[$type . '_method']) ? $array[$type . '_method'] : null;
                 $application->getVoiceConfig()->setWebhook($type . '_url', new Webhook($array[$type . '_url'], $method));
             }
         }
+
+        // Messages
+
+        // RTC
 
         return $application;
     }
@@ -270,6 +275,11 @@ class Client implements ClientAwareInterface, CollectionInterface
                 $rtcCapabilities[$type.'_url']['address'],
                 $rtcCapabilities[$type.'_url']['http_method']
             ));
+        }
+
+        // Handle VBC
+        if (isset($capabilities['vbc'])) {
+            $application->enableVbc();
         }
 
         return $application;

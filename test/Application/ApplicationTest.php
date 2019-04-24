@@ -37,22 +37,19 @@ class ApplicationTest extends TestCase
         $this->assertEquals('test', $this->app->getRequestData()['name']);
     }
 
-    public function testAllAppsAreVoice()
-    {
-        $this->assertEquals('voice', $this->app->getRequestData()['type']);
-    }
-
     public function testVoiceWebhookParams()
     {
         $this->app->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'http://example.com/event');
         $this->app->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'http://example.com/answer');
 
         $params = $this->app->getRequestData();
-        $this->assertArrayHasKey('event_url', $params);
-        $this->assertArrayHasKey('answer_url', $params);
 
-        $this->assertEquals('http://example.com/event', $params['event_url']);
-        $this->assertEquals('http://example.com/answer', $params['answer_url']);
+        $capabilities = $params['capabilities'];
+        $this->assertArrayHasKey('event_url', $capabilities['voice']['webhooks']);
+        $this->assertArrayHasKey('answer_url', $capabilities['voice']['webhooks']);
+
+        $this->assertEquals('http://example.com/event', $capabilities['voice']['webhooks']['event_url']['address']);
+        $this->assertEquals('http://example.com/answer', $capabilities['voice']['webhooks']['answer_url']['address']);
     }
 
     public function testResponseSetsProperties()

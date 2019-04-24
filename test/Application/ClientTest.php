@@ -57,7 +57,7 @@ class ClientTest extends TestCase
         $filter = new Filter(new \DateTime('yesterday'), new \DateTime('tomorrow'));
 
         $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($filter){
-            $this->assertEquals('/v1/applications', $request->getUri()->getPath());
+            $this->assertEquals('/v2/applications', $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
             foreach($filter->getQuery() as $key => $value){
@@ -77,7 +77,7 @@ class ClientTest extends TestCase
     public function testSetPage()
     {
         $this->nexmoClient->send(Argument::that(function(RequestInterface $request) {
-            $this->assertEquals('/v1/applications', $request->getUri()->getPath());
+            $this->assertEquals('/v2/applications', $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
             $this->assertRequestQueryContains('page_index', '1', $request);
@@ -93,7 +93,7 @@ class ClientTest extends TestCase
     public function testSetSize()
     {
         $this->nexmoClient->send(Argument::that(function(RequestInterface $request) {
-            $this->assertEquals('/v1/applications', $request->getUri()->getPath());
+            $this->assertEquals('/v2/applications', $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
             $this->assertRequestQueryContains('page_size', '5', $request);
@@ -135,7 +135,7 @@ class ClientTest extends TestCase
                 $last = $request;
             }
 
-            $this->assertEquals('/v1/applications', $request->getUri()->getPath());
+            $this->assertEquals('/v2/applications', $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
 
@@ -157,7 +157,7 @@ class ClientTest extends TestCase
     public function testCanIterateClient()
     {
         $this->nexmoClient->send(Argument::that(function(RequestInterface $request){
-            $this->assertEquals('/v1/applications', $request->getUri()->getPath());
+            $this->assertEquals('/v2/applications', $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
             return true;
@@ -182,7 +182,7 @@ class ClientTest extends TestCase
     public function testGetApplication($payload, $id)
     {
         $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($id){
-            $this->assertEquals('/v1/applications/' . $id, $request->getUri()->getPath());
+            $this->assertEquals('/v2/applications/' . $id, $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
             return true;
@@ -210,14 +210,29 @@ class ClientTest extends TestCase
     public function testUpdateApplication($payload, $method, $id, $expectedId)
     {
         $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($expectedId){
-            $this->assertEquals('/v1/applications/' . $expectedId, $request->getUri()->getPath());
+            $this->assertEquals('/v2/applications/' . $expectedId, $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('PUT', $request->getMethod());
 
             $this->assertRequestJsonBodyContains('name', 'updated application', $request);
-            $this->assertRequestJsonBodyContains('type', 'voice', $request);
-            $this->assertRequestJsonBodyContains('answer_url', 'https://example.com/new_answer', $request);
-            $this->assertRequestJsonBodyContains('event_url' , 'https://example.com/new_event' , $request);
+
+            // And check all other capabilities
+            $capabilities = [
+                'voice' => [
+                    'webhooks' => [
+                        'answer_url' => [
+                            'address' => 'https://example.com/new_answer',
+                            'http_method' => null
+
+                        ],
+                        'event_url' => [
+                            'address' => 'https://example.com/new_event',
+                            'http_method' => null
+                        ]
+                    ]
+                ],
+            ];
+            $this->assertRequestJsonBodyContains('capabilities', $capabilities, $request);
 
             return true;
         }))->willReturn($this->getResponse());
@@ -277,7 +292,7 @@ class ClientTest extends TestCase
     public function testDeleteApplication($payload, $id)
     {
         $this->nexmoClient->send(Argument::that(function(Request $request) use($id){
-            $this->assertEquals('/v1/applications/' . $id, $request->getUri()->getPath());
+            $this->assertEquals('/v2/applications/' . $id, $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('DELETE', $request->getMethod());
             return true;
@@ -431,13 +446,15 @@ class ClientTest extends TestCase
         $application->getMessagesConfig()->setWebhook(MessagesConfig::STATUS, 'https://example.com/status');
         $application->getMessagesConfig()->setWebhook(MessagesConfig::INBOUND, 'https://example.com/inbound');
         $application->setPublicKey('-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSLcjxu33G\nd/vynKnlw9SENi+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xsO\nOUNhPx2LhuLmgwWSRS4L5W851Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n');
+        $application->enableVbc();
 
         $rawV1 = [
             'name' => 'test application',
             'answer_url' => 'https://example.com/answer',
             'event_url' => 'https://example.com/event',
             'status_url' => 'https://example.com/status',
-            'inbound_url' => 'https://example.com/inbound'
+            'inbound_url' => 'https://example.com/inbound',
+            'vbc' => true
         ];
 
         $rawV2 = [

@@ -24,6 +24,7 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
     protected $voiceConfig;
     protected $messagesConfig;
     protected $rtcConfig;
+    protected $usesVbc = false; // This will become a config if we ever have parameters
 
     protected $name;
 
@@ -39,6 +40,10 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
     public function getId()
     {
         return $this->id;
+    }
+
+    public function enableVbc() {
+        $this->usesVbc = true;
     }
 
     public function setVoiceConfig(VoiceConfig $config)
@@ -177,49 +182,42 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
 
     public function jsonSerialize()
     {
+
+        // Build up capabilities that are set
+        $availableCapabilities = [
+            'voice' => [VoiceConfig::ANSWER, VoiceConfig::EVENT],
+            'messages' => [MessagesConfig::INBOUND, MessagesConfig::STATUS],
+            'rtc' => [RtcConfig::EVENT]
+        ];
+
+        $capabilities = [];
+        foreach ($availableCapabilities as $type => $values) {
+            $configAccessorMethod = 'get'.ucfirst($type).'Config';
+            foreach ($values as $constant) {
+                $webhook = $this->$configAccessorMethod()->getWebhook($constant);
+                if ($webhook) {
+                    if (!isset($capabilities[$type])) {
+                        $capabilities[$type]['webhooks'] = [];
+                    }
+                    $capabilities[$type]['webhooks'][$constant] = [
+                        'address' => $webhook->getUrl(),
+                        'http_method' => $webhook->getMethod(),
+                    ];
+                }
+            }
+        }
+
+        // Handle VBC specifically
+        if ($this->usesVbc) {
+            $capabilities['vbc'] = new \StdClass;
+        }
+
         return [
             'name' => $this->getName(),
             'keys' => [
                 'public_key' => $this->getPublicKey()
             ],
-            'capabilities' => [
-                'voice' =>
-                    [
-                        'webhooks' => [
-                            'answer_url' => [
-                                'address' => $this->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER)->getUrl(),
-                                'http_method' => $this->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER)->getMethod(),
-                            ],
-                            'event_url' => [
-                                'address' => $this->getVoiceConfig()->getWebhook(VoiceConfig::EVENT)->getUrl(),
-                                'http_method' => $this->getVoiceConfig()->getWebhook(VoiceConfig::EVENT)->getMethod(),
-                            ]
-                        ]
-                    ]
-                ,
-                'messages' => [
-                    'webhooks' => [
-                        'inbound_url' => [
-                            'address' => $this->getMessagesConfig()->getWebhook(MessagesConfig::INBOUND)->getUrl(),
-                            'http_method' => $this->getMessagesConfig()->getWebhook(MessagesConfig::INBOUND)->getMethod(),
-                        ],
-                        'status_url' => [
-                            'address' => $this->getMessagesConfig()->getWebhook(MessagesConfig::STATUS)->getUrl(),
-                            'http_method' => $this->getMessagesConfig()->getWebhook(MessagesConfig::STATUS)->getMethod(),
-                        ]
-                    ]
-                ],
-                'rtc' => [
-                    'webhooks' => [
-                        'event_url' => [
-                            'address' => $this->getRtcConfig()->getWebhook(RtcConfig::EVENT)->getUrl(),
-                            'http_method' => $this->getRtcConfig()->getWebhook(RtcConfig::EVENT)->getMethod(),
-                        ],
-                    ]
-                ],
-                'vbc' => (object) array()
-            ]
-            //'type' => 'voice' //currently the only type
+            'capabilities' => $capabilities
         ];
     }
 
