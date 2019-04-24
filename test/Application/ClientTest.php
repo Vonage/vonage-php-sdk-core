@@ -404,6 +404,12 @@ class ClientTest extends TestCase
                 'vbc' => []
             ];
             $this->assertRequestJsonBodyContains('capabilities', $capabilities, $request);
+
+            // And the public key
+            $keys = [
+                'public_key' => '-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSLcjxu33G\nd/vynKnlw9SENi+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xsO\nOUNhPx2LhuLmgwWSRS4L5W851Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n'
+            ];
+            $this->assertRequestJsonBodyContains('keys', $keys, $request);
             return true;
         }))->willReturn($this->getResponse('success', '201'));
 
@@ -424,6 +430,7 @@ class ClientTest extends TestCase
         $application->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'https://example.com/event');
         $application->getMessagesConfig()->setWebhook(MessagesConfig::STATUS, 'https://example.com/status');
         $application->getMessagesConfig()->setWebhook(MessagesConfig::INBOUND, 'https://example.com/inbound');
+        $application->setPublicKey('-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSLcjxu33G\nd/vynKnlw9SENi+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xsO\nOUNhPx2LhuLmgwWSRS4L5W851Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n');
 
         $rawV1 = [
             'name' => 'test application',
@@ -435,6 +442,9 @@ class ClientTest extends TestCase
 
         $rawV2 = [
             'name' => 'test application',
+            'keys' => [
+                'public_key' => '-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSLcjxu33G\nd/vynKnlw9SENi+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xsO\nOUNhPx2LhuLmgwWSRS4L5W851Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n'
+            ],
             'capabilities' => [
                 'voice' => [
                     'webhooks' => [

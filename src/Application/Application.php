@@ -113,6 +113,12 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
         return $this->rtcConfig;
     }
 
+    public function setPublicKey($key)
+    {
+        $this->keys['public_key'] = $key;
+        return $this;
+    }
+
     public function getPublicKey()
     {
         if(isset($this->keys['public_key'])){
@@ -173,7 +179,9 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
     {
         return [
             'name' => $this->getName(),
-            //currently, the request data does not match the response data
+            'keys' => [
+                'public_key' => $this->getPublicKey()
+            ],
             'capabilities' => [
                 'voice' =>
                     [

@@ -227,6 +227,12 @@ class Client implements ClientAwareInterface, CollectionInterface
         $application = new Application();
         $application->setName($array['name']);
 
+        // Is there a public key?
+        if (isset($array['keys']['public_key'])) {
+            $application->setPublicKey($array['keys']['public_key']);
+        }
+
+        // How about capabilities?
         if (!isset($array['capabilities'])) {
             return $application;
         }
