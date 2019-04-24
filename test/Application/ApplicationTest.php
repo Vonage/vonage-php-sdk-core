@@ -9,6 +9,8 @@
 namespace NexmoTest\Application;
 
 use Nexmo\Application\Application;
+use Nexmo\Application\MessagesConfig;
+use Nexmo\Application\RtcConfig;
 use Nexmo\Application\VoiceConfig;
 use Zend\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
@@ -55,36 +57,67 @@ class ApplicationTest extends TestCase
     public function testResponseSetsProperties()
     {
         $this->app->setResponse($this->getResponse());
-        $this->assertEquals('client_test', $this->app->getName());
+        $this->assertEquals('My Application', $this->app->getName());
         $this->assertEquals('public_key', $this->app->getPublicKey());
         $this->assertEquals('private_key', $this->app->getPrivateKey());
     }
 
-    public function testResponseSetsConfigs()
+    public function testResponseSetsVoiceConfigs()
     {
         $this->app->setResponse($this->getResponse());
 
         $webhook = $this->app->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER);
         $method  = $this->app->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER)->getMethod();
-        $this->assertEquals('http://test.runscope.net/answer', $webhook);
+        $this->assertEquals('https://example.com/webhooks/answer', $webhook);
         $this->assertEquals('GET', $method);
 
         $webhook = $this->app->getVoiceConfig()->getWebhook(VoiceConfig::EVENT);
         $method  = $this->app->getVoiceConfig()->getWebhook(VoiceConfig::EVENT)->getMethod();
-        $this->assertEquals('http://test.runscope.net/event', $webhook);
+        $this->assertEquals('https://example.com/webhooks/event', $webhook);
         $this->assertEquals('POST', $method);
+    }
+
+    public function testResponseSetsMessagesConfigs()
+    {
+        $this->app->setResponse($this->getResponse());
+
+        $webhook = $this->app->getMessagesConfig()->getWebhook(MessagesConfig::INBOUND);
+        $method  = $this->app->getMessagesConfig()->getWebhook(MessagesConfig::INBOUND)->getMethod();
+        $this->assertEquals('https://example.com/webhooks/inbound', $webhook);
+        $this->assertEquals('POST', $method);
+
+        $webhook = $this->app->getMessagesConfig()->getWebhook(MessagesConfig::STATUS);
+        $method  = $this->app->getMessagesConfig()->getWebhook(MessagesConfig::STATUS)->getMethod();
+        $this->assertEquals('https://example.com/webhooks/status', $webhook);
+        $this->assertEquals('POST', $method);
+    }
+
+    public function testResponseSetsRtcConfigs()
+    {
+        $this->app->setResponse($this->getResponse());
+
+        $webhook = $this->app->getRtcConfig()->getWebhook(RtcConfig::EVENT);
+        $method  = $this->app->getRtcConfig()->getWebhook(RtcConfig::EVENT)->getMethod();
+        $this->assertEquals('https://example.com/webhooks/event', $webhook);
+        $this->assertEquals('POST', $method);
+    }
+
+    public function testResponseSetsVbcConfigs()
+    {
+        $this->app->setResponse($this->getResponse());
+        $this->assertEquals(true, $this->app->isVbcEnabled());
     }
 
     public function testCanGetDirtyValues()
     {
         $this->app->setResponse($this->getResponse());
-        $this->assertEquals('client_test', $this->app->getName());
+        $this->assertEquals('My Application', $this->app->getName());
 
         $this->app->setName('new');
         $this->assertEquals('new', $this->app->getName());
 
         $webhook = $this->app->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER);
-        $this->assertEquals('http://test.runscope.net/answer', (string) $webhook);
+        $this->assertEquals('https://example.com/webhooks/answer', $webhook);
 
         $this->app->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'http://example.com');
         $webhook = $this->app->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER);
@@ -101,7 +134,7 @@ class ApplicationTest extends TestCase
         $otherapp->setVoiceConfig($this->app->getVoiceConfig());
 
         $webhook = $otherapp->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER);
-        $this->assertEquals('http://test.runscope.net/answer', $webhook);
+        $this->assertEquals('https://example.com/webhooks/answer', $webhook);
     }
 
     /**

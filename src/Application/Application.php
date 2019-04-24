@@ -46,6 +46,10 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
         $this->usesVbc = true;
     }
 
+    public function isVbcEnabled() {
+        return $this->usesVbc;
+    }
+
     public function setVoiceConfig(VoiceConfig $config)
     {
         $this->voiceConfig = $config;
@@ -155,27 +159,35 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
         $this->id   = $json['id'];
         $this->keys = $json['keys'];
 
-        //todo: make voice  hydrate-able
-        $this->voiceConfig = new VoiceConfig();
-        if(isset($json['voice']) AND isset($json['voice']['webhooks'])){
-            foreach($json['voice']['webhooks'] as $webhook){
-                $this->voiceConfig->setWebhook($webhook['endpoint_type'], new Webhook($webhook['endpoint'], $webhook['http_method']));
-            }
-        }
+        if (isset($json['capabilities'])) {
+            $capabilities = $json['capabilities'];
 
-        //todo: make messages  hydrate-able
-        $this->messagesConfig = new MessagesConfig();
-        if(isset($json['messages']) AND isset($json['messages']['webhooks'])){
-            foreach($json['messages']['webhooks'] as $webhook){
-                $this->messagesConfig->setWebhook($webhook['endpoint_type'], new Webhook($webhook['endpoint'], $webhook['http_method']));
+            //todo: make voice  hydrate-able
+            $this->voiceConfig = new VoiceConfig();
+            if (isset($capabilities['voice']) AND isset($capabilities['voice']['webhooks'])) {
+                foreach ($capabilities['voice']['webhooks'] as $name => $details) {
+                    $this->voiceConfig->setWebhook($name, new Webhook($details['address'], $details['http_method']));
+                }
             }
-        }
 
-        //todo: make rtc  hydrate-able
-        $this->messagesConfig = new MessagesConfig();
-        if(isset($json['rtc']) AND isset($json['rtc']['webhooks'])){
-            foreach($json['rtc']['webhooks'] as $webhook){
-                $this->messagesConfig->setWebhook($webhook['endpoint_type'], new Webhook($webhook['endpoint'], $webhook['http_method']));
+            //todo: make messages  hydrate-able
+            $this->messagesConfig = new MessagesConfig();
+            if (isset($capabilities['messages']) AND isset($capabilities['messages']['webhooks'])) {
+                foreach ($capabilities['messages']['webhooks'] as $name => $details) {
+                    $this->messagesConfig->setWebhook($name, new Webhook($details['address'], $details['http_method']));
+                }
+            }
+
+            //todo: make rtc  hydrate-able
+            $this->rtcConfig = new RtcConfig();
+            if (isset($capabilities['rtc']) AND isset($capabilities['rtc']['webhooks'])) {
+                foreach ($capabilities['rtc']['webhooks'] as $name => $details) {
+                    $this->rtcConfig->setWebhook($name, new Webhook($details['address'], $details['http_method']));
+                }
+            }
+
+            if (isset($capabilities['vbc'])) {
+                $this->enableVbc();
             }
         }
     }
