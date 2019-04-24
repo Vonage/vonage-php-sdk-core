@@ -12,6 +12,7 @@ use Nexmo\Application\Application;
 use Nexmo\Application\Client;
 use Nexmo\Application\Filter;
 use Nexmo\Application\MessagesConfig;
+use Nexmo\Application\RtcConfig;
 use Nexmo\Application\VoiceConfig;
 use Nexmo\Client\Exception\Exception;
 use NexmoTest\Psr7AssertionTrait;
@@ -231,6 +232,14 @@ class ClientTest extends TestCase
                         ]
                     ]
                 ],
+                'rtc' => [
+                    'webhooks' => [
+                        'event_url' => [
+                            'address' => 'https://example.com/new_event',
+                            'http_method' => null
+                        ]
+                    ]
+                ],
             ];
             $this->assertRequestJsonBodyContains('capabilities', $capabilities, $request);
 
@@ -257,11 +266,13 @@ class ClientTest extends TestCase
         $existing->setName('updated application');
         $existing->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'https://example.com/new_answer');
         $existing->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'https://example.com/new_event');
+        $existing->getRtcConfig()->setWebhook(RtcConfig::EVENT, 'https://example.com/new_event');
 
         $new = new Application();
         $new->setName('updated application');
         $new->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'https://example.com/new_answer');
         $new->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'https://example.com/new_event');
+        $new->getRtcConfig()->setWebhook(RtcConfig::EVENT, 'https://example.com/new_event');
 
         $raw = [
             'name' => 'updated application',
@@ -391,7 +402,7 @@ class ClientTest extends TestCase
                     'webhooks' => [
                         'answer_url' => [
                             'address' => 'https://example.com/answer',
-                            'http_method' => 'POST'
+                            'http_method' => 'GET'
 
                         ],
                         'event_url' => [
@@ -446,20 +457,26 @@ class ClientTest extends TestCase
     {
         $application = new Application();
         $application->setName('test application');
-        $application->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'https://example.com/answer');
-        $application->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'https://example.com/event');
-        $application->getMessagesConfig()->setWebhook(MessagesConfig::STATUS, 'https://example.com/status');
-        $application->getMessagesConfig()->setWebhook(MessagesConfig::INBOUND, 'https://example.com/inbound');
+        $application->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'https://example.com/answer', 'GET');
+        $application->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'https://example.com/event', 'POST');
+        $application->getMessagesConfig()->setWebhook(MessagesConfig::STATUS, 'https://example.com/status', 'POST');
+        $application->getMessagesConfig()->setWebhook(MessagesConfig::INBOUND, 'https://example.com/inbound', 'POST');
+        $application->getRtcConfig()->setWebhook(RtcConfig::EVENT, 'https://example.com/event', 'POST');
         $application->setPublicKey('-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSLcjxu33G\nd/vynKnlw9SENi+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xsO\nOUNhPx2LhuLmgwWSRS4L5W851Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n');
         $application->enableVbc();
 
         $rawV1 = [
             'name' => 'test application',
             'answer_url' => 'https://example.com/answer',
+            'answer_method' => 'GET',
             'event_url' => 'https://example.com/event',
+            'event_method' => 'POST',
             'status_url' => 'https://example.com/status',
+            'status_method' => 'POST',
             'inbound_url' => 'https://example.com/inbound',
-            'vbc' => true
+            'inbound_method' => 'POST',
+            'vbc' => true,
+            'public_key' => '-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSLcjxu33G\nd/vynKnlw9SENi+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xsO\nOUNhPx2LhuLmgwWSRS4L5W851Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n'
         ];
 
         $rawV2 = [
@@ -472,24 +489,46 @@ class ClientTest extends TestCase
                     'webhooks' => [
                         'answer_url' => [
                             'address' => 'https://example.com/answer',
-                            'http_method' => 'POST',
+                            'http_method' => 'GET',
                         ],
                         'event_url' => [
                             'address' => 'https://example.com/event',
                             'http_method' => 'POST',
                         ],
                     ]
-                ]
+                ],
+                'messages' => [
+                    'webhooks' => [
+                        'inbound_url' => [
+                            'address' => 'https://example.com/inbound',
+                            'http_method' => 'POST'
+
+                        ],
+                        'status_url' => [
+                            'address' => 'https://example.com/status',
+                            'http_method' => 'POST'
+                        ]
+                    ]
+                ],
+                'rtc' => [
+                    'webhooks' => [
+                        'event_url' => [
+                            'address' => 'https://example.com/event',
+                            'http_method' => 'POST',
+                        ],
+                    ]
+                ],
+                'vbc' => []
             ]
         ];
 
         return [
-            [clone $application, 'create'],
-            [clone $application, 'post'],
-            [$rawV1, 'create'],
-            [$rawV1, 'post'],
-            [$rawV2, 'create'],
-            [$rawV2, 'post'],
+            'createApplication' => [clone $application, 'create'],
+            'postApplication' => [clone $application, 'post'],
+            'createRawV1' => [$rawV1, 'create'],
+            'postRawV1' => [$rawV1, 'post'],
+            'createRawV2' => [$rawV2, 'create'],
+            'postRawV2' => [$rawV2, 'post'],
         ];
     }
 

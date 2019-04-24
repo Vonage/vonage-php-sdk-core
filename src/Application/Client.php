@@ -201,6 +201,11 @@ class Client implements ClientAwareInterface, CollectionInterface
         $application = new Application();
         $application->setName($array['name']);
 
+        // Public key?
+        if (isset($array['public_key'])) {
+            $application->setPublicKey($array['public_key']);
+        }
+
         // Voice
         foreach(['event', 'answer'] as $type){
             if(isset($array[$type . '_url'])){
@@ -210,8 +215,25 @@ class Client implements ClientAwareInterface, CollectionInterface
         }
 
         // Messages
+        foreach(['status', 'inbound'] as $type){
+            if(isset($array[$type . '_url'])){
+                $method = isset($array[$type . '_method']) ? $array[$type . '_method'] : null;
+                $application->getMessagesConfig()->setWebhook($type . '_url', new Webhook($array[$type . '_url'], $method));
+            }
+        }
 
         // RTC
+        foreach(['event'] as $type){
+            if(isset($array[$type . '_url'])){
+                $method = isset($array[$type . '_method']) ? $array[$type . '_method'] : null;
+                $application->getRtcConfig()->setWebhook($type . '_url', new Webhook($array[$type . '_url'], $method));
+            }
+        }
+
+        // VBC
+        if (isset($array['vbc']) && $array['vbc']) {
+            $application->enableVbc();
+        }
 
         return $application;
     }
