@@ -361,6 +361,11 @@ class ClientTest extends TestCase
 
             $this->assertRequestJsonBodyContains('name', 'test application', $request);
 
+            // Check for VBC as an object explicitly
+            $request->getBody()->rewind();
+            $this->assertContains('"vbc":{}', $request->getBody()->getContents());
+
+            // And check all other capabilities
             $capabilities = [
                 'voice' => [
                     'webhooks' => [
@@ -396,6 +401,7 @@ class ClientTest extends TestCase
                         ],
                     ]
                 ],
+                'vbc' => []
             ];
             $this->assertRequestJsonBodyContains('capabilities', $capabilities, $request);
             return true;

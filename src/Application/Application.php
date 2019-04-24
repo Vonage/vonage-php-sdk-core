@@ -208,7 +208,8 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
                             'http_method' => $this->getRtcConfig()->getWebhook(RtcConfig::EVENT)->getMethod(),
                         ],
                     ]
-                ]
+                ],
+                'vbc' => (object) array()
             ]
             //'type' => 'voice' //currently the only type
         ];
