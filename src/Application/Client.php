@@ -182,6 +182,14 @@ class Client implements ClientAwareInterface, CollectionInterface
 
     protected function createFromArray($array)
     {
+        if (isset($array['answer_url']) || isset($array['event_url'])) {
+            return $this->createFromArrayV1($array);
+        }
+
+        return $this->createFromArrayV2($array);
+    }
+
+    protected function createFromArrayV1($array) {
         if(!is_array($array)){
             throw new \RuntimeException('application must implement `' . ApplicationInterface::class . '` or be an array`');
         }
@@ -201,6 +209,44 @@ class Client implements ClientAwareInterface, CollectionInterface
                 $application->getVoiceConfig()->setWebhook($type . '_url', new Webhook($array[$type . '_url'], $method));
             }
         }
+
+        return $application;
+    }
+
+    protected function createFromArrayV2($array) {
+        if(!is_array($array)){
+            throw new \RuntimeException('application must implement `' . ApplicationInterface::class . '` or be an array`');
+        }
+
+        foreach(['name',] as $param){
+            if(!isset($array[$param])){
+                throw new \InvalidArgumentException('missing expected key `' . $param . '`');
+            }
+        }
+
+        $application = new Application();
+        $application->setName($array['name']);
+
+        if (!isset($array['capabilities'])) {
+            return $application;
+        }
+
+        $capabilities = $array['capabilities'];
+
+        // Handle voice
+        if (isset($capabilities['voice'])) {
+            $voiceCapabilities = $capabilities['voice']['webhooks'];
+
+            foreach(['answer', 'event'] as $type)
+            $application->getVoiceConfig()->setWebhook($type.'_url', new Webhook(
+                $voiceCapabilities[$type.'_url']['address'],
+                $voiceCapabilities[$type.'_url']['http_method']
+            ));
+        }
+
+        // Handle messages
+
+        // Handle RTC
 
         return $application;
     }

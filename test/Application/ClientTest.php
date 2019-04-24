@@ -381,17 +381,37 @@ class ClientTest extends TestCase
         $application->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'https://example.com/answer');
         $application->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'https://example.com/event');
 
-        $raw = [
+        $rawV1 = [
             'name' => 'test application',
             'answer_url' => 'https://example.com/answer',
             'event_url' => 'https://example.com/event'
         ];
 
+        $rawV2 = [
+            'name' => 'test application',
+            'capabilities' => [
+                'voice' => [
+                    'webhooks' => [
+                        'answer_url' => [
+                            'address' => 'https://example.com/answer',
+                            'http_method' => 'POST',
+                        ],
+                        'event_url' => [
+                            'address' => 'https://example.com/event',
+                            'http_method' => 'POST',
+                        ],
+                    ]
+                ]
+            ]
+        ];
+
         return [
             [clone $application, 'create'],
             [clone $application, 'post'],
-            [$raw, 'create'],
-            [$raw, 'post'],
+            [$rawV1, 'create'],
+            [$rawV1, 'post'],
+            [$rawV2, 'create'],
+            [$rawV2, 'post'],
         ];
     }
 
