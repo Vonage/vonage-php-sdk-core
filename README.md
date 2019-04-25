@@ -599,10 +599,10 @@ curl.cainfo = "C:\php\extras\ssl\cacert.pem"
 
 We allow use of any HTTPlug adapter, so you can create a client with alternative configuration if you need it, for example to take account of a local proxy, or deal with something else specific to your setup.
 
-Here's an example, this one disables the verification step, which is not recommended but does make a good example!
+Here's an example that reduces the default timeout to 5 seconds to avoid long delays if you have no route to our servers:
 
 ```
-$adapter_client = new Http\Adapter\Guzzle6\Client(new GuzzleHttp\Client(['verify' => false]));
+$adapter_client = new Http\Adapter\Guzzle6\Client(new GuzzleHttp\Client(['timeout' => 5]));
 $nexmo_client = new Nexmo\Client(new Nexmo\Client\Credentials\Basic($api_key, $api_secret), [], $adapter_client);
 ```
 
