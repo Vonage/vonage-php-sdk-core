@@ -80,7 +80,7 @@ class Client implements ClientAwareInterface, CollectionInterface
             $this->getClient()->getApiUrl() . $this->getCollectionPath()
             ,'POST',
             'php://temp',
-            ['content-type' => 'application/json']
+            ['Content-Type' => 'application/json']
         );
 
         $request->getBody()->write(json_encode($body));
@@ -116,7 +116,7 @@ class Client implements ClientAwareInterface, CollectionInterface
             $this->getClient()->getApiUrl() . $this->getCollectionPath() . '/' . $id,
             'PUT',
             'php://temp',
-            ['content-type' => 'application/json']
+            ['Content-Type' => 'application/json']
         );
 
         $request->getBody()->write(json_encode($body));
@@ -143,7 +143,7 @@ class Client implements ClientAwareInterface, CollectionInterface
             $this->getClient()->getApiUrl(). $this->getCollectionPath() . '/' . $id
             ,'DELETE',
             'php://temp',
-            ['content-type' => 'application/json']
+            ['Content-Type' => 'application/json']
         );
 
         if($application instanceof Application){
