@@ -21,5 +21,5 @@ echo "\nRTC\n-----\n";
 echo $a->getRtcConfig()->getWebhook('event_url').PHP_EOL;
 
 echo "\nVBC\n-----\n";
-echo $a->isVbcEnabled() ? 'Enabled' : 'Disabled';
+echo $a->getVbcConfig()->isEnabled() ? 'Enabled' : 'Disabled';
 echo "\n\n";
