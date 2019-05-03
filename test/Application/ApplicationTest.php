@@ -105,7 +105,7 @@ class ApplicationTest extends TestCase
     public function testResponseSetsVbcConfigs()
     {
         $this->app->setResponse($this->getResponse());
-        $this->assertEquals(true, $this->app->isVbcEnabled());
+        $this->assertEquals(true, $this->app->getVbcConfig()->isEnabled());
     }
 
     public function testCanGetDirtyValues()

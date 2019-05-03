@@ -463,7 +463,7 @@ class ClientTest extends TestCase
         $application->getMessagesConfig()->setWebhook(MessagesConfig::INBOUND, 'https://example.com/inbound', 'POST');
         $application->getRtcConfig()->setWebhook(RtcConfig::EVENT, 'https://example.com/event', 'POST');
         $application->setPublicKey('-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSLcjxu33G\nd/vynKnlw9SENi+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xsO\nOUNhPx2LhuLmgwWSRS4L5W851Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n');
-        $application->enableVbc();
+        $application->getVbcConfig()->enable();
 
         $rawV1 = [
             'name' => 'test application',

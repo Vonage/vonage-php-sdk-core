@@ -236,7 +236,7 @@ class Client implements ClientAwareInterface, CollectionInterface
 
         // VBC
         if (isset($array['vbc']) && $array['vbc']) {
-            $application->enableVbc();
+            $application->getVbcConfig()->enable();
         }
 
         return $application;
@@ -303,7 +303,7 @@ class Client implements ClientAwareInterface, CollectionInterface
 
         // Handle VBC
         if (isset($capabilities['vbc'])) {
-            $application->enableVbc();
+            $application->getVbcConfig()->enable();
         }
 
         return $application;

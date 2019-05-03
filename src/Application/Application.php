@@ -230,8 +230,14 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
         }
 
         // Handle VBC specifically
-        if ($this->vbcConfig->isEnabled()) {
+        if ($this->getVbcConfig()->isEnabled()) {
             $capabilities['vbc'] = new \StdClass;
+        }
+
+        // Workaround API bug. It expects an object and throws 500
+        // if it gets an array
+        if (!count($capabilities)) {
+            $capabilities = (object) $capabilities;
         }
 
         return [
@@ -239,7 +245,7 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
             'keys' => [
                 'public_key' => $this->getPublicKey()
             ],
-            'capabilities' => (object) $capabilities
+            'capabilities' => $capabilities
         ];
     }
 
