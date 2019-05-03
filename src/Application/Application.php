@@ -24,7 +24,7 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
     protected $voiceConfig;
     protected $messagesConfig;
     protected $rtcConfig;
-    protected $usesVbc = false; // This will become a config if we ever have parameters
+    protected $vbcConfig;
 
     protected $name;
 
@@ -42,18 +42,6 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
         return $this->id;
     }
 
-    public function enableVbc() {
-        $this->usesVbc = true;
-    }
-
-    public function disableVbc() {
-        $this->usesVbc = false;
-    }
-
-    public function isVbcEnabled() {
-        return $this->usesVbc;
-    }
-
     public function setVoiceConfig(VoiceConfig $config)
     {
         $this->voiceConfig = $config;
@@ -69,6 +57,12 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
     public function setRtcConfig(RtcConfig $config)
     {
         $this->rtcConfig = $config;
+        return $this;
+    }
+
+    public function setVbcConfig(VbcConfig $config)
+    {
+        $this->vbcConfig = $config;
         return $this;
     }
 
@@ -124,6 +118,18 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
         }
 
         return $this->rtcConfig;
+    }
+
+    /**
+     * @return RtcConfig
+     */
+    public function getVbcConfig()
+    {
+        if(!isset($this->vbcConfig)){
+            $this->setVbcConfig(new VbcConfig());
+        }
+
+        return $this->vbcConfig;
     }
 
     public function setPublicKey($key)
@@ -191,7 +197,7 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
             }
 
             if (isset($capabilities['vbc'])) {
-                $this->enableVbc();
+                $this->getVbcConfig()->enable();
             }
         }
     }
@@ -224,7 +230,7 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
         }
 
         // Handle VBC specifically
-        if ($this->usesVbc) {
+        if ($this->vbcConfig->isEnabled()) {
             $capabilities['vbc'] = new \StdClass;
         }
 
