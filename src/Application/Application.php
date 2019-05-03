@@ -233,7 +233,7 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
             'keys' => [
                 'public_key' => $this->getPublicKey()
             ],
-            'capabilities' => $capabilities
+            'capabilities' => (object) $capabilities
         ];
     }
 
