@@ -4,7 +4,7 @@ Client Library for PHP
 [![Latest Stable Version](https://poser.pugx.org/nexmo/client/v/stable)](https://packagist.org/packages/nexmo/client)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE.txt)
 
-*This library requires a minimum PHP version of 5.6*
+*This library requires a minimum PHP version of 7.1*
 
 This is the PHP client library for use Nexmo's API. To use this, you'll need a Nexmo account. Sign up [for free at 
 nexmo.com][signup]. This is currently a beta release, see [contributing](#contributing) for more information.
