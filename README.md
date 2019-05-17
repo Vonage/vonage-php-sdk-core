@@ -1,4 +1,4 @@
-Nexmo Client Library for PHP 
+Client Library for PHP 
 ============================
 [![Build Status](https://api.travis-ci.org/Nexmo/nexmo-php.svg?branch=master)](https://travis-ci.org/Nexmo/nexmo-php)
 [![Latest Stable Version](https://poser.pugx.org/nexmo/client/v/stable)](https://packagist.org/packages/nexmo/client)
@@ -513,6 +513,24 @@ $application = $client->applications()->update([
 ], '1a20a124-1775-412b-b623-e6985f4aace0');
 ```
 
+### List Your Numbers
+
+You can list the numbers owned by your account and optionally include filtering:
+
+`search_pattern`:
+* `0` - the number begins with `pattern`
+* `1` - the number includes `pattern`
+* `2` - the number ends with `pattern`
+
+```
+$client->numbers()->searchOwned(
+    '234',
+    [
+        "search_pattern" => 1,
+    ]
+);
+```
+
 ### Search Available Numbers
 
 You can search for numbers available to purchase in a specific country:
@@ -535,6 +553,30 @@ Or you can specify the number and country manually:
 ```php
 $client->numbers()->purchase('14155550100', 'US');
 ```
+
+### Update a Number
+
+To update a number, use `numbers()->update` and pass in the configuration options you want to change. To clear a setting, pass in an empty value.
+
+```php
+$client->numbers()->update([
+    "messagesCallbackType" => "app",
+    "messagesCallbackValue" => '1a20a124-1775-412b-b623-e6985f4aace0',
+    "voiceCallbackType" => 'tel',
+    "voiceCallbackValue" => '447700900002',
+    "voiceStatusCallback" => 'https://example.com/webhooks/status',
+    "moHttpUrl" => 'https://example.com/webhooks/inbound-sms',
+], NEXMO_NUMBER);
+```
+
+### Cancel a Number
+
+To cancel a number, provide the `msisdn`:
+
+```php
+$client->numbers()->cancel('447700900002');
+```
+
 
 ### Managing Secrets
 
