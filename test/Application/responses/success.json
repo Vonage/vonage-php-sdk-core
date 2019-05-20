@@ -1,27 +1,43 @@
 {
-  "id": "7568c82a-0852-4974-b5c7-19078a4020c3",
-  "name": "client_test",
-  "voice": {
-    "webhooks": [
-      {
-        "endpoint_type": "event_url",
-        "endpoint": "http://test.runscope.net/event",
-        "http_method": "POST"
-      },
-      {
-        "endpoint_type": "answer_url",
-        "endpoint": "http://test.runscope.net/answer",
-        "http_method": "GET"
+  "id": "78d335fa323d01149c3dd6f0d48968cf",
+  "name": "My Application",
+  "capabilities": {
+    "voice": {
+      "webhooks": {
+        "answer_url": {
+          "address": "https://example.com/webhooks/answer",
+          "http_method": "GET"
+        },
+        "event_url": {
+          "address": "https://example.com/webhooks/event",
+          "http_method": "POST"
+        }
       }
-    ]
+    },
+    "messages": {
+      "webhooks": {
+        "inbound_url": {
+          "address": "https://example.com/webhooks/inbound",
+          "http_method": "POST"
+        },
+        "status_url": {
+          "address": "https://example.com/webhooks/status",
+          "http_method": "POST"
+        }
+      }
+    },
+    "rtc": {
+      "webhooks": {
+        "event_url": {
+          "address": "https://example.com/webhooks/event",
+          "http_method": "POST"
+        }
+      }
+    },
+    "vbc": {}
   },
   "keys": {
     "public_key": "public_key",
     "private_key": "private_key"
-  },
-  "_links": {
-    "self": {
-      "href": "/v1/applications/7568c82a-0852-4974-b5c7-19078a4020c3"
-    }
   }
 }

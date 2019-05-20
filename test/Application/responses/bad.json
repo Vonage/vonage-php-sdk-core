@@ -1,7 +1,12 @@
 {
-  "type": "BAD_REQUEST",
-  "error_title": "Bad Request",
-  "invalid_parameters": {
-    "name": "Is required."
-  }
+  "type": "https://developer.nexmo.com/api-errors/application#payload-validation",
+  "title": "Bad Request",
+  "detail": "The request failed due to validation errors",
+  "invalid_parameters": [
+    {
+      "name": "capabilities.voice.webhooks.answer_url.http_method",
+      "reason": "must be one of: GET, POST"
+    }
+  ],
+  "instance": "797a8f199c45014ab7b08bfe9cc1c12c"
 }

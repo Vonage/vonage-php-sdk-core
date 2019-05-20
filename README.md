@@ -413,22 +413,66 @@ foreach($client->calls($filter) as $call){
 Application are configuration containers. You can create one using a simple array structure:
 
 ```php
-$application = $client->applications()->create([
-    'name' => 'My Application',
-    'answer_url' => 'https://example.com/answer',
-    'event_url' => 'https://example.com/event'
-]);
+$application = [
+ 'name' => 'test application',
+ 'keys' => [
+     'public_key' => '-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSLcjxu33G\nd/vynKnlw9SENi+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xsO\nOUNhPx2LhuLmgwWSRS4L5W851Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n'
+ ],
+ 'capabilities' => [
+     'voice' => [
+         'webhooks' => [
+             'answer_url' => [
+                 'address' => 'https://example.com/answer',
+                 'http_method' => 'GET',
+             ],
+             'event_url' => [
+                 'address' => 'https://example.com/event',
+                 'http_method' => 'POST',
+             ],
+         ]
+     ],
+     'messages' => [
+         'webhooks' => [
+             'inbound_url' => [
+                 'address' => 'https://example.com/inbound',
+                 'http_method' => 'POST'
+
+             ],
+             'status_url' => [
+                 'address' => 'https://example.com/status',
+                 'http_method' => 'POST'
+             ]
+         ]
+     ],
+     'rtc' => [
+         'webhooks' => [
+             'event_url' => [
+                 'address' => 'https://example.com/event',
+                 'http_method' => 'POST',
+             ],
+         ]
+     ],
+     'vbc' => []
+ ]
+];
+
+$client->applications()->create($application);
 ```
 
 You can also pass the client an application object:
 
 ```php
-$application = new Nexmo\Application\Application();
-$application->setName('My Application');
-$application->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'https://example.com/answer');
-$application->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'https://example.com/event');
+$a = new Nexmo\Application\Application;
 
-$client->appliations()->create($application);
+$a->setName('PHP Client Example');
+$a->getVoiceConfig()->setWebhook('answer_url', 'https://example.com/answer', 'GET');
+$a->getVoiceConfig()->setWebhook('event_url', 'https://example.com/event', 'POST');
+$a->getMessagesConfig()->setWebhook('status_url', 'https://example.com/status', 'POST');
+$a->getMessagesConfig()->setWebhook('inbound_url', 'https://example.com/inbound', 'POST');
+$a->getRtcConfig()->setWebhook('event_url', 'https://example.com/event', 'POST');
+$a->disableVbc();
+
+$client->applications()->create($a);
 ```
 
 ### Fetching Applications
@@ -466,8 +510,6 @@ You can also pass an array and the application UUID to the client:
 ```php
 $application = $client->applications()->update([
     'name' => 'Updated Application',
-    'answer_url' => 'https://example.com/v2/answer',
-    'event_url' => 'https://example.com/v2/event'
 ], '1a20a124-1775-412b-b623-e6985f4aace0');
 ```
 
@@ -573,6 +615,9 @@ print_r($response->data);
 
 ## Troubleshooting
 
+
+### `unable to get local issuer certificate`
+
 Some users have issues making requests due to the following error:
 
 ```
@@ -590,6 +635,17 @@ To resolve this issue, download a list of trusted CA certificates (e.g. the [cur
 curl.cainfo = "/etc/pki/tls/cacert.pem"
 # Windows
 curl.cainfo = "C:\php\extras\ssl\cacert.pem"
+```
+
+### Pass custom Guzzle client
+
+We allow use of any HTTPlug adapter, so you can create a client with alternative configuration if you need it, for example to take account of a local proxy, or deal with something else specific to your setup.
+
+Here's an example that reduces the default timeout to 5 seconds to avoid long delays if you have no route to our servers:
+
+```
+$adapter_client = new Http\Adapter\Guzzle6\Client(new GuzzleHttp\Client(['timeout' => 5]));
+$nexmo_client = new Nexmo\Client(new Nexmo\Client\Credentials\Basic($api_key, $api_secret), [], $adapter_client);
 ```
 
 API Coverage
