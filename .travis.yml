@@ -4,7 +4,12 @@ php:
   - '7.2'
   - '7.3'
 
+env:
+  matrix:
+    - PREFER_LOWEST=1
+
 before_script:
-  - composer install
+  - if [[ $PREFER_LOWEST != 1 ]]; then composer install --no-interaction; fi
+  - if [[ $PREFER_LOWEST == 1 ]]; then composer update --prefer-lowest --prefer-dist --prefer-stable --no-interaction; fi
 
 script: ./vendor/bin/phpunit -v
