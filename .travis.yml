@@ -6,10 +6,10 @@ php:
 
 env:
   matrix:
-    - PREFER_LOWEST=1
+    - PREFER_LOWEST=""
+    - PREFER_LOWEST="--prefer-lowest --prefer-stable"
 
 before_script:
-  - if [[ $PREFER_LOWEST != 1 ]]; then composer install --no-interaction; fi
-  - if [[ $PREFER_LOWEST == 1 ]]; then composer update --prefer-lowest --prefer-dist --prefer-stable --no-interaction; fi
+  - travis_retry composer update --no-suggest --no-interaction $PREFER_LOWEST
 
 script: ./vendor/bin/phpunit -v
