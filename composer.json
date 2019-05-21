@@ -18,7 +18,7 @@
     "php": ">=5.6",
     "php-http/client-implementation": "^1.0",
     "zendframework/zend-diactoros": "^1.8.4 || ^2.0",
-    "php-http/guzzle6-adapter": "^1.0",
+    "php-http/guzzle6-adapter": "^1.0 | ^2.0",
     "lcobucci/jwt": "^3.2"
   },
   "require-dev": {
