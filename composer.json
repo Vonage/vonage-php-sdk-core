@@ -1,5 +1,5 @@
 {
-  "name": "nexmo/client",
+  "name": "nexmo/client-core",
   "description": "PHP Client for using Nexmo's API.",
   "license": "MIT",
   "type": "library",
@@ -9,7 +9,18 @@
       "email": "tim@nexmo.com",
       "role": "Developer",
       "homepage": "http://twitter.com/tjlytle"
+    },
+    {
+      "name": "Michael Heap",
+      "email": "michael.heap@vonage.com",
+      "role": "Developer"
+    },
+    {
+      "name": "Lorna Mitchell",
+      "email": "lorna.mitchell@vonage.com",
+      "role": "Developer"
     }
+
   ],
   "support": {
     "email": "devrel@nexmo.com"
@@ -18,7 +29,6 @@
     "php": ">=5.6",
     "php-http/client-implementation": "^1.0",
     "zendframework/zend-diactoros": "^1.8.4 || ^2.0",
-    "php-http/guzzle6-adapter": "^1.0",
     "lcobucci/jwt": "^3.2"
   },
   "require-dev": {
