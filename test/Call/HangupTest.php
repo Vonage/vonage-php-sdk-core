@@ -21,7 +21,7 @@ class HangupTest extends TestCase
         $hangup = new Hangup();
 
         $json = json_decode(json_encode($hangup));
-        $this->assertJsonMatchesSchema(__DIR__ . '/schema/hangup.json', $json);
+        $this->assertJsonMatchesSchema($json, __DIR__ . '/schema/hangup.json');
         $this->assertJsonValueEquals('hangup', 'action', $json);
     }
 }

@@ -21,7 +21,7 @@ class EarmuffTest extends TestCase
         $mute = new Earmuff();
 
         $json = json_decode(json_encode($mute));
-        $this->assertJsonMatchesSchema(__DIR__ . '/schema/earmuff.json', $json);
+        $this->assertJsonMatchesSchema($json, __DIR__ . '/schema/earmuff.json');
         $this->assertJsonValueEquals('earmuff', 'action', $json);
     }
 }
