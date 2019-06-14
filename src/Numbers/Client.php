@@ -171,7 +171,8 @@ class Client implements ClientAwareInterface
 
         $searchResults = json_decode($response->getBody()->getContents(), true);
         if(empty($searchResults)){
-            throw new Exception\Request('number not found', 404);
+            // we did not find any results, that's OK
+            return [];
         }
 
         if(!isset($searchResults['count']) OR !isset($searchResults['numbers'])){
