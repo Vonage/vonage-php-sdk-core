@@ -85,10 +85,12 @@ class ClientTest extends TestCase
 
     /**
      * @dataProvider exceptionsProvider
-     * @expectedException Nexmo\Client\Exception\Request
      */
     public function testExceptions($response, $code, $expectedException, $expectedMessage)
     {
+        $this->expectException($expectedException);
+        $this->expectExceptionMessage($expectedMessage);
+
         $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
             return true;
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse($response, $code));
@@ -104,6 +106,7 @@ class ClientTest extends TestCase
             'invalid-id' => ['invalid-id', 404, Exception\Request::class, "Invalid ID - ID '0A000000B0C9A1234' could not be found (type=MT). See https://developer.nexmo.com/api-errors#invalid-id"],
             'invalid-json' => ['invalid-json', 422, Exception\Request::class, "Invalid JSON - Unexpected character ('\"' (code 34)): was expecting comma to separate Object entries. See https://developer.nexmo.com/api-errors#invalid-json"],
             'unsupported-product' => ['unsupported-product', 422, Exception\Request::class, "Invalid Product - No product corresponding to supplied string sms2!. See https://developer.nexmo.com/api-errors/redact#invalid-product"],
+            'unknown-error' => ['error', 500, Exception\Server::class, "Unexpected error"],
         ];
     }
 
