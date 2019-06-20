@@ -655,6 +655,43 @@ $response = $client->account()->updateConfig([
 print_r($response->data);
 ```
 
+### Get Information About a Number
+
+The [Number Insights API](https://developer.nexmo.com/api/number-insight) allows a user to check that a number is valid and to find out more about how to use it.
+
+#### Basic and Standard Usage
+
+You can use either the `basic()` or `standard()` methods (an `advanced()` method is available, but it is recommended to use the async option to get advanced info), like this:
+
+```php
+
+try {
+  $insights = $client->insights()->basic(PHONE_NUMBER);
+
+  echo $insights['national_format_number'];
+} catch (Exception $e) {
+  // for the Nexmo-specific exceptions, try the `getEntity()` method for more diagnostic information
+}
+```
+
+The data is returned in the `$insights` variable in the example above.
+
+#### Advanced Usage
+
+To get advanced insights, use the async feature and supply a URL for the webhook to be sent to:
+
+```php
+try {
+  $client->insights()->advancedAsync(PHONE_NUMBER, 'http://example.com/webhooks/number-insights');
+} catch (Exception $e) {
+  // for the Nexmo-specific exceptions, try the `getEntity()` method for more diagnostic information
+}
+```
+
+Check out the [documentation](https://developer.nexmo.com/number-insight/code-snippets/number-insight-advanced-async-callback) for what to expect in the incoming webhook containing the data you requested.
+
+
+
 ## Troubleshooting
 
 
