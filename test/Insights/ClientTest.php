@@ -79,6 +79,45 @@ class ClientTest extends TestCase
         $this->checkInsightsRequest('advanced', '/ni/advanced/json', Advanced::class);
     }
 
+
+    /**
+     * @expectedException \Nexmo\Client\Exception\Request
+     */
+    public function testError()
+    {
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request){
+            return true;
+        }))->willReturn($this->getResponse('error'));
+
+        $insightsStandard = $this->insightsClient->basic('14155550100');
+    }
+
+    /**
+     * @expectedException \Nexmo\Client\Exception\Request
+     */
+    public function testClientException()
+    {
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request){
+            return true;
+        }))->willReturn($this->getResponse('error', 401));
+
+        $insightsStandard = $this->insightsClient->basic('14155550100');
+    }
+
+    /**
+     * @expectedException \Nexmo\Client\Exception\Server
+     */
+    public function testServerException()
+    {
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request){
+            return true;
+        }))->willReturn($this->getResponse('error', 502));
+
+        $insightsStandard = $this->insightsClient->basic('14155550100');
+    }
+
+
+
     protected function checkInsightsRequest($methodToCall, $expectedPath, $expectedClass)
     {
         $this->nexmoClient->send(Argument::that(function (RequestInterface $request)  use ($expectedPath){

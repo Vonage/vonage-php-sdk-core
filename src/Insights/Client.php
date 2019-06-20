@@ -12,6 +12,7 @@ use Nexmo\Client\ClientAwareInterface;
 use Nexmo\Client\ClientAwareTrait;
 use Nexmo\Client\Exception;
 use Zend\Diactoros\Request;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class Client
@@ -90,29 +91,53 @@ class Client implements ClientAwareInterface
 
         $response = $this->client->send($request);
 
-        $insightsResults = json_decode($response->getBody()->getContents(), true);
-
+        // this API almost always returns 200 but just in case
         if('200' != $response->getStatusCode()){
             throw $this->getException($response);
+        }
+
+        $insightsResults = json_decode($response->getBody()->getContents(), true);
+
+        // check the status field in response (HTTP status is 200 even for errors)
+        if($insightsResults['status'] != 0) {
+            throw $this->getNIException($insightsResults);
         }
 
         return $insightsResults;
     }
 
+
     protected function getException(ResponseInterface $response)
     {
-        $body = json_decode($response->getBody()->getContents(), true);
         $status = $response->getStatusCode();
+        $msg = 'Unexpected HTTP Status Code ' . $status;
 
         if($status >= 400 AND $status < 500) {
-            $e = new Exception\Request($body['error-code-label'], $status);
+            $e = new Exception\Request($msg, $status);
         } elseif($status >= 500 AND $status < 600) {
-            $e = new Exception\Server($body['error-code-label'], $status);
+            $e = new Exception\Server($msg, $status);
         } else {
-            $e = new Exception\Exception('Unexpected HTTP Status Code');
-            throw $e;
+            $e = new Exception\Exception($msg, $status);
+        }
+        return $e;
+    }
+
+    protected function getNIException($body)
+    {
+        $status = $body['status'];
+        $message = "Error: ";
+
+        if(isset($body['status_message'])) {
+            $message .= $body['status_message'];
         }
 
+        // the advanced async endpoint returns status detail in another field
+        // this is a workaround
+        if(isset($body['error_text'])) {
+            $message .= $body['error_text'];
+        }
+
+        $e = new Exception\Request($message, $status);
         return $e;
     }
 }
