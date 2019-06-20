@@ -144,9 +144,15 @@ class Client implements ClientAwareInterface
         $data = json_decode($response->getBody()->getContents(), true);
 
         if($response->getStatusCode() != '200' && isset($data['error-code'])){
-            throw new Exception\Request($data['error-code-label'], $data['error-code']);
+            $e = new Exception\Request($data['error-code-label'], $data['error-code']);
+            $response->getBody()->rewind();
+            $e->setEntity($response);
+            throw $e;
         } elseif($response->getStatusCode() != '200'){
-            throw new Exception\Request('error status from API', $response->getStatusCode());
+            $e = new Exception\Request('error status from API', $response->getStatusCode());
+            $response->getBody()->rewind();
+            $e->setEntity($response);
+            throw $e;
         }
 
         if(!isset($data['items'])){
@@ -210,11 +216,17 @@ class Client implements ClientAwareInterface
         } elseif($response->getStatusCode() == '429'){
             throw new Exception\Request('too many concurrent requests', $response->getStatusCode());
         } elseif($response->getStatusCode() != '200'){
-            throw new Exception\Request('error status from API', $response->getStatusCode());
+            $e = new Exception\Request('error status from API', $response->getStatusCode());
+            $response->getBody()->rewind();
+            $e->setEntity($response);
+            throw $e;
         }
 
         if(!$data){
-            throw new Exception\Request('no message found for `' . $id . '`');
+            $e = new Exception\Request('no message found for `' . $id . '`');
+            $response->getBody()->rewind();
+            $e->setEntity($response);
+            throw $e;
         }
 
         switch($data['type']){
@@ -261,7 +273,10 @@ class Client implements ClientAwareInterface
         if($response->getStatusCode() != '200' && isset($data['error-code'])){
             throw new Exception\Request($data['error-code-label'], $data['error-code']);
         } elseif($response->getStatusCode() != '200'){
-            throw new Exception\Request('error status from API', $response->getStatusCode());
+            $e = new Exception\Request('error status from API', $response->getStatusCode());
+            $response->getBody()->rewind();
+            $e->setEntity($response);
+            throw $e;
         }
 
         if(!isset($data['items'])){

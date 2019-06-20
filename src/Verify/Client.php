@@ -50,7 +50,9 @@ class Client implements ClientAwareInterface
         $data = $this->processReqRes($verification, $request, $response, true);
 
         if(!isset($data['status'])){
-            throw new Exception\Exception('unexpected response from API');
+            $e = new Exception\Request('unexpected response from API');
+            $e->setEntity($response);
+            throw $e;
         }
 
         //verify API returns text status on success
@@ -62,9 +64,11 @@ class Client implements ClientAwareInterface
         switch($data['status']){
             case '5':
                 $e = new Exception\Server($data['error_text'], $data['status']);
+                $e->setEntity($response);
                 break;
             default:
                 $e = new Exception\Request($data['error_text'], $data['status']);
+                $e->setEntity($response);
                 break;
         }
 
@@ -144,7 +148,9 @@ class Client implements ClientAwareInterface
     protected function checkError(Verification $verification, $data)
     {
         if(!isset($data['status'])){
-            throw new Exception\Exception('unexpected response from API');
+            $e = new Exception\Request('unexpected response from API');
+            $e->setEntity($data);
+            throw $e;
         }
 
         //normalize errors (client vrs server)
@@ -153,9 +159,11 @@ class Client implements ClientAwareInterface
                 return $verification;
             case '5':
                 $e = new Exception\Server($data['error_text'], $data['status']);
+                $e->setEntity($data);
                 break;
             default:
                 $e = new Exception\Request($data['error_text'], $data['status']);
+                $e->setEntity($data);
                 break;
         }
 

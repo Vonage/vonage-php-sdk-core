@@ -106,19 +106,24 @@ class Client implements ClientAwareInterface
         return $insightsResults;
     }
 
-
     protected function getException(ResponseInterface $response)
     {
         $status = $response->getStatusCode();
-        $msg = 'Unexpected HTTP Status Code ' . $status;
+        $msg = "Error"; // no guaranteed fields for more info
 
         if($status >= 400 AND $status < 500) {
             $e = new Exception\Request($msg, $status);
+            // attach the response for additional debugging
+            $e->setEntity($response);
         } elseif($status >= 500 AND $status < 600) {
             $e = new Exception\Server($msg, $status);
+            // attach the response for additional debugging
+            $e->setEntity($response);
         } else {
+            $msg = 'Unexpected HTTP Status Code ' . $status;
             $e = new Exception\Exception($msg, $status);
         }
+
         return $e;
     }
 

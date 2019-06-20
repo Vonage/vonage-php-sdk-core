@@ -171,11 +171,17 @@ class Client implements ClientAwareInterface
 
         $searchResults = json_decode($response->getBody()->getContents(), true);
         if(empty($searchResults)){
-            throw new Exception\Request('number not found', 404);
+            $e = new Exception\Request('number not found', 404);
+            $response->getBody()->rewind();
+            $e->setEntity($response);
+            throw $e;
         }
 
         if(!isset($searchResults['count']) OR !isset($searchResults['numbers'])){
-            throw new Exception\Exception('unexpected response format');
+            $e = new Exception\Request('unexpected response format');
+            $response->getBody()->rewind();
+            $e->setEntity($response);
+            throw $e;
         }
 
         // We're going to return a list of numbers
@@ -277,8 +283,12 @@ class Client implements ClientAwareInterface
 
         if($status >= 400 AND $status < 500) {
             $e = new Exception\Request($body['error-code-label'], $status);
+            $response->getBody()->rewind();
+            $e->setEntity($response);
         } elseif($status >= 500 AND $status < 600) {
             $e = new Exception\Server($body['error-code-label'], $status);
+            $response->getBody()->rewind();
+            $e->setEntity($response);
         } else {
             $e = new Exception\Exception('Unexpected HTTP Status Code');
             throw $e;

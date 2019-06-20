@@ -727,6 +727,10 @@ $adapter_client = new Http\Adapter\Guzzle6\Client(new GuzzleHttp\Client(['timeou
 $nexmo_client = new Nexmo\Client(new Nexmo\Client\Credentials\Basic($api_key, $api_secret), [], $adapter_client);
 ```
 
+### Accessing Response Data
+
+When things go wrong, you'll receive an `Exception`. The Nexmo exception classes `Nexmo\Client\Exception\Request` and `Nexmo\Client\Exception\Server` support an additional `getEntity()` method which you can use in addition to `getCode()` and `getMessage()` to find out more about what went wrong. The entity returned will typically be an object related to the operation, or the response object from the API call.
+
 API Coverage
 ------------
 
