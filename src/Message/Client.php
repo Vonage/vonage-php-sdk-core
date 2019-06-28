@@ -37,8 +37,8 @@ class Client implements ClientAwareInterface
         $params = $message->getRequestData(false);
         
         $request = new Request(
-            $this->getClient()->getRestUrl() . '/sms/json'
-            ,'POST',
+            $this->getClient()->getRestUrl() . '/sms/json',
+            'POST',
             'php://temp',
             ['content-type' => 'application/json']
         );
@@ -89,8 +89,8 @@ class Client implements ClientAwareInterface
         $params = $message->getRequestData();
 
         $request = new Request(
-            $this->getClient()->getRestUrl() . '/sc/us/'.$message->getType().'/json'
-            ,'POST',
+            $this->getClient()->getRestUrl() . '/sc/us/'.$message->getType().'/json',
+            'POST',
             'php://temp',
             ['content-type' => 'application/json']
         );
