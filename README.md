@@ -695,3 +695,13 @@ Contributing
 
 This library is actively developed and we love to hear from you! Please feel free to [create an issue][issues] or [open a pull request][pulls] with your questions, comments, suggestions and feedback.
 
+[signup]: https://dashboard.nexmo.com/sign-up?utm_source=DEV_REL&utm_medium=github&utm_campaign=php-client-library
+[doc_sms]: https://developer.nexmo.com/messaging/sms/overview
+[doc_inbound]: https://developer.nexmo.com/messaging/sms/guides/inbound-sms
+[doc_verify]: https://developer.nexmo.com/verify/overview
+[license]: LICENSE.txt
+[send_example]: examples/send.php
+[spec]: https://github.com/Nexmo/client-library-specification
+[issues]: https://github.com/Nexmo/nexmo-php/issues
+[pulls]: https://github.com/Nexmo/nexmo-php/pulls
+
