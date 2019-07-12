@@ -3,6 +3,7 @@ Client Library for PHP
 [![Build Status](https://api.travis-ci.org/Nexmo/nexmo-php.svg?branch=master)](https://travis-ci.org/Nexmo/nexmo-php)
 [![Latest Stable Version](https://poser.pugx.org/nexmo/client/v/stable)](https://packagist.org/packages/nexmo/client)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE.txt)
+[![codecov](https://codecov.io/gh/Nexmo/nexmo-php/branch/master/graph/badge.svg)](https://codecov.io/gh/Nexmo/nexmo-php)
 
 *This library requires a minimum PHP version of 5.6*
 
