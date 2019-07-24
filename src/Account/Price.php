@@ -12,7 +12,8 @@ use Nexmo\Entity\JsonSerializableTrait;
 use Nexmo\Entity\NoRequestResponseTrait;
 use Nexmo\Entity\JsonUnserializableInterface;
 
-abstract class Price implements EntityInterface, JsonSerializableInterface, JsonUnserializableInterface, ArrayAccess {
+abstract class Price implements EntityInterface, JsonSerializableInterface, JsonUnserializableInterface, ArrayAccess
+{
     use JsonSerializableTrait;
     use NoRequestResponseTrait;
     use JsonResponseTrait;
@@ -61,8 +62,7 @@ abstract class Price implements EntityInterface, JsonSerializableInterface, Json
     public function getPriceForNetwork($networkCode)
     {
         $networks = $this->getNetworks();
-        if (isset($networks[$networkCode]))
-        {
+        if (isset($networks[$networkCode])) {
             return $networks[$networkCode]->{$this->priceMethod}();
         }
 
@@ -73,7 +73,7 @@ abstract class Price implements EntityInterface, JsonSerializableInterface, Json
     {
         // Convert CamelCase to snake_case as that's how we use array access in every other object
         $data = [];
-        foreach ($json as $k => $v){
+        foreach ($json as $k => $v) {
             $k = ltrim(strtolower(preg_replace('/[A-Z]([A-Z](?![a-z]))*/', '_$0', $k)), '_');
 
             // PrefixPrice fixes
@@ -96,15 +96,15 @@ abstract class Price implements EntityInterface, JsonSerializableInterface, Json
         // Create objects for all the nested networks too
         $networks = [];
         if (isset($json['networks'])) {
-            foreach ($json['networks'] as $n){
+            foreach ($json['networks'] as $n) {
                 if (isset($n['code'])) {
                     $n['networkCode'] = $n['code'];
-                    unset ($n['code']);
+                    unset($n['code']);
                 }
 
                 if (isset($n['network'])) {
                     $n['networkName'] = $n['network'];
-                    unset ($n['network']);
+                    unset($n['network']);
                 }
 
                 $network = new Network($n['networkCode'], $n['networkName']);
@@ -117,7 +117,7 @@ abstract class Price implements EntityInterface, JsonSerializableInterface, Json
         $this->data = $data;
     }
 
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return $this->data;
     }

@@ -9,7 +9,6 @@ use Psr\Http\Message\ResponseInterface;
 use Zend\Diactoros\Request;
 use Nexmo\Client\Exception;
 
-
 class Client implements ClientAwareInterface
 {
     use ClientAwareTrait;
@@ -33,7 +32,7 @@ class Client implements ClientAwareInterface
 
         $rawBody = $response->getBody()->getContents();
 
-        if('204' != $response->getStatusCode()){
+        if ('204' != $response->getStatusCode()) {
             throw $this->getException($response);
         }
 
@@ -62,9 +61,9 @@ class Client implements ClientAwareInterface
             $msg .= '. See '.$body['type'];
         }
 
-        if($status >= 400 AND $status < 500) {
+        if ($status >= 400 and $status < 500) {
             $e = new Exception\Request($msg, $status);
-        } elseif($status >= 500 AND $status < 600) {
+        } elseif ($status >= 500 and $status < 600) {
             $e = new Exception\Server($msg, $status);
         } else {
             $e = new Exception\Exception('Unexpected HTTP Status Code');
@@ -73,6 +72,4 @@ class Client implements ClientAwareInterface
 
         return $e;
     }
-
-
 }

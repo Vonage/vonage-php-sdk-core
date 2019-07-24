@@ -17,7 +17,7 @@ class MessagesConfig
 
     public function setWebhook($type, $url, $method = null)
     {
-        if(!($url instanceof Webhook)){
+        if (!($url instanceof Webhook)) {
             $url = new Webhook($url, $method);
         }
 
@@ -27,7 +27,7 @@ class MessagesConfig
 
     public function getWebhook($type)
     {
-        if(isset($this->webhooks[$type])){
+        if (isset($this->webhooks[$type])) {
             return $this->webhooks[$type];
         }
     }

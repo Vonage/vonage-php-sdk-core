@@ -7,6 +7,7 @@
  */
 
 namespace Nexmo\Client\Factory;
+
 use Nexmo\Client;
 
 class MapFactory implements FactoryInterface
@@ -45,11 +46,11 @@ class MapFactory implements FactoryInterface
 
     public function getApi($api)
     {
-        if(isset($this->cache[$api])){
+        if (isset($this->cache[$api])) {
             return $this->cache[$api];
         }
 
-        if(!$this->hasApi($api)){
+        if (!$this->hasApi($api)) {
             throw new \RuntimeException(sprintf(
                 'no map defined for `%s`',
                 $api
@@ -59,7 +60,7 @@ class MapFactory implements FactoryInterface
         $class = $this->map[$api];
 
         $instance = new $class();
-        if($instance instanceof Client\ClientAwareInterface){
+        if ($instance instanceof Client\ClientAwareInterface) {
             $instance->setClient($this->client);
         }
         $this->cache[$api] = $instance;

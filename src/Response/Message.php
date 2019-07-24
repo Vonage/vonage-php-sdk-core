@@ -49,7 +49,7 @@ class Message
 
     public function getErrorMessage()
     {
-        if(!isset($this->data['error-text'])){
+        if (!isset($this->data['error-text'])) {
             return '';
         }
 
@@ -58,7 +58,7 @@ class Message
 
     protected function checkData($param)
     {
-        if(!isset($this->data[$param])){
+        if (!isset($this->data[$param])) {
             throw new \RuntimeException('tried to access ' . $param . ' but data is missing');
         }
 

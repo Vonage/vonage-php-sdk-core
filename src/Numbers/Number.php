@@ -8,7 +8,6 @@
 
 namespace Nexmo\Numbers;
 
-
 use Nexmo\Application\Application;
 use Nexmo\Entity\EntityInterface;
 use Nexmo\Entity\JsonResponseTrait;
@@ -77,7 +76,7 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
 
     public function hasFeature($feature)
     {
-        if(!isset($this->data['features'])){
+        if (!isset($this->data['features'])) {
             return false;
         }
 
@@ -91,7 +90,7 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
 
     public function setWebhook($type, $url)
     {
-        if(!in_array($type, [self::WEBHOOK_MESSAGE, self::WEBHOOK_VOICE_STATUS])){
+        if (!in_array($type, [self::WEBHOOK_MESSAGE, self::WEBHOOK_VOICE_STATUS])) {
             throw new \InvalidArgumentException("invalid webhook type `$type`");
         }
 
@@ -111,11 +110,11 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
 
     public function setVoiceDestination($endpoint, $type = null)
     {
-        if(is_null($type)){
+        if (is_null($type)) {
             $type = $this->autoType($endpoint);
         }
 
-        if(self::ENDPOINT_APP == $type AND !($endpoint instanceof Application)){
+        if (self::ENDPOINT_APP == $type and !($endpoint instanceof Application)) {
             $endpoint = new Application($endpoint);
         }
 
@@ -127,19 +126,19 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
 
     protected function autoType($endpoint)
     {
-        if($endpoint instanceof Application){
+        if ($endpoint instanceof Application) {
             return self::ENDPOINT_APP;
         }
 
-        if(false !== strpos($endpoint, '@')){
+        if (false !== strpos($endpoint, '@')) {
             return self::ENDPOINT_SIP;
         }
 
-        if(0 === strpos(strtolower($endpoint), 'http')){
+        if (0 === strpos(strtolower($endpoint), 'http')) {
             return self::ENDPOINT_VXML;
         }
 
-        if(preg_match('#[a-z]+#', $endpoint)){
+        if (preg_match('#[a-z]+#', $endpoint)) {
             return self::ENDPOINT_APP;
         }
 
@@ -153,7 +152,7 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
 
     public function getVoiceType()
     {
-        if(!isset($this->data['voiceCallbackType'])){
+        if (!isset($this->data['voiceCallbackType'])) {
             return null;
         }
 
@@ -162,7 +161,7 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
 
     protected function fromData($name)
     {
-        if(!isset($this->data[$name])){
+        if (!isset($this->data[$name])) {
             throw new \RuntimeException("`{$name}` has not been set");
         }
 
@@ -174,10 +173,10 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
         $this->data = $json;
     }
 
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         $json = $this->data;
-        if(isset($json['voiceCallbackValue']) AND ($json['voiceCallbackValue'] instanceof Application)){
+        if (isset($json['voiceCallbackValue']) and ($json['voiceCallbackValue'] instanceof Application)) {
             $json['voiceCallbackValue'] = $json['voiceCallbackValue']->getId();
         }
 

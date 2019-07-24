@@ -7,6 +7,7 @@
  */
 
 namespace Nexmo\Call;
+
 use Nexmo\Call\Collection;
 use Nexmo\Client\ClientAwareInterface;
 use Nexmo\Client\ClientAwareTrait;
@@ -33,7 +34,7 @@ class Stream implements JsonSerializableInterface, ClientAwareInterface
 
     public function __invoke(Stream $stream = null)
     {
-        if(is_null($stream)){
+        if (is_null($stream)) {
             return $this;
         }
 
@@ -47,7 +48,7 @@ class Stream implements JsonSerializableInterface, ClientAwareInterface
 
     public function setUrl($url)
     {
-        if(!is_array($url)){
+        if (!is_array($url)) {
             $url = array($url);
         }
 
@@ -61,7 +62,7 @@ class Stream implements JsonSerializableInterface, ClientAwareInterface
 
     public function put($stream = null)
     {
-        if(!$stream){
+        if (!$stream) {
             $stream = $this;
         }
 
@@ -90,13 +91,13 @@ class Stream implements JsonSerializableInterface, ClientAwareInterface
 
     protected function parseEventResponse(ResponseInterface $response)
     {
-        if($response->getStatusCode() != '200'){
+        if ($response->getStatusCode() != '200') {
             throw $this->getException($response);
         }
 
         $json = json_decode($response->getBody()->getContents(), true);
 
-        if(!$json){
+        if (!$json) {
             throw new Exception\Exception('Unexpected Response Body Format');
         }
 
@@ -108,9 +109,9 @@ class Stream implements JsonSerializableInterface, ClientAwareInterface
         $body = json_decode($response->getBody()->getContents(), true);
         $status = $response->getStatusCode();
 
-        if($status >= 400 AND $status < 500) {
+        if ($status >= 400 and $status < 500) {
             $e = new Exception\Request($body['error_title'], $status);
-        } elseif($status >= 500 AND $status < 600) {
+        } elseif ($status >= 500 and $status < 600) {
             $e = new Exception\Server($body['error_title'], $status);
         } else {
             $e = new Exception\Exception('Unexpected HTTP Status Code');
@@ -120,7 +121,7 @@ class Stream implements JsonSerializableInterface, ClientAwareInterface
         return $e;
     }
 
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return $this->data;
     }

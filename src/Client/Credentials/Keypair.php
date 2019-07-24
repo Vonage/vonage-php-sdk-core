@@ -13,9 +13,8 @@ use Lcobucci\JWT\Signer\Key;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Nexmo\Application\Application;
 
-class Keypair extends AbstractCredentials  implements CredentialsInterface
+class Keypair extends AbstractCredentials implements CredentialsInterface
 {
-
     protected $key;
 
     protected $signer;
@@ -23,8 +22,8 @@ class Keypair extends AbstractCredentials  implements CredentialsInterface
     public function __construct($privateKey, $application = null)
     {
         $this->credentials['key'] = $privateKey;
-        if($application){
-            if($application instanceof Application){
+        if ($application) {
+            if ($application instanceof Application) {
                 $application = $application->getId();
             }
 
@@ -41,17 +40,17 @@ class Keypair extends AbstractCredentials  implements CredentialsInterface
         $iat = time();
         $jti = base64_encode(mt_rand());
 
-        if(isset($claims['exp'])){
+        if (isset($claims['exp'])) {
             $exp = $claims['exp'];
             unset($claims['exp']);
         }
 
-        if(isset($claims['iat'])){
+        if (isset($claims['iat'])) {
             $iat = $claims['iat'];
             unset($claims['iat']);
         }
 
-        if(isset($claims['jti'])){
+        if (isset($claims['jti'])) {
             $jti = $claims['jti'];
             unset($claims['jti']);
         }
@@ -62,17 +61,17 @@ class Keypair extends AbstractCredentials  implements CredentialsInterface
                 ->setId($jti);
 
 
-        if(isset($claims['nbf'])){
+        if (isset($claims['nbf'])) {
             $builder->setNotBefore($claims['nbf']);
             unset($claims['nbf']);
         }
 
-        if(isset($this->credentials['application'])){
+        if (isset($this->credentials['application'])) {
             $builder->set('application_id', $this->credentials['application']);
         }
 
-        if(!empty($claims)){
-            foreach($claims as $claim => $value){
+        if (!empty($claims)) {
+            foreach ($claims as $claim => $value) {
                 $builder->set($claim, $value);
             }
         }

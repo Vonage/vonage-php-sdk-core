@@ -21,13 +21,13 @@ class Client implements ClientAwareInterface
 
     public function update($number, $id = null)
     {
-        if(!is_null($id)){
+        if (!is_null($id)) {
             $update = $this->get($id);
         }
 
-        if($number instanceof Number){
+        if ($number instanceof Number) {
             $body = $number->getRequestData();
-            if(!isset($update) AND !isset($body['country'])){
+            if (!isset($update) and !isset($body['country'])) {
                 $data = $this->get($number->getId());
                 $body['msisdn'] = $data->getId();
                 $body['country'] = $data->getCountry();
@@ -36,7 +36,7 @@ class Client implements ClientAwareInterface
             $body = $number;
         }
 
-        if(isset($update)){
+        if (isset($update)) {
             $body['msisdn'] = $update->getId();
             $body['country'] = $update->getCountry();
         }
@@ -54,15 +54,15 @@ class Client implements ClientAwareInterface
         $request->getBody()->write(http_build_query($body));
         $response = $this->client->send($request);
 
-        if('200' != $response->getStatusCode()){
+        if ('200' != $response->getStatusCode()) {
             throw $this->getException($response);
         }
 
-        if(isset($update) AND ($number instanceof Number)){
+        if (isset($update) and ($number instanceof Number)) {
             return $this->get($number);
         }
 
-        if($number instanceof Number){
+        if ($number instanceof Number) {
             return $this->get($number);
         }
 
@@ -129,12 +129,11 @@ class Client implements ClientAwareInterface
     {
         $query = [];
         if ($number !== null) {
-            if($number instanceof Number){
+            if ($number instanceof Number) {
                 $query = ['pattern' => $number->getId()];
             } else {
                 $query = ['pattern' => $number];
             }
-
         }
 
         // These are all optional parameters
@@ -165,17 +164,17 @@ class Client implements ClientAwareInterface
 
     private function handleNumberSearchResult($response, $number)
     {
-        if($response->getStatusCode() != '200'){
+        if ($response->getStatusCode() != '200') {
             throw $this->getException($response);
         }
 
         $searchResults = json_decode($response->getBody()->getContents(), true);
-        if(empty($searchResults)){
+        if (empty($searchResults)) {
             // we did not find any results, that's OK
             return [];
         }
 
-        if(!isset($searchResults['count']) OR !isset($searchResults['numbers'])){
+        if (!isset($searchResults['count']) or !isset($searchResults['numbers'])) {
             throw new Exception\Exception('unexpected response format');
         }
 
@@ -184,7 +183,7 @@ class Client implements ClientAwareInterface
 
         // If they provided a number initially, we'll only get one response
         // so let's reuse the object
-        if($number instanceof Number){
+        if ($number instanceof Number) {
             $number->jsonUnserialize($searchResults['numbers'][0]);
             $numbers[] = $number;
         } else {
@@ -199,7 +198,8 @@ class Client implements ClientAwareInterface
         return $numbers;
     }
 
-    public function purchase($number, $country = null) {
+    public function purchase($number, $country = null)
+    {
         // We cheat here and fetch a number using the API so that we have the country code which is required
         // to make a cancel request
         if (!$number instanceof Number) {
@@ -234,12 +234,13 @@ class Client implements ClientAwareInterface
         // Mismatch number/country :: 420 :: method failed
         // Already own number :: 420 :: method failed
         // Someone else owns the number :: 420 :: method failed
-        if('200' != $response->getStatusCode()){
+        if ('200' != $response->getStatusCode()) {
             throw $this->getException($response);
         }
     }
 
-    public function cancel($number) {
+    public function cancel($number)
+    {
         // We cheat here and fetch a number using the API so that we have the country code which is required
         // to make a cancel request
         if (!$number instanceof Number) {
@@ -266,7 +267,7 @@ class Client implements ClientAwareInterface
 
         // Sadly we can't distinguish *why* purchasing fails, just that it
         // has failed.
-        if('200' != $response->getStatusCode()){
+        if ('200' != $response->getStatusCode()) {
             throw $this->getException($response);
         }
     }
@@ -276,9 +277,9 @@ class Client implements ClientAwareInterface
         $body = json_decode($response->getBody()->getContents(), true);
         $status = $response->getStatusCode();
 
-        if($status >= 400 AND $status < 500) {
+        if ($status >= 400 and $status < 500) {
             $e = new Exception\Request($body['error-code-label'], $status);
-        } elseif($status >= 500 AND $status < 600) {
+        } elseif ($status >= 500 and $status < 600) {
             $e = new Exception\Server($body['error-code-label'], $status);
         } else {
             $e = new Exception\Exception('Unexpected HTTP Status Code');
@@ -287,5 +288,4 @@ class Client implements ClientAwareInterface
 
         return $e;
     }
-
 }

@@ -22,7 +22,7 @@ trait CollectionAwareTrait
 
     public function getCollection()
     {
-        if(!isset($this->collection)){
+        if (!isset($this->collection)) {
             throw new \RuntimeException('missing collection');
         }
 

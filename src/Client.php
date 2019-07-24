@@ -7,6 +7,7 @@
  */
 
 namespace Nexmo;
+
 use Http\Client\HttpClient;
 use Nexmo\Client\Credentials\Basic;
 use Nexmo\Client\Credentials\Container;
@@ -71,14 +72,14 @@ class Client
      */
     public function __construct(CredentialsInterface $credentials, $options = array(), HttpClient $client = null)
     {
-        if(is_null($client)){
+        if (is_null($client)) {
             $client = new \Http\Adapter\Guzzle6\Client();
         }
 
         $this->setHttpClient($client);
 
         //make sure we know how to use the credentials
-        if(!($credentials instanceof Container) && !($credentials instanceof Basic) && !($credentials instanceof SignatureSecret) && !($credentials instanceof OAuth) && !($credentials instanceof Keypair)){
+        if (!($credentials instanceof Container) && !($credentials instanceof Basic) && !($credentials instanceof SignatureSecret) && !($credentials instanceof OAuth) && !($credentials instanceof Keypair)) {
             throw new \RuntimeException('unknown credentials type: ' . get_class($credentials));
         }
 
@@ -121,11 +122,13 @@ class Client
         ], $this));
     }
 
-    public function getRestUrl() {
+    public function getRestUrl()
+    {
         return $this->restUrl;
     }
 
-    public function getApiUrl() {
+    public function getApiUrl()
+    {
         return $this->apiUrl;
     }
 
@@ -173,7 +176,7 @@ class Client
      */
     public static function signRequest(RequestInterface $request, SignatureSecret $credentials)
     {
-        switch($request->getHeaderLine('content-type')){
+        switch ($request->getHeaderLine('content-type')) {
             case 'application/json':
                 $body = $request->getBody();
                 $body->rewind();
@@ -210,12 +213,12 @@ class Client
 
     public static function authRequest(RequestInterface $request, Basic $credentials)
     {
-        switch($request->getHeaderLine('content-type')) {
+        switch ($request->getHeaderLine('content-type')) {
             case 'application/json':
             if (static::requiresBasicAuth($request)) {
                 $c = $credentials->asArray();
                 $request = $request->withHeader('Authorization', 'Basic ' . base64_encode($c['api_key'] . ':' . $c['api_secret']));
-            } else if (static::requiresAuthInUrlNotBody($request)) {
+            } elseif (static::requiresAuthInUrlNotBody($request)) {
                 $query = [];
                 parse_str($request->getUri()->getQuery(), $query);
                 $query = array_merge($query, $credentials->asArray());
@@ -225,7 +228,9 @@ class Client
                 $body->rewind();
                 $content = $body->getContents();
                 $params = json_decode($content, true);
-                if (!$params) { $params = []; }
+                if (!$params) {
+                    $params = [];
+                }
                 $params = array_merge($params, $credentials->asArray());
                 $body->rewind();
                 $body->write(json_encode($params));
@@ -273,13 +278,13 @@ class Client
      */
     public function get($url, array $params = [])
     {
-       $queryString = '?' . http_build_query($params);
+        $queryString = '?' . http_build_query($params);
 
-       $url = $url . $queryString;
+        $url = $url . $queryString;
 
-       $request = new Request(
-            $url,
-            'GET'
+        $request = new Request(
+           $url,
+           'GET'
         );
 
         return $this->send($request);
@@ -361,37 +366,37 @@ class Client
         return $this->send($request);
     }
 
-     /**
-     * Wraps the HTTP Client, creates a new PSR-7 request adding authentication, signatures, etc.
-     *
-     * @param \Psr\Http\Message\RequestInterface $request
-     * @return \Psr\Http\Message\ResponseInterface
-     */
+    /**
+    * Wraps the HTTP Client, creates a new PSR-7 request adding authentication, signatures, etc.
+    *
+    * @param \Psr\Http\Message\RequestInterface $request
+    * @return \Psr\Http\Message\ResponseInterface
+    */
     public function send(\Psr\Http\Message\RequestInterface $request)
     {
-        if($this->credentials instanceof Container) {
+        if ($this->credentials instanceof Container) {
             if ($this->needsKeypairAuthentication($request)) {
                 $request = $request->withHeader('Authorization', 'Bearer ' . $this->credentials->get(Keypair::class)->generateJwt());
             } else {
                 $request = self::authRequest($request, $this->credentials->get(Basic::class));
             }
-        } elseif($this->credentials instanceof Keypair){
+        } elseif ($this->credentials instanceof Keypair) {
             $request = $request->withHeader('Authorization', 'Bearer ' . $this->credentials->generateJwt());
-        } elseif($this->credentials instanceof SignatureSecret){
+        } elseif ($this->credentials instanceof SignatureSecret) {
             $request = self::signRequest($request, $this->credentials);
-        } elseif($this->credentials instanceof Basic){
+        } elseif ($this->credentials instanceof Basic) {
             $request = self::authRequest($request, $this->credentials);
         }
 
         //todo: add oauth support
 
         //allow any part of the URI to be replaced with a simple search
-        if(isset($this->options['url'])){
-            foreach($this->options['url'] as $search => $replace){
+        if (isset($this->options['url'])) {
+            foreach ($this->options['url'] as $search => $replace) {
                 $uri = (string) $request->getUri();
 
                 $new = str_replace($search, $replace, $uri);
-                if($uri !== $new){
+                if ($uri !== $new) {
                     $request = $request->withUri(new Uri($new));
                 }
             }
@@ -421,7 +426,8 @@ class Client
         return $response;
     }
 
-    protected function validateAppOptions($app) {
+    protected function validateAppOptions($app)
+    {
         $disallowedCharacters = ['/', ' ', "\t", "\n"];
         foreach (['name', 'version'] as $key) {
             if (!isset($app[$key])) {
@@ -438,7 +444,7 @@ class Client
 
     public function serialize(EntityInterface $entity)
     {
-        if($entity instanceof Verification){
+        if ($entity instanceof Verification) {
             return $this->verify()->serialize($entity);
         }
 
@@ -447,11 +453,11 @@ class Client
 
     public function unserialize($entity)
     {
-        if(is_string($entity)){
+        if (is_string($entity)) {
             $entity = unserialize($entity);
         }
 
-        if($entity instanceof Verification){
+        if ($entity instanceof Verification) {
             return $this->verify()->unserialize($entity);
         }
 
@@ -460,13 +466,13 @@ class Client
 
     public function __call($name, $args)
     {
-        if(!$this->factory->hasApi($name)){
+        if (!$this->factory->hasApi($name)) {
             throw new \RuntimeException('no api namespace found: ' . $name);
         }
 
         $collection = $this->factory->getApi($name);
 
-        if(empty($args)){
+        if (empty($args)) {
             return $collection;
         }
 
@@ -475,7 +481,7 @@ class Client
 
     public function __get($name)
     {
-        if(!$this->factory->hasApi($name)){
+        if (!$this->factory->hasApi($name)) {
             throw new \RuntimeException('no api namespace found: ' . $name);
         }
 

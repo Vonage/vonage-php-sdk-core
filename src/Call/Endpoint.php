@@ -49,14 +49,14 @@ class Endpoint implements \JsonSerializable
 
     public function get($property)
     {
-        if(isset($this->additional[$property])){
+        if (isset($this->additional[$property])) {
             return $this->additional[$property];
         }
     }
 
     public function getNumber()
     {
-        if(!self::PHONE == $this->type){
+        if (!self::PHONE == $this->type) {
             throw new \RuntimeException('number not defined for this type');
         }
 
@@ -68,9 +68,9 @@ class Endpoint implements \JsonSerializable
         return (string) $this->getId();
     }
 
-    function jsonSerialize()
+    public function jsonSerialize()
     {
-        switch($this->type){
+        switch ($this->type) {
             case 'phone':
                 return array_merge(
                     $this->additional,

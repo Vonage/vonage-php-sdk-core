@@ -23,7 +23,7 @@ class Unicode extends Message
     
     /**
      * Create a new SMS text message.
-     * 
+     *
      * @param string $to
      * @param string $from
      * @param string $text
@@ -41,6 +41,6 @@ class Unicode extends Message
     {
         return array_merge(parent::getRequestData($sent), array(
             'text' => $this->text
-        ));        
+        ));
     }
 }

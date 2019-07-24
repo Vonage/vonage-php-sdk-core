@@ -7,6 +7,7 @@
  */
 
 namespace Nexmo\Message;
+
 use Nexmo\Message\EncodingDetector;
 use Nexmo\Entity\JsonResponseTrait;
 use Nexmo\Entity\Psr7Trait;
@@ -50,14 +51,14 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
      */
     public function __construct($idOrTo, $from = null, $additional = [])
     {
-        if(is_null($from)){
+        if (is_null($from)) {
             $this->id = $idOrTo;
             return;
         }
 
         $this->requestData['to'] = (string) $idOrTo;
         $this->requestData['from'] = (string) $from;
-        if(static::TYPE){
+        if (static::TYPE) {
             $this->requestData['type'] = static::TYPE;
         }
         
@@ -69,9 +70,10 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
         return $this->setRequestData('status-report-req', $dlr ? 1 : 0);
     }
 
-    public function setCallback($callback) {
+    public function setCallback($callback)
+    {
         return $this->setRequestData('callback', (string) $callback);
-    }    
+    }
     
     public function setClientRef($ref)
     {
@@ -106,7 +108,7 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
     public function count()
     {
         $data = $this->getResponseData();
-        if(!isset($data['messages'])){
+        if (!isset($data['messages'])) {
             return 0;
         }
 
@@ -115,7 +117,7 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
 
     public function getMessageId($index = null)
     {
-        if(isset($this->id)){
+        if (isset($this->id)) {
             return $this->id;
         }
 
@@ -138,7 +140,7 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
 
         //check if this is data from a send request
         //(which also has a status, but it's not the same)
-        if(isset($data['messages'])){
+        if (isset($data['messages'])) {
             return $this->getMessageData('to', $index);
         }
 
@@ -156,7 +158,7 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
 
         //check if this is data from a send request
         //(which also has a status, but it's not the same)
-        if(isset($data['messages'])){
+        if (isset($data['messages'])) {
             return $this->getMessageData('message-price', $index);
         }
 
@@ -174,7 +176,7 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
 
         //check if this is data from a send request
         //(which also has a status, but it's not the same)
-        if(isset($data['messages'])){
+        if (isset($data['messages'])) {
             return;
         }
 
@@ -213,12 +215,12 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
 
     protected function getMessageData($name, $index = null)
     {
-        if(!isset($this->response)){
+        if (!isset($this->response)) {
             return null;
         }
 
         $data = $this->getResponseData();
-        if(is_null($index)){
+        if (is_null($index)) {
             $index = $this->count() -1;
         }
 
@@ -246,7 +248,7 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
 
         // Auto detect unicode messages
         $detector = new EncodingDetector;
-        if ($detector->requiresUnicodeEncoding($this->requestData['text'])){
+        if ($detector->requiresUnicodeEncoding($this->requestData['text'])) {
             return Unicode::TYPE;
         }
 
@@ -257,18 +259,18 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
     {
         $response = $this->getResponseData();
 
-        if(isset($this->index)){
+        if (isset($this->index)) {
             $response = $response['items'][$this->index];
         }
 
         $request  = $this->getRequestData();
         $dirty    = $this->getRequestData(false);
-        if(isset($response[$offset]) || isset($request[$offset]) || isset($dirty[$offset])){
+        if (isset($response[$offset]) || isset($request[$offset]) || isset($dirty[$offset])) {
             return true;
         }
 
         //provide access to split messages by virtual index
-        if(is_int($offset) && $offset < $this->count()){
+        if (is_int($offset) && $offset < $this->count()) {
             return true;
         }
 
@@ -279,36 +281,35 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
     {
         $response = $this->getResponseData();
 
-        if(isset($this->index)){
+        if (isset($this->index)) {
             $response = $response['items'][$this->index];
         }
 
         $request  = $this->getRequestData();
         $dirty    = $this->getRequestData(false);
 
-        if(isset($response[$offset])){
+        if (isset($response[$offset])) {
             return $response[$offset];
         }
 
         //provide access to split messages by virtual index, if there is data
-        if(isset($response['messages'])){
-            if(is_int($offset) && isset($response['messages'][$offset])){
+        if (isset($response['messages'])) {
+            if (is_int($offset) && isset($response['messages'][$offset])) {
                 return $response['messages'][$offset];
             }
 
             $index = $this->count() -1;
 
-            if(isset($response['messages'][$index]) && isset($response['messages'][$index][$offset])){
+            if (isset($response['messages'][$index]) && isset($response['messages'][$index][$offset])) {
                 return $response['messages'][$index][$offset];
             }
-
         }
 
-        if(isset($request[$offset])){
+        if (isset($request[$offset])) {
             return $request[$offset];
         }
 
-        if(isset($dirty[$offset])){
+        if (isset($dirty[$offset])) {
             return $dirty[$offset];
         }
     }
@@ -333,7 +334,7 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
 
     public function current()
     {
-        if(!isset($this->response)){
+        if (!isset($this->response)) {
             return null;
         }
 
@@ -348,7 +349,7 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
 
     public function key()
     {
-        if(!isset($this->response)){
+        if (!isset($this->response)) {
             return null;
         }
 
@@ -357,7 +358,7 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
 
     public function valid()
     {
-        if(!isset($this->response)){
+        if (!isset($this->response)) {
             return null;
         }
 
@@ -369,7 +370,4 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
     {
         $this->current = 0;
     }
-
-
-
 }

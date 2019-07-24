@@ -15,30 +15,34 @@ use Nexmo\Message\Shortcode\TwoFactor;
 
 abstract class Shortcode
 {
-
     protected $to;
     protected $custom;
     protected $options;
 
-    public function __construct($to, array $custom = [], array $options = []) {
+    public function __construct($to, array $custom = [], array $options = [])
+    {
         $this->to = $to;
         $this->custom = $custom;
         $this->options = $options;
     }
 
-    public function setCustom($custom) {
+    public function setCustom($custom)
+    {
         $this->custom = $custom;
     }
 
-    public function setOptions($options) {
+    public function setOptions($options)
+    {
         $this->options = $options;
     }
 
-    public function getType() {
+    public function getType()
+    {
         return $this->type;
     }
 
-    public function getRequestData() {
+    public function getRequestData()
+    {
         // Options, then custom, then to. This is the priority
         // we want so that people can't overwrite to with a custom param
         return $this->options + $this->custom + [
@@ -46,7 +50,8 @@ abstract class Shortcode
         ];
     }
 
-    public static function createMessageFromArray($data){
+    public static function createMessageFromArray($data)
+    {
         if (!isset($data['type'])) {
             throw new Exception('No type provided when creating a shortcode message');
         }
@@ -59,9 +64,9 @@ abstract class Shortcode
 
         if ($data['type'] === '2fa') {
             $m = new TwoFactor($data['to']);
-        } else if ($data['type'] === 'marketing') {
+        } elseif ($data['type'] === 'marketing') {
             $m = new Marketing($data['to']);
-        } else if ($data['type'] === 'alert') {
+        } elseif ($data['type'] === 'alert') {
             $m = new Alert($data['to']);
         }
 
