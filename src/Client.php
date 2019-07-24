@@ -518,6 +518,6 @@ class Client
 
     protected function getVersion()
     {
-        return \PackageVersions\Versions::getVersion('nexmo/client');
+        return \PackageVersions\Versions::getVersion('nexmo/client-core');
     }
 }
