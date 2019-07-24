@@ -78,7 +78,6 @@ class Endpoint implements \JsonSerializable
                         'type' => $this->type,
                         'number' => $this->id
                     ]
-
                 );
             default:
                 throw new \RuntimeException('unknown type: ' . $this->type);

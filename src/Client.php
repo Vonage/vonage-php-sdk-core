@@ -215,26 +215,26 @@ class Client
     {
         switch ($request->getHeaderLine('content-type')) {
             case 'application/json':
-            if (static::requiresBasicAuth($request)) {
-                $c = $credentials->asArray();
-                $request = $request->withHeader('Authorization', 'Basic ' . base64_encode($c['api_key'] . ':' . $c['api_secret']));
-            } elseif (static::requiresAuthInUrlNotBody($request)) {
-                $query = [];
-                parse_str($request->getUri()->getQuery(), $query);
-                $query = array_merge($query, $credentials->asArray());
-                $request = $request->withUri($request->getUri()->withQuery(http_build_query($query)));
-            } else {
-                $body = $request->getBody();
-                $body->rewind();
-                $content = $body->getContents();
-                $params = json_decode($content, true);
-                if (!$params) {
-                    $params = [];
+                if (static::requiresBasicAuth($request)) {
+                    $c = $credentials->asArray();
+                    $request = $request->withHeader('Authorization', 'Basic ' . base64_encode($c['api_key'] . ':' . $c['api_secret']));
+                } elseif (static::requiresAuthInUrlNotBody($request)) {
+                    $query = [];
+                    parse_str($request->getUri()->getQuery(), $query);
+                    $query = array_merge($query, $credentials->asArray());
+                    $request = $request->withUri($request->getUri()->withQuery(http_build_query($query)));
+                } else {
+                    $body = $request->getBody();
+                    $body->rewind();
+                    $content = $body->getContents();
+                    $params = json_decode($content, true);
+                    if (!$params) {
+                        $params = [];
+                    }
+                    $params = array_merge($params, $credentials->asArray());
+                    $body->rewind();
+                    $body->write(json_encode($params));
                 }
-                $params = array_merge($params, $credentials->asArray());
-                $body->rewind();
-                $body->write(json_encode($params));
-            }
                 break;
             case 'application/x-www-form-urlencoded':
                 $body = $request->getBody();
@@ -283,8 +283,8 @@ class Client
         $url = $url . $queryString;
 
         $request = new Request(
-           $url,
-           'GET'
+            $url,
+            'GET'
         );
 
         return $this->send($request);

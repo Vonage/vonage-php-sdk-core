@@ -45,7 +45,7 @@ class Client implements ClientAwareInterface
         return $standard;
     }
 
-    public function standard($number, $useCnam=false)
+    public function standard($number, $useCnam = false)
     {
         $insightsResults = $this->makeRequest('/ni/standard/json', $number);
         $standard = new Standard($insightsResults['national_format_number']);

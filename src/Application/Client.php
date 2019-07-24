@@ -276,9 +276,9 @@ class Client implements ClientAwareInterface, CollectionInterface
 
             foreach (['answer', 'event'] as $type) {
                 $application->getVoiceConfig()->setWebhook($type.'_url', new Webhook(
-                $voiceCapabilities[$type.'_url']['address'],
-                $voiceCapabilities[$type.'_url']['http_method']
-            ));
+                    $voiceCapabilities[$type.'_url']['address'],
+                    $voiceCapabilities[$type.'_url']['http_method']
+                ));
             }
         }
 
@@ -288,9 +288,9 @@ class Client implements ClientAwareInterface, CollectionInterface
 
             foreach (['status', 'inbound'] as $type) {
                 $application->getMessagesConfig()->setWebhook($type.'_url', new Webhook(
-                $messagesCapabilities[$type.'_url']['address'],
-                $messagesCapabilities[$type.'_url']['http_method']
-            ));
+                    $messagesCapabilities[$type.'_url']['address'],
+                    $messagesCapabilities[$type.'_url']['http_method']
+                ));
             }
         }
 
@@ -300,9 +300,9 @@ class Client implements ClientAwareInterface, CollectionInterface
 
             foreach (['event'] as $type) {
                 $application->getRtcConfig()->setWebhook($type.'_url', new Webhook(
-                $rtcCapabilities[$type.'_url']['address'],
-                $rtcCapabilities[$type.'_url']['http_method']
-            ));
+                    $rtcCapabilities[$type.'_url']['address'],
+                    $rtcCapabilities[$type.'_url']['http_method']
+                ));
             }
         }
 

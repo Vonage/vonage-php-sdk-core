@@ -10,17 +10,17 @@ class Client implements ClientAwareInterface
 {
     use ClientAwareTrait;
 
-    public function sms($message_id, $delivered, $timestamp=null)
+    public function sms($message_id, $delivered, $timestamp = null)
     {
         return $this->sendConversion('sms', $message_id, $delivered, $timestamp);
     }
 
-    public function voice($message_id, $delivered, $timestamp=null)
+    public function voice($message_id, $delivered, $timestamp = null)
     {
         return $this->sendConversion('voice', $message_id, $delivered, $timestamp);
     }
 
-    protected function sendConversion($type, $message_id, $delivered, $timestamp=null)
+    protected function sendConversion($type, $message_id, $delivered, $timestamp = null)
     {
         $params = [
             'message-id' => $message_id,

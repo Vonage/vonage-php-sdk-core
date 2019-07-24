@@ -47,6 +47,6 @@ abstract class AbstractCredentials implements CredentialsInterface
         return new \RuntimeException(sprintf(
             '%s is read only, cannot modify using array access.',
             get_class($this)
-            ));
+        ));
     }
 }

@@ -263,10 +263,10 @@ class Client implements ClientAwareInterface
     protected function get($url)
     {
         $request = new Request(
-           $url,
-           'GET',
-           'php://temp',
-           ['content-type' => 'application/json']
+            $url,
+            'GET',
+            'php://temp',
+            ['content-type' => 'application/json']
         );
 
         $response = $this->client->send($request);
