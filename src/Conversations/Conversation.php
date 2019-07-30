@@ -8,7 +8,6 @@
 
 namespace Nexmo\Conversations;
 
-
 use Nexmo\Client\ClientAwareInterface;
 use Nexmo\Client\ClientAwareTrait;
 use Nexmo\Entity\EntityInterface;
@@ -24,7 +23,6 @@ use Nexmo\Client\Exception;
 
 class Conversation implements EntityInterface, \JsonSerializable, JsonUnserializableInterface, ClientAwareInterface
 {
-
     use NoRequestResponseTrait;
     use JsonSerializableTrait;
     use JsonResponseTrait;
@@ -66,13 +64,13 @@ class Conversation implements EntityInterface, \JsonSerializable, JsonUnserializ
     public function get()
     {
         $request = new Request(
-            $this->getClient()->getApiUrl() . Collection::getCollectionPath() . '/' . $this->getId()
-            ,'GET'
+            $this->getClient()->getApiUrl() . Collection::getCollectionPath() . '/' . $this->getId(),
+            'GET'
         );
 
         $response = $this->getClient()->send($request);
 
-        if($response->getStatusCode() != '200'){
+        if ($response->getStatusCode() != '200') {
             throw $this->getException($response);
         }
 
@@ -97,7 +95,7 @@ class Conversation implements EntityInterface, \JsonSerializable, JsonUnserializ
     {
         $response = $this->getClient()->get($this->getClient()->getApiUrl() . Collection::getCollectionPath() . '/' . $this->getId() .'/members');
 
-        if($response->getStatusCode() != '200'){
+        if ($response->getStatusCode() != '200') {
             throw $this->getException($response);
         }
 
@@ -122,12 +120,13 @@ class Conversation implements EntityInterface, \JsonSerializable, JsonUnserializ
             $this->getClient()->getApiUrl() . Collection::getCollectionPath() . '/' . $this->getId() .'/members/'. $user->getId()
         );
 
-        if($response->getStatusCode() != '200'){
+        if ($response->getStatusCode() != '200') {
             throw $this->getException($response);
         }
     }
 
-    public function sendPostAction(User $user, $action, $channel = 'app') {
+    public function sendPostAction(User $user, $action, $channel = 'app')
+    {
         $body = $user->getRequestDataForConversation();
         $body['action'] = $action;
         $body['channel'] = ['type' => $channel];
@@ -137,7 +136,7 @@ class Conversation implements EntityInterface, \JsonSerializable, JsonUnserializ
             $body
         );
 
-        if($response->getStatusCode() != '200'){
+        if ($response->getStatusCode() != '200') {
             throw $this->getException($response);
         }
 
@@ -166,9 +165,9 @@ class Conversation implements EntityInterface, \JsonSerializable, JsonUnserializ
             $errorTitle = $body['error_title'];
         }
 
-        if($status >= 400 AND $status < 500) {
+        if ($status >= 400 and $status < 500) {
             $e = new Exception\Request($errorTitle, $status);
-        } elseif($status >= 500 AND $status < 600) {
+        } elseif ($status >= 500 and $status < 600) {
             $e = new Exception\Server($errorTitle, $status);
         } else {
             $e = new Exception\Exception('Unexpected HTTP Status Code');
@@ -177,6 +176,4 @@ class Conversation implements EntityInterface, \JsonSerializable, JsonUnserializ
 
         return $e;
     }
-
-
 }

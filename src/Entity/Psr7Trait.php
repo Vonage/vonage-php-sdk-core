@@ -31,7 +31,7 @@ trait Psr7Trait
 
         $status = $response->getStatusCode();
 
-        if($this instanceof JsonUnserializableInterface AND ((200 == $status) OR (201 == $status))){
+        if ($this instanceof JsonUnserializableInterface and ((200 == $status) or (201 == $status))) {
             $this->jsonUnserialize($this->getResponseData());
         }
     }

@@ -8,7 +8,6 @@
 
 namespace Nexmo\Verify;
 
-
 interface VerificationInterface extends \Nexmo\Entity\EntityInterface
 {
     public function getNumber();

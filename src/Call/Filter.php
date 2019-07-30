@@ -70,7 +70,7 @@ class Filter implements FilterInterface
 
     public function setConversation($conversation)
     {
-        if($conversation instanceof Conversation){
+        if ($conversation instanceof Conversation) {
             $conversation = $conversation->getId();
         }
 

@@ -8,14 +8,12 @@
 
 namespace Nexmo\Call;
 
-
 class Hangup implements \JsonSerializable
 {
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return [
             'action' => 'hangup'
         ];
     }
-
 }

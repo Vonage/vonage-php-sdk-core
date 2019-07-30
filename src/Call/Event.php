@@ -14,7 +14,7 @@ class Event implements \ArrayAccess
 
     public function __construct($data)
     {
-        if(!isset($data['uuid']) || !isset($data['message'])){
+        if (!isset($data['uuid']) || !isset($data['message'])) {
             throw new \InvalidArgumentException('missing message or uuid');
         }
 

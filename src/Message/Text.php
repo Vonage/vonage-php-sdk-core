@@ -23,7 +23,7 @@ class Text extends Message
     
     /**
      * Create a new SMS text message.
-     * 
+     *
      * @param string $to
      * @param string $from
      * @param string $text

@@ -7,6 +7,7 @@
  */
 
 namespace Nexmo\Message\Callback;
+
 use Nexmo\Client\Callback\Callback;
 
 class Receipt extends Callback
@@ -109,7 +110,7 @@ class Receipt extends Callback
     public function getTimestamp()
     {
         $date = \DateTime::createFromFormat('ymdHi', $this->data['scts']);
-        if($date){
+        if ($date) {
             return $date;
         }
 
@@ -122,7 +123,7 @@ class Receipt extends Callback
     public function getSent()
     {
         $date = \DateTime::createFromFormat('Y-m-d H:i:s', $this->data['message-timestamp']);
-        if($date){
+        if ($date) {
             return $date;
         }
 

@@ -7,6 +7,7 @@
  */
 
 namespace Nexmo\Call;
+
 use Nexmo\Call\Collection;
 use Nexmo\Client\ClientAwareInterface;
 use Nexmo\Client\ClientAwareTrait;
@@ -37,7 +38,7 @@ class Dtmf implements JsonSerializableInterface, ClientAwareInterface, \ArrayAcc
 
     public function __invoke(self $entity = null)
     {
-        if(is_null($entity)){
+        if (is_null($entity)) {
             return $this;
         }
 
@@ -56,7 +57,7 @@ class Dtmf implements JsonSerializableInterface, ClientAwareInterface, \ArrayAcc
 
     public function put($dtmf = null)
     {
-        if(!$dtmf){
+        if (!$dtmf) {
             $dtmf = $this;
         }
 
@@ -74,13 +75,13 @@ class Dtmf implements JsonSerializableInterface, ClientAwareInterface, \ArrayAcc
 
     protected function parseEventResponse(ResponseInterface $response)
     {
-        if($response->getStatusCode() != '200'){
+        if ($response->getStatusCode() != '200') {
             throw $this->getException($response);
         }
 
         $json = json_decode($response->getBody()->getContents(), true);
 
-        if(!$json){
+        if (!$json) {
             throw new Exception\Exception('Unexpected Response Body Format');
         }
 
@@ -92,9 +93,9 @@ class Dtmf implements JsonSerializableInterface, ClientAwareInterface, \ArrayAcc
         $body = json_decode($response->getBody()->getContents(), true);
         $status = $response->getStatusCode();
 
-        if($status >= 400 AND $status < 500) {
+        if ($status >= 400 and $status < 500) {
             $e = new Exception\Request($body['error_title'], $status);
-        } elseif($status >= 500 AND $status < 600) {
+        } elseif ($status >= 500 and $status < 600) {
             $e = new Exception\Server($body['error_title'], $status);
         } else {
             $e = new Exception\Exception('Unexpected HTTP Status Code');
@@ -104,7 +105,7 @@ class Dtmf implements JsonSerializableInterface, ClientAwareInterface, \ArrayAcc
         return $e;
     }
 
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return $this->data;
     }
@@ -121,7 +122,7 @@ class Dtmf implements JsonSerializableInterface, ClientAwareInterface, \ArrayAcc
 
     public function offsetSet($offset, $value)
     {
-        if(!in_array($offset, $this->params)){
+        if (!in_array($offset, $this->params)) {
             throw new \RuntimeException('invalid parameter: ' . $offset);
         }
 
@@ -130,7 +131,7 @@ class Dtmf implements JsonSerializableInterface, ClientAwareInterface, \ArrayAcc
 
     public function offsetUnset($offset)
     {
-        if(!in_array($offset, $this->params)){
+        if (!in_array($offset, $this->params)) {
             throw new \RuntimeException('invalid parameter: ' . $offset);
         }
 

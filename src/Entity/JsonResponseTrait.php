@@ -16,7 +16,7 @@ trait JsonResponseTrait
 
     public function getResponseData()
     {
-        if(!($this instanceof EntityInterface)){
+        if (!($this instanceof EntityInterface)) {
             throw new \Exception(sprintf(
                 '%s can only be used if the class implements %s',
                 __TRAIT__,
@@ -24,8 +24,8 @@ trait JsonResponseTrait
             ));
         }
 
-        if(($response = $this->getResponse()) && ($response instanceof ResponseInterface)){
-            if($response->getBody()->isSeekable()){
+        if (($response = $this->getResponse()) && ($response instanceof ResponseInterface)) {
+            if ($response->getBody()->isSeekable()) {
                 $response->getBody()->rewind();
             }
 

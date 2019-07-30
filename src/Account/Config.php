@@ -7,22 +7,23 @@ use Nexmo\Client\Exception\Exception;
 use Nexmo\Entity\JsonSerializableInterface;
 use Nexmo\Entity\JsonUnserializableInterface;
 
-class Config implements JsonSerializableInterface, JsonUnserializableInterface, ArrayAccess {
+class Config implements JsonSerializableInterface, JsonUnserializableInterface, ArrayAccess
+{
     public function __construct($sms_callback_url = null, $dr_callback_url = null, $max_outbound_request = null, $max_inbound_request = null, $max_calls_per_second = null)
     {
-        if(!is_null($sms_callback_url)) {
+        if (!is_null($sms_callback_url)) {
             $this->data['sms_callback_url'] = $sms_callback_url;
         }
-        if(!is_null($dr_callback_url)) {
+        if (!is_null($dr_callback_url)) {
             $this->data['dr_callback_url'] = $dr_callback_url;
         }
-        if(!is_null($max_outbound_request)) {
+        if (!is_null($max_outbound_request)) {
             $this->data['max_outbound_request'] = $max_outbound_request;
         }
-        if(!is_null($max_inbound_request)) {
+        if (!is_null($max_inbound_request)) {
             $this->data['max_inbound_request'] = $max_inbound_request;
         }
-        if(!is_null($max_calls_per_second)) {
+        if (!is_null($max_calls_per_second)) {
             $this->data['max_calls_per_second'] = $max_calls_per_second;
         }
     }
@@ -63,7 +64,7 @@ class Config implements JsonSerializableInterface, JsonUnserializableInterface, 
         ];
     }
 
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return $this->data;
     }
@@ -88,4 +89,3 @@ class Config implements JsonSerializableInterface, JsonUnserializableInterface, 
         throw new Exception('Balance is read only');
     }
 }
-

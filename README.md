@@ -3,16 +3,16 @@ Client Library for PHP
 [![Build Status](https://api.travis-ci.org/Nexmo/nexmo-php.svg?branch=master)](https://travis-ci.org/Nexmo/nexmo-php)
 [![Latest Stable Version](https://poser.pugx.org/nexmo/client/v/stable)](https://packagist.org/packages/nexmo/client)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE.txt)
+[![codecov](https://codecov.io/gh/Nexmo/nexmo-php/branch/master/graph/badge.svg)](https://codecov.io/gh/Nexmo/nexmo-php)
 
-*This library requires a minimum PHP version of 5.6*
+*This library requires a minimum PHP version of 7.1*
 
 This is the PHP client library for use Nexmo's API. To use this, you'll need a Nexmo account. Sign up [for free at 
-nexmo.com][signup]. This is currently a beta release, see [contributing](#contributing) for more information.
+nexmo.com][signup].
 
  * [Installation](#installation)
  * [Usage](#usage)
  * [Examples](#examples)
- * [Coverage](#api-coverage)
  * [Contributing](#contributing) 
 
 Installation
@@ -679,7 +679,7 @@ curl.cainfo = "/etc/pki/tls/cacert.pem"
 curl.cainfo = "C:\php\extras\ssl\cacert.pem"
 ```
 
-### Pass custom Guzzle client
+### Pass custom HTTP client
 
 We allow use of any HTTPlug adapter, so you can create a client with alternative configuration if you need it, for example to take account of a local proxy, or deal with something else specific to your setup.
 
@@ -690,66 +690,16 @@ $adapter_client = new Http\Adapter\Guzzle6\Client(new GuzzleHttp\Client(['timeou
 $nexmo_client = new Nexmo\Client(new Nexmo\Client\Credentials\Basic($api_key, $api_secret), [], $adapter_client);
 ```
 
-API Coverage
-------------
+### Composer installation fails due to Guzzle Adapter
 
-* Account
-    * [X] Balance
-    * [X] Pricing
-    * [ ] Settings
-    * [X] Top Up
-    * [X] Secret Management
-    * [X] Pricing
-    * [X] Numbers
-        * [X] Search
-        * [X] Buy
-        * [X] Cancel
-        * [X] Update
-* Number Insight
-    * [X] Basic
-    * [X] Standard
-    * [X] Advanced
-    * [X] Webhook Notification
-* Verify
-    * [X] Verify
-    * [X] Check
-    * [X] Search
-    * [X] Control
-* Messaging 
-    * [X] Send
-    * [X] Delivery Receipt
-    * [X] Inbound Messages
-    * [X] Search
-        * [X] Message
-        * [X] Messages
-        * [X] Rejections
-    * [X] US Short Codes
-        * [X] Two-Factor Authentication
-        * [X] Event Based Alerts
-            * [X] Sending Alerts
-            * [X] Campaign Subscription Management
-* Voice
-    * [X] Outbound Call
-    * [X] Outbound Call with an NCCO
-    * [X] Inbound Call
-    * [X] Text-To-Speech Call
-    * [X] Text-To-Speech Prompt
+If you have a conflicting package installation that cannot co-exist with our recommended `php-http/guzzle6-adapter` package, then you may install the package `nexmo/client-core` along with any package that satisfies the `php-http/client-implementation` requirement.
+
+See the [Packagist page for client-implementation](https://packagist.org/providers/php-http/client-implementation) for options.
 
 Contributing
 ------------
 
-This library is currently being refactored from an earlier prototype to match the current [client library spec][spec].
-The `legacy` branch can be used to require that earlier version. During the transition the `develop` and `master` 
-branches will have both new and legacy code. The [API coverage](#API-Coverage) section identifies what features are 
-currently implemented and up to date. 
-
-To contribute to the library, docs, or examples, [create an issue][issues] or [a pull request][pulls]. Please only raise issues
-about features marked as working in the [API coverage](#API-Coverage) as the rest of the code is being updated.
-
-License
--------
-
-This library is released under the [MIT License][license]
+This library is actively developed and we love to hear from you! Please feel free to [create an issue][issues] or [open a pull request][pulls] with your questions, comments, suggestions and feedback.
 
 [signup]: https://dashboard.nexmo.com/sign-up?utm_source=DEV_REL&utm_medium=github&utm_campaign=php-client-library
 [doc_sms]: https://developer.nexmo.com/messaging/sms/overview

@@ -8,7 +8,6 @@
 
 namespace Nexmo\User;
 
-
 use Nexmo\Client\ClientAwareInterface;
 use Nexmo\Client\ClientAwareTrait;
 use Nexmo\Entity\EntityInterface;
@@ -54,13 +53,13 @@ class User implements EntityInterface, \JsonSerializable, JsonUnserializableInte
     public function get()
     {
         $request = new Request(
-            $this->getClient()->getApiUrl() . Collection::getCollectionPath() . '/' . $this->getId()
-            ,'GET'
+            $this->getClient()->getApiUrl() . Collection::getCollectionPath() . '/' . $this->getId(),
+            'GET'
         );
 
         $response = $this->getClient()->send($request);
 
-        if($response->getStatusCode() != '200'){
+        if ($response->getStatusCode() != '200') {
             throw $this->getException($response);
         }
 
@@ -70,12 +69,13 @@ class User implements EntityInterface, \JsonSerializable, JsonUnserializableInte
         return $this;
     }
 
-    public function getConversations() {
+    public function getConversations()
+    {
         $response = $this->getClient()->get(
             $this->getClient()->getApiUrl() . Collection::getCollectionPath().'/'.$this->getId().'/conversations'
         );
 
-        if($response->getStatusCode() != '200'){
+        if ($response->getStatusCode() != '200') {
             throw $this->getException($response);
         }
 
@@ -122,9 +122,9 @@ class User implements EntityInterface, \JsonSerializable, JsonUnserializableInte
             $errorTitle = $body['error_title'];
         }
 
-        if($status >= 400 AND $status < 500) {
+        if ($status >= 400 and $status < 500) {
             $e = new Exception\Request($errorTitle, $status);
-        } elseif($status >= 500 AND $status < 600) {
+        } elseif ($status >= 500 and $status < 600) {
             $e = new Exception\Server($errorTitle, $status);
         } else {
             $e = new Exception\Exception('Unexpected HTTP Status Code');
@@ -133,6 +133,4 @@ class User implements EntityInterface, \JsonSerializable, JsonUnserializableInte
 
         return $e;
     }
-
-
 }

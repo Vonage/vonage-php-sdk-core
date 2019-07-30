@@ -6,22 +6,21 @@ use Nexmo\Client\ClientAwareInterface;
 use Nexmo\Client\ClientAwareTrait;
 use Nexmo\Client\Exception;
 
-
 class Client implements ClientAwareInterface
 {
     use ClientAwareTrait;
 
-    public function sms($message_id, $delivered, $timestamp=null)
+    public function sms($message_id, $delivered, $timestamp = null)
     {
         return $this->sendConversion('sms', $message_id, $delivered, $timestamp);
     }
 
-    public function voice($message_id, $delivered, $timestamp=null)
+    public function voice($message_id, $delivered, $timestamp = null)
     {
         return $this->sendConversion('voice', $message_id, $delivered, $timestamp);
     }
 
-    protected function sendConversion($type, $message_id, $delivered, $timestamp=null)
+    protected function sendConversion($type, $message_id, $delivered, $timestamp = null)
     {
         $params = [
             'message-id' => $message_id,
@@ -37,7 +36,7 @@ class Client implements ClientAwareInterface
             []
         );
 
-        if($response->getStatusCode() != '200'){
+        if ($response->getStatusCode() != '200') {
             throw $this->getException($response);
         }
     }
@@ -47,11 +46,11 @@ class Client implements ClientAwareInterface
         $body = json_decode($response->getBody()->getContents(), true);
         $status = $response->getStatusCode();
 
-        if($status === 402) {
+        if ($status === 402) {
             $e = new Exception\Request("This endpoint may need activating on your account. Please email support@nexmo.com for more information", $status);
-        } elseif($status >= 400 AND $status < 500) {
+        } elseif ($status >= 400 and $status < 500) {
             $e = new Exception\Request($body['error_title'], $status);
-        } elseif($status >= 500 AND $status < 600) {
+        } elseif ($status >= 500 and $status < 600) {
             $e = new Exception\Server($body['error_title'], $status);
         } else {
             $e = new Exception\Exception('Unexpected HTTP Status Code');
@@ -59,5 +58,4 @@ class Client implements ClientAwareInterface
 
         return $e;
     }
-
 }

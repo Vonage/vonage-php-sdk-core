@@ -45,7 +45,7 @@ class Client implements ClientAwareInterface
         return $standard;
     }
 
-    public function standard($number, $useCnam=false)
+    public function standard($number, $useCnam = false)
     {
         $insightsResults = $this->makeRequest('/ni/standard/json', $number);
         $standard = new Standard($insightsResults['national_format_number']);
@@ -70,8 +70,7 @@ class Client implements ClientAwareInterface
 
     public function makeRequest($path, $number, $additionalParams = [])
     {
-        if ($number instanceof Number)
-        {
+        if ($number instanceof Number) {
             $number = $number->getMsisdn();
         }
 
@@ -92,7 +91,7 @@ class Client implements ClientAwareInterface
 
         $insightsResults = json_decode($response->getBody()->getContents(), true);
 
-        if('200' != $response->getStatusCode()){
+        if ('200' != $response->getStatusCode()) {
             throw $this->getException($response);
         }
 
@@ -104,9 +103,9 @@ class Client implements ClientAwareInterface
         $body = json_decode($response->getBody()->getContents(), true);
         $status = $response->getStatusCode();
 
-        if($status >= 400 AND $status < 500) {
+        if ($status >= 400 and $status < 500) {
             $e = new Exception\Request($body['error-code-label'], $status);
-        } elseif($status >= 500 AND $status < 600) {
+        } elseif ($status >= 500 and $status < 600) {
             $e = new Exception\Server($body['error-code-label'], $status);
         } else {
             $e = new Exception\Exception('Unexpected HTTP Status Code');

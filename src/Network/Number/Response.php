@@ -7,6 +7,7 @@
  */
 
 namespace Nexmo\Network\Number;
+
 use Nexmo\Client\Response\Response as BaseResponse;
 use Nexmo\Client\Response\ResponseInterface;
 
@@ -23,12 +24,12 @@ class Response extends BaseResponse implements ResponseInterface
 
         parent::__construct($data);
 
-        foreach($callbacks as $callback){
-            if(!($callback instanceof Callback)){
+        foreach ($callbacks as $callback) {
+            if (!($callback instanceof Callback)) {
                 throw new \InvalidArgumentException('callback must be of type: Nexmo\Network\Number\Callback');
             }
 
-            if($callback->getId() !== $this->getId()){
+            if ($callback->getId() !== $this->getId()) {
                 throw new \InvalidArgumentException('callback id must match request id');
             }
         }
@@ -73,12 +74,12 @@ class Response extends BaseResponse implements ResponseInterface
 
     public function __call($name, $args)
     {
-        if(empty($this->callbacks)){
+        if (empty($this->callbacks)) {
             throw new \BadMethodCallException('can not check for response data without callback data');
         }
 
-        foreach($this->callbacks as $callback){
-            if($last = $callback->$name()){
+        foreach ($this->callbacks as $callback) {
+            if ($last = $callback->$name()) {
                 return $last;
             }
         }

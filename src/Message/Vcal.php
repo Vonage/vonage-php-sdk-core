@@ -23,7 +23,7 @@ class Vcal extends Message
     
     /**
      * Create a new SMS text message.
-     * 
+     *
      * @param string $to
      * @param string $from
      * @param string $vcal
@@ -41,6 +41,6 @@ class Vcal extends Message
     {
         return array_merge(parent::getRequestData($sent), array(
             'vcal' => $this->vcal
-        ));        
+        ));
     }
 }

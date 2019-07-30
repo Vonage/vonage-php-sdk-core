@@ -43,7 +43,7 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
      */
     public function __construct($idOrNumber, $brand = null, $additional = [])
     {
-        if(is_null($brand)){
+        if (is_null($brand)) {
             $this->dirty = false;
             $this->requestData['request_id'] = $idOrNumber;
         } else {
@@ -71,7 +71,7 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
      */
     protected function useClient()
     {
-        if(isset($this->client)){
+        if (isset($this->client)) {
             return $this->client;
         }
 
@@ -92,8 +92,8 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
         try {
             $this->useClient()->check($this, $code, $ip);
             return true;
-        } catch(RequestException $e) {
-            if($e->getCode() == 16 || $e->getCode() == 17){
+        } catch (RequestException $e) {
+            if ($e->getCode() == 16 || $e->getCode() == 17) {
                 return false;
             }
 
@@ -380,11 +380,11 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
     public function getChecks()
     {
         $checks = $this->proxyArrayAccess('checks');
-        if(!$checks){
+        if (!$checks) {
             return [];
         }
 
-        foreach($checks as $i => $check) {
+        foreach ($checks as $i => $check) {
             $checks[$i] = new Check($check);
         }
 
@@ -461,7 +461,7 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
     protected function proxyArrayAccessDate($param)
     {
         $date = $this->proxyArrayAccess($param);
-        if($date) {
+        if ($date) {
             return new \DateTime($date);
         }
     }
@@ -477,7 +477,7 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
      */
     protected function proxyArrayAccess($param)
     {
-        if(isset($this[$param])){
+        if (isset($this[$param])) {
             return $this[$param];
         }
     }
@@ -512,15 +512,15 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
         $request  = $this->getRequestData();
         $dirty    = $this->requestData;
 
-        if(isset($response[$offset])){
+        if (isset($response[$offset])) {
             return $response[$offset];
         }
 
-        if(isset($request[$offset])){
+        if (isset($request[$offset])) {
             return $request[$offset];
         }
 
-        if(isset($dirty[$offset])){
+        if (isset($dirty[$offset])) {
             return $dirty[$offset];
         }
     }
@@ -566,11 +566,11 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
             'requestData'  => $this->requestData
         ];
 
-        if($request = $this->getRequest()){
+        if ($request = $this->getRequest()) {
             $data['request'] = \Zend\Diactoros\Request\Serializer::toString($request);
         }
 
-        if($response = $this->getResponse()){
+        if ($response = $this->getResponse()) {
             $data['response'] = \Zend\Diactoros\Response\Serializer::toString($response);
         }
 
@@ -583,14 +583,12 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
 
         $this->requestData = $data['requestData'];
 
-        if(isset($data['request'])){
+        if (isset($data['request'])) {
             $this->request = \Zend\Diactoros\Request\Serializer::fromString($data['request']);
         }
 
-        if(isset($data['response'])){
+        if (isset($data['response'])) {
             $this->response = \Zend\Diactoros\Response\Serializer::fromString($data['response']);
         }
     }
-
-
 }

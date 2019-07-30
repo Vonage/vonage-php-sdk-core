@@ -11,7 +11,8 @@ use Nexmo\Entity\JsonSerializableTrait;
 use Nexmo\Entity\NoRequestResponseTrait;
 use Nexmo\Entity\JsonUnserializableInterface;
 
-class Network implements EntityInterface, JsonSerializableInterface, JsonUnserializableInterface, ArrayAccess {
+class Network implements EntityInterface, JsonSerializableInterface, JsonUnserializableInterface, ArrayAccess
+{
     use JsonSerializableTrait;
     use NoRequestResponseTrait;
     use JsonResponseTrait;
@@ -50,7 +51,8 @@ class Network implements EntityInterface, JsonSerializableInterface, JsonUnseria
         return $this['price'];
     }
 
-    public function getPrefixPrice() {
+    public function getPrefixPrice()
+    {
         return $this['mt_price'];
     }
 
@@ -63,14 +65,14 @@ class Network implements EntityInterface, JsonSerializableInterface, JsonUnseria
     {
         // Convert CamelCase to snake_case as that's how we use array access in every other object
         $data = [];
-        foreach ($json as $k => $v){
+        foreach ($json as $k => $v) {
             $k = ltrim(strtolower(preg_replace('/[A-Z]([A-Z](?![a-z]))*/', '_$0', $k)), '_');
             $data[$k] = $v;
         }
         $this->data = $data;
     }
 
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return $this->data;
     }

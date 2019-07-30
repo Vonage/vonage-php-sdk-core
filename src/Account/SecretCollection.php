@@ -2,25 +2,30 @@
 
 namespace Nexmo\Account;
 
-class SecretCollection implements \ArrayAccess {
+class SecretCollection implements \ArrayAccess
+{
     protected $data;
 
-    public function __construct($secrets, $links) {
+    public function __construct($secrets, $links)
+    {
         $this->data = [
             'secrets' => $secrets,
             '_links' => $links
         ];
     }
 
-    public function getSecrets() {
+    public function getSecrets()
+    {
         return $this['secrets'];
     }
 
-    public function getLinks() {
+    public function getLinks()
+    {
         return $this['_links'];
     }
 
-    public static function fromApi($data) {
+    public static function fromApi($data)
+    {
         $secrets = [];
         foreach ($data['_embedded']['secrets'] as $s) {
             $secrets[] = Secret::fromApi($s);
@@ -47,5 +52,4 @@ class SecretCollection implements \ArrayAccess {
     {
         throw new \Exception('SecretCollection::offsetUnset is not implemented');
     }
-
 }

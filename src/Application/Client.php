@@ -41,13 +41,13 @@ class Client implements ClientAwareInterface, CollectionInterface
 
     public function get($application)
     {
-        if(!($application instanceof Application)){
+        if (!($application instanceof Application)) {
             $application = new Application($application);
         }
 
         $request = new Request(
-            $this->getClient()->getApiUrl() . $this->getCollectionPath() . '/' . $application->getId()
-            ,'GET',
+            $this->getClient()->getApiUrl() . $this->getCollectionPath() . '/' . $application->getId(),
+            'GET',
             'php://memory',
             ['Content-Type' => 'application/json']
         );
@@ -56,7 +56,7 @@ class Client implements ClientAwareInterface, CollectionInterface
         $response = $this->client->send($request);
         $application->setResponse($response);
 
-        if($response->getStatusCode() != '200'){
+        if ($response->getStatusCode() != '200') {
             throw $this->getException($response, $application);
         }
 
@@ -70,15 +70,15 @@ class Client implements ClientAwareInterface, CollectionInterface
 
     public function post($application)
     {
-        if(!($application instanceof Application)){
+        if (!($application instanceof Application)) {
             $application = $this->createFromArray($application);
         }
 
         $body = $application->getRequestData(false);
 
         $request = new Request(
-            $this->getClient()->getApiUrl() . $this->getCollectionPath()
-            ,'POST',
+            $this->getClient()->getApiUrl() . $this->getCollectionPath(),
+            'POST',
             'php://temp',
             ['Content-Type' => 'application/json']
         );
@@ -88,7 +88,7 @@ class Client implements ClientAwareInterface, CollectionInterface
         $response = $this->client->send($request);
         $application->setResponse($response);
 
-        if($response->getStatusCode() != '201'){
+        if ($response->getStatusCode() != '201') {
             throw $this->getException($response, $application);
         }
 
@@ -102,11 +102,11 @@ class Client implements ClientAwareInterface, CollectionInterface
 
     public function put($application, $id = null)
     {
-        if(!($application instanceof Application)){
+        if (!($application instanceof Application)) {
             $application = $this->createFromArray($application);
         }
 
-        if(is_null($id)){
+        if (is_null($id)) {
             $id = $application->getId();
         }
 
@@ -124,7 +124,7 @@ class Client implements ClientAwareInterface, CollectionInterface
         $response = $this->client->send($request);
         $application->setResponse($response);
 
-        if($response->getStatusCode() != '200'){
+        if ($response->getStatusCode() != '200') {
             throw $this->getException($response, $application);
         }
 
@@ -133,30 +133,30 @@ class Client implements ClientAwareInterface, CollectionInterface
 
     public function delete($application)
     {
-        if(($application instanceof Application)){
+        if (($application instanceof Application)) {
             $id = $application->getId();
         } else {
             $id = $application;
         }
 
         $request = new Request(
-            $this->getClient()->getApiUrl(). $this->getCollectionPath() . '/' . $id
-            ,'DELETE',
+            $this->getClient()->getApiUrl(). $this->getCollectionPath() . '/' . $id,
+            'DELETE',
             'php://temp',
             ['Content-Type' => 'application/json']
         );
 
-        if($application instanceof Application){
+        if ($application instanceof Application) {
             $application->setRequest($request);
         }
 
         $response = $this->client->send($request);
 
-        if($application instanceof Application){
+        if ($application instanceof Application) {
             $application->setResponse($response);
         }
 
-        if($response->getStatusCode() != '204'){
+        if ($response->getStatusCode() != '204') {
             throw $this->getException($response, $application);
         }
 
@@ -174,7 +174,7 @@ class Client implements ClientAwareInterface, CollectionInterface
             ApiErrorHandler::check($body, $status);
         } catch (Exception\Exception $e) {
             //todo use interfaces here
-            if(($application instanceof Application) AND (($e instanceof Exception\Request) OR ($e instanceof Exception\Server))){
+            if (($application instanceof Application) and (($e instanceof Exception\Request) or ($e instanceof Exception\Server))) {
                 $e->setEntity($application);
             }
         }
@@ -191,13 +191,14 @@ class Client implements ClientAwareInterface, CollectionInterface
         return $this->createFromArrayV2($array);
     }
 
-    protected function createFromArrayV1($array) {
-        if(!is_array($array)){
+    protected function createFromArrayV1($array)
+    {
+        if (!is_array($array)) {
             throw new \RuntimeException('application must implement `' . ApplicationInterface::class . '` or be an array`');
         }
 
-        foreach(['name',] as $param){
-            if(!isset($array[$param])){
+        foreach (['name',] as $param) {
+            if (!isset($array[$param])) {
                 throw new \InvalidArgumentException('missing expected key `' . $param . '`');
             }
         }
@@ -211,24 +212,24 @@ class Client implements ClientAwareInterface, CollectionInterface
         }
 
         // Voice
-        foreach(['event', 'answer'] as $type){
-            if(isset($array[$type . '_url'])){
+        foreach (['event', 'answer'] as $type) {
+            if (isset($array[$type . '_url'])) {
                 $method = isset($array[$type . '_method']) ? $array[$type . '_method'] : null;
                 $application->getVoiceConfig()->setWebhook($type . '_url', new Webhook($array[$type . '_url'], $method));
             }
         }
 
         // Messages
-        foreach(['status', 'inbound'] as $type){
-            if(isset($array[$type . '_url'])){
+        foreach (['status', 'inbound'] as $type) {
+            if (isset($array[$type . '_url'])) {
                 $method = isset($array[$type . '_method']) ? $array[$type . '_method'] : null;
                 $application->getMessagesConfig()->setWebhook($type . '_url', new Webhook($array[$type . '_url'], $method));
             }
         }
 
         // RTC
-        foreach(['event'] as $type){
-            if(isset($array[$type . '_url'])){
+        foreach (['event'] as $type) {
+            if (isset($array[$type . '_url'])) {
                 $method = isset($array[$type . '_method']) ? $array[$type . '_method'] : null;
                 $application->getRtcConfig()->setWebhook($type . '_url', new Webhook($array[$type . '_url'], $method));
             }
@@ -242,13 +243,14 @@ class Client implements ClientAwareInterface, CollectionInterface
         return $application;
     }
 
-    protected function createFromArrayV2($array) {
-        if(!is_array($array)){
+    protected function createFromArrayV2($array)
+    {
+        if (!is_array($array)) {
             throw new \RuntimeException('application must implement `' . ApplicationInterface::class . '` or be an array`');
         }
 
-        foreach(['name',] as $param){
-            if(!isset($array[$param])){
+        foreach (['name',] as $param) {
+            if (!isset($array[$param])) {
                 throw new \InvalidArgumentException('missing expected key `' . $param . '`');
             }
         }
@@ -272,33 +274,36 @@ class Client implements ClientAwareInterface, CollectionInterface
         if (isset($capabilities['voice'])) {
             $voiceCapabilities = $capabilities['voice']['webhooks'];
 
-            foreach(['answer', 'event'] as $type)
-            $application->getVoiceConfig()->setWebhook($type.'_url', new Webhook(
-                $voiceCapabilities[$type.'_url']['address'],
-                $voiceCapabilities[$type.'_url']['http_method']
-            ));
+            foreach (['answer', 'event'] as $type) {
+                $application->getVoiceConfig()->setWebhook($type.'_url', new Webhook(
+                    $voiceCapabilities[$type.'_url']['address'],
+                    $voiceCapabilities[$type.'_url']['http_method']
+                ));
+            }
         }
 
         // Handle messages
         if (isset($capabilities['messages'])) {
             $messagesCapabilities = $capabilities['messages']['webhooks'];
 
-            foreach(['status', 'inbound'] as $type)
-            $application->getMessagesConfig()->setWebhook($type.'_url', new Webhook(
-                $messagesCapabilities[$type.'_url']['address'],
-                $messagesCapabilities[$type.'_url']['http_method']
-            ));
+            foreach (['status', 'inbound'] as $type) {
+                $application->getMessagesConfig()->setWebhook($type.'_url', new Webhook(
+                    $messagesCapabilities[$type.'_url']['address'],
+                    $messagesCapabilities[$type.'_url']['http_method']
+                ));
+            }
         }
 
         // Handle RTC
         if (isset($capabilities['rtc'])) {
             $rtcCapabilities = $capabilities['rtc']['webhooks'];
 
-            foreach(['event'] as $type)
-            $application->getRtcConfig()->setWebhook($type.'_url', new Webhook(
-                $rtcCapabilities[$type.'_url']['address'],
-                $rtcCapabilities[$type.'_url']['http_method']
-            ));
+            foreach (['event'] as $type) {
+                $application->getRtcConfig()->setWebhook($type.'_url', new Webhook(
+                    $rtcCapabilities[$type.'_url']['address'],
+                    $rtcCapabilities[$type.'_url']['http_method']
+                ));
+            }
         }
 
         // Handle VBC
