@@ -11,8 +11,9 @@ use Nexmo\Message\Shortcode;
 use Nexmo\Message\Shortcode\TwoFactor;
 use Nexmo\Message\Shortcode\Marketing;
 use Nexmo\Message\Shortcode\Alert;
+use PHPUnit\Framework\TestCase;
 
-class ShortcodeTest extends \PHPUnit_Framework_TestCase
+class ShortcodeTest extends TestCase
 {
     public function setUp()
     {

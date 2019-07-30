@@ -24,7 +24,7 @@ class TransferTest extends TestCase
         ]);
 
         $json = json_decode(json_encode($transfer));
-        $this->assertJsonMatchesSchema(__DIR__ . '/schema/transfer.json', $json);
+        $this->assertJsonMatchesSchema($json, __DIR__ . '/schema/transfer.json');
         $this->assertJsonValueEquals('transfer', 'action', $json);
         $this->assertJsonValueEquals('ncco', 'destination.type', $json);
         $this->assertJsonValueEquals([
@@ -38,7 +38,7 @@ class TransferTest extends TestCase
         $transfer = new Transfer('http://example.com');
 
         $json = json_decode(json_encode($transfer));
-        $this->assertJsonMatchesSchema(__DIR__ . '/schema/transfer.json', $json);
+        $this->assertJsonMatchesSchema($json, __DIR__ . '/schema/transfer.json');
         $this->assertJsonValueEquals('transfer', 'action', $json);
         $this->assertJsonValueEquals('ncco', 'destination.type', $json);
         $this->assertJsonValueEquals(['http://example.com'], 'destination.url', $json);

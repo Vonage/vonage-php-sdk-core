@@ -88,7 +88,8 @@ class ClientTest extends TestCase
      */
     public function testExceptions($response, $code, $expectedException, $expectedMessage)
     {
-        $this->setExpectedException($expectedException, $expectedMessage);
+        $this->expectException($expectedException);
+        $this->expectExceptionMessage($expectedMessage);
 
         $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
             return true;
