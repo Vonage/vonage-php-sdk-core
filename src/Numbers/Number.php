@@ -168,6 +168,9 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
         return $this->data[$name];
     }
 
+    /**
+     * @todo Either make this take JSON, or rename this to `fromArray`
+     */
     public function jsonUnserialize(array $json)
     {
         $this->data = $json;
