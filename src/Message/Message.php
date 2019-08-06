@@ -64,32 +64,67 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
         
         $this->requestData = array_merge($this->requestData, $additional);
     }
-    
+
+    /**
+     * Boolean indicating if you would like to receive a Delivery Receipt
+     *
+     * @param bool $dlr
+     */
     public function requestDLR($dlr = true)
     {
         return $this->setRequestData('status-report-req', $dlr ? 1 : 0);
     }
 
+    /**
+     * Webhook endpoint the delivery receipt is sent to for this message
+     * This overrides the setting in the Dashboard, and should be a full URL
+     *
+     * @param str $callback
+     */
     public function setCallback($callback)
     {
         return $this->setRequestData('callback', (string) $callback);
     }
-    
+
+    /**
+     * Optional reference of up to 40 characters
+     *
+     * @param str $ref
+     */
     public function setClientRef($ref)
     {
         return $this->setRequestData('client-ref', (string) $ref);
     }
 
+    /**
+     * The Mobile Country Code Mobile Network Code (MCCMNC) this number is registered with
+     *
+     * @param str $network
+     */
     public function setNetwork($network)
     {
         return $this->setRequestData('network-code', (string) $network);
     }
 
+    /**
+     * The duration in milliseconds the delivery of an SMS will be attempted
+     * By default this is set to 72 hours, but can be overridden if needed.
+     * Nexmo recommends no shorter than 30 minutes, and to keep at deafult
+     * when possible.
+     *
+     * @param int $ttl
+     */
     public function setTTL($ttl)
     {
         return $this->setRequestData('ttl', (int) $ttl);
     }
 
+    /**
+     * The Data Coding Sceheme value of this message
+     * Should be 0, 1, 2, or 3
+     *
+     * @param int $class
+     */
     public function setClass($class)
     {
         return $this->setRequestData('message-class', $class);
