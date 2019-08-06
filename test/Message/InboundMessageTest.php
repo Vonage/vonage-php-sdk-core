@@ -24,11 +24,32 @@ class InboundMessageTest extends TestCase
 
     /**
      * Inbound messages can be created from a PSR-7 server request.
+     *
      * @dataProvider getRequests
+     *
+     * @param ServerRequest $request
      */
     public function testCanCreateWithServerRequest($request)
     {
         $message = new InboundMessage($request);
+
+        /** @var array $requestData */
+        $requestData = $message->getRequestData();
+
+        $originalData = $request->getQueryParams();
+        if ('POST' === $request->getMethod()) {
+            $originalData = $request->getParsedBody();
+
+            $contentTypeHeader = $request->getHeader('Content-Type');
+            if (array_key_exists(0, $contentTypeHeader) && 'application/json' === $contentTypeHeader[0]) {
+                $originalData = json_decode((string)$request->getBody(), true);
+            }
+        }
+
+        $this->assertEquals(count($originalData), count($requestData));
+        foreach ($originalData as $key => $value) {
+            $this->assertSame($value, $requestData[$key]);
+        }
     }
 
     public function testCanCheckValid()

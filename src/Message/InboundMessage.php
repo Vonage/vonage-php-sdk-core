@@ -22,6 +22,9 @@ class InboundMessage implements MessageInterface, \ArrayAccess
 
     /**
      * InboundMessage constructor.
+     *
+     * @todo Find a cleaner way to create this object
+     *
      * @param string|ServerRequestInterface $idOrRequest Message ID, or inbound HTTP request.
      */
     public function __construct($idOrRequest)
