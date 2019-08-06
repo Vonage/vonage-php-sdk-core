@@ -1,10 +1,13 @@
 <?php
 
 namespace Nexmo;
+
 use Nexmo\Client\Exception;
 
-class ApiErrorHandler {
-    public static function check($body, $statusCode) {
+class ApiErrorHandler
+{
+    public static function check($body, $statusCode)
+    {
         $statusCodeType = (int) ($statusCode / 100);
 
         // If it's ok, we can continue

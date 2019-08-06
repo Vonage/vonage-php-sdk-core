@@ -8,7 +8,6 @@
 
 namespace Nexmo\Client\Response;
 
-
 interface ResponseInterface
 {
     public function getData();

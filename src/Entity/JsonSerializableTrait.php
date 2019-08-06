@@ -20,7 +20,7 @@ trait JsonSerializableTrait
      */
     public function getRequestData($sent = true)
     {
-        if(!($this instanceof EntityInterface)){
+        if (!($this instanceof EntityInterface)) {
             throw new \Exception(sprintf(
                 '%s can only be used if the class implements %s',
                 __TRAIT__,
@@ -28,7 +28,7 @@ trait JsonSerializableTrait
             ));
         }
 
-        if(!($this instanceof \JsonSerializable)){
+        if (!($this instanceof \JsonSerializable)) {
             throw new \Exception(sprintf(
                 '%s can only be used if the class implements %s',
                 __TRAIT__,
@@ -36,7 +36,7 @@ trait JsonSerializableTrait
             ));
         }
 
-        if($sent && ($request = $this->getRequest())){
+        if ($sent && ($request = $this->getRequest())) {
             //TODO, figure out what the request data actually was
         }
 

@@ -8,8 +8,8 @@
 
 namespace Nexmo\Message;
 
-class EncodingDetector {
-
+class EncodingDetector
+{
     public function requiresUnicodeEncoding($content)
     {
         $gsmCodePoints = array_map(

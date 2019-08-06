@@ -69,13 +69,13 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
     public function get()
     {
         $request = new Request(
-            $this->getClient()->getApiUrl() . Collection::getCollectionPath() . '/' . $this->getId()
-            ,'GET'
+            $this->getClient()->getApiUrl() . Collection::getCollectionPath() . '/' . $this->getId(),
+            'GET'
         );
 
         $response = $this->getClient()->send($request);
 
-        if($response->getStatusCode() != '200'){
+        if ($response->getStatusCode() != '200') {
             throw $this->getException($response);
         }
 
@@ -90,9 +90,9 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
         $body = json_decode($response->getBody()->getContents(), true);
         $status = $response->getStatusCode();
 
-        if($status >= 400 AND $status < 500) {
+        if ($status >= 400 and $status < 500) {
             $e = new Exception\Request($body['error_title'], $status);
-        } elseif($status >= 500 AND $status < 600) {
+        } elseif ($status >= 500 and $status < 600) {
             $e = new Exception\Server($body['error_title'], $status);
         } else {
             $e = new Exception\Exception('Unexpected HTTP Status Code');
@@ -104,8 +104,8 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
     public function put($payload)
     {
         $request = new Request(
-            $this->getClient()->getApiUrl() . Collection::getCollectionPath() . '/' . $this->getId()
-            ,'PUT',
+            $this->getClient()->getApiUrl() . Collection::getCollectionPath() . '/' . $this->getId(),
+            'PUT',
             'php://temp',
             ['content-type' => 'application/json']
         );
@@ -114,7 +114,7 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
         $response = $this->client->send($request);
 
         $responseCode = $response->getStatusCode();
-        if($responseCode != '200' && $responseCode != '204'){
+        if ($responseCode != '200' && $responseCode != '204') {
             throw $this->getException($response);
         }
 
@@ -128,7 +128,7 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
 
     public function setTo($endpoint)
     {
-        if(!($endpoint instanceof Endpoint)){
+        if (!($endpoint instanceof Endpoint)) {
             $endpoint = new Endpoint($endpoint);
         }
 
@@ -141,16 +141,16 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
      */
     public function getTo()
     {
-        if($this->lazyLoad()){
+        if ($this->lazyLoad()) {
             return new Endpoint($this->data['to']['number'], $this->data['to']['type']);
         }
 
         return $this->to;
-   }
+    }
 
     public function setFrom($endpoint)
     {
-        if(!($endpoint instanceof Endpoint)){
+        if (!($endpoint instanceof Endpoint)) {
             $endpoint = new Endpoint($endpoint);
         }
 
@@ -163,7 +163,7 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
      */
     public function getFrom()
     {
-        if($this->lazyLoad()){
+        if ($this->lazyLoad()) {
             return new Endpoint($this->data['from']['number'], $this->data['from']['type']);
         }
 
@@ -172,13 +172,13 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
 
     public function setWebhook($type, $url = null, $method = null)
     {
-        if($type instanceof Webhook){
+        if ($type instanceof Webhook) {
             $this->webhooks[$type->getType()] = $type;
             return $this;
         }
 
-        if(is_null($url)){
-            throw new \InvalidArgumentException('must provide `Nexmo\Call\Webhook` object, or a type and url: missing url' );
+        if (is_null($url)) {
+            throw new \InvalidArgumentException('must provide `Nexmo\Call\Webhook` object, or a type and url: missing url');
         }
 
         $this->webhooks[$type] = new Webhook($type, $url, $method);
@@ -195,28 +195,29 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
         $this->data[$type . '_timeout'] = $length;
     }
 
-    public function setNcco($ncco) {
+    public function setNcco($ncco)
+    {
         $this->data['ncco'] = $ncco;
         return $this;
     }
 
     public function getStatus()
     {
-        if($this->lazyLoad()){
+        if ($this->lazyLoad()) {
             return $this->data['status'];
         }
     }
 
     public function getDirection()
     {
-        if($this->lazyLoad()){
+        if ($this->lazyLoad()) {
             return $this->data['direction'];
         }
     }
 
     public function getConversation()
     {
-        if($this->lazyLoad()){
+        if ($this->lazyLoad()) {
             return new Conversation($this->data['conversation_uuid']);
         }
     }
@@ -230,11 +231,11 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
      */
     protected function lazyLoad()
     {
-        if(!empty($this->data)){
+        if (!empty($this->data)) {
             return true;
         }
 
-        if(isset($this->id)){
+        if (isset($this->id)) {
             $this->get($this);
             return true;
         }
@@ -244,7 +245,7 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
 
     public function __get($name)
     {
-        switch($name){
+        switch ($name) {
             case 'stream':
             case 'talk':
             case 'dtmf':
@@ -256,7 +257,7 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
 
     public function __call($name, $arguments)
     {
-        switch($name){
+        switch ($name) {
             case 'stream':
             case 'talk':
             case 'dtmf':
@@ -269,7 +270,7 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
 
     protected function lazySubresource($type)
     {
-        if(!isset($this->subresources[$type])){
+        if (!isset($this->subresources[$type])) {
             $class = 'Nexmo\Call\\' . $type;
             $instance = new $class($this->getId());
             $instance->setClient($this->getClient());
@@ -283,15 +284,15 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
     {
         $data = $this->data;
 
-        if(isset($this->to)){
+        if (isset($this->to)) {
             $data['to'] = [$this->to->jsonSerialize()];
         }
 
-        if(isset($this->from)){
+        if (isset($this->from)) {
             $data['from'] = $this->from->jsonSerialize();
         }
 
-        foreach($this->webhooks as $webhook){
+        foreach ($this->webhooks as $webhook) {
             $data = array_merge($data, $webhook->jsonSerialize());
         }
 

@@ -11,4 +11,6 @@ namespace Nexmo\Entity;
 /**
  * Identifies the Entity as using JsonSerializable to prepare request data.
  */
-interface JsonSerializableInterface extends \JsonSerializable {}
+interface JsonSerializableInterface extends \JsonSerializable
+{
+}

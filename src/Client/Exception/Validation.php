@@ -18,7 +18,8 @@ class Validation extends Request
         parent::__construct($message, $code, $previous);
     }
 
-    public function getValidationErrors() {
+    public function getValidationErrors()
+    {
         return $this->errors;
     }
 }

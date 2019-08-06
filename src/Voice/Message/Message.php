@@ -7,6 +7,7 @@
  */
 
 namespace Nexmo\Voice\Message;
+
 use Nexmo\Client\Request\AbstractRequest;
 use Nexmo\Client\Request\RequestInterface;
 
@@ -41,7 +42,7 @@ class Message extends AbstractRequest implements RequestInterface
     public function setCallback($url, $method = null)
     {
         $this->params['callback'] = $url;
-        if(!is_null($method)){
+        if (!is_null($method)) {
             $this->params['callback_method'] = $method;
         } else {
             unset($this->params['callback_method']);
@@ -53,7 +54,7 @@ class Message extends AbstractRequest implements RequestInterface
     public function setMachineDetection($hangup = true, $timeout = null)
     {
         $this->params['machine_detection'] = ($hangup ? 'hangup' : 'true');
-        if(!is_null($timeout)){
+        if (!is_null($timeout)) {
             $this->params['machine_timeout'] = (int) $timeout;
         } else {
             unset($this->params['machine_timeout']);
@@ -69,5 +70,4 @@ class Message extends AbstractRequest implements RequestInterface
     {
         return '/tts/json';
     }
-
-} 
+}

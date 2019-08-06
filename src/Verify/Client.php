@@ -21,7 +21,7 @@ class Client implements ClientAwareInterface
 
     public function start($verification)
     {
-        if(!($verification instanceof Verification)){
+        if (!($verification instanceof Verification)) {
             $verification = $this->createVerificationFromArray($verification);
         }
 
@@ -36,7 +36,7 @@ class Client implements ClientAwareInterface
 
     public function search($verification)
     {
-        if(!($verification instanceof Verification)){
+        if (!($verification instanceof Verification)) {
             $verification = new Verification($verification);
         }
 
@@ -49,19 +49,19 @@ class Client implements ClientAwareInterface
 
         $data = $this->processReqRes($verification, $request, $response, true);
 
-        if(!isset($data['status'])){
+        if (!isset($data['status'])) {
             $e = new Exception\Request('unexpected response from API');
             $e->setEntity($response);
             throw $e;
         }
 
         //verify API returns text status on success
-        if(!is_numeric($data['status'])){
+        if (!is_numeric($data['status'])) {
             return $verification;
         }
 
         //normalize errors (client vrs server)
-        switch($data['status']){
+        switch ($data['status']) {
             case '5':
                 $e = new Exception\Server($data['error_text'], $data['status']);
                 $e->setEntity($response);
@@ -88,7 +88,7 @@ class Client implements ClientAwareInterface
 
     public function check($verification, $code, $ip = null)
     {
-        if(!($verification instanceof Verification)){
+        if (!($verification instanceof Verification)) {
             $verification = new Verification($verification);
         }
 
@@ -97,7 +97,7 @@ class Client implements ClientAwareInterface
             'code' => $code
         ];
 
-        if(!is_null($ip)){
+        if (!is_null($ip)) {
             $params['ip'] = $ip;
         }
 
@@ -115,11 +115,11 @@ class Client implements ClientAwareInterface
 
     public function unserialize($verification)
     {
-        if(is_string($verification)){
+        if (is_string($verification)) {
             $verification = unserialize($verification);
         }
 
-        if(!($verification instanceof Verification)){
+        if (!($verification instanceof Verification)) {
             throw new \InvalidArgumentException('expected verification object or serialize verification object');
         }
 
@@ -129,7 +129,7 @@ class Client implements ClientAwareInterface
 
     protected function control($verification, $cmd)
     {
-        if(!($verification instanceof Verification)){
+        if (!($verification instanceof Verification)) {
             $verification = new Verification($verification);
         }
 
@@ -147,14 +147,14 @@ class Client implements ClientAwareInterface
 
     protected function checkError(Verification $verification, $data)
     {
-        if(!isset($data['status'])){
+        if (!isset($data['status'])) {
             $e = new Exception\Request('unexpected response from API');
             $e->setEntity($data);
             throw $e;
         }
 
         //normalize errors (client vrs server)
-        switch($data['status']){
+        switch ($data['status']) {
             case '0':
                 return $verification;
             case '5':
@@ -175,16 +175,16 @@ class Client implements ClientAwareInterface
     {
         $verification->setClient($this);
 
-        if($replace || !$verification->getRequest()){
+        if ($replace || !$verification->getRequest()) {
             $verification->setRequest($req);
         }
 
-        if($replace || !$verification->getResponse()) {
+        if ($replace || !$verification->getResponse()) {
             $verification->setResponse($res);
             return $verification->getResponseData();
         }
 
-        if($res->getBody()->isSeekable()){
+        if ($res->getBody()->isSeekable()) {
             $res->getBody()->rewind();
         }
 
@@ -193,7 +193,7 @@ class Client implements ClientAwareInterface
 
     protected function getRequest($params, $path = null)
     {
-        if(!is_null($path)){
+        if (!is_null($path)) {
             $path = '/verify/' . $path . '/json';
         } else {
             $path = '/verify/json';
@@ -218,12 +218,12 @@ class Client implements ClientAwareInterface
      */
     protected function createVerificationFromArray($array)
     {
-        if(!is_array($array)){
+        if (!is_array($array)) {
             throw new \RuntimeException('verification must implement `' . VerificationInterface::class . '` or be an array`');
         }
 
-        foreach(['number', 'brand'] as $param){
-            if(!isset($array[$param])){
+        foreach (['number', 'brand'] as $param) {
+            if (!isset($array[$param])) {
                 throw new \InvalidArgumentException('missing expected key `' . $param . '`');
             }
         }

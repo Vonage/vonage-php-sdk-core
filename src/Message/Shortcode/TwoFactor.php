@@ -7,6 +7,7 @@
  */
 
 namespace Nexmo\Message\Shortcode;
+
 use Nexmo\Message\Shortcode;
 
 class TwoFactor extends Shortcode

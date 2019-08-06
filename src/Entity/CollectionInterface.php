@@ -8,7 +8,6 @@
 
 namespace Nexmo\Entity;
 
-
 interface CollectionInterface extends \Countable, \Iterator
 {
     /**

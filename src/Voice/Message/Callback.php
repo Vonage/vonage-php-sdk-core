@@ -7,6 +7,7 @@
  */
 
 namespace Nexmo\Voice\Message;
+
 use Nexmo\Client\Callback\CallbackInterface;
 use Nexmo\Client\Callback\Callback as BaseCallback;
 
@@ -62,7 +63,7 @@ class Callback extends BaseCallback implements CallbackInterface
 
     public function getStart()
     {
-        if(!isset($this->data['call-start'])){
+        if (!isset($this->data['call-start'])) {
             return null;
         }
 
@@ -71,7 +72,7 @@ class Callback extends BaseCallback implements CallbackInterface
 
     public function getEnd()
     {
-        if(!isset($this->data['call-end'])){
+        if (!isset($this->data['call-end'])) {
             return null;
         }
 
@@ -82,5 +83,4 @@ class Callback extends BaseCallback implements CallbackInterface
     {
         return $this->data['network-code'];
     }
-
-} 
+}

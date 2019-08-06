@@ -8,7 +8,6 @@
 
 namespace Nexmo\Entity;
 
-
 interface EntityInterface
 {
     public function getRequest();
@@ -22,5 +21,4 @@ interface EntityInterface
     public function setResponse(\Psr\Http\Message\ResponseInterface $response);
 
     public function setRequest(\Psr\Http\Message\RequestInterface $request);
-
 }

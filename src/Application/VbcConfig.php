@@ -12,15 +12,18 @@ class VbcConfig
 {
     protected $enabled = false;
 
-    public function enable() {
+    public function enable()
+    {
         $this->enabled = true;
     }
 
-    public function disable() {
+    public function disable()
+    {
         $this->enabled = false;
     }
 
-    public function isEnabled() {
+    public function isEnabled()
+    {
         return $this->enabled;
     }
 }

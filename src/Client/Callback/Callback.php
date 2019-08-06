@@ -8,7 +8,6 @@
 
 namespace Nexmo\Client\Callback;
 
-
 class Callback implements CallbackInterface
 {
     const ENV_ALL =  'all';
@@ -24,7 +23,7 @@ class Callback implements CallbackInterface
         $keys = array_keys($data);
         $missing = array_diff($this->expected, $keys);
 
-        if($missing){
+        if ($missing) {
             throw new \RuntimeException('missing expected callback keys: ' . implode(', ', $missing));
         }
 
@@ -38,7 +37,7 @@ class Callback implements CallbackInterface
 
     public static function fromEnv($source = self::ENV_ALL)
     {
-        switch(strtolower($source)){
+        switch (strtolower($source)) {
             case 'post':
                 $data = $_POST;
                 break;

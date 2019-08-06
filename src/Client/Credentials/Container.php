@@ -20,11 +20,11 @@ class Container extends AbstractCredentials implements CredentialsInterface
 
     public function __construct($credentials)
     {
-        if(!is_array($credentials)){
+        if (!is_array($credentials)) {
             $credentials = func_get_args();
         }
 
-        foreach($credentials as $credential){
+        foreach ($credentials as $credential) {
             $this->addCredential($credential);
         }
     }
@@ -32,7 +32,7 @@ class Container extends AbstractCredentials implements CredentialsInterface
     protected function addCredential(CredentialsInterface $credential)
     {
         $type = $this->getType($credential);
-        if(isset($this->credentials[$type])){
+        if (isset($this->credentials[$type])) {
             throw new \RuntimeException('can not use more than one of a single credential type');
         }
 
@@ -42,7 +42,7 @@ class Container extends AbstractCredentials implements CredentialsInterface
     protected function getType(CredentialsInterface $credential)
     {
         foreach ($this->types as $type) {
-            if($credential instanceof $type){
+            if ($credential instanceof $type) {
                 return $type;
             }
         }
@@ -50,7 +50,7 @@ class Container extends AbstractCredentials implements CredentialsInterface
 
     public function get($type)
     {
-        if(!isset($this->credentials[$type])){
+        if (!isset($this->credentials[$type])) {
             throw new \RuntimeException('credental not set');
         }
 
@@ -62,8 +62,8 @@ class Container extends AbstractCredentials implements CredentialsInterface
         return isset($this->credentials[$type]);
     }
 
-    public function generateJwt($claims) {
+    public function generateJwt($claims)
+    {
         return $this->credentials[Keypair::class]->generateJwt($claims);
     }
-
 }

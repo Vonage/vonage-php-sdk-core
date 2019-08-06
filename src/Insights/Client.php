@@ -46,7 +46,7 @@ class Client implements ClientAwareInterface
         return $standard;
     }
 
-    public function standard($number, $useCnam=false)
+    public function standard($number, $useCnam = false)
     {
         $insightsResults = $this->makeRequest('/ni/standard/json', $number);
         $standard = new Standard($insightsResults['national_format_number']);
@@ -71,8 +71,7 @@ class Client implements ClientAwareInterface
 
     public function makeRequest($path, $number, $additionalParams = [])
     {
-        if ($number instanceof Number)
-        {
+        if ($number instanceof Number) {
             $number = $number->getMsisdn();
         }
 
@@ -92,14 +91,14 @@ class Client implements ClientAwareInterface
         $response = $this->client->send($request);
 
         // this API almost always returns 200 but just in case
-        if('200' != $response->getStatusCode()){
-            throw $this->getException($response);
+        if ('200' != $response->getStatusCode()) {
+          throw $this->getException($response);            
         }
 
         $insightsResults = json_decode($response->getBody()->getContents(), true);
 
         // check the status field in response (HTTP status is 200 even for errors)
-        if($insightsResults['status'] != 0) {
+        if ($insightsResults['status'] != 0) {
             throw $this->getNIException($insightsResults);
         }
 
@@ -111,11 +110,11 @@ class Client implements ClientAwareInterface
         $status = $response->getStatusCode();
         $msg = "Error"; // no guaranteed fields for more info
 
-        if($status >= 400 AND $status < 500) {
+        if ($status >= 400 AND $status < 500) {
             $e = new Exception\Request($msg, $status);
             // attach the response for additional debugging
             $e->setEntity($response);
-        } elseif($status >= 500 AND $status < 600) {
+        } elseif ($status >= 500 AND $status < 600) {
             $e = new Exception\Server($msg, $status);
             // attach the response for additional debugging
             $e->setEntity($response);

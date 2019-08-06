@@ -7,6 +7,7 @@
  */
 
 namespace Nexmo\Entity;
+
 use Psr\Http\Message\ResponseInterface;
 use Zend\Diactoros\Request;
 use Nexmo\Application\Application;
@@ -78,9 +79,9 @@ trait CollectionTrait
      */
     public function key()
     {
-        if(isset($this->page['_embedded'][$this->getCollectionName()][$this->current]['id'])){
+        if (isset($this->page['_embedded'][$this->getCollectionName()][$this->current]['id'])) {
             return $this->page['_embedded'][$this->getCollectionName()][$this->current]['id'];
-        } elseif(isset($this->page['_embedded'][$this->getCollectionName()][$this->current]['uuid'])) {
+        } elseif (isset($this->page['_embedded'][$this->getCollectionName()][$this->current]['uuid'])) {
             return $this->page['_embedded'][$this->getCollectionName()][$this->current]['uuid'];
         }
 
@@ -94,28 +95,28 @@ trait CollectionTrait
     public function valid()
     {
         //can't be valid if there's not a page (rewind sets this)
-        if(!isset($this->page)){
+        if (!isset($this->page)) {
             return false;
         }
 
         //all hal collections have an `_embedded` object, we expect there to be a property matching the collection name
-        if(!isset($this->page['_embedded']) OR !isset($this->page['_embedded'][$this->getCollectionName()])){
+        if (!isset($this->page['_embedded']) or !isset($this->page['_embedded'][$this->getCollectionName()])) {
             return false;
         }
 
         //if we have a page with no items, we've gone beyond the end of the collection
-        if(!count($this->page['_embedded'][$this->getCollectionName()])){
+        if (!count($this->page['_embedded'][$this->getCollectionName()])) {
             return false;
         }
 
         //index the start of a page at 0
-        if(is_null($this->current)){
+        if (is_null($this->current)) {
             $this->current = 0;
         }
 
         //if our current index is past the current page, fetch the next page if possible and reset the index
-        if(!isset($this->page['_embedded'][$this->getCollectionName()][$this->current])){
-            if(isset($this->page['_links']) AND isset($this->page['_links']['next'])){
+        if (!isset($this->page['_embedded'][$this->getCollectionName()][$this->current])) {
+            if (isset($this->page['_links']) and isset($this->page['_links']['next'])) {
                 $this->fetchPage($this->page['_links']['next']['href']);
                 $this->current = 0;
 
@@ -142,7 +143,7 @@ trait CollectionTrait
      */
     public function count()
     {
-        if(isset($this->page)){
+        if (isset($this->page)) {
             return (int) $this->page['count'];
         }
     }
@@ -155,11 +156,11 @@ trait CollectionTrait
 
     public function getPage()
     {
-        if(isset($this->page)){
+        if (isset($this->page)) {
             return $this->page['page_index'];
         }
 
-        if(isset($this->index)){
+        if (isset($this->index)) {
             return $this->index;
         }
 
@@ -168,11 +169,11 @@ trait CollectionTrait
 
     public function getSize()
     {
-        if(isset($this->page)){
+        if (isset($this->page)) {
             return $this->page['page_size'];
         }
 
-        if(isset($this->size)){
+        if (isset($this->size)) {
             return $this->size;
         }
 
@@ -199,7 +200,7 @@ trait CollectionTrait
 
     public function getFilter()
     {
-        if(!isset($this->filter)){
+        if (!isset($this->filter)) {
             $this->setFilter(new EmptyFilter());
         }
 
@@ -214,18 +215,18 @@ trait CollectionTrait
     protected function fetchPage($absoluteUri)
     {
         //use filter if no query provided
-        if(false === strpos($absoluteUri, '?')){
+        if (false === strpos($absoluteUri, '?')) {
             $query = [];
 
-            if(isset($this->size)){
+            if (isset($this->size)) {
                 $query['page_size'] = $this->size;
             }
 
-            if(isset($this->index)){
+            if (isset($this->index)) {
                 $query['page_index'] = $this->index;
             }
 
-            if(isset($this->filter)){
+            if (isset($this->filter)) {
                 $query = array_merge($this->filter->getQuery(), $query);
             }
 
@@ -240,7 +241,7 @@ trait CollectionTrait
 
         $response = $this->client->send($request);
 
-        if($response->getStatusCode() != '200'){
+        if ($response->getStatusCode() != '200') {
             throw $this->getException($response);
         }
 

@@ -8,7 +8,6 @@
 
 namespace Nexmo\Client\Response;
 
-
 abstract class AbstractResponse implements ResponseInterface
 {
     protected $data;
@@ -20,7 +19,7 @@ abstract class AbstractResponse implements ResponseInterface
 
     public function isSuccess()
     {
-        return isset($this->data['status']) AND $this->data['status'] == 0;
+        return isset($this->data['status']) and $this->data['status'] == 0;
     }
 
     public function isError()

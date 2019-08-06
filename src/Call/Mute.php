@@ -8,10 +8,9 @@
 
 namespace Nexmo\Call;
 
-
 class Mute implements \JsonSerializable
 {
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return [
             'action' => 'mute'

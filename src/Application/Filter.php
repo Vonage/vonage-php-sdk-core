@@ -7,6 +7,7 @@
  */
 
 namespace Nexmo\Application;
+
 use Nexmo\Entity\FilterInterface;
 
 /**
@@ -21,7 +22,7 @@ class Filter implements FilterInterface
 
     public function __construct(\DateTime $start, \DateTime $end)
     {
-        if($start < $end){
+        if ($start < $end) {
             $this->start = $start;
             $this->end = $end;
         } else {

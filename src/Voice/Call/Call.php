@@ -7,6 +7,7 @@
  */
 
 namespace Nexmo\Voice\Call;
+
 use Nexmo\Client\Request\AbstractRequest;
 use Nexmo\Client\Request\RequestInterface;
 
@@ -17,7 +18,7 @@ class Call extends AbstractRequest implements RequestInterface
         $this->params['answer_url'] = $url;
         $this->params['to'] = $to;
 
-        if(!is_null($from)){
+        if (!is_null($from)) {
             $this->params['from'] = $from;
         }
     }
@@ -25,7 +26,7 @@ class Call extends AbstractRequest implements RequestInterface
     public function setAnswer($url, $method = null)
     {
         $this->params['answer_url'] = $url;
-        if(!is_null($method)){
+        if (!is_null($method)) {
             $this->params['answer_method'] = $method;
         } else {
             unset($this->params['answer_method']);
@@ -37,7 +38,7 @@ class Call extends AbstractRequest implements RequestInterface
     public function setError($url, $method = null)
     {
         $this->params['error_url'] = $url;
-        if(!is_null($method)){
+        if (!is_null($method)) {
             $this->params['error_method'] = $method;
         } else {
             unset($this->params['error_method']);
@@ -49,7 +50,7 @@ class Call extends AbstractRequest implements RequestInterface
     public function setStatus($url, $method = null)
     {
         $this->params['status_url'] = $url;
-        if(!is_null($method)){
+        if (!is_null($method)) {
             $this->params['status_method'] = $method;
         } else {
             unset($this->params['status_method']);
@@ -62,7 +63,7 @@ class Call extends AbstractRequest implements RequestInterface
     public function setMachineDetection($hangup = true, $timeout = null)
     {
         $this->params['machine_detection'] = ($hangup ? 'hangup' : 'true');
-        if(!is_null($timeout)){
+        if (!is_null($timeout)) {
             $this->params['machine_timeout'] = (int) $timeout;
         } else {
             unset($this->params['machine_timeout']);
@@ -78,5 +79,4 @@ class Call extends AbstractRequest implements RequestInterface
     {
         return '/call/json';
     }
-
-} 
+}

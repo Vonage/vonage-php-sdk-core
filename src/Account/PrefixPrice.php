@@ -2,7 +2,8 @@
 
 namespace Nexmo\Account;
 
-class PrefixPrice extends Price {
+class PrefixPrice extends Price
+{
     protected $priceMethod = 'getPrefixPrice';
 
     public function getCurrency()
@@ -10,4 +11,3 @@ class PrefixPrice extends Price {
         throw new Exception('Currency is unavailable from this endpoint');
     }
 }
-

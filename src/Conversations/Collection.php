@@ -39,7 +39,7 @@ class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAcc
 
     public function hydrateEntity($data, $idOrConversation)
     {
-        if(!($idOrConversation instanceof Conversation)){
+        if (!($idOrConversation instanceof Conversation)) {
             $idOrConversation = new Conversation($idOrConversation);
         }
 
@@ -65,7 +65,7 @@ class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAcc
      */
     public function __invoke(Filter $filter = null)
     {
-        if(!is_null($filter)){
+        if (!is_null($filter)) {
             $this->setFilter($filter);
         }
 
@@ -79,15 +79,15 @@ class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAcc
 
     public function post($conversation)
     {
-        if($conversation instanceof Conversation){
+        if ($conversation instanceof Conversation) {
             $body = $conversation->getRequestData();
         } else {
             $body = $conversation;
         }
 
         $request = new Request(
-            $this->getClient()->getApiUrl() . $this->getCollectionPath()
-            ,'POST',
+            $this->getClient()->getApiUrl() . $this->getCollectionPath(),
+            'POST',
             'php://temp',
             ['content-type' => 'application/json']
         );
@@ -95,7 +95,7 @@ class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAcc
         $request->getBody()->write(json_encode($body));
         $response = $this->getClient()->send($request);
 
-        if($response->getStatusCode() != '200'){
+        if ($response->getStatusCode() != '200') {
             throw $this->getException($response);
         }
 
@@ -109,7 +109,7 @@ class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAcc
 
     public function get($conversation)
     {
-        if(!($conversation instanceof Conversation)){
+        if (!($conversation instanceof Conversation)) {
             $conversation = new Conversation($conversation);
         }
 
@@ -135,9 +135,9 @@ class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAcc
             $errorTitle = $body['error_title'];
         }
 
-        if($status >= 400 AND $status < 500) {
+        if ($status >= 400 and $status < 500) {
             $e = new Exception\Request($errorTitle, $status);
-        } elseif($status >= 500 AND $status < 600) {
+        } elseif ($status >= 500 and $status < 600) {
             $e = new Exception\Server($errorTitle, $status);
         } else {
             $e = new Exception\Exception('Unexpected HTTP Status Code');
@@ -158,7 +158,7 @@ class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAcc
      */
     public function offsetGet($conversation)
     {
-        if(!($conversation instanceof Conversation)){
+        if (!($conversation instanceof Conversation)) {
             $conversation = new Conversation($conversation);
         }
 

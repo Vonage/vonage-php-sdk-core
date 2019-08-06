@@ -339,7 +339,7 @@ class ClientTest extends TestCase
 
     public function testUserAgentStringAppNotProvided()
     {
-        $version = Client::VERSION;
+        $version = '1.2.3';
         $php = 'php/' . implode('.', [
             PHP_MAJOR_VERSION,
             PHP_MINOR_VERSION
@@ -350,7 +350,7 @@ class ClientTest extends TestCase
         $response->getBody()->write('test response');
         $this->http->addResponse($response);
 
-        $client = new Client(new Basic('key', 'secret'), [], $this->http);
+        $client = new FixedVersionClient(new Basic('key', 'secret'), [], $this->http);
         $request = $this->getRequest();
 
         //api client should simply pass back the http response
@@ -368,7 +368,7 @@ class ClientTest extends TestCase
 
     public function testUserAgentStringAppProvided()
     {
-        $version = Client::VERSION;
+        $version = '1.2.3';
         $php = 'php/' . implode('.', [
             PHP_MAJOR_VERSION,
             PHP_MINOR_VERSION
@@ -379,7 +379,7 @@ class ClientTest extends TestCase
         $response->getBody()->write('test response');
         $this->http->addResponse($response);
 
-        $client = new Client(new Basic('key', 'secret'), [
+        $client = new FixedVersionClient(new Basic('key', 'secret'), [
             'app' => [
                 'name' => 'TestApp',
                 'version' => '9.4.5'
@@ -571,5 +571,11 @@ class ClientTest extends TestCase
         //params should be correctly signed
         $signature = new Signature($array, $secret, 'md5hash');
         self::assertTrue($signature->check($array));
+    }
+}
+
+class FixedVersionClient extends Client {
+    public function getVersion(){
+        return '1.2.3';
     }
 }

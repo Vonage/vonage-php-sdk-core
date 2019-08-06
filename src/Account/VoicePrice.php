@@ -2,6 +2,7 @@
 
 namespace Nexmo\Account;
 
-class VoicePrice extends Price {
+class VoicePrice extends Price
+{
     protected $priceMethod = 'getOutboundVoicePrice';
 }
