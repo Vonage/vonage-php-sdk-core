@@ -63,8 +63,12 @@ class Client implements ClientAwareInterface
 
         if ($status >= 400 and $status < 500) {
             $e = new Exception\Request($msg, $status);
-        } elseif ($status >= 500 and $status < 600) {
+            $response->getBody()->rewind();
+            $e->setEntity($response);
+        } elseif ($status >= 500 AND $status < 600) {
             $e = new Exception\Server($msg, $status);
+            $response->getBody()->rewind();
+            $e->setEntity($response);
         } else {
             $e = new Exception\Exception('Unexpected HTTP Status Code');
             throw $e;

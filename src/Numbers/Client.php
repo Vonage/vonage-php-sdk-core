@@ -174,8 +174,11 @@ class Client implements ClientAwareInterface
             return [];
         }
 
-        if (!isset($searchResults['count']) or !isset($searchResults['numbers'])) {
-            throw new Exception\Exception('unexpected response format');
+        if (!isset($searchResults['count']) OR !isset($searchResults['numbers'])) {
+            $e = new Exception\Request('unexpected response format');
+            $response->getBody()->rewind();
+            $e->setEntity($response);
+            throw $e;
         }
 
         // We're going to return a list of numbers
@@ -279,8 +282,12 @@ class Client implements ClientAwareInterface
 
         if ($status >= 400 and $status < 500) {
             $e = new Exception\Request($body['error-code-label'], $status);
+            $response->getBody()->rewind();
+            $e->setEntity($response);
         } elseif ($status >= 500 and $status < 600) {
             $e = new Exception\Server($body['error-code-label'], $status);
+            $response->getBody()->rewind();
+            $e->setEntity($response);
         } else {
             $e = new Exception\Exception('Unexpected HTTP Status Code');
             throw $e;

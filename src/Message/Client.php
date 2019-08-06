@@ -24,7 +24,6 @@ class Client implements ClientAwareInterface
     /**
      * @param Message|array $message
      * @return Message
-     * @throws Exception\Exception
      * @throws Exception\Request
      * @throws Exception\Server
      */
@@ -51,7 +50,9 @@ class Client implements ClientAwareInterface
         //check for valid data, as well as an error response from the API
         $data = $message->getResponseData();
         if (!isset($data['messages'])) {
-            throw new Exception\Exception('unexpected response from API');
+            $e = new Exception\Request('unexpected response from API');
+            $e->setEntity($data);
+            throw $e;
         }
 
         //normalize errors (client vrs server)
@@ -144,13 +145,21 @@ class Client implements ClientAwareInterface
         $data = json_decode($response->getBody()->getContents(), true);
 
         if ($response->getStatusCode() != '200' && isset($data['error-code'])) {
-            throw new Exception\Request($data['error-code-label'], $data['error-code']);
+            $e = new Exception\Request($data['error-code-label'], $data['error-code']);
+            $response->getBody()->rewind();
+            $e->setEntity($response);
+            throw $e;
         } elseif ($response->getStatusCode() != '200') {
-            throw new Exception\Request('error status from API', $response->getStatusCode());
+            $e = new Exception\Request('error status from API', $response->getStatusCode());
+            $response->getBody()->rewind();
+            $e->setEntity($response);
+            throw $e;
         }
 
         if (!isset($data['items'])) {
-            throw new Exception\Exception('unexpected response from API');
+            $e = new Exception\Request('unexpected response from API');
+            $e->setEntity($data);
+            throw $e;
         }
 
         if (count($data['items']) == 0) {
@@ -168,7 +177,9 @@ class Client implements ClientAwareInterface
                     $new = new InboundMessage($item['message-id']);
                     break;
                 default:
-                    throw new Exception\Exception('unexpected response from API');
+                    $e = new Exception\Request('unexpected response from API');
+                    $e->setEntity($data);
+                    throw $e;
             }
 
             $new->setResponse($response);
@@ -209,11 +220,17 @@ class Client implements ClientAwareInterface
         } elseif ($response->getStatusCode() == '429') {
             throw new Exception\Request('too many concurrent requests', $response->getStatusCode());
         } elseif ($response->getStatusCode() != '200') {
-            throw new Exception\Request('error status from API', $response->getStatusCode());
+            $e = new Exception\Request('error status from API', $response->getStatusCode());
+            $response->getBody()->rewind();
+            $e->setEntity($response);
+            throw $e;
         }
 
         if (!$data) {
-            throw new Exception\Request('no message found for `' . $id . '`');
+            $e = new Exception\Request('no message found for `' . $id . '`');
+            $response->getBody()->rewind();
+            $e->setEntity($response);
+            throw $e;
         }
 
         switch ($data['type']) {
@@ -224,7 +241,9 @@ class Client implements ClientAwareInterface
                 $new = new InboundMessage($data['message-id']);
                 break;
             default:
-                throw new Exception\Exception('unexpected response from API');
+                $e = new Exception\Request('unexpected response from API');
+                $e->setEntity($data);
+                throw $e;
         }
 
         if (isset($message) && !($message instanceof $new)) {
@@ -243,6 +262,9 @@ class Client implements ClientAwareInterface
         return $message;
     }
 
+    /**
+     * @throws Exception\Request
+     */
     public function searchRejections(Query $query)
     {
         $params = $query->getParams();
@@ -260,11 +282,16 @@ class Client implements ClientAwareInterface
         if ($response->getStatusCode() != '200' && isset($data['error-code'])) {
             throw new Exception\Request($data['error-code-label'], $data['error-code']);
         } elseif ($response->getStatusCode() != '200') {
-            throw new Exception\Request('error status from API', $response->getStatusCode());
+            $e = new Exception\Request('error status from API', $response->getStatusCode());
+            $response->getBody()->rewind();
+            $e->setEntity($response);
+            throw $e;
         }
 
         if (!isset($data['items'])) {
-            throw new Exception\Exception('unexpected response from API');
+            $e = new Exception\Request('unexpected response from API');
+            $e->setEntity($data);
+            throw $e;
         }
 
         if (count($data['items']) == 0) {
@@ -282,7 +309,9 @@ class Client implements ClientAwareInterface
                     $new = new InboundMessage($item['message-id']);
                     break;
                 default:
-                    throw new Exception\Exception('unexpected response from API');
+                    $e = new Exception\Request('unexpected response from API');
+                    $e->setEntity($data);
+                    throw $e;
             }
 
             $new->setResponse($response);
