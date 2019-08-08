@@ -58,6 +58,67 @@ class ClientTest extends TestCase
         $this->accountClient->topUp('ABC123');
     }
 
+    public function testTopUpFailsWith4xx()
+    {
+        $this->expectException('\Nexmo\Client\Exception\Request');
+        $this->expectExceptionMessage('authentication failed');
+
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('/account/top-up', $request->getUri()->getPath());
+            $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('POST', $request->getMethod());
+            $this->assertRequestFormBodyContains('trx', 'ABC123', $request);
+
+            return true;
+        }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('auth-failure', 401));
+
+        $this->accountClient->topUp('ABC123');
+    }
+
+    /**
+     * Handle when a proper error is returned from the top-up API
+     * While this client library is building the response correctly, we need to
+     * simulate a non-200 response
+     */
+    public function testTopUpFailsDueToBadRequest()
+    {
+        $this->expectException('\Nexmo\Client\Exception\Request');
+        $this->expectExceptionMessage('Bad Request');
+
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('/account/top-up', $request->getUri()->getPath());
+            $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('POST', $request->getMethod());
+            $this->assertRequestFormBodyContains('trx', 'ABC123', $request);
+
+            return true;
+        }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('top-up-bad-request', 400));
+
+        $this->accountClient->topUp('ABC123');
+    }
+
+    /**
+     * Handle when a proper error is returned from the top-up API
+     * While this client library is building the response correctly, we need to
+     * simulate a non-200 response
+     */
+    public function testTopUpFailsDueToBadRequestReturns500()
+    {
+        $this->expectException('\Nexmo\Client\Exception\Server');
+        $this->expectExceptionMessage('Bad Request');
+
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('/account/top-up', $request->getUri()->getPath());
+            $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('POST', $request->getMethod());
+            $this->assertRequestFormBodyContains('trx', 'ABC123', $request);
+
+            return true;
+        }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('top-up-bad-request', 500));
+
+        $this->accountClient->topUp('ABC123');
+    }
+
     public function testGetBalance()
     {
         $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
@@ -67,6 +128,29 @@ class ClientTest extends TestCase
 
             return true;
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('get-balance'));
+
+        $balance = $this->accountClient->getBalance();
+        $this->assertInstanceOf(Balance::class, $balance);
+    }
+
+    /**
+     * Handle if the balance API returns a completely empty body
+     * Not sure how this would happen in real life, but making sure we work
+     *
+     * @author Chris Tankersley <chris.tankersley@vonage.com>
+     */
+    public function testGetBalanceWithNoResults()
+    {
+        $this->expectException('\Nexmo\Client\Exception\Server');
+        $this->expectExceptionMessage('No results found');
+
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('/account/get-balance', $request->getUri()->getPath());
+            $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('GET', $request->getMethod());
+
+            return true;
+        }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('empty'));
 
         $balance = $this->accountClient->getBalance();
         $this->assertInstanceOf(Balance::class, $balance);
@@ -86,6 +170,29 @@ class ClientTest extends TestCase
         $this->assertInstanceOf(Config::class, $config);
     }
 
+    /**
+     * Handle if the balance API returns a completely empty body
+     * Not sure how this would happen in real life, but making sure we work
+     *
+     * @author Chris Tankersley <chris.tankersley@vonage.com>
+     */
+    public function testGetConfigBlankResponse()
+    {
+        $this->expectException('\Nexmo\Client\Exception\Server');
+        $this->expectExceptionMessage('Response was empty');
+
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('/account/settings', $request->getUri()->getPath());
+            $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('empty'));
+
+        $config = $this->accountClient->getConfig();
+        $this->assertInstanceOf(Config::class, $config);
+    }
+
     public function testUpdateConfig()
     {
         $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
@@ -96,6 +203,45 @@ class ClientTest extends TestCase
 
             return true;
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('get-config'));
+
+        $config = $this->accountClient->updateConfig([
+            "sms_callback_url" => "https://example.com/other",
+            "dr_callback_url" => "https://example.com/receipt",
+        ]);
+        $this->assertInstanceOf(Config::class, $config);
+    }
+
+    public function testUpdateConfigThrowsNon200()
+    {
+        $this->expectException('\Nexmo\Client\Exception\Request');
+        $this->expectExceptionMessage('authentication failed');
+
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('/account/settings', $request->getUri()->getPath());
+            $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('POST', $request->getMethod());
+            $this->assertRequestFormBodyContains('moCallBackUrl', 'https://example.com/other', $request);
+
+            return true;
+        }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('auth-failure', 401));
+
+        $config = $this->accountClient->updateConfig(["sms_callback_url" => "https://example.com/other"]);
+        $this->assertInstanceOf(Config::class, $config);
+    }
+
+    public function testUpdateConfigReturnsBlankResponse()
+    {
+        $this->expectException('\Nexmo\Client\Exception\Server');
+        $this->expectExceptionMessage('Response was empty');
+
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('/account/settings', $request->getUri()->getPath());
+            $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('POST', $request->getMethod());
+            $this->assertRequestFormBodyContains('moCallBackUrl', 'https://example.com/other', $request);
+
+            return true;
+        }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('empty', 200));
 
         $config = $this->accountClient->updateConfig(["sms_callback_url" => "https://example.com/other"]);
         $this->assertInstanceOf(Config::class, $config);
@@ -115,6 +261,23 @@ class ClientTest extends TestCase
         $smsPrice = $this->accountClient->getSmsPrice('US');
         $this->assertInstanceOf(SmsPrice::class, $smsPrice);
         $this->assertInstanceOf(Network::class, $smsPrice['networks']['311310']);
+    }
+
+    public function testGetSmsPricingReturnsEmptySet()
+    {
+        $this->expectException('\Nexmo\Client\Exception\Server');
+        $this->expectExceptionMessage('No results found');
+
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('/account/get-pricing/outbound/sms', $request->getUri()->getPath());
+            $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('GET', $request->getMethod());
+            $this->assertRequestQueryContains('country', 'XX', $request);
+
+            return true;
+        }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('empty'));
+
+        $smsPrice = $this->accountClient->getSmsPrice('XX');
     }
 
     public function testGetVoicePricing()
@@ -147,6 +310,55 @@ class ClientTest extends TestCase
         $prefixPrice = $this->accountClient->getPrefixPricing('263');
         $this->assertInstanceOf(PrefixPrice::class, $prefixPrice[0]);
         $this->assertInstanceOf(Network::class, $prefixPrice[0]['networks']['64804']);
+    }
+
+    public function testGetPrefixPricingNoResults()
+    {
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('/account/get-prefix-pricing/outbound', $request->getUri()->getPath());
+            $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('GET', $request->getMethod());
+            $this->assertRequestQueryContains('prefix', '263', $request);
+
+            return true;
+        }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('prefix-pricing-no-results'));
+
+        $prefixPrice = $this->accountClient->getPrefixPricing('263');
+        $this->assertEmpty($prefixPrice);
+    }
+
+    public function testGetPrefixPricingGenerates4xxError()
+    {
+        $this->expectException('Nexmo\Client\Exception\Request');
+        $this->expectExceptionMessage('authentication failed');
+
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('/account/get-prefix-pricing/outbound', $request->getUri()->getPath());
+            $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('GET', $request->getMethod());
+            $this->assertRequestQueryContains('prefix', '263', $request);
+
+            return true;
+        }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('auth-failure', 401));
+
+        $prefixPrice = $this->accountClient->getPrefixPricing('263');
+    }
+
+    public function testGetPrefixPricingGenerates5xxError()
+    {
+        $this->expectException('Nexmo\Client\Exception\Server');
+        $this->expectExceptionMessage('unknown error');
+
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('/account/get-prefix-pricing/outbound', $request->getUri()->getPath());
+            $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('GET', $request->getMethod());
+            $this->assertRequestQueryContains('prefix', '263', $request);
+
+            return true;
+        }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('prefix-pricing-server-failure', 500));
+
+        $prefixPrice = $this->accountClient->getPrefixPricing('263');
     }
 
     public function testListSecrets()

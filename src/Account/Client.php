@@ -10,6 +10,9 @@ use Psr\Http\Message\ResponseInterface;
 use Zend\Diactoros\Request;
 use Nexmo\Client\Exception;
 
+/**
+ * @todo Unify the exception handling to avoid duplicated code and logic (ie: getPrefixPricing())
+ */
 class Client implements ClientAwareInterface
 {
     use ClientAwareTrait;
@@ -71,6 +74,9 @@ class Client implements ClientAwareInterface
         return $voicePrice;
     }
 
+    /**
+     * @todo This should return an empty result instead of throwing an Exception on no results
+     */
     protected function makePricingRequest($country, $pricingType)
     {
         $queryString = http_build_query([
@@ -93,6 +99,9 @@ class Client implements ClientAwareInterface
         return json_decode($rawBody, true);
     }
 
+    /**
+     * @todo This needs further investigated to see if '' can even be returned from this endpoint
+     */
     public function getBalance()
     {
         $request = new Request(
@@ -279,22 +288,34 @@ class Client implements ClientAwareInterface
         return $body;
     }
 
+    /**
+     * Generates an appropriate Exception message and object based on HTTP response
+     * This has a bit of logic to it since different error messages have a different
+     * reponse format.
+     *
+     * @return Exception
+     */
     protected function getException(ResponseInterface $response, $application = null)
     {
         $body = json_decode($response->getBody()->getContents(), true);
         $status = $response->getStatusCode();
 
-        if ($status >= 400 and $status < 500) {
-            $e = new Exception\Request($body['error_title'], $status);
-            $response->getBody()->rewind();
-            $e->setEntity($response);
-        } elseif ($status >= 500 AND $status < 600) {
-            $e = new Exception\Server($body['error_title'], $status);
-            $response->getBody()->rewind();
-            $e->setEntity($response);
-        } else {
-            $e = new Exception\Exception('Unexpected HTTP Status Code');
+        $errorMessage = "Unexpected HTTP Status Code";
+        if (array_key_exists('error_title', $body)) {
+            $errorMessage = $body['error_title'];
+        } elseif (array_key_exists('error-code-label', $body)) {
+            $errorMessage = $body['error-code-label'];
         }
+
+        $e = new Exception\Exception($errorMessage);
+        if ($status >= 400 && $status < 500) {
+            $e = new Exception\Request($errorMessage, $status);
+        } elseif ($status >= 500 && $status < 600) {
+            $e = new Exception\Server($errorMessage, $status);
+        }
+
+        $response->getBody()->rewind();
+        $e->setEntity($response);
 
         return $e;
     }

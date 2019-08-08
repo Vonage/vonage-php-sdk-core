@@ -2,6 +2,8 @@
 
 namespace Nexmo\Account;
 
+use \Exception;
+
 class PrefixPrice extends Price
 {
     protected $priceMethod = 'getPrefixPrice';

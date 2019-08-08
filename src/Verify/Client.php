@@ -19,11 +19,12 @@ class Client implements ClientAwareInterface
 {
     use ClientAwareTrait;
 
+    /**
+     * @param array|Verification $verification
+     */
     public function start($verification)
     {
-        if (!($verification instanceof Verification)) {
-            $verification = $this->createVerificationFromArray($verification);
-        }
+        $verification = $this->createVerification($verification);
 
         $params = $verification->getRequestData(false);
 
@@ -34,11 +35,12 @@ class Client implements ClientAwareInterface
         return $this->checkError($verification, $data);
     }
 
+    /**
+     * @param string|Verification $verification
+     */
     public function search($verification)
     {
-        if (!($verification instanceof Verification)) {
-            $verification = new Verification($verification);
-        }
+        $verification = $this->createVerification($verification);
 
         $params = [
             'request_id' => $verification->getRequestId()
@@ -61,15 +63,12 @@ class Client implements ClientAwareInterface
         }
 
         //normalize errors (client vrs server)
-        switch ($data['status']) {
-            case '5':
-                $e = new Exception\Server($data['error_text'], $data['status']);
-                $e->setEntity($response);
-                break;
-            default:
-                $e = new Exception\Request($data['error_text'], $data['status']);
-                $e->setEntity($response);
-                break;
+        if ('5' === $data['status']) {
+            $e = new Exception\Server($data['error_text'], $data['status']);
+            $e->setEntity($response);
+        } else {
+            $e = new Exception\Request($data['error_text'], $data['status']);
+            $e->setEntity($response);
         }
 
         $e->setEntity($verification);
@@ -88,9 +87,7 @@ class Client implements ClientAwareInterface
 
     public function check($verification, $code, $ip = null)
     {
-        if (!($verification instanceof Verification)) {
-            $verification = new Verification($verification);
-        }
+        $verification = $this->createVerification($verification);
 
         $params = [
             'request_id' => $verification->getRequestId(),
@@ -129,9 +126,7 @@ class Client implements ClientAwareInterface
 
     protected function control($verification, $cmd)
     {
-        if (!($verification instanceof Verification)) {
-            $verification = new Verification($verification);
-        }
+        $verification = $this->createVerification($verification);
 
         $params = [
             'request_id' => $verification->getRequestId(),
@@ -210,6 +205,29 @@ class Client implements ClientAwareInterface
         
         $request->getBody()->write(json_encode($params));
         return $request;
+    }
+
+    /**
+     * Creates a verification object from a variety of sources
+     *
+     * @throws \RuntimeException
+     * @return Verification
+     */
+    protected function createVerification($verification)
+    {
+        if ($verification instanceof Verification) {
+            return $verification;
+        }
+
+        if (is_array($verification)) {
+            return $this->createVerificationFromArray($verification);
+        }
+
+        if (\is_string($verification)) {
+            return new Verification($verification);
+        }
+
+        throw new \RuntimeException('Unable to create Verification object from source data');
     }
 
     /**

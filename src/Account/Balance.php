@@ -7,8 +7,19 @@ use Nexmo\Client\Exception\Exception;
 use Nexmo\Entity\JsonSerializableInterface;
 use Nexmo\Entity\JsonUnserializableInterface;
 
+/**
+ * @todo Have the JSON unserialize/serialize keys match with $this->data keys
+ */
 class Balance implements JsonSerializableInterface, JsonUnserializableInterface, ArrayAccess
 {
+    /**
+     * @var array
+     */
+    protected $data;
+
+    /**
+     * @todo Have these take null values, since we offer an unserialize option to populate
+     */
     public function __construct($balance, $autoReload)
     {
         $this->data['balance'] = $balance;

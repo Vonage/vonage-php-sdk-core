@@ -61,11 +61,11 @@ class Client implements ClientAwareInterface
             $msg .= '. See '.$body['type'];
         }
 
-        if ($status >= 400 and $status < 500) {
+        if ($status >= 400 && $status < 500) {
             $e = new Exception\Request($msg, $status);
             $response->getBody()->rewind();
             $e->setEntity($response);
-        } elseif ($status >= 500 AND $status < 600) {
+        } elseif ($status >= 500 && $status < 600) {
             $e = new Exception\Server($msg, $status);
             $response->getBody()->rewind();
             $e->setEntity($response);

@@ -79,5 +79,13 @@ class PrefixPriceTest extends TestCase
 
         return $r;
     }
-}
 
+    public function testCannotGetCurrency()
+    {
+        $this->expectException('\Exception');
+        $this->expectExceptionMessage('Currency is unavailable from this endpoint');
+
+        $prefixPrice = new PrefixPrice();
+        $prefixPrice->getCurrency();
+    }
+}
