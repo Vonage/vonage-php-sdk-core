@@ -19,8 +19,12 @@
       "name": "Lorna Mitchell",
       "email": "lorna.mitchell@vonage.com",
       "role": "Developer"
+    },
+    {
+      "name": "Chris Tankersley",
+      "email": "chris.tankersley@vonage.com",
+      "role": "Developer"
     }
-
   ],
   "support": {
     "email": "devrel@nexmo.com"
