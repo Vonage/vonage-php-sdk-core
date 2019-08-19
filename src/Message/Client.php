@@ -191,7 +191,11 @@ class Client implements ClientAwareInterface
     }
 
     /**
+     * @todo Decide if this and `get` should flip-flop names, or combine them
+     *
      * @param string|MessageInterface $idOrMessage
+     *
+     * @return MessageInterface
      */
     public function search($idOrMessage)
     {
@@ -356,7 +360,7 @@ class Client implements ClientAwareInterface
      */
     public function __call($name, $arguments)
     {
-        if (!(strstr($name, 'send') !== 0)) {
+        if ("send" !== substr($name, 0, 4)) {
             throw new \RuntimeException(sprintf(
                 '`%s` is not a valid method on `%s`',
                 $name,
