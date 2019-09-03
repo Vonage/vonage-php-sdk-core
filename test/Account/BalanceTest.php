@@ -75,4 +75,9 @@ class BalanceTest extends TestCase
 
         $this->balance['balance'] = '5.00';
     }
+
+    public function testMakeSureDataIsPubliclyVisible()
+    {
+        $this->assertSame('12.99', $this->balance->data['balance']);
+    }
 }

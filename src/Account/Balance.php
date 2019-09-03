@@ -15,7 +15,7 @@ class Balance implements JsonSerializableInterface, JsonUnserializableInterface,
     /**
      * @var array
      */
-    protected $data;
+    public $data;
 
     /**
      * @todo Have these take null values, since we offer an unserialize option to populate
