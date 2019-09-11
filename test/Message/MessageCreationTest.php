@@ -87,25 +87,35 @@ class MessageCreationTest extends TestCase
         );
     }
 
-    public function testCanNotChangeCreationAfterResponse()
+    /**
+     * Returns a series of methods/args to test on a Message object
+     */
+    public static function responseMethodChangeList()
     {
+        return [
+            ['requestDLR', true],
+            ['setCallback', 'https://example.com/changed'],
+            ['setClientRef', 'my-personal-message'],
+            ['setNetwork', '1234'],
+            ['setTTL', 3600],
+            ['setClass', 0],
+        ];
+    }
+
+    /**
+     * Throw an exception when we make a call on a method that cannot change after request
+     *
+     * @dataProvider responseMethodChangeList
+     */
+    public function testCanNotChangeCreationAfterResponse($method, $argument)
+    {
+        $this->expectException('RuntimeException');
+
         $data = ['test' => 'test'];
         $response = new \Zend\Diactoros\Response();
         $response->getBody()->write(json_encode($data));
         $this->message->setResponse($response);
 
-        $methods = [
-            'requestDlr' => true
-        ];
-
-        foreach($methods as $method => $arg){
-            try{
-                $this->message->$method($arg);
-            } catch (\RuntimeException $e) {
-                continue;
-            }
-
-            $this->fail('entity allowed request data to be set after response');
-        }
+        $this->message->$method($argument);
     }
 }

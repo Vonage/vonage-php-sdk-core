@@ -39,7 +39,7 @@ class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAcc
 
     public function hydrateEntity($data, $idOrUser)
     {
-        if(!($idOrUser instanceof User)){
+        if (!($idOrUser instanceof User)) {
             $idOrUser = new User($idOrUser);
         }
 
@@ -72,14 +72,15 @@ class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAcc
      */
     public function __invoke(Filter $filter = null)
     {
-        if(!is_null($filter)){
+        if (!is_null($filter)) {
             $this->setFilter($filter);
         }
 
         return $this;
     }
 
-    public function fetch() {
+    public function fetch()
+    {
         $this->fetchPage(self::getCollectionPath());
         return $this->hydrateAll($this->page);
     }
@@ -91,15 +92,15 @@ class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAcc
 
     public function post($user)
     {
-        if($user instanceof User){
+        if ($user instanceof User) {
             $body = $user->getRequestData();
         } else {
             $body = $user;
         }
 
         $request = new Request(
-            $this->getClient()->getApiUrl() . $this->getCollectionPath()
-            ,'POST',
+            $this->getClient()->getApiUrl() . $this->getCollectionPath(),
+            'POST',
             'php://temp',
             ['content-type' => 'application/json']
         );
@@ -107,7 +108,7 @@ class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAcc
         $request->getBody()->write(json_encode($body));
         $response = $this->client->send($request);
 
-        if($response->getStatusCode() != '200'){
+        if ($response->getStatusCode() != '200') {
             throw $this->getException($response);
         }
 
@@ -121,7 +122,7 @@ class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAcc
 
     public function get($user)
     {
-        if(!($user instanceof User)){
+        if (!($user instanceof User)) {
             $user = new User($user);
         }
 
@@ -151,9 +152,9 @@ class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAcc
             $errorTitle = $body['error_title'];
         }
 
-        if($status >= 400 AND $status < 500) {
+        if ($status >= 400 and $status < 500) {
             $e = new Exception\Request($errorTitle, $status);
-        } elseif($status >= 500 AND $status < 600) {
+        } elseif ($status >= 500 and $status < 600) {
             $e = new Exception\Server($errorTitle, $status);
         } else {
             $e = new Exception\Exception('Unexpected HTTP Status Code');
@@ -174,7 +175,7 @@ class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAcc
      */
     public function offsetGet($user)
     {
-        if(!($user instanceof User)){
+        if (!($user instanceof User)) {
             $user = new User($user);
         }
 

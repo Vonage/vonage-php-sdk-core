@@ -11,9 +11,17 @@ use Nexmo\ApiErrorHandler;
 
 class ApiErrorHandlerTest extends TestCase
 {
+    /**
+     * Valid HTTP responses do not throw an error
+     * There is not a good way to test for an exception _not_ being thrown,
+     * but this method has the side effect of returning NULL when everything
+     * is OK.
+     */
     public function testDoesNotThrowOnSuccess()
     {
-        ApiErrorHandler::check(['success' => true], 200);
+        $response = ApiErrorHandler::check(['success' => true], 200);
+
+        $this->assertNull($response);
     }
 
     public function testThrowsOn4xx()

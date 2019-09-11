@@ -34,7 +34,7 @@ class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAcc
 
     public function hydrateEntity($data, $idOrCall)
     {
-        if(!($idOrCall instanceof Call)){
+        if (!($idOrCall instanceof Call)) {
             $idOrCall = new Call($idOrCall);
         }
 
@@ -50,7 +50,7 @@ class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAcc
      */
     public function __invoke(Filter $filter = null)
     {
-        if(!is_null($filter)){
+        if (!is_null($filter)) {
             $this->setFilter($filter);
         }
 
@@ -64,7 +64,7 @@ class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAcc
 
     public function put($payload, $idOrCall)
     {
-        if(!($idOrCall instanceof Call)){
+        if (!($idOrCall instanceof Call)) {
             $idOrCall = new Call($idOrCall);
         }
 
@@ -75,22 +75,22 @@ class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAcc
 
     public function delete($call = null, $type)
     {
-        if(is_object($call) AND is_callable([$call, 'getId'])){
+        if (is_object($call) and is_callable([$call, 'getId'])) {
             $call = $call->getId();
         }
 
-        if(!($call instanceof Call)){
+        if (!($call instanceof Call)) {
             $call = new Call($call);
         }
 
         $request = new Request(
-            $this->getClient()->getApiUrl() . $this->getCollectionPath() . '/' . $call->getId() . '/' . $type
-            ,'DELETE'
+            $this->getClient()->getApiUrl() . $this->getCollectionPath() . '/' . $call->getId() . '/' . $type,
+            'DELETE'
         );
 
         $response = $this->client->send($request);
 
-        if($response->getStatusCode() != '204'){
+        if ($response->getStatusCode() != '204') {
             throw $this->getException($response);
         }
 
@@ -99,15 +99,15 @@ class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAcc
 
     public function post($call)
     {
-        if($call instanceof Call){
+        if ($call instanceof Call) {
             $body = $call->getRequestData();
         } else {
             $body = $call;
         }
 
         $request = new Request(
-            $this->getClient()->getApiUrl() . $this->getCollectionPath()
-            ,'POST',
+            $this->getClient()->getApiUrl() . $this->getCollectionPath(),
+            'POST',
             'php://temp',
             ['content-type' => 'application/json']
         );
@@ -115,7 +115,7 @@ class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAcc
         $request->getBody()->write(json_encode($body));
         $response = $this->client->send($request);
 
-        if($response->getStatusCode() != '201'){
+        if ($response->getStatusCode() != '201') {
             throw $this->getException($response);
         }
 
@@ -129,7 +129,7 @@ class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAcc
 
     public function get($call)
     {
-        if(!($call instanceof Call)){
+        if (!($call instanceof Call)) {
             $call = new Call($call);
         }
 
@@ -159,9 +159,9 @@ class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAcc
             $errorTitle = $body['error_title'];
         }
 
-        if($status >= 400 AND $status < 500) {
+        if ($status >= 400 and $status < 500) {
             $e = new Exception\Request($errorTitle, $status);
-        } elseif($status >= 500 AND $status < 600) {
+        } elseif ($status >= 500 and $status < 600) {
             $e = new Exception\Server($errorTitle, $status);
         } else {
             $e = new Exception\Exception('Unexpected HTTP Status Code');
@@ -183,7 +183,7 @@ class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAcc
      */
     public function offsetGet($call)
     {
-        if(!($call instanceof Call)){
+        if (!($call instanceof Call)) {
             $call = new Call($call);
         }
 

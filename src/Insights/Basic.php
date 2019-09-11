@@ -5,8 +5,8 @@ namespace Nexmo\Insights;
 use Nexmo\Client\Exception\Exception;
 use Nexmo\Entity\JsonUnserializableInterface;
 
-class Basic implements \JsonSerializable, JsonUnserializableInterface, \ArrayAccess {
-
+class Basic implements \JsonSerializable, JsonUnserializableInterface, \ArrayAccess
+{
     protected $data = [];
 
     public function __construct($number)

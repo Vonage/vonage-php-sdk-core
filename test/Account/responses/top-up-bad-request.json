@@ -1,0 +1,7 @@
+{
+    "type": "BAD_REQUEST",
+    "error_title": "Bad Request",
+    "invalid_parameters": {
+      "trx": "Is required."
+    }
+  }

@@ -11,7 +11,7 @@ namespace Nexmo;
 use Nexmo\Response\Message;
 
 /**
- * Wrapper for Nexmo API Response, provides access to the count and status of 
+ * Wrapper for Nexmo API Response, provides access to the count and status of
  * the messages.
  */
 class Response implements \Countable, \Iterator
@@ -24,7 +24,7 @@ class Response implements \Countable, \Iterator
     
     public function __construct($data)
     {
-        if(!is_string($data)){
+        if (!is_string($data)) {
             throw new \InvalidArgumentException('expected response data to be a string');
         }
 
@@ -33,7 +33,7 @@ class Response implements \Countable, \Iterator
 
     public function getMessages()
     {
-        if(!isset($this->data['messages'])){
+        if (!isset($this->data['messages'])) {
             return array();
         }
 
@@ -62,7 +62,7 @@ class Response implements \Countable, \Iterator
      */
     public function current()
     {
-        if(!isset($this->messages[$this->position])){
+        if (!isset($this->messages[$this->position])) {
             $this->messages[$this->position] = new Message($this->data['messages'][$this->position]);
         }
 

@@ -8,8 +8,9 @@
 
 namespace NexmoTest;
 
-use GuzzleHttp\Psr7\Request;
 use Nexmo\Message\Message;
+use GuzzleHttp\Psr7\Request;
+use Nexmo\Message\MessageInterface;
 
 trait MessageAssertionTrait
 {
@@ -32,7 +33,7 @@ trait MessageAssertionTrait
         }
     }
 
-    public static function assertMessagesEqual(Message $expected, Message $actual)
+    public static function assertMessagesEqual(MessageInterface $expected, MessageInterface $actual)
     {
         self::assertEquals($expected->getResponseData(), $actual->getResponseData());
     }

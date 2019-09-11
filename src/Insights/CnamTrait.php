@@ -1,8 +1,8 @@
 <?php
 namespace Nexmo\Insights;
 
-trait CnamTrait {
-
+trait CnamTrait
+{
     public function getCallerName()
     {
         return $this['caller_name'];

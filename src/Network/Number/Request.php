@@ -34,7 +34,7 @@ class Request extends AbstractRequest implements RequestInterface, WrapResponseI
         $this->params['callback_method'] = $method;
         $this->params['client_ref'] = $ref;
 
-        if(!empty($features)){
+        if (!empty($features)) {
             $this->params['features'] = implode(',', $features);
         }
     }
@@ -50,12 +50,10 @@ class Request extends AbstractRequest implements RequestInterface, WrapResponseI
      */
     public function wrapResponse(ResponseInterface $response)
     {
-        if($response->isError()){
+        if ($response->isError()) {
             return new Error($response->getData());
         }
 
         return new Response($response->getData());
     }
-
-
 }

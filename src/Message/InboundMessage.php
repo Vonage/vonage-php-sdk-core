@@ -22,16 +22,19 @@ class InboundMessage implements MessageInterface, \ArrayAccess
 
     /**
      * InboundMessage constructor.
+     *
+     * @todo Find a cleaner way to create this object
+     *
      * @param string|ServerRequestInterface $idOrRequest Message ID, or inbound HTTP request.
      */
     public function __construct($idOrRequest)
     {
-        if($idOrRequest instanceof ServerRequestInterface){
+        if ($idOrRequest instanceof ServerRequestInterface) {
             $this->setRequest($idOrRequest);
             return;
         }
 
-        if(is_string($idOrRequest)){
+        if (is_string($idOrRequest)) {
             $this->id = $idOrRequest;
             return;
         }
@@ -63,11 +66,11 @@ class InboundMessage implements MessageInterface, \ArrayAccess
     {
         $request = $this->getRequest();
 
-        if(is_null($request)){
+        if (is_null($request)) {
             return [];
         }
 
-        if(!($request instanceof ServerRequestInterface)){
+        if (!($request instanceof ServerRequestInterface)) {
             throw new \RuntimeException('inbound message request should only ever be `' . ServerRequestInterface::class . '`');
         }
 
@@ -80,7 +83,7 @@ class InboundMessage implements MessageInterface, \ArrayAccess
             $isApplicationJson = true;
         }
 
-        switch($request->getMethod()){
+        switch ($request->getMethod()) {
             case 'POST':
                 $params = $isApplicationJson ? json_decode((string)$request->getBody(), true) : $request->getParsedBody();
                 break;
@@ -97,7 +100,7 @@ class InboundMessage implements MessageInterface, \ArrayAccess
 
     public function getFrom()
     {
-        if($this->getRequest()){
+        if ($this->getRequest()) {
             return $this['msisdn'];
         } else {
             return $this['from'];
@@ -111,7 +114,7 @@ class InboundMessage implements MessageInterface, \ArrayAccess
 
     public function getMessageId()
     {
-        if(isset($this->id)){
+        if (isset($this->id)) {
             return $this->id;
         }
 
@@ -125,7 +128,7 @@ class InboundMessage implements MessageInterface, \ArrayAccess
 
     public function getBody()
     {
-        if($this->getRequest()){
+        if ($this->getRequest()) {
             return $this['text'];
         } else {
             return $this['body'];
@@ -159,7 +162,7 @@ class InboundMessage implements MessageInterface, \ArrayAccess
     {
         $response = $this->getResponseData();
 
-        if(isset($this->index)){
+        if (isset($this->index)) {
             $response = $response['items'][$this->index];
         }
 
@@ -180,22 +183,22 @@ class InboundMessage implements MessageInterface, \ArrayAccess
     {
         $response = $this->getResponseData();
 
-        if(isset($this->index)){
+        if (isset($this->index)) {
             $response = $response['items'][$this->index];
         }
 
         $request  = $this->getRequestData();
         $dirty    = $this->getRequestData(false);
 
-        if(isset($response[$offset])){
+        if (isset($response[$offset])) {
             return $response[$offset];
         }
 
-        if(isset($request[$offset])){
+        if (isset($request[$offset])) {
             return $request[$offset];
         }
 
-        if(isset($dirty[$offset])){
+        if (isset($dirty[$offset])) {
             return $dirty[$offset];
         }
     }

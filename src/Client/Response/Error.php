@@ -8,13 +8,12 @@
 
 namespace Nexmo\Client\Response;
 
-
 class Error extends Response
 {
     public function __construct($data)
     {
         //normalize the data
-        if(isset($data['error_text'])){
+        if (isset($data['error_text'])) {
             $data['error-text'] = $data['error_text'];
         }
 

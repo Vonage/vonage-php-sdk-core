@@ -8,18 +8,20 @@
 
 namespace NexmoTest\Message;
 
-use Nexmo\Client\Exception;
+use Prophecy\Argument;
+use Nexmo\Message\Text;
+use Nexmo\Message\Query;
 use Nexmo\Message\Client;
 use Nexmo\Message\Message;
-use Nexmo\Message\Shortcode\TwoFactor;
-use Nexmo\Message\Text;
-use NexmoTest\Psr7AssertionTrait;
-use NexmoTest\MessageAssertionTrait;
-use Prophecy\Argument;
-use Psr\Http\Message\RequestInterface;
+use Nexmo\Client\Exception;
 use Zend\Diactoros\Request;
 use Zend\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
+use Nexmo\Message\InboundMessage;
+use NexmoTest\Psr7AssertionTrait;
+use NexmoTest\MessageAssertionTrait;
+use Nexmo\Message\Shortcode\TwoFactor;
+use Psr\Http\Message\RequestInterface;
 
 class ClientTest extends TestCase
 {
@@ -52,7 +54,7 @@ class ClientTest extends TestCase
             'text' => 'Go To Gino\'s'
         ];
 
-        $this->nexmoClient->send(Argument::that(function(Request $request) use ($args){
+        $this->nexmoClient->send(Argument::that(function (Request $request) use ($args){
             $this->assertRequestJsonBodyContains('to', $args['to'], $request);
             $this->assertRequestJsonBodyContains('from', $args['from'], $request);
             $this->assertRequestJsonBodyContains('text', $args['text'], $request);
@@ -63,7 +65,28 @@ class ClientTest extends TestCase
         $this->assertInstanceOf('Nexmo\Message\Text', $message);
     }
 
-    public function  testCanUseArguments()
+    public function testThrowsRequestExceptionWhenInvalidAPIResponse()
+    {
+        $this->expectException('\Nexmo\Client\Exception\Request');
+        $this->expectExceptionMessage('unexpected response from API');
+
+        $args = [
+            'to' => '14845551212',
+            'from' => '16105551212',
+            'text' => 'Go To Gino\'s'
+        ];
+
+        $this->nexmoClient->send(Argument::that(function (Request $request) use ($args){
+            $this->assertRequestJsonBodyContains('to', $args['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $args['from'], $request);
+            $this->assertRequestJsonBodyContains('text', $args['text'], $request);
+            return true;
+        }))->willReturn($this->getResponse('empty'));
+
+        $message = $this->messageClient->send(new Text($args['to'], $args['from'], $args['text']));
+    }
+
+    public function testCanUseArguments()
     {
         $args = [
             'to' => '14845551212',
@@ -142,6 +165,190 @@ class ClientTest extends TestCase
         }
     }
 
+    public function testCanGetMessageWithMessageObject()
+    {
+        $message = new Message('02000000D912945A');
+        $response = $this->getResponse('get-outbound');
+
+        $this->nexmoClient->send(Argument::that(function (Request $request) {
+            $this->assertRequestQueryContains('ids', ['02000000D912945A'], $request);
+            return true;
+        }))->willReturn($response);
+
+        $messages = $this->messageClient->get($message);
+        $body = json_decode($response->getBody(), true);
+
+        $this->assertSame($body['count'], count($messages));
+        $this->assertSame($body['items'][0]['message-id'], $messages[0]->getMessageId());
+    }
+
+    public function testCanGetInboundMessage()
+    {
+        $message = new Message('0B00000053FFB40F');
+        $response = $this->getResponse('get-inbound');
+
+        $this->nexmoClient->send(Argument::that(function (Request $request) {
+            $this->assertRequestQueryContains('ids', ['0B00000053FFB40F'], $request);
+            return true;
+        }))->willReturn($response);
+
+        $messages = $this->messageClient->get($message);
+        $body = json_decode($response->getBody(), true);
+
+        $this->assertSame($body['count'], count($messages));
+        $this->assertSame($body['items'][0]['message-id'], $messages[0]->getMessageId());
+        $this->assertTrue($messages[0] instanceof InboundMessage);
+    }
+
+    public function testGetThrowsExceptionOnBadMessageType()
+    {
+        $this->expectException(Exception\Request::class);
+        $this->expectExceptionMessage('unexpected response from API');
+
+        $message = new Message('0B00000053FFB40F');
+        $response = $this->getResponse('get-invalid-type');
+
+        $this->nexmoClient->send(Argument::that(function (Request $request) {
+            $this->assertRequestQueryContains('ids', ['0B00000053FFB40F'], $request);
+            return true;
+        }))->willReturn($response);
+
+        $this->messageClient->get($message);
+    }
+
+    public function testGetReturnsEmptyArrayWithNoResults()
+    {
+        $message = new Message('02000000D912945A');
+        $response = $this->getResponse('get-no-results');
+
+        $this->nexmoClient->send(Argument::that(function (Request $request) {
+            $this->assertRequestQueryContains('ids', ['02000000D912945A'], $request);
+            return true;
+        }))->willReturn($response);
+
+        $messages = $this->messageClient->get($message);
+        $body = json_decode($response->getBody(), true);
+
+        $this->assertSame(0, count($messages));
+    }
+
+    public function testCanGetMessageWithStringID()
+    {
+        $messageID = '02000000D912945A';
+        $response = $this->getResponse('get-outbound');
+
+        $this->nexmoClient->send(Argument::that(function (Request $request) {
+            $this->assertRequestQueryContains('ids', ['02000000D912945A'], $request);
+            return true;
+        }))->willReturn($response);
+
+        $messages = $this->messageClient->get($messageID);
+        $body = json_decode($response->getBody(), true);
+
+        $this->assertSame($body['count'], count($messages));
+        $this->assertSame($body['items'][0]['message-id'], $messages[0]->getMessageId());
+    }
+
+    public function testCanGetMessageWithArrayOfIDs()
+    {
+        $messageIDs = ['02000000D912945A'];
+        $response = $this->getResponse('get-outbound');
+
+        $this->nexmoClient->send(Argument::that(function (Request $request) {
+            $this->assertRequestQueryContains('ids', ['02000000D912945A'], $request);
+            return true;
+        }))->willReturn($response);
+
+        $messages = $this->messageClient->get($messageIDs);
+        $body = json_decode($response->getBody(), true);
+
+        $this->assertSame($body['count'], count($messages));
+        $this->assertSame($body['items'][0]['message-id'], $messages[0]->getMessageId());
+    }
+
+    public function testCanGetMessageWithQuery()
+    {
+        $query = new Query(new \DateTime('2016-05-19'), '14845551212');
+        $response = $this->getResponse('get-outbound');
+
+        $this->nexmoClient->send(Argument::that(function (Request $request) {
+            $this->assertRequestQueryContains('date', '2016-05-19', $request);
+            $this->assertRequestQueryContains('to', '14845551212', $request);
+            return true;
+        }))->willReturn($response);
+
+        $messages = $this->messageClient->get($query);
+        $body = json_decode($response->getBody(), true);
+
+        $this->assertSame($body['count'], count($messages));
+        $this->assertSame($body['items'][0]['message-id'], $messages[0]->getMessageId());
+    }
+
+    public function testGetThrowsExceptionWhenNot200ButHasErrorLabel()
+    {
+        $this->expectException(Exception\Request::class);
+        $this->expectExceptionMessage('authentication failed');
+
+        $message = new Message('02000000D912945A');
+        $response = $this->getResponse('auth-failure', 401);
+
+        $this->nexmoClient->send(Argument::that(function (Request $request) {
+            $this->assertRequestQueryContains('ids', ['02000000D912945A'], $request);
+            return true;
+        }))->willReturn($response);
+
+        $this->messageClient->get($message);
+    }
+
+    public function testGetThrowsExceptionWhenNot200AndHasNoCode()
+    {
+        $this->expectException(Exception\Request::class);
+        $this->expectExceptionMessage('error status from API');
+
+        $message = new Message('02000000D912945A');
+        $response = $this->getResponse('empty', 500);
+
+        $this->nexmoClient->send(Argument::that(function (Request $request) {
+            $this->assertRequestQueryContains('ids', ['02000000D912945A'], $request);
+            return true;
+        }))->willReturn($response);
+
+        $this->messageClient->get($message);
+    }
+
+    public function testGetThrowsExceptionWhenInvalidResponseReturned()
+    {
+        $this->expectException(Exception\Request::class);
+        $this->expectExceptionMessage('unexpected response from API');
+
+        $message = new Message('02000000D912945A');
+        $response = $this->getResponse('empty');
+
+        $this->nexmoClient->send(Argument::that(function (Request $request) {
+            $this->assertRequestQueryContains('ids', ['02000000D912945A'], $request);
+            return true;
+        }))->willReturn($response);
+
+        $this->messageClient->get($message);
+    }
+
+    public function testGetThrowsInvalidArgumentExceptionWithBadQuery()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('query must be an instance of Query, MessageInterface, string ID, or array of IDs.');
+
+        $message = new \stdClass;
+        $message->ids = ['02000000D912945A'];
+        $response = $this->getResponse('empty');
+
+        $this->nexmoClient->send(Argument::that(function (Request $request) {
+            $this->assertRequestQueryContains('ids', ['02000000D912945A'], $request);
+            return true;
+        }))->willReturn($response);
+
+        $this->messageClient->get($message);
+    }
+
     public function testCanSearchByMessage()
     {
         $message = new Message('02000000D912945A');
@@ -186,7 +393,86 @@ class ClientTest extends TestCase
         $this->assertSame($response, $message->getResponse());
     }
 
-    public function testRateLimitRetires()
+    public function testSearchThrowsExceptionOnEmptySearchSet()
+    {
+        $this->expectException(Exception\Request::class);
+        $this->expectExceptionMessage('no message found for `02000000DA7C52E7`');
+        $response = $this->getResponse('search-empty');
+
+        $this->nexmoClient->send(Argument::that(function(Request $request) {
+            $this->assertRequestQueryContains('id', '02000000DA7C52E7', $request);
+            return true;
+        }))->willReturn($response);
+
+        $this->messageClient->search('02000000DA7C52E7');
+    }
+
+    public function testSearchThrowExceptionOnNon200()
+    {
+        $this->expectException(Exception\Request::class);
+        $this->expectExceptionMessage('authentication failed');
+
+        $message = new Message('02000000D912945A');
+        $response = $this->getResponse('auth-failure', 401);
+
+        $this->nexmoClient->send(Argument::that(function(Request $request) {
+            $this->assertRequestQueryContains('id', '02000000D912945A', $request);
+            return true;
+        }))->willReturn($response);
+
+        $this->messageClient->search($message);
+    }
+
+    public function testSearchThrowExceptionOnInvalidType()
+    {
+        $this->expectException(Exception\Request::class);
+        $this->expectExceptionMessage('unexpected response from API');
+
+        $message = new Message('02000000D912945A');
+        $response = $this->getResponse('search-invalid-type');
+
+        $this->nexmoClient->send(Argument::that(function(Request $request) {
+            $this->assertRequestQueryContains('id', '02000000D912945A', $request);
+            return true;
+        }))->willReturn($response);
+
+        $this->messageClient->search($message);
+    }
+
+    public function testSearchThrowsGenericExceptionOnNon200()
+    {
+        $this->expectException(Exception\Request::class);
+        $this->expectExceptionMessage('error status from API');
+
+        $message = new Message('02000000D912945A');
+        $response = $this->getResponse('empty', 500);
+
+        $this->nexmoClient->send(Argument::that(function(Request $request) {
+            $this->assertRequestQueryContains('id', '02000000D912945A', $request);
+            return true;
+        }))->willReturn($response);
+
+        $this->messageClient->search($message);
+    }
+
+    public function testThrowsExceptionWhenSearchResultMismatchesQuery()
+    {
+
+        $this->expectException(Exception\Exception::class);
+        $this->expectExceptionMessage('searched for message with type `Nexmo\Message\Message` but message of type `Nexmo\Message\InboundMessage`');
+
+        $message = new Message('02000000D912945A');
+        $response = $this->getResponse('search-inbound');
+
+        $this->nexmoClient->send(Argument::that(function(Request $request) {
+            $this->assertRequestQueryContains('id', '02000000D912945A', $request);
+            return true;
+        }))->willReturn($response);
+
+        $this->messageClient->search($message);
+    }
+
+    public function testRateLimitRetries()
     {
         $rate    = $this->getResponse('ratelimit');
         $success = $this->getResponse('success');
@@ -197,7 +483,29 @@ class ClientTest extends TestCase
             'text' => 'test message'
         ];
 
-        $this->nexmoClient->send(Argument::that(function(Request $request) use ($args){
+        $this->nexmoClient->send(Argument::that(function (Request $request) use ($args){
+            $this->assertRequestJsonBodyContains('to', $args['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $args['from'], $request);
+            $this->assertRequestJsonBodyContains('text', $args['text'], $request);
+            return true;
+        }))->willReturn($rate, $rate, $success);
+
+        $message = $this->messageClient->send(new Text($args['to'], $args['from'], $args['text']));
+        $this->assertEquals($success, $message->getResponse());
+    }
+
+    public function testRateLimitRetriesWithDefault()
+    {
+        $rate    = $this->getResponse('ratelimit-notime');
+        $success = $this->getResponse('success');
+
+        $args = [
+            'to' => '14845551345',
+            'from' => '1105551334',
+            'text' => 'test message'
+        ];
+
+        $this->nexmoClient->send(Argument::that(function (Request $request) use ($args){
             $this->assertRequestJsonBodyContains('to', $args['to'], $request);
             $this->assertRequestJsonBodyContains('from', $args['from'], $request);
             $this->assertRequestJsonBodyContains('text', $args['text'], $request);
@@ -245,12 +553,18 @@ class ClientTest extends TestCase
         $message = new Message('0C0000005BA0B864');
         $message->setResponse($this->getResponse('search-rejections'));
         $message->setIndex(0);
+        $inboundMessage = new InboundMessage('0C0000005BA0B864');
+        $inboundMessage->setResponse($this->getResponse('search-rejections-inbound'));
+        $inboundMessage->setIndex(0);
+
         $r['rejection found'] = [new \DateTime(), '123456', 'search-rejections', [$message], 200, null];
+        $r['inbound rejection found'] = [new \DateTime(), '123456', 'search-rejections-inbound', [$inboundMessage], 200, null];
 
         $r['error-code provided (validation)'] = [new \DateTime(), '123456', 'search-rejections-error-provided-validation', 'Validation error: You forgot to do something', 400, Exception\Request::class];
         $r['error-code provided (server error)'] = [new \DateTime(), '123456', 'search-rejections-error-provided-server-error', 'Gremlins! There are gremlins in the system!', 500, Exception\Request::class];
         $r['error-code not provided'] = [new \DateTime(), '123456', 'empty', 'error status from API', 500, Exception\Request::class];
         $r['missing items key in response on 200'] = [new \DateTime(), '123456', 'empty', 'unexpected response from API', 200, Exception\Exception::class];
+        $r['invalid message type in response'] = [new \DateTime(), '123456', 'search-rejections-invalid-type', 'unexpected response from API', 200, Exception\Request::class];
 
         return $r;
     }
@@ -335,6 +649,64 @@ class ClientTest extends TestCase
         ], $response);
     }
 
+    public function testCreateMessageThrowsExceptionOnBadData()
+    {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('message must implement `Nexmo\Message\MessageInterface` or be an array`');
+
+        $this->messageClient->send("Bob");
+    }
+
+    public function testCreateMessageThrowsExceptionOnMissingData()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('missing expected key `from`');
+
+        $this->messageClient->send(['to' => '15555555555']);
+    }
+
+    public function testMagicMethodIsCalledProperly()
+    {
+        $args = [
+            'to' => '14845551212',
+            'from' => '16105551212',
+            'text' => 'Go To Gino\'s'
+        ];
+
+        $this->nexmoClient->send(Argument::that(function (Request $request) use ($args){
+            $this->assertRequestJsonBodyContains('to', $args['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $args['from'], $request);
+            $this->assertRequestJsonBodyContains('text', $args['text'], $request);
+            return true;
+        }))->willReturn($this->getResponse());
+
+        $message = $this->messageClient->sendText($args['to'], $args['from'], $args['text']);
+        $this->assertInstanceOf('Nexmo\Message\Text', $message);
+    }
+
+    public function testCreateMessageThrowsExceptionOnNonSendMethod()
+    {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('failsendText` is not a valid method on `Nexmo\Message\Client`');
+
+        $this->messageClient->failsendText('14845551212', '16105551212', 'Test');
+    }
+
+    public function testCreateMessageThrowsExceptionOnNonSendMethodTakeTwo()
+    {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('failText` is not a valid method on `Nexmo\Message\Client`');
+
+        $this->messageClient->failText('14845551212', '16105551212', 'Test');
+    }
+
+    public function testCreateMessageThrowsExceptionOnInvalidMessageType()
+    {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('sendGarbage` is not a valid method on `Nexmo\Message\Client`');
+
+        $this->messageClient->sendGarbage('14845551212', '16105551212', 'Test');
+    }
 
     /**
      * Get the API response we'd expect for a call to the API. Message API currently returns 200 all the time, so only

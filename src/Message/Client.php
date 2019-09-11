@@ -24,13 +24,12 @@ class Client implements ClientAwareInterface
     /**
      * @param Message|array $message
      * @return Message
-     * @throws Exception\Exception
      * @throws Exception\Request
      * @throws Exception\Server
      */
     public function send($message)
     {
-        if(!($message instanceof MessageInterface)){
+        if (!($message instanceof MessageInterface)) {
             $message = $this->createMessageFromArray($message);
         }
 
@@ -50,17 +49,19 @@ class Client implements ClientAwareInterface
 
         //check for valid data, as well as an error response from the API
         $data = $message->getResponseData();
-        if(!isset($data['messages'])){
-            throw new Exception\Exception('unexpected response from API');
+        if (!isset($data['messages'])) {
+            $e = new Exception\Request('unexpected response from API');
+            $e->setEntity($data);
+            throw $e;
         }
 
         //normalize errors (client vrs server)
-        foreach($data['messages'] as $part){
-            switch($part['status']){
+        foreach ($data['messages'] as $part) {
+            switch ($part['status']) {
                 case '0':
                     break; //all okay
                 case '1':
-                    if(preg_match('#\[\s+(\d+)\s+\]#', $part['error-text'], $match)){
+                    if (preg_match('#\[\s+(\d+)\s+\]#', $part['error-text'], $match)) {
                         usleep($match[1] + 1);
                     } else {
                         sleep(1);
@@ -81,8 +82,9 @@ class Client implements ClientAwareInterface
         return $message;
     }
 
-    public function sendShortcode($message) {
-        if(!($message instanceof Shortcode)){
+    public function sendShortcode($message)
+    {
+        if (!($message instanceof Shortcode)) {
             $message = Shortcode::createMessageFromArray($message);
         }
 
@@ -109,7 +111,6 @@ class Client implements ClientAwareInterface
         }
 
         return $body;
-
     }
 
     /**
@@ -120,13 +121,13 @@ class Client implements ClientAwareInterface
      */
     public function get($query)
     {
-        if($query instanceof Query){
+        if ($query instanceof Query) {
             $params = $query->getParams();
-        } else if($query instanceof MessageInterface){
+        } elseif ($query instanceof MessageInterface) {
             $params = ['ids' => [$query->getMessageId()]];
-        } else if(is_string($query)) {
+        } elseif (is_string($query)) {
             $params = ['ids' => [$query]];
-        } else if(is_array($query)){
+        } elseif (is_array($query)) {
             $params = ['ids' => $query];
         } else {
             throw new \InvalidArgumentException('query must be an instance of Query, MessageInterface, string ID, or array of IDs.');
@@ -143,24 +144,32 @@ class Client implements ClientAwareInterface
         $response->getBody()->rewind();
         $data = json_decode($response->getBody()->getContents(), true);
 
-        if($response->getStatusCode() != '200' && isset($data['error-code'])){
-            throw new Exception\Request($data['error-code-label'], $data['error-code']);
-        } elseif($response->getStatusCode() != '200'){
-            throw new Exception\Request('error status from API', $response->getStatusCode());
+        if ($response->getStatusCode() != '200' && isset($data['error-code'])) {
+            $e = new Exception\Request($data['error-code-label'], $data['error-code']);
+            $response->getBody()->rewind();
+            $e->setEntity($response);
+            throw $e;
+        } elseif ($response->getStatusCode() != '200') {
+            $e = new Exception\Request('error status from API', $response->getStatusCode());
+            $response->getBody()->rewind();
+            $e->setEntity($response);
+            throw $e;
         }
 
-        if(!isset($data['items'])){
-            throw new Exception\Exception('unexpected response from API');
+        if (!isset($data['items'])) {
+            $e = new Exception\Request('unexpected response from API');
+            $e->setEntity($data);
+            throw $e;
         }
 
-        if(count($data['items']) == 0){
+        if (count($data['items']) == 0) {
             return [];
         }
 
         $collection = [];
 
-        foreach($data['items'] as $index => $item){
-            switch($item['type']){
+        foreach ($data['items'] as $index => $item) {
+            switch ($item['type']) {
                 case 'MT':
                     $new = new Message($item['message-id']);
                     break;
@@ -168,24 +177,29 @@ class Client implements ClientAwareInterface
                     $new = new InboundMessage($item['message-id']);
                     break;
                 default:
-                    throw new Exception\Exception('unexpected response from API');
+                    $e = new Exception\Request('unexpected response from API');
+                    $e->setEntity($data);
+                    throw $e;
             }
 
             $new->setResponse($response);
             $new->setIndex($index);
             $collection[] = $new;
-
         }
 
         return $collection;
     }
 
     /**
+     * @todo Decide if this and `get` should flip-flop names, or combine them
+     *
      * @param string|MessageInterface $idOrMessage
+     *
+     * @return MessageInterface
      */
     public function search($idOrMessage)
     {
-        if($idOrMessage instanceof MessageInterface){
+        if ($idOrMessage instanceof MessageInterface) {
             $id = $idOrMessage->getMessageId();
             $message = $idOrMessage;
         } else {
@@ -205,19 +219,25 @@ class Client implements ClientAwareInterface
 
         $data = json_decode($response->getBody()->getContents(), true);
 
-        if($response->getStatusCode() != '200' && isset($data['error-code'])){
+        if ($response->getStatusCode() != '200' && isset($data['error-code'])) {
             throw new Exception\Request($data['error-code-label'], $data['error-code']);
-        } elseif($response->getStatusCode() == '429'){
+        } elseif ($response->getStatusCode() == '429') {
             throw new Exception\Request('too many concurrent requests', $response->getStatusCode());
-        } elseif($response->getStatusCode() != '200'){
-            throw new Exception\Request('error status from API', $response->getStatusCode());
+        } elseif ($response->getStatusCode() != '200') {
+            $e = new Exception\Request('error status from API', $response->getStatusCode());
+            $response->getBody()->rewind();
+            $e->setEntity($response);
+            throw $e;
         }
 
-        if(!$data){
-            throw new Exception\Request('no message found for `' . $id . '`');
+        if (!$data) {
+            $e = new Exception\Request('no message found for `' . $id . '`');
+            $response->getBody()->rewind();
+            $e->setEntity($response);
+            throw $e;
         }
 
-        switch($data['type']){
+        switch ($data['type']) {
             case 'MT':
                 $new = new Message($data['message-id']);
                 break;
@@ -225,10 +245,12 @@ class Client implements ClientAwareInterface
                 $new = new InboundMessage($data['message-id']);
                 break;
             default:
-                throw new Exception\Exception('unexpected response from API');
+                $e = new Exception\Request('unexpected response from API');
+                $e->setEntity($data);
+                throw $e;
         }
 
-        if(isset($message) && !($message instanceof $new)){
+        if (isset($message) && !($message instanceof $new)) {
             throw new Exception\Exception(sprintf(
                 'searched for message with type `%s` but message of type `%s`',
                 get_class($message),
@@ -236,7 +258,7 @@ class Client implements ClientAwareInterface
             ));
         }
 
-        if(!isset($message)){
+        if (!isset($message)) {
             $message = $new;
         }
 
@@ -244,8 +266,11 @@ class Client implements ClientAwareInterface
         return $message;
     }
 
-    public function searchRejections(Query $query) {
-
+    /**
+     * @throws Exception\Request
+     */
+    public function searchRejections(Query $query)
+    {
         $params = $query->getParams();
         $request = new Request(
             $this->getClient()->getRestUrl() . '/search/rejections?' . http_build_query($params),
@@ -258,24 +283,29 @@ class Client implements ClientAwareInterface
         $response->getBody()->rewind();
         $data = json_decode($response->getBody()->getContents(), true);
 
-        if($response->getStatusCode() != '200' && isset($data['error-code'])){
+        if ($response->getStatusCode() != '200' && isset($data['error-code'])) {
             throw new Exception\Request($data['error-code-label'], $data['error-code']);
-        } elseif($response->getStatusCode() != '200'){
-            throw new Exception\Request('error status from API', $response->getStatusCode());
+        } elseif ($response->getStatusCode() != '200') {
+            $e = new Exception\Request('error status from API', $response->getStatusCode());
+            $response->getBody()->rewind();
+            $e->setEntity($response);
+            throw $e;
         }
 
-        if(!isset($data['items'])){
-            throw new Exception\Exception('unexpected response from API');
+        if (!isset($data['items'])) {
+            $e = new Exception\Request('unexpected response from API');
+            $e->setEntity($data);
+            throw $e;
         }
 
-        if(count($data['items']) == 0){
+        if (count($data['items']) == 0) {
             return [];
         }
 
         $collection = [];
 
-        foreach($data['items'] as $index => $item){
-            switch($item['type']){
+        foreach ($data['items'] as $index => $item) {
+            switch ($item['type']) {
                 case 'MT':
                     $new = new Message($item['message-id']);
                     break;
@@ -283,7 +313,9 @@ class Client implements ClientAwareInterface
                     $new = new InboundMessage($item['message-id']);
                     break;
                 default:
-                    throw new Exception\Exception('unexpected response from API');
+                    $e = new Exception\Request('unexpected response from API');
+                    $e->setEntity($data);
+                    throw $e;
             }
 
             $new->setResponse($response);
@@ -300,12 +332,12 @@ class Client implements ClientAwareInterface
      */
     protected function createMessageFromArray($message)
     {
-        if(!is_array($message)){
+        if (!is_array($message)) {
             throw new \RuntimeException('message must implement `' . MessageInterface::class . '` or be an array`');
         }
 
-        foreach(['to', 'from'] as $param){
-            if(!isset($message[$param])){
+        foreach (['to', 'from'] as $param) {
+            if (!isset($message[$param])) {
                 throw new \InvalidArgumentException('missing expected key `' . $param . '`');
             }
         }
@@ -328,7 +360,7 @@ class Client implements ClientAwareInterface
      */
     public function __call($name, $arguments)
     {
-        if(!(strstr($name, 'send') !== 0)){
+        if ("send" !== substr($name, 0, 4)) {
             throw new \RuntimeException(sprintf(
                 '`%s` is not a valid method on `%s`',
                 $name,
@@ -339,7 +371,7 @@ class Client implements ClientAwareInterface
         $class = substr($name, 4);
         $class = 'Nexmo\\Message\\' . ucfirst(strtolower($class));
 
-        if(!class_exists($class)){
+        if (!class_exists($class)) {
             throw new \RuntimeException(sprintf(
                 '`%s` is not a valid method on `%s`',
                 $name,

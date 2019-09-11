@@ -56,7 +56,11 @@ trait Psr7AssertionTrait
         $params = [];
         parse_str($query, $params);
         self::assertArrayHasKey($key, $params, 'query string does not have key: ' . $key);
-        self::assertSame($value, $params[$key], 'query string does not have value: ' . $value);
+        $errorValue = $value;
+        if (is_array($errorValue)) {
+            $errorValue = \json_encode($errorValue);
+        }
+        self::assertSame($value, $params[$key], 'query string does not have value: ' . $errorValue);
     }
 
     public static function assertRequestQueryHas($key, RequestInterface $request)

@@ -2,3 +2,4 @@
 composer.lock
 vendor
 logs
+.php_cs.cache

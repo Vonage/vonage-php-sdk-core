@@ -8,10 +8,9 @@
 
 namespace Nexmo\Call;
 
-
 class Unearmuff implements \JsonSerializable
 {
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return [
             'action' => 'unearmuff'

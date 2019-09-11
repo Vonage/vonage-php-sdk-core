@@ -19,4 +19,4 @@ abstract class AbstractRequest implements RequestInterface
     {
         return array_filter($this->params, 'is_scalar');
     }
-} 
+}

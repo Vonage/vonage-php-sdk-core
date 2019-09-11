@@ -24,7 +24,7 @@ trait ClientAwareTrait
 
     protected function getClient()
     {
-        if(isset($this->client)){
+        if (isset($this->client)) {
             return $this->client;
         }
 

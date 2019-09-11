@@ -4,26 +4,32 @@ namespace Nexmo\Account;
 
 use Nexmo\InvalidResponseException;
 
-class Secret implements \ArrayAccess {
+class Secret implements \ArrayAccess
+{
     protected $data;
 
-    public function __construct($data) {
+    public function __construct($data)
+    {
         $this->data = $data;
     }
 
-    public function getId() {
+    public function getId()
+    {
         return $this['id'];
     }
 
-    public function getCreatedAt() {
+    public function getCreatedAt()
+    {
         return $this['created_at'];
     }
 
-    public function getLinks() {
+    public function getLinks()
+    {
         return $this['_links'];
     }
 
-    public static function fromApi($data) {
+    public static function fromApi($data)
+    {
         if (!isset($data['id'])) {
             throw new InvalidResponseException("Missing key: 'id");
         }
@@ -52,5 +58,4 @@ class Secret implements \ArrayAccess {
     {
         throw new \Exception('Secret::offsetUnset is not implemented');
     }
-
 }

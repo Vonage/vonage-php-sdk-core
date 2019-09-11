@@ -7,6 +7,7 @@
  */
 
 namespace Nexmo\Network\Number;
+
 use Nexmo\Client\Callback\CallbackInterface;
 use Nexmo\Client\Callback\Callback as BaseCallback;
 
@@ -70,15 +71,15 @@ class Callback extends BaseCallback implements CallbackInterface
         $type = substr($name, 0, 3);
         $property = substr($name, 3);
 
-        if(!isset($this->optional[$property])){
+        if (!isset($this->optional[$property])) {
             throw new \BadMethodCallException('property does not exist: ' . $property);
         }
 
         $property = $this->optional[$property];
 
-        switch($type){
+        switch ($type) {
             case 'get':
-                if(isset($this->data[$property])){
+                if (isset($this->data[$property])) {
                     return $this->data[$property];
                 } else {
                     return null;

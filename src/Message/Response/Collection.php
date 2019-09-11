@@ -7,6 +7,7 @@
  */
 
 namespace Nexmo\Message\Response;
+
 use Nexmo\Client\Response\Response;
 use Nexmo\Client\Response\Error;
 use Nexmo\Client\Response\ResponseInterface;
@@ -40,12 +41,12 @@ class Collection extends Response implements ResponseInterface, \Countable, \Ite
 
         $this->count = $data['message-count'];
 
-        if(count($data['messages']) != $data['message-count']){
+        if (count($data['messages']) != $data['message-count']) {
             throw new \RuntimeException('invalid message count');
         }
 
-        foreach($data['messages'] as $message){
-            if(0 != $message['status']){
+        foreach ($data['messages'] as $message) {
+            if (0 != $message['status']) {
                 $this->messages[] = new Error($message);
             } else {
                 $this->messages[] = new Message($message);
@@ -64,8 +65,8 @@ class Collection extends Response implements ResponseInterface, \Countable, \Ite
 
     public function isSuccess()
     {
-        foreach($this->messages as $message){
-            if($message instanceof Error){
+        foreach ($this->messages as $message) {
+            if ($message instanceof Error) {
                 return false;
             }
         }

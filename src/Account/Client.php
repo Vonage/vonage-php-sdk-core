@@ -10,7 +10,9 @@ use Psr\Http\Message\ResponseInterface;
 use Zend\Diactoros\Request;
 use Nexmo\Client\Exception;
 
-
+/**
+ * @todo Unify the exception handling to avoid duplicated code and logic (ie: getPrefixPricing())
+ */
 class Client implements ClientAwareInterface
 {
     use ClientAwareTrait;
@@ -36,7 +38,7 @@ class Client implements ClientAwareInterface
         if ($codeCategory != 2) {
             if ($codeCategory == 4) {
                 throw new Exception\Request($body['error-code-label']);
-            }else if ($codeCategory == 5) {
+            } elseif ($codeCategory == 5) {
                 throw new Exception\Server($body['error-code-label']);
             }
         }
@@ -72,6 +74,9 @@ class Client implements ClientAwareInterface
         return $voicePrice;
     }
 
+    /**
+     * @todo This should return an empty result instead of throwing an Exception on no results
+     */
     protected function makePricingRequest($country, $pricingType)
     {
         $queryString = http_build_query([
@@ -94,9 +99,11 @@ class Client implements ClientAwareInterface
         return json_decode($rawBody, true);
     }
 
+    /**
+     * @todo This needs further investigated to see if '' can even be returned from this endpoint
+     */
     public function getBalance()
     {
-
         $request = new Request(
             $this->getClient()->getRestUrl() . '/account/get-balance',
             'GET',
@@ -123,23 +130,22 @@ class Client implements ClientAwareInterface
         ];
 
         $request = new Request(
-            $this->getClient()->getRestUrl() . '/account/top-up'
-            ,'POST'
-            , 'php://temp'
-            , ['content-type' => 'application/x-www-form-urlencoded']
+            $this->getClient()->getRestUrl() . '/account/top-up',
+            'POST',
+            'php://temp',
+            ['content-type' => 'application/x-www-form-urlencoded']
         );
 
         $request->getBody()->write(http_build_query($body));
         $response = $this->client->send($request);
 
-        if($response->getStatusCode() != '200'){
+        if ($response->getStatusCode() != '200') {
             throw $this->getException($response);
         }
     }
 
     public function getConfig()
     {
-
         $request = new Request(
             $this->getClient()->getRestUrl() . '/account/settings',
             'POST',
@@ -169,11 +175,11 @@ class Client implements ClientAwareInterface
     {
         // supported options are SMS Callback and DR Callback
         $params = [];
-        if(isset($options['sms_callback_url'])) {
+        if (isset($options['sms_callback_url'])) {
             $params['moCallBackUrl'] = $options['sms_callback_url'];
         }
 
-        if(isset($options['dr_callback_url'])) {
+        if (isset($options['dr_callback_url'])) {
             $params['drCallBackUrl'] = $options['dr_callback_url'];
         }
 
@@ -187,7 +193,7 @@ class Client implements ClientAwareInterface
         $request->getBody()->write(http_build_query($params));
         $response = $this->client->send($request);
 
-        if($response->getStatusCode() != '200'){
+        if ($response->getStatusCode() != '200') {
             throw $this->getException($response);
         }
 
@@ -211,13 +217,13 @@ class Client implements ClientAwareInterface
 
     public function listSecrets($apiKey)
     {
-        $body = $this->get( $this->getClient()->getApiUrl() . '/accounts/'.$apiKey.'/secrets');
+        $body = $this->get($this->getClient()->getApiUrl() . '/accounts/'.$apiKey.'/secrets');
         return SecretCollection::fromApi($body);
     }
 
     public function getSecret($apiKey, $secretId)
     {
-        $body = $this->get( $this->getClient()->getApiUrl() . '/accounts/'.$apiKey.'/secrets/'. $secretId);
+        $body = $this->get($this->getClient()->getApiUrl() . '/accounts/'.$apiKey.'/secrets/'. $secretId);
         return Secret::fromApi($body);
     }
 
@@ -228,10 +234,10 @@ class Client implements ClientAwareInterface
         ];
 
         $request = new Request(
-            $this->getClient()->getApiUrl() . '/accounts/'.$apiKey.'/secrets'
-            ,'POST'
-            , 'php://temp'
-            , ['content-type' => 'application/json']
+            $this->getClient()->getApiUrl() . '/accounts/'.$apiKey.'/secrets',
+            'POST',
+            'php://temp',
+            ['content-type' => 'application/json']
         );
 
         $request->getBody()->write(json_encode($body));
@@ -247,10 +253,10 @@ class Client implements ClientAwareInterface
     public function deleteSecret($apiKey, $secretId)
     {
         $request = new Request(
-            $this->getClient()->getApiUrl() . '/accounts/'.$apiKey.'/secrets/'. $secretId
-            ,'DELETE'
-            , 'php://temp'
-            , ['content-type' => 'application/json']
+            $this->getClient()->getApiUrl() . '/accounts/'.$apiKey.'/secrets/'. $secretId,
+            'DELETE',
+            'php://temp',
+            ['content-type' => 'application/json']
         );
 
         $response = $this->client->send($request);
@@ -263,12 +269,13 @@ class Client implements ClientAwareInterface
         // This returns a 204, so no response body
     }
 
-    protected function get($url) {
-       $request = new Request(
-           $url
-           ,'GET'
-           , 'php://temp'
-           , ['content-type' => 'application/json']
+    protected function get($url)
+    {
+        $request = new Request(
+            $url,
+            'GET',
+            'php://temp',
+            ['content-type' => 'application/json']
         );
 
         $response = $this->client->send($request);
@@ -281,20 +288,35 @@ class Client implements ClientAwareInterface
         return $body;
     }
 
+    /**
+     * Generates an appropriate Exception message and object based on HTTP response
+     * This has a bit of logic to it since different error messages have a different
+     * reponse format.
+     *
+     * @return Exception
+     */
     protected function getException(ResponseInterface $response, $application = null)
     {
         $body = json_decode($response->getBody()->getContents(), true);
         $status = $response->getStatusCode();
 
-        if($status >= 400 AND $status < 500) {
-            $e = new Exception\Request($body['error_title'], $status);
-        } elseif($status >= 500 AND $status < 600) {
-            $e = new Exception\Server($body['error_title'], $status);
-        } else {
-            $e = new Exception\Exception('Unexpected HTTP Status Code');
+        $errorMessage = "Unexpected HTTP Status Code";
+        if (array_key_exists('error_title', $body)) {
+            $errorMessage = $body['error_title'];
+        } elseif (array_key_exists('error-code-label', $body)) {
+            $errorMessage = $body['error-code-label'];
         }
+
+        $e = new Exception\Exception($errorMessage);
+        if ($status >= 400 && $status < 500) {
+            $e = new Exception\Request($errorMessage, $status);
+        } elseif ($status >= 500 && $status < 600) {
+            $e = new Exception\Server($errorMessage, $status);
+        }
+
+        $response->getBody()->rewind();
+        $e->setEntity($response);
 
         return $e;
     }
-
 }

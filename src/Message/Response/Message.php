@@ -7,6 +7,7 @@
  */
 
 namespace Nexmo\Message\Response;
+
 use Nexmo\Client\Response\Response;
 use Nexmo\Client\Response\ResponseInterface;
 use Nexmo\Message\Callback\Receipt;
@@ -18,7 +19,7 @@ class Message extends Response implements ResponseInterface
      */
     protected $receipt;
 
-    public function __construct(Array $data, Receipt $receipt = null)
+    public function __construct(array $data, Receipt $receipt = null)
     {
         $this->expected = array(
             'status',
@@ -34,11 +35,11 @@ class Message extends Response implements ResponseInterface
         $return = parent::__construct($data);
 
         //validate receipt
-        if(!$receipt){
+        if (!$receipt) {
             return $return;
         }
 
-        if($receipt->getId() != $this->getId()){
+        if ($receipt->getId() != $this->getId()) {
             throw new \UnexpectedValueException('receipt id must match message id');
         }
 

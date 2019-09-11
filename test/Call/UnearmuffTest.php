@@ -21,7 +21,7 @@ class UnearmuffTest extends TestCase
         $mute = new Unearmuff();
 
         $json = json_decode(json_encode($mute));
-        $this->assertJsonMatchesSchema(__DIR__ . '/schema/unearmuff.json', $json);
+        $this->assertJsonMatchesSchema($json, __DIR__ . '/schema/unearmuff.json');
         $this->assertJsonValueEquals('unearmuff', 'action', $json);
     }
 }

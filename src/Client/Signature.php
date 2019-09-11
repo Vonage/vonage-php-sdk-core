@@ -35,7 +35,7 @@ class Signature
         $this->params = $params;
         $this->signed = $params;
 
-        if(!isset($this->signed['timestamp'])){
+        if (!isset($this->signed['timestamp'])) {
             $this->signed['timestamp'] = time();
         }
 
@@ -56,8 +56,9 @@ class Signature
         $this->signed['sig'] = $this->sign($signatureMethod, $base, $secret);
     }
 
-    protected function sign($signatureMethod, $data, $secret) {
-       switch($signatureMethod) {
+    protected function sign($signatureMethod, $data, $secret)
+    {
+        switch ($signatureMethod) {
             case 'md5hash':
                 // md5hash needs the secret appended
                 $data .= $secret;
@@ -111,18 +112,18 @@ class Signature
      * signature parameter and calculate the correct one. Then call this
      * method and supply the signature that came in with the request.
      *
-     * @param array| string $signature The incoming sig parameter to check 
+     * @param array| string $signature The incoming sig parameter to check
      *      (or all incoming params)
      * @return bool
      * @throws \InvalidArgumentException
      */
     public function check($signature)
     {
-        if(is_array($signature) AND isset($signature['sig'])){
+        if (is_array($signature) and isset($signature['sig'])) {
             $signature = $signature['sig'];
         }
 
-        if(!is_string($signature)){
+        if (!is_string($signature)) {
             throw new \InvalidArgumentException('signature must be string, or present in array or parameters');
         }
 
@@ -131,7 +132,7 @@ class Signature
 
     /**
      * Allow easy comparison.
-     * 
+     *
      * @return string
      */
     public function __toString()

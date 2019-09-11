@@ -5,7 +5,7 @@ Client Library for PHP
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE.txt)
 [![codecov](https://codecov.io/gh/Nexmo/nexmo-php/branch/master/graph/badge.svg)](https://codecov.io/gh/Nexmo/nexmo-php)
 
-*This library requires a minimum PHP version of 5.6*
+*This library requires a minimum PHP version of 7.1*
 
 This is the PHP client library for use Nexmo's API. To use this, you'll need a Nexmo account. Sign up [for free at 
 nexmo.com][signup].
@@ -655,6 +655,43 @@ $response = $client->account()->updateConfig([
 print_r($response->data);
 ```
 
+### Get Information About a Number
+
+The [Number Insights API](https://developer.nexmo.com/api/number-insight) allows a user to check that a number is valid and to find out more about how to use it.
+
+#### Basic and Standard Usage
+
+You can use either the `basic()` or `standard()` methods (an `advanced()` method is available, but it is recommended to use the async option to get advanced info), like this:
+
+```php
+
+try {
+  $insights = $client->insights()->basic(PHONE_NUMBER);
+
+  echo $insights['national_format_number'];
+} catch (Exception $e) {
+  // for the Nexmo-specific exceptions, try the `getEntity()` method for more diagnostic information
+}
+```
+
+The data is returned in the `$insights` variable in the example above.
+
+#### Advanced Usage
+
+To get advanced insights, use the async feature and supply a URL for the webhook to be sent to:
+
+```php
+try {
+  $client->insights()->advancedAsync(PHONE_NUMBER, 'http://example.com/webhooks/number-insights');
+} catch (Exception $e) {
+  // for the Nexmo-specific exceptions, try the `getEntity()` method for more diagnostic information
+}
+```
+
+Check out the [documentation](https://developer.nexmo.com/number-insight/code-snippets/number-insight-advanced-async-callback) for what to expect in the incoming webhook containing the data you requested.
+
+
+
 ## Troubleshooting
 
 
@@ -679,7 +716,7 @@ curl.cainfo = "/etc/pki/tls/cacert.pem"
 curl.cainfo = "C:\php\extras\ssl\cacert.pem"
 ```
 
-### Pass custom Guzzle client
+### Pass custom HTTP client
 
 We allow use of any HTTPlug adapter, so you can create a client with alternative configuration if you need it, for example to take account of a local proxy, or deal with something else specific to your setup.
 
@@ -690,6 +727,15 @@ $adapter_client = new Http\Adapter\Guzzle6\Client(new GuzzleHttp\Client(['timeou
 $nexmo_client = new Nexmo\Client(new Nexmo\Client\Credentials\Basic($api_key, $api_secret), [], $adapter_client);
 ```
 
+### Accessing Response Data
+
+When things go wrong, you'll receive an `Exception`. The Nexmo exception classes `Nexmo\Client\Exception\Request` and `Nexmo\Client\Exception\Server` support an additional `getEntity()` method which you can use in addition to `getCode()` and `getMessage()` to find out more about what went wrong. The entity returned will typically be an object related to the operation, or the response object from the API call.
+
+### Composer installation fails due to Guzzle Adapter
+
+If you have a conflicting package installation that cannot co-exist with our recommended `php-http/guzzle6-adapter` package, then you may install the package `nexmo/client-core` along with any package that satisfies the `php-http/client-implementation` requirement.
+
+See the [Packagist page for client-implementation](https://packagist.org/providers/php-http/client-implementation) for options.
 
 Contributing
 ------------

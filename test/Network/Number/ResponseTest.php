@@ -45,10 +45,10 @@ class ResponseTest extends TestCase
     /**
      * @dataProvider getOptionalProperties
      * @param $property
+     * @expectedException BadMethodCallException
      */
     public function testCantGetOptionalDataBeforeCallback($property)
     {
-        $this->setExpectedException('BadMethodCallException');
         $get = 'get' . $property;
         $this->response->$get();
     }
@@ -56,10 +56,10 @@ class ResponseTest extends TestCase
     /**
      * @dataProvider getOptionalProperties
      * @param $property
+     * @expectedException BadMethodCallException
      */
     public function testCantHasOptionalDataBeforeCallback($property)
     {
-        $this->setExpectedException('BadMethodCallException');
         $has = 'has' . $property;
         $this->response->$has();
     }

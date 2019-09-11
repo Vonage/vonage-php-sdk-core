@@ -10,7 +10,7 @@ namespace Nexmo\Entity;
 
 trait ArrayAccessTrait
 {
-    public abstract function getResponseData();
+    abstract public function getResponseData();
     
-    public abstract function getRequestData();
+    abstract public function getRequestData();
 }

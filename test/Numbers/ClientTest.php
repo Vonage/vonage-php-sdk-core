@@ -233,6 +233,24 @@ class ClientTest extends TestCase
         $this->assertSame('14155550101', $numbers[1]->getId());
     }
 
+    /**
+     * A search can return an empty set `[]` result when no numbers are found
+     */
+    public function testSearchAvailableReturnsEmptyNumberList()
+    {
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('/number/search', $request->getUri()->getPath());
+            $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('GET', $request->getMethod());
+            return true;
+        }))->willReturn($this->getResponse('empty'));
+
+        $numbers = $this->numberClient->searchAvailable('US');
+
+        $this->assertInternalType('array', $numbers);
+        $this->assertEmpty($numbers);
+    }
+
     public function testSearchOwnedErrorsOnUnknownSearchParameters()
     {
 

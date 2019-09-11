@@ -135,9 +135,14 @@ class NumberTest extends TestCase
 
     public function testSystemType()
     {
-        $this->markTestIncomplete('not tested');
-        $this->assertSame($this->number, $this->number->setSystemType('inbound'));
-        $this->assertEquals('inbound', $this->number->getSystemType());
+        $numberData = [
+            'msisdn' => '447700900000',
+            'type' => Number::TYPE_FIXED,
+        ];
+        $number = new Number();
+        $number->jsonUnserialize($numberData);
+
+        $this->assertEquals($numberData['type'], $number->getType());
     }
 
     public function testStatusWebhook()
