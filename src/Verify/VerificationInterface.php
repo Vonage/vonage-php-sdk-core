@@ -18,4 +18,5 @@ interface VerificationInterface extends \Nexmo\Entity\EntityInterface
     public function setRequireType($type);
     public function setPinExpiry($time);
     public function setWaitTime($time);
+    public function setWorkflowId($workflow_id);
 }

@@ -267,6 +267,21 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
     }
 
     /**
+     * Which workflow to use, default is 1 for SMS -> TTS -> TTS
+     * @link https://developer.nexmo.com/verify/guides/workflows-and-events
+     *
+     * Can only be set before the verification is created.
+     * @uses \Nexmo\Entity\RequestArrayTrait::setRequestData
+     *
+     * @param int $workflow_id Which workflow to use
+     * @return $this
+     */
+    public function setWorkflowId($workflow_id)
+    {
+        return $this->setRequestData('workflow_id', $workflow_id);
+    }
+
+    /**
      * Get the verification request id, if available.
      *
      * @uses \Nexmo\Verify\Verification::proxyArrayAccess()
