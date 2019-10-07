@@ -522,11 +522,36 @@ You can list the numbers owned by your account and optionally include filtering:
 * `1` - the number includes `pattern`
 * `2` - the number ends with `pattern`
 
-```
+```php
 $client->numbers()->searchOwned(
     '234',
     [
         "search_pattern" => 1,
+    ]
+);
+```
+
+`has_application`:
+* `true` - The number is attached to an application
+* `false` - The number is not attached to an application
+
+```php
+$client->numbers()->searchOwned(
+    null,
+    [
+        "has_application" => true,
+    ]
+);
+```
+
+`application_id`:
+* Supply an application ID to get all of the numbers associated with the requestion application
+
+```php
+$client->numbers()->searchOwned(
+    null,
+    [
+        "application_id" => "66c04cea-68b2-45e4-9061-3fd847d627b8",
     ]
 );
 ```

@@ -11,6 +11,7 @@ namespace NexmoTest\Numbers;
 use Nexmo\Numbers\Client;
 use Nexmo\Numbers\Number;
 use Nexmo\Client\Exception;
+use Nexmo\Client\Exception\Request;
 use NexmoTest\Psr7AssertionTrait;
 use Prophecy\Argument;
 use Psr\Http\Message\RequestInterface;
@@ -182,36 +183,39 @@ class ClientTest extends TestCase
 
     public function testSearchAvailablePassesThroughWhitelistedOptions()
     {
-
-        $allowedOptions = [
+        $options = [
             'pattern' => 'one',
             'search_pattern' => '2',
             'features' => 'SMS,VOICE',
             'size' => '100',
             'index' => '19'
         ];
-        $invalidOptions = ['foo' => 'bananas'];
 
-        $options = array_merge($allowedOptions, $invalidOptions);
-
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($allowedOptions, $invalidOptions){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($options) {
             $this->assertEquals('/number/search', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
 
             // Things that are whitelisted should be shown
-            foreach ($allowedOptions as $name => $value) {
+            foreach ($options as $name => $value) {
                 $this->assertRequestQueryContains($name, $value, $request);
             }
 
-            // Anything else should be dropped
-            foreach ($invalidOptions as $name => $value) {
-                $this->assertRequestQueryNotContains($name, $request);
-            }
             return true;
         }))->willReturn($this->getResponse('available-numbers'));
 
         $this->numberClient->searchAvailable('US', $options);
+    }
+
+    /**
+     * Make sure that unknown parameters fail validation
+     */
+    public function testUnknownParameterValueForSearchThrowsException()
+    {
+        $this->expectException(Request::class);
+        $this->expectExceptionMessage("Unknown option: 'foo'");
+
+        $this->numberClient->searchAvailable('US', ['foo' => 'bar']);
     }
 
     public function testSearchAvailableReturnsNumberList()
@@ -264,18 +268,22 @@ class ClientTest extends TestCase
 
     public function testSearchOwnedPassesInAllowedAdditionalParameters()
     {
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/numbers', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
-            $this->assertEquals('pattern=1415550100&index=1&size=100&search_pattern=0', $request->getUri()->getQuery());
+            $this->assertEquals(
+                'index=1&size=100&search_pattern=0&has_application=false&pattern=1415550100',
+                $request->getUri()->getQuery()
+            );
             return true;
         }))->willReturn($this->getResponse('single'));
 
         $this->numberClient->searchOwned('1415550100', [
             'index' => 1,
             'size' => '100',
-            'search_pattern' => 0
+            'search_pattern' => 0,
+            'has_application' => false,
         ]);
     }
 
@@ -420,6 +428,28 @@ class ClientTest extends TestCase
 
         $num = new Number('1415550100', 'US');
         $this->numberClient->cancel($num);
+    }
+
+    /**
+     * Make sure that integer values that fail validation throw properly
+     */
+    public function testInvalidIntegerValueForSearchThrowsException()
+    {
+        $this->expectException(Request::class);
+        $this->expectExceptionMessage("Invalid value: 'size' must be an integer");
+
+        $this->numberClient->searchOwned(null, ['size' => 'bob']);
+    }
+
+    /**
+     * Make sure that boolean values that fail validation throw properly
+     */
+    public function testInvalidBooleanValueForSearchThrowsException()
+    {
+        $this->expectException(Request::class);
+        $this->expectExceptionMessage("Invalid value: 'has_application' must be a boolean value");
+
+        $this->numberClient->searchOwned(null, ['has_application' => 'bob']);
     }
 
     /**
