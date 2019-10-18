@@ -92,27 +92,28 @@ class Client implements ClientAwareInterface
         return $this->searchOwned($number);
     }
 
-    public function searchAvailable($country, $options = [])
+    /**
+     * Returns a set of numbers for the specified country
+     *
+     * @param string $country The two character country code in ISO 3166-1 alpha-2 format
+     * @param array $options Additional options, see https://developer.nexmo.com/api/numbers#getAvailableNumbers
+     */
+    public function searchAvailable(string $country, array $options = []) : array
     {
-        $query = [
-            'country' => $country
-        ];
+        $options['country'] = $country;
 
         // These are all optional parameters
         $possibleParameters = [
-            'pattern',
-            'search_pattern',
-            'features',
-            'size',
-            'type',
-            'index'
+            'country' => 'string',
+            'pattern' => 'string',
+            'search_pattern' => 'integer',
+            'features' => 'array',
+            'size' => 'integer',
+            'type' => 'string',
+            'index' => 'integer'
         ];
 
-        foreach ($possibleParameters as $param) {
-            if (isset($options[$param])) {
-                $query[$param] = $options[$param];
-            }
-        }
+        $query = $this->parseParameters($possibleParameters, $options);
 
         $request = new Request(
             $this->client->getRestUrl() . '/number/search?' . http_build_query($query),
@@ -125,30 +126,33 @@ class Client implements ClientAwareInterface
         return $this->handleNumberSearchResult($response, null);
     }
 
-    public function searchOwned($number = null, $options = [])
+    /**
+     * Returns a set of numbers for the specified country
+     *
+     * @param string|Number $number Number to search for, if any
+     * @param array $options Additional options, see https://developer.nexmo.com/api/numbers#getOwnedNumbers
+     */
+    public function searchOwned($number = null, array $options = []) : array
     {
-        $query = [];
         if ($number !== null) {
             if ($number instanceof Number) {
-                $query = ['pattern' => $number->getId()];
+                $options['pattern'] = $number->getId();
             } else {
-                $query = ['pattern' => $number];
+                $options['pattern'] = $number;
             }
         }
 
         // These are all optional parameters
         $possibleParameters = [
-            'search_pattern',
-            'size',
-            'index'
+            'pattern' => 'string',
+            'search_pattern' => 'integer',
+            'size' => 'integer',
+            'index' => 'integer',
+            'has_application' => 'boolean',
+            'application_id' => 'string'
         ];
 
-        foreach ($options as $param => $value) {
-            if (!in_array($param, $possibleParameters)) {
-                throw new Exception\Request("Unknown option: '".$param."'");
-            }
-            $query[$param] = $value;
-        }
+        $query = $this->parseParameters($possibleParameters, $options);
 
         $queryString = http_build_query($query);
 
@@ -159,7 +163,44 @@ class Client implements ClientAwareInterface
         );
 
         $response = $this->client->send($request);
+
         return $this->handleNumberSearchResult($response, $number);
+    }
+
+    /**
+     * Checks and converts parameters into appropriate values for the API
+     */
+    protected function parseParameters(array $possibleParameters, array $data = []) : array
+    {
+        $query = [];
+        foreach ($data as $param => $value) {
+            if (!array_key_exists($param, $possibleParameters)) {
+                throw new Exception\Request("Unknown option: '" . $param . "'");
+            }
+
+            switch ($possibleParameters[$param]) {
+                case 'boolean':
+                    $value = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+                    if (is_null($value)) {
+                        throw new Exception\Request("Invalid value: '" . $param . "' must be a boolean value");
+                    }
+                    $value = $value ? "true" : "false";
+                    break;
+                case 'integer':
+                    $value = filter_var($value, FILTER_VALIDATE_INT);
+                    if ($value === false) {
+                        throw new Exception\Request("Invalid value: '" . $param . "' must be an integer");
+                    }
+                    break;
+                default:
+                    // No-op, take the value whatever it is
+                    break;
+            }
+
+            $query[$param] = $value;
+        }
+
+        return $query;
     }
 
     private function handleNumberSearchResult($response, $number)
