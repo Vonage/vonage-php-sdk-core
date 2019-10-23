@@ -18,8 +18,16 @@ use Nexmo\Client\Credentials\SignatureSecret;
 use Nexmo\Client\Exception\Exception;
 use Nexmo\Client\Factory\FactoryInterface;
 use Nexmo\Client\Factory\MapFactory;
+use Nexmo\Client\OpenAPIResource;
 use Nexmo\Client\Response\Response;
 use Nexmo\Client\Signature;
+use Nexmo\Conversations\Event\API as ConversationEventAPI;
+use Nexmo\Conversations\Event\Client as ConversationEventClient;
+use Nexmo\Conversations\Member\Client as ConversationMemberClient;
+use Nexmo\Conversations\Member\API as ConversationMemberAPI;
+use Nexmo\Conversations\Member\Hydrator as ConversationMemberHydrator;
+use Nexmo\Conversations\Event\Hydrator as ConversationEventHydrator;
+use Nexmo\Conversations\Hydrator as ConversationsHydrator;
 use Nexmo\Entity\EntityInterface;
 use Nexmo\Verify\Verification;
 use Psr\Http\Message\RequestInterface;
@@ -37,6 +45,10 @@ use Zend\Diactoros\Request;
  * @method \Nexmo\Application\Client applications()
  * @method \Nexmo\Call\Collection calls()
  * @method \Nexmo\Numbers\Client numbers()
+ * @method \Nexmo\Conversations\Collection conversations()
+ * @method \Nexmo\Conversations\Collection conversation()
+ * @method \Nexmo\User\Collection user()
+ * @method \Nexmo\User\Collection users()
  */
 class Client
 {
@@ -114,11 +126,53 @@ class Client
             'verify'  => 'Nexmo\Verify\Client',
             'applications' => 'Nexmo\Application\Client',
             'numbers' => 'Nexmo\Numbers\Client',
-            'calls' => 'Nexmo\Call\Collection',
+            'calls' => function ($factory) {
+                /** @var OpenAPIResource $api */
+                $api = $factory->get(OpenAPIResource::class);
+                $api->setBaseUri('/v1/calls');
+                $api->setCollectionName('calls');
+
+                return new \Nexmo\Call\Client(
+                    $api,
+                    $factory->get(ConversationsHydrator::class)
+                );
+            },
             'conversion' => 'Nexmo\Conversion\Client',
-            'conversation' => 'Nexmo\Conversations\Collection',
+            'conversations' => function ($factory) {
+                /** @var OpenAPIResource $api */
+                $api = $factory->get(OpenAPIResource::class);
+                $api->setBaseUri('/v0.1/conversations');
+                $api->setCollectionName('conversations');
+
+                return new \Nexmo\Conversations\Client(
+                    $api,
+                    $factory->get(ConversationsHydrator::class)
+                );
+            },
             'user' => 'Nexmo\User\Collection',
+            'users' => 'Nexmo\User\Collection',
             'redact' => 'Nexmo\Redact\Client',
+            OpenAPIResource::class => OpenAPIResource::class,
+            ConversationsHydrator::class => function ($factory) {
+                return new ConversationsHydrator(
+                    $factory->get(ConversationEventClient::class),
+                    $factory->get(ConversationMemberClient::class)
+                );
+            },
+            ConversationEventClient::class => function ($factory) {
+                return new ConversationEventClient(
+                    $factory->get(OpenAPIResource::class),
+                    $factory->get(ConversationEventHydrator::class)
+                );
+            },
+            ConversationEventHydrator::class => ConversationEventHydrator::class,
+            ConversationMemberHydrator::class => ConversationMemberHydrator::class,
+            ConversationMemberClient::class => function ($factory) {
+                return new ConversationMemberClient(
+                    $factory->get(OpenAPIResource::class),
+                    $factory->get(ConversationMemberHydrator::class)
+                );
+            },
         ], $this));
     }
 

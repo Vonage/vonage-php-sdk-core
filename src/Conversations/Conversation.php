@@ -1,179 +1,269 @@
 <?php
-/**
- * Nexmo Client Library for PHP
- *
- * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
- */
 
 namespace Nexmo\Conversations;
 
-use Nexmo\Client\ClientAwareInterface;
-use Nexmo\Client\ClientAwareTrait;
-use Nexmo\Entity\EntityInterface;
-use Nexmo\Entity\JsonResponseTrait;
-use Nexmo\Entity\JsonSerializableTrait;
-use Nexmo\Entity\JsonUnserializableInterface;
-use Nexmo\Entity\NoRequestResponseTrait;
-use Nexmo\User\Collection as UserCollection;
 use Nexmo\User\User;
-use Psr\Http\Message\ResponseInterface;
-use Zend\Diactoros\Request;
-use Nexmo\Client\Exception;
+use Nexmo\Entity\Collection;
+use Nexmo\Entity\EmptyFilter;
+use Nexmo\Entity\FilterInterface;
+use Nexmo\Conversations\Event\Event;
+use Nexmo\Conversations\Member\Member;
+use Nexmo\Entity\ArrayHydrateInterface;
+use Nexmo\Conversations\Event\Client as EventClient;
+use Nexmo\Conversations\Member\Client as MemberClient;
 
-class Conversation implements EntityInterface, \JsonSerializable, JsonUnserializableInterface, ClientAwareInterface
+class Conversation implements ArrayHydrateInterface
 {
-    use NoRequestResponseTrait;
-    use JsonSerializableTrait;
-    use JsonResponseTrait;
-    use ClientAwareTrait;
+    /**
+     * @var string
+     */
+    protected $id;
 
-    protected $data = [];
+    /**
+     * @var string
+     */
+    protected $displayName;
 
-    public function __construct($id = null)
+    /**
+     * @var EventClient
+     */
+    protected $eventClient = null;
+
+    /**
+     * @var string
+     */
+    protected $imageUrl;
+
+    /**
+     * @var MemberClient
+     */
+    protected $memberClient;
+
+    /**
+     * @var string
+     */
+    protected $name;
+
+    /**
+     * @var array<string, string>
+     */
+    protected $properties = [];
+
+    /**
+     * @var \DateTimeImmutable
+     */
+    protected $timestamp;
+
+    public function addEvent(Event $event)
     {
-        $this->data['id'] = $id;
+        return $this->eventClient->create($event);
     }
 
-    public function setName($name)
+    public function addMember(User $user, $action = 'invite')
     {
-        $this->data['name'] = $name;
+        return $this->getMemberClient()->create($user, $action);
+    }
+
+    public function createFromArray($data)
+    {
+        if (array_key_exists('id', $data)) {
+            $this->setId($data['id']);
+        }
+        
+        if (array_key_exists('name', $data)) {
+            $this->setName($data['name']);
+        }
+
+        if (array_key_exists('display_name', $data)) {
+            $this->setDisplayName($data['display_name']);
+        }
+
+        if (array_key_exists('image_url', $data)) {
+            $this->setImageUrl($data['image_url']);
+        }
+
+        if (array_key_exists('properties', $data)) {
+            $this->setProperties($data['properties']['custom_data']);
+        }
+
+        if (array_key_exists('timestamp', $data)) {
+            if (is_array($data['timestamp']) && array_key_exists('created', $data['timestamp'])) {
+                $this->setTimestamp(new \DateTimeImmutable($data['timestamp']['created']));
+            } else {
+                $this->setTimestamp(new \DateTimeImmutable($data['timestamp']));
+            }
+        }
+    }
+
+    public function deleteEvent(Event $event) : void
+    {
+        $this->getEventClient()->delete($event);
+    }
+
+    public function deleteMember(Member $member) : void
+    {
+        $this->getMemberClient()->delete($member);
+    }
+
+    public function toArray() : array
+    {
+        $data = [
+            'id' => $this->getId(),
+            'name' => $this->getName(),
+            'display_name' => $this->getDisplayName(),
+            'image_url' => $this->getImageUrl(),
+            'properties' => ['custom_data' => $this->getProperties()]
+        ];
+
+        if (!is_null($this->getTimestamp())) {
+            $data['timestamp'] = ['created' => $this->getTimestamp()->format(\DateTimeInterface::RFC3339_EXTENDED)];
+        }
+        return $data;
+    }
+
+    public function getId() : ?string
+    {
+        return $this->id;
+    }
+
+    public function getDisplayName() : ?string
+    {
+        return $this->displayName;
+    }
+
+    public function getEvent(string $id) : Event
+    {
+        return $this->getEventClient()->get($id);
+    }
+
+    public function searchEvents(FilterInterface $filter = null) : Collection
+    {
+        return $this->getEventClient()->search($filter);
+    }
+
+    public function getEventClient() : EventClient
+    {
+        if (!isset($this->eventClient)) {
+            throw new \RuntimeException('Events Client was called but has not been configured');
+        }
+
+        return $this->eventClient;
+    }
+
+    public function getImageUrl() : ?string
+    {
+        return $this->imageUrl;
+    }
+
+    public function searchMembers(FilterInterface $filter = null) : Collection
+    {
+        return $this->getMemberClient()->search($filter);
+    }
+
+    public function getMember(string $id) : Member
+    {
+        return $this->getMemberClient()->get($id);
+    }
+
+    public function getMemberClient()
+    {
+        return $this->memberClient;
+    }
+
+    public function getName() : ?string
+    {
+        return $this->name;
+    }
+
+    public function getProperties() : array
+    {
+        return $this->properties;
+    }
+
+    public function getProperty($key) : ?string
+    {
+        if (isset($this->properties[$key])) {
+            return $this->properties[$key];
+        }
+
+        return null;
+    }
+
+    public function getTimestamp() : ?\DateTimeImmutable
+    {
+        return $this->timestamp;
+    }
+
+    /**
+     * Convienance method to join a member to an existing conversation
+     */
+    public function joinMember(Member $member)
+    {
+        $member->setState('join');
+        $member->setChannel('app');
+
+        return $this->updateMember($member);
+    }
+
+    public function setId(string $id) : self
+    {
+        $this->id = $id;
         return $this;
     }
 
-    public function setDisplayName($name)
+    public function setDisplayName(string $displayName) : self
     {
-        $this->data['display_name'] = $name;
+        $this->displayName = $displayName;
         return $this;
     }
 
-    public function getId()
+    public function setEventClient(EventClient $eventClient) : self
     {
-        if (isset($this->data['uuid'])) {
-            return $this->data['uuid'];
-        }
-        return $this->data['id'];
-    }
-
-    public function __toString()
-    {
-        return (string)$this->getId();
-    }
-
-
-    public function get()
-    {
-        $request = new Request(
-            $this->getClient()->getApiUrl() . Collection::getCollectionPath() . '/' . $this->getId(),
-            'GET'
-        );
-
-        $response = $this->getClient()->send($request);
-
-        if ($response->getStatusCode() != '200') {
-            throw $this->getException($response);
-        }
-
-        $data = json_decode($response->getBody()->getContents(), true);
-        $this->jsonUnserialize($data);
+        $this->eventClient = $eventClient;
+        $this->eventClient->setConversation($this);
 
         return $this;
     }
 
-
-    public function jsonSerialize()
+    public function setImageUrl(string $url) : self
     {
-        return $this->data;
+        $this->imageUrl = $url;
+        return $this;
     }
 
-    public function jsonUnserialize(array $json)
+    public function setMemberClient(MemberClient $memberClient) : self
     {
-        $this->data = $json;
+        $this->memberClient = $memberClient;
+        $this->memberClient->setConversation($this);
+        return $this;
     }
 
-    public function members()
+    public function setName(string $name) : self
     {
-        $response = $this->getClient()->get($this->getClient()->getApiUrl() . Collection::getCollectionPath() . '/' . $this->getId() .'/members');
-
-        if ($response->getStatusCode() != '200') {
-            throw $this->getException($response);
-        }
-
-        $data = json_decode($response->getBody()->getContents(), true);
-        $memberCollection = new UserCollection();
-        return $memberCollection->hydrateAll($data);
+        $this->name = $name;
+        return $this;
     }
 
-    public function addMember(User $user)
+    public function setProperties(array $properties) : self
     {
-        return $this->sendPostAction($user, 'join');
+        $this->properties = $properties;
+        return $this;
     }
 
-    public function inviteMember(User $user)
+    public function setProperty(string $key, string $value) : self
     {
-        return $this->sendPostAction($user, 'invite');
+        $this->properties[$key] = $value;
+        return $this;
     }
 
-    public function removeMember(User $user)
+    public function setTimestamp(\DateTimeImmutable $timestamp) : self
     {
-        $response = $this->getClient()->delete(
-            $this->getClient()->getApiUrl() . Collection::getCollectionPath() . '/' . $this->getId() .'/members/'. $user->getId()
-        );
-
-        if ($response->getStatusCode() != '200') {
-            throw $this->getException($response);
-        }
+        $this->timestamp = $timestamp;
+        return $this;
     }
 
-    public function sendPostAction(User $user, $action, $channel = 'app')
+    public function updateMember(Member $member) : Member
     {
-        $body = $user->getRequestDataForConversation();
-        $body['action'] = $action;
-        $body['channel'] = ['type' => $channel];
-
-        $response = $this->getClient()->post(
-            $this->getClient()->getApiUrl() . Collection::getCollectionPath() . '/' . $this->getId() .'/members',
-            $body
-        );
-
-        if ($response->getStatusCode() != '200') {
-            throw $this->getException($response);
-        }
-
-        $body = json_decode($response->getBody()->getContents(), true);
-
-        $user = new User($body['user_id']);
-        $user->jsonUnserialize($body);
-        $user->setClient($this->getClient());
-
-        return $user;
-    }
-
-    protected function getException(ResponseInterface $response)
-    {
-        $body = json_decode($response->getBody()->getContents(), true);
-        $status = $response->getStatusCode();
-
-        // This message isn't very useful, but we shouldn't ever see it
-        $errorTitle = 'Unexpected error';
-
-        if (isset($body['description'])) {
-            $errorTitle = $body['description'];
-        }
-
-        if (isset($body['error_title'])) {
-            $errorTitle = $body['error_title'];
-        }
-
-        if ($status >= 400 and $status < 500) {
-            $e = new Exception\Request($errorTitle, $status);
-        } elseif ($status >= 500 and $status < 600) {
-            $e = new Exception\Server($errorTitle, $status);
-        } else {
-            $e = new Exception\Exception('Unexpected HTTP Status Code');
-            throw $e;
-        }
-
-        return $e;
+        return $this->getMemberClient()->update($member);
     }
 }

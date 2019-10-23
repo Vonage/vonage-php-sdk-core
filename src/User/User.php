@@ -14,41 +14,105 @@ use Nexmo\Entity\EntityInterface;
 use Nexmo\Entity\JsonResponseTrait;
 use Nexmo\Entity\JsonSerializableTrait;
 use Nexmo\Entity\JsonUnserializableInterface;
-use Nexmo\Entity\NoRequestResponseTrait;
 use Zend\Diactoros\Request;
 use Nexmo\Client\Exception;
+use Nexmo\Client\Request\RequestInterface;
+use Nexmo\Entity\ArrayHydrateInterface;
+use Nexmo\Entity\Psr7Trait;
 use Psr\Http\Message\ResponseInterface;
 
-class User implements EntityInterface, \JsonSerializable, JsonUnserializableInterface, ClientAwareInterface
+class User implements
+    EntityInterface,
+    \JsonSerializable,
+    JsonUnserializableInterface,
+    ClientAwareInterface,
+    ArrayHydrateInterface
 {
-    use NoRequestResponseTrait;
     use JsonSerializableTrait;
+    use Psr7Trait;
     use JsonResponseTrait;
     use ClientAwareTrait;
 
+    protected $id;
+    protected $name;
+    protected $displayName;
+    protected $imageUrl;
+    protected $properties = [];
+
+    /**
+     * @deprecated
+     */
     protected $data = [];
 
     public function __construct($id = null)
     {
-        $this->data['id'] = $id;
+        $this->id = $id;
     }
 
-    public function setName($name)
+    public function setName($name) : self
     {
-        $this->data['name'] = $name;
+        $this->name = $name;
         return $this;
     }
 
-    public function getId()
+    public function setDisplayName($displayName) : self
     {
-        return $this->data['id'];
+        $this->displayName = $displayName;
+        return $this;
+    }
+
+    public function setImageUrl($imageUrl) : self
+    {
+        $this->imageUrl = $imageUrl;
+        return $this;
+    }
+
+    public function setProperties(array $properties) : self
+    {
+        $this->properties = $properties;
+        return $this;
+    }
+
+    public function setProperty(string $key, string $value) : self
+    {
+        $this->properties[$key] = $value;
+        return $this;
+    }
+
+    public function getId() : ?string
+    {
+        return $this->id;
+    }
+
+    public function getName() : ?string
+    {
+        return $this->name;
+    }
+
+    public function getDisplayName() : ?string
+    {
+        return $this->displayName;
+    }
+
+    public function getImageUrl() : ?string
+    {
+        return $this->imageUrl;
+    }
+
+    public function getProperties() : array
+    {
+        return $this->properties;
+    }
+
+    public function getProperty($key) : ?string
+    {
+        return array_key_exists($key, $this->properties) ? $this->properties[$key] : null;
     }
 
     public function __toString()
     {
         return (string)$this->getId();
     }
-
 
     public function get()
     {
@@ -87,12 +151,12 @@ class User implements EntityInterface, \JsonSerializable, JsonUnserializableInte
 
     public function jsonSerialize()
     {
-        return $this->data;
+        return $this->toArray();
     }
 
     public function jsonUnserialize(array $json)
     {
-        $this->data = $json;
+        $this->createFromArray($json);
     }
 
     public function getRequestDataForConversation()
@@ -132,5 +196,39 @@ class User implements EntityInterface, \JsonSerializable, JsonUnserializableInte
         }
 
         return $e;
+    }
+
+    public function createFromArray(array $data) : void
+    {
+        if (array_key_exists('id', $data)) {
+            $this->id = $data['id'];
+        }
+
+        if (array_key_exists('name', $data)) {
+            $this->setName($data['name']);
+        }
+
+        if (array_key_exists('display_name', $data)) {
+            $this->setDisplayName($data['display_name']);
+        }
+
+        if (array_key_exists('image_url', $data)) {
+            $this->setImageUrl($data['image_url']);
+        }
+
+        if (array_key_exists('custom_data', $data)) {
+            $this->setProperties($data['custom_data']);
+        }
+    }
+
+    public function toArray() : array
+    {
+        return [
+            'id' => $this->getId(),
+            'name' => $this->getName(),
+            'display_name' => $this->getDisplayName(),
+            'image_url' => $this->getImageUrl(),
+            'custom_data' => $this->getProperties(),
+        ];
     }
 }

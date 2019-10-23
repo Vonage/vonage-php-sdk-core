@@ -1,0 +1,14 @@
+{
+    "id": "USR-e46d9542-752a-4786-8f12-25a2e623a793",
+    "name": "ashley",
+    "display_name": "Ashley Aardvark",
+    "image_url": "https://example.com/ashley.png",
+    "_links": {
+      "self": {
+        "href": "http://localhost:4010/v0.1/users/USR-e46d9542-752a-4786-8f12-25a2e623a793"
+      }
+    },
+    "properties": {
+      "custom_data": {}
+    }
+  }

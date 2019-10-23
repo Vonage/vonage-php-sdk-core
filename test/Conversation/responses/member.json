@@ -1,0 +1,36 @@
+{
+    "id": "MEM-afe887d8-d587-4280-9aae-dfa4c9227d5e",
+    "name": "ashley",
+    "display_name": "Ashley Arthur",
+    "user_id": "USR-2c52f0ec-7a48-4b52-9d47-df47482b2b7e",
+    "conversation_id": "CON-afe887d8-d587-4280-9aae-dfa4c9227d5e",
+    "state": "JOINED",
+    "_links": {
+      "self": {
+        "href": "http://localhost:4010/v0.1/conversations/CON-92a44c64-7e4e-485f-a0c4-1f2adfc44625/members/MEM-e784d5d1-dff2-424a-9de7-bc34f1901177"
+      }
+    },
+    "timestamp": {
+      "invited": "2019-09-03T18:40:24.324Z",
+      "joined": "2019-09-12T16:27:07.450Z",
+      "left": "2019-09-13T02:16:55.390Z"
+    },
+    "channel": {
+      "type": "app"
+    },
+    "initiator": {
+      "invited": {
+        "is_system": true
+      },
+      "joined": {
+        "is_system": true
+      }
+    },
+    "media": {
+      "audio_settings": {
+        "enabled": false,
+        "earmuffed": false,
+        "muted": false
+      }
+    }
+  }

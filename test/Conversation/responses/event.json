@@ -1,0 +1,15 @@
+{
+    "body": {
+        "text": "Hello World"
+    },
+    "type": "text",
+    "conversation_id": "CON-92a44c64-7e4e-485f-a0c4-1f2adfc44625",
+    "id": 9,
+    "from": "MEM-afe887d8-d587-4280-9aae-dfa4c9227d5e",
+    "timestamp": "2019-09-12T19:49:21.823Z",
+    "_links": {
+        "self": {
+            "href": "http://localhost:4010/v0.1/conversations/CON-92a44c64-7e4e-485f-a0c4-1f2adfc44625/events/9"
+        }
+    }
+}

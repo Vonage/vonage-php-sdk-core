@@ -56,7 +56,7 @@ class Endpoint implements \JsonSerializable
 
     public function getNumber()
     {
-        if (!self::PHONE == $this->type) {
+        if (self::PHONE !== $this->type) {
             throw new \RuntimeException('number not defined for this type');
         }
 

@@ -8,28 +8,18 @@
 
 namespace Nexmo\Call;
 
-use Nexmo\Client\ClientAwareInterface;
-use Nexmo\Client\ClientAwareTrait;
-use Nexmo\Conversations\Conversation;
+use RuntimeException;
 use Nexmo\Entity\EntityInterface;
+use Nexmo\Client\ClientAwareTrait;
 use Nexmo\Entity\JsonResponseTrait;
+use Nexmo\Conversations\Conversation;
+use Nexmo\Client\ClientAwareInterface;
 use Nexmo\Entity\JsonSerializableTrait;
-use Nexmo\Entity\JsonUnserializableInterface;
 use Nexmo\Entity\NoRequestResponseTrait;
-use Psr\Http\Message\ResponseInterface;
-use Nexmo\Client\Exception;
-use Zend\Diactoros\Request;
+use Nexmo\Entity\JsonUnserializableInterface;
 
 /**
  * Class Call
- *
- * @property \Nexmo\Call\Stream $stream
- * @property \Nexmo\Call\Talk   $talk
- * @property \Nexmo\Call\Dtmf   $dtmf
- *
- * @method \Nexmo\Call\Stream stream()
- * @method \Nexmo\Call\Talk   talk()
- * @method \Nexmo\Call\Dtmf   dtmf()
  */
 class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInterface, ClientAwareInterface
 {
@@ -61,64 +51,14 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
 
     protected $subresources = [];
 
+    /**
+     * @var Callable
+     */
+    protected $conversation = null;
+
     public function __construct($id = null)
     {
         $this->id = $id;
-    }
-
-    public function get()
-    {
-        $request = new Request(
-            $this->getClient()->getApiUrl() . Collection::getCollectionPath() . '/' . $this->getId(),
-            'GET'
-        );
-
-        $response = $this->getClient()->send($request);
-
-        if ($response->getStatusCode() != '200') {
-            throw $this->getException($response);
-        }
-
-        $data = json_decode($response->getBody()->getContents(), true);
-        $this->jsonUnserialize($data);
-
-        return $this;
-    }
-
-    protected function getException(ResponseInterface $response)
-    {
-        $body = json_decode($response->getBody()->getContents(), true);
-        $status = $response->getStatusCode();
-
-        if ($status >= 400 and $status < 500) {
-            $e = new Exception\Request($body['error_title'], $status);
-        } elseif ($status >= 500 and $status < 600) {
-            $e = new Exception\Server($body['error_title'], $status);
-        } else {
-            $e = new Exception\Exception('Unexpected HTTP Status Code');
-        }
-
-        return $e;
-    }
-
-    public function put($payload)
-    {
-        $request = new Request(
-            $this->getClient()->getApiUrl() . Collection::getCollectionPath() . '/' . $this->getId(),
-            'PUT',
-            'php://temp',
-            ['content-type' => 'application/json']
-        );
-
-        $request->getBody()->write(json_encode($payload));
-        $response = $this->client->send($request);
-
-        $responseCode = $response->getStatusCode();
-        if ($responseCode != '200' && $responseCode != '204') {
-            throw $this->getException($response);
-        }
-
-        return $this;
     }
 
     public function getId()
@@ -126,47 +66,25 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
         return $this->id;
     }
 
-    public function setTo($endpoint)
+    public function setTo(Endpoint $endpoint)
     {
-        if (!($endpoint instanceof Endpoint)) {
-            $endpoint = new Endpoint($endpoint);
-        }
-
         $this->to = $endpoint;
         return $this;
     }
 
-    /**
-     * @return Endpoint
-     */
-    public function getTo()
+    public function getTo() : Endpoint
     {
-        if ($this->lazyLoad()) {
-            return new Endpoint($this->data['to']['number'], $this->data['to']['type']);
-        }
-
         return $this->to;
     }
 
-    public function setFrom($endpoint)
+    public function setFrom(Endpoint $endpoint)
     {
-        if (!($endpoint instanceof Endpoint)) {
-            $endpoint = new Endpoint($endpoint);
-        }
-
         $this->from = $endpoint;
         return $this;
     }
 
-    /**
-     * @return Endpoint
-     */
-    public function getFrom()
+    public function getFrom() : Endpoint
     {
-        if ($this->lazyLoad()) {
-            return new Endpoint($this->data['from']['number'], $this->data['from']['type']);
-        }
-
         return $this->from;
     }
 
@@ -203,84 +121,30 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
 
     public function getStatus()
     {
-        if ($this->lazyLoad()) {
-            return $this->data['status'];
-        }
+        return $this->data['status'];
     }
 
     public function getDirection()
     {
-        if ($this->lazyLoad()) {
-            return $this->data['direction'];
-        }
+        return $this->data['direction'];
     }
 
-    public function getConversation()
+    public function getConversation() : Conversation
     {
-        if ($this->lazyLoad()) {
-            return new Conversation($this->data['conversation_uuid']);
+        if ($this->conversation != null) {
+            $convo = $this->conversation;
+            return $convo();
         }
+
+        throw new RuntimeException('Conversation was not properly hydrated for this Call');
     }
 
-    /**
-     * Returns true if the resource data is loaded.
-     *
-     * Will attempt to load the data if it's not already.
-     *
-     * @return bool
-     */
-    protected function lazyLoad()
+    public function setConversation($conversation)
     {
-        if (!empty($this->data)) {
-            return true;
-        }
-
-        if (isset($this->id)) {
-            $this->get($this);
-            return true;
-        }
-
-        return false;
+        $this->conversation = $conversation;
     }
 
-    public function __get($name)
-    {
-        switch ($name) {
-            case 'stream':
-            case 'talk':
-            case 'dtmf':
-                return $this->lazySubresource(ucfirst($name));
-            default:
-                throw new \RuntimeException('property does not exist: ' . $name);
-        }
-    }
-
-    public function __call($name, $arguments)
-    {
-        switch ($name) {
-            case 'stream':
-            case 'talk':
-            case 'dtmf':
-                $entity = $this->lazySubresource(ucfirst($name));
-                return call_user_func_array($entity, $arguments);
-            default:
-                throw new \RuntimeException('method does not exist: ' . $name);
-        }
-    }
-
-    protected function lazySubresource($type)
-    {
-        if (!isset($this->subresources[$type])) {
-            $class = 'Nexmo\Call\\' . $type;
-            $instance = new $class($this->getId());
-            $instance->setClient($this->getClient());
-            $this->subresources[$type] = $instance;
-        }
-
-        return $this->subresources[$type];
-    }
-
-    public function jsonSerialize()
+    public function toArray() : array
     {
         $data = $this->data;
 
@@ -299,9 +163,30 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
         return $data;
     }
 
+    /**
+     * Not for public consumption
+     */
+    public function jsonSerialize()
+    {
+        return $this->toArray();
+    }
+
+    public function createFromArray(array $data)
+    {
+        $this->data = $data;
+        $this->id = $data['uuid'];
+
+        if (array_key_exists('to', $data)) {
+            $this->setTo(new Endpoint($data['to']['number'], $data['to']['type']));
+        }
+
+        if (array_key_exists('from', $data)) {
+            $this->setFrom(new Endpoint($data['from']['number'], $data['from']['type']));
+        }
+    }
+
     public function jsonUnserialize(array $json)
     {
-        $this->data = $json;
-        $this->id = $json['uuid'];
+        $this->createFromArray($json);
     }
 }

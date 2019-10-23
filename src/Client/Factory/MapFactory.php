@@ -39,31 +39,51 @@ class MapFactory implements FactoryInterface
         $this->client = $client;
     }
 
-    public function hasApi($api)
+    public function has(string $key)
     {
-        return isset($this->map[$api]);
+        return isset($this->map[$key]);
     }
 
-    public function getApi($api)
+    /**
+     * @deprecated Use has() instead
+     */
+    public function hasApi($api)
     {
-        if (isset($this->cache[$api])) {
-            return $this->cache[$api];
+        return $this->has($api);
+    }
+
+    public function get(string $key)
+    {
+        if (isset($this->cache[$key])) {
+            return $this->cache[$key];
         }
 
-        if (!$this->hasApi($api)) {
+        if (!$this->hasApi($key)) {
             throw new \RuntimeException(sprintf(
                 'no map defined for `%s`',
-                $api
+                $key
             ));
         }
 
-        $class = $this->map[$api];
+        if (is_callable($this->map[$key])) {
+            $instance = $this->map[$key]($this);
+        } else {
+            $class = $this->map[$key];
+            $instance = new $class();
+        }
 
-        $instance = new $class();
         if ($instance instanceof Client\ClientAwareInterface) {
             $instance->setClient($this->client);
         }
-        $this->cache[$api] = $instance;
+        $this->cache[$key] = $instance;
         return $instance;
+    }
+
+    /**
+     * @deprecated Use get() instead
+     */
+    public function getApi($api)
+    {
+        return $this->get($api);
     }
 }

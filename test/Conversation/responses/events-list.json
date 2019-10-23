@@ -1,0 +1,36 @@
+{
+    "page_size": 10,
+    "_embedded": {
+      "events": [
+        {
+          "body": {
+            "text": "Hello World"
+          },
+          "type": "text",
+          "conversation_id": "CON-92a44c64-7e4e-485f-a0c4-1f2adfc44625",
+          "id": 9,
+          "from": "MEM-afe887d8-d587-4280-9aae-dfa4c9227d5e",
+          "timestamp": "2019-09-12T19:49:21.823Z",
+          "_links": {
+            "self": {
+              "href": "http://localhost:4010/v0.1/conversations/CON-92a44c64-7e4e-485f-a0c4-1f2adfc44625/events/9"
+            }
+          }
+        }
+      ]
+    },
+    "_links": {
+      "first": {
+        "href": "http://localhost:4010/v0.1/conversations/CON-92a44c64-7e4e-485f-a0c4-1f2adfc44625/events?page_size=10"
+      },
+      "self": {
+        "href": "http://localhost:4010/v0.1/conversations/CON-92a44c64-7e4e-485f-a0c4-1f2adfc44625/events?page_size=10&cursor=a30e3b7a3dcda1434f64bbb1a5fa489b"
+      },
+      "next": {
+        "href": "http://localhost:4010/v0.1/conversations/CON-92a44c64-7e4e-485f-a0c4-1f2adfc44625/events?page_size=10&cursor=4db03d9254d1cdaecc7b1fc15b6bf1a81f3d3151191d784f1327893f8dc96416"
+      },
+      "prev": {
+        "href": "http://localhost:4010/v0.1/conversations/CON-92a44c64-7e4e-485f-a0c4-1f2adfc44625/events?page_size=10&cursor=84963f79fd25785be9706bd38bfd30c264f71964fa4edc8d8b4dd5f30bbd9f7c"
+      }
+    }
+  }

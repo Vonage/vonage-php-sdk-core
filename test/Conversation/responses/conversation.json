@@ -1,42 +1,17 @@
 {
-  "id": "CON-aaaaaaaa-bbbb-cccc-dddd-0123456789ab",
-  "name": "NAM-0209adeb-8b42-45d5-82fa-909373338039",
-  "display_name": "Nexmo Chat",
+  "id": "CON-afe887d8-d587-4280-9aae-dfa4c9227d5e",
+  "name": "my-conversation",
+  "display_name": "Conversation with Ashley",
+  "image_url": "https://example.com/my-image.png",
   "timestamp": {
-    "created": "2018-02-26T08:00:13.457Z"
+    "created": "2019-09-03T18:40:24.324Z"
   },
-  "sequence_number": 12,
-  "numbers": [],
-  "properties": [],
-  "members": [
-    {
-      "member_id": "MEM-5bf5dd88-95e2-4fe1-80fa-b3f443f89534",
-      "user_id": "USR-8d20e45e-98ee-4ef0-ae6c-6537f86983f6",
-      "name": "jamie",
-      "state": "JOINED",
-      "timestamp": {
-        "joined": "2018-02-26T08:00:51.740Z"
-      }
-    },
-    {
-      "member_id": "MEM-6b835e79-d9ba-4425-a36a-e7efae920bc2",
-      "user_id": "USR-4a9c1cee-ad60-4780-8a77-158cbcd657d3",
-      "name": "alice",
-      "state": "JOINED",
-      "timestamp": {
-        "joined": "2018-02-26T08:10:10.432Z"
-      }
-    }
-  ],
-  "api_key": "abc123",
   "_links": {
     "self": {
-      "href": "http:\/\/conversation.local\/v1\/conversations\/CON-39bbdc17-7b49-4201-b03b-257bdfc10ee8"
+      "href": "http://localhost:4010/v0.1/conversations/CON-c4724477-72ac-438e-9fc0-1d3e2ff8728c"
     }
   },
-  "_embedded": {
-    "legs": {
-      "_links": []
-    }
+  "properties": {
+    "custom_data": {}
   }
 }

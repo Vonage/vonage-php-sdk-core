@@ -31,7 +31,9 @@ class FilterTest extends TestCase
         $this->assertArrayHasKey('conversation_uuid', $query);
         $this->assertEquals('test', $query['conversation_uuid']);
 
-        $this->filter->setConversation(new Conversation('test'));
+        $conversation = new Conversation();
+        $conversation->setId('test');
+        $this->filter->setConversation($conversation);
         $query = $this->filter->getQuery();
         $this->assertArrayHasKey('conversation_uuid', $query);
         $this->assertEquals('test', $query['conversation_uuid']);
