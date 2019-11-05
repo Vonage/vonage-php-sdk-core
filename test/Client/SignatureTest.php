@@ -56,10 +56,10 @@ class SignatureTest extends TestCase
      * @param $params
      * @param $secret
      */
-    public function testSignature($sig, $params, $secret)
+    public function testSignature($algo, $sig, $params, $secret)
     {
         //a signature is created from a set of parameters and a secret
-        $signature = new Signature($params, $secret, 'md5hash');
+        $signature = new Signature($params, $secret, $algo);
 
         //the parameters should ne be changed
         $this->assertEquals($params, $signature->getParams());
@@ -75,7 +75,7 @@ class SignatureTest extends TestCase
 
         //signature can validate a string signature, or a set of params that includes a signature
         $this->assertTrue($signature->check($sig));
-        if(isset($params['sig'])){
+        if (isset($params['sig'])) {
             $this->assertTrue($signature->check($params));
         }
     }
@@ -84,7 +84,43 @@ class SignatureTest extends TestCase
     {
         return array(
             //inbound
-            array('d2e7b1dc968737c5998ad624e02f90b7', array(
+            array('md5hash', 'd2e7b1dc968737c5998ad624e02f90b7', array(
+                'message-timestamp' => '2013-11-21 15:27:30',
+                'messageId' => '020000001B0FE827',
+                'msisdn' => '14843472194',
+                'text' => 'Test again',
+                'timestamp' => '1385047698',
+                'to' => '13239877404',
+                'type' => 'text'
+            ),'my_secret_key_for_testing'),
+            array('md5', 'DDEBD46008C2D4E93CCE578A332A52D5', array(
+                'message-timestamp' => '2013-11-21 15:27:30',
+                'messageId' => '020000001B0FE827',
+                'msisdn' => '14843472194',
+                'text' => 'Test again',
+                'timestamp' => '1385047698',
+                'to' => '13239877404',
+                'type' => 'text'
+            ),'my_secret_key_for_testing'),
+            array('sha1', '27D0D05C2876C7CB1720DBCDBA4D492E1E55C09A', array(
+                'message-timestamp' => '2013-11-21 15:27:30',
+                'messageId' => '020000001B0FE827',
+                'msisdn' => '14843472194',
+                'text' => 'Test again',
+                'timestamp' => '1385047698',
+                'to' => '13239877404',
+                'type' => 'text'
+            ),'my_secret_key_for_testing'),
+            array('sha256', 'DDB8397C2B90AAC7F3882D306475C9A5058C92322EEF43C92B298B6E0FC0D330', array(
+                'message-timestamp' => '2013-11-21 15:27:30',
+                'messageId' => '020000001B0FE827',
+                'msisdn' => '14843472194',
+                'text' => 'Test again',
+                'timestamp' => '1385047698',
+                'to' => '13239877404',
+                'type' => 'text'
+            ),'my_secret_key_for_testing'),
+            array('sha512', 'E0D3C650F8C9D1A5C174D10DDDBFB003E561F59B265616208B0487C5D819481CD3C311D59CF6165ECD1139622D5BA3A256C0D763AC4A9AD9144B5A426B94FE82', array(
                 'message-timestamp' => '2013-11-21 15:27:30',
                 'messageId' => '020000001B0FE827',
                 'msisdn' => '14843472194',
@@ -94,7 +130,7 @@ class SignatureTest extends TestCase
                 'type' => 'text'
             ),'my_secret_key_for_testing'),
             //is sig is passed, it should be ignored
-            array('d2e7b1dc968737c5998ad624e02f90b7', array(
+            array('md5hash', 'd2e7b1dc968737c5998ad624e02f90b7', array(
                 'message-timestamp' => '2013-11-21 15:27:30',
                 'messageId' => '020000001B0FE827',
                 'msisdn' => '14843472194',
@@ -105,7 +141,7 @@ class SignatureTest extends TestCase
                 'sig' => 'd2e7b1dc968737c5998ad624e02f90b7'
             ), 'my_secret_key_for_testing'),
             //is sig is passed, it should be ignored
-            array('f0bfad43bd90cf1ea1f1525c18ba4dab', array(
+            array('md5hash', 'f0bfad43bd90cf1ea1f1525c18ba4dab', array(
                 'message-timestamp' => '2013-11-21 17:31:42',
                 'messageId' => '030000002A264B8B',
                 'msisdn' => '14843472194',
@@ -115,7 +151,7 @@ class SignatureTest extends TestCase
                 'type' => 'text',
                 'sig' => 'f0bfad43bd90cf1ea1f1525c18ba4dab'
             ), ''),
-            array('83c052a82906ec7c116e16f6d92f7eee', array(
+            array('md5hash', '83c052a82906ec7c116e16f6d92f7eee', array(
                 'message-timestamp' => '2013-11-21 17:37:31',
                 'messageId' => '030000002A267DBB',
                 'msisdn' => '14843472194',
@@ -126,7 +162,7 @@ class SignatureTest extends TestCase
                 'sig' => '83c052a82906ec7c116e16f6d92f7eee'
             ), 'my_secret_key_for_testing'),
 
-            array('ff933bf31c79ab3fc6a38d100191c48f', array(
+            array('md5hash', 'ff933bf31c79ab3fc6a38d100191c48f', array(
                 'keyword' => 'TESTINGS',
                 'message-timestamp' => '2017-04-04 23:05:22',
                 'messageId' => '0C00000027217D5B',
@@ -139,7 +175,7 @@ class SignatureTest extends TestCase
                 'type' => 'text',
             ), 'my_secret_key_for_testing'),
 
-            array('e06d9763e3fd0b9c31beb5fc2fcb011c', array(
+            array('md5hash', 'e06d9763e3fd0b9c31beb5fc2fcb011c', array(
                 'keyword' => 'TEST',
                 'message-timestamp' => '2017-04-04 22:57:47',
                 'messageId' => '0B00000042AC53BD',
@@ -153,7 +189,7 @@ class SignatureTest extends TestCase
             ), 'my_secret_key_for_testing'),
 
             //outbound
-            array('17f5e3b22f778ec73464c01d180e9d0f', array(
+            array('md5hash', '17f5e3b22f778ec73464c01d180e9d0f', array(
                 'api_key' => 'not_a_key',
                 'from' => '12192259404',
                 'text' => '14843472194',
