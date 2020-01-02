@@ -8,7 +8,7 @@
 
 namespace NexmoTest\Traits;
 
-use Zend\Diactoros\Response;
+use Laminas\Diactoros\Response;
 
 trait Psr7ResponseTrait
 {

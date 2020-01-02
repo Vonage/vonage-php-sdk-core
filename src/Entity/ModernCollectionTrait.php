@@ -9,7 +9,7 @@
 namespace Nexmo\Entity;
 
 use Psr\Http\Message\ResponseInterface;
-use Zend\Diactoros\Request;
+use Laminas\Diactoros\Request;
 use Nexmo\Application\Application;
 
 /**

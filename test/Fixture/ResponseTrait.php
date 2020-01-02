@@ -8,7 +8,7 @@
 
 namespace NexmoTest\Fixture;
 
-use Zend\Diactoros\Response;
+use Laminas\Diactoros\Response;
 
 /**
  * Creates mock response objects.

@@ -16,8 +16,8 @@ use Nexmo\Client\Credentials\Basic;
 use Nexmo\Client\Credentials\OAuth;
 use Nexmo\Client\Signature;
 use Nexmo\Verify\Verification;
-use Zend\Diactoros\Request;
-use Zend\Diactoros\Response;
+use Laminas\Diactoros\Request;
+use Laminas\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
 
 class ClientTest extends TestCase

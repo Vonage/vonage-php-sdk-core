@@ -12,7 +12,7 @@ use Nexmo\Call\Talk;
 use NexmoTest\Psr7AssertionTrait;
 use Prophecy\Argument;
 use Psr\Http\Message\RequestInterface;
-use Zend\Diactoros\Response;
+use Laminas\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
 
 class TalkTest extends TestCase

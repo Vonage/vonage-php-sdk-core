@@ -23,8 +23,8 @@ use Nexmo\Client\Signature;
 use Nexmo\Entity\EntityInterface;
 use Nexmo\Verify\Verification;
 use Psr\Http\Message\RequestInterface;
-use Zend\Diactoros\Uri;
-use Zend\Diactoros\Request;
+use Laminas\Diactoros\Uri;
+use Laminas\Diactoros\Request;
 
 /**
  * Nexmo API Client, allows access to the API from PHP.

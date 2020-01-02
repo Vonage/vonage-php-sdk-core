@@ -112,7 +112,7 @@ class MessageCreationTest extends TestCase
         $this->expectException('RuntimeException');
 
         $data = ['test' => 'test'];
-        $response = new \Zend\Diactoros\Response();
+        $response = new \Laminas\Diactoros\Response();
         $response->getBody()->write(json_encode($data));
         $this->message->setResponse($response);
 

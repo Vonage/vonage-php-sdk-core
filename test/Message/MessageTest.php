@@ -10,8 +10,8 @@ namespace NexmoTest\Message;
 
 use Nexmo\Message\Message;
 use Nexmo\Message\Text;
-use Zend\Diactoros\Response;
-use Zend\Diactoros\ServerRequest;
+use Laminas\Diactoros\Response;
+use Laminas\Diactoros\ServerRequest;
 use PHPUnit\Framework\TestCase;
 
 class MessageTest extends TestCase
@@ -42,7 +42,7 @@ class MessageTest extends TestCase
     public function testRequestSetsData()
     {
         $data = ['test' => 'test'];
-        $request = new \Zend\Diactoros\Request('http://example.com?' . http_build_query($data));
+        $request = new \Laminas\Diactoros\Request('http://example.com?' . http_build_query($data));
         $this->message->setRequest($request);
 
         $this->assertSame($request, $this->message->getRequest());
@@ -53,7 +53,7 @@ class MessageTest extends TestCase
     public function testResponseSetsData()
     {
         $data = ['test' => 'test'];
-        $response = new \Zend\Diactoros\Response();
+        $response = new \Laminas\Diactoros\Response();
         $response->getBody()->write(json_encode($data));
         $response->getBody()->rewind();
 

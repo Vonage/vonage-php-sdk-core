@@ -14,7 +14,7 @@ use Nexmo\Client\ClientAwareTrait;
 use Nexmo\Entity\CollectionInterface;
 use Nexmo\Entity\ModernCollectionTrait;
 use Psr\Http\Message\ResponseInterface;
-use Zend\Diactoros\Request;
+use Laminas\Diactoros\Request;
 use Nexmo\Client\Exception;
 
 class Client implements ClientAwareInterface, CollectionInterface

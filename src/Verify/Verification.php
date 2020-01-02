@@ -582,11 +582,11 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
         ];
 
         if ($request = $this->getRequest()) {
-            $data['request'] = \Zend\Diactoros\Request\Serializer::toString($request);
+            $data['request'] = \Laminas\Diactoros\Request\Serializer::toString($request);
         }
 
         if ($response = $this->getResponse()) {
-            $data['response'] = \Zend\Diactoros\Response\Serializer::toString($response);
+            $data['response'] = \Laminas\Diactoros\Response\Serializer::toString($response);
         }
 
         return serialize($data);
@@ -599,11 +599,11 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
         $this->requestData = $data['requestData'];
 
         if (isset($data['request'])) {
-            $this->request = \Zend\Diactoros\Request\Serializer::fromString($data['request']);
+            $this->request = \Laminas\Diactoros\Request\Serializer::fromString($data['request']);
         }
 
         if (isset($data['response'])) {
-            $this->response = \Zend\Diactoros\Response\Serializer::fromString($data['response']);
+            $this->response = \Laminas\Diactoros\Response\Serializer::fromString($data['response']);
         }
     }
 }

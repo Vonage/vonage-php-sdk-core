@@ -9,8 +9,8 @@
 namespace NexmoTest\Message;
 
 use Nexmo\Message\Message;
-use Zend\Diactoros\Response;
-use Zend\Diactoros\ServerRequest;
+use Laminas\Diactoros\Response;
+use Laminas\Diactoros\ServerRequest;
 use PHPUnit\Framework\TestCase;
 
 /**

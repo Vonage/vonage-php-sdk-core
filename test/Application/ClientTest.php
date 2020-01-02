@@ -17,8 +17,8 @@ use Nexmo\Application\VoiceConfig;
 use Nexmo\Client\Exception\Exception;
 use NexmoTest\Psr7AssertionTrait;
 use Prophecy\Argument;
-use Zend\Diactoros\Request;
-use Zend\Diactoros\Response;
+use Laminas\Diactoros\Request;
+use Laminas\Diactoros\Response;
 use Psr\Http\Message\RequestInterface;
 use PHPUnit\Framework\TestCase;
 

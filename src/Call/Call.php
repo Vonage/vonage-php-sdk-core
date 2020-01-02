@@ -18,7 +18,7 @@ use Nexmo\Entity\JsonUnserializableInterface;
 use Nexmo\Entity\NoRequestResponseTrait;
 use Psr\Http\Message\ResponseInterface;
 use Nexmo\Client\Exception;
-use Zend\Diactoros\Request;
+use Laminas\Diactoros\Request;
 
 /**
  * Class Call

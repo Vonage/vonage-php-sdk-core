@@ -17,7 +17,7 @@ use Nexmo\Account\SmsPrice;
 use Nexmo\Account\VoicePrice;
 use Nexmo\Account\PrefixPrice;
 use Nexmo\Account\Client;
-use Zend\Diactoros\Response;
+use Laminas\Diactoros\Response;
 use NexmoTest\Psr7AssertionTrait;
 use Prophecy\Argument;
 use Psr\Http\Message\RequestInterface;

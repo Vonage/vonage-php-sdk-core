@@ -11,7 +11,7 @@ namespace Nexmo\Insights;
 use Nexmo\Client\ClientAwareInterface;
 use Nexmo\Client\ClientAwareTrait;
 use Nexmo\Client\Exception;
-use Zend\Diactoros\Request;
+use Laminas\Diactoros\Request;
 use Psr\Http\Message\ResponseInterface;
 
 /**

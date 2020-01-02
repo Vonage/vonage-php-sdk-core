@@ -32,7 +32,7 @@
   "require": {
     "php": ">=7.1",
     "php-http/client-implementation": "^1.0",
-    "zendframework/zend-diactoros": "^1.8.4 || ^2.0",
+    "laminas/laminas-diactoros": "^1.8.4 || ^2.0",
     "lcobucci/jwt": "^3.2",
     "ocramius/package-versions": "^1.4"
   },

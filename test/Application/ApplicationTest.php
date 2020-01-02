@@ -12,7 +12,7 @@ use Nexmo\Application\Application;
 use Nexmo\Application\MessagesConfig;
 use Nexmo\Application\RtcConfig;
 use Nexmo\Application\VoiceConfig;
-use Zend\Diactoros\Response;
+use Laminas\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
 
 class ApplicationTest extends TestCase

@@ -14,7 +14,7 @@ use Nexmo\Verify\Verification;
 use NexmoTest\Psr7AssertionTrait;
 use Prophecy\Argument;
 use Psr\Http\Message\RequestInterface;
-use Zend\Diactoros\Response;
+use Laminas\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
 
 class ClientTest extends TestCase

@@ -13,7 +13,7 @@ use Nexmo\Client\ClientAwareInterface;
 use Nexmo\Client\ClientAwareTrait;
 use Psr\Http\Message\ResponseInterface;
 use Nexmo\Client\Exception;
-use Zend\Diactoros\Request;
+use Laminas\Diactoros\Request;
 
 class Client implements ClientAwareInterface
 {

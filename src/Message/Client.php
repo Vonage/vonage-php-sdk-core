@@ -11,7 +11,7 @@ namespace Nexmo\Message;
 use Nexmo\Client\ClientAwareInterface;
 use Nexmo\Client\ClientAwareTrait;
 use Nexmo\Client\Exception;
-use Zend\Diactoros\Request;
+use Laminas\Diactoros\Request;
 
 /**
  * Class Client

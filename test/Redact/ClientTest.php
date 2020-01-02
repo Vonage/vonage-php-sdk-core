@@ -9,7 +9,7 @@
 namespace NexmoTest\Redact;
 
 use Nexmo\Redact\Client;
-use Zend\Diactoros\Response;
+use Laminas\Diactoros\Response;
 use NexmoTest\Psr7AssertionTrait;
 use Prophecy\Argument;
 use Psr\Http\Message\RequestInterface;

@@ -14,7 +14,7 @@ use Nexmo\Conversations\Conversation;
 use Nexmo\Entity\CollectionInterface;
 use Nexmo\Entity\CollectionTrait;
 use Psr\Http\Message\ResponseInterface;
-use Zend\Diactoros\Request;
+use Laminas\Diactoros\Request;
 use Nexmo\Client\Exception;
 
 class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAccess

@@ -15,7 +15,7 @@ use Nexmo\Call\Collection;
 use NexmoTest\Psr7AssertionTrait;
 use Prophecy\Argument;
 use Psr\Http\Message\RequestInterface;
-use Zend\Diactoros\Response;
+use Laminas\Diactoros\Response;
 use Nexmo\Client\Exception;
 use PHPUnit\Framework\TestCase;
 

@@ -47,7 +47,7 @@ class InboundMessage implements MessageInterface, \ArrayAccess
 
     public static function createFromGlobals()
     {
-        $serverRequest = \Zend\Diactoros\ServerRequestFactory::fromGlobals();
+        $serverRequest = \Laminas\Diactoros\ServerRequestFactory::fromGlobals();
         return new self($serverRequest);
     }
 

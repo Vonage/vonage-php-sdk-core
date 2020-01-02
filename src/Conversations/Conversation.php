@@ -18,7 +18,7 @@ use Nexmo\Entity\NoRequestResponseTrait;
 use Nexmo\User\Collection as UserCollection;
 use Nexmo\User\User;
 use Psr\Http\Message\ResponseInterface;
-use Zend\Diactoros\Request;
+use Laminas\Diactoros\Request;
 use Nexmo\Client\Exception;
 
 class Conversation implements EntityInterface, \JsonSerializable, JsonUnserializableInterface, ClientAwareInterface
