@@ -64,7 +64,7 @@ class Conversation implements ArrayHydrateInterface
         return $this->getMemberClient()->create($user, $action);
     }
 
-    public function createFromArray($data)
+    public function createFromArray(array $data)
     {
         if (array_key_exists('id', $data)) {
             $this->setId($data['id']);
@@ -116,7 +116,7 @@ class Conversation implements ArrayHydrateInterface
         ];
 
         if (!is_null($this->getTimestamp())) {
-            $data['timestamp'] = ['created' => $this->getTimestamp()->format(\DateTimeInterface::RFC3339_EXTENDED)];
+            $data['timestamp'] = ['created' => $this->getTimestamp()->format(\DateTime::RFC3339)];
         }
         return $data;
     }

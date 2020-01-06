@@ -248,7 +248,7 @@ class ConversationTest extends TestCase
         $this->assertSame($data['name'], $this->conversation->getName());
         $this->assertSame($data['display_name'], $this->conversation->getDisplayName());
         $this->assertSame($data['image_url'], $this->conversation->getImageUrl());
-        $this->assertSame($data['timestamp']['created'], $this->conversation->getTimestamp()->format(\DateTimeInterface::RFC3339_EXTENDED));
+        $this->assertSame($data['timestamp']['created'], $this->conversation->getTimestamp()->format(\DateTime::RFC3339));
     }
 
     public function testGetEventReturnsCorrectEvent()
