@@ -8,15 +8,21 @@
 
 namespace Nexmo\Entity;
 
+use Countable;
+use \Iterator;
 use Psr\Http\Message\ResponseInterface;
 use Zend\Diactoros\Request;
-use Nexmo\Application\Application;
+use Nexmo\Client\ClientAwareInterface;
+use Nexmo\Client\ClientAwareTrait;
+use Nexmo\Client\Exception;
 
 /**
  * Common code for iterating over a collection, and using the collection class to discover the API path.
  */
-trait CollectionTrait
+class Collection implements ClientAwareInterface, Iterator, Countable
 {
+    use ClientAwareTrait;
+
     /**
      * Index of the current resource of the current page
      * @var int
@@ -52,9 +58,57 @@ trait CollectionTrait
      */
     protected $filter;
 
-    abstract public function getCollectionName();
-    abstract public function getCollectionPath();
-    abstract public function hydrateEntity($data, $id = null);
+    /**
+     * @var string
+     */
+    protected $collectionName;
+
+    /**
+     * @var string
+     */
+    protected $collectionPath;
+
+    protected $hydrator;
+
+    protected $prototype;
+
+    public function getCollectionName()
+    {
+        return $this->collectionName;
+    }
+
+    public function setCollectionName(string $name) : self
+    {
+        $this->collectionName = $name;
+        return $this;
+    }
+
+    public function getCollectionPath()
+    {
+        return $this->collectionPath;
+    }
+
+    public function setCollectionPath(string $path) : self
+    {
+        $this->collectionPath = $path;
+        return $this;
+    }
+
+    public function setHydrator($hydrator) : self
+    {
+        $this->hydrator = $hydrator;
+        return $this;
+    }
+    
+    public function hydrateEntity($data, $id = null)
+    {
+        if ($this->hydrator) {
+            $object = $this->hydrator->hydrate($data);
+            return $object;
+        }
+
+        return $data;
+    }
 
     /**
      * Return the current item, expects concrete collection to handle creating the object.
@@ -134,6 +188,7 @@ trait CollectionTrait
      */
     public function rewind()
     {
+        $this->current = 0;
         $this->fetchPage($this->getCollectionPath());
     }
 
@@ -144,7 +199,7 @@ trait CollectionTrait
     public function count()
     {
         if (isset($this->page)) {
-            return (int) $this->page['count'];
+            return count($this->page['_embedded'][$this->getCollectionName()]);
         }
     }
 
@@ -247,5 +302,37 @@ trait CollectionTrait
 
         $this->response = $response;
         $this->page = json_decode($this->response->getBody()->getContents(), true);
+    }
+
+    protected function getException(ResponseInterface $response)
+    {
+        $body = json_decode($response->getBody()->getContents(), true);
+        $status = $response->getStatusCode();
+
+        // Error responses aren't consistent. Some are generated within the
+        // proxy and some are generated within voice itself. This handles
+        // both cases
+
+        // This message isn't very useful, but we shouldn't ever see it
+        $errorTitle = 'Unexpected error';
+
+        if (isset($body['title'])) {
+            $errorTitle = $body['title'];
+        }
+
+        if (isset($body['error_title'])) {
+            $errorTitle = $body['error_title'];
+        }
+
+        if ($status >= 400 and $status < 500) {
+            $e = new Exception\Request($errorTitle, $status);
+        } elseif ($status >= 500 and $status < 600) {
+            $e = new Exception\Server($errorTitle, $status);
+        } else {
+            $e = new Exception\Exception('Unexpected HTTP Status Code');
+            throw $e;
+        }
+
+        return $e;
     }
 }

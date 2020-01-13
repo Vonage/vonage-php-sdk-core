@@ -6,14 +6,19 @@
  * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
  */
 
-namespace Nexmo\Call;
+namespace Nexmo\Call\NCCO;
 
-class Unearmuff implements \JsonSerializable
+class Unmute implements \JsonSerializable, NCCOInterface
 {
     public function jsonSerialize()
     {
+        return $this->toArray();
+    }
+
+    public function toArray() : array
+    {
         return [
-            'action' => 'unearmuff'
+            'action' => 'unmute'
         ];
     }
 }

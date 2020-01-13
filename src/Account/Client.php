@@ -9,6 +9,8 @@ use Nexmo\Network;
 use Psr\Http\Message\ResponseInterface;
 use Zend\Diactoros\Request;
 use Nexmo\Client\Exception;
+use Nexmo\Client\OpenAPIResource;
+use Nexmo\Entity\SimpleFilter;
 
 /**
  * @todo Unify the exception handling to avoid duplicated code and logic (ie: getPrefixPricing())
@@ -19,42 +21,24 @@ class Client implements ClientAwareInterface
 
     public function getPrefixPricing($prefix)
     {
-        $queryString = http_build_query([
-            'prefix' => $prefix
-        ]);
-
-        $request = new Request(
-            $this->getClient()->getRestUrl() . '/account/get-prefix-pricing/outbound?'.$queryString,
-            'GET',
-            'php://temp'
-        );
-
-        $response = $this->client->send($request);
-        $rawBody = $response->getBody()->getContents();
-
-        $body = json_decode($rawBody, true);
-
-        $codeCategory = (int) ($response->getStatusCode()/100);
-        if ($codeCategory != 2) {
-            if ($codeCategory == 4) {
-                throw new Exception\Request($body['error-code-label']);
-            } elseif ($codeCategory == 5) {
-                throw new Exception\Server($body['error-code-label']);
-            }
-        }
-
-        if ($body['count'] == 0) {
+        $api = new OpenAPIResource();
+        $api->setClient($this->getClient());
+        $api->setBaseUri($this->getClient()->getRestUrl() . '/account/get-prefix-pricing/outbound');
+        $data = $api->search(new SimpleFilter(['prefix' => $prefix]));
+        
+        if ($data['count'] == 0) {
             return [];
         }
 
         // Multiple countries can match each prefix
         $prices = [];
 
-        foreach ($body['prices'] as $p) {
+        foreach ($data['prices'] as $p) {
             $prefixPrice = new PrefixPrice();
             $prefixPrice->jsonUnserialize($p);
             $prices[] = $prefixPrice;
         }
+
         return $prices;
     }
 

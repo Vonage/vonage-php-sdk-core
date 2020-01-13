@@ -6,9 +6,9 @@
  * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
  */
 
-namespace Nexmo\Call;
+namespace Nexmo\Call\NCCO;
 
-class Transfer implements \JsonSerializable
+class Transfer implements \JsonSerializable, NCCOInterface
 {
     protected $urls;
 
@@ -21,7 +21,7 @@ class Transfer implements \JsonSerializable
         $this->urls = $urls;
     }
 
-    public function jsonSerialize()
+    public function toArray() : array
     {
         return [
             'action' => 'transfer',
@@ -30,5 +30,10 @@ class Transfer implements \JsonSerializable
                 'url' => $this->urls
             ]
         ];
+    }
+
+    public function jsonSerialize()
+    {
+        return $this->toArray();
     }
 }

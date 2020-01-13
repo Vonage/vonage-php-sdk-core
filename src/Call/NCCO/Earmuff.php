@@ -6,11 +6,18 @@
  * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
  */
 
-namespace Nexmo\Call;
+namespace Nexmo\Call\NCCO;
 
-class Earmuff implements \JsonSerializable
+use Nexmo\Call\NCCO\NCCOInterface;
+
+class Earmuff implements \JsonSerializable, NCCOInterface
 {
     public function jsonSerialize()
+    {
+        return $this->toArray();
+    }
+
+    public function toArray() : array
     {
         return [
             'action' => 'earmuff'

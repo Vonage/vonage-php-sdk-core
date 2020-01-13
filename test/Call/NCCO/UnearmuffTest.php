@@ -8,20 +8,20 @@
 
 namespace NexmoTest\Calls;
 
-use Nexmo\Call\Unmute;
+use Nexmo\Call\NCCO\Unearmuff;
 use EnricoStahn\JsonAssert\Assert as JsonAssert;
 use PHPUnit\Framework\TestCase;
 
-class UnmuteTest extends TestCase
+class UnearmuffTest extends TestCase
 {
     use JsonAssert;
 
     public function testStructure()
     {
-        $mute = new Unmute();
+        $mute = new Unearmuff();
 
         $json = json_decode(json_encode($mute));
-        $this->assertJsonMatchesSchema($json, __DIR__ . '/schema/unmute.json');
-        $this->assertJsonValueEquals('unmute', 'action', $json);
+        $this->assertJsonMatchesSchema($json, __DIR__ . '/../schema/unearmuff.json');
+        $this->assertJsonValueEquals('unearmuff', 'action', $json);
     }
 }

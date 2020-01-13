@@ -8,7 +8,7 @@
 
 namespace NexmoTest\Calls;
 
-use Nexmo\Call\Mute;
+use Nexmo\Call\NCCO\Mute;
 use EnricoStahn\JsonAssert\Assert as JsonAssert;
 use PHPUnit\Framework\TestCase;
 
@@ -21,7 +21,7 @@ class MuteTest extends TestCase
         $mute = new Mute();
 
         $json = json_decode(json_encode($mute));
-        $this->assertJsonMatchesSchema($json, __DIR__ . '/schema/mute.json');
+        $this->assertJsonMatchesSchema($json, __DIR__ . '/../schema/mute.json');
         $this->assertJsonValueEquals('mute', 'action', $json);
     }
 }

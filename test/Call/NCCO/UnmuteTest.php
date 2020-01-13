@@ -8,20 +8,20 @@
 
 namespace NexmoTest\Calls;
 
-use Nexmo\Call\Hangup;
+use Nexmo\Call\NCCO\Unmute;
 use EnricoStahn\JsonAssert\Assert as JsonAssert;
 use PHPUnit\Framework\TestCase;
 
-class HangupTest extends TestCase
+class UnmuteTest extends TestCase
 {
     use JsonAssert;
 
     public function testStructure()
     {
-        $hangup = new Hangup();
+        $mute = new Unmute();
 
-        $json = json_decode(json_encode($hangup));
-        $this->assertJsonMatchesSchema($json, __DIR__ . '/schema/hangup.json');
-        $this->assertJsonValueEquals('hangup', 'action', $json);
+        $json = json_decode(json_encode($mute));
+        $this->assertJsonMatchesSchema($json, __DIR__ . '/../schema/unmute.json');
+        $this->assertJsonValueEquals('unmute', 'action', $json);
     }
 }
