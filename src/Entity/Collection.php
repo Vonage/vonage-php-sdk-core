@@ -10,11 +10,13 @@ namespace Nexmo\Entity;
 
 use Countable;
 use \Iterator;
+use Nexmo\Client;
 use Psr\Http\Message\ResponseInterface;
 use Zend\Diactoros\Request;
 use Nexmo\Client\ClientAwareInterface;
 use Nexmo\Client\ClientAwareTrait;
 use Nexmo\Client\Exception;
+use Nexmo\Client\OpenAPIResource;
 
 /**
  * Common code for iterating over a collection, and using the collection class to discover the API path.
@@ -22,6 +24,22 @@ use Nexmo\Client\Exception;
 class Collection implements ClientAwareInterface, Iterator, Countable
 {
     use ClientAwareTrait;
+
+    /**
+     * @var OpenAPIResource
+     */
+    protected $api;
+
+    /**
+     * @var string
+     */
+    protected $baseUrl = Client::BASE_API;
+
+    /**
+     * Holds a cache of various pages we have already polled
+     * @var array<string, string>
+     */
+    protected $cache = [];
 
     /**
      * Index of the current resource of the current page
@@ -48,6 +66,11 @@ class Collection implements ClientAwareInterface, Iterator, Countable
     protected $index;
 
     /**
+     * @var bool
+     */
+    protected $isHAL = true;
+
+    /**
      * User set pgge sixe.
      * @var int
      */
@@ -61,7 +84,7 @@ class Collection implements ClientAwareInterface, Iterator, Countable
     /**
      * @var string
      */
-    protected $collectionName;
+    protected $collectionName = '';
 
     /**
      * @var string
@@ -71,28 +94,6 @@ class Collection implements ClientAwareInterface, Iterator, Countable
     protected $hydrator;
 
     protected $prototype;
-
-    public function getCollectionName()
-    {
-        return $this->collectionName;
-    }
-
-    public function setCollectionName(string $name) : self
-    {
-        $this->collectionName = $name;
-        return $this;
-    }
-
-    public function getCollectionPath()
-    {
-        return $this->collectionPath;
-    }
-
-    public function setCollectionPath(string $path) : self
-    {
-        $this->collectionPath = $path;
-        return $this;
-    }
 
     public function setHydrator($hydrator) : self
     {
@@ -110,13 +111,27 @@ class Collection implements ClientAwareInterface, Iterator, Countable
         return $data;
     }
 
+    public function getResourceRoot() : array
+    {
+        $collectionName = $this->getApiResource()->getCollectionName();
+        if ($this->getApiResource()->isHAL()) {
+            return $this->page['_embedded'][$collectionName];
+        }
+
+        if (!empty($this->getApiResource()->getCollectionName())) {
+            return $this->page[$collectionName];
+        }
+
+        return $this->page;
+    }
+
     /**
      * Return the current item, expects concrete collection to handle creating the object.
      * @return mixed
      */
     public function current()
     {
-        return $this->hydrateEntity($this->page['_embedded'][$this->getCollectionName()][$this->current], $this->key());
+        return $this->hydrateEntity($this->getResourceRoot()[$this->current], $this->key());
     }
 
     /**
@@ -133,10 +148,10 @@ class Collection implements ClientAwareInterface, Iterator, Countable
      */
     public function key()
     {
-        if (isset($this->page['_embedded'][$this->getCollectionName()][$this->current]['id'])) {
-            return $this->page['_embedded'][$this->getCollectionName()][$this->current]['id'];
-        } elseif (isset($this->page['_embedded'][$this->getCollectionName()][$this->current]['uuid'])) {
-            return $this->page['_embedded'][$this->getCollectionName()][$this->current]['uuid'];
+        if (isset($this->getResourceRoot()[$this->current]['id'])) {
+            return $this->getResourceRoot()[$this->current]['id'];
+        } elseif (isset($this->getResourceRoot()[$this->current]['uuid'])) {
+            return $this->getResourceRoot()[$this->current]['uuid'];
         }
 
         return $this->current;
@@ -154,12 +169,17 @@ class Collection implements ClientAwareInterface, Iterator, Countable
         }
 
         //all hal collections have an `_embedded` object, we expect there to be a property matching the collection name
-        if (!isset($this->page['_embedded']) or !isset($this->page['_embedded'][$this->getCollectionName()])) {
-            return false;
+        if ($this->getApiResource()->isHAL()) {
+            if (
+                !isset($this->page['_embedded'])
+                || !isset($this->page['_embedded'][$this->getApiResource()->getCollectionName()])
+            ) {
+                return false;
+            }
         }
 
         //if we have a page with no items, we've gone beyond the end of the collection
-        if (!count($this->page['_embedded'][$this->getCollectionName()])) {
+        if (!count($this->getResourceRoot())) {
             return false;
         }
 
@@ -169,7 +189,7 @@ class Collection implements ClientAwareInterface, Iterator, Countable
         }
 
         //if our current index is past the current page, fetch the next page if possible and reset the index
-        if (!isset($this->page['_embedded'][$this->getCollectionName()][$this->current])) {
+        if (!isset($this->getResourceRoot()[$this->current])) {
             if (isset($this->page['_links']) and isset($this->page['_links']['next'])) {
                 $this->fetchPage($this->page['_links']['next']['href']);
                 $this->current = 0;
@@ -189,7 +209,18 @@ class Collection implements ClientAwareInterface, Iterator, Countable
     public function rewind()
     {
         $this->current = 0;
-        $this->fetchPage($this->getCollectionPath());
+        $this->fetchPage($this->getApiResource()->getBaseUri());
+    }
+
+    public function setApiResource(OpenAPIResource $api)
+    {
+        $this->api = $api;
+        return $this;
+    }
+
+    public function getApiResource() : OpenAPIResource
+    {
+        return $this->api;
     }
 
     /**
@@ -198,9 +229,19 @@ class Collection implements ClientAwareInterface, Iterator, Countable
      */
     public function count()
     {
-        if (isset($this->page)) {
-            return count($this->page['_embedded'][$this->getCollectionName()]);
+        if (!isset($this->page)) {
+            $this->rewind();
         }
+
+        if (isset($this->page)) {
+            return count($this->getResourceRoot());
+        }
+    }
+
+    public function setBaseUrl(string $url) : self
+    {
+        $this->baseUrl = $url;
+        return $this;
     }
 
     public function setPage($index)
@@ -220,6 +261,11 @@ class Collection implements ClientAwareInterface, Iterator, Countable
         }
 
         throw new \RuntimeException('page not set');
+    }
+
+    public function getPageData() : ?array
+    {
+        return $this->page;
     }
 
     public function getSize()
@@ -290,7 +336,13 @@ class Collection implements ClientAwareInterface, Iterator, Countable
 
         $requestUri = $absoluteUri;
         if (filter_var($absoluteUri, FILTER_VALIDATE_URL) === false) {
-            $requestUri = $this->getClient()->getApiUrl() . $absoluteUri;
+            $requestUri = $this->getApiResource()->getBaseUrl() . $absoluteUri;
+        }
+
+        $cacheKey = md5($requestUri);
+        if (array_key_exists($cacheKey, $this->cache)) {
+            $this->page = $this->cache[$cacheKey];
+            return;
         }
 
         $request = new Request($requestUri, 'GET');
@@ -301,7 +353,10 @@ class Collection implements ClientAwareInterface, Iterator, Countable
         }
 
         $this->response = $response;
-        $this->page = json_decode($this->response->getBody()->getContents(), true);
+        $body = $this->response->getBody()->getContents();
+        $json = json_decode($body, true);
+        $this->cache[md5($requestUri)] = $json;
+        $this->page = $json;
     }
 
     protected function getException(ResponseInterface $response)
@@ -322,6 +377,10 @@ class Collection implements ClientAwareInterface, Iterator, Countable
 
         if (isset($body['error_title'])) {
             $errorTitle = $body['error_title'];
+        }
+
+        if (isset($body['error-code-label'])) {
+            $errorTitle = $body['error-code-label'];
         }
 
         if ($status >= 400 and $status < 500) {

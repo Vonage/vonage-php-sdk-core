@@ -120,7 +120,16 @@ class Client
         }
 
         $this->setFactory(new MapFactory([
-            'account' => 'Nexmo\Account\Client',
+            'account' => function ($factory) {
+                $api = $factory->get(OpenAPIResource::class);
+                $api
+                    ->setBaseUrl(self::BASE_REST)
+                    ->setIsHAL(false)
+                    ->setBaseUri('/account')
+                ;
+
+                return new \Nexmo\Account\Client($api);
+            },
             'insights' => 'Nexmo\Insights\Client',
             'message' => 'Nexmo\Message\Client',
             'verify'  => 'Nexmo\Verify\Client',

@@ -2,12 +2,8 @@
 
 namespace Nexmo\Account;
 
-use Nexmo\ApiErrorHandler;
 use Nexmo\Client\ClientAwareInterface;
 use Nexmo\Client\ClientAwareTrait;
-use Nexmo\Network;
-use Psr\Http\Message\ResponseInterface;
-use Zend\Diactoros\Request;
 use Nexmo\Client\Exception;
 use Nexmo\Client\OpenAPIResource;
 use Nexmo\Entity\SimpleFilter;
@@ -19,21 +15,32 @@ class Client implements ClientAwareInterface
 {
     use ClientAwareTrait;
 
-    public function getPrefixPricing($prefix)
+    /**
+     * @var OpenAPIResource
+     */
+    protected $api;
+
+    public function __construct(OpenAPIResource $api)
     {
-        $api = new OpenAPIResource();
-        $api->setClient($this->getClient());
-        $api->setBaseUri($this->getClient()->getRestUrl() . '/account/get-prefix-pricing/outbound');
+        $this->api = $api;
+    }
+
+    public function getPrefixPricing($prefix) : array
+    {
+        $api = clone $this->api;
+        $api->setBaseUri('/account/get-prefix-pricing/outbound');
+        $api->setCollectionName('prices');
+
         $data = $api->search(new SimpleFilter(['prefix' => $prefix]));
         
-        if ($data['count'] == 0) {
+        if (count($data) == 0) {
             return [];
         }
 
         // Multiple countries can match each prefix
         $prices = [];
 
-        foreach ($data['prices'] as $p) {
+        foreach ($data as $p) {
             $prefixPrice = new PrefixPrice();
             $prefixPrice->jsonUnserialize($p);
             $prices[] = $prefixPrice;
@@ -61,90 +68,53 @@ class Client implements ClientAwareInterface
     /**
      * @todo This should return an empty result instead of throwing an Exception on no results
      */
-    protected function makePricingRequest($country, $pricingType)
+    protected function makePricingRequest($country, $pricingType) : array
     {
-        $queryString = http_build_query([
-            'country' => $country
-        ]);
+        $api = clone $this->api;
+        $api->setBaseUri('/account/get-pricing/outbound/' . $pricingType);
+        $results = $api->search(new SimpleFilter(['country' => $country]));
+        $data = $results->getPageData();
 
-        $request = new Request(
-            $this->getClient()->getRestUrl() . '/account/get-pricing/outbound/'.$pricingType.'?'.$queryString,
-            'GET',
-            'php://temp'
-        );
-
-        $response = $this->client->send($request);
-        $rawBody = $response->getBody()->getContents();
-
-        if ($rawBody === '') {
+        if (is_null($data)) {
             throw new Exception\Server('No results found');
         }
 
-        return json_decode($rawBody, true);
+        return $data;
     }
 
     /**
      * @todo This needs further investigated to see if '' can even be returned from this endpoint
      */
-    public function getBalance()
+    public function getBalance() : Balance
     {
-        $request = new Request(
-            $this->getClient()->getRestUrl() . '/account/get-balance',
-            'GET',
-            'php://temp'
-        );
+        $data = $this->api->get('get-balance');
 
-        $response = $this->client->send($request);
-        $rawBody = $response->getBody()->getContents();
-
-        if ($rawBody === '') {
+        if (is_null($data)) {
             throw new Exception\Server('No results found');
         }
 
-        $body = json_decode($rawBody, true);
-
-        $balance = new Balance($body['value'], $body['autoReload']);
+        $balance = new Balance($data['value'], $data['autoReload']);
         return $balance;
     }
 
-    public function topUp($trx)
+    public function topUp($trx) : void
     {
-        $body = [
-            'trx' => $trx
-        ];
-
-        $request = new Request(
-            $this->getClient()->getRestUrl() . '/account/top-up',
-            'POST',
-            'php://temp',
-            ['content-type' => 'application/x-www-form-urlencoded']
-        );
-
-        $request->getBody()->write(http_build_query($body));
-        $response = $this->client->send($request);
-
-        if ($response->getStatusCode() != '200') {
-            throw $this->getException($response);
-        }
+        $api = clone $this->api;
+        $api->setBaseUri('/account/top-up');
+        $api->submit(['trx' => $trx]);
     }
 
-    public function getConfig()
+    public function getConfig() : Config
     {
-        $request = new Request(
-            $this->getClient()->getRestUrl() . '/account/settings',
-            'POST',
-            'php://temp'
-        );
+        $api = clone $this->api;
+        $api->setBaseUri('/account/settings');
+        $body = $api->submit();
 
-        $response = $this->client->send($request);
-        $rawBody = $response->getBody()->getContents();
-
-        if ($rawBody === '') {
+        if ($body === '') {
             throw new Exception\Server('Response was empty');
         }
 
-        $body = json_decode($rawBody, true);
-
+        $body = json_decode($body, true);
         $config = new Config(
             $body['mo-callback-url'],
             $body['dr-callback-url'],
@@ -155,7 +125,7 @@ class Client implements ClientAwareInterface
         return $config;
     }
 
-    public function updateConfig($options)
+    public function updateConfig(array $options) : Config
     {
         // supported options are SMS Callback and DR Callback
         $params = [];
@@ -167,21 +137,10 @@ class Client implements ClientAwareInterface
             $params['drCallBackUrl'] = $options['dr_callback_url'];
         }
 
-        $request = new Request(
-            $this->getClient()->getRestUrl() . '/account/settings',
-            'POST',
-            'php://temp',
-            ['content-type' => 'application/x-www-form-urlencoded']
-        );
+        $api = clone $this->api;
+        $api->setBaseUri('/account/settings');
 
-        $request->getBody()->write(http_build_query($params));
-        $response = $this->client->send($request);
-
-        if ($response->getStatusCode() != '200') {
-            throw $this->getException($response);
-        }
-
-        $rawBody = $response->getBody()->getContents();
+        $rawBody = $api->submit($params);
 
         if ($rawBody === '') {
             throw new Exception\Server('Response was empty');
@@ -199,108 +158,44 @@ class Client implements ClientAwareInterface
         return $config;
     }
 
-    public function listSecrets($apiKey)
+    public function listSecrets(string $apiKey) : SecretCollection
     {
-        $body = $this->get($this->getClient()->getApiUrl() . '/accounts/'.$apiKey.'/secrets');
-        return SecretCollection::fromApi($body);
+        $api = clone $this->api;
+        $api->setBaseUrl($this->getClient()->getApiUrl());
+        $api->setBaseUri('/accounts');
+        
+        $data = $api->get($apiKey . '/secrets');
+
+        return SecretCollection::fromApi($data);
     }
 
-    public function getSecret($apiKey, $secretId)
+    public function getSecret(string $apiKey, string $secretId) : Secret
     {
-        $body = $this->get($this->getClient()->getApiUrl() . '/accounts/'.$apiKey.'/secrets/'. $secretId);
-        return Secret::fromApi($body);
+        $api = clone $this->api;
+        $api->setBaseUrl($this->getClient()->getApiUrl());
+        $api->setBaseUri('/accounts');
+        
+        $data = $api->get($apiKey . '/secrets/' . $secretId);
+
+        return Secret::fromApi($data);
     }
 
-    public function createSecret($apiKey, $newSecret)
+    public function createSecret(string $apiKey, string $newSecret) : Secret
     {
-        $body = [
-            'secret' => $newSecret
-        ];
-
-        $request = new Request(
-            $this->getClient()->getApiUrl() . '/accounts/'.$apiKey.'/secrets',
-            'POST',
-            'php://temp',
-            ['content-type' => 'application/json']
-        );
-
-        $request->getBody()->write(json_encode($body));
-        $response = $this->client->send($request);
-
-        $rawBody = $response->getBody()->getContents();
-        $responseBody = json_decode($rawBody, true);
-        ApiErrorHandler::check($responseBody, $response->getStatusCode());
-
-        return Secret::fromApi($responseBody);
+        $api = clone $this->api;
+        $api->setBaseUrl($this->getClient()->getApiUrl());
+        $api->setBaseUri('/accounts/' . $apiKey . '/secrets');
+        
+        $response = $api->create(['secret' => $newSecret]);
+        
+        return Secret::fromApi($response);
     }
 
-    public function deleteSecret($apiKey, $secretId)
+    public function deleteSecret(string $apiKey, string $secretId) : void
     {
-        $request = new Request(
-            $this->getClient()->getApiUrl() . '/accounts/'.$apiKey.'/secrets/'. $secretId,
-            'DELETE',
-            'php://temp',
-            ['content-type' => 'application/json']
-        );
-
-        $response = $this->client->send($request);
-        $rawBody = $response->getBody()->getContents();
-        $body = json_decode($rawBody, true);
-
-        // This will throw an exception on any error
-        ApiErrorHandler::check($body, $response->getStatusCode());
-
-        // This returns a 204, so no response body
-    }
-
-    protected function get($url)
-    {
-        $request = new Request(
-            $url,
-            'GET',
-            'php://temp',
-            ['content-type' => 'application/json']
-        );
-
-        $response = $this->client->send($request);
-        $rawBody = $response->getBody()->getContents();
-        $body = json_decode($rawBody, true);
-
-        // This will throw an exception on any error
-        ApiErrorHandler::check($body, $response->getStatusCode());
-
-        return $body;
-    }
-
-    /**
-     * Generates an appropriate Exception message and object based on HTTP response
-     * This has a bit of logic to it since different error messages have a different
-     * reponse format.
-     *
-     * @return Exception
-     */
-    protected function getException(ResponseInterface $response, $application = null)
-    {
-        $body = json_decode($response->getBody()->getContents(), true);
-        $status = $response->getStatusCode();
-
-        $errorMessage = "Unexpected HTTP Status Code";
-        if (array_key_exists('error_title', $body)) {
-            $errorMessage = $body['error_title'];
-        } elseif (array_key_exists('error-code-label', $body)) {
-            $errorMessage = $body['error-code-label'];
-        }
-
-        $e = new Exception\Exception($errorMessage);
-        if ($status >= 400 && $status < 500) {
-            $e = new Exception\Request($errorMessage, $status);
-        } elseif ($status >= 500 && $status < 600) {
-            $e = new Exception\Server($errorMessage, $status);
-        }
-
-        $response->getBody()->rewind();
-        $e->setEntity($response);
-
-        return $e;
+        $api = clone $this->api;
+        $api->setBaseUrl($this->getClient()->getApiUrl());
+        $api->setBaseUri('/accounts/' . $apiKey . '/secrets');
+        $api->delete($secretId);
     }
 }
