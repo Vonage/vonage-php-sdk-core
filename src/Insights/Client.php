@@ -8,11 +8,11 @@
 
 namespace Nexmo\Insights;
 
-use Nexmo\Client\ClientAwareInterface;
-use Nexmo\Client\ClientAwareTrait;
 use Nexmo\Client\Exception;
-use Zend\Diactoros\Request;
-use Psr\Http\Message\ResponseInterface;
+use Nexmo\Entity\SimpleFilter;
+use Nexmo\Client\OpenAPIResource;
+use Nexmo\Client\ClientAwareTrait;
+use Nexmo\Client\ClientAwareInterface;
 
 /**
  * Class Client
@@ -21,7 +21,17 @@ class Client implements ClientAwareInterface
 {
     use ClientAwareTrait;
 
-    public function basic($number)
+    /**
+     * @var OpenAPIResource
+     */
+    protected $api;
+
+    public function __construct(OpenAPIResource $api)
+    {
+        $this->api = $api;
+    }
+
+    public function basic(string $number) : Basic
     {
         $insightsResults = $this->makeRequest('/ni/basic/json', $number);
 
@@ -30,7 +40,7 @@ class Client implements ClientAwareInterface
         return $basic;
     }
 
-    public function standardCNam($number)
+    public function standardCNam(string $number) : StandardCnam
     {
         $insightsResults = $this->makeRequest('/ni/standard/json', $number, ['cnam' => 'true']);
         $standard = new StandardCnam($insightsResults['national_format_number']);
@@ -38,7 +48,7 @@ class Client implements ClientAwareInterface
         return $standard;
     }
 
-    public function advancedCnam($number)
+    public function advancedCnam(string $number) : AdvancedCnam
     {
         $insightsResults = $this->makeRequest('/ni/advanced/json', $number, ['cnam' => 'true']);
         $standard = new AdvancedCnam($insightsResults['national_format_number']);
@@ -46,7 +56,7 @@ class Client implements ClientAwareInterface
         return $standard;
     }
 
-    public function standard($number, $useCnam = false)
+    public function standard(string $number, bool $useCnam = false) : Standard
     {
         $insightsResults = $this->makeRequest('/ni/standard/json', $number);
         $standard = new Standard($insightsResults['national_format_number']);
@@ -54,7 +64,7 @@ class Client implements ClientAwareInterface
         return $standard;
     }
 
-    public function advanced($number)
+    public function advanced(string $number) : Advanced
     {
         $insightsResults = $this->makeRequest('/ni/advanced/json', $number);
         $advanced = new Advanced($insightsResults['national_format_number']);
@@ -62,42 +72,27 @@ class Client implements ClientAwareInterface
         return $advanced;
     }
 
-    public function advancedAsync($number, $webhook)
+    /**
+     * Performs an advanced number insight lookup by async
+     * 
+     * @param string $webhook URL to use as a callback
+     */
+    public function advancedAsync(string $number, string $webhook)
     {
         // This method does not have a return value as it's async. If there is no exception thrown
         // We can assume that everything is fine
         $this->makeRequest('/ni/advanced/async/json', $number, ['callback' => $webhook]);
     }
 
-    public function makeRequest($path, $number, $additionalParams = [])
+    public function makeRequest(string $path, string $number, array $additionalParams = []) : array
     {
-        if ($number instanceof Number) {
-            $number = $number->getMsisdn();
-        }
+        $api = clone $this->api;
+        $api->setBaseUri($path);
 
-        $queryString = http_build_query([
-            'number' => $number,
-        ] + $additionalParams);
+        $params = ['number' => $number] + $additionalParams;
+        $response = $api->search(new SimpleFilter($params));
+        $insightsResults = $response->current();
 
-        $request = new Request(
-            $this->getClient()->getApiUrl(). $path.'?'.$queryString,
-            'GET',
-            'php://temp',
-            [
-                'Accept' => 'application/json'
-            ]
-        );
-
-        $response = $this->client->send($request);
-
-        // this API almost always returns 200 but just in case
-        if ('200' != $response->getStatusCode()) {
-          throw $this->getException($response);            
-        }
-
-        $insightsResults = json_decode($response->getBody()->getContents(), true);
-
-        // check the status field in response (HTTP status is 200 even for errors)
         if ($insightsResults['status'] != 0) {
             throw $this->getNIException($insightsResults);
         }
@@ -105,39 +100,23 @@ class Client implements ClientAwareInterface
         return $insightsResults;
     }
 
-    protected function getException(ResponseInterface $response)
-    {
-        $status = $response->getStatusCode();
-        $msg = "Error"; // no guaranteed fields for more info
-
-        if ($status >= 400 AND $status < 500) {
-            $e = new Exception\Request($msg, $status);
-            // attach the response for additional debugging
-            $e->setEntity($response);
-        } elseif ($status >= 500 AND $status < 600) {
-            $e = new Exception\Server($msg, $status);
-            // attach the response for additional debugging
-            $e->setEntity($response);
-        } else {
-            $msg = 'Unexpected HTTP Status Code ' . $status;
-            $e = new Exception\Exception($msg, $status);
-        }
-
-        return $e;
-    }
-
+    /**
+     * Number Insights special error handling
+     * Number Insights returns a 200 even on most errors, so this does some
+     * additional checking to the JSON response to see if we actually errored.
+     */
     protected function getNIException($body)
     {
         $status = $body['status'];
         $message = "Error: ";
 
-        if(isset($body['status_message'])) {
+        if (isset($body['status_message'])) {
             $message .= $body['status_message'];
         }
 
         // the advanced async endpoint returns status detail in another field
         // this is a workaround
-        if(isset($body['error_text'])) {
+        if (isset($body['error_text'])) {
             $message .= $body['error_text'];
         }
 

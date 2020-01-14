@@ -8,11 +8,13 @@
 
 namespace NexmoTest\Insights;
 
+use Nexmo\Client\OpenAPIResource;
 use Nexmo\Insights\AdvancedCnam;
 use Nexmo\Insights\Basic;
 use Nexmo\Insights\Standard;
 use Nexmo\Insights\Advanced;
 use Nexmo\Insights\Client;
+use Nexmo\Insights\Collection;
 use Nexmo\Insights\StandardCnam;
 use NexmoTest\Psr7AssertionTrait;
 use Prophecy\Argument;
@@ -35,7 +37,13 @@ class ClientTest extends TestCase
     {
         $this->nexmoClient = $this->prophesize('Nexmo\Client');
         $this->nexmoClient->getApiUrl()->willReturn('http://api.nexmo.com');
-        $this->insightsClient = new Client();
+
+        $api = new OpenAPIResource();
+        $api->setClient($this->nexmoClient->reveal());
+        $api->setIsHAL(false);
+        $api->setCollectionPrototype(new Collection());
+
+        $this->insightsClient = new Client($api);
         $this->insightsClient->setClient($this->nexmoClient->reveal());
     }
 

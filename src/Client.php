@@ -25,6 +25,7 @@ use Nexmo\Client\Signature;
 use Nexmo\Conversations\Hydrator as ConversationsHydrator;
 use Nexmo\Entity\EntityInterface;
 use Nexmo\Entity\Hydrator\ArrayHydrator;
+use Nexmo\Insights\Collection;
 use Nexmo\Verify\Verification;
 use Psr\Http\Message\RequestInterface;
 use Zend\Diactoros\Uri;
@@ -126,7 +127,14 @@ class Client
 
                 return new \Nexmo\Account\Client($api);
             },
-            'insights' => 'Nexmo\Insights\Client',
+            'insights' => function ($factory) {
+                /** @var OpenAPIResource $api */
+                $api = $factory->get(OpenAPIResource::class);
+                $api->setIsHAL(false);
+                $api->setCollectionPrototype(new Collection());
+
+                return new \Nexmo\Insights\Client($api);
+            },
             'message' => 'Nexmo\Message\Client',
             'verify'  => 'Nexmo\Verify\Client',
             'applications' => function ($factory) {
