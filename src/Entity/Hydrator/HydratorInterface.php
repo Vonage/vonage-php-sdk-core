@@ -1,6 +1,6 @@
 <?php
 
-namespace Nexmo\Entity;
+namespace Nexmo\Entity\Hydrator;
 
 interface HydratorInterface
 {

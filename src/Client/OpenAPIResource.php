@@ -38,7 +38,7 @@ class OpenAPIResource implements ClientAwareInterface
     /**
      * @var bool
      */
-    protected $isHAL = false;
+    protected $isHAL = true;
 
     public function create(array $body)
     {

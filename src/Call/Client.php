@@ -8,7 +8,7 @@ use Nexmo\Client\ClientAwareTrait;
 use Nexmo\Client\OpenAPIResource;
 use Nexmo\Entity\Collection;
 use Nexmo\Entity\FilterInterface;
-use Nexmo\Entity\HydratorInterface;
+use Nexmo\Entity\Hydrator\HydratorInterface;
 
 class Client implements ClientAwareInterface
 {

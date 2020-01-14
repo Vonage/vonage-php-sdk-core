@@ -9,6 +9,8 @@
 namespace Nexmo;
 
 use Http\Client\HttpClient;
+use Nexmo\Application\Application;
+use Nexmo\Application\Hydrator;
 use Nexmo\Client\Credentials\Basic;
 use Nexmo\Client\Credentials\Container;
 use Nexmo\Client\Credentials\CredentialsInterface;
@@ -19,16 +21,10 @@ use Nexmo\Client\Exception\Exception;
 use Nexmo\Client\Factory\FactoryInterface;
 use Nexmo\Client\Factory\MapFactory;
 use Nexmo\Client\OpenAPIResource;
-use Nexmo\Client\Response\Response;
 use Nexmo\Client\Signature;
-use Nexmo\Conversations\Event\API as ConversationEventAPI;
-use Nexmo\Conversations\Event\Client as ConversationEventClient;
-use Nexmo\Conversations\Member\Client as ConversationMemberClient;
-use Nexmo\Conversations\Member\API as ConversationMemberAPI;
-use Nexmo\Conversations\Member\Hydrator as ConversationMemberHydrator;
-use Nexmo\Conversations\Event\Hydrator as ConversationEventHydrator;
 use Nexmo\Conversations\Hydrator as ConversationsHydrator;
 use Nexmo\Entity\EntityInterface;
+use Nexmo\Entity\Hydrator\ArrayHydrator;
 use Nexmo\Verify\Verification;
 use Psr\Http\Message\RequestInterface;
 use Zend\Diactoros\Uri;
@@ -133,7 +129,17 @@ class Client
             'insights' => 'Nexmo\Insights\Client',
             'message' => 'Nexmo\Message\Client',
             'verify'  => 'Nexmo\Verify\Client',
-            'applications' => 'Nexmo\Application\Client',
+            'applications' => function ($factory) {
+                /** @var OpenAPIResource $api */
+                $api = $factory->get(OpenAPIResource::class);
+                $api->setBaseUri('/v2/applications');
+                $api->setCollectionName('applications');
+
+                return new \Nexmo\Application\Client(
+                    $api,
+                    $factory->get(Hydrator::class)
+                );
+            },
             'numbers' => 'Nexmo\Numbers\Client',
             'calls' => function ($factory) {
                 /** @var OpenAPIResource $api */
@@ -152,6 +158,8 @@ class Client
             'users' => 'Nexmo\User\Collection',
             'redact' => 'Nexmo\Redact\Client',
             OpenAPIResource::class => OpenAPIResource::class,
+            ArrayHydrator::class => ArrayHydrator::class,
+            Hydrator::class => Hydrator::class,
         ], $this));
     }
 

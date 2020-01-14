@@ -8,309 +8,74 @@
 
 namespace Nexmo\Application;
 
-use Nexmo\ApiErrorHandler;
-use Nexmo\Client\ClientAwareInterface;
+use Nexmo\Entity\Collection;
+use Nexmo\Client\OpenAPIResource;
+use Nexmo\Entity\FilterInterface;
 use Nexmo\Client\ClientAwareTrait;
-use Nexmo\Entity\CollectionInterface;
-use Nexmo\Entity\ModernCollectionTrait;
-use Psr\Http\Message\ResponseInterface;
-use Zend\Diactoros\Request;
-use Nexmo\Client\Exception;
+use Nexmo\Client\ClientAwareInterface;
+use Nexmo\Entity\Hydrator\HydratorInterface;
 
-class Client implements ClientAwareInterface, CollectionInterface
+class Client implements ClientAwareInterface
 {
     use ClientAwareTrait;
-    use ModernCollectionTrait;
 
-    public static function getCollectionName()
+    /**
+     * @var OpenAPIResource
+     */
+    protected $api;
+
+    /**
+     * @var HydratorInterface
+     */
+    protected $hydrator;
+
+    public function __construct(OpenAPIResource $api, HydratorInterface $hydrator)
     {
-        return 'applications';
+        $this->api = $api;
+        $this->hydrator = $hydrator;
     }
 
-    public static function getCollectionPath()
+    public function get(string $id) : Application
     {
-        return '/v2/' . self::getCollectionName();
-    }
+        $data = $this->api->get($id);
 
-    public function hydrateEntity($data, $id)
-    {
-        $application = new Application($id);
-        $application->jsonUnserialize($data);
-        return $application;
-    }
-
-    public function get($application)
-    {
-        if (!($application instanceof Application)) {
-            $application = new Application($application);
-        }
-
-        $request = new Request(
-            $this->getClient()->getApiUrl() . $this->getCollectionPath() . '/' . $application->getId(),
-            'GET',
-            'php://memory',
-            ['Content-Type' => 'application/json']
-        );
-
-        $application->setRequest($request);
-        $response = $this->client->send($request);
-        $application->setResponse($response);
-
-        if ($response->getStatusCode() != '200') {
-            throw $this->getException($response, $application);
-        }
+        $application = new Application();
+        $application->createFromArray($data);
 
         return $application;
     }
 
-    public function create($application)
+    public function create(Application $application) : Application
     {
-        return $this->post($application);
-    }
-
-    public function post($application)
-    {
-        if (!($application instanceof Application)) {
-            $application = $this->createFromArray($application);
-        }
-
-        $body = $application->getRequestData(false);
-
-        $request = new Request(
-            $this->getClient()->getApiUrl() . $this->getCollectionPath(),
-            'POST',
-            'php://temp',
-            ['Content-Type' => 'application/json']
-        );
-
-        $request->getBody()->write(json_encode($body));
-        $application->setRequest($request);
-        $response = $this->client->send($request);
-        $application->setResponse($response);
-
-        if ($response->getStatusCode() != '201') {
-            throw $this->getException($response, $application);
-        }
+        $response = $this->api->create($application->toArray());
+        $application = $this->hydrator->hydrate($response);
 
         return $application;
     }
 
-    public function update($application, $id = null)
+    public function update(Application $application) : Application
     {
-        return $this->put($application, $id);
-    }
-
-    public function put($application, $id = null)
-    {
-        if (!($application instanceof Application)) {
-            $application = $this->createFromArray($application);
-        }
-
+        $id = $application->getId();
         if (is_null($id)) {
-            $id = $application->getId();
+            throw new \RuntimeException('Cannot update an application without an ID.');
         }
 
-        $body = $application->getRequestData(false);
-
-        $request = new Request(
-            $this->getClient()->getApiUrl() . $this->getCollectionPath() . '/' . $id,
-            'PUT',
-            'php://temp',
-            ['Content-Type' => 'application/json']
-        );
-
-        $request->getBody()->write(json_encode($body));
-        $application->setRequest($request);
-        $response = $this->client->send($request);
-        $application->setResponse($response);
-
-        if ($response->getStatusCode() != '200') {
-            throw $this->getException($response, $application);
-        }
+        $data = $this->api->update($application->getId(), $application->toArray());
+        $application = $this->hydrator->hydrate($data);
 
         return $application;
     }
 
-    public function delete($application)
+    public function delete(Application $application) : void
     {
-        if (($application instanceof Application)) {
-            $id = $application->getId();
-        } else {
-            $id = $application;
-        }
-
-        $request = new Request(
-            $this->getClient()->getApiUrl(). $this->getCollectionPath() . '/' . $id,
-            'DELETE',
-            'php://temp',
-            ['Content-Type' => 'application/json']
-        );
-
-        if ($application instanceof Application) {
-            $application->setRequest($request);
-        }
-
-        $response = $this->client->send($request);
-
-        if ($application instanceof Application) {
-            $application->setResponse($response);
-        }
-
-        if ($response->getStatusCode() != '204') {
-            throw $this->getException($response, $application);
-        }
-
-        return true;
+        $this->api->delete($application->getId());
     }
 
-    protected function getException(ResponseInterface $response, $application = null)
+    public function search(FilterInterface $filter = null) : Collection
     {
-        $body = json_decode($response->getBody()->getContents(), true);
-        $status = $response->getStatusCode();
+        $collection = $this->api->search($filter);
+        $collection->setHydrator($this->hydrator);
 
-        // Handle new style errors
-        $e = null;
-        try {
-            ApiErrorHandler::check($body, $status);
-        } catch (Exception\Exception $e) {
-            //todo use interfaces here
-            if (($application instanceof Application) and (($e instanceof Exception\Request) or ($e instanceof Exception\Server))) {
-                $e->setEntity($application);
-            }
-        }
-
-        return $e;
-    }
-
-    protected function createFromArray($array)
-    {
-        if (isset($array['answer_url']) || isset($array['event_url'])) {
-            return $this->createFromArrayV1($array);
-        }
-
-        return $this->createFromArrayV2($array);
-    }
-
-    protected function createFromArrayV1($array)
-    {
-        if (!is_array($array)) {
-            throw new \RuntimeException('application must implement `' . ApplicationInterface::class . '` or be an array`');
-        }
-
-        foreach (['name',] as $param) {
-            if (!isset($array[$param])) {
-                throw new \InvalidArgumentException('missing expected key `' . $param . '`');
-            }
-        }
-
-        $application = new Application();
-        $application->setName($array['name']);
-
-        // Public key?
-        if (isset($array['public_key'])) {
-            $application->setPublicKey($array['public_key']);
-        }
-
-        // Voice
-        foreach (['event', 'answer'] as $type) {
-            if (isset($array[$type . '_url'])) {
-                $method = isset($array[$type . '_method']) ? $array[$type . '_method'] : null;
-                $application->getVoiceConfig()->setWebhook($type . '_url', new Webhook($array[$type . '_url'], $method));
-            }
-        }
-
-        // Messages
-        foreach (['status', 'inbound'] as $type) {
-            if (isset($array[$type . '_url'])) {
-                $method = isset($array[$type . '_method']) ? $array[$type . '_method'] : null;
-                $application->getMessagesConfig()->setWebhook($type . '_url', new Webhook($array[$type . '_url'], $method));
-            }
-        }
-
-        // RTC
-        foreach (['event'] as $type) {
-            if (isset($array[$type . '_url'])) {
-                $method = isset($array[$type . '_method']) ? $array[$type . '_method'] : null;
-                $application->getRtcConfig()->setWebhook($type . '_url', new Webhook($array[$type . '_url'], $method));
-            }
-        }
-
-        // VBC
-        if (isset($array['vbc']) && $array['vbc']) {
-            $application->getVbcConfig()->enable();
-        }
-
-        return $application;
-    }
-
-    protected function createFromArrayV2($array)
-    {
-        if (!is_array($array)) {
-            throw new \RuntimeException('application must implement `' . ApplicationInterface::class . '` or be an array`');
-        }
-
-        foreach (['name',] as $param) {
-            if (!isset($array[$param])) {
-                throw new \InvalidArgumentException('missing expected key `' . $param . '`');
-            }
-        }
-
-        $application = new Application();
-        $application->setName($array['name']);
-
-        // Is there a public key?
-        if (isset($array['keys']['public_key'])) {
-            $application->setPublicKey($array['keys']['public_key']);
-        }
-
-        // How about capabilities?
-        if (!isset($array['capabilities'])) {
-            return $application;
-        }
-
-        $capabilities = $array['capabilities'];
-
-        // Handle voice
-        if (isset($capabilities['voice'])) {
-            $voiceCapabilities = $capabilities['voice']['webhooks'];
-
-            foreach (['answer', 'event'] as $type) {
-                $application->getVoiceConfig()->setWebhook($type.'_url', new Webhook(
-                    $voiceCapabilities[$type.'_url']['address'],
-                    $voiceCapabilities[$type.'_url']['http_method']
-                ));
-            }
-        }
-
-        // Handle messages
-        if (isset($capabilities['messages'])) {
-            $messagesCapabilities = $capabilities['messages']['webhooks'];
-
-            foreach (['status', 'inbound'] as $type) {
-                $application->getMessagesConfig()->setWebhook($type.'_url', new Webhook(
-                    $messagesCapabilities[$type.'_url']['address'],
-                    $messagesCapabilities[$type.'_url']['http_method']
-                ));
-            }
-        }
-
-        // Handle RTC
-        if (isset($capabilities['rtc'])) {
-            $rtcCapabilities = $capabilities['rtc']['webhooks'];
-
-            foreach (['event'] as $type) {
-                $application->getRtcConfig()->setWebhook($type.'_url', new Webhook(
-                    $rtcCapabilities[$type.'_url']['address'],
-                    $rtcCapabilities[$type.'_url']['http_method']
-                ));
-            }
-        }
-
-        // Handle VBC
-        if (isset($capabilities['vbc'])) {
-            $application->getVbcConfig()->enable();
-        }
-
-        return $application;
+        return $collection;
     }
 }

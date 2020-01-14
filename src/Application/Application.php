@@ -8,13 +8,14 @@
 
 namespace Nexmo\Application;
 
+use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
 use Nexmo\Entity\JsonUnserializableInterface;
 use Nexmo\Entity\EntityInterface;
 use Nexmo\Entity\JsonResponseTrait;
 use Nexmo\Entity\JsonSerializableTrait;
 use Nexmo\Entity\Psr7Trait;
 
-class Application implements EntityInterface, \JsonSerializable, JsonUnserializableInterface
+class Application implements EntityInterface, \JsonSerializable, JsonUnserializableInterface, ArrayHydrateInterface
 {
     use JsonSerializableTrait;
     use Psr7Trait;
@@ -34,6 +35,51 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
     public function __construct($id = null)
     {
         $this->id = $id;
+    }
+
+    public function createFromArray(array $data)
+    {
+        $this->name = $data['name'];
+        $this->id   = $data['id'];
+        $this->keys = $data['keys'];
+
+        if (isset($data['capabilities'])) {
+            $capabilities = $data['capabilities'];
+
+            //todo: make voice  hydrate-able
+            $this->voiceConfig = new VoiceConfig();
+            if (isset($capabilities['voice']) and isset($capabilities['voice']['webhooks'])) {
+                foreach ($capabilities['voice']['webhooks'] as $name => $details) {
+                    $this->voiceConfig->setWebhook($name, new Webhook($details['address'], $details['http_method']));
+                }
+            }
+
+            //todo: make messages  hydrate-able
+            $this->messagesConfig = new MessagesConfig();
+            if (isset($capabilities['messages']) and isset($capabilities['messages']['webhooks'])) {
+                foreach ($capabilities['messages']['webhooks'] as $name => $details) {
+                    $this->messagesConfig->setWebhook($name, new Webhook($details['address'], $details['http_method']));
+                }
+            }
+
+            //todo: make rtc  hydrate-able
+            $this->rtcConfig = new RtcConfig();
+            if (isset($capabilities['rtc']) and isset($capabilities['rtc']['webhooks'])) {
+                foreach ($capabilities['rtc']['webhooks'] as $name => $details) {
+                    $this->rtcConfig->setWebhook($name, new Webhook($details['address'], $details['http_method']));
+                }
+            }
+
+            if (isset($capabilities['vbc'])) {
+                $this->getVbcConfig()->enable();
+            }
+        }
+    }
+
+    public function setId(string $id) : self
+    {
+        $this->id = $id;
+        return $this;
     }
 
     public function getId()
@@ -164,46 +210,21 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
 
     public function jsonUnserialize(array $json)
     {
-        $this->name = $json['name'];
-        $this->id   = $json['id'];
-        $this->keys = $json['keys'];
-
-        if (isset($json['capabilities'])) {
-            $capabilities = $json['capabilities'];
-
-            //todo: make voice  hydrate-able
-            $this->voiceConfig = new VoiceConfig();
-            if (isset($capabilities['voice']) and isset($capabilities['voice']['webhooks'])) {
-                foreach ($capabilities['voice']['webhooks'] as $name => $details) {
-                    $this->voiceConfig->setWebhook($name, new Webhook($details['address'], $details['http_method']));
-                }
-            }
-
-            //todo: make messages  hydrate-able
-            $this->messagesConfig = new MessagesConfig();
-            if (isset($capabilities['messages']) and isset($capabilities['messages']['webhooks'])) {
-                foreach ($capabilities['messages']['webhooks'] as $name => $details) {
-                    $this->messagesConfig->setWebhook($name, new Webhook($details['address'], $details['http_method']));
-                }
-            }
-
-            //todo: make rtc  hydrate-able
-            $this->rtcConfig = new RtcConfig();
-            if (isset($capabilities['rtc']) and isset($capabilities['rtc']['webhooks'])) {
-                foreach ($capabilities['rtc']['webhooks'] as $name => $details) {
-                    $this->rtcConfig->setWebhook($name, new Webhook($details['address'], $details['http_method']));
-                }
-            }
-
-            if (isset($capabilities['vbc'])) {
-                $this->getVbcConfig()->enable();
-            }
-        }
+        $this->createFromArray($json);
     }
 
     public function jsonSerialize()
     {
+        return $this->toArray();
+    }
 
+    public function __toString()
+    {
+        return (string) $this->getId();
+    }
+
+    public function toArray() : array
+    {
         // Build up capabilities that are set
         $availableCapabilities = [
             'voice' => [VoiceConfig::ANSWER, VoiceConfig::EVENT],
@@ -246,10 +267,5 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
             ],
             'capabilities' => $capabilities
         ];
-    }
-
-    public function __toString()
-    {
-        return (string) $this->getId();
     }
 }

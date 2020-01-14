@@ -114,6 +114,7 @@ class Collection implements ClientAwareInterface, Iterator, Countable
     public function getResourceRoot() : array
     {
         $collectionName = $this->getApiResource()->getCollectionName();
+
         if ($this->getApiResource()->isHAL()) {
             return $this->page['_embedded'][$collectionName];
         }

@@ -4,7 +4,7 @@ namespace Nexmo\Call;
 
 use Closure;
 use Nexmo\Conversations\Client;
-use Nexmo\Entity\HydratorInterface;
+use Nexmo\Entity\Hydrator\HydratorInterface;
 
 class Hydrator implements HydratorInterface
 {
