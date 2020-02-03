@@ -2,7 +2,7 @@
 
 require_once '../vendor/autoload.php';
 
-$client = new Nexmo\Client(new Nexmo\Client\Credentials\Basic(API_KEY, API_SECRET));
+$client = new Nexmo\Client(new Nexmo\Client\Credentials\Basic(4907799d, 0330hiZxrqk8yNPQ));
 
 $a = new Nexmo\Application\Application;
 
