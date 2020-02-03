@@ -3,13 +3,13 @@
 require_once '../vendor/autoload.php';
 
 //create client with api key and secret
-$client = new Nexmo\Client(new Nexmo\Client\Credentials\Basic(API_KEY, API_SECRET));
+$client = new Nexmo\Client(new Nexmo\Client\Credentials\Basic(4907799d, 0330hiZxrqk8yNPQ));
 
 //send message using simple api params
 $message = $client->message()->send([
     'to' => NEXMO_TO,
-    'from' => NEXMO_FROM,
-    'text' => 'Test message from the Nexmo PHP Client'
+    'from' => 12622584913,
+    'text' => 'hello'
 ]);
 
 //array access provides response data
