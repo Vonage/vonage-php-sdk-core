@@ -8,23 +8,24 @@
 
 namespace Nexmo;
 
-use Http\Client\HttpClient;
-use Nexmo\Client\Credentials\Basic;
-use Nexmo\Client\Credentials\Container;
-use Nexmo\Client\Credentials\CredentialsInterface;
-use Nexmo\Client\Credentials\Keypair;
-use Nexmo\Client\Credentials\OAuth;
-use Nexmo\Client\Credentials\SignatureSecret;
-use Nexmo\Client\Exception\Exception;
-use Nexmo\Client\Factory\FactoryInterface;
-use Nexmo\Client\Factory\MapFactory;
-use Nexmo\Client\Response\Response;
-use Nexmo\Client\Signature;
-use Nexmo\Entity\EntityInterface;
-use Nexmo\Verify\Verification;
-use Psr\Http\Message\RequestInterface;
 use Zend\Diactoros\Uri;
+use Http\Client\HttpClient;
+use Nexmo\Client\Signature;
 use Zend\Diactoros\Request;
+use Nexmo\Client\APIResource;
+use Nexmo\Verify\Verification;
+use Nexmo\Entity\EntityInterface;
+use Nexmo\Client\Credentials\Basic;
+use Nexmo\Client\Credentials\OAuth;
+use Nexmo\Client\Response\Response;
+use Nexmo\Client\Factory\MapFactory;
+use Nexmo\Client\Credentials\Keypair;
+use Nexmo\Client\Exception\Exception;
+use Psr\Http\Message\RequestInterface;
+use Nexmo\Client\Credentials\Container;
+use Nexmo\Client\Factory\FactoryInterface;
+use Nexmo\Client\Credentials\SignatureSecret;
+use Nexmo\Client\Credentials\CredentialsInterface;
 
 /**
  * Nexmo API Client, allows access to the API from PHP.
@@ -108,7 +109,16 @@ class Client
         }
 
         $this->setFactory(new MapFactory([
-            'account' => 'Nexmo\Account\Client',
+            'account' => function ($factory) {
+                $api = $factory->get(APIResource::class);
+                $api
+                    ->setBaseUrl(self::BASE_REST)
+                    ->setIsHAL(false)
+                    ->setBaseUri('/account')
+                ;
+
+                return new \Nexmo\Account\Client($api);
+            },
             'insights' => 'Nexmo\Insights\Client',
             'message' => 'Nexmo\Message\Client',
             'verify'  => 'Nexmo\Verify\Client',

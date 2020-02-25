@@ -8,21 +8,24 @@
 
 namespace NexmoTest\Account;
 
-use Nexmo\Account\Balance;
+use Nexmo\Network;
+use Prophecy\Argument;
+use Nexmo\Account\Client;
 use Nexmo\Account\Config;
 use Nexmo\Account\Secret;
-use Nexmo\Account\SecretCollection;
-use Nexmo\Network;
+use Nexmo\Account\Balance;
 use Nexmo\Account\SmsPrice;
-use Nexmo\Account\VoicePrice;
-use Nexmo\Account\PrefixPrice;
-use Nexmo\Account\Client;
-use Zend\Diactoros\Response;
-use NexmoTest\Psr7AssertionTrait;
-use Prophecy\Argument;
-use Psr\Http\Message\RequestInterface;
-use PHPUnit\Framework\TestCase;
 use Nexmo\Client\Exception;
+use Zend\Diactoros\Response;
+use Nexmo\Account\VoicePrice;
+use Nexmo\Client\APIResource;
+use Nexmo\Account\PrefixPrice;
+use PHPUnit\Framework\TestCase;
+use NexmoTest\Psr7AssertionTrait;
+use Nexmo\Account\SecretCollection;
+use Nexmo\Client\Exception\Request;
+use Nexmo\Client\Exception\Validation;
+use Psr\Http\Message\RequestInterface;
 
 class ClientTest extends TestCase
 {
@@ -35,12 +38,27 @@ class ClientTest extends TestCase
      */
     protected $accountClient;
 
+    /**
+     * APIResource
+     */
+    protected $api;
+
     public function setUp()
     {
         $this->nexmoClient = $this->prophesize('Nexmo\Client');
         $this->nexmoClient->getRestUrl()->willReturn('https://rest.nexmo.com');
         $this->nexmoClient->getApiUrl()->willReturn('https://api.nexmo.com');
-        $this->accountClient = new Client();
+
+        $this->apiClient = new APIResource();
+        $this->apiClient
+            ->setBaseUrl('https://rest.nexmo.com')
+            ->setIsHAL(false)
+            ->setBaseUri('/account')
+        ;
+        $this->apiClient->setCollectionName('');
+        $this->apiClient->setClient($this->nexmoClient->reveal());
+
+        $this->accountClient = new Client($this->apiClient);
         $this->accountClient->setClient($this->nexmoClient->reveal());
     }
 
@@ -447,7 +465,7 @@ class ClientTest extends TestCase
         try {
             $this->nexmoClient->send(Argument::any())->willReturn($this->getResponse('secret-management/create-validation', 400));
             $this->accountClient->createSecret('abcd1234', 'example-4PI-secret');
-        } catch (Exception\Validation $e) {
+        } catch (Validation $e) {
             $this->assertEquals('Bad Request: The request failed due to validation errors. See https://developer.nexmo.com/api-errors/account/secret-management#validation for more information', $e->getMessage());
             $this->assertEquals([['name' => 'secret', 'reason' => 'Does not meet complexity requirements']], $e->getValidationErrors());
         }
