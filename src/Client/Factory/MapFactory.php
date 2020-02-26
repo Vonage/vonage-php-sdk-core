@@ -79,6 +79,11 @@ class MapFactory implements FactoryInterface
         return $instance;
     }
 
+    public function getClient()
+    {
+        return $this->client;
+    }
+
     /**
      * @deprecated Use get() instead
      */

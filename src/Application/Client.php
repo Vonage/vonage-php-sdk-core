@@ -8,22 +8,17 @@
 
 namespace Nexmo\Application;
 
-use Nexmo\ApiErrorHandler;
-use Nexmo\Client\Exception;
-use Zend\Diactoros\Request;
 use Nexmo\Client\APIResource;
 use Nexmo\Client\ClientAwareTrait;
 use Nexmo\Entity\CollectionInterface;
 use Nexmo\Client\ClientAwareInterface;
-use Nexmo\Entity\IterableAPICollection;
-use Nexmo\Entity\ModernCollectionTrait;
-use Psr\Http\Message\ResponseInterface;
 use Nexmo\Entity\Hydrator\HydratorInterface;
+use Nexmo\Entity\IterableServiceShimTrait;
 
 class Client implements ClientAwareInterface, CollectionInterface
 {
     use ClientAwareTrait;
-    // use ModernCollectionTrait;
+    use IterableServiceShimTrait;
 
     /**
      * @var APIResource
@@ -35,23 +30,10 @@ class Client implements ClientAwareInterface, CollectionInterface
      */
     protected $hydrator;
 
-    /**
-     * @var IterableAPICollection
-     */
-    protected $collection = null;
-
     public function __construct(APIResource $api, HydratorInterface $hydrator)
     {
         $this->api = $api;
         $this->hydrator = $hydrator;
-    }
-
-    /**
-     * @deprecated Use the hydrator directly
-     */
-    public function hydrateEntity($data, $id)
-    {
-        return $this->hydrator->hydrate($data);
     }
 
     /**
@@ -71,148 +53,7 @@ class Client implements ClientAwareInterface, CollectionInterface
     }
 
     /**
-     * Generates a collection object to help keep API compatibility
-     */
-    protected function generateCollection($filter = null)
-    {
-        $this->collection = $this->api->search($filter);
-        $this->collection->setHydrator($this->hydrator);
-    }
-
-    /**
-     * Counts the current search query
-     * @deprecated This will be removed in a future release, and will be part of a search response
-     */
-    public function count() : int
-    {
-        if (is_null($this->collection)) {
-            $this->generateCollection();
-        }
-
-        return $this->collection->count();
-    }
-
-    /**
-     * Returns the current object in the search
-     * @deprecated This will be removed in a future release, and will be part of a search response
-     */
-    public function current()
-    {
-        if (is_null($this->collection)) {
-            $this->generateCollection();
-        }
-
-        return $this->collection->current();
-    }
-
-    /**
-     * Returns the next object in the search
-     * @deprecated This will be removed in a future release, and will be part of a search response
-     */
-    public function next()
-    {
-        if (is_null($this->collection)) {
-            $this->generateCollection();
-        }
-
-        return $this->collection->next();
-    }
-
-    /**
-     * Returns the key of the current object in the search
-     * @deprecated This will be removed in a future release, and will be part of a search response
-     */
-    public function key()
-    {
-        if (is_null($this->collection)) {
-            $this->generateCollection();
-        }
-
-        return $this->collection->key();
-    }
-
-    /**
-     * Returns if the current iterable is valid
-     * @deprecated This will be removed in a future release, and will be part of a search response
-     */
-    public function valid()
-    {
-        if (is_null($this->collection)) {
-            $this->generateCollection();
-        }
-
-        return $this->collection->valid();
-    }
-
-    /**
-     * Rewinds the current iterable
-     * @deprecated This will be removed in a future release, and will be part of a search response
-     */
-    public function rewind()
-    {
-        if (is_null($this->collection)) {
-            $this->generateCollection();
-        }
-
-        return $this->collection->rewind();
-    }
-
-    public function setFilter($filter)
-    {
-        $this->generateCollection($filter);
-        return $this;
-    }
-
-    public function getFilter()
-    {
-        if (is_null($this->collection)) {
-            $this->generateCollection();
-        }
-
-        return $this->collection->getFilter();
-    }
-
-    public function getPage()
-    {
-        if (is_null($this->collection)) {
-            $this->generateCollection();
-        }
-
-        return $this->collection->getPage();
-    }
-
-    public function setPage($index)
-    {
-        if (is_null($this->collection)) {
-            $this->generateCollection();
-        }
-
-        $this->collection->setPage($index);
-        return $this;
-    }
-
-    public function getSize()
-    {
-        if (is_null($this->collection)) {
-            $this->generateCollection();
-        }
-
-        return $this->collection->getSize();
-    }
-
-    public function setSize(int $size)
-    {
-        if (is_null($this->collection)) {
-            $this->generateCollection();
-        }
-
-        $this->collection->setSize($size);
-        return $this;
-    }
-
-    /**
      * Returns the specified application
-     *    
      */
     public function get($application)
     {

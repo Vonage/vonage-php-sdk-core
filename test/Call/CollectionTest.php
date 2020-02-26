@@ -8,20 +8,27 @@
 
 namespace NexmoTest\Calls;
 
-use Nexmo\Call\Filter;
-use Nexmo\Call\Transfer;
+use Nexmo\Call\Hydrator;
 use Nexmo\Call\Call;
-use Nexmo\Call\Collection;
-use NexmoTest\Psr7AssertionTrait;
+use Nexmo\Call\Filter;
 use Prophecy\Argument;
-use Psr\Http\Message\RequestInterface;
-use Zend\Diactoros\Response;
+use Nexmo\Call\Transfer;
+use Nexmo\Call\Collection;
 use Nexmo\Client\Exception;
+use Zend\Diactoros\Response;
+use Nexmo\Client\APIResource;
 use PHPUnit\Framework\TestCase;
+use NexmoTest\Psr7AssertionTrait;
+use Psr\Http\Message\RequestInterface;
 
 class CollectionTest extends TestCase
 {
     use Psr7AssertionTrait;
+
+    /**
+     * @var APIResource
+     */
+    protected $api;
 
     /**
      * @var \Prophecy\Prophecy\ObjectProphecy
@@ -37,7 +44,13 @@ class CollectionTest extends TestCase
     {
         $this->nexmoClient = $this->prophesize('Nexmo\Client');
         $this->nexmoClient->getApiUrl()->willReturn('https://api.nexmo.com');
-        $this->collection = new Collection();
+
+        $this->api = new APIResource();
+        $this->api->setClient($this->nexmoClient->reveal());
+        $this->api->setBaseUri('/v1/calls');
+        $this->api->setCollectionName('calls');
+
+        $this->collection = new Collection($this->api, new Hydrator($this->nexmoClient->reveal()));
         $this->collection->setClient($this->nexmoClient->reveal());
     }
 
@@ -51,7 +64,7 @@ class CollectionTest extends TestCase
     {
         $collection = $this->collection;
         $filter = new Filter();
-        $return = $collection($filter);
+        $return = @$collection($filter);
 
         $this->assertSame($collection, $return);
         $this->assertSame($collection->getFilter(), $filter);
@@ -69,7 +82,7 @@ class CollectionTest extends TestCase
         $this->collection->hydrateEntity($data, $call->reveal());
 
         $call->setClient($this->nexmoClient->reveal())->shouldHaveBeenCalled();
-        $call->jsonUnserialize($data)->shouldHaveBeenCalled();
+        $call->createFromArray($data)->shouldHaveBeenCalled();
     }
 
     /**
@@ -83,7 +96,7 @@ class CollectionTest extends TestCase
         $this->nexmoClient->send(Argument::any())->willReturn($this->getResponse('call'));
 
         $collection = $this->collection;
-        $call = $collection[$payload];
+        $call = @$collection[$payload];
 
         $this->assertInstanceOf('Nexmo\Call\Call', $call);
         $this->nexmoClient->send(Argument::any())->shouldNotHaveBeenCalled();
@@ -111,7 +124,7 @@ class CollectionTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('call'))->shouldBeCalled();
 
-        $call = $this->collection->get($payload);
+        $call = @$this->collection->get($payload);
 
         $this->assertInstanceOf('Nexmo\Call\Call', $call);
         if($payload instanceof Call){
@@ -130,7 +143,7 @@ class CollectionTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('created', '201'));
 
-        $call = $this->collection->$method($payload);
+        $call = @$this->collection->$method($payload);
 
         $this->assertInstanceOf('Nexmo\Call\Call', $call);
         $this->assertEquals('e46fd8bd-504d-4044-9600-26dd18b41111', $call->getId());
@@ -139,7 +152,7 @@ class CollectionTest extends TestCase
     /**
      * @dataProvider postCallNcco
      */
-    public function testCreatePostCallNcco($payload)
+    public function testCreateCallNcco($payload)
     {
         $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($payload){
             $ncco = [['action' => 'talk', 'text' => 'Hello World']];
@@ -150,7 +163,7 @@ class CollectionTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('created', '201'));
 
-        $call = $this->collection->post($payload);
+        $call = @$this->collection->create($payload);
 
         $this->assertInstanceOf('Nexmo\Call\Call', $call);
         $this->assertEquals('e46fd8bd-504d-4044-9600-26dd18b41111', $call->getId());
@@ -168,7 +181,7 @@ class CollectionTest extends TestCase
         }))->willReturn($this->getResponse('error_vapi', '400'));
 
         try {
-            $call = $this->collection->$method($payload);
+            $call = @$this->collection->$method($payload);
             $this->fail('Expected to throw request exception');
         } catch (Exception\Request $e) {
             $this->assertEquals($e->getMessage(), 'Bad Request');
@@ -187,7 +200,7 @@ class CollectionTest extends TestCase
         }))->willReturn($this->getResponse('error_proxy', '400'));
 
         try {
-            $call = $this->collection->$method($payload);
+            $call = @$this->collection->$method($payload);
             $this->fail('Expected to throw request exception');
         } catch (Exception\Request $e) {
             $this->assertEquals($e->getMessage(), 'Unsupported Media Type');
@@ -206,7 +219,7 @@ class CollectionTest extends TestCase
         }))->willReturn($this->getResponse('error_unknown_format', '400'));
 
         try {
-            $call = $this->collection->$method($payload);
+            $call = @$this->collection->$method($payload);
             $this->fail('Expected to throw request exception');
         } catch (Exception\Request $e) {
             $this->assertEquals($e->getMessage(), "Unexpected error");
@@ -225,7 +238,7 @@ class CollectionTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('updated'))->shouldBeCalled();
 
-        $call = $this->collection->put($payload, $id);
+        $call = @$this->collection->put($payload, $id);
         $this->assertInstanceOf('Nexmo\Call\Call', $call);
 
         if($id instanceof Call){
