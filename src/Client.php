@@ -10,6 +10,7 @@ namespace Nexmo;
 
 use Zend\Diactoros\Uri;
 use Http\Client\HttpClient;
+use Nexmo\Application\Hydrator;
 use Nexmo\Client\Signature;
 use Zend\Diactoros\Request;
 use Nexmo\Client\APIResource;
@@ -122,7 +123,15 @@ class Client
             'insights' => 'Nexmo\Insights\Client',
             'message' => 'Nexmo\Message\Client',
             'verify'  => 'Nexmo\Verify\Client',
-            'applications' => 'Nexmo\Application\Client',
+            'applications' => function ($factory) {
+                $api = $factory->get(APIResource::class);
+                $api
+                    ->setBaseUri('/v2/applications')
+                    ->setCollectionName('applications')
+                ;
+
+                return new \Nexmo\Application\Client($api, new Hydrator());
+            },
             'numbers' => 'Nexmo\Numbers\Client',
             'calls' => 'Nexmo\Call\Collection',
             'conversion' => 'Nexmo\Conversion\Client',
