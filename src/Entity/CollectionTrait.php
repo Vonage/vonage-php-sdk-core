@@ -10,7 +10,6 @@ namespace Nexmo\Entity;
 
 use Psr\Http\Message\ResponseInterface;
 use Zend\Diactoros\Request;
-use Nexmo\Application\Application;
 
 /**
  * Common code for iterating over a collection, and using the collection class to discover the API path.

@@ -10,11 +10,12 @@ namespace Nexmo\Application;
 
 use Nexmo\Entity\JsonUnserializableInterface;
 use Nexmo\Entity\EntityInterface;
+use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
 use Nexmo\Entity\JsonResponseTrait;
 use Nexmo\Entity\JsonSerializableTrait;
 use Nexmo\Entity\Psr7Trait;
 
-class Application implements EntityInterface, \JsonSerializable, JsonUnserializableInterface
+class Application implements EntityInterface, \JsonSerializable, JsonUnserializableInterface, ArrayHydrateInterface
 {
     use JsonSerializableTrait;
     use Psr7Trait;
@@ -122,7 +123,7 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
     /**
      * @return RtcConfig
      */
-    public function getVbcConfig()
+    public function getVbcConfig() : VbcConfig
     {
         if (!isset($this->vbcConfig)) {
             $this->setVbcConfig(new VbcConfig());
@@ -164,12 +165,27 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
 
     public function jsonUnserialize(array $json)
     {
-        $this->name = $json['name'];
-        $this->id   = $json['id'];
-        $this->keys = $json['keys'];
+        $this->createFromArray($json);
+    }
 
-        if (isset($json['capabilities'])) {
-            $capabilities = $json['capabilities'];
+    public function jsonSerialize()
+    {
+        return $this->toArray();
+    }
+
+    public function __toString()
+    {
+        return (string) $this->getId();
+    }
+
+    public function createFromArray(array $data)
+    {
+        $this->name = $data['name'];
+        $this->id   = $data['id'];
+        $this->keys = $data['keys'];
+
+        if (isset($data['capabilities'])) {
+            $capabilities = $data['capabilities'];
 
             //todo: make voice  hydrate-able
             $this->voiceConfig = new VoiceConfig();
@@ -201,9 +217,8 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
         }
     }
 
-    public function jsonSerialize()
+    public function toArray(): array
     {
-
         // Build up capabilities that are set
         $availableCapabilities = [
             'voice' => [VoiceConfig::ANSWER, VoiceConfig::EVENT],
@@ -240,16 +255,12 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
         }
 
         return [
+            'id' => $this->getName(),
             'name' => $this->getName(),
             'keys' => [
                 'public_key' => $this->getPublicKey()
             ],
             'capabilities' => $capabilities
         ];
-    }
-
-    public function __toString()
-    {
-        return (string) $this->getId();
     }
 }

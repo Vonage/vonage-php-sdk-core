@@ -7,6 +7,7 @@ use Zend\Diactoros\Request;
 use Nexmo\Entity\EmptyFilter;
 use Nexmo\Entity\FilterInterface;
 use Nexmo\Entity\IterableAPICollection;
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class APIResource implements ClientAwareInterface
@@ -53,7 +54,9 @@ class APIResource implements ClientAwareInterface
         $response = $this->getClient()->send($request);
 
         if ($response->getStatusCode() < 200 || $response->getStatusCode() > 299) {
-            throw $this->getException($response);
+            $e = $this->getException($response, $request);
+            $e->setEntity($body);
+            throw $e;
         }
 
         return json_decode($response->getBody()->getContents(), true);
@@ -67,7 +70,9 @@ class APIResource implements ClientAwareInterface
         $response = $this->getClient()->send($request);
 
         if ($response->getStatusCode() < 200 || $response->getStatusCode() > 299) {
-            throw $this->getException($response);
+            $e = $this->getException($response, $request);
+            $e->setEntity($id);
+            throw $e;
         }
     }
 
@@ -79,7 +84,9 @@ class APIResource implements ClientAwareInterface
         $response = $this->getClient()->send($request);
 
         if ($response->getStatusCode() < 200 || $response->getStatusCode() > 299) {
-            throw $this->getException($response);
+            $e = $this->getException($response, $request);
+            $e->setEntity($id);
+            throw $e;
         }
 
         $body = json_decode($response->getBody()->getContents(), true);
@@ -111,9 +118,10 @@ class APIResource implements ClientAwareInterface
         return clone $this->collectionPrototype;
     }
 
-    protected function getException(ResponseInterface $response)
+    protected function getException(ResponseInterface $response, RequestInterface $request)
     {
         $body = json_decode($response->getBody()->getContents(), true);
+        $response->getBody()->rewind();
         $status = $response->getStatusCode();
 
         // Error responses aren't consistent. Some are generated within the
@@ -146,10 +154,12 @@ class APIResource implements ClientAwareInterface
 
         if ($status >= 400 and $status < 500) {
             $e = new Exception\Request($errorTitle, $status);
-            $e->setEntity($body);
+            $e->setRequest($request);
+            $e->setResponse($response);
         } elseif ($status >= 500 and $status < 600) {
             $e = new Exception\Server($errorTitle, $status);
-            $e->setEntity($body);
+            $e->setRequest($request);
+            $e->setResponse($response);
         } else {
             $e = new Exception\Exception('Unexpected HTTP Status Code');
             throw $e;
@@ -175,7 +185,6 @@ class APIResource implements ClientAwareInterface
             ->setFilter($filter)
         ;
         $collection->setClient($this->client);
-        $collection->rewind();
 
         return $collection;
     }
@@ -226,7 +235,9 @@ class APIResource implements ClientAwareInterface
         $response = $this->getClient()->send($request);
 
         if ($response->getStatusCode() < 200 || $response->getStatusCode() > 299) {
-            throw $this->getException($response);
+            $e = $this->getException($response, $request);
+            $e->setEntity($formData);
+            throw $e;
         }
 
         return $response->getBody()->getContents();
@@ -245,7 +256,9 @@ class APIResource implements ClientAwareInterface
         $response = $this->getClient()->send($request);
 
         if ($response->getStatusCode() != '200') {
-            throw $this->getException($response);
+            $e = $this->getException($response, $request);
+            $e->setEntity(['id' => $id, 'body' => $body]);
+            throw $e;
         }
 
         return json_decode($response->getBody()->getContents(), true);

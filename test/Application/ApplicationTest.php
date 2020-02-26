@@ -58,7 +58,10 @@ class ApplicationTest extends TestCase
     {
         $this->app->setResponse($this->getResponse());
         $this->assertEquals('My Application', $this->app->getName());
-        $this->assertEquals('public_key', $this->app->getPublicKey());
+        $this->assertEquals(
+            "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSLcjxu33G\nd/vynKnlw9SENi+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xsO\nOUNhPx2LhuLmgwWSRS4L5W851Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n",
+            $this->app->getPublicKey()
+        );
         $this->assertEquals('private_key', $this->app->getPrivateKey());
     }
 
