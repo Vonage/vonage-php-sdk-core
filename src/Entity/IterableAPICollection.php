@@ -132,6 +132,10 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
      */
     public function current()
     {
+        if (is_null($this->current)) {
+            $this->rewind();
+        }
+
         return $this->hydrateEntity($this->getResourceRoot()[$this->current], $this->key());
     }
 
@@ -235,6 +239,10 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
         }
 
         if (isset($this->page)) {
+            if (array_key_exists('total_items', $this->page)) {
+                return $this->page['total_items'];
+            }
+
             return count($this->getResourceRoot());
         }
     }
@@ -254,6 +262,10 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
     public function getPage()
     {
         if (isset($this->page)) {
+            if (array_key_exists('page', $this->page)) {
+                return $this->page['page'];
+            }
+
             return $this->page['page_index'];
         }
 
@@ -266,6 +278,10 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
 
     public function getPageData() : ?array
     {
+        if (is_null($this->page)) {
+            $this->rewind();
+        }
+
         return $this->page;
     }
 

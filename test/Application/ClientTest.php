@@ -8,25 +8,34 @@
 
 namespace NexmoTest\Application;
 
-use Nexmo\Application\Application;
-use Nexmo\Application\Client;
-use Nexmo\Application\Filter;
-use Nexmo\Application\MessagesConfig;
-use Nexmo\Application\RtcConfig;
-use Nexmo\Application\VoiceConfig;
-use Nexmo\Client\Exception\Exception;
-use NexmoTest\Psr7AssertionTrait;
 use Prophecy\Argument;
 use Zend\Diactoros\Request;
 use Zend\Diactoros\Response;
-use Psr\Http\Message\RequestInterface;
+use Nexmo\Application\Client;
+use Nexmo\Application\Filter;
+use Nexmo\Client\APIResource;
+use Nexmo\Application\Hydrator;
 use PHPUnit\Framework\TestCase;
+use Nexmo\Application\RtcConfig;
+use NexmoTest\Psr7AssertionTrait;
+use Nexmo\Application\Application;
+use Nexmo\Application\VoiceConfig;
+use Nexmo\Application\MessagesConfig;
+use Nexmo\Client\Exception\Exception;
+use Psr\Http\Message\RequestInterface;
+use Nexmo\Client\Exception\Request as ExceptionRequest;
+use Nexmo\Client\Exception\Request as RequestException;
 
 class ClientTest extends TestCase
 {
     use Psr7AssertionTrait;
 
     protected $nexmoClient;
+
+    /**
+     * @var APIResource
+     */
+    protected $apiClient;
 
     /**
      * @var Client
@@ -37,7 +46,15 @@ class ClientTest extends TestCase
     {
         $this->nexmoClient = $this->prophesize('Nexmo\Client');
         $this->nexmoClient->getApiUrl()->willReturn('http://api.nexmo.com');
-        $this->applicationClient = new Client();
+
+        $this->apiClient = new APIResource();
+        $this->apiClient->setCollectionName('applications');
+        $this->apiClient->setBaseUri('/v2/applications');
+        $this->apiClient->setClient($this->nexmoClient->reveal());
+
+        $hydrator = new Hydrator();
+
+        $this->applicationClient = new Client($this->apiClient, $hydrator);
         $this->applicationClient->setClient($this->nexmoClient->reveal());
     }
 
@@ -57,11 +74,11 @@ class ClientTest extends TestCase
     {
         $filter = new Filter(new \DateTime('yesterday'), new \DateTime('tomorrow'));
 
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($filter){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($filter) {
             $this->assertEquals('/v2/applications', $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
-            foreach($filter->getQuery() as $key => $value){
+            foreach ($filter->getQuery() as $key => $value) {
                 $this->assertRequestQueryContains($key, $value, $request);
             }
 
@@ -77,7 +94,7 @@ class ClientTest extends TestCase
 
     public function testSetPage()
     {
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) {
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/v2/applications', $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
@@ -93,7 +110,7 @@ class ClientTest extends TestCase
 
     public function testSetSize()
     {
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) {
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/v2/applications', $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
@@ -113,8 +130,7 @@ class ClientTest extends TestCase
              ->shouldBeCalledTimes(1)
              ->willReturn($this->getResponse('list'));
 
-        foreach($this->applicationClient as $id => $application)
-        {
+        foreach ($this->applicationClient as $id => $application) {
             break;
         }
 
@@ -129,10 +145,10 @@ class ClientTest extends TestCase
         $page = $this->getResponse('list');
         $last = $this->getResponse('last');
 
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) {
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
             //a bit hacky here
             static $last;
-            if(is_null($last)){ //first call
+            if (is_null($last)) { //first call
                 $last = $request;
             }
 
@@ -140,16 +156,14 @@ class ClientTest extends TestCase
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
 
-            if($last !== $request){ //second call
+            if ($last !== $request) { //second call
                 $this->assertEquals('page_size=3&page_index=3', $request->getUri()->getQuery());
             }
 
             return true;
         }))->shouldBeCalledTimes(2)->willReturn($page, $last);
 
-
-        foreach($this->applicationClient as $id => $application)
-        {
+        foreach ($this->applicationClient as $id => $application) {
             $this->assertInstanceOf('Nexmo\Application\Application', $application);
             $this->assertSame($application->getId(), $id);
         }
@@ -157,7 +171,7 @@ class ClientTest extends TestCase
 
     public function testCanIterateClient()
     {
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/v2/applications', $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
@@ -166,68 +180,110 @@ class ClientTest extends TestCase
 
         $this->assertInstanceOf('Iterator', $this->applicationClient);
 
-        foreach($this->applicationClient as $id => $application)
-        {
+        foreach ($this->applicationClient as $id => $application) {
             break;
         }
 
         $this->assertTrue(isset($application));
         $this->assertInstanceOf('Nexmo\Application\Application', $application);
         $this->assertSame($application->getId(), $id);
-
     }
 
     /**
+     * @todo Remove error supression when object passing has been removed
      * @dataProvider getApplication
      */
     public function testGetApplication($payload, $id)
     {
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($id){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($id) {
             $this->assertEquals('/v2/applications/' . $id, $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
             return true;
         }))->willReturn($this->getResponse());
 
-        $application = $this->applicationClient->get($payload);
+        $application = @$this->applicationClient->get($payload);
+        $expectedData = json_decode($this->getResponse()->getBody()->getContents(), true);
 
         $this->assertInstanceOf('Nexmo\Application\Application', $application);
-        if($payload instanceof Application){
-            $this->assertSame($payload, $application);
-        }
+        $this->assertSame($expectedData['id'], $application->getId());
+        $this->assertSame($expectedData['name'], $application->getName());
+        $this->assertSame(
+            $expectedData['capabilities']['voice']['webhooks']['answer_url']['address'],
+            $application->getVoiceConfig()->getWebhook('answer_url')->getUrl()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['voice']['webhooks']['answer_url']['http_method'],
+            $application->getVoiceConfig()->getWebhook('answer_url')->getMethod()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['voice']['webhooks']['event_url']['address'],
+            $application->getVoiceConfig()->getWebhook('event_url')->getUrl()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['voice']['webhooks']['event_url']['http_method'],
+            $application->getVoiceConfig()->getWebhook('event_url')->getMethod()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['messages']['webhooks']['inbound_url']['address'],
+            $application->getMessagesConfig()->getWebhook('inbound_url')->getUrl()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['messages']['webhooks']['inbound_url']['http_method'],
+            $application->getMessagesConfig()->getWebhook('inbound_url')->getMethod()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['messages']['webhooks']['status_url']['address'],
+            $application->getMessagesConfig()->getWebhook('status_url')->getUrl()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['messages']['webhooks']['status_url']['http_method'],
+            $application->getMessagesConfig()->getWebhook('status_url')->getMethod()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['rtc']['webhooks']['event_url']['address'],
+            $application->getRtcConfig()->getWebhook('event_url')->getUrl()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['rtc']['webhooks']['event_url']['address'],
+            $application->getRtcConfig()->getWebhook('event_url')->getUrl()
+        );
     }
 
     public function getApplication()
     {
         return [
-            ['1a20a124-1775-412b-b623-e6985f4aace0', '1a20a124-1775-412b-b623-e6985f4aace0'],
-            [new Application('1a20a124-1775-412b-b623-e6985f4aace0'), '1a20a124-1775-412b-b623-e6985f4aace0']
+            ['78d335fa323d01149c3dd6f0d48968cf', '78d335fa323d01149c3dd6f0d48968cf'],
+            [new Application('78d335fa323d01149c3dd6f0d48968cf'), '78d335fa323d01149c3dd6f0d48968cf']
         ];
     }
 
     /**
+     * @todo Remove error supression when object passing has been removed
+     * @todo Rework this whole test, because it uses stock responses it's impossible to test in its current form
+     *
      * @dataProvider updateApplication
      */
     public function testUpdateApplication($payload, $method, $id, $expectedId)
     {
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($expectedId){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($expectedId) {
             $this->assertEquals('/v2/applications/' . $expectedId, $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('PUT', $request->getMethod());
 
-            $this->assertRequestJsonBodyContains('name', 'updated application', $request);
+            $this->assertRequestJsonBodyContains('name', 'My Application', $request);
 
             // And check all other capabilities
             $capabilities = [
                 'voice' => [
                     'webhooks' => [
                         'answer_url' => [
-                            'address' => 'https://example.com/new_answer',
+                            'address' => 'https://example.com/webhooks/answer',
                             'http_method' => null
 
                         ],
                         'event_url' => [
-                            'address' => 'https://example.com/new_event',
+                            'address' => 'https://example.com/webhooks/event',
                             'http_method' => null
                         ]
                     ]
@@ -235,7 +291,7 @@ class ClientTest extends TestCase
                 'rtc' => [
                     'webhooks' => [
                         'event_url' => [
-                            'address' => 'https://example.com/new_event',
+                            'address' => 'https://example.com/webhooks/event',
                             'http_method' => null
                         ]
                     ]
@@ -246,16 +302,57 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse());
 
-        if($id){
-            $application = $this->applicationClient->$method($payload, $id);
+        if ($id) {
+            $application = @$this->applicationClient->$method($payload, $id);
         } else {
-            $application = $this->applicationClient->$method($payload);
+            $application = @$this->applicationClient->$method($payload);
         }
 
+        $expectedData = json_decode($this->getResponse()->getBody()->getContents(), true);
+        
         $this->assertInstanceOf('Nexmo\Application\Application', $application);
-        if($payload instanceof Application){
-            $this->assertSame($payload, $application);
-        }
+        $this->assertSame($expectedData['id'], $application->getId());
+        $this->assertSame($expectedData['name'], $application->getName());
+        $this->assertSame(
+            $expectedData['capabilities']['voice']['webhooks']['answer_url']['address'],
+            $application->getVoiceConfig()->getWebhook('answer_url')->getUrl()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['voice']['webhooks']['answer_url']['http_method'],
+            $application->getVoiceConfig()->getWebhook('answer_url')->getMethod()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['voice']['webhooks']['event_url']['address'],
+            $application->getVoiceConfig()->getWebhook('event_url')->getUrl()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['voice']['webhooks']['event_url']['http_method'],
+            $application->getVoiceConfig()->getWebhook('event_url')->getMethod()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['messages']['webhooks']['inbound_url']['address'],
+            $application->getMessagesConfig()->getWebhook('inbound_url')->getUrl()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['messages']['webhooks']['inbound_url']['http_method'],
+            $application->getMessagesConfig()->getWebhook('inbound_url')->getMethod()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['messages']['webhooks']['status_url']['address'],
+            $application->getMessagesConfig()->getWebhook('status_url')->getUrl()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['messages']['webhooks']['status_url']['http_method'],
+            $application->getMessagesConfig()->getWebhook('status_url')->getMethod()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['rtc']['webhooks']['event_url']['address'],
+            $application->getRtcConfig()->getWebhook('event_url')->getUrl()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['rtc']['webhooks']['event_url']['address'],
+            $application->getRtcConfig()->getWebhook('event_url')->getUrl()
+        );
     }
 
     public function updateApplication()
@@ -263,37 +360,30 @@ class ClientTest extends TestCase
         $id = '1a20a124-1775-412b-b623-e6985f4aace0';
         $copy = '1a20a124-1775-412b-4444-e6985f4aace0';
         $existing = new Application($id);
-        $existing->setName('updated application');
-        $existing->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'https://example.com/new_answer');
-        $existing->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'https://example.com/new_event');
-        $existing->getRtcConfig()->setWebhook(RtcConfig::EVENT, 'https://example.com/new_event');
+        $existing->setName('My Application');
+        $existing->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'https://example.com/webhooks/answer');
+        $existing->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'https://example.com/webhooks/event');
+        $existing->getRtcConfig()->setWebhook(RtcConfig::EVENT, 'https://example.com/webhooks/event');
 
         $new = new Application();
-        $new->setName('updated application');
-        $new->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'https://example.com/new_answer');
-        $new->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'https://example.com/new_event');
-        $new->getRtcConfig()->setWebhook(RtcConfig::EVENT, 'https://example.com/new_event');
+        $new->setName('My Application');
+        $new->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'https://example.com/webhooks/answer');
+        $new->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'https://example.com/webhooks/event');
+        $new->getRtcConfig()->setWebhook(RtcConfig::EVENT, 'https://example.com/webhooks/event');
 
         $raw = [
-            'name' => 'updated application',
-            'answer_url' => 'https://example.com/new_answer',
-            'event_url' => 'https://example.com/new_event'
+            'name' => 'My Application',
+            'answer_url' => 'https://example.com/webhooks/answer',
+            'event_url' => 'https://example.com/webhooks/event'
         ];
 
         return [
             //can send an application to update it
             [clone $existing, 'update', null, $id],
-            [clone $existing, 'put', null, $id],
             //can send raw array and id
             [$raw, 'update', $id, $id],
-            [$raw, 'put', $id, $id],
             //one application overwrites another if id provided
             [clone $existing, 'update', $copy, $copy],
-            [clone $existing, 'put', $copy, $copy],
-            //new application replaces old if id provided
-            [clone $new, 'update', $id, $id],
-            [clone $new, 'put', $id, $id],
-
         ];
     }
 
@@ -302,14 +392,14 @@ class ClientTest extends TestCase
      */
     public function testDeleteApplication($payload, $id)
     {
-        $this->nexmoClient->send(Argument::that(function(Request $request) use($id){
+        $this->nexmoClient->send(Argument::that(function (Request $request) use ($id) {
             $this->assertEquals('/v2/applications/' . $id, $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('DELETE', $request->getMethod());
             return true;
         }))->willReturn(new Response('php://memory', 204));
 
-        $this->assertTrue($this->applicationClient->delete($payload));
+        $this->assertTrue(@$this->applicationClient->delete($payload));
     }
 
     public function deleteApplication()
@@ -321,42 +411,38 @@ class ClientTest extends TestCase
     }
 
     /**
+     * @todo Break this test up, it is doing way too much
      * @dataProvider exceptions
      */
     public function testThrowsException($method, $response, $code)
     {
         $response = $this->getResponse($response, $code);
         $this->nexmoClient->send(Argument::type(RequestInterface::class))->willReturn($response);
-        $application = new Application();
+        $application = new Application('78d335fa323d01149c3dd6f0d48968cf');
 
-        try{
-            $this->applicationClient->$method($application);
+        try {
+            @$this->applicationClient->$method($application);
             $this->fail('did not throw exception');
         } catch (Exception $e) {
             $response->getBody()->rewind();
             $data = json_decode($response->getBody()->getContents(), true);
             $class = substr($code, 0, 1);
 
-            if (!isset($data['title'])) {
-                print_r($data);die;
-            }
             $msg = $data['title'];
             if ($data['detail']) {
                 $msg .= ': '.$data['detail'].'. See '.$data['type'].' for more information';
             }
 
-            switch($class){
+            switch ($class) {
                 case '4':
                     $this->assertInstanceOf('Nexmo\Client\Exception\Request', $e);
                     $this->assertEquals($msg, $e->getMessage());
                     $this->assertEquals($code, $e->getCode());
-                    $this->assertSame($application, $e->getEntity());
                     break;
                 case '5':
                     $this->assertInstanceOf('Nexmo\Client\Exception\Server', $e);
                     $this->assertEquals($msg, $e->getMessage());
                     $this->assertEquals($code, $e->getCode());
-                    $this->assertSame($application, $e->getEntity());
                     break;
                 default:
                     $this->assertInstanceOf('Nexmo\Client\Exception\Exception', $e);
@@ -371,8 +457,8 @@ class ClientTest extends TestCase
         //todo: add server error
         return [
             //post / create are aliases
-            ['post', 'bad', '400'],
-            ['post', 'unauthorized', '401'],
+            ['update', 'bad', '400'],
+            ['update', 'unauthorized', '401'],
             ['create', 'bad', '400'],
             ['create', 'unauthorized', '401'],
             ['delete', 'bad', '400'],
@@ -385,12 +471,12 @@ class ClientTest extends TestCase
      */
     public function testCreateApplication($payload, $method)
     {
-        $this->nexmoClient->send(Argument::that(function(Request $request){
+        $this->nexmoClient->send(Argument::that(function (Request $request) {
             $this->assertEquals('/v2/applications', $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('POST', $request->getMethod());
 
-            $this->assertRequestJsonBodyContains('name', 'test application', $request);
+            $this->assertRequestJsonBodyContains('name', 'My Application', $request);
 
             // Check for VBC as an object explicitly
             $request->getBody()->rewind();
@@ -401,12 +487,12 @@ class ClientTest extends TestCase
                 'voice' => [
                     'webhooks' => [
                         'answer_url' => [
-                            'address' => 'https://example.com/answer',
+                            'address' => 'https://example.com/webhooks/answer',
                             'http_method' => 'GET'
 
                         ],
                         'event_url' => [
-                            'address' => 'https://example.com/event',
+                            'address' => 'https://example.com/webhooks/event',
                             'http_method' => 'POST'
                         ]
                     ]
@@ -414,12 +500,12 @@ class ClientTest extends TestCase
                 'messages' => [
                     'webhooks' => [
                         'inbound_url' => [
-                            'address' => 'https://example.com/inbound',
+                            'address' => 'https://example.com/webhooks/inbound',
                             'http_method' => 'POST'
 
                         ],
                         'status_url' => [
-                            'address' => 'https://example.com/status',
+                            'address' => 'https://example.com/webhooks/status',
                             'http_method' => 'POST'
                         ]
                     ]
@@ -427,7 +513,7 @@ class ClientTest extends TestCase
                 'rtc' => [
                     'webhooks' => [
                         'event_url' => [
-                            'address' => 'https://example.com/event',
+                            'address' => 'https://example.com/webhooks/event',
                             'http_method' => 'POST',
                         ],
                     ]
@@ -438,61 +524,100 @@ class ClientTest extends TestCase
 
             // And the public key
             $keys = [
-                'public_key' => '-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSLcjxu33G\nd/vynKnlw9SENi+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xsO\nOUNhPx2LhuLmgwWSRS4L5W851Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n'
+                'public_key' => "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSLcjxu33G\nd/vynKnlw9SENi+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xsO\nOUNhPx2LhuLmgwWSRS4L5W851Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n",
             ];
             $this->assertRequestJsonBodyContains('keys', $keys, $request);
             return true;
         }))->willReturn($this->getResponse('success', '201'));
 
-        $application = $this->applicationClient->$method($payload);
+        $application = @$this->applicationClient->$method($payload);
 
-        //is an application object was provided, should be the same
+        $expectedData = json_decode($this->getResponse()->getBody()->getContents(), true);
         $this->assertInstanceOf('Nexmo\Application\Application', $application);
-        if($payload instanceof Application){
-            $this->assertSame($payload, $application);
-        }
+        $this->assertSame($expectedData['id'], $application->getId());
+        $this->assertSame($expectedData['name'], $application->getName());
+        $this->assertSame(
+            $expectedData['capabilities']['voice']['webhooks']['answer_url']['address'],
+            $application->getVoiceConfig()->getWebhook('answer_url')->getUrl()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['voice']['webhooks']['answer_url']['http_method'],
+            $application->getVoiceConfig()->getWebhook('answer_url')->getMethod()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['voice']['webhooks']['event_url']['address'],
+            $application->getVoiceConfig()->getWebhook('event_url')->getUrl()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['voice']['webhooks']['event_url']['http_method'],
+            $application->getVoiceConfig()->getWebhook('event_url')->getMethod()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['messages']['webhooks']['inbound_url']['address'],
+            $application->getMessagesConfig()->getWebhook('inbound_url')->getUrl()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['messages']['webhooks']['inbound_url']['http_method'],
+            $application->getMessagesConfig()->getWebhook('inbound_url')->getMethod()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['messages']['webhooks']['status_url']['address'],
+            $application->getMessagesConfig()->getWebhook('status_url')->getUrl()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['messages']['webhooks']['status_url']['http_method'],
+            $application->getMessagesConfig()->getWebhook('status_url')->getMethod()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['rtc']['webhooks']['event_url']['address'],
+            $application->getRtcConfig()->getWebhook('event_url')->getUrl()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['rtc']['webhooks']['event_url']['address'],
+            $application->getRtcConfig()->getWebhook('event_url')->getUrl()
+        );
     }
 
     public function createApplication()
     {
         $application = new Application();
-        $application->setName('test application');
-        $application->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'https://example.com/answer', 'GET');
-        $application->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'https://example.com/event', 'POST');
-        $application->getMessagesConfig()->setWebhook(MessagesConfig::STATUS, 'https://example.com/status', 'POST');
-        $application->getMessagesConfig()->setWebhook(MessagesConfig::INBOUND, 'https://example.com/inbound', 'POST');
-        $application->getRtcConfig()->setWebhook(RtcConfig::EVENT, 'https://example.com/event', 'POST');
-        $application->setPublicKey('-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSLcjxu33G\nd/vynKnlw9SENi+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xsO\nOUNhPx2LhuLmgwWSRS4L5W851Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n');
+        $application->setName('My Application');
+        $application->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'https://example.com/webhooks/answer', 'GET');
+        $application->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'https://example.com/webhooks/event', 'POST');
+        $application->getMessagesConfig()->setWebhook(MessagesConfig::STATUS, 'https://example.com/webhooks/status', 'POST');
+        $application->getMessagesConfig()->setWebhook(MessagesConfig::INBOUND, 'https://example.com/webhooks/inbound', 'POST');
+        $application->getRtcConfig()->setWebhook(RtcConfig::EVENT, 'https://example.com/webhooks/event', 'POST');
+        $application->setPublicKey("-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSLcjxu33G\nd/vynKnlw9SENi+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xsO\nOUNhPx2LhuLmgwWSRS4L5W851Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n");
         $application->getVbcConfig()->enable();
 
         $rawV1 = [
-            'name' => 'test application',
-            'answer_url' => 'https://example.com/answer',
+            'name' => 'My Application',
+            'answer_url' => 'https://example.com/webhooks/answer',
             'answer_method' => 'GET',
-            'event_url' => 'https://example.com/event',
+            'event_url' => 'https://example.com/webhooks/event',
             'event_method' => 'POST',
-            'status_url' => 'https://example.com/status',
+            'status_url' => 'https://example.com/webhooks/status',
             'status_method' => 'POST',
-            'inbound_url' => 'https://example.com/inbound',
+            'inbound_url' => 'https://example.com/webhooks/inbound',
             'inbound_method' => 'POST',
             'vbc' => true,
-            'public_key' => '-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSLcjxu33G\nd/vynKnlw9SENi+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xsO\nOUNhPx2LhuLmgwWSRS4L5W851Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n'
+            'public_key' => "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSLcjxu33G\nd/vynKnlw9SENi+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xsO\nOUNhPx2LhuLmgwWSRS4L5W851Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n"
         ];
 
         $rawV2 = [
-            'name' => 'test application',
+            'name' => 'My Application',
             'keys' => [
-                'public_key' => '-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSLcjxu33G\nd/vynKnlw9SENi+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xsO\nOUNhPx2LhuLmgwWSRS4L5W851Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n'
+                'public_key' => "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSLcjxu33G\nd/vynKnlw9SENi+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xsO\nOUNhPx2LhuLmgwWSRS4L5W851Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n"
             ],
             'capabilities' => [
                 'voice' => [
                     'webhooks' => [
                         'answer_url' => [
-                            'address' => 'https://example.com/answer',
+                            'address' => 'https://example.com/webhooks/answer',
                             'http_method' => 'GET',
                         ],
                         'event_url' => [
-                            'address' => 'https://example.com/event',
+                            'address' => 'https://example.com/webhooks/event',
                             'http_method' => 'POST',
                         ],
                     ]
@@ -500,12 +625,12 @@ class ClientTest extends TestCase
                 'messages' => [
                     'webhooks' => [
                         'inbound_url' => [
-                            'address' => 'https://example.com/inbound',
+                            'address' => 'https://example.com/webhooks/inbound',
                             'http_method' => 'POST'
 
                         ],
                         'status_url' => [
-                            'address' => 'https://example.com/status',
+                            'address' => 'https://example.com/webhooks/status',
                             'http_method' => 'POST'
                         ]
                     ]
@@ -513,7 +638,7 @@ class ClientTest extends TestCase
                 'rtc' => [
                     'webhooks' => [
                         'event_url' => [
-                            'address' => 'https://example.com/event',
+                            'address' => 'https://example.com/webhooks/event',
                             'http_method' => 'POST',
                         ],
                     ]
