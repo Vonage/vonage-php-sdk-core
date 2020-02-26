@@ -198,7 +198,7 @@ class APIResource implements ClientAwareInterface
         return $this;
     }
 
-    public function setCollectionPrototype(Collection $prototype)
+    public function setCollectionPrototype(IterableAPICollection $prototype)
     {
         $this->collectionPrototype = $prototype;
         return $this;
