@@ -24,6 +24,7 @@ use PHPUnit\Framework\TestCase;
 use NexmoTest\Psr7AssertionTrait;
 use Nexmo\Account\SecretCollection;
 use Nexmo\Client\Exception\Request;
+use Nexmo\Client\Exception\Validation;
 use Psr\Http\Message\RequestInterface;
 
 class ClientTest extends TestCase
@@ -464,7 +465,7 @@ class ClientTest extends TestCase
         try {
             $this->nexmoClient->send(Argument::any())->willReturn($this->getResponse('secret-management/create-validation', 400));
             $this->accountClient->createSecret('abcd1234', 'example-4PI-secret');
-        } catch (Request $e) {
+        } catch (Validation $e) {
             $this->assertEquals('Bad Request: The request failed due to validation errors. See https://developer.nexmo.com/api-errors/account/secret-management#validation for more information', $e->getMessage());
             $this->assertEquals([['name' => 'secret', 'reason' => 'Does not meet complexity requirements']], $e->getValidationErrors());
         }

@@ -2,14 +2,13 @@
 
 namespace Nexmo\Account;
 
-use Nexmo\ApiErrorHandler;
 use Nexmo\Client\Exception;
-use Zend\Diactoros\Request;
 use Nexmo\Client\APIResource;
 use Nexmo\Client\ClientAwareTrait;
 use Nexmo\Client\ClientAwareInterface;
+use Nexmo\Client\Exception\Request as ExceptionRequest;
+use Nexmo\Client\Exception\Validation;
 use Nexmo\Entity\KeyValueFilter;
-use Psr\Http\Message\ResponseInterface;
 
 /**
  * @todo Unify the exception handling to avoid duplicated code and logic (ie: getPrefixPricing())
@@ -199,13 +198,26 @@ class Client implements ClientAwareInterface
         return Secret::fromApi($data);
     }
 
+    /**
+     * Create a new account secret
+     */
     public function createSecret(string $apiKey, string $newSecret) : Secret
     {
         $api = clone $this->api;
         $api->setBaseUrl($this->getClient()->getApiUrl());
         $api->setBaseUri('/accounts/' . $apiKey . '/secrets');
 
-        $response = $api->create(['secret' => $newSecret]);
+        try {
+            $response = $api->create(['secret' => $newSecret]);
+        } catch (ExceptionRequest $e) {
+            // @deprectated Throw a Validation exception to preserve old behavior
+            // This will change to a general Request exception in the future
+            $rawResponse = $e->getEntity();
+            if (array_key_exists('invalid_parameters', $rawResponse)) {
+                throw new Validation($e->getMessage(), $e->getCode(), null, $rawResponse['invalid_parameters']);
+            }
+            throw $e;
+        }
 
         return Secret::fromApi($response);
     }
