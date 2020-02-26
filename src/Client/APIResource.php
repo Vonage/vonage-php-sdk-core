@@ -132,12 +132,17 @@ class APIResource implements ClientAwareInterface
         $errorTitle = 'Unexpected error';
 
         if (isset($body['title'])) {
-            $errorTitle = sprintf(
-                "%s: %s. See %s for more information",
-                $body['title'],
-                $body['detail'],
-                $body['type']
-            );
+            // Have to do this check to handle VAPI errors 
+            if (is_string($body['type'])) {
+                $errorTitle = sprintf(
+                    "%s: %s. See %s for more information",
+                    $body['title'],
+                    $body['detail'],
+                    $body['type']
+                );
+            } else {
+                $errorTitle = $body['title'];
+            }
         }
 
         if (isset($body['error_title'])) {

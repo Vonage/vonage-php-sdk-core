@@ -18,6 +18,7 @@ use Nexmo\Entity\JsonUnserializableInterface;
 use Nexmo\Entity\NoRequestResponseTrait;
 use Psr\Http\Message\ResponseInterface;
 use Nexmo\Client\Exception;
+use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
 use Zend\Diactoros\Request;
 
 /**
@@ -31,7 +32,7 @@ use Zend\Diactoros\Request;
  * @method \Nexmo\Call\Talk   talk()
  * @method \Nexmo\Call\Dtmf   dtmf()
  */
-class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInterface, ClientAwareInterface
+class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInterface, ClientAwareInterface, ArrayHydrateInterface
 {
     use NoRequestResponseTrait;
     use JsonSerializableTrait;
@@ -282,6 +283,11 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
 
     public function jsonSerialize()
     {
+        return $this->toArray();
+    }
+
+    public function toArray() : array
+    {
         $data = $this->data;
 
         if (isset($this->to)) {
@@ -301,7 +307,12 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
 
     public function jsonUnserialize(array $json)
     {
-        $this->data = $json;
-        $this->id = $json['uuid'];
+        $this->createFromArray($json);
+    }
+
+    public function createFromArray(array $data)
+    {
+        $this->data = $data;
+        $this->id = $data['uuid'] ?? null;
     }
 }

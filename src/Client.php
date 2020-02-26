@@ -11,6 +11,7 @@ namespace Nexmo;
 use Zend\Diactoros\Uri;
 use Http\Client\HttpClient;
 use Nexmo\Application\Hydrator;
+use Nexmo\Call\Hydrator as CallHydrator;
 use Nexmo\Client\Signature;
 use Zend\Diactoros\Request;
 use Nexmo\Client\APIResource;
@@ -18,7 +19,6 @@ use Nexmo\Verify\Verification;
 use Nexmo\Entity\EntityInterface;
 use Nexmo\Client\Credentials\Basic;
 use Nexmo\Client\Credentials\OAuth;
-use Nexmo\Client\Response\Response;
 use Nexmo\Client\Factory\MapFactory;
 use Nexmo\Client\Credentials\Keypair;
 use Nexmo\Client\Exception\Exception;
@@ -133,11 +133,25 @@ class Client
                 return new \Nexmo\Application\Client($api, new Hydrator());
             },
             'numbers' => 'Nexmo\Numbers\Client',
-            'calls' => 'Nexmo\Call\Collection',
+            'calls' => function ($factory) {
+                /** @var APIResource $api */
+                $api = $factory->get(APIResource::class);
+                $api->setBaseUri('/v1/calls');
+                $api->setCollectionName('calls');
+
+                return new \Nexmo\Call\Client(
+                    $api,
+                    $factory->get(CallHydrator::class)
+                );
+            },
             'conversion' => 'Nexmo\Conversion\Client',
             'conversation' => 'Nexmo\Conversations\Collection',
             'user' => 'Nexmo\User\Collection',
             'redact' => 'Nexmo\Redact\Client',
+            APIResource::class => APIResource::class,
+            CallHydrator::class => function ($factory) {
+                return new CallHydrator($factory->getClient());
+            }
         ], $this));
     }
 
