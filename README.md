@@ -6,6 +6,8 @@ Client Library for PHP
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE.txt)
 [![codecov](https://codecov.io/gh/Nexmo/nexmo-php/branch/master/graph/badge.svg)](https://codecov.io/gh/Nexmo/nexmo-php)
 
+<img src="https://developer.nexmo.com/assets/images/Vonage_Nexmo.svg" height="48px" alt="Nexmo is now known as Vonage" />
+
 *This library requires a minimum PHP version of 7.1*
 
 This is the PHP client library for use Nexmo's API. To use this, you'll need a Nexmo account. Sign up [for free at 
