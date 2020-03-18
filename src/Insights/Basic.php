@@ -3,9 +3,10 @@
 namespace Nexmo\Insights;
 
 use Nexmo\Client\Exception\Exception;
+use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
 use Nexmo\Entity\JsonUnserializableInterface;
 
-class Basic implements \JsonSerializable, JsonUnserializableInterface, \ArrayAccess
+class Basic implements \JsonSerializable, JsonUnserializableInterface, \ArrayAccess, ArrayHydrateInterface
 {
     protected $data = [];
 
@@ -72,12 +73,12 @@ class Basic implements \JsonSerializable, JsonUnserializableInterface, \ArrayAcc
 
     public function jsonSerialize()
     {
-        return $this->data;
+        return $this->toArray();
     }
 
     public function jsonUnserialize(array $json)
     {
-        $this->data = $json;
+        $this->createFromArray($json);
     }
 
     public function offsetExists($offset)
@@ -98,5 +99,15 @@ class Basic implements \JsonSerializable, JsonUnserializableInterface, \ArrayAcc
     public function offsetUnset($offset)
     {
         throw new Exception('Number insights results are read only');
+    }
+
+    public function createFromArray(array $data)
+    {
+        $this->data = $data;
+    }
+
+    public function toArray(): array
+    {
+        return $this->data;
     }
 }
