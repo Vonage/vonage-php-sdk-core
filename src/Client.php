@@ -120,7 +120,12 @@ class Client
 
                 return new \Nexmo\Account\Client($api);
             },
-            'insights' => 'Nexmo\Insights\Client',
+            'insights' => function ($factory) {
+                $api = $factory->get(APIResource::class);
+                $api->setIsHAL(false);
+
+                return new \Nexmo\Insights\Client($api);
+            },
             'message' => 'Nexmo\Message\Client',
             'verify'  => 'Nexmo\Verify\Client',
             'applications' => function ($factory) {

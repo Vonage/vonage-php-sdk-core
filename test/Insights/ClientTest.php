@@ -8,21 +8,27 @@
 
 namespace NexmoTest\Insights;
 
-use Nexmo\Insights\AdvancedCnam;
+use Prophecy\Argument;
 use Nexmo\Insights\Basic;
-use Nexmo\Insights\Standard;
-use Nexmo\Insights\Advanced;
 use Nexmo\Insights\Client;
+use Nexmo\Insights\Advanced;
+use Nexmo\Insights\Standard;
+use Zend\Diactoros\Response;
+use Nexmo\Client\APIResource;
+use PHPUnit\Framework\TestCase;
+use Nexmo\Insights\AdvancedCnam;
 use Nexmo\Insights\StandardCnam;
 use NexmoTest\Psr7AssertionTrait;
-use Prophecy\Argument;
 use Psr\Http\Message\RequestInterface;
-use Zend\Diactoros\Response;
-use PHPUnit\Framework\TestCase;
 
 class ClientTest extends TestCase
 {
     use Psr7AssertionTrait;
+
+    /**
+     * @var APIResource
+     */
+    protected $apiClient;
 
     protected $nexmoClient;
 
@@ -35,8 +41,12 @@ class ClientTest extends TestCase
     {
         $this->nexmoClient = $this->prophesize('Nexmo\Client');
         $this->nexmoClient->getApiUrl()->willReturn('http://api.nexmo.com');
-        $this->insightsClient = new Client();
-        $this->insightsClient->setClient($this->nexmoClient->reveal());
+
+        $this->apiClient = new APIResource();
+        $this->apiClient->setIsHAL(false);
+        $this->apiClient->setClient($this->nexmoClient->reveal());
+
+        $this->insightsClient = new Client($this->apiClient);
     }
 
     public function testStandardCnam()
