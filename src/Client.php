@@ -346,11 +346,15 @@ class Client
     }
 
     /**
+     * Takes a URL and a key=>value array to get a streamed response
+     *
+     * @param string $url The URL to make a request to
+     * @param array $params Key=>Value array of data to use as the query string
      * @return resource A streamable response resource
      */
-    public function stream(...$params)
+    public function stream($url, array $params = [])
     {
-        return $this->get(...$params)->getBody()->detach();
+        return $this->get($url, $params)->getBody()->detach();
     }
 
     /**
