@@ -9,6 +9,7 @@
 namespace Nexmo\Numbers;
 
 use Http\Client\Common\Exception\ClientErrorException;
+use Nexmo\Client\APIResource;
 use Nexmo\Client\ClientAwareInterface;
 use Nexmo\Client\ClientAwareTrait;
 use Psr\Http\Message\ResponseInterface;
@@ -18,6 +19,16 @@ use Zend\Diactoros\Request;
 class Client implements ClientAwareInterface
 {
     use ClientAwareTrait;
+
+    /**
+     * @var APIResource
+     */
+    protected $api;
+
+    public function __construct(APIResource $api)
+    {
+        $this->api = $api;
+    }
 
     public function update($number, $id = null)
     {
@@ -41,22 +52,9 @@ class Client implements ClientAwareInterface
             $body['country'] = $update->getCountry();
         }
 
-        $request = new Request(
-            $this->client->getRestUrl() . '/number/update',
-            'POST',
-            'php://temp',
-            [
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/x-www-form-urlencoded'
-            ]
-        );
-
-        $request->getBody()->write(http_build_query($body));
-        $response = $this->client->send($request);
-
-        if ('200' != $response->getStatusCode()) {
-            throw $this->getException($response);
-        }
+        $api = clone $this->api;
+        $api->setBaseUri('/number/update');
+        $api->submit($body);
 
         if (isset($update) and ($number instanceof Number)) {
             return $this->get($number);
@@ -69,8 +67,15 @@ class Client implements ClientAwareInterface
         return $this->get($body['msisdn']);
     }
 
+    /**
+     * Returns a number
+     */
     public function get($number = null)
     {
+        if (is_null($number)) {
+            trigger_error('Calling Nexmo\Numbers\Client::get() without a parameter is deprecated, please use `search()` instead');
+        }
+
         $items =  $this->search($number);
 
         // This is legacy behaviour, so we need to keep it even though

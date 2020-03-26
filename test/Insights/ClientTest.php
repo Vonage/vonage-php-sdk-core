@@ -44,6 +44,7 @@ class ClientTest extends TestCase
 
         $this->apiClient = new APIResource();
         $this->apiClient->setIsHAL(false);
+        $this->apiClient->setBaseUrl('https://rest.nexmo.com');
         $this->apiClient->setClient($this->nexmoClient->reveal());
 
         $this->insightsClient = new Client($this->apiClient);
@@ -125,8 +126,6 @@ class ClientTest extends TestCase
 
         $insightsStandard = $this->insightsClient->basic('14155550100');
     }
-
-
 
     protected function checkInsightsRequest($methodToCall, $expectedPath, $expectedClass)
     {

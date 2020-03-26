@@ -8,19 +8,25 @@
 
 namespace NexmoTest\Numbers;
 
+use Prophecy\Argument;
 use Nexmo\Numbers\Client;
 use Nexmo\Numbers\Number;
 use Nexmo\Client\Exception;
-use Nexmo\Client\Exception\Request;
-use NexmoTest\Psr7AssertionTrait;
-use Prophecy\Argument;
-use Psr\Http\Message\RequestInterface;
 use Zend\Diactoros\Response;
+use Nexmo\Client\APIResource;
 use PHPUnit\Framework\TestCase;
+use NexmoTest\Psr7AssertionTrait;
+use Nexmo\Client\Exception\Request;
+use Psr\Http\Message\RequestInterface;
 
 class ClientTest extends TestCase
 {
     use Psr7AssertionTrait;
+
+    /**
+     * @var APIResource
+     */
+    protected $apiClient;
 
     protected $nexmoClient;
 
@@ -33,7 +39,13 @@ class ClientTest extends TestCase
     {
         $this->nexmoClient = $this->prophesize('Nexmo\Client');
         $this->nexmoClient->getRestUrl()->willReturn('https://rest.nexmo.com');
-        $this->numberClient = new Client();
+
+        $this->apiClient = new APIResource();
+        $this->apiClient->setIsHAL(false);
+        $this->apiClient->setBaseUrl('https://rest.nexmo.com');
+        $this->apiClient->setClient($this->nexmoClient->reveal());
+
+        $this->numberClient = new Client($this->apiClient);
         $this->numberClient->setClient($this->nexmoClient->reveal());
     }
 
