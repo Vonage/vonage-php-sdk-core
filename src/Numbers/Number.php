@@ -10,13 +10,14 @@ namespace Nexmo\Numbers;
 
 use Nexmo\Application\Application;
 use Nexmo\Entity\EntityInterface;
+use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
 use Nexmo\Entity\JsonResponseTrait;
 use Nexmo\Entity\JsonSerializableInterface;
 use Nexmo\Entity\JsonSerializableTrait;
 use Nexmo\Entity\JsonUnserializableInterface;
 use Nexmo\Entity\NoRequestResponseTrait;
 
-class Number implements EntityInterface, JsonSerializableInterface, JsonUnserializableInterface
+class Number implements EntityInterface, JsonSerializableInterface, JsonUnserializableInterface, ArrayHydrateInterface
 {
     use JsonSerializableTrait;
     use NoRequestResponseTrait;
@@ -173,10 +174,20 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
      */
     public function jsonUnserialize(array $json)
     {
-        $this->data = $json;
+        $this->createFromArray($json);
+    }
+
+    public function createFromArray(array $data)
+    {
+        $this->data = $data;
     }
 
     public function jsonSerialize()
+    {
+        return $this->toArray();
+    }
+
+    public function toArray() : array
     {
         $json = $this->data;
         if (isset($json['voiceCallbackValue']) and ($json['voiceCallbackValue'] instanceof Application)) {

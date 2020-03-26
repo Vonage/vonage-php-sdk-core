@@ -175,8 +175,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
 
         //all hal collections have an `_embedded` object, we expect there to be a property matching the collection name
         if ($this->getApiResource()->isHAL()) {
-            if (
-                !isset($this->page['_embedded'])
+            if (!isset($this->page['_embedded'])
                 || !isset($this->page['_embedded'][$this->getApiResource()->getCollectionName()])
             ) {
                 return false;

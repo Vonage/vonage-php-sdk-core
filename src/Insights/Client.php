@@ -10,18 +10,20 @@ namespace Nexmo\Insights;
 
 use Nexmo\Numbers\Number;
 use Nexmo\Client\Exception;
-use Zend\Diactoros\Request;
 use Nexmo\Client\APIResource;
 use Nexmo\Entity\KeyValueFilter;
 use Nexmo\Client\ClientAwareTrait;
 use Nexmo\Client\ClientAwareInterface;
-use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class Client
  */
-class Client
+class Client implements ClientAwareInterface
 {
+    /**
+     * @deprecated This client no longer needs to be ClientAware
+     */
+    use ClientAwareTrait;
     /**
      * @var APIResource
      */
@@ -57,7 +59,7 @@ class Client
         return $standard;
     }
 
-    public function standard($number, $useCnam = false) : Standard
+    public function standard($number, bool $useCnam = false) : Standard
     {
         $insightsResults = $this->makeRequest('/ni/standard/json', $number);
         $standard = new Standard($insightsResults['national_format_number']);
@@ -73,7 +75,7 @@ class Client
         return $advanced;
     }
 
-    public function advancedAsync($number, $webhook) : void
+    public function advancedAsync($number, string $webhook) : void
     {
         // This method does not have a return value as it's async. If there is no exception thrown
         // We can assume that everything is fine
@@ -109,7 +111,7 @@ class Client
      * This API returns a 200 on an error, so does not get caught by the normal
      * error checking. We check for a status and message manually.
      */
-    protected function getNIException($body)
+    protected function getNIException(array $body) : Exception\Request
     {
         $status = $body['status'];
         $message = "Error: ";

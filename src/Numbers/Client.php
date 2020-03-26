@@ -8,19 +8,42 @@
 
 namespace Nexmo\Numbers;
 
-use Http\Client\Common\Exception\ClientErrorException;
+use Nexmo\Client\APIResource;
 use Nexmo\Client\ClientAwareInterface;
 use Nexmo\Client\ClientAwareTrait;
-use Psr\Http\Message\ResponseInterface;
 use Nexmo\Client\Exception;
-use Zend\Diactoros\Request;
+use Nexmo\Entity\IterableAPICollection;
+use Nexmo\Entity\KeyValueFilter;
 
 class Client implements ClientAwareInterface
 {
+    /**
+     * @deprecated This client no longer needs to be ClientAware
+     */
     use ClientAwareTrait;
 
-    public function update($number, $id = null)
+    /**
+     * @var APIResource
+     */
+    protected $api;
+
+    public function __construct(APIResource $api)
     {
+        $this->api = $api;
+    }
+
+    /**
+     * @todo Clean up the logic here, we are doing a lot of GET requests
+     *
+     * @param string|Number $number Number to update
+     * @param string $id MSISDN to look
+     */
+    public function update($number, ?string $id = null) : Number
+    {
+        if (!$number instanceof Number) {
+            trigger_error("Passing a string to `Nexmo\Number\Client::update()` is deprecated, please pass a `Number` object instead");
+        }
+
         if (!is_null($id)) {
             $update = $this->get($id);
         }
@@ -41,22 +64,9 @@ class Client implements ClientAwareInterface
             $body['country'] = $update->getCountry();
         }
 
-        $request = new Request(
-            $this->client->getRestUrl() . '/number/update',
-            'POST',
-            'php://temp',
-            [
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/x-www-form-urlencoded'
-            ]
-        );
-
-        $request->getBody()->write(http_build_query($body));
-        $response = $this->client->send($request);
-
-        if ('200' != $response->getStatusCode()) {
-            throw $this->getException($response);
-        }
+        $api = clone $this->api;
+        $api->setBaseUri('/number/update');
+        $api->submit($body);
 
         if (isset($update) and ($number instanceof Number)) {
             return $this->get($number);
@@ -69,9 +79,26 @@ class Client implements ClientAwareInterface
         return $this->get($body['msisdn']);
     }
 
-    public function get($number = null)
+    /**
+     * Returns a number
+     *
+     * @param Number|string $number Number to fetch, deprecating passing a `Number` object
+     */
+    public function get($number = null) : Number
     {
-        $items =  $this->search($number);
+        if (is_null($number)) {
+            trigger_error(
+                'Calling Nexmo\Numbers\Client::get() without a parameter is deprecated, please use `searchOwned()` or `searchAvailable()` instead'
+            );
+        }
+
+        if ($number instanceof Number) {
+            trigger_error(
+                'Calling Nexmo\Numbers\Client::get() with a `Number` object is deprecated, please pass a string MSISDN instead'
+            );
+        }
+
+        $items =  $this->searchOwned($number);
 
         // This is legacy behaviour, so we need to keep it even though
         // it isn't technically the correct message
@@ -83,7 +110,7 @@ class Client implements ClientAwareInterface
     }
 
     /**
-     * @param null|string $number
+     * @param null|string|Number $number
      * @return array []Number
      * @deprecated Use `searchOwned` instead
      */
@@ -115,13 +142,11 @@ class Client implements ClientAwareInterface
 
         $query = $this->parseParameters($possibleParameters, $options);
 
-        $request = new Request(
-            $this->client->getRestUrl() . '/number/search?' . http_build_query($query),
-            'GET',
-            'php://temp'
-        );
+        $api = clone $this->api;
+        $api->setBaseUri('/number/search');
+        $api->setCollectionName('numbers');
 
-        $response = $this->client->send($request);
+        $response = $api->search(new KeyValueFilter($query));
 
         return $this->handleNumberSearchResult($response, null);
     }
@@ -153,16 +178,11 @@ class Client implements ClientAwareInterface
         ];
 
         $query = $this->parseParameters($possibleParameters, $options);
+        $api = clone $this->api;
+        $api->setBaseUri('/account/numbers');
+        $api->setCollectionName('numbers');
 
-        $queryString = http_build_query($query);
-
-        $request = new Request(
-            $this->client->getRestUrl() . '/account/numbers?' . $queryString,
-            'GET',
-            'php://temp'
-        );
-
-        $response = $this->client->send($request);
+        $response = $api->search(new KeyValueFilter($query));
 
         return $this->handleNumberSearchResult($response, $number);
     }
@@ -203,38 +223,23 @@ class Client implements ClientAwareInterface
         return $query;
     }
 
-    private function handleNumberSearchResult($response, $number)
+    /**
+     * @param string|Number $number Number onject to populate, deprecated
+     */
+    private function handleNumberSearchResult(IterableAPICollection $response, $number = null) : array
     {
-        if ($response->getStatusCode() != '200') {
-            throw $this->getException($response);
-        }
-
-        $searchResults = json_decode($response->getBody()->getContents(), true);
-        if (empty($searchResults)) {
-            // we did not find any results, that's OK
-            return [];
-        }
-
-        if (!isset($searchResults['count']) OR !isset($searchResults['numbers'])) {
-            $e = new Exception\Request('unexpected response format');
-            $response->getBody()->rewind();
-            $e->setEntity($response);
-            throw $e;
-        }
-
         // We're going to return a list of numbers
         $numbers = [];
 
-        // If they provided a number initially, we'll only get one response
-        // so let's reuse the object
-        if ($number instanceof Number) {
-            $number->jsonUnserialize($searchResults['numbers'][0]);
+        // Legacy - If the user passed in a number object, populate that object
+        // @deprecated This will eventually return a new clean object
+        if (count($response) === 1 && $number instanceof Number) {
+            $number->createFromArray($response->current());
             $numbers[] = $number;
         } else {
-            // Otherwise, we return everything that matches
-            foreach ($searchResults['numbers'] as $returnedNumber) {
+            foreach ($response as $rawNumber) {
                 $number = new Number();
-                $number->jsonUnserialize($returnedNumber);
+                $number->createFromArray($rawNumber);
                 $numbers[] = $number;
             }
         }
@@ -242,7 +247,10 @@ class Client implements ClientAwareInterface
         return $numbers;
     }
 
-    public function purchase($number, $country = null)
+    /**
+     * @param Number|string $number Number to purchase
+     */
+    public function purchase($number, ?string $country = null) : void
     {
         // We cheat here and fetch a number using the API so that we have the country code which is required
         // to make a cancel request
@@ -250,6 +258,8 @@ class Client implements ClientAwareInterface
             if (!$country) {
                 throw new Exception\Exception("You must supply a country in addition to a number to purchase a number");
             }
+
+            trigger_error('Passing a string to Nexmo\Number\Client::purchase() is being deprecated, please pass a Nexmo\Number\Number object');
             $number = new Number($number, $country);
         }
 
@@ -258,36 +268,20 @@ class Client implements ClientAwareInterface
             'country' => $number->getCountry()
         ];
 
-        $request = new Request(
-            $this->client->getRestUrl() . '/number/buy',
-            'POST',
-            'php://temp',
-            [
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/x-www-form-urlencoded'
-            ]
-        );
-
-        $request->getBody()->write(http_build_query($body));
-        $response = $this->client->send($request);
-
-        // Sadly we can't distinguish *why* purchasing fails, just that it
-        // has failed. Here are a few of the tests I attempted and their associated
-        // error codes + body
-        //
-        // Mismatch number/country :: 420 :: method failed
-        // Already own number :: 420 :: method failed
-        // Someone else owns the number :: 420 :: method failed
-        if ('200' != $response->getStatusCode()) {
-            throw $this->getException($response);
-        }
+        $api = clone $this->api;
+        $api->setBaseUri('/number/buy');
+        $api->submit($body);
     }
 
-    public function cancel($number)
+    /**
+     * @param Number|string $number Number to cancel
+     */
+    public function cancel($number) : void
     {
         // We cheat here and fetch a number using the API so that we have the country code which is required
         // to make a cancel request
         if (!$number instanceof Number) {
+            trigger_error('Passing a string to Nexmo\Number\Client::purchase() is being deprecated, please pass a Nexmo\Number\Number object');
             $number = $this->get($number);
         }
 
@@ -296,44 +290,8 @@ class Client implements ClientAwareInterface
             'country' => $number->getCountry()
         ];
 
-        $request = new Request(
-            $this->client->getRestUrl() . '/number/cancel',
-            'POST',
-            'php://temp',
-            [
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/x-www-form-urlencoded'
-            ]
-        );
-
-        $request->getBody()->write(http_build_query($body));
-        $response = $this->client->send($request);
-
-        // Sadly we can't distinguish *why* purchasing fails, just that it
-        // has failed.
-        if ('200' != $response->getStatusCode()) {
-            throw $this->getException($response);
-        }
-    }
-
-    protected function getException(ResponseInterface $response)
-    {
-        $body = json_decode($response->getBody()->getContents(), true);
-        $status = $response->getStatusCode();
-
-        if ($status >= 400 and $status < 500) {
-            $e = new Exception\Request($body['error-code-label'], $status);
-            $response->getBody()->rewind();
-            $e->setEntity($response);
-        } elseif ($status >= 500 and $status < 600) {
-            $e = new Exception\Server($body['error-code-label'], $status);
-            $response->getBody()->rewind();
-            $e->setEntity($response);
-        } else {
-            $e = new Exception\Exception('Unexpected HTTP Status Code');
-            throw $e;
-        }
-
-        return $e;
+        $api = clone $this->api;
+        $api->setBaseUri('/number/cancel');
+        $api->submit($body);
     }
 }

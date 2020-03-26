@@ -126,11 +126,9 @@ class ClientTest extends TestCase
         $insightsStandard = $this->insightsClient->basic('14155550100');
     }
 
-
-
     protected function checkInsightsRequest($methodToCall, $expectedPath, $expectedClass)
     {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request)  use ($expectedPath){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($expectedPath) {
             $this->assertEquals($expectedPath, $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());

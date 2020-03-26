@@ -8,19 +8,25 @@
 
 namespace NexmoTest\Numbers;
 
+use Prophecy\Argument;
 use Nexmo\Numbers\Client;
 use Nexmo\Numbers\Number;
 use Nexmo\Client\Exception;
-use Nexmo\Client\Exception\Request;
-use NexmoTest\Psr7AssertionTrait;
-use Prophecy\Argument;
-use Psr\Http\Message\RequestInterface;
 use Zend\Diactoros\Response;
+use Nexmo\Client\APIResource;
 use PHPUnit\Framework\TestCase;
+use NexmoTest\Psr7AssertionTrait;
+use Nexmo\Client\Exception\Request;
+use Psr\Http\Message\RequestInterface;
 
 class ClientTest extends TestCase
 {
     use Psr7AssertionTrait;
+
+    /**
+     * @var APIResource
+     */
+    protected $apiClient;
 
     protected $nexmoClient;
 
@@ -33,7 +39,13 @@ class ClientTest extends TestCase
     {
         $this->nexmoClient = $this->prophesize('Nexmo\Client');
         $this->nexmoClient->getRestUrl()->willReturn('https://rest.nexmo.com');
-        $this->numberClient = new Client();
+
+        $this->apiClient = new APIResource();
+        $this->apiClient->setIsHAL(false);
+        $this->apiClient->setBaseUrl('https://rest.nexmo.com');
+        $this->apiClient->setClient($this->nexmoClient->reveal());
+
+        $this->numberClient = new Client($this->apiClient);
         $this->numberClient->setClient($this->nexmoClient->reveal());
     }
 
@@ -43,7 +55,7 @@ class ClientTest extends TestCase
     public function testUpdateNumber($payload, $id, $expectedId, $lookup)
     {
         //based on the id provided, may need to look up the number first
-        if($lookup){
+        if ($lookup) {
             if(is_null($id) OR ('1415550100' == $id)){
                 $first = $this->getResponse('single');
             } else {
@@ -58,8 +70,8 @@ class ClientTest extends TestCase
             $third = null;
         }
 
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($expectedId, $lookup) {
-            if($request->getUri()->getPath() == '/account/numbers'){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($expectedId, $lookup) {
+            if ($request->getUri()->getPath() == '/account/numbers') {
                 //just getting the number first / last
                 return true;
             }
@@ -80,14 +92,14 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($first, $second, $third);
 
-        if(isset($id)){
-            $number = $this->numberClient->update($payload, $id);
+        if (isset($id)) {
+            $number = @$this->numberClient->update($payload, $id);
         } else {
-            $number = $this->numberClient->update($payload);
+            $number = @$this->numberClient->update($payload);
         }
 
         $this->assertInstanceOf('Nexmo\Numbers\Number', $number);
-        if($payload instanceof Number){
+        if ($payload instanceof Number) {
             $this->assertSame($payload, $number);
 
         }
@@ -136,7 +148,7 @@ class ClientTest extends TestCase
      */
     public function testGetNumber($payload, $id)
     {
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($id){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($id) {
             $this->assertEquals('/account/numbers', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
@@ -144,10 +156,10 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('single'));
 
-        $number = $this->numberClient->get($payload);
+        $number = @$this->numberClient->get($payload);
 
         $this->assertInstanceOf('Nexmo\Numbers\Number', $number);
-        if($payload instanceof Number){
+        if ($payload instanceof Number) {
             $this->assertSame($payload, $number);
         }
 
@@ -220,7 +232,7 @@ class ClientTest extends TestCase
 
     public function testSearchAvailableReturnsNumberList()
     {
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/number/search', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
@@ -289,7 +301,7 @@ class ClientTest extends TestCase
 
     public function testSearchOwnedReturnsSingleNumber()
     {
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/numbers', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
@@ -306,7 +318,7 @@ class ClientTest extends TestCase
 
     public function testPurchaseNumberWithNumberObject()
     {
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/number/buy', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('POST', $request->getMethod());
@@ -323,12 +335,12 @@ class ClientTest extends TestCase
     public function testPurchaseNumberWithNumberAndCountry()
     {
         // When providing a number string, the first thing that happens is a GET request to fetch number details
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
             return $request->getUri()->getPath() === '/account/numbers';
         }))->willReturn($this->getResponse('single'));
 
         // Then we purchase the number
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
             if ($request->getUri()->getPath() === '/number/buy') {
                 $this->assertEquals('/number/buy', $request->getUri()->getPath());
                 $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
@@ -337,7 +349,7 @@ class ClientTest extends TestCase
             }
             return false;
         }))->willReturn($this->getResponse('post'));
-        $this->numberClient->purchase('1415550100', 'US');
+        @$this->numberClient->purchase('1415550100', 'US');
 
         // There's nothing to assert here as we don't do anything with the response.
         // If there's no exception thrown, everything is fine!
@@ -348,7 +360,7 @@ class ClientTest extends TestCase
      */
     public function testPurchaseNumberErrors($number, $country, $responseFile, $expectedHttpCode, $expectedException, $expectedExceptionMessage)
     {
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/number/buy', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('POST', $request->getMethod());
@@ -359,7 +371,7 @@ class ClientTest extends TestCase
         $this->expectExceptionMessage($expectedExceptionMessage);
 
         $num = new Number($number, $country);
-        $this->numberClient->purchase($num);
+        @$this->numberClient->purchase($num);
     }
 
     public function purchaseNumberErrorProvider()
@@ -375,7 +387,7 @@ class ClientTest extends TestCase
 
     public function testCancelNumberWithNumberObject()
     {
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/number/cancel', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('POST', $request->getMethod());
@@ -391,15 +403,14 @@ class ClientTest extends TestCase
 
     public function testCancelNumberWithNumberString()
     {
-
         // When providing a number string, the first thing that happens is a GET request to fetch number details
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
             return $request->getUri()->getPath() === '/account/numbers';
         }))->willReturn($this->getResponse('single'));
 
 
         // Then we get a POST request to cancel
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) {
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
             if ($request->getUri()->getPath() === '/number/cancel') {
                 $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
                 $this->assertEquals('POST', $request->getMethod());
@@ -408,15 +419,12 @@ class ClientTest extends TestCase
             return false;
         }))->willReturn($this->getResponse('cancel'));
 
-        $this->numberClient->cancel('1415550100');
-
-        // There's nothing to assert here as we don't do anything with the response.
-        // If there's no exception thrown, everything is fine!
+        @$this->numberClient->cancel('1415550100');
     }
 
     public function testCancelNumberError()
     {
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/number/cancel', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('POST', $request->getMethod());

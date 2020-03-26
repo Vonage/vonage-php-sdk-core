@@ -102,7 +102,7 @@ class CollectionTest extends TestCase
         $this->nexmoClient->send(Argument::any())->shouldNotHaveBeenCalled();
         $this->assertEquals($id, $call->getId());
 
-        if($payload instanceof Call){
+        if ($payload instanceof Call) {
             $this->assertSame($payload, $call);
         }
 
@@ -119,7 +119,7 @@ class CollectionTest extends TestCase
     public function testGetIsNotLazy($payload, $id)
     {
         //this generally proxies the call resource, but we're testing the correct request, not the proxy
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($id){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($id) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'GET', $request);
             return true;
         }))->willReturn($this->getResponse('call'))->shouldBeCalled();
@@ -127,7 +127,7 @@ class CollectionTest extends TestCase
         $call = @$this->collection->get($payload);
 
         $this->assertInstanceOf('Nexmo\Call\Call', $call);
-        if($payload instanceof Call){
+        if ($payload instanceof Call) {
             $this->assertSame($payload, $call);
         }
     }
@@ -137,7 +137,7 @@ class CollectionTest extends TestCase
      */
     public function testCreatePostCall($payload, $method)
     {
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($payload){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
             return true;
@@ -154,7 +154,7 @@ class CollectionTest extends TestCase
      */
     public function testCreateCallNcco($payload)
     {
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($payload){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
             $ncco = [['action' => 'talk', 'text' => 'Hello World']];
 
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
@@ -174,7 +174,7 @@ class CollectionTest extends TestCase
      */
     public function testCreatePostCallErrorFromVApi($payload, $method)
     {
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($payload){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
             return true;
@@ -193,7 +193,7 @@ class CollectionTest extends TestCase
      */
     public function testCreatePostCallErrorFromProxy($payload, $method)
     {
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($payload){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
             return true;
@@ -212,7 +212,7 @@ class CollectionTest extends TestCase
      */
     public function testCreatePostCallErrorUnknownFormat($payload, $method)
     {
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($payload){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
             return true;
@@ -232,7 +232,7 @@ class CollectionTest extends TestCase
     public function testPutCall($expectedId, $id, $payload)
     {
         //this generally proxies the call resource, but we're testing the correct request, not the proxy
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($expectedId, $payload){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($expectedId, $payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $expectedId, 'PUT', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
             return true;
@@ -241,7 +241,7 @@ class CollectionTest extends TestCase
         $call = @$this->collection->put($payload, $id);
         $this->assertInstanceOf('Nexmo\Call\Call', $call);
 
-        if($id instanceof Call){
+        if ($id instanceof Call) {
             $this->assertSame($id, $call);
         } else {
             $this->assertEquals($id, $call->getId());
