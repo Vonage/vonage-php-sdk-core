@@ -75,7 +75,24 @@ class Client
     public function __construct(CredentialsInterface $credentials, $options = array(), HttpClient $client = null)
     {
         if (is_null($client)) {
-            $client = new \Http\Adapter\Guzzle6\Client();
+            $guzzle = null;
+
+            if (!empty($options['stream'])) {
+                $guzzleOptions = [
+                    'stream' => true,
+                ];
+
+                if (!empty($options['guzzleOptions'])) {
+                    $guzzleOptions = array_merge(
+                        $guzzleOptions,
+                        $options['guzzleOptions']
+                    );
+                }
+
+                $guzzle = new \GuzzleHttp\Client($guzzleOptions);
+            }
+
+            $client = new \Http\Adapter\Guzzle6\Client($guzzle);
         }
 
         $this->setHttpClient($client);
@@ -326,6 +343,14 @@ class Client
         );
 
         return $this->send($request);
+    }
+
+    /**
+     * @return resource A streamable response resource
+     */
+    public function stream(...$params)
+    {
+        return $this->get(...$params)->getBody()->detach();
     }
 
     /**
