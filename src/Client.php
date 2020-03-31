@@ -77,22 +77,11 @@ class Client
         if (is_null($client)) {
             $guzzle = null;
 
-            if (!empty($options['stream'])) {
-                $guzzleOptions = [
-                    'stream' => true,
-                ];
-
-                if (!empty($options['guzzleOptions'])) {
-                    $guzzleOptions = array_merge(
-                        $guzzleOptions,
-                        $options['guzzleOptions']
-                    );
-                }
-
-                $guzzle = new \GuzzleHttp\Client($guzzleOptions);
+            if (!empty($options['guzzle'])) {
+                $guzzle = new \GuzzleHttp\Client($options['guzzle']);
             }
 
-            $client = new \Http\Adapter\Guzzle6\Client($guzzle);
+            $client = new \Nexmo\Client\GuzzleStreamAdapter($guzzle);
         }
 
         $this->setHttpClient($client);
@@ -354,7 +343,13 @@ class Client
      */
     public function stream($url, array $params = [])
     {
-        return $this->get($url, $params)->getBody()->detach();
+        if (!($this->client instanceof \Nexmo\StreamingInterface)) {
+            throw new \RuntimeException('Client does not support streaming');
+        }
+
+        return $this->client->stream(
+            $this->get($url, $params)
+        );
     }
 
     /**
