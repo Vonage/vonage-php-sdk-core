@@ -522,6 +522,45 @@ class ClientTest extends TestCase
     }
 
     /**
+     * @dataProvider genericStreamConfigProvider
+     */
+    public function testCanConfigureStreaming($config, $isStreaming)
+    {
+        $nexmo = new Client($this->basic_credentials, $config);
+        $adapter = $nexmo->getHttpClient();
+
+        $guzzle = $this->getHiddenValue($adapter, 'client');
+
+        $this->assertEquals($guzzle->getConfig('stream'), $isStreaming);
+    }
+
+    public function genericStreamConfigProvider()
+    {
+        return [
+            'with streaming' => [
+                ['guzzle' => ['stream' => true]], /* initial nexmo client config */
+                true, /* whether or not guzzle should be configured to stream */
+            ],
+            'without streaming' => [
+                [], /* initial nexmo client config */
+                false, /* whether or not guzzle should be configured to stream */
+            ],
+        ];
+    }
+
+    /**
+     * Please forgive me...
+     */
+    private function getHiddenValue($object, $name)
+    {
+        $reflection = new \ReflectionObject($object);
+        $property = $reflection->getProperty($name);
+        $property->setAccessible(true);
+
+        return $property->getValue($object);
+    }
+
+    /**
      * Allow tests to check that the API client is correctly forming the HTTP request before sending it to the HTTP
      * client.
      *
