@@ -32,10 +32,41 @@ class Client implements ClientAwareInterface, CollectionInterface, \ArrayAccess
      */
     protected $hydrator;
 
-    public function __construct(APIResource $api, HydratorInterface $hydrator)
+    public function __construct(APIResource $api = null, HydratorInterface $hydrator = null)
     {
         $this->api = $api;
         $this->hydrator = $hydrator;
+    }
+
+    /**
+     * Shim to handle older instatiations of this class
+     * @deprecated Will remove in v3
+     */
+    protected function getApiResource() : APIResource
+    {
+        if (is_null($this->api)) {
+            $api = new APIResource();
+            $api->setClient($this->getClient())
+                ->setBaseUri('/v1/calls')
+                ->setCollectionName('calls')
+            ;
+            $this->api = $api;
+        }
+        return $this->api;
+    }
+
+    /**
+     * Shim to handle older instatiations of this class
+     * @deprecated Will remove in v3
+     */
+    protected function getHydrator() : HydratorInterface
+    {
+        if (is_null($this->hydrator)) {
+            $hydrator = new Hydrator($this->getClient());
+            $this->hydrator = $hydrator;
+        }
+
+        return $this->hydrator;
     }
 
     public static function getCollectionName()
@@ -76,9 +107,9 @@ class Client implements ClientAwareInterface, CollectionInterface, \ArrayAccess
             $body = $call;
         }
 
-        $response = $this->api->create($body);
+        $response = $this->getApiResource()->create($body);
 
-        return $this->hydrator->hydrate($response);
+        return $this->getHydrator()->hydrate($response);
     }
 
     /**
@@ -111,8 +142,8 @@ class Client implements ClientAwareInterface, CollectionInterface, \ArrayAccess
      */
     public function streamAudio(Call $call, array $urls, int $loop = 1, float $volumeLevel = 0.0)
     {
-        $api = clone $this->api;
-        $api->setBaseUri($this->api->getBaseUri() . '/' . $call->getId());
+        $api = $this->getApiResource();
+        $api->setBaseUri($this->getApiResource()->getBaseUri() . '/' . $call->getId());
 
         $api->update('stream', [
             'stream_url' => $urls,
@@ -126,8 +157,8 @@ class Client implements ClientAwareInterface, CollectionInterface, \ArrayAccess
      */
     public function dtmf(Call $call, string $digits)
     {
-        $api = clone $this->api;
-        $api->setBaseUri($this->api->getBaseUri() . '/' . $call->getId());
+        $api = $this->getApiResource();
+        $api->setBaseUri($this->getApiResource()->getBaseUri() . '/' . $call->getId());
 
         $api->update('dtmf', ['digits' => $digits]);
     }
@@ -143,8 +174,8 @@ class Client implements ClientAwareInterface, CollectionInterface, \ArrayAccess
         float $volumeLevel = 0.0
     )
     {
-        $api = clone $this->api;
-        $api->setBaseUri($this->api->getBaseUri() . '/' . $call->getId());
+        $api = $this->getApiResource();
+        $api->setBaseUri($this->getApiResource()->getBaseUri() . '/' . $call->getId());
 
         $api->update('talk', [
             'text' => $text,
@@ -169,8 +200,8 @@ class Client implements ClientAwareInterface, CollectionInterface, \ArrayAccess
             $call = new Call($call);
         }
 
-        $api = clone $this->api;
-        $api->setBaseUri($this->api->getBaseUri() . '/' . $call->getId());
+        $api = $this->getApiResource();
+        $api->setBaseUri($this->getApiResource()->getBaseUri() . '/' . $call->getId());
         $api->delete($type);
 
         return $call;
@@ -181,8 +212,8 @@ class Client implements ClientAwareInterface, CollectionInterface, \ArrayAccess
      */
     public function streamAudioStop(Call $call) : void
     {
-        $api = clone $this->api;
-        $api->setBaseUri($this->api->getBaseUri() . '/' . $call->getId());
+        $api = $this->getApiResource();
+        $api->setBaseUri($this->getApiResource()->getBaseUri() . '/' . $call->getId());
 
         $api->delete('stream');
     }
@@ -192,8 +223,8 @@ class Client implements ClientAwareInterface, CollectionInterface, \ArrayAccess
      */
     public function talkStop(Call $call) : void
     {
-        $api = clone $this->api;
-        $api->setBaseUri($this->api->getBaseUri() . '/' . $call->getId());
+        $api = $this->getApiResource();
+        $api->setBaseUri($this->getApiResource()->getBaseUri() . '/' . $call->getId());
 
         $api->delete('talk');
     }
@@ -215,8 +246,8 @@ class Client implements ClientAwareInterface, CollectionInterface, \ArrayAccess
             trigger_error('Passing a Call object to Nexmo\Call\Collection::get() is deprecated, please pass a string id');
         }
 
-        $response = $this->api->get($call->getId());
-        return $this->hydrator->hydrateObject($response, $call);
+        $response = $this->getApiResource()->get($call->getId());
+        return $this->getHydrator()->hydrateObject($response, $call);
     }
 
     /**
@@ -265,7 +296,7 @@ class Client implements ClientAwareInterface, CollectionInterface, \ArrayAccess
      */
     public function search(FilterInterface $filter = null) : IterableAPICollection
     {
-        $collection = $this->api->search($filter);
+        $collection = $this->getApiResource()->search($filter);
         $collection->setHydrator($this->hydrator);
 
         return $collection;

@@ -24,7 +24,7 @@ trait IterableServiceShimTrait
      */
     public function hydrateEntity($data, $id)
     {
-        return $this->hydrator->hydrateObject($data, $id);
+        return $this->getHydrator()->hydrateObject($data, $id);
     }
 
         /**
@@ -32,7 +32,7 @@ trait IterableServiceShimTrait
      */
     protected function generateCollection($filter = null)
     {
-        $this->collection = $this->api->search($filter);
+        $this->collection = $this->getApiResource()->search($filter);
         $this->collection->setHydrator($this->hydrator);
     }
 

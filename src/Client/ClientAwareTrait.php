@@ -20,6 +20,7 @@ trait ClientAwareTrait
     public function setClient(Client $client)
     {
         $this->client = $client;
+        return $this;
     }
 
     protected function getClient()

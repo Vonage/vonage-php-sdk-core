@@ -30,10 +30,33 @@ class Client implements ClientAwareInterface, CollectionInterface
      */
     protected $hydrator;
 
-    public function __construct(APIResource $api, HydratorInterface $hydrator)
+    public function __construct(APIResource $api = null, HydratorInterface $hydrator = null)
     {
         $this->api = $api;
         $this->hydrator = $hydrator;
+
+        // Shim to handle BC with old constructor
+        // Will remove in v3
+        if (is_null($this->hydrator)) {
+            $this->hydrator = new Hydrator();
+        }
+    }
+
+    /**
+     * Shim to handle older instatiations of this class
+     * @deprecated Will remove in v3
+     */
+    protected function getApiResource() : APIResource
+    {
+        if (is_null($this->api)) {
+            $api = new APIResource();
+            $api->setClient($this->getClient())
+                ->setBaseUri('/v2/applications')
+                ->setCollectionName('applications')
+            ;
+            $this->api = $api;
+        }
+        return clone $this->api;
     }
 
     /**
@@ -62,7 +85,7 @@ class Client implements ClientAwareInterface, CollectionInterface
             $application = new Application($application);
         }
 
-        $data = $this->api->get($application->getId());
+        $data = $this->getApiResource()->get($application->getId());
         $application = new Application();
         $application->createFromArray($data);
 
@@ -81,7 +104,7 @@ class Client implements ClientAwareInterface, CollectionInterface
             $application = $this->createFromArray($application);
         }
 
-        $response = $this->api->create($application->toArray());
+        $response = $this->getApiResource()->create($application->toArray());
         $application = $this->hydrator->hydrate($response);
         return $application;
     }
@@ -113,7 +136,7 @@ class Client implements ClientAwareInterface, CollectionInterface
             trigger_error('Passing an ID to Nexmo\Application\Client::update() is deprecated and will be removed in a future release');
         }
 
-        $data = $this->api->update($id, $application->toArray());
+        $data = $this->getApiResource()->update($id, $application->toArray());
         $application = $this->hydrator->hydrate($data);
 
         return $application;
@@ -142,7 +165,7 @@ class Client implements ClientAwareInterface, CollectionInterface
             $id = $application;
         }
 
-        $this->api->delete($id);
+        $this->getApiResource()->delete($id);
 
         return true;
     }

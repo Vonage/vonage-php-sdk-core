@@ -27,9 +27,26 @@ class Client implements ClientAwareInterface
      */
     protected $api;
 
-    public function __construct(APIResource $api)
+    public function __construct(APIResource $api = null)
     {
         $this->api = $api;
+    }
+
+    /**
+     * Shim to handle older instatiations of this class
+     * @deprecated Will remove in v3
+     */
+    protected function getApiResource() : APIResource
+    {
+        if (is_null($this->api)) {
+            $api = new APIResource();
+            $api->setClient($this->getClient())
+                ->setBaseUrl($this->getClient()->getRestUrl())
+                ->setIsHAL(false)
+            ;
+            $this->api = $api;
+        }
+        return clone $this->api;
     }
 
     /**
@@ -64,7 +81,7 @@ class Client implements ClientAwareInterface
             $body['country'] = $update->getCountry();
         }
 
-        $api = clone $this->api;
+        $api = $this->getApiResource();
         $api->setBaseUri('/number/update');
         $api->submit($body);
 
@@ -142,7 +159,7 @@ class Client implements ClientAwareInterface
 
         $query = $this->parseParameters($possibleParameters, $options);
 
-        $api = clone $this->api;
+        $api = $this->getApiResource();
         $api->setBaseUri('/number/search');
         $api->setCollectionName('numbers');
 
@@ -178,7 +195,7 @@ class Client implements ClientAwareInterface
         ];
 
         $query = $this->parseParameters($possibleParameters, $options);
-        $api = clone $this->api;
+        $api = $this->getApiResource();
         $api->setBaseUri('/account/numbers');
         $api->setCollectionName('numbers');
 
@@ -268,7 +285,7 @@ class Client implements ClientAwareInterface
             'country' => $number->getCountry()
         ];
 
-        $api = clone $this->api;
+        $api = $this->getApiResource();
         $api->setBaseUri('/number/buy');
         $api->submit($body);
     }
@@ -290,7 +307,7 @@ class Client implements ClientAwareInterface
             'country' => $number->getCountry()
         ];
 
-        $api = clone $this->api;
+        $api = $this->getApiResource();
         $api->setBaseUri('/number/cancel');
         $api->submit($body);
     }

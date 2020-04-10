@@ -29,9 +29,25 @@ class Client implements ClientAwareInterface
      */
     protected $api;
 
-    public function __construct(APIResource $api)
+    public function __construct(APIResource $api = null)
     {
         $this->api = $api;
+    }
+
+    /**
+     * Shim to handle older instatiations of this class
+     * @deprecated Will remove in v3
+     */
+    protected function getApiResource() : APIResource
+    {
+        if (is_null($this->api)) {
+            $api = new APIResource();
+            $api->setClient($this->getClient())
+                ->setIsHAL(false)
+            ;
+            $this->api = $api;
+        }
+        return clone $this->api;
     }
 
     public function basic($number) : Basic
@@ -87,7 +103,7 @@ class Client implements ClientAwareInterface
      */
     public function makeRequest(string $path, $number, array $additionalParams = []) : array
     {
-        $api = clone $this->api;
+        $api = $this->getApiResource();
         $api->setBaseUri($path);
 
         if ($number instanceof Number) {

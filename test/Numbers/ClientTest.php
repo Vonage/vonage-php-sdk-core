@@ -40,12 +40,7 @@ class ClientTest extends TestCase
         $this->nexmoClient = $this->prophesize('Nexmo\Client');
         $this->nexmoClient->getRestUrl()->willReturn('https://rest.nexmo.com');
 
-        $this->apiClient = new APIResource();
-        $this->apiClient->setIsHAL(false);
-        $this->apiClient->setBaseUrl('https://rest.nexmo.com');
-        $this->apiClient->setClient($this->nexmoClient->reveal());
-
-        $this->numberClient = new Client($this->apiClient);
+        $this->numberClient = new Client();
         $this->numberClient->setClient($this->nexmoClient->reveal());
     }
 

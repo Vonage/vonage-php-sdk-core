@@ -45,12 +45,7 @@ class CollectionTest extends TestCase
         $this->nexmoClient = $this->prophesize('Nexmo\Client');
         $this->nexmoClient->getApiUrl()->willReturn('https://api.nexmo.com');
 
-        $this->api = new APIResource();
-        $this->api->setClient($this->nexmoClient->reveal());
-        $this->api->setBaseUri('/v1/calls');
-        $this->api->setCollectionName('calls');
-
-        $this->collection = new Collection($this->api, new Hydrator($this->nexmoClient->reveal()));
+        $this->collection = new Collection();
         $this->collection->setClient($this->nexmoClient->reveal());
     }
 

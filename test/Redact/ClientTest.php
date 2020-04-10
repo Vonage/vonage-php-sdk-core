@@ -38,11 +38,7 @@ class ClientTest extends TestCase
         $this->nexmoClient = $this->prophesize('Nexmo\Client');
         $this->nexmoClient->getApiUrl()->willReturn('https://api.nexmo.com');
 
-        $this->apiClient = new APIResource();
-        $this->apiClient->setBaseUri('/v1/redact');
-        $this->apiClient->setClient($this->nexmoClient->reveal());
-
-        $this->redact = new Client($this->apiClient);
+        $this->redact = new Client();
         $this->redact->setClient($this->nexmoClient->reveal());
     }
 

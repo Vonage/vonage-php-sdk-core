@@ -42,11 +42,8 @@ class ClientTest extends TestCase
         $this->nexmoClient = $this->prophesize('Nexmo\Client');
         $this->nexmoClient->getApiUrl()->willReturn('http://api.nexmo.com');
 
-        $this->apiClient = new APIResource();
-        $this->apiClient->setIsHAL(false);
-        $this->apiClient->setClient($this->nexmoClient->reveal());
-
-        $this->insightsClient = new Client($this->apiClient);
+        $this->insightsClient = new Client();
+        $this->insightsClient->setClient($this->nexmoClient->reveal());
     }
 
     public function testStandardCnam()

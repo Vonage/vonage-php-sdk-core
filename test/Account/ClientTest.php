@@ -49,16 +49,17 @@ class ClientTest extends TestCase
         $this->nexmoClient->getRestUrl()->willReturn('https://rest.nexmo.com');
         $this->nexmoClient->getApiUrl()->willReturn('https://api.nexmo.com');
 
-        $this->apiClient = new APIResource();
-        $this->apiClient
-            ->setBaseUrl('https://rest.nexmo.com')
-            ->setIsHAL(false)
-            ->setBaseUri('/account')
-        ;
-        $this->apiClient->setCollectionName('');
-        $this->apiClient->setClient($this->nexmoClient->reveal());
+        // $this->apiClient = new APIResource();
+        // $this->apiClient
+        //     ->setBaseUrl('https://rest.nexmo.com')
+        //     ->setIsHAL(false)
+        //     ->setBaseUri('/account')
+        // ;
+        // $this->apiClient->setCollectionName('');
+        // $this->apiClient->setClient($this->nexmoClient->reveal());
 
-        $this->accountClient = new Client($this->apiClient);
+        // $this->accountClient = new Client($this->apiClient);
+        $this->accountClient = new Client();
         $this->accountClient->setClient($this->nexmoClient->reveal());
     }
 

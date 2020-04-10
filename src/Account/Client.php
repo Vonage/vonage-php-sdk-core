@@ -15,6 +15,9 @@ use Nexmo\Entity\KeyValueFilter;
  */
 class Client implements ClientAwareInterface
 {
+    /**
+     * @deprecated This object will be dropping support for ClientAwareInterface in the future
+     */
     use ClientAwareTrait;
 
     /**
@@ -22,9 +25,28 @@ class Client implements ClientAwareInterface
      */
     protected $api;
 
-    public function __construct(APIResource $api)
+    public function __construct(?APIResource $api = null)
     {
         $this->api = $api;
+    }
+
+    /**
+     * Shim to handle older instatiations of this class
+     * @deprecated Will remove in v3
+     */
+    protected function getApiResource() : APIResource
+    {
+        if (is_null($this->api)) {
+            $api = new APIResource();
+            $api->setClient($this->getClient())
+                ->setBaseUrl($this->getClient()->getRestUrl())
+                ->setIsHAL(false)
+                ->setBaseUri('/account')
+                ->setCollectionName('')
+            ;
+            $this->api = $api;
+        }
+        return clone $this->api;
     }
 
     /**
@@ -32,7 +54,7 @@ class Client implements ClientAwareInterface
      */
     public function getPrefixPricing($prefix) : array
     {
-        $api = clone $this->api;
+        $api = $this->getApiResource();
         $api->setBaseUri('/account/get-prefix-pricing/outbound');
         $api->setCollectionName('prices');
 
@@ -81,7 +103,7 @@ class Client implements ClientAwareInterface
      */
     protected function makePricingRequest($country, $pricingType) : array
     {
-        $api = clone $this->api;
+        $api = $this->getApiResource();
         $api->setBaseUri('/account/get-pricing/outbound/' . $pricingType);
         $results = $api->search(new KeyValueFilter(['country' => $country]));
         $data = $results->getPageData();
@@ -100,7 +122,7 @@ class Client implements ClientAwareInterface
      */
     public function getBalance() : Balance
     {
-        $data = $this->api->get('get-balance');
+        $data = $this->getApiResource()->get('get-balance');
         
         if (is_null($data)) {
             throw new Exception\Server('No results found');
@@ -112,7 +134,7 @@ class Client implements ClientAwareInterface
 
     public function topUp($trx) : void
     {
-        $api = clone $this->api;
+        $api = $this->getApiResource();
         $api->setBaseUri('/account/top-up');
         $api->submit(['trx' => $trx]);
     }
@@ -122,7 +144,7 @@ class Client implements ClientAwareInterface
      */
     public function getConfig() : Config
     {
-        $api = clone $this->api;
+        $api = $this->getApiResource();
         $api->setBaseUri('/account/settings');
         $body = $api->submit();
 
@@ -157,7 +179,7 @@ class Client implements ClientAwareInterface
             $params['drCallBackUrl'] = $options['dr_callback_url'];
         }
 
-        $api = clone $this->api;
+        $api = $this->getApiResource();
         $api->setBaseUri('/account/settings');
 
         $rawBody = $api->submit($params);
@@ -180,7 +202,7 @@ class Client implements ClientAwareInterface
 
     public function listSecrets(string $apiKey) : SecretCollection
     {
-        $api = clone $this->api;
+        $api = $this->getApiResource();
         $api->setBaseUrl($this->getClient()->getApiUrl());
         $api->setBaseUri('/accounts');
         
@@ -190,7 +212,7 @@ class Client implements ClientAwareInterface
 
     public function getSecret(string $apiKey, string $secretId) : Secret
     {
-        $api = clone $this->api;
+        $api = $this->getApiResource();
         $api->setBaseUrl($this->getClient()->getApiUrl());
         $api->setBaseUri('/accounts');
 
@@ -203,7 +225,7 @@ class Client implements ClientAwareInterface
      */
     public function createSecret(string $apiKey, string $newSecret) : Secret
     {
-        $api = clone $this->api;
+        $api = $this->getApiResource();
         $api->setBaseUrl($this->getClient()->getApiUrl());
         $api->setBaseUri('/accounts/' . $apiKey . '/secrets');
 
@@ -224,7 +246,7 @@ class Client implements ClientAwareInterface
 
     public function deleteSecret(string $apiKey, string $secretId) : void
     {
-        $api = clone $this->api;
+        $api = $this->getApiResource();
         $api->setBaseUrl($this->getClient()->getApiUrl());
         $api->setBaseUri('/accounts/' . $apiKey . '/secrets');
         $api->delete($secretId);
