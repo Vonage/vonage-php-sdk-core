@@ -109,7 +109,8 @@ class ClientTest extends TestCase
         $this->redact->transaction('ABC123', 'sms');
     }
 
-    public function exceptionsProvider() {
+    public function exceptionsProvider()
+    {
         return [
             'unauthorized' => ['unauthorized', 401, Exception\Request::class, "Unauthorized"],
             'premature-redaction' => ['premature-redaction', 403, Exception\Request::class, "Premature Redaction - You must wait 60 minutes before redacting ID '0A000000B0C9A1234'. See https://developer.nexmo.com/api-errors/redact#premature-redaction"],

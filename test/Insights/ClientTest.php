@@ -95,7 +95,7 @@ class ClientTest extends TestCase
      */
     public function testError()
     {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
             return true;
         }))->willReturn($this->getResponse('error'));
 
@@ -107,7 +107,7 @@ class ClientTest extends TestCase
      */
     public function testClientException()
     {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
             return true;
         }))->willReturn($this->getResponse('error', 401));
 
@@ -119,7 +119,7 @@ class ClientTest extends TestCase
      */
     public function testServerException()
     {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
             return true;
         }))->willReturn($this->getResponse('error', 502));
 
@@ -144,7 +144,7 @@ class ClientTest extends TestCase
 
     protected function checkInsightsRequestCnam($methodToCall, $expectedPath, $expectedClass)
     {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request)  use ($expectedPath){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($expectedPath) {
             $this->assertEquals($expectedPath, $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
