@@ -11,6 +11,9 @@ namespace Nexmo\Voice\Message;
 use Nexmo\Client\Callback\CallbackInterface;
 use Nexmo\Client\Callback\Callback as BaseCallback;
 
+/**
+ * @deprecated This objects are no longer viable and will be removed in a future version
+ */
 class Callback extends BaseCallback implements CallbackInterface
 {
     const TIME_FORMAT = 'Y-m-d H:i:s';

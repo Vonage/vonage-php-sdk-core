@@ -216,6 +216,9 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
         }
     }
 
+    /**
+     * @deprecated This will be removed in a future version as Conversations is still considered Beta
+     */
     public function getConversation()
     {
         if ($this->lazyLoad()) {
