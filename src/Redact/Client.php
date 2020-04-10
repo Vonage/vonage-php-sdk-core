@@ -2,78 +2,44 @@
 
 namespace Nexmo\Redact;
 
+use Nexmo\Client\APIExceptionHandler;
+use Nexmo\Client\APIResource;
 use Nexmo\Client\ClientAwareInterface;
 use Nexmo\Client\ClientAwareTrait;
-use Nexmo\Network;
-use Psr\Http\Message\ResponseInterface;
-use Zend\Diactoros\Request;
-use Nexmo\Client\Exception;
 
 class Client implements ClientAwareInterface
 {
+    /**
+     * @deprecated This object no longer needs to be client aware
+     */
     use ClientAwareTrait;
 
-    public function transaction($id, $product, $options = [])
+    /**
+     * @var APIResource
+     */
+    protected $api;
+
+    /**
+     * @todo Stop having this use its own formatting for exceptions
+     */
+    public function __construct(APIResource $api)
     {
-        $request = new Request(
-            $this->getClient()->getApiUrl() . '/v1/redact/transaction',
-            'POST',
-            'php://temp',
-            [
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json'
-            ]
-        );
+        $this->api = $api;
 
-        $body = ['id' => $id, 'product' => $product] + $options;
-
-        $request->getBody()->write(json_encode($body));
-        $response = $this->client->send($request);
-
-        $rawBody = $response->getBody()->getContents();
-
-        if ('204' != $response->getStatusCode()) {
-            throw $this->getException($response);
+        // This API has been using a different exception response format, so reset it if we can
+        $exceptionHandler = $this->api->getExceptionErrorHandler();
+        if ($exceptionHandler instanceof APIExceptionHandler) {
+            $exceptionHandler->setRfc7807Format("%s - %s. See %s for more information");
         }
-
-        return null;
+        $this->api->setExceptionErrorHandler($exceptionHandler);
     }
 
-    protected function getException(ResponseInterface $response)
+    public function transaction(string $id, string $product, array $options = []) : void
     {
-        $response->getBody()->rewind();
-        $body = json_decode($response->getBody()->getContents(), true);
-        $status = $response->getStatusCode();
+        $api = clone $this->api;
+        $api->setBaseUri('/v1/redact/transaction');
 
-        $msg = 'Unexpected error';
-
-        // This is an error at the load balancer, likely auth related
-        if (isset($body['error_title'])) {
-            $msg = $body['error_title'];
-        }
-
-        if (isset($body['title'])) {
-            $msg = $body['title'];
-            if (isset($body['detail'])) {
-                $msg .= ' - '.$body['detail'];
-            }
-
-            $msg .= '. See '.$body['type'];
-        }
-
-        if ($status >= 400 && $status < 500) {
-            $e = new Exception\Request($msg, $status);
-            $response->getBody()->rewind();
-            $e->setEntity($response);
-        } elseif ($status >= 500 && $status < 600) {
-            $e = new Exception\Server($msg, $status);
-            $response->getBody()->rewind();
-            $e->setEntity($response);
-        } else {
-            $e = new Exception\Exception('Unexpected HTTP Status Code');
-            throw $e;
-        }
-
-        return $e;
+        $body = ['id' => $id, 'product' => $product] + $options;
+        $api->create($body);
     }
 }

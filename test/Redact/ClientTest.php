@@ -8,17 +8,23 @@
 
 namespace NexmoTest\Redact;
 
-use Nexmo\Redact\Client;
-use Zend\Diactoros\Response;
-use NexmoTest\Psr7AssertionTrait;
 use Prophecy\Argument;
-use Psr\Http\Message\RequestInterface;
-use PHPUnit\Framework\TestCase;
+use Nexmo\Redact\Client;
 use Nexmo\Client\Exception;
+use Zend\Diactoros\Response;
+use Nexmo\Client\APIResource;
+use PHPUnit\Framework\TestCase;
+use NexmoTest\Psr7AssertionTrait;
+use Psr\Http\Message\RequestInterface;
 
 class ClientTest extends TestCase
 {
     use Psr7AssertionTrait;
+
+    /**
+     * @var APIResource
+     */
+    protected $apiClient;
 
     protected $nexmoClient;
 
@@ -31,7 +37,12 @@ class ClientTest extends TestCase
     {
         $this->nexmoClient = $this->prophesize('Nexmo\Client');
         $this->nexmoClient->getApiUrl()->willReturn('https://api.nexmo.com');
-        $this->redact = new Client();
+
+        $this->apiClient = new APIResource();
+        $this->apiClient->setBaseUri('/v1/redact');
+        $this->apiClient->setClient($this->nexmoClient->reveal());
+
+        $this->redact = new Client($this->apiClient);
         $this->redact->setClient($this->nexmoClient->reveal());
     }
 
