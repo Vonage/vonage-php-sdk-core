@@ -13,11 +13,13 @@ use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
 use Nexmo\Entity\JsonResponseTrait;
 use Nexmo\Entity\Psr7Trait;
 use Nexmo\Entity\RequestArrayTrait;
-use PDO;
 
 class Verification implements VerificationInterface, \ArrayAccess, \Serializable, ArrayHydrateInterface
 {
     use Psr7Trait;
+    /**
+     * @deprecated
+     */
     use RequestArrayTrait;
     use JsonResponseTrait;
 
@@ -38,6 +40,7 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
 
     /**
      * Create a verification with a number and brand, or the `request_id` of an existing verification.
+     * Note that in the future, this constructor will accept only the ID as the first parameter
      *
      * @param string $idOrNumber The number to verify, or the `request_id` of an existing verification.
      * @param null|string $brand The brand that identifies your application to the user.
@@ -59,6 +62,7 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
     /**
      * Allow Verification to have actions.
      *
+     * @deprecated Use the Nexmo\Verfication\Client service object directly
      * @param Client $client Verify Client
      * @return $this
      */
@@ -83,6 +87,7 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
     /**
      * Check if the code is correct. Unlike the method it proxies, an invalid code does not throw an exception.
      *
+     * @deprecated Use Nexmo\Verfication\Client::check()
      * @uses \Nexmo\Verify\Client::check()
      * @param string $code Numeric code provided by the user.
      * @param null|string $ip IP address to be used for the verification.
@@ -106,6 +111,7 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
     /**
      * Cancel the verification.
      *
+     * @deprecated Use Nexmo\Verfication\Client::cancel()
      * @uses \Nexmo\Verify\Client::cancel()
      */
     public function cancel()
@@ -116,6 +122,7 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
     /**
      * Trigger the next verification.
      *
+     * @deprecated Use Nexmo\Verfication\Client::trigger()
      * @uses \Nexmo\Verify\Client::trigger()
      */
     public function trigger()
@@ -126,6 +133,7 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
     /**
      * Update Verification from the API.
      *
+     * @deprecated Use Nexmo\Verfication\Client::get() to retrieve the object directly
      * @uses \Nexmo\Verify\Client::search()
      */
     public function sync()
@@ -136,6 +144,7 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
     /**
      * Check if the user provided data has sent to the API yet.
      *
+     * @deprecated This object will not hold this information in the future
      * @return bool
      */
     public function isDirty()
@@ -503,6 +512,7 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
      * Allow the object to access the data from the API response, a sent API request, or the user set data that the
      * request will be created from - in that order.
      *
+     * @deprecated Array access will be removed in the future
      * @param mixed $offset
      * @return bool
      * @throws \Exception
@@ -519,6 +529,7 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
      * Allow the object to access the data from the API response, a sent API request, or the user set data that the
      * request will be created from - in that order.
      *
+     * @deprecated Array access will be removed in the future
      * @param mixed $offset
      * @return mixed
      * @throws \Exception
@@ -545,6 +556,7 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
     /**
      * All properties are read only.
      *
+     * @deprecated Array access will be removed in the future
      * @param mixed $offset
      * @param mixed $value
      */
@@ -556,6 +568,7 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
     /**
      * All properties are read only.
      *
+     * @deprecated Array access will be removed in the future
      * @param mixed $offset
      */
     public function offsetUnset($offset)
@@ -566,6 +579,7 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
     /**
      * All properties are read only.
      *
+     * @deprecated Array access will be removed in the future
      * @param $offset
      * @return \RuntimeException
      */
