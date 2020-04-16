@@ -23,7 +23,7 @@ trait ClientAwareTrait
         return $this;
     }
 
-    protected function getClient()
+    public function getClient()
     {
         if (isset($this->client)) {
             return $this->client;

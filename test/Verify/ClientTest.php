@@ -113,7 +113,7 @@ class ClientTest extends TestCase
         $success = $this->setupClientForStart('start');
 
         $verification = new Verification('14845551212', 'Test Verify');
-        $this->client->start($verification);
+        @$this->client->start($verification);
         $this->assertSame($success, $verification->getResponse());
     }
 
@@ -121,7 +121,7 @@ class ClientTest extends TestCase
     {
         $response = $this->setupClientForStart('start');
 
-        $verification = $this->client->start([
+        @$verification = $this->client->start([
             'number' => '14845551212',
             'brand'  => 'Test Verify'
         ]);
@@ -134,7 +134,7 @@ class ClientTest extends TestCase
         $response = $this->setupClientForStart('start-error');
 
         try {
-            $this->client->start([
+            @$this->client->start([
                 'number' => '14845551212',
                 'brand'  => 'Test Verify'
             ]);
@@ -151,7 +151,7 @@ class ClientTest extends TestCase
         $response = $this->setupClientForStart('server-error');
 
         try {
-            $this->client->start([
+            @$this->client->start([
                 'number' => '14845551212',
                 'brand'  => 'Test Verify'
             ]);
@@ -166,9 +166,9 @@ class ClientTest extends TestCase
     protected function setupClientForStart($response)
     {
         $response = $this->getResponse($response);
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) {
-            $this->assertRequestJsonBodyContains('number', '14845551212', $request);
-            $this->assertRequestJsonBodyContains('brand', 'Test Verify', $request);
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertRequestQueryContains('number', '14845551212', $request);
+            $this->assertRequestQueryContains('brand', 'Test Verify', $request);
             $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/json', $request);
             return true;
         }))->willReturn($response)
@@ -182,7 +182,7 @@ class ClientTest extends TestCase
         $response = $this->setupClientForSearch('search');
 
         $verification = new Verification('44a5279b27dd4a638d614d265ad57a77');
-        $this->client->search($verification);
+        @$this->client->search($verification);
 
         $this->assertSame($response, $verification->getResponse());
     }
@@ -191,7 +191,7 @@ class ClientTest extends TestCase
     {
         $response = $this->setupClientForSearch('search');
 
-        $verification = $this->client->search('44a5279b27dd4a638d614d265ad57a77');
+        $verification = @$this->client->search('44a5279b27dd4a638d614d265ad57a77');
 
         $this->assertSame($response, $verification->getResponse());
     }
@@ -201,7 +201,7 @@ class ClientTest extends TestCase
         $response = $this->setupClientForSearch('search-error');
 
         try {
-            $this->client->search('44a5279b27dd4a638d614d265ad57a77');
+            @$this->client->search('44a5279b27dd4a638d614d265ad57a77');
             $this->fail('did not throw exception');
         } catch (\Nexmo\Client\Exception\Request $e) {
             $this->assertEquals('101', $e->getCode());
@@ -215,7 +215,7 @@ class ClientTest extends TestCase
         $response = $this->setupClientForSearch('server-error');
 
         try {
-            $this->client->search('44a5279b27dd4a638d614d265ad57a77');
+            @$this->client->search('44a5279b27dd4a638d614d265ad57a77');
             $this->fail('did not throw exception');
         } catch (\Nexmo\Client\Exception\Server $e) {
             $this->assertEquals('5', $e->getCode());
@@ -239,8 +239,8 @@ class ClientTest extends TestCase
     protected function setupClientForSearch($response)
     {
         $response = $this->getResponse($response);
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) {
-            $this->assertRequestJsonBodyContains('request_id', '44a5279b27dd4a638d614d265ad57a77', $request);
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertRequestQueryContains('request_id', '44a5279b27dd4a638d614d265ad57a77', $request);
             $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/search/json', $request);
             return true;
         }))->willReturn($response)
@@ -264,7 +264,7 @@ class ClientTest extends TestCase
     {
         $response = $this->setupClientForControl('cancel', 'cancel');
 
-        $verification = $this->client->cancel('44a5279b27dd4a638d614d265ad57a77');
+        $verification = @$this->client->cancel('44a5279b27dd4a638d614d265ad57a77');
 
         $this->assertSame($response, $verification->getResponse());
     }
@@ -274,7 +274,7 @@ class ClientTest extends TestCase
         $response = $this->setupClientForControl('cancel-error', 'cancel');
 
         try {
-            $this->client->cancel('44a5279b27dd4a638d614d265ad57a77');
+            @$this->client->cancel('44a5279b27dd4a638d614d265ad57a77');
             $this->fail('did not throw exception');
         } catch (\Nexmo\Client\Exception\Request $e) {
             $this->assertEquals('19', $e->getCode());
@@ -288,7 +288,7 @@ class ClientTest extends TestCase
         $response = $this->setupClientForControl('server-error', 'cancel');
 
         try {
-            $this->client->cancel('44a5279b27dd4a638d614d265ad57a77');
+            @$this->client->cancel('44a5279b27dd4a638d614d265ad57a77');
             $this->fail('did not throw exception');
         } catch (\Nexmo\Client\Exception\Server $e) {
             $this->assertEquals('5', $e->getCode());
@@ -301,7 +301,7 @@ class ClientTest extends TestCase
     {
         $response = $this->setupClientForControl('trigger', 'trigger_next_event');
 
-        $verification = $this->client->trigger('44a5279b27dd4a638d614d265ad57a77');
+        $verification = @$this->client->trigger('44a5279b27dd4a638d614d265ad57a77');
 
         $this->assertSame($response, $verification->getResponse());
     }
@@ -322,7 +322,7 @@ class ClientTest extends TestCase
         $response = $this->setupClientForControl('trigger-error', 'trigger_next_event');
 
         try {
-            $this->client->trigger('44a5279b27dd4a638d614d265ad57a77');
+            @$this->client->trigger('44a5279b27dd4a638d614d265ad57a77');
             $this->fail('did not throw exception');
         } catch (\Nexmo\Client\Exception\Request $e) {
             $this->assertEquals('6', $e->getCode());
@@ -336,7 +336,7 @@ class ClientTest extends TestCase
         $response = $this->setupClientForControl('server-error', 'trigger_next_event');
 
         try {
-            $this->client->trigger('44a5279b27dd4a638d614d265ad57a77');
+            @$this->client->trigger('44a5279b27dd4a638d614d265ad57a77');
             $this->fail('did not throw exception');
         } catch (\Nexmo\Client\Exception\Server $e) {
             $this->assertEquals('5', $e->getCode());
@@ -355,7 +355,7 @@ class ClientTest extends TestCase
         $verification->setResponse($response);
 
         $this->setupClientForControl($method, $cmd);
-        $this->client->$method($verification);
+        @$this->client->$method($verification);
 
         $this->assertSame($response, $verification->getResponse());
     }
@@ -366,14 +366,14 @@ class ClientTest extends TestCase
             ['cancel', 'cancel'],
             ['trigger', 'trigger_next_event']
         ];
-    }    
+    }
     
     protected function setupClientForControl($response, $cmd)
     {
         $response = $this->getResponse($response);
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($cmd) {
-            $this->assertRequestJsonBodyContains('request_id', '44a5279b27dd4a638d614d265ad57a77', $request);
-            $this->assertRequestJsonBodyContains('cmd', $cmd, $request);
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($cmd) {
+            $this->assertRequestQueryContains('request_id', '44a5279b27dd4a638d614d265ad57a77', $request);
+            $this->assertRequestQueryContains('cmd', $cmd, $request);
             $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/control/json', $request);
             return true;
         }))->willReturn($response)
@@ -444,12 +444,12 @@ class ClientTest extends TestCase
     protected function setupClientForCheck($response, $code, $ip = null)
     {
         $response = $this->getResponse($response);
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($code, $ip) {
-            $this->assertRequestJsonBodyContains('request_id', '44a5279b27dd4a638d614d265ad57a77', $request);
-            $this->assertRequestJsonBodyContains('code', $code, $request);
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($code, $ip) {
+            $this->assertRequestQueryContains('request_id', '44a5279b27dd4a638d614d265ad57a77', $request);
+            $this->assertRequestQueryContains('code', $code, $request);
 
             if($ip){
-                $this->assertRequestJsonBodyContains('ip_address', $ip, $request);
+                $this->assertRequestQueryContains('ip_address', $ip, $request);
             }
 
             $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/check/json', $request);

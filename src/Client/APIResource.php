@@ -47,6 +47,16 @@ class APIResource implements ClientAwareInterface
      */
     protected $isHAL = true;
 
+    /**
+     * @var RequestInterface
+     */
+    protected $lastRequest;
+
+    /**
+     * @var ResponseInterface
+     */
+    protected $lastResponse;
+
     public function create(array $body)
     {
         $request = new Request(
@@ -57,7 +67,10 @@ class APIResource implements ClientAwareInterface
         );
 
         $request->getBody()->write(json_encode($body));
+        $this->lastRequest = $request;
+
         $response = $this->getClient()->send($request);
+        $this->lastResponse = $response;
 
         if ($response->getStatusCode() < 200 || $response->getStatusCode() > 299) {
             $e = $this->getException($response, $request);
@@ -74,6 +87,8 @@ class APIResource implements ClientAwareInterface
         $request = new Request($uri, 'DELETE');
 
         $response = $this->getClient()->send($request);
+        $this->lastRequest = $request;
+        $this->lastResponse = $response;
 
         if ($response->getStatusCode() < 200 || $response->getStatusCode() > 299) {
             $e = $this->getException($response, $request);
@@ -82,12 +97,17 @@ class APIResource implements ClientAwareInterface
         }
     }
 
-    public function get($id)
+    public function get($id, array $query = [])
     {
         $uri = $this->getBaseUrl() . $this->baseUri . '/' . $id;
+        if (!empty($query)) {
+            $uri .= '?' . http_build_query($query);
+        }
         $request = new Request($uri, 'GET', 'php://temp', ['accept' => 'application/json']);
 
         $response = $this->getClient()->send($request);
+        $this->lastRequest = $request;
+        $this->lastResponse = $response;
 
         if ($response->getStatusCode() < 200 || $response->getStatusCode() > 299) {
             $e = $this->getException($response, $request);
@@ -144,6 +164,16 @@ class APIResource implements ClientAwareInterface
     protected function getException(ResponseInterface $response, RequestInterface $request)
     {
         return $this->getExceptionErrorHandler()($response, $request);
+    }
+
+    public function getLastRequest() : ?RequestInterface
+    {
+        return $this->lastRequest;
+    }
+
+    public function getLastResponse() : ?ResponseInterface
+    {
+        return $this->lastResponse;
     }
 
     public function isHAL() : bool
@@ -211,6 +241,8 @@ class APIResource implements ClientAwareInterface
 
         $request->getBody()->write(http_build_query($formData));
         $response = $this->getClient()->send($request);
+        $this->lastRequest = $request;
+        $this->lastResponse = $response;
 
         if ($response->getStatusCode() < 200 || $response->getStatusCode() > 299) {
             $e = $this->getException($response, $request);
@@ -232,6 +264,8 @@ class APIResource implements ClientAwareInterface
 
         $request->getBody()->write(json_encode($body));
         $response = $this->getClient()->send($request);
+        $this->lastRequest = $request;
+        $this->lastResponse = $response;
 
         if ($response->getStatusCode() != '200') {
             $e = $this->getException($response, $request);

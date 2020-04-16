@@ -37,6 +37,7 @@ class Client implements ClientAwareInterface
             $api = new APIResource();
             $api->setClient($this->getClient())
                 ->setBaseUri('/v1/redact')
+                ->setCollectionName('')
             ;
             $this->api = $api;
 

@@ -9,11 +9,13 @@
 namespace Nexmo\Verify;
 
 use Nexmo\Client\Exception\Request as RequestException;
+use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
 use Nexmo\Entity\JsonResponseTrait;
 use Nexmo\Entity\Psr7Trait;
 use Nexmo\Entity\RequestArrayTrait;
+use PDO;
 
-class Verification implements VerificationInterface, \ArrayAccess, \Serializable
+class Verification implements VerificationInterface, \ArrayAccess, \Serializable, ArrayHydrateInterface
 {
     use Psr7Trait;
     use RequestArrayTrait;
@@ -605,5 +607,15 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
         if (isset($data['response'])) {
             $this->response = \Zend\Diactoros\Response\Serializer::fromString($data['response']);
         }
+    }
+
+    public function toArray() : array
+    {
+        return $this->requestData;
+    }
+
+    public function createFromArray(array $data)
+    {
+        $this->requestData = $data;
     }
 }
