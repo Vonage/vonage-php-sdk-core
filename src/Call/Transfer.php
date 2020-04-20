@@ -8,27 +8,11 @@
 
 namespace Nexmo\Call;
 
-class Transfer implements \JsonSerializable
+use Nexmo\Call\NCCO\Transfer as NCCOTransfer;
+
+/**
+ * @deprecated Use Nexmo\Call\NCCO\Transfer
+ */
+class Transfer extends NCCOTransfer
 {
-    protected $urls;
-
-    public function __construct($urls)
-    {
-        if (!is_array($urls)) {
-            $urls = array($urls);
-        }
-
-        $this->urls = $urls;
-    }
-
-    public function jsonSerialize()
-    {
-        return [
-            'action' => 'transfer',
-            'destination' => [
-                'type' => 'ncco',
-                'url' => $this->urls
-            ]
-        ];
-    }
 }

@@ -8,12 +8,11 @@
 
 namespace Nexmo\Call;
 
-class Unearmuff implements \JsonSerializable
+use Nexmo\Call\NCCO\Unearmuff as NCCOUnearmuff;
+
+/**
+ * @deprecated Use Nexmo\Call\NCCO\Unearmuff
+ */
+class Unearmuff extends NCCOUnearmuff
 {
-    public function jsonSerialize()
-    {
-        return [
-            'action' => 'unearmuff'
-        ];
-    }
 }

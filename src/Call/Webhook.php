@@ -8,45 +8,11 @@
 
 namespace Nexmo\Call;
 
-class Webhook implements \JsonSerializable
+use Nexmo\Call\NCCO\Webhook as NCCOWebhook;
+
+/**
+ * @deprecated Use Nexmo\Call\NCCO\Webhook
+ */
+class Webhook extends NCCOWebhook
 {
-    protected $urls;
-
-    protected $method;
-
-    protected $type;
-
-    public function __construct($type, $urls, $method = null)
-    {
-        if (!is_array($urls)) {
-            $urls = [$urls];
-        }
-
-        $this->urls = $urls;
-        $this->type = $type;
-        $this->method = $method;
-    }
-
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    public function add($url)
-    {
-        $this->urls[] = $url;
-    }
-
-    public function jsonSerialize()
-    {
-        $data = [
-            $this->type . '_url' => $this->urls
-        ];
-
-        if (isset($this->method)) {
-            $data[$this->type . '_method'] = $this->method;
-        }
-
-        return $data;
-    }
 }

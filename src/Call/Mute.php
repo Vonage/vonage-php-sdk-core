@@ -8,12 +8,11 @@
 
 namespace Nexmo\Call;
 
-class Mute implements \JsonSerializable
+use Nexmo\Call\NCCO\Mute as NCCOMute;
+
+/**
+ * @deprecated Use Nexmo\Call\NCCO\Mute
+ */
+class Mute extends NCCOMute
 {
-    public function jsonSerialize()
-    {
-        return [
-            'action' => 'mute'
-        ];
-    }
 }

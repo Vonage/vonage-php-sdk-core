@@ -8,12 +8,11 @@
 
 namespace Nexmo\Call;
 
-class Unmute implements \JsonSerializable
+use Nexmo\Call\NCCO\Unmute as NCCOUnmute;
+
+/**
+ * @deprecated Use Nexmo\Call\NCCO\Unmute
+ */
+class Unmute extends NCCOUnmute
 {
-    public function jsonSerialize()
-    {
-        return [
-            'action' => 'unmute'
-        ];
-    }
 }

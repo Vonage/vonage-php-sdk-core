@@ -8,12 +8,11 @@
 
 namespace Nexmo\Call;
 
-class Hangup implements \JsonSerializable
+use Nexmo\Call\NCCO\Hangup as NCCOHangup;
+
+/**
+ * @deprecated Use Nexmo\Call\NCCO\Hangup
+ */
+class Hangup extends NCCOHangup
 {
-    public function jsonSerialize()
-    {
-        return [
-            'action' => 'hangup'
-        ];
-    }
 }

@@ -18,6 +18,7 @@ use Nexmo\Client\Exception;
 
 /**
  * Lightweight resource, only has put / delete.
+ * @deprecated Use Nexmo\Call\Client::talk() instead
  */
 class Talk implements JsonSerializableInterface, ClientAwareInterface, \ArrayAccess
 {

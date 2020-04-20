@@ -8,12 +8,11 @@
 
 namespace Nexmo\Call;
 
-class Earmuff implements \JsonSerializable
+use Nexmo\Call\NCCO\Earmuff as NCCOEarmuff;
+
+/**
+ * @deprecated Use Nexmo\Call\NCCO\Earmuff instead
+ */
+class Earmuff extends NCCOEarmuff
 {
-    public function jsonSerialize()
-    {
-        return [
-            'action' => 'earmuff'
-        ];
-    }
 }
