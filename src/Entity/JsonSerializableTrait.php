@@ -12,6 +12,8 @@ namespace Nexmo\Entity;
  * Implements getRequestData from EntityInterface based on the entity's jsonSerialize().
  *
  * @see EntityInterface::getRequestData()
+ *
+ * @deprecated Each model will handle serializing to/from JSON via hydrators
  */
 trait JsonSerializableTrait
 {
