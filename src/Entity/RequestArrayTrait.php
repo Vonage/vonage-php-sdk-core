@@ -12,6 +12,8 @@ namespace Nexmo\Entity;
  * Implements getRequestData from EntityInterface with a simple array. Request data stored in an array, and locked once
  * a request object has been set.
  *
+ * @deprecated This information will be available at API client level as opposed to the model level
+ *
  * @see EntityInterface::getRequestData()
  */
 trait RequestArrayTrait

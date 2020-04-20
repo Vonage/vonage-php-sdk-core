@@ -58,7 +58,7 @@ class ClientTest extends TestCase
         $mock->expects($this->once())->method('setClient')->with($this->client);
 
         array_unshift($args, $mock);
-        call_user_func_array([$this->client, $method], $args);
+        @call_user_func_array([$this->client, $method], $args);
     }
 
     public function getApiMethods()
@@ -90,12 +90,12 @@ class ClientTest extends TestCase
         $verification->setResponse($this->getResponse('start'));
 
         $string = serialize($verification);
-        $object = $this->client->unserialize($string);
+        $object = @$this->client->unserialize($string);
 
         $this->assertInstanceOf('Nexmo\Verify\Verification', $object);
 
         $search = $this->setupClientForSearch('search');
-        $object->sync();
+        @$object->sync();
         $this->assertSame($search, $object->getResponse());
     }
 
@@ -231,7 +231,7 @@ class ClientTest extends TestCase
         $verification->setResponse($old);
 
         $response = $this->setupClientForSearch('search');
-        $this->client->search($verification);
+        @$this->client->search($verification);
 
         $this->assertSame($response, $verification->getResponse());
     }
@@ -254,7 +254,7 @@ class ClientTest extends TestCase
         $response = $this->setupClientForControl('cancel', 'cancel');
 
         $verification = new Verification('44a5279b27dd4a638d614d265ad57a77');
-        $result = $this->client->cancel($verification);
+        $result = @$this->client->cancel($verification);
 
         $this->assertSame($verification, $result);
         $this->assertSame($response, $verification->getResponse());
@@ -311,7 +311,7 @@ class ClientTest extends TestCase
         $response = $this->setupClientForControl('trigger', 'trigger_next_event');
 
         $verification = new Verification('44a5279b27dd4a638d614d265ad57a77');
-        $result = $this->client->trigger($verification);
+        $result = @$this->client->trigger($verification);
 
         $this->assertSame($verification, $result);
         $this->assertSame($response, $verification->getResponse());
@@ -387,7 +387,7 @@ class ClientTest extends TestCase
         $response = $this->setupClientForCheck('check', '1234');
         $verification = new Verification('44a5279b27dd4a638d614d265ad57a77');
         
-        $this->client->check($verification, '1234');
+        @$this->client->check($verification, '1234');
         
         $this->assertSame($response, $verification->getResponse());
     }
@@ -395,7 +395,7 @@ class ClientTest extends TestCase
     public function testCanCheckId()
     {
         $response = $this->setupClientForCheck('check', '1234');
-        $verification = $this->client->check('44a5279b27dd4a638d614d265ad57a77', '1234');
+        $verification = @$this->client->check('44a5279b27dd4a638d614d265ad57a77', '1234');
 
         $this->assertSame($response, $verification->getResponse());
     }
@@ -406,7 +406,7 @@ class ClientTest extends TestCase
         $response = $this->setupClientForCheck('check-error', '1234');
 
         try {
-            $this->client->check('44a5279b27dd4a638d614d265ad57a77', '1234');
+            @$this->client->check('44a5279b27dd4a638d614d265ad57a77', '1234');
             $this->fail('did not throw exception');
         } catch (\Nexmo\Client\Exception\Request $e) {
             $this->assertEquals('16', $e->getCode());
@@ -420,7 +420,7 @@ class ClientTest extends TestCase
         $response = $this->setupClientForCheck('server-error', '1234');
 
         try {
-            $this->client->check('44a5279b27dd4a638d614d265ad57a77', '1234');
+            @$this->client->check('44a5279b27dd4a638d614d265ad57a77', '1234');
             $this->fail('did not throw exception');
         } catch (\Nexmo\Client\Exception\Server $e) {
             $this->assertEquals('5', $e->getCode());
@@ -437,7 +437,7 @@ class ClientTest extends TestCase
 
         $this->setupClientForCheck('check', '1234');
 
-        $this->client->check($verification, '1234');
+        @$this->client->check($verification, '1234');
         $this->assertSame($old, $verification->getResponse());
     }
     

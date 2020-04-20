@@ -10,6 +10,9 @@ namespace Nexmo\Entity;
 
 use Psr\Http\Message\ResponseInterface;
 
+/**
+ * @deprecated This data will be better exposed at the model level
+ */
 trait JsonResponseTrait
 {
     protected $responseJson;
