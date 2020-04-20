@@ -37,6 +37,10 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
     use NoRequestResponseTrait;
     use JsonSerializableTrait;
     use JsonResponseTrait;
+
+    /**
+     * @deprecated This object will no longer be ClientAware and functions will be moved to the Nexmo\Call\Client object
+     */
     use ClientAwareTrait;
 
     const WEBHOOK_ANSWER = 'answer';
@@ -67,8 +71,13 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
         $this->id = $id;
     }
 
+    /**
+     * @deprecated Use Nexmo\Call\Client::get()
+     */
     public function get()
     {
+        trigger_error('Nexmo\Call\Call::get() is deprecated, please use Nexmo\Call\Client::get() instead');
+
         $request = new Request(
             $this->getClient()->getApiUrl() . Collection::getCollectionPath() . '/' . $this->getId(),
             'GET'
@@ -86,6 +95,9 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
         return $this;
     }
 
+    /**
+     * @todo Remove this once this object is no longer ClientAware
+     */
     protected function getException(ResponseInterface $response)
     {
         $body = json_decode($response->getBody()->getContents(), true);
@@ -102,8 +114,12 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
         return $e;
     }
 
+    /**
+     * @deprecated Use Nexmo\Call\Client::update()
+     */
     public function put($payload)
     {
+        trigger_error('Nexmo\Call\Call::put() is deprecated, please use Nexmo\Call\Client::update() instead');
         $request = new Request(
             $this->getClient()->getApiUrl() . Collection::getCollectionPath() . '/' . $this->getId(),
             'PUT',
@@ -249,6 +265,8 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
 
     public function __get($name)
     {
+        trigger_error('Nexmo\Call\Call::[stream|talk|dtmf] is deprecated, please use the appropriate Nexmo\Call object instead');
+
         switch ($name) {
             case 'stream':
             case 'talk':
@@ -263,8 +281,11 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
     {
         switch ($name) {
             case 'stream':
+                trigger_error('Nexmo\Call\Call::stream() is deprecated, please use Nexmo\Call\Client::streamAudio() instead');
             case 'talk':
+                trigger_error('Nexmo\Call\Call::talk() is deprecated, please use Nexmo\Call\Client::talk() instead');
             case 'dtmf':
+                trigger_error('Nexmo\Call\Call::dtmf() is deprecated, please use Nexmo\Call\Client::dtmf() instead');
                 $entity = $this->lazySubresource(ucfirst($name));
                 return call_user_func_array($entity, $arguments);
             default:
@@ -272,6 +293,9 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
         }
     }
 
+    /**
+     * @todo Remove once the magic methods are removed
+     */
     protected function lazySubresource($type)
     {
         if (!isset($this->subresources[$type])) {

@@ -101,7 +101,7 @@ class CollectionTest extends TestCase
             $this->assertSame($payload, $call);
         }
 
-        $call->get();
+        @$call->get();
         $this->nexmoClient->send(Argument::any())->shouldHaveBeenCalled();
     }
 
