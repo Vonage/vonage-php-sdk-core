@@ -291,7 +291,7 @@ class Client implements ClientAwareInterface
     /**
      * Generates an appropriate Exception message and object based on HTTP response
      * This has a bit of logic to it since different error messages have a different
-     * reponse format.
+     * response format.
      *
      * @return Exception
      */
