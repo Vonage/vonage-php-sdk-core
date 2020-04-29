@@ -6,13 +6,23 @@ use ArrayAccess;
 use Nexmo\Client\Exception\Exception;
 use Nexmo\Network;
 use Nexmo\Entity\EntityInterface;
+use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
 use Nexmo\Entity\JsonSerializableInterface;
 use Nexmo\Entity\JsonResponseTrait;
 use Nexmo\Entity\JsonSerializableTrait;
 use Nexmo\Entity\NoRequestResponseTrait;
 use Nexmo\Entity\JsonUnserializableInterface;
 
-abstract class Price implements EntityInterface, JsonSerializableInterface, JsonUnserializableInterface, ArrayAccess
+/**
+ * This class will no longer be accessible via array access, nor contain request/response information after v2.
+ */
+abstract class Price implements
+    EntityInterface,
+    \JsonSerializable,
+    JsonSerializableInterface,
+    JsonUnserializableInterface,
+    ArrayAccess,
+    ArrayHydrateInterface
 {
     use JsonSerializableTrait;
     use NoRequestResponseTrait;
@@ -71,9 +81,14 @@ abstract class Price implements EntityInterface, JsonSerializableInterface, Json
 
     public function jsonUnserialize(array $json)
     {
+        $this->createFromArray($json);
+    }
+
+    public function createFromArray(array $data)
+    {
         // Convert CamelCase to snake_case as that's how we use array access in every other object
-        $data = [];
-        foreach ($json as $k => $v) {
+        $storage = [];
+        foreach ($data as $k => $v) {
             $k = ltrim(strtolower(preg_replace('/[A-Z]([A-Z](?![a-z]))*/', '_$0', $k)), '_');
 
             // PrefixPrice fixes
@@ -82,21 +97,21 @@ abstract class Price implements EntityInterface, JsonSerializableInterface, Json
             }
 
             if ($k == 'name') {
-                $data['country_display_name'] = $v;
-                $data['country_name'] = $v;
+                $storage['country_display_name'] = $v;
+                $storage['country_name'] = $v;
             }
 
             if ($k == 'prefix') {
                 $k = 'dialing_prefix';
             }
 
-            $data[$k] = $v;
+            $storage[$k] = $v;
         }
 
         // Create objects for all the nested networks too
         $networks = [];
-        if (isset($json['networks'])) {
-            foreach ($json['networks'] as $n) {
+        if (isset($data['networks'])) {
+            foreach ($data['networks'] as $n) {
                 if (isset($n['code'])) {
                     $n['networkCode'] = $n['code'];
                     unset($n['code']);
@@ -108,16 +123,21 @@ abstract class Price implements EntityInterface, JsonSerializableInterface, Json
                 }
 
                 $network = new Network($n['networkCode'], $n['networkName']);
-                $network->jsonUnserialize($n);
+                $network->createFromArray($n);
                 $networks[$network->getCode()] = $network;
             }
         }
 
-        $data['networks'] = $networks;
-        $this->data = $data;
+        $storage['networks'] = $networks;
+        $this->data = $storage;
     }
 
     public function jsonSerialize()
+    {
+        return $this->toArray();
+    }
+
+    public function toArray(): array
     {
         return $this->data;
     }

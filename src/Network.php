@@ -5,13 +5,23 @@ namespace Nexmo;
 use ArrayAccess;
 use Nexmo\Client\Exception\Exception;
 use Nexmo\Entity\EntityInterface;
+use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
 use Nexmo\Entity\JsonSerializableInterface;
 use Nexmo\Entity\JsonResponseTrait;
 use Nexmo\Entity\JsonSerializableTrait;
 use Nexmo\Entity\NoRequestResponseTrait;
 use Nexmo\Entity\JsonUnserializableInterface;
 
-class Network implements EntityInterface, JsonSerializableInterface, JsonUnserializableInterface, ArrayAccess
+/**
+ * This class will no longer be accessible via array access, nor contain request/response information after v2.
+ */
+class Network implements
+    EntityInterface,
+    \JsonSerializable,
+    JsonSerializableInterface,
+    JsonUnserializableInterface,
+    ArrayAccess,
+    ArrayHydrateInterface
 {
     use JsonSerializableTrait;
     use NoRequestResponseTrait;
@@ -63,18 +73,12 @@ class Network implements EntityInterface, JsonSerializableInterface, JsonUnseria
 
     public function jsonUnserialize(array $json)
     {
-        // Convert CamelCase to snake_case as that's how we use array access in every other object
-        $data = [];
-        foreach ($json as $k => $v) {
-            $k = ltrim(strtolower(preg_replace('/[A-Z]([A-Z](?![a-z]))*/', '_$0', $k)), '_');
-            $data[$k] = $v;
-        }
-        $this->data = $data;
+        $this->createFromArray($json);
     }
 
     public function jsonSerialize()
     {
-        return $this->data;
+        return $this->toArray();
     }
 
     public function offsetExists($offset)
@@ -95,5 +99,21 @@ class Network implements EntityInterface, JsonSerializableInterface, JsonUnseria
     public function offsetUnset($offset)
     {
         throw new Exception('Network is read only');
+    }
+
+    public function createFromArray(array $data) : void
+    {
+        // Convert CamelCase to snake_case as that's how we use array access in every other object
+        $storage = [];
+        foreach ($data as $k => $v) {
+            $k = ltrim(strtolower(preg_replace('/[A-Z]([A-Z](?![a-z]))*/', '_$0', $k)), '_');
+            $storage[$k] = $v;
+        }
+        $this->data = $storage;
+    }
+
+    public function toArray(): array
+    {
+        return $this->data;
     }
 }
