@@ -21,22 +21,28 @@ class Client implements ClientAwareInterface
     use ClientAwareTrait;
 
     /**
-     * APIResource
+     * @var APIResource
      */
-    protected $api;
+    protected $accountAPI;
 
-    public function __construct(?APIResource $api = null)
+    /**
+     * @var APIResource
+     */
+    protected $secretsAPI;
+
+    public function __construct(?APIResource $accountAPI = null, ?APIResource $secretsAPI = null)
     {
-        $this->api = $api;
+        $this->accountAPI = $accountAPI;
+        $this->secretsAPI = $secretsAPI;
     }
 
     /**
      * Shim to handle older instatiations of this class
      * @deprecated Will remove in v3
      */
-    protected function getApiResource() : APIResource
+    protected function getAccountAPI() : APIResource
     {
-        if (is_null($this->api)) {
+        if (is_null($this->accountAPI)) {
             $api = new APIResource();
             $api->setClient($this->getClient())
                 ->setBaseUrl($this->getClient()->getRestUrl())
@@ -44,9 +50,28 @@ class Client implements ClientAwareInterface
                 ->setBaseUri('/account')
                 ->setCollectionName('')
             ;
-            $this->api = $api;
+            $this->accountAPI = $api;
         }
-        return clone $this->api;
+        return clone $this->accountAPI;
+    }
+
+    /**
+     * Shim to handle older instatiations of this class
+     * @deprecated Will remove in v3
+     */
+    protected function getSecretsAPI() : APIResource
+    {
+        if (is_null($this->secretsAPI)) {
+            $api = new APIResource();
+            $api->setClient($this->getClient())
+                ->setBaseUrl($this->getClient()->getApiUrl())
+                ->setIsHAL(false)
+                ->setBaseUri('/accounts')
+                ->setCollectionName('')
+            ;
+            $this->secretsAPI = $api;
+        }
+        return clone $this->secretsAPI;
     }
 
     /**
@@ -54,7 +79,7 @@ class Client implements ClientAwareInterface
      */
     public function getPrefixPricing($prefix) : array
     {
-        $api = $this->getApiResource();
+        $api = $this->getAccountAPI();
         $api->setBaseUri('/account/get-prefix-pricing/outbound');
         $api->setCollectionName('prices');
 
@@ -103,7 +128,7 @@ class Client implements ClientAwareInterface
      */
     protected function makePricingRequest($country, $pricingType) : array
     {
-        $api = $this->getApiResource();
+        $api = $this->getAccountAPI();
         $api->setBaseUri('/account/get-pricing/outbound/' . $pricingType);
         $results = $api->search(new KeyValueFilter(['country' => $country]));
         $data = $results->getPageData();
@@ -122,7 +147,7 @@ class Client implements ClientAwareInterface
      */
     public function getBalance() : Balance
     {
-        $data = $this->getApiResource()->get('get-balance');
+        $data = $this->getAccountAPI()->get('get-balance');
         
         if (is_null($data)) {
             throw new Exception\Server('No results found');
@@ -134,7 +159,7 @@ class Client implements ClientAwareInterface
 
     public function topUp($trx) : void
     {
-        $api = $this->getApiResource();
+        $api = $this->getAccountAPI();
         $api->setBaseUri('/account/top-up');
         $api->submit(['trx' => $trx]);
     }
@@ -144,7 +169,7 @@ class Client implements ClientAwareInterface
      */
     public function getConfig() : Config
     {
-        $api = $this->getApiResource();
+        $api = $this->getAccountAPI();
         $api->setBaseUri('/account/settings');
         $body = $api->submit();
 
@@ -179,7 +204,7 @@ class Client implements ClientAwareInterface
             $params['drCallBackUrl'] = $options['dr_callback_url'];
         }
 
-        $api = $this->getApiResource();
+        $api = $this->getAccountAPI();
         $api->setBaseUri('/account/settings');
 
         $rawBody = $api->submit($params);
@@ -202,9 +227,7 @@ class Client implements ClientAwareInterface
 
     public function listSecrets(string $apiKey) : SecretCollection
     {
-        $api = $this->getApiResource();
-        $api->setBaseUrl($this->getClient()->getApiUrl());
-        $api->setBaseUri('/accounts');
+        $api = $this->getSecretsAPI();
         
         $data = $api->get($apiKey . '/secrets');
         return @SecretCollection::fromApi($data);
@@ -212,9 +235,7 @@ class Client implements ClientAwareInterface
 
     public function getSecret(string $apiKey, string $secretId) : Secret
     {
-        $api = $this->getApiResource();
-        $api->setBaseUrl($this->getClient()->getApiUrl());
-        $api->setBaseUri('/accounts');
+        $api = $this->getSecretsAPI();
 
         $data = $api->get($apiKey . '/secrets/' . $secretId);
         return @Secret::fromApi($data);
@@ -225,8 +246,7 @@ class Client implements ClientAwareInterface
      */
     public function createSecret(string $apiKey, string $newSecret) : Secret
     {
-        $api = $this->getApiResource();
-        $api->setBaseUrl($this->getClient()->getApiUrl());
+        $api = $this->getSecretsAPI();
         $api->setBaseUri('/accounts/' . $apiKey . '/secrets');
 
         try {
@@ -246,8 +266,7 @@ class Client implements ClientAwareInterface
 
     public function deleteSecret(string $apiKey, string $secretId) : void
     {
-        $api = $this->getApiResource();
-        $api->setBaseUrl($this->getClient()->getApiUrl());
+        $api = $this->getSecretsAPI();
         $api->setBaseUri('/accounts/' . $apiKey . '/secrets');
         $api->delete($secretId);
     }
