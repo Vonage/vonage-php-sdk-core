@@ -14,17 +14,31 @@ use PHPUnit\Framework\TestCase;
 
 class SecretCollectionTest extends TestCase
 {
+    /**
+     * @var array<string, array>
+     */
+    protected $links;
+
+    /**
+     * @var array<Secret>
+     */
+    protected $secrets;
+
     public function setUp()
     {
-        $this->secrets = [[
-            'id' => 'ad6dc56f-07b5-46e1-a527-85530e625800',
-            'created_at' => '2017-03-02T16:34:49Z',
-            '_links' => [
-                'self' => [
-                    'href' => '/accounts/abcd1234/secrets/ad6dc56f-07b5-46e1-a527-85530e625800'
+        $this->secrets = [
+            new Secret(
+                [
+                    'id' => 'ad6dc56f-07b5-46e1-a527-85530e625800',
+                    'created_at' => '2017-03-02T16:34:49Z',
+                    '_links' => [
+                        'self' => [
+                            'href' => '/accounts/abcd1234/secrets/ad6dc56f-07b5-46e1-a527-85530e625800'
+                        ]
+                    ]
                 ]
-            ]
-        ]];
+            )
+        ];
 
         $this->links = [
             'self' => [
@@ -32,12 +46,7 @@ class SecretCollectionTest extends TestCase
             ]
         ];
 
-        $this->collection = @SecretCollection::fromApi([
-            '_links' => $this->links,
-            '_embedded' => [
-                'secrets' => $this->secrets
-            ]
-        ]);
+        $this->collection = new SecretCollection($this->secrets, $this->links);
     }
 
     public function testGetSecrets()
@@ -54,20 +63,6 @@ class SecretCollectionTest extends TestCase
     public function testObjectAccess()
     {
         $this->assertEquals($this->links, $this->collection->getLinks());
-
-        $secrets = array_map(function ($v) {
-            return @Secret::fromApi($v);
-        }, $this->secrets);
-        $this->assertEquals($secrets, $this->collection->getSecrets());
-    }
-
-    public function testArrayAccess()
-    {
-        $this->assertEquals($this->links, @$this->collection['_links']);
-
-        $secrets = array_map(function ($v) {
-            return @Secret::fromApi($v);
-        }, $this->secrets);
-        $this->assertEquals($secrets, @$this->collection['secrets']);
+        $this->assertEquals($this->secrets, $this->collection->getSecrets());
     }
 }

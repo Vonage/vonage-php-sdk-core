@@ -2,9 +2,7 @@
 
 namespace Nexmo\Account;
 
-use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
-
-class SecretCollection implements \ArrayAccess
+class SecretCollection
 {
     protected $data;
 

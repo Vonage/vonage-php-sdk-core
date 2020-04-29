@@ -2,18 +2,9 @@
 
 namespace Nexmo\Account;
 
-use ArrayAccess;
-use Nexmo\Client\Exception\Exception;
 use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
-use Nexmo\Entity\JsonSerializableInterface;
-use Nexmo\Entity\JsonUnserializableInterface;
 
-class Config implements
-    \JsonSerializable,
-    JsonSerializableInterface,
-    JsonUnserializableInterface,
-    ArrayAccess,
-    ArrayHydrateInterface
+class Config implements \JsonSerializable, ArrayHydrateInterface
 {
     /**
      * @var array<string, mixed>

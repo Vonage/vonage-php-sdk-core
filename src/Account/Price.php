@@ -2,27 +2,13 @@
 
 namespace Nexmo\Account;
 
-use ArrayAccess;
-use Nexmo\Client\Exception\Exception;
 use Nexmo\Network;
-use Nexmo\Entity\EntityInterface;
 use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
-use Nexmo\Entity\JsonSerializableInterface;
-use Nexmo\Entity\JsonResponseTrait;
-use Nexmo\Entity\JsonSerializableTrait;
-use Nexmo\Entity\NoRequestResponseTrait;
-use Nexmo\Entity\JsonUnserializableInterface;
 
 /**
  * This class will no longer be accessible via array access, nor contain request/response information after v2.
  */
-abstract class Price implements
-    EntityInterface,
-    \JsonSerializable,
-    JsonSerializableInterface,
-    JsonUnserializableInterface,
-    ArrayAccess,
-    ArrayHydrateInterface
+abstract class Price implements \JsonSerializable, ArrayHydrateInterface
 {
     use JsonSerializableTrait;
     use NoRequestResponseTrait;
@@ -150,44 +136,5 @@ abstract class Price implements
     public function toArray(): array
     {
         return $this->data;
-    }
-
-    public function offsetExists($offset)
-    {
-        trigger_error(
-            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
-            E_USER_DEPRECATED
-        );
-        return isset($this->data[$offset]);
-    }
-
-    public function offsetGet($offset)
-    {
-        trigger_error(
-            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
-            E_USER_DEPRECATED
-        );
-        return $this->data[$offset];
-    }
-
-    public function offsetSet($offset, $value)
-    {
-        throw new Exception('Price is read only');
-    }
-
-    public function offsetUnset($offset)
-    {
-        throw new Exception('Price is read only');
-    }
-
-    public function __get($key)
-    {
-        if ($key === 'data') {
-            trigger_error(
-                "Direct access to " . get_class($this) . "::data is deprecated, please use getter to toArray() methods",
-                E_USER_DEPRECATED
-            );
-            return $this->data;
-        }
     }
 }

@@ -44,18 +44,6 @@ class SmsPriceTest extends TestCase
     /**
      * @dataProvider smsPriceProvider
      */
-    public function testArrayAccess($smsPrice)
-    {
-        $this->assertEquals("US", @$smsPrice['country_code']);
-        $this->assertEquals("United States", @$smsPrice['country_name']);
-        $this->assertEquals("United States", @$smsPrice['country_display_name']);
-        $this->assertEquals("1", @$smsPrice['dialing_prefix']);
-        $this->assertEquals("0.00512", @$smsPrice['default_price']);
-    }
-
-    /**
-     * @dataProvider smsPriceProvider
-     */
     public function testUsesCustomPriceForKnownNetwork($smsPrice)
     {
         $this->assertEquals("0.123", $smsPrice->getPriceForNetwork('21039'));

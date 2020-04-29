@@ -16,7 +16,7 @@ class SecretTest extends TestCase
 {
     public function setUp()
     {
-        $this->secret = @Secret::fromApi([
+        $this->secret = new Secret([
             'id' => 'ad6dc56f-07b5-46e1-a527-85530e625800',
             'created_at' => '2017-03-02T16:34:49Z',
             '_links' => [
@@ -30,13 +30,13 @@ class SecretTest extends TestCase
     public function testRejectsInvalidDataNoId()
     {
         $this->expectException(InvalidResponseException::class);
-        @Secret::fromApi(['id' => 'abc']);
+        new Secret(['id' => 'abc']);
     }
 
     public function testRejectsInvalidDataNoCreatedAt()
     {
         $this->expectException(InvalidResponseException::class);
-        @Secret::fromApi(['created_at' => '2017-03-02T16:34:49Z']);
+        new Secret(['created_at' => '2017-03-02T16:34:49Z']);
     }
 
     public function testObjectAccess()

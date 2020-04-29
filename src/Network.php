@@ -2,31 +2,10 @@
 
 namespace Nexmo;
 
-use ArrayAccess;
-use Nexmo\Client\Exception\Exception;
-use Nexmo\Entity\EntityInterface;
 use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
-use Nexmo\Entity\JsonSerializableInterface;
-use Nexmo\Entity\JsonResponseTrait;
-use Nexmo\Entity\JsonSerializableTrait;
-use Nexmo\Entity\NoRequestResponseTrait;
-use Nexmo\Entity\JsonUnserializableInterface;
 
-/**
- * This class will no longer be accessible via array access, nor contain request/response information after v2.
- */
-class Network implements
-    EntityInterface,
-    \JsonSerializable,
-    JsonSerializableInterface,
-    JsonUnserializableInterface,
-    ArrayAccess,
-    ArrayHydrateInterface
+class Network implements \JsonSerializable, ArrayHydrateInterface
 {
-    use JsonSerializableTrait;
-    use NoRequestResponseTrait;
-    use JsonResponseTrait;
-
     protected $data = [];
 
     public function __construct($networkCode, $networkName)

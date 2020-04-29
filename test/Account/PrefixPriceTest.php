@@ -42,17 +42,6 @@ class PrefixPriceTest extends TestCase
     /**
      * @dataProvider prefixPriceProvider
      */
-    public function testArrayAccess($prefixPrice)
-    {
-        $this->assertEquals("ZW", @$prefixPrice['country_code']);
-        $this->assertEquals("Zimbabwe", @$prefixPrice['country_name']);
-        $this->assertEquals("Zimbabwe", @$prefixPrice['country_display_name']);
-        $this->assertEquals("263", @$prefixPrice['dialing_prefix']);
-    }
-
-    /**
-     * @dataProvider prefixPriceProvider
-     */
     public function testUsesCustomPriceForKnownNetwork($prefixPrice)
     {
         $this->assertEquals("0.123", $prefixPrice->getPriceForNetwork('21039'));

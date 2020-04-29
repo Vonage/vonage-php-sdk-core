@@ -2,22 +2,13 @@
 
 namespace Nexmo\Account;
 
-use ArrayAccess;
-use Nexmo\Client\Exception\Exception;
 use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
-use Nexmo\Entity\JsonSerializableInterface;
-use Nexmo\Entity\JsonUnserializableInterface;
 
 /**
  * This class will no longer be accessible via array keys past v2
  * @todo Have the JSON unserialize/serialize keys match with $this->data keys
  */
-class Balance implements
-    \JsonSerializable,
-    JsonSerializableInterface,
-    JsonUnserializableInterface,
-    ArrayAccess,
-    ArrayHydrateInterface
+class Balance implements \JsonSerializable, ArrayHydrateInterface
 {
     /**
      * @var array

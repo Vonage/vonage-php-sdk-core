@@ -43,37 +43,15 @@ class BalanceTest extends TestCase
         $this->assertSame(false, $data['auto_reload']);
     }
 
-    public function testJsonUnserialize()
+    public function testUnserializingFromArray()
     {
         $data = ['value' => '5.00', 'autoReload' => false];
 
         $balance = new Balance('1.99', true);
         $balance->fromArray($data);
 
-        $this->assertSame($data['value'], @$balance['balance']);
-        $this->assertSame($data['autoReload'], @$balance['auto_reload']);
-    }
-
-    public function testActsLikeArray()
-    {
-        $this->assertSame('12.99', @$this->balance['balance']);
-        $this->assertTrue(@isset($this->balance['balance']));
-    }
-
-    public function testCannotRemoveArrayKey()
-    {
-        $this->expectException('Nexmo\Client\Exception\Exception');
-        $this->expectExceptionMessage('Balance is read only');
-
-        unset($this->balance['balance']);
-    }
-
-    public function testCannotDirectlySetArrayKey()
-    {
-        $this->expectException('Nexmo\Client\Exception\Exception');
-        $this->expectExceptionMessage('Balance is read only');
-
-        $this->balance['balance'] = '5.00';
+        $this->assertSame($data['value'], $balance->getBalance());
+        $this->assertSame($data['autoReload'], $balance->getAutoReload());
     }
 
     public function testMakeSureDataIsPubliclyVisible()
