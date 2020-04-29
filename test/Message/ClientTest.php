@@ -94,14 +94,14 @@ class ClientTest extends TestCase
             'text' => 'Go To Gino\'s'
         ];
 
-        $this->nexmoClient->send(Argument::that(function(Request $request) use ($args){
+        $this->nexmoClient->send(Argument::that(function (Request $request) use ($args) {
             $this->assertRequestJsonBodyContains('to', $args['to'], $request);
             $this->assertRequestJsonBodyContains('from', $args['from'], $request);
             $this->assertRequestJsonBodyContains('text', $args['text'], $request);
             return true;
         }))->willReturn($this->getResponse());
 
-        $message = $this->messageClient->send($args);
+        @$message = $this->messageClient->send($args);
         $this->assertInstanceOf('Nexmo\Message\Message', $message);
     }
 
@@ -121,7 +121,7 @@ class ClientTest extends TestCase
         $this->nexmoClient->send(Argument::type(RequestInterface::class))->willReturn($response);
         $message = new Text('14845551212', '16105551212', 'Not Pats?');
 
-        try{
+        try {
             $this->messageClient->send($message);
             $this->fail('did not throw exception');
         } catch (\Nexmo\Client\Exception\Request $e) {
@@ -148,11 +148,11 @@ class ClientTest extends TestCase
 
     public function testThrowConcurrentRequestsException()
     {
-        try{
+        try {
             $message = new Message('02000000D912945A');
             $response = $this->getResponse('empty', 429);
 
-            $this->nexmoClient->send(Argument::that(function(Request $request) {
+            $this->nexmoClient->send(Argument::that(function (Request $request) {
                 $this->assertRequestQueryContains('id', '02000000D912945A', $request);
                 return true;
             }))->willReturn($response);
@@ -354,20 +354,23 @@ class ClientTest extends TestCase
         $message = new Message('02000000D912945A');
         $response = $this->getResponse('search-outbound');
 
-        $this->nexmoClient->send(Argument::that(function(Request $request) {
+        $this->nexmoClient->send(Argument::that(function (Request $request) {
             $this->assertRequestQueryContains('id', '02000000D912945A', $request);
             return true;
         }))->willReturn($response);
 
-        $this->messageClient->search($message);
-        $this->assertSame($response, $message->getResponse());
+        $searchedMessage = $this->messageClient->search($message);
+
+        $response->getBody()->rewind();
+        $successData = json_decode($response->getBody()->getContents(), true);
+        $this->assertEquals($successData['message-id'], $searchedMessage->getMessageId());
     }
 
     public function testCanSearchBySingleOutboundId()
     {
         $response = $this->getResponse('search-outbound');
 
-        $this->nexmoClient->send(Argument::that(function(Request $request) {
+        $this->nexmoClient->send(Argument::that(function (Request $request) {
             $this->assertRequestQueryContains('id', '02000000D912945A', $request);
             return true;
         }))->willReturn($response);
@@ -415,7 +418,7 @@ class ClientTest extends TestCase
         $message = new Message('02000000D912945A');
         $response = $this->getResponse('auth-failure', 401);
 
-        $this->nexmoClient->send(Argument::that(function(Request $request) {
+        $this->nexmoClient->send(Argument::that(function (Request $request) {
             $this->assertRequestQueryContains('id', '02000000D912945A', $request);
             return true;
         }))->willReturn($response);
@@ -431,7 +434,7 @@ class ClientTest extends TestCase
         $message = new Message('02000000D912945A');
         $response = $this->getResponse('search-invalid-type');
 
-        $this->nexmoClient->send(Argument::that(function(Request $request) {
+        $this->nexmoClient->send(Argument::that(function (Request $request) {
             $this->assertRequestQueryContains('id', '02000000D912945A', $request);
             return true;
         }))->willReturn($response);
@@ -447,7 +450,7 @@ class ClientTest extends TestCase
         $message = new Message('02000000D912945A');
         $response = $this->getResponse('empty', 500);
 
-        $this->nexmoClient->send(Argument::that(function(Request $request) {
+        $this->nexmoClient->send(Argument::that(function (Request $request) {
             $this->assertRequestQueryContains('id', '02000000D912945A', $request);
             return true;
         }))->willReturn($response);
@@ -464,7 +467,7 @@ class ClientTest extends TestCase
         $message = new Message('02000000D912945A');
         $response = $this->getResponse('search-inbound');
 
-        $this->nexmoClient->send(Argument::that(function(Request $request) {
+        $this->nexmoClient->send(Argument::that(function (Request $request) {
             $this->assertRequestQueryContains('id', '02000000D912945A', $request);
             return true;
         }))->willReturn($response);
@@ -475,6 +478,7 @@ class ClientTest extends TestCase
     public function testRateLimitRetries()
     {
         $rate    = $this->getResponse('ratelimit');
+        $rate2    = $this->getResponse('ratelimit');
         $success = $this->getResponse('success');
 
         $args = [
@@ -483,12 +487,12 @@ class ClientTest extends TestCase
             'text' => 'test message'
         ];
 
-        $this->nexmoClient->send(Argument::that(function (Request $request) use ($args){
+        $this->nexmoClient->send(Argument::that(function (Request $request) use ($args) {
             $this->assertRequestJsonBodyContains('to', $args['to'], $request);
             $this->assertRequestJsonBodyContains('from', $args['from'], $request);
             $this->assertRequestJsonBodyContains('text', $args['text'], $request);
             return true;
-        }))->willReturn($rate, $rate, $success);
+        }))->willReturn($rate, $rate2, $success);
 
         $message = $this->messageClient->send(new Text($args['to'], $args['from'], $args['text']));
         $this->assertEquals($success, $message->getResponse());
@@ -497,6 +501,7 @@ class ClientTest extends TestCase
     public function testRateLimitRetriesWithDefault()
     {
         $rate    = $this->getResponse('ratelimit-notime');
+        $rate2    = $this->getResponse('ratelimit-notime'); // Have to duplicate to avoid rewind issues
         $success = $this->getResponse('success');
 
         $args = [
@@ -505,15 +510,18 @@ class ClientTest extends TestCase
             'text' => 'test message'
         ];
 
-        $this->nexmoClient->send(Argument::that(function (Request $request) use ($args){
+        $this->nexmoClient->send(Argument::that(function (Request $request) use ($args)  {
             $this->assertRequestJsonBodyContains('to', $args['to'], $request);
             $this->assertRequestJsonBodyContains('from', $args['from'], $request);
             $this->assertRequestJsonBodyContains('text', $args['text'], $request);
             return true;
-        }))->willReturn($rate, $rate, $success);
+        }))->willReturn($rate, $rate2, $success);
 
         $message = $this->messageClient->send(new Text($args['to'], $args['from'], $args['text']));
-        $this->assertEquals($success, $message->getResponse());
+
+        $success->getBody()->rewind();
+        $successData = json_decode($success->getBody()->getContents(), true);
+        $this->assertEquals($successData['messages'][0]['message-id'], $message->getMessageId());
     }
 
     /**
@@ -654,7 +662,7 @@ class ClientTest extends TestCase
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('message must implement `Nexmo\Message\MessageInterface` or be an array`');
 
-        $this->messageClient->send("Bob");
+        @$this->messageClient->send("Bob");
     }
 
     public function testCreateMessageThrowsExceptionOnMissingData()
@@ -662,7 +670,7 @@ class ClientTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('missing expected key `from`');
 
-        $this->messageClient->send(['to' => '15555555555']);
+        @$this->messageClient->send(['to' => '15555555555']);
     }
 
     public function testMagicMethodIsCalledProperly()

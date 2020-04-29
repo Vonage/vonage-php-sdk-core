@@ -364,19 +364,23 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
         $request = new Request($requestUri, 'GET');
         $response = $this->client->send($request);
 
-        if ($response->getStatusCode() != '200') {
-            throw $this->getException($response);
-        }
-
         $this->response = $response;
+        $this->getApiResource()->setLastResponse($response);
+
         $body = $this->response->getBody()->getContents();
         $json = json_decode($body, true);
         $this->cache[md5($requestUri)] = $json;
         $this->page = $json;
+
+        if ($response->getStatusCode() != '200') {
+            $e = $this->getException($response);
+            throw $e;
+        }
     }
 
     protected function getException(ResponseInterface $response)
     {
+        $response->getBody()->rewind();
         $body = json_decode($response->getBody()->getContents(), true);
         $status = $response->getStatusCode();
 

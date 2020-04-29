@@ -37,6 +37,12 @@ class APIResource implements ClientAwareInterface
     protected $collectionPrototype;
 
     /**
+     * Sets flag that says to check for errors even on 200 Success
+     * @var bool
+     */
+    protected $errorsOn200 = false;
+
+    /**
      * Error handler to use when reviewing API responses
      * @var callable
      */
@@ -57,7 +63,7 @@ class APIResource implements ClientAwareInterface
      */
     protected $lastResponse;
 
-    public function create(array $body)
+    public function create(array $body) : ?array
     {
         $request = new Request(
             $this->baseUrl . $this->baseUri,
@@ -70,14 +76,17 @@ class APIResource implements ClientAwareInterface
         $this->lastRequest = $request;
 
         $response = $this->getClient()->send($request);
-        $this->lastResponse = $response;
+        $this->setLastResponse($response);
 
-        if ($response->getStatusCode() < 200 || $response->getStatusCode() > 299) {
+        if ($this->errorsOn200() || ($response->getStatusCode() < 200 || $response->getStatusCode() > 299)) {
             $e = $this->getException($response, $request);
-            $e->setEntity($body);
-            throw $e;
+            if ($e) {
+                $e->setEntity($body);
+                throw $e;
+            }
         }
 
+        $response->getBody()->rewind();
         return json_decode($response->getBody()->getContents(), true);
     }
 
@@ -88,7 +97,7 @@ class APIResource implements ClientAwareInterface
 
         $response = $this->getClient()->send($request);
         $this->lastRequest = $request;
-        $this->lastResponse = $response;
+        $this->setLastResponse($response);
 
         if ($response->getStatusCode() < 200 || $response->getStatusCode() > 299) {
             $e = $this->getException($response, $request);
@@ -107,7 +116,7 @@ class APIResource implements ClientAwareInterface
 
         $response = $this->getClient()->send($request);
         $this->lastRequest = $request;
-        $this->lastResponse = $response;
+        $this->setLastResponse($response);
 
         if ($response->getStatusCode() < 200 || $response->getStatusCode() > 299) {
             $e = $this->getException($response, $request);
@@ -227,6 +236,12 @@ class APIResource implements ClientAwareInterface
         return $this;
     }
 
+    public function setLastResponse(ResponseInterface $response) : self
+    {
+        $this->lastResponse = $response;
+        return $this;
+    }
+
     /**
      * Allows form URL-encoded POST requests
      */
@@ -242,7 +257,7 @@ class APIResource implements ClientAwareInterface
         $request->getBody()->write(http_build_query($formData));
         $response = $this->getClient()->send($request);
         $this->lastRequest = $request;
-        $this->lastResponse = $response;
+        $this->setLastResponse($response);
 
         if ($response->getStatusCode() < 200 || $response->getStatusCode() > 299) {
             $e = $this->getException($response, $request);
@@ -265,14 +280,25 @@ class APIResource implements ClientAwareInterface
         $request->getBody()->write(json_encode($body));
         $response = $this->getClient()->send($request);
         $this->lastRequest = $request;
-        $this->lastResponse = $response;
+        $this->setLastResponse($response);
 
-        if ($response->getStatusCode() != '200') {
+        if ($response->getStatusCode() != '200' || $this->errorsOn200()) {
             $e = $this->getException($response, $request);
             $e->setEntity(['id' => $id, 'body' => $body]);
             throw $e;
         }
 
         return json_decode($response->getBody()->getContents(), true);
+    }
+
+    public function errorsOn200() : bool
+    {
+        return $this->errorsOn200;
+    }
+
+    public function setErrorsOn200(bool $value) : self
+    {
+        $this->errorsOn200 = $value;
+        return $this;
     }
 }
