@@ -76,7 +76,10 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
      */
     public function get()
     {
-        trigger_error('Nexmo\Call\Call::get() is deprecated, please use Nexmo\Call\Client::get() instead');
+        trigger_error(
+            'Nexmo\Call\Call::get() is deprecated, please use Nexmo\Call\Client::get() instead',
+            E_USER_DEPRECATED
+        );
 
         $request = new Request(
             $this->getClient()->getApiUrl() . Collection::getCollectionPath() . '/' . $this->getId(),
@@ -119,7 +122,10 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
      */
     public function put($payload)
     {
-        trigger_error('Nexmo\Call\Call::put() is deprecated, please use Nexmo\Call\Client::update() instead');
+        trigger_error(
+            'Nexmo\Call\Call::put() is deprecated, please use Nexmo\Call\Client::update() instead',
+            E_USER_DEPRECATED
+        );
         $request = new Request(
             $this->getClient()->getApiUrl() . Collection::getCollectionPath() . '/' . $this->getId(),
             'PUT',
@@ -265,7 +271,10 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
 
     public function __get($name)
     {
-        trigger_error('Nexmo\Call\Call::[stream|talk|dtmf] is deprecated, please use the appropriate Nexmo\Call object instead');
+        trigger_error(
+            'Nexmo\Call\Call::[stream|talk|dtmf] is deprecated, please use the appropriate Nexmo\Call object instead',
+            E_USER_DEPRECATED
+        );
 
         switch ($name) {
             case 'stream':
@@ -281,11 +290,20 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
     {
         switch ($name) {
             case 'stream':
-                trigger_error('Nexmo\Call\Call::stream() is deprecated, please use Nexmo\Call\Client::streamAudio() instead');
+                trigger_error(
+                    'Nexmo\Call\Call::stream() is deprecated, please use Nexmo\Call\Client::streamAudio() instead',
+                    E_USER_DEPRECATED
+                );
             case 'talk':
-                trigger_error('Nexmo\Call\Call::talk() is deprecated, please use Nexmo\Call\Client::talk() instead');
+                trigger_error(
+                    'Nexmo\Call\Call::talk() is deprecated, please use Nexmo\Call\Client::talk() instead',
+                    E_USER_DEPRECATED
+                );
             case 'dtmf':
-                trigger_error('Nexmo\Call\Call::dtmf() is deprecated, please use Nexmo\Call\Client::dtmf() instead');
+                trigger_error(
+                    'Nexmo\Call\Call::dtmf() is deprecated, please use Nexmo\Call\Client::dtmf() instead',
+                    E_USER_DEPRECATED
+                );
                 $entity = $this->lazySubresource(ucfirst($name));
                 return call_user_func_array($entity, $arguments);
             default:

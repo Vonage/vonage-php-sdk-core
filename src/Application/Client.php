@@ -81,7 +81,10 @@ class Client implements ClientAwareInterface, CollectionInterface
     public function get($application)
     {
         if (!($application instanceof Application)) {
-            trigger_error("Passing a Application object to Nexmo\\Application\\Client::get is deprecated, please pass the String ID instead.");
+            trigger_error(
+                "Passing a Application object to Nexmo\\Application\\Client::get is deprecated, please pass the String ID instead.",
+                E_USER_DEPRECATED
+            );
             $application = new Application($application);
         }
 
@@ -100,7 +103,10 @@ class Client implements ClientAwareInterface, CollectionInterface
     public function create($application) : Application
     {
         if (!($application instanceof Application)) {
-            trigger_error('Passing an array to Nexmo\Application\Client::create() is deprecated, please pass an Application object instead.');
+            trigger_error(
+                'Passing an array to Nexmo\Application\Client::create() is deprecated, please pass an Application object instead.',
+                E_USER_DEPRECATED
+            );
             $application = $this->createFromArray($application);
         }
 
@@ -114,7 +120,10 @@ class Client implements ClientAwareInterface, CollectionInterface
      */
     public function post($application) : Application
     {
-        trigger_error('Nexmo\Application\Client::post() has been deprecated in favor of the create() method');
+        trigger_error(
+            'Nexmo\Application\Client::post() has been deprecated in favor of the create() method',
+            E_USER_DEPRECATED
+        );
         return $this->create($application);
     }
 
@@ -126,14 +135,20 @@ class Client implements ClientAwareInterface, CollectionInterface
     public function update($application, $id = null) : Application
     {
         if (!($application instanceof Application)) {
-            trigger_error('Passing an array to Nexmo\Application\Client::update() is deprecated, please pass an Application object instead.');
+            trigger_error(
+                'Passing an array to Nexmo\Application\Client::update() is deprecated, please pass an Application object instead.',
+                E_USER_DEPRECATED
+            );
             $application = $this->createFromArray($application);
         }
 
         if (is_null($id)) {
             $id = $application->getId();
         } else {
-            trigger_error('Passing an ID to Nexmo\Application\Client::update() is deprecated and will be removed in a future release');
+            trigger_error(
+                'Passing an ID to Nexmo\Application\Client::update() is deprecated and will be removed in a future release',
+                E_USER_DEPRECATED
+            );
         }
 
         $data = $this->getApiResource()->update($id, $application->toArray());
@@ -147,7 +162,10 @@ class Client implements ClientAwareInterface, CollectionInterface
      */
     public function put($application, $id = null) : Application
     {
-        trigger_error('Nexmo\Application\Client::put() has been deprecated in favor of the update() method');
+        trigger_error(
+            'Nexmo\Application\Client::put() has been deprecated in favor of the update() method',
+            E_USER_DEPRECATED
+        );
         return $this->update($application, $id);
     }
 
@@ -161,7 +179,10 @@ class Client implements ClientAwareInterface, CollectionInterface
         if (($application instanceof Application)) {
             $id = $application->getId();
         } else {
-            trigger_error('Passing an ID to Nexmo\Application\Client::delete() is deprecated, please pass an Application object instead');
+            trigger_error(
+                'Passing an ID to Nexmo\Application\Client::delete() is deprecated, please pass an Application object instead',
+                E_USER_DEPRECATED
+            );
             $id = $application;
         }
 

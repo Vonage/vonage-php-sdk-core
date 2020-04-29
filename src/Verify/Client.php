@@ -52,10 +52,16 @@ class Client implements ClientAwareInterface
     public function start($verification) : Verification
     {
         if (is_array($verification)) {
-            trigger_error('Passing an array to Nexmo\Verification\Client::start() is deprecated, please pass a Verification object instead');
+            trigger_error(
+                'Passing an array to Nexmo\Verification\Client::start() is deprecated, please pass a Verification object instead',
+                E_USER_DEPRECATED
+            );
         }
         if (is_string($verification)) {
-            trigger_error('Passing a string to Nexmo\Verification\Client::start() is deprecated, please pass a Verification object instead');
+            trigger_error(
+                'Passing a string to Nexmo\Verification\Client::start() is deprecated, please pass a Verification object instead',
+                E_USER_DEPRECATED
+            );
         }
 
         $api = $this->getApiResource();
@@ -72,7 +78,10 @@ class Client implements ClientAwareInterface
     public function search($verification)
     {
         if (is_string($verification)) {
-            trigger_error('Passing a Verification object to Nexmo\Verification\Client::search() is deprecated, please pass a string ID instead');
+            trigger_error(
+                'Passing a Verification object to Nexmo\Verification\Client::search() is deprecated, please pass a string ID instead',
+                E_USER_DEPRECATED
+            );
         }
 
         $api = $this->getApiResource();
@@ -104,10 +113,16 @@ class Client implements ClientAwareInterface
     public function check($verification, string $code, string $ip = null) : Verification
     {
         if (is_array($verification)) {
-            @trigger_error('Passing an array for parameter 1 to Nexmo\Verification\Client::check() is deprecated, please pass a string ID instead');
+            trigger_error(
+                'Passing an array for parameter 1 to Nexmo\Verification\Client::check() is deprecated, please pass a string ID instead',
+                E_USER_DEPRECATED
+            );
         }
         if ($verification instanceof Verification) {
-            @trigger_error('Passing a Verification object for parameter 1 to Nexmo\Verification\Client::check() is deprecated, please pass a string ID instead');
+            trigger_error(
+                'Passing a Verification object for parameter 1 to Nexmo\Verification\Client::check() is deprecated, please pass a string ID instead',
+                E_USER_DEPRECATED
+            );
         }
 
         $api = $this->getApiResource();
@@ -153,10 +168,16 @@ class Client implements ClientAwareInterface
     protected function control($verification, string $cmd) : Verification
     {
         if (is_array($verification)) {
-            trigger_error('Passing an array to Nexmo\Verification\Client::control() is deprecated, please pass a Verification object instead');
+            trigger_error(
+                'Passing an array to Nexmo\Verification\Client::control() is deprecated, please pass a Verification object instead',
+                E_USER_DEPRECATED
+            );
         }
         if (is_string($verification)) {
-            trigger_error('Passing a string to Nexmo\Verification\Client::control() is deprecated, please pass a Verification object instead');
+            trigger_error(
+                'Passing a string to Nexmo\Verification\Client::control() is deprecated, please pass a Verification object instead',
+                E_USER_DEPRECATED
+            );
         }
 
         $api = $this->getApiResource();

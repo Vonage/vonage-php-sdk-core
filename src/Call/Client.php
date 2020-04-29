@@ -87,7 +87,10 @@ class Client implements ClientAwareInterface, CollectionInterface, \ArrayAccess
      */
     public function __invoke(Filter $filter = null)
     {
-        trigger_error('Array access to Nexmo\Call\Collection::__invoke() is deprecated, please use search() instead');
+        trigger_error(
+            'Array access to Nexmo\Call\Collection::__invoke() is deprecated, please use search() instead',
+            E_USER_DEPRECATED
+        );
         if (!is_null($filter)) {
             $this->setFilter($filter);
         }
@@ -103,7 +106,10 @@ class Client implements ClientAwareInterface, CollectionInterface, \ArrayAccess
         if ($call instanceof Call) {
             $body = $call->getRequestData();
         } else {
-            trigger_error('Passing an array to Nexmo\Application\Client::create() has been deprecated, please pass a Call object instead.');
+            trigger_error(
+                'Passing an array to Nexmo\Application\Client::create() has been deprecated, please pass a Call object instead.',
+                E_USER_DEPRECATED
+            );
             $body = $call;
         }
 
@@ -117,7 +123,10 @@ class Client implements ClientAwareInterface, CollectionInterface, \ArrayAccess
      */
     public function put($payload, $idOrCall)
     {
-        trigger_error('Passing an array to Nexmo\Application\Client::put() has been deprecated, please use update() instead');
+        trigger_error(
+            'Passing an array to Nexmo\Application\Client::put() has been deprecated, please use update() instead',
+            E_USER_DEPRECATED
+        );
         return $this->update($payload, $idOrCall);
     }
 
@@ -190,7 +199,10 @@ class Client implements ClientAwareInterface, CollectionInterface, \ArrayAccess
      */
     public function delete($call = null, $type)
     {
-        trigger_error('Nexmo\Call\Collection::delete() is deprecated, please use streamAudioStop() or talkStop() instead');
+        trigger_error(
+            'Nexmo\Call\Collection::delete() is deprecated, please use streamAudioStop() or talkStop() instead',
+            E_USER_DEPRECATED
+        );
 
         if (is_object($call) and is_callable([$call, 'getId'])) {
             $call = $call->getId();
@@ -234,7 +246,10 @@ class Client implements ClientAwareInterface, CollectionInterface, \ArrayAccess
      */
     public function post($call)
     {
-        trigger_error('Nexmo\Call\Collection::post() has been deprecated, please use create() instead.');
+        trigger_error(
+            'Nexmo\Call\Collection::post() has been deprecated, please use create() instead.',
+            E_USER_DEPRECATED
+        );
         return $this->create($call);
     }
 
@@ -243,7 +258,10 @@ class Client implements ClientAwareInterface, CollectionInterface, \ArrayAccess
         if (!($call instanceof Call)) {
             $call = new Call($call);
         } else {
-            trigger_error('Passing a Call object to Nexmo\Call\Collection::get() is deprecated, please pass a string id');
+            trigger_error(
+                'Passing a Call object to Nexmo\Call\Collection::get() is deprecated, please pass a string id',
+                E_USER_DEPRECATED
+            );
         }
 
         $response = $this->getApiResource()->get($call->getId());
@@ -266,7 +284,10 @@ class Client implements ClientAwareInterface, CollectionInterface, \ArrayAccess
      */
     public function offsetGet($call)
     {
-        trigger_error('Array access to Nexmo\Call\Collection::get() is deprecated, please use search() instead');
+        trigger_error(
+            'Array access to Nexmo\Call\Collection::get() is deprecated, please use search() instead',
+            E_USER_DEPRECATED
+        );
         if (!($call instanceof Call)) {
             $call = new Call($call);
         }
