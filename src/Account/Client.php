@@ -207,7 +207,7 @@ class Client implements ClientAwareInterface
         $api->setBaseUri('/accounts');
         
         $data = $api->get($apiKey . '/secrets');
-        return SecretCollection::fromApi($data);
+        return @SecretCollection::fromApi($data);
     }
 
     public function getSecret(string $apiKey, string $secretId) : Secret
@@ -217,7 +217,7 @@ class Client implements ClientAwareInterface
         $api->setBaseUri('/accounts');
 
         $data = $api->get($apiKey . '/secrets/' . $secretId);
-        return Secret::fromApi($data);
+        return @Secret::fromApi($data);
     }
 
     /**
@@ -241,7 +241,7 @@ class Client implements ClientAwareInterface
             throw $e;
         }
 
-        return Secret::fromApi($response);
+        return @Secret::fromApi($response);
     }
 
     public function deleteSecret(string $apiKey, string $secretId) : void

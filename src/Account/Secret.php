@@ -2,6 +2,7 @@
 
 namespace Nexmo\Account;
 
+use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
 use Nexmo\InvalidResponseException;
 
 class Secret implements \ArrayAccess
@@ -10,6 +11,13 @@ class Secret implements \ArrayAccess
 
     public function __construct($data)
     {
+        if (!isset($data['id'])) {
+            throw new InvalidResponseException("Missing key: 'id");
+        }
+        if (!isset($data['created_at'])) {
+            throw new InvalidResponseException("Missing key: 'created_at");
+        }
+
         $this->data = $data;
     }
 
@@ -28,14 +36,12 @@ class Secret implements \ArrayAccess
         return $this['_links'];
     }
 
+    /**
+     * @deprecated Instatiate the object directly
+     */
     public static function fromApi($data)
     {
-        if (!isset($data['id'])) {
-            throw new InvalidResponseException("Missing key: 'id");
-        }
-        if (!isset($data['created_at'])) {
-            throw new InvalidResponseException("Missing key: 'created_at");
-        }
+        trigger_error('Please instatiate a Nexmo\Account\Secret object instead of using fromApi', E_USER_DEPRECATED);
         return new self($data);
     }
 

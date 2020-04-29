@@ -32,7 +32,7 @@ class SecretCollectionTest extends TestCase
             ]
         ];
 
-        $this->collection = SecretCollection::fromApi([
+        $this->collection = @SecretCollection::fromApi([
             '_links' => $this->links,
             '_embedded' => [
                 'secrets' => $this->secrets
@@ -56,7 +56,7 @@ class SecretCollectionTest extends TestCase
         $this->assertEquals($this->links, $this->collection->getLinks());
 
         $secrets = array_map(function ($v) {
-            return Secret::fromApi($v);
+            return @Secret::fromApi($v);
         }, $this->secrets);
         $this->assertEquals($secrets, $this->collection->getSecrets());
     }
@@ -66,7 +66,7 @@ class SecretCollectionTest extends TestCase
         $this->assertEquals($this->links, $this->collection['_links']);
 
         $secrets = array_map(function ($v) {
-            return Secret::fromApi($v);
+            return @Secret::fromApi($v);
         }, $this->secrets);
         $this->assertEquals($secrets, $this->collection['secrets']);
     }

@@ -4,10 +4,16 @@ namespace Nexmo\Account;
 
 use ArrayAccess;
 use Nexmo\Client\Exception\Exception;
+use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
 use Nexmo\Entity\JsonSerializableInterface;
 use Nexmo\Entity\JsonUnserializableInterface;
 
-class Config implements JsonSerializableInterface, JsonUnserializableInterface, ArrayAccess
+class Config implements
+    \JsonSerializable,
+    JsonSerializableInterface,
+    JsonUnserializableInterface,
+    ArrayAccess,
+    ArrayHydrateInterface
 {
     public function __construct($sms_callback_url = null, $dr_callback_url = null, $max_outbound_request = null, $max_inbound_request = null, $max_calls_per_second = null)
     {
@@ -55,16 +61,26 @@ class Config implements JsonSerializableInterface, JsonUnserializableInterface, 
 
     public function jsonUnserialize(array $json)
     {
+        $this->createFromArray($json);
+    }
+
+    public function createFromArray(array $data)
+    {
         $this->data = [
-            'sms_callback_url' => $json['sms_callback_url'],
-            'dr_callback_url' => $json['dr_callback_url'],
-            'max_outbound_request' => $json['max_outbound_request'],
-            'max_inbound_request' => $json['max_inbound_request'],
-            'max_calls_per_second' => $json['max_calls_per_second'],
+            'sms_callback_url' => $data['sms_callback_url'],
+            'dr_callback_url' => $data['dr_callback_url'],
+            'max_outbound_request' => $data['max_outbound_request'],
+            'max_inbound_request' => $data['max_inbound_request'],
+            'max_calls_per_second' => $data['max_calls_per_second'],
         ];
     }
 
     public function jsonSerialize()
+    {
+        return $this->toArray();
+    }
+
+    public function toArray(): array
     {
         return $this->data;
     }

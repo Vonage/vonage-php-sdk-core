@@ -2,6 +2,8 @@
 
 namespace Nexmo\Account;
 
+use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
+
 class SecretCollection implements \ArrayAccess
 {
     protected $data;
@@ -24,8 +26,12 @@ class SecretCollection implements \ArrayAccess
         return $this['_links'];
     }
 
+    /**
+     * @deprecated Instatiate the object directly
+     */
     public static function fromApi($data)
     {
+        trigger_error('Please instatiate a Nexmo\Account\SecretCollection instead of using fromApi()', E_USER_DEPRECATED);
         $secrets = [];
         foreach ($data['_embedded']['secrets'] as $s) {
             $secrets[] = Secret::fromApi($s);
