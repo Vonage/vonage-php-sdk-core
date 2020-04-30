@@ -355,15 +355,15 @@ class ClientTest extends TestCase
         $copy = '1a20a124-1775-412b-4444-e6985f4aace0';
         $existing = new Application($id);
         $existing->setName('My Application');
-        $existing->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'https://example.com/webhooks/answer');
-        $existing->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'https://example.com/webhooks/event');
-        $existing->getRtcConfig()->setWebhook(RtcConfig::EVENT, 'https://example.com/webhooks/event');
+        @$existing->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'https://example.com/webhooks/answer');
+        @$existing->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'https://example.com/webhooks/event');
+        @$existing->getRtcConfig()->setWebhook(RtcConfig::EVENT, 'https://example.com/webhooks/event');
 
         $new = new Application();
         $new->setName('My Application');
-        $new->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'https://example.com/webhooks/answer');
-        $new->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'https://example.com/webhooks/event');
-        $new->getRtcConfig()->setWebhook(RtcConfig::EVENT, 'https://example.com/webhooks/event');
+        @$new->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'https://example.com/webhooks/answer');
+        @$new->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'https://example.com/webhooks/event');
+        @$new->getRtcConfig()->setWebhook(RtcConfig::EVENT, 'https://example.com/webhooks/event');
 
         $raw = [
             'name' => 'My Application',
@@ -576,11 +576,11 @@ class ClientTest extends TestCase
     {
         $application = new Application();
         $application->setName('My Application');
-        $application->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'https://example.com/webhooks/answer', 'GET');
-        $application->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'https://example.com/webhooks/event', 'POST');
-        $application->getMessagesConfig()->setWebhook(MessagesConfig::STATUS, 'https://example.com/webhooks/status', 'POST');
-        $application->getMessagesConfig()->setWebhook(MessagesConfig::INBOUND, 'https://example.com/webhooks/inbound', 'POST');
-        $application->getRtcConfig()->setWebhook(RtcConfig::EVENT, 'https://example.com/webhooks/event', 'POST');
+        @$application->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'https://example.com/webhooks/answer', 'GET');
+        @$application->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'https://example.com/webhooks/event', 'POST');
+        @$application->getMessagesConfig()->setWebhook(MessagesConfig::STATUS, 'https://example.com/webhooks/status', 'POST');
+        @$application->getMessagesConfig()->setWebhook(MessagesConfig::INBOUND, 'https://example.com/webhooks/inbound', 'POST');
+        @$application->getRtcConfig()->setWebhook(RtcConfig::EVENT, 'https://example.com/webhooks/event', 'POST');
         $application->setPublicKey("-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSLcjxu33G\nd/vynKnlw9SENi+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xsO\nOUNhPx2LhuLmgwWSRS4L5W851Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n");
         $application->getVbcConfig()->enable();
 

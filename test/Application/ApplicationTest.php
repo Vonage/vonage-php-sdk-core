@@ -41,8 +41,8 @@ class ApplicationTest extends TestCase
 
     public function testVoiceWebhookParams()
     {
-        $this->app->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'http://example.com/event');
-        $this->app->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'http://example.com/answer');
+        @$this->app->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'http://example.com/event');
+        @$this->app->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'http://example.com/answer');
 
         $params = $this->app->getRequestData();
 
@@ -122,7 +122,7 @@ class ApplicationTest extends TestCase
         $webhook = $this->app->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER);
         $this->assertEquals('https://example.com/webhooks/answer', $webhook);
 
-        $this->app->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'http://example.com');
+        @$this->app->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'http://example.com');
         $webhook = $this->app->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER);
         $this->assertEquals('http://example.com', (string) $webhook);
     }
