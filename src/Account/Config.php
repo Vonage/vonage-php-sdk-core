@@ -61,10 +61,10 @@ class Config implements
 
     public function jsonUnserialize(array $json)
     {
-        $this->createFromArray($json);
+        $this->fromArray($json);
     }
 
-    public function createFromArray(array $data)
+    public function fromArray(array $data)
     {
         $this->data = [
             'sms_callback_url' => $data['sms_callback_url'],

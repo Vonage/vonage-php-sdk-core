@@ -73,7 +73,7 @@ class Network implements
 
     public function jsonUnserialize(array $json)
     {
-        $this->createFromArray($json);
+        $this->fromArray($json);
     }
 
     public function jsonSerialize()
@@ -101,7 +101,7 @@ class Network implements
         throw new Exception('Network is read only');
     }
 
-    public function createFromArray(array $data) : void
+    public function fromArray(array $data) : void
     {
         // Convert CamelCase to snake_case as that's how we use array access in every other object
         $storage = [];

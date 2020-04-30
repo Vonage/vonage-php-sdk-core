@@ -94,7 +94,7 @@ class Client implements ClientAwareInterface
 
         foreach ($data as $p) {
             $prefixPrice = new PrefixPrice();
-            $prefixPrice->jsonUnserialize($p);
+            $prefixPrice->fromArray($p);
             $prices[] = $prefixPrice;
         }
 
@@ -108,7 +108,7 @@ class Client implements ClientAwareInterface
     {
         $body = $this->makePricingRequest($country, 'sms');
         $smsPrice = new SmsPrice();
-        $smsPrice->jsonUnserialize($body);
+        $smsPrice->fromArray($body);
         return $smsPrice;
     }
 
@@ -119,7 +119,7 @@ class Client implements ClientAwareInterface
     {
         $body = $this->makePricingRequest($country, 'voice');
         $voicePrice = new VoicePrice();
-        $voicePrice->jsonUnserialize($body);
+        $voicePrice->fromArray($body);
         return $voicePrice;
     }
 

@@ -32,7 +32,7 @@ class Hydrator implements HydratorInterface
      */
     public function hydrateObject(array $data, $object) : Call
     {
-        $object->createFromArray($data);
+        $object->fromArray($data);
         $object->setClient($this->client);
 
         return $object;

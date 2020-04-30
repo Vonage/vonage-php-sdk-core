@@ -74,7 +74,7 @@ class SmsPriceTest extends TestCase
         $r = [];
 
         $smsPrice = new SmsPrice();
-        $smsPrice->jsonUnserialize([
+        @$smsPrice->jsonUnserialize([
             'dialing_prefix' => 1,
             'default_price' => '0.00512',
             'currency' => 'EUR',

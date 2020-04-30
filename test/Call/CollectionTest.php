@@ -77,7 +77,7 @@ class CollectionTest extends TestCase
         $this->collection->hydrateEntity($data, $call->reveal());
 
         $call->setClient($this->nexmoClient->reveal())->shouldHaveBeenCalled();
-        $call->createFromArray($data)->shouldHaveBeenCalled();
+        $call->fromArray($data)->shouldHaveBeenCalled();
     }
 
     /**

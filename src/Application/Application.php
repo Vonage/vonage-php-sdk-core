@@ -165,7 +165,7 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
 
     public function jsonUnserialize(array $json)
     {
-        $this->createFromArray($json);
+        $this->fromArray($json);
     }
 
     public function jsonSerialize()
@@ -178,7 +178,7 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
         return (string) $this->getId();
     }
 
-    public function createFromArray(array $data)
+    public function fromArray(array $data)
     {
         $this->name = $data['name'];
         $this->id   = $data['id'];

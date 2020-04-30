@@ -256,12 +256,12 @@ class Client implements ClientAwareInterface
         // Legacy - If the user passed in a number object, populate that object
         // @deprecated This will eventually return a new clean object
         if (count($response) === 1 && $number instanceof Number) {
-            $number->createFromArray($response->current());
+            $number->fromArray($response->current());
             $numbers[] = $number;
         } else {
             foreach ($response as $rawNumber) {
                 $number = new Number();
-                $number->createFromArray($rawNumber);
+                $number->fromArray($rawNumber);
                 $numbers[] = $number;
             }
         }

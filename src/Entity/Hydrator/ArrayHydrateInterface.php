@@ -11,6 +11,6 @@ namespace Nexmo\Entity\Hydrator;
  */
 interface ArrayHydrateInterface
 {
-    public function createFromArray(array $data);
+    public function fromArray(array $data);
     public function toArray() : array;
 }

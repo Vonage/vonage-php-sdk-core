@@ -77,7 +77,7 @@ class Hydrator implements HydratorInterface
         }
 
         $application = new Application();
-        $application->createFromArray($array);
+        $application->fromArray($array);
         $application->setName($array['name']);
 
         // Is there a public key?

@@ -78,7 +78,7 @@ class Basic implements \JsonSerializable, JsonUnserializableInterface, \ArrayAcc
 
     public function jsonUnserialize(array $json)
     {
-        $this->createFromArray($json);
+        $this->fromArray($json);
     }
 
     public function offsetExists($offset)
@@ -101,7 +101,7 @@ class Basic implements \JsonSerializable, JsonUnserializableInterface, \ArrayAcc
         throw new Exception('Number insights results are read only');
     }
 
-    public function createFromArray(array $data)
+    public function fromArray(array $data)
     {
         $this->data = $data;
     }

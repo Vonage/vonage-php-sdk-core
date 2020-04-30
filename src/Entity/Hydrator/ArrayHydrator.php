@@ -12,7 +12,7 @@ class ArrayHydrator implements HydratorInterface
     public function hydrate(array $data)
     {
         $object = clone $this->prototype;
-        $object->createFromArray($data);
+        $object->fromArray($data);
 
         return $object;
     }

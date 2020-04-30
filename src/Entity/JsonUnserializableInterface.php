@@ -15,6 +15,7 @@ interface JsonUnserializableInterface
 {
     /**
      * Update the object state with the json data (as an array)
+     * @deprecated Implement ArrayHydrator instead as it is more semantically correct
      * @param $json
      * @return null
      */

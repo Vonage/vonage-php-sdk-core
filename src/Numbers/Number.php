@@ -174,10 +174,10 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
      */
     public function jsonUnserialize(array $json)
     {
-        $this->createFromArray($json);
+        $this->fromArray($json);
     }
 
-    public function createFromArray(array $data)
+    public function fromArray(array $data)
     {
         $this->data = $data;
     }

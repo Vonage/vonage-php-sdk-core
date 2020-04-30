@@ -90,7 +90,7 @@ class Client implements ClientAwareInterface, CollectionInterface
 
         $data = $this->getApiResource()->get($application->getId());
         $application = new Application();
-        $application->createFromArray($data);
+        $application->fromArray($data);
 
         return $application;
     }
@@ -107,7 +107,7 @@ class Client implements ClientAwareInterface, CollectionInterface
                 'Passing an array to Nexmo\Application\Client::create() is deprecated, please pass an Application object instead.',
                 E_USER_DEPRECATED
             );
-            $application = $this->createFromArray($application);
+            $application = $this->fromArray($application);
         }
 
         $response = $this->getApiResource()->create($application->toArray());
@@ -139,7 +139,7 @@ class Client implements ClientAwareInterface, CollectionInterface
                 'Passing an array to Nexmo\Application\Client::update() is deprecated, please pass an Application object instead.',
                 E_USER_DEPRECATED
             );
-            $application = $this->createFromArray($application);
+            $application = $this->fromArray($application);
         }
 
         if (is_null($id)) {
@@ -194,7 +194,7 @@ class Client implements ClientAwareInterface, CollectionInterface
     /**
      * @deprecated Use Nexmo\Application\Hydrator directly instead
      */
-    protected function createFromArray(array $array) : Application
+    protected function fromArray(array $array) : Application
     {
         return $this->hydrator->hydrate($array);
     }

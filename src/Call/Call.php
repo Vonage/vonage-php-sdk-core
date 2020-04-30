@@ -352,10 +352,10 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
 
     public function jsonUnserialize(array $json)
     {
-        $this->createFromArray($json);
+        $this->fromArray($json);
     }
 
-    public function createFromArray(array $data)
+    public function fromArray(array $data)
     {
         $this->data = $data;
         $this->id = $data['uuid'] ?? null;

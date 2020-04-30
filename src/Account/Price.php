@@ -81,10 +81,11 @@ abstract class Price implements
 
     public function jsonUnserialize(array $json)
     {
-        $this->createFromArray($json);
+        trigger_error('jsonUnserialize has been deprecated, please use fromArray() instead', E_USER_DEPRECATED);
+        $this->fromArray($json);
     }
 
-    public function createFromArray(array $data)
+    public function fromArray(array $data)
     {
         // Convert CamelCase to snake_case as that's how we use array access in every other object
         $storage = [];
@@ -123,7 +124,7 @@ abstract class Price implements
                 }
 
                 $network = new Network($n['networkCode'], $n['networkName']);
-                $network->createFromArray($n);
+                $network->fromArray($n);
                 $networks[$network->getCode()] = $network;
             }
         }

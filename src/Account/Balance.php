@@ -45,7 +45,7 @@ class Balance implements
 
     public function jsonUnserialize(array $json)
     {
-        $this->createFromArray($json);
+        $this->fromArray($json);
     }
 
     public function jsonSerialize()
@@ -73,7 +73,7 @@ class Balance implements
         throw new Exception('Balance is read only');
     }
 
-    public function createFromArray(array $data)
+    public function fromArray(array $data)
     {
         $this->data = [
             'balance' => $data['value'],

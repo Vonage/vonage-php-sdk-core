@@ -686,7 +686,7 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
     /**
      * @param array<string, scalar> $data
      */
-    public function createFromArray(array $data) : void
+    public function fromArray(array $data) : void
     {
         $this->requestData = $data;
     }
