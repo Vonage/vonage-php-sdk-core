@@ -13,7 +13,7 @@ use Nexmo\Client\ClientAwareInterface;
 use Nexmo\Client\ClientAwareTrait;
 use Nexmo\Client\Exception;
 use Nexmo\Entity\IterableAPICollection;
-use Nexmo\Entity\KeyValueFilter;
+use Nexmo\Entity\Filter\KeyValueFilter;
 
 class Client implements ClientAwareInterface
 {

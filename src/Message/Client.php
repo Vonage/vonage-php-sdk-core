@@ -12,8 +12,8 @@ use Nexmo\Client\APIResource;
 use Nexmo\Client\ClientAwareInterface;
 use Nexmo\Client\ClientAwareTrait;
 use Nexmo\Client\Exception;
-use Nexmo\Entity\FilterInterface;
-use Nexmo\Entity\KeyValueFilter;
+use Nexmo\Entity\Filter\FilterInterface;
+use Nexmo\Entity\Filter\KeyValueFilter;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 

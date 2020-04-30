@@ -8,7 +8,7 @@ use Nexmo\Client\ClientAwareTrait;
 use Nexmo\Client\ClientAwareInterface;
 use Nexmo\Client\Exception\Request as ExceptionRequest;
 use Nexmo\Client\Exception\Validation;
-use Nexmo\Entity\KeyValueFilter;
+use Nexmo\Entity\Filter\KeyValueFilter;
 
 /**
  * @todo Unify the exception handling to avoid duplicated code and logic (ie: getPrefixPricing())

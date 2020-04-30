@@ -8,15 +8,17 @@
 
 namespace Nexmo\Entity;
 
-use Countable;
 use \Iterator;
+use Countable;
 use Nexmo\Client;
-use Psr\Http\Message\ResponseInterface;
-use Zend\Diactoros\Request;
-use Nexmo\Client\ClientAwareInterface;
-use Nexmo\Client\ClientAwareTrait;
 use Nexmo\Client\Exception;
+use Zend\Diactoros\Request;
 use Nexmo\Client\APIResource;
+use Nexmo\Client\ClientAwareTrait;
+use Nexmo\Entity\Filter\EmptyFilter;
+use Nexmo\Client\ClientAwareInterface;
+use Psr\Http\Message\ResponseInterface;
+use Nexmo\Entity\Filter\FilterInterface;
 
 /**
  * Common code for iterating over a collection, and using the collection class to discover the API path.

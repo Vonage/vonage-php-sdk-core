@@ -4,8 +4,8 @@ namespace Nexmo\Client;
 
 use Nexmo\Client;
 use Zend\Diactoros\Request;
-use Nexmo\Entity\EmptyFilter;
-use Nexmo\Entity\FilterInterface;
+use Nexmo\Entity\Filter\EmptyFilter;
+use Nexmo\Entity\Filter\FilterInterface;
 use Nexmo\Entity\IterableAPICollection;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;

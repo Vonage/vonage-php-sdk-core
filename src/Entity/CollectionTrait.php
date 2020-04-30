@@ -8,8 +8,10 @@
 
 namespace Nexmo\Entity;
 
-use Psr\Http\Message\ResponseInterface;
 use Zend\Diactoros\Request;
+use Nexmo\Entity\Filter\EmptyFilter;
+use Psr\Http\Message\ResponseInterface;
+use Nexmo\Entity\Filter\FilterInterface;
 
 /**
  * Common code for iterating over a collection, and using the collection class to discover the API path.

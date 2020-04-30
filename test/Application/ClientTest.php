@@ -25,6 +25,7 @@ use Nexmo\Client\Exception\Exception;
 use Psr\Http\Message\RequestInterface;
 use Nexmo\Client\Exception\Request as ExceptionRequest;
 use Nexmo\Client\Exception\Request as RequestException;
+use Nexmo\Entity\Filter\EmptyFilter;
 
 class ClientTest extends TestCase
 {
@@ -78,7 +79,7 @@ class ClientTest extends TestCase
             return true;
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('list'));
 
-        $this->assertInstanceOf('Nexmo\Entity\EmptyFilter', $this->applicationClient->getFilter());
+        $this->assertInstanceOf(EmptyFilter::class, $this->applicationClient->getFilter());
         $this->assertSame($this->applicationClient, $this->applicationClient->setFilter($filter));
         $this->assertSame($filter, $this->applicationClient->getFilter());
 

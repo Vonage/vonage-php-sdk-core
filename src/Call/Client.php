@@ -9,7 +9,7 @@
 namespace Nexmo\Call;
 
 use Nexmo\Client\APIResource;
-use Nexmo\Entity\FilterInterface;
+use Nexmo\Entity\Filter\FilterInterface;
 use Nexmo\Client\ClientAwareTrait;
 use Nexmo\Entity\CollectionInterface;
 use Nexmo\Client\ClientAwareInterface;

@@ -11,7 +11,7 @@ namespace Nexmo\Insights;
 use Nexmo\Numbers\Number;
 use Nexmo\Client\Exception;
 use Nexmo\Client\APIResource;
-use Nexmo\Entity\KeyValueFilter;
+use Nexmo\Entity\Filter\KeyValueFilter;
 use Nexmo\Client\ClientAwareTrait;
 use Nexmo\Client\ClientAwareInterface;
 

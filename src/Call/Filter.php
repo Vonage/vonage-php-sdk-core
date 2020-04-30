@@ -9,7 +9,7 @@
 namespace Nexmo\Call;
 
 use Nexmo\Conversations\Conversation;
-use Nexmo\Entity\FilterInterface;
+use Nexmo\Entity\Filter\FilterInterface;
 
 class Filter implements FilterInterface
 {
