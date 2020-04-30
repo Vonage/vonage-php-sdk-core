@@ -44,9 +44,10 @@ class Client implements APIClient
 
     /**
      * Returns pricing based on the prefix requested
-     * @return array<PrefixPrice>
+     *
+     * @return array<int, PrefixPrice>
      */
-    public function getPrefixPricing($prefix) : array
+    public function getPrefixPricing(string $prefix) : array
     {
         $data = $this->accountAPI->get(
             'get-prefix-pricing/outbound',
@@ -55,7 +56,9 @@ class Client implements APIClient
         
         $prices = [];
         foreach ($data['prices'] as $priceData) {
-            $prices[] = $this->priceFactory->build($priceData, PriceFactory::TYPE_PREFIX);
+            /** @var PrefixPrice $price */
+            $price = $this->priceFactory->build($priceData, PriceFactory::TYPE_PREFIX);
+            $prices[] = $price;
         }
 
         if (empty($prices)) {
@@ -71,7 +74,10 @@ class Client implements APIClient
     public function getSmsPrice(string $country) : SmsPrice
     {
         $body = $this->makePricingRequest($country, 'sms');
-        return $this->priceFactory->build($body, PriceFactory::TYPE_SMS);
+        
+        /** @var SmsPrice $price */
+        $price = $this->priceFactory->build($body, PriceFactory::TYPE_SMS);
+        return $price;
     }
 
     /**
@@ -80,13 +86,16 @@ class Client implements APIClient
     public function getVoicePrice(string $country) : VoicePrice
     {
         $body = $this->makePricingRequest($country, 'voice');
-        return $this->priceFactory->build($body, PriceFactory::TYPE_VOICE);
+
+        /** @var VoicePrice $price */
+        $price = $this->priceFactory->build($body, PriceFactory::TYPE_VOICE);
+        return $price;
     }
 
     /**
-     * @todo This should return an empty result instead of throwing an Exception on no results
+     * @return array<string, array|string>
      */
-    protected function makePricingRequest($country, $pricingType) : array
+    protected function makePricingRequest(string $country, string $pricingType) : array
     {
         $data = $this->accountAPI->get(
             'get-pricing/outbound/' . $pricingType,
@@ -117,7 +126,7 @@ class Client implements APIClient
         return $balance;
     }
 
-    public function topUp($trx) : void
+    public function topUp(string $trx) : void
     {
         $this->accountAPI->submit(['trx' => $trx], '/top-up');
     }
@@ -147,8 +156,9 @@ class Client implements APIClient
 
     /**
      * Update account config
+     * @param array<string, string> $options Callback options to set for the account
      */
-    public function updateConfig($options) : Config
+    public function updateConfig(array $options) : Config
     {
         // supported options are SMS Callback and DR Callback
         $params = [];
@@ -183,7 +193,7 @@ class Client implements APIClient
         $data = $this->secretsAPI->get($apiKey . '/secrets');
         $secrets = [];
         foreach ($data['_embedded']['secrets'] as $secretData) {
-            $secrets[] = new Secret($secretData);
+            $secrets[] = new Secret($secretData['id'], $secretData['created_at'], $secretData['_links']);
         }
 
         return new SecretCollection($secrets, $data['_links']);
@@ -192,7 +202,7 @@ class Client implements APIClient
     public function getSecret(string $apiKey, string $secretId) : Secret
     {
         $data = $this->secretsAPI->get($apiKey . '/secrets/' . $secretId);
-        return new Secret($data);
+        return new Secret($data['id'], $data['created_at'], $data['_links']);
     }
 
     /**
@@ -216,7 +226,7 @@ class Client implements APIClient
             throw $e;
         }
 
-        return new Secret($response);
+        return new Secret($response['id'], $response['created_at'], $response['_links']);
     }
 
     public function deleteSecret(string $apiKey, string $secretId) : void

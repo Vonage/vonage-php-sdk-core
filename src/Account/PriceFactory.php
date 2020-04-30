@@ -28,6 +28,8 @@ class PriceFactory
 
     /**
      * @todo Figure out a way to do this without specifying a type
+     *
+     * @param array<string, scalar> $data Data for the price request
      */
     public function build(array $data, int $type) : Price
     {
@@ -43,7 +45,6 @@ class PriceFactory
                 break;
             default:
                 throw new \InvalidArgumentException('Invalid pricing type requested', $type);
-                break;
         }
 
         $price = new $class();

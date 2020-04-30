@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 namespace Nexmo\Account;
 
 use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
@@ -11,82 +11,57 @@ use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
 class Balance implements \JsonSerializable, ArrayHydrateInterface
 {
     /**
-     * @var array
+     * @var bool
      */
-    protected $data;
+    protected $autoReload;
 
     /**
-     * @todo Have these take null values, since we offer an unserialize option to populate
+     * @var float
      */
-    public function __construct($balance, $autoReload)
+    protected $balance;
+
+    public function __construct(float $balance, bool $autoReload)
     {
-        $this->data['balance'] = $balance;
-        $this->data['auto_reload'] = $autoReload;
+        $this->balance = $balance;
+        $this->autoReload = $autoReload;
     }
 
-    public function getBalance()
+    public function getBalance() : float
     {
-        return $this->data['balance'];
+        return $this->balance;
     }
 
-    public function getAutoReload()
+    public function getAutoReload() : bool
     {
-        return $this->data['auto_reload'];
+        return $this->autoReload;
     }
 
-    public function jsonUnserialize(array $json)
-    {
-        trigger_error(
-            get_class($this) . "::jsonUnserialize is deprecated, please fromArray() instead",
-            E_USER_DEPRECATED
-        );
-        $this->fromArray($json);
-    }
-
+    /**
+     * @return array<string, float|bool>
+     */
     public function jsonSerialize()
     {
-        return $this->data;
+        return $this->toArray();
     }
 
-    public function offsetExists($offset)
+    /**
+     * @param array<string, float|bool> $data Data about the account balance
+     */
+    public function fromArray(array $data) : void
     {
-        trigger_error(
-            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
-            E_USER_DEPRECATED
-        );
-        return isset($this->data[$offset]);
+        $this->balance = (float) $data['value'] ?? null;
+        $this->autoReload = $data['autoReload'] ?? null;
     }
 
-    public function offsetGet($offset)
-    {
-        trigger_error(
-            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
-            E_USER_DEPRECATED
-        );
-        return $this->data[$offset];
-    }
-
-    public function offsetSet($offset, $value)
-    {
-        throw new Exception('Balance is read only');
-    }
-
-    public function offsetUnset($offset)
-    {
-        throw new Exception('Balance is read only');
-    }
-
-    public function fromArray(array $data)
-    {
-        $this->data = [
-            'balance' => $data['value'],
-            'auto_reload' => $data['autoReload']
-        ];
-    }
-
+    /**
+     * @return array<string, float|bool>
+     */
     public function toArray(): array
     {
-        return $this->data;
+        return [
+            'balance' => $this->getBalance(),
+            'autoReload' => $this->getAutoReload(),
+        ];
     }
 
     public function __get($key)

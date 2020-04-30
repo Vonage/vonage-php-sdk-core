@@ -39,23 +39,18 @@ class BalanceTest extends TestCase
     {
         $data = $this->balance->jsonSerialize();
 
-        $this->assertSame('12.99', $data['balance']);
-        $this->assertSame(false, $data['auto_reload']);
+        $this->assertSame(12.99, $data['balance']);
+        $this->assertSame(false, $data['autoReload']);
     }
 
     public function testUnserializingFromArray()
     {
-        $data = ['value' => '5.00', 'autoReload' => false];
+        $data = ['value' => 5.00, 'autoReload' => false];
 
-        $balance = new Balance('1.99', true);
+        $balance = new Balance((float) '1.99', true);
         $balance->fromArray($data);
 
         $this->assertSame($data['value'], $balance->getBalance());
         $this->assertSame($data['autoReload'], $balance->getAutoReload());
-    }
-
-    public function testMakeSureDataIsPubliclyVisible()
-    {
-        $this->assertSame('12.99', @$this->balance->data['balance']);
     }
 }

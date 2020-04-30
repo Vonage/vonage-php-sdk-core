@@ -6,9 +6,9 @@ namespace NexmoTest\Account;
 use Nexmo\Account\PrefixPrice;
 use Nexmo\Account\PriceFactory;
 use PHPUnit\Framework\TestCase;
-use Nexmo\Account\PriceHydrator;
 use Nexmo\Account\SmsPrice;
 use Nexmo\Account\VoicePrice;
+use Nexmo\Entity\Hydrator\ArrayHydrator;
 
 class PriceFactoryTest extends TestCase
 {
@@ -19,7 +19,7 @@ class PriceFactoryTest extends TestCase
 
     public function setUp()
     {
-        $this->factory = new PriceFactory(new PriceHydrator());
+        $this->factory = new PriceFactory(new ArrayHydrator());
     }
 
     public function testCreatesPrefixPrice()

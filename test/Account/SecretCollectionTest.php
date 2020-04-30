@@ -28,13 +28,11 @@ class SecretCollectionTest extends TestCase
     {
         $this->secrets = [
             new Secret(
+                'ad6dc56f-07b5-46e1-a527-85530e625800',
+                '2017-03-02T16:34:49Z',
                 [
-                    'id' => 'ad6dc56f-07b5-46e1-a527-85530e625800',
-                    'created_at' => '2017-03-02T16:34:49Z',
-                    '_links' => [
-                        'self' => [
-                            'href' => '/accounts/abcd1234/secrets/ad6dc56f-07b5-46e1-a527-85530e625800'
-                        ]
+                    'self' => [
+                        'href' => '/accounts/abcd1234/secrets/ad6dc56f-07b5-46e1-a527-85530e625800'
                     ]
                 ]
             )

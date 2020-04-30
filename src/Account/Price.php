@@ -10,58 +10,94 @@ use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
  */
 abstract class Price implements \JsonSerializable, ArrayHydrateInterface
 {
-    use JsonSerializableTrait;
-    use NoRequestResponseTrait;
-    use JsonResponseTrait;
+    /**
+     * @var string
+     */
+    protected $countryCode;
 
     /**
-     * @var array<string, mixed>
+     * @var string
      */
-    protected $data = [];
+    protected $countryDisplayName;
 
-    public function getCountryCode()
+    /**
+     * @var string
+     */
+    protected $countryName;
+
+    /**
+     * @var string
+     */
+    protected $currency;
+
+    /**
+     * @var string
+     */
+    protected $defaultPrice;
+
+    /**
+     * @var string
+     */
+    protected $dialingPrefix;
+
+    /**
+     * @var float
+     */
+    protected $mt;
+
+    /**
+     * @var array<string|int, Network>
+     */
+    protected $networks;
+
+    /**
+     * @var string
+     */
+    protected $priceMethod;
+
+    public function getCountryCode() : string
     {
-        return $this->data['country_code'];
+        return $this->countryCode;
     }
 
-    public function getCountryDisplayName()
+    public function getCountryDisplayName() : string
     {
-        return $this->data['country_display_name'];
+        return $this->countryDisplayName;
     }
 
-    public function getCountryName()
+    public function getCountryName() : string
     {
-        return $this->data['country_name'];
+        return $this->countryName;
     }
 
-    public function getDialingPrefix()
+    public function getDialingPrefix() : string
     {
-        return $this->data['dialing_prefix'];
+        return $this->dialingPrefix;
     }
 
-    public function getDefaultPrice()
+    public function getDefaultPrice() : float
     {
-        if (isset($this->data['default_price'])) {
-            return $this->data['default_price'];
+        if (isset($this->defaultPrice)) {
+            return (float) $this->defaultPrice;
         }
 
-        if (!array_key_exists('mt', $this->data)) {
-            throw new \RuntimeException('Unknown pricing for ' . $this->getCountryName() . ' (' . $this->getCountryCode() . ')');
-        }
-        return $this->data['mt'];
+        return $this->mt;
     }
 
-    public function getCurrency()
+    public function getCurrency() : string
     {
-        return $this->data['currency'];
+        return $this->currency;
     }
 
-    public function getNetworks()
+    /**
+     * @return array<string|int, Network>
+     */
+    public function getNetworks() : array
     {
-        return $this->data['networks'];
+        return $this->networks;
     }
 
-    public function getPriceForNetwork($networkCode)
+    public function getPriceForNetwork(int $networkCode) : float
     {
         $networks = $this->getNetworks();
         if (isset($networks[$networkCode])) {
@@ -71,37 +107,30 @@ abstract class Price implements \JsonSerializable, ArrayHydrateInterface
         return $this->getDefaultPrice();
     }
 
-    public function jsonUnserialize(array $json)
+    /**
+     * @param array<string, array|string> $data Incoming data from API or serialization
+     */
+    public function fromArray(array $data) : void
     {
-        trigger_error(
-            get_class($this) . "::jsonUnserialize is deprecated, please fromArray() instead",
-            E_USER_DEPRECATED
-        );
-        $this->fromArray($json);
-    }
+        $data = $this->convertKeyNames($data);
 
-    public function fromArray(array $data)
-    {
-        // Convert CamelCase to snake_case as that's how we use array access in every other object
-        $storage = [];
-        foreach ($data as $k => $v) {
-            $k = ltrim(strtolower(preg_replace('/[A-Z]([A-Z](?![a-z]))*/', '_$0', $k)), '_');
+        $this->countryCode = $data['countryCode'] ?? null;
+        $this->countryDisplayName = $data['countryDisplayName'] ?? null;
+        $this->countryName = $data['countryName'] ?? null;
+        $this->currency = $data['currency'] ?? null;
+        $this->defaultPrice = $data['defaultPrice'] ?? null;
+        $this->dialingPrefix = $data['dialingPrefix'] ?? null;
 
-            // PrefixPrice fixes
-            if ($k == 'country') {
-                $k = 'country_code';
-            }
-
-            if ($k == 'name') {
-                $storage['country_display_name'] = $v;
-                $storage['country_name'] = $v;
-            }
-
-            if ($k == 'prefix') {
-                $k = 'dialing_prefix';
-            }
-
-            $storage[$k] = $v;
+        // Legacy checks for old key names
+        if (is_null($this->countryCode)) {
+            $this->countryCode = $data['country'] ?? null;
+        }
+        if (is_null($this->countryName)) {
+            $this->countryName = $data['name'] ?? null;
+            $this->countryDisplayName = $data['name'] ?? null;
+        }
+        if (is_null($this->dialingPrefix)) {
+            $this->dialingPrefix = $data['prefix'] ?? null;
         }
 
         // Create objects for all the nested networks too
@@ -124,17 +153,52 @@ abstract class Price implements \JsonSerializable, ArrayHydrateInterface
             }
         }
 
-        $storage['networks'] = $networks;
-        $this->data = $storage;
+        $this->networks = $networks;
     }
 
-    public function jsonSerialize()
+    /**
+     * Shim to convert snake case back into the original camelCase the API uses
+     * Due to legacy code, this object can take key names in as snake_case
+     * instead of the camelCase format the API returns. This method allows
+     * conversion from snake_case to camelCase where legacy data cannot
+     * immediately be fixed.
+     *
+     * @param array <string, array|string> $data Data to replace key names on
+     * @return array<string, array|string>
+     */
+    public function convertKeyNames(array $data) : array
+    {
+        $newData = [];
+        foreach ($data as $key => $value) {
+            $key = lcfirst(str_replace('_', '', ucwords($key, '_')));
+            $newData[$key] = $value;
+        }
+
+        return $newData;
+    }
+
+    /**
+     * @return array<string, array|string>
+     */
+    public function jsonSerialize() : array
     {
         return $this->toArray();
     }
 
+    /**
+     * @return array<string, array|string>
+     */
     public function toArray(): array
     {
-        return $this->data;
+        return [
+            'countryCode' => $this->getCountryCode(),
+            'countryDisplayName' => $this->getCountryDisplayName(),
+            'countryName' => $this->getCountryName(),
+            'currency' => $this->getCurrency(),
+            'defaultPrice' => (string) $this->getDefaultPrice(),
+            'dialingPrefix'=> $this->getDialingPrefix(),
+            'networks' => $this->getNetworks(),
+            'prefix' => $this->getDialingPrefix(),
+        ];
     }
 }
