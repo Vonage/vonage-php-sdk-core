@@ -131,12 +131,33 @@ class Client implements ClientAwareInterface, CollectionInterface, \ArrayAccess
     }
 
     /**
-     * Update an existing call 
+     * Update an existing call
+     *
+     * @param $payload NCCO Object or NCCO Array to update the call
+     * @param string|Call $idOrCall String ID of a Call or the Call object to pull the ID from
      */
     public function update($payload, $idOrCall)
     {
+        if (is_array($payload)) {
+            trigger_error(
+                'Passing an NCCO array is deprecated, please pass an NCCO object instead',
+                E_USER_DEPRECATED
+            );
+        }
+
+        if (is_string($idOrCall)) {
+            trigger_error(
+                'Passing a string Call ID deprecated, please pass a Call object instead',
+                E_USER_DEPRECATED
+            );
+        }
+
         if (!($idOrCall instanceof Call)) {
             $idOrCall = new Call($idOrCall);
+        }
+
+        if ($payload instanceof Call) {
+            $payload = $payload->toArray();
         }
 
         $idOrCall->setClient($this->getClient());
