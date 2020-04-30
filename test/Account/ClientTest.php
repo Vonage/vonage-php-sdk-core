@@ -25,7 +25,6 @@ use Nexmo\Account\PriceFactory;
 use PHPUnit\Framework\TestCase;
 use NexmoTest\Psr7AssertionTrait;
 use Nexmo\Account\SecretCollection;
-use Nexmo\Client\Exception\Request;
 use Nexmo\Client\Exception\Validation;
 use Nexmo\Entity\Hydrator\ArrayHydrator;
 use Psr\Http\Message\RequestInterface;

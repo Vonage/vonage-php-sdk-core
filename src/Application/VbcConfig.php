@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Nexmo Client Library for PHP
  *
@@ -10,19 +11,22 @@ namespace Nexmo\Application;
 
 class VbcConfig
 {
+    /**
+     * @var bool
+     */
     protected $enabled = false;
 
-    public function enable()
+    public function enable() : void
     {
         $this->enabled = true;
     }
 
-    public function disable()
+    public function disable() : void
     {
         $this->enabled = false;
     }
 
-    public function isEnabled()
+    public function isEnabled() : bool
     {
         return $this->enabled;
     }

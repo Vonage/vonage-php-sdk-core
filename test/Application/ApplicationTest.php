@@ -8,12 +8,13 @@
 
 namespace NexmoTest\Application;
 
-use Nexmo\Application\Application;
-use Nexmo\Application\MessagesConfig;
-use Nexmo\Application\RtcConfig;
-use Nexmo\Application\VoiceConfig;
 use Zend\Diactoros\Response;
+use Nexmo\Application\Webhook;
 use PHPUnit\Framework\TestCase;
+use Nexmo\Application\RtcConfig;
+use Nexmo\Application\Application;
+use Nexmo\Application\VoiceConfig;
+use Nexmo\Application\MessagesConfig;
 
 class ApplicationTest extends TestCase
 {
@@ -25,7 +26,7 @@ class ApplicationTest extends TestCase
     public function setUp()
     {
         $this->app = new Application();
-        $this->app->setName('test');
+        $this->app->fromArray(json_decode(file_get_contents(__DIR__ . '/responses/success.json'), true));
     }
 
     public function testConstructWithId()
@@ -36,28 +37,20 @@ class ApplicationTest extends TestCase
 
     public function testNameIsSet()
     {
-        $this->assertEquals('test', @$this->app->getRequestData()['name']);
+        $this->assertEquals('My Application', $this->app->getName());
     }
 
     public function testVoiceWebhookParams()
     {
-        @$this->app->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'http://example.com/event');
-        @$this->app->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'http://example.com/answer');
+        @$this->app->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, new Webhook('http://example.com/event'));
+        @$this->app->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, new Webhook('http://example.com/answer'));
 
-        $params = @$this->app->getRequestData();
-
-        $capabilities = $params['capabilities'];
-        $this->assertArrayHasKey('event_url', $capabilities['voice']['webhooks']);
-        $this->assertArrayHasKey('answer_url', $capabilities['voice']['webhooks']);
-
-        $this->assertEquals('http://example.com/event', $capabilities['voice']['webhooks']['event_url']['address']);
-        $this->assertEquals('http://example.com/answer', $capabilities['voice']['webhooks']['answer_url']['address']);
+        $this->assertEquals('http://example.com/event', $this->app->getVoiceConfig()->getWebhook(VoiceConfig::EVENT));
+        $this->assertEquals('http://example.com/answer', $this->app->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER));
     }
 
     public function testResponseSetsProperties()
     {
-        @$this->app->setResponse($this->getResponse());
-        $this->assertEquals('My Application', $this->app->getName());
         $this->assertEquals(
             "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSLcjxu33G\nd/vynKnlw9SENi+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xsO\nOUNhPx2LhuLmgwWSRS4L5W851Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n",
             $this->app->getPublicKey()
@@ -67,8 +60,6 @@ class ApplicationTest extends TestCase
 
     public function testResponseSetsVoiceConfigs()
     {
-        @$this->app->setResponse($this->getResponse());
-
         $webhook = $this->app->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER);
         $method  = $this->app->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER)->getMethod();
         $this->assertEquals('https://example.com/webhooks/answer', $webhook);
@@ -82,8 +73,6 @@ class ApplicationTest extends TestCase
 
     public function testResponseSetsMessagesConfigs()
     {
-        @$this->app->setResponse($this->getResponse());
-
         $webhook = $this->app->getMessagesConfig()->getWebhook(MessagesConfig::INBOUND);
         $method  = $this->app->getMessagesConfig()->getWebhook(MessagesConfig::INBOUND)->getMethod();
         $this->assertEquals('https://example.com/webhooks/inbound', $webhook);
@@ -97,8 +86,6 @@ class ApplicationTest extends TestCase
 
     public function testResponseSetsRtcConfigs()
     {
-        @$this->app->setResponse($this->getResponse());
-
         $webhook = $this->app->getRtcConfig()->getWebhook(RtcConfig::EVENT);
         $method  = $this->app->getRtcConfig()->getWebhook(RtcConfig::EVENT)->getMethod();
         $this->assertEquals('https://example.com/webhooks/event', $webhook);
@@ -107,13 +94,11 @@ class ApplicationTest extends TestCase
 
     public function testResponseSetsVbcConfigs()
     {
-        @$this->app->setResponse($this->getResponse());
         $this->assertEquals(true, $this->app->getVbcConfig()->isEnabled());
     }
 
     public function testCanGetDirtyValues()
     {
-        @$this->app->setResponse($this->getResponse());
         $this->assertEquals('My Application', $this->app->getName());
 
         $this->app->setName('new');
@@ -122,15 +107,13 @@ class ApplicationTest extends TestCase
         $webhook = $this->app->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER);
         $this->assertEquals('https://example.com/webhooks/answer', $webhook);
 
-        @$this->app->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'http://example.com');
+        @$this->app->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, new Webhook('http://example.com'));
         $webhook = $this->app->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER);
         $this->assertEquals('http://example.com', (string) $webhook);
     }
 
     public function testConfigCanBeCopied()
     {
-        @$this->app->setResponse($this->getResponse());
-
         $otherapp = new Application();
         $otherapp->setName('new app');
 

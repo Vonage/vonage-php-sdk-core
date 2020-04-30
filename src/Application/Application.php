@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Nexmo Client Library for PHP
  *
@@ -8,59 +9,75 @@
 
 namespace Nexmo\Application;
 
-use Nexmo\Entity\JsonUnserializableInterface;
-use Nexmo\Entity\EntityInterface;
 use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
-use Nexmo\Entity\JsonResponseTrait;
-use Nexmo\Entity\JsonSerializableTrait;
-use Nexmo\Entity\Psr7Trait;
 
-class Application implements EntityInterface, \JsonSerializable, JsonUnserializableInterface, ArrayHydrateInterface
+class Application implements \JsonSerializable, ArrayHydrateInterface
 {
-    use JsonSerializableTrait;
-    use Psr7Trait;
-    use JsonResponseTrait;
 
+    /**
+     * @var VoiceConfig
+     */
     protected $voiceConfig;
+
+    /**
+     * @var MessagesConfig
+     */
     protected $messagesConfig;
+
+    /**
+     * @var RtcConfig
+     */
     protected $rtcConfig;
+
+    /**
+     * @var VbcConfig
+     */
     protected $vbcConfig;
 
+    /**
+     * @var string
+     */
     protected $name;
 
+    /**
+     * @var array<string, string>
+     */
     protected $keys = [];
 
+    /**
+     * @var string
+     */
     protected $id;
 
-    public function __construct($id = null)
+    public function __construct(string $id = null)
     {
         $this->id = $id;
     }
 
-    public function getId()
+    public function getId() : ?string
     {
         return $this->id;
     }
 
-    public function setVoiceConfig(VoiceConfig $config)
+    public function setVoiceConfig(VoiceConfig $config) : self
     {
         $this->voiceConfig = $config;
         return $this;
     }
 
-    public function setMessagesConfig(MessagesConfig $config)
+    public function setMessagesConfig(MessagesConfig $config) : self
     {
         $this->messagesConfig = $config;
         return $this;
     }
 
-    public function setRtcConfig(RtcConfig $config)
+    public function setRtcConfig(RtcConfig $config) : self
     {
         $this->rtcConfig = $config;
         return $this;
     }
 
-    public function setVbcConfig(VbcConfig $config)
+    public function setVbcConfig(VbcConfig $config) : self
     {
         $this->vbcConfig = $config;
         return $this;
@@ -73,12 +90,6 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
     {
         if (!isset($this->voiceConfig)) {
             $this->setVoiceConfig(new VoiceConfig());
-            $data = @$this->getResponseData();
-            if (isset($data['voice']) and isset($data['voice']['webhooks'])) {
-                foreach ($data['voice']['webhooks'] as $webhook) {
-                    $this->voiceConfig->setWebhook($webhook['endpoint_type'], $webhook['endpoint'], $webhook['http_method']);
-                }
-            }
         }
 
         return $this->voiceConfig;
@@ -91,12 +102,6 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
     {
         if (!isset($this->messagesConfig)) {
             $this->setMessagesConfig(new MessagesConfig());
-            $data = $this->getResponseData();
-            if (isset($data['messages']) and isset($data['messages']['webhooks'])) {
-                foreach ($data['messages']['webhooks'] as $webhook) {
-                    $this->getMessagesConfig()->setWebhook($webhook['endpoint_type'], $webhook['endpoint'], $webhook['http_method']);
-                }
-            }
         }
 
         return $this->messagesConfig;
@@ -109,19 +114,13 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
     {
         if (!isset($this->rtcConfig)) {
             $this->setRtcConfig(new RtcConfig());
-            $data = $this->getResponseData();
-            if (isset($data['rtc']) and isset($data['rtc']['webhooks'])) {
-                foreach ($data['rtc']['webhooks'] as $webhook) {
-                    $this->getRtcConfig()->setWebhook($webhook['endpoint_type'], $webhook['endpoint'], $webhook['http_method']);
-                }
-            }
         }
 
         return $this->rtcConfig;
     }
 
     /**
-     * @return RtcConfig
+     * @return VbcConfig
      */
     public function getVbcConfig() : VbcConfig
     {
@@ -132,47 +131,44 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
         return $this->vbcConfig;
     }
 
-    public function setPublicKey($key)
+    public function setPublicKey(string $key) : self
     {
         $this->keys['public_key'] = $key;
         return $this;
     }
 
-    public function getPublicKey()
+    public function getPublicKey() : ?string
     {
         if (isset($this->keys['public_key'])) {
             return $this->keys['public_key'];
         }
+
+        return null;
     }
 
-    public function getPrivateKey()
+    public function getPrivateKey() : ?string
     {
         if (isset($this->keys['private_key'])) {
             return $this->keys['private_key'];
         }
+
+        return null;
     }
 
-    public function setName($name)
+    public function setName(string $name) : self
     {
         $this->name = $name;
         return $this;
     }
 
-    public function getName()
+    public function getName() : string
     {
         return $this->name;
     }
 
-    public function jsonUnserialize(array $json)
-    {
-        trigger_error(
-            get_class($this) . "::jsonUnserialize is deprecated, please fromArray() instead",
-            E_USER_DEPRECATED
-        );
-
-        $this->fromArray($json);
-    }
-
+    /**
+     * @return array<string, array|scalar>
+     */
     public function jsonSerialize()
     {
         return $this->toArray();
@@ -183,7 +179,10 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
         return (string) $this->getId();
     }
 
-    public function fromArray(array $data)
+    /**
+     * @param array<string, array|scalar> $data Data to parse for the Application
+     */
+    public function fromArray(array $data) : void
     {
         $this->name = $data['name'];
         $this->id   = $data['id'] ?? null;
@@ -222,6 +221,9 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
         }
     }
 
+    /**
+     * @return array<string, array|scalar>
+     */
     public function toArray(): array
     {
         // Build up capabilities that are set

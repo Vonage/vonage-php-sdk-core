@@ -6,13 +6,20 @@ use Nexmo\Entity\Hydrator\HydratorInterface;
 
 class Hydrator implements HydratorInterface
 {
-    public function hydrate(array $data)
+    /**
+     * @param array<string, array|scalar> $data
+     */
+    public function hydrate(array $data) : Application
     {
         $application = new Application();
         return $this->hydrateObject($data, $application);
     }
 
-    public function hydrateObject(array $data, $object)
+    /**
+     * @param array<string, array|scalar> $data
+     * @param Application $object
+     */
+    public function hydrateObject(array $data, $object) : Application
     {
         if (isset($data['answer_url']) || isset($data['event_url'])) {
             return $this->createFromArrayV1($data, $object);
@@ -21,7 +28,10 @@ class Hydrator implements HydratorInterface
         return $this->createFromArrayV2($data, $object);
     }
 
-    protected function createFromArrayV1(array $array, $application) : Application
+    /**
+     * @param array<string, array|scalar> $array Data for the Application
+     */
+    protected function createFromArrayV1(array $array, Application $application) : Application
     {
         foreach (['name',] as $param) {
             if (!isset($array[$param])) {
@@ -68,7 +78,10 @@ class Hydrator implements HydratorInterface
         return $application;
     }
 
-    protected function createFromArrayV2(array $array) : Application
+    /**
+     * @param array<string, array|scalar> $array Data for the Application
+     */
+    protected function createFromArrayV2(array $array, Application $application) : Application
     {
         foreach (['name',] as $param) {
             if (!isset($array[$param])) {
@@ -76,7 +89,6 @@ class Hydrator implements HydratorInterface
             }
         }
 
-        $application = new Application();
         $application->fromArray($array);
         $application->setName($array['name']);
 

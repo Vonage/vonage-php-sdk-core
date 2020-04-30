@@ -12,7 +12,6 @@ use Prophecy\Argument;
 use Zend\Diactoros\Request;
 use Zend\Diactoros\Response;
 use Nexmo\Application\Client;
-use Nexmo\Application\Filter;
 use Nexmo\Client\APIResource;
 use Nexmo\Application\Hydrator;
 use PHPUnit\Framework\TestCase;
@@ -21,11 +20,9 @@ use NexmoTest\Psr7AssertionTrait;
 use Nexmo\Application\Application;
 use Nexmo\Application\VoiceConfig;
 use Nexmo\Application\MessagesConfig;
+use Nexmo\Application\Webhook;
 use Nexmo\Client\Exception\Exception;
 use Psr\Http\Message\RequestInterface;
-use Nexmo\Client\Exception\Request as ExceptionRequest;
-use Nexmo\Client\Exception\Request as RequestException;
-use Nexmo\Entity\Filter\EmptyFilter;
 
 class ClientTest extends TestCase
 {
@@ -48,138 +45,18 @@ class ClientTest extends TestCase
         $this->nexmoClient = $this->prophesize('Nexmo\Client');
         $this->nexmoClient->getApiUrl()->willReturn('http://api.nexmo.com');
 
-        $this->applicationClient = new Client();
+        $this->apiClient = new APIResource();
+        $this->apiClient
+            ->setBaseUri('/v2/applications')
+            ->setCollectionName('applications')
+            ->setClient($this->nexmoClient->reveal())
+        ;
+
+        $this->applicationClient = new Client($this->apiClient, new Hydrator());
         $this->applicationClient->setClient($this->nexmoClient->reveal());
     }
 
-    public function testSizeException()
-    {
-        $this->expectException('RuntimeException');
-        $this->applicationClient->getSize();
-    }
-
-    public function testSetFilter()
-    {
-        $filter = new Filter(new \DateTime('yesterday'), new \DateTime('tomorrow'));
-
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($filter) {
-            $this->assertEquals('/v2/applications', $request->getUri()->getPath());
-            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('GET', $request->getMethod());
-            foreach ($filter->getQuery() as $key => $value) {
-                $this->assertRequestQueryContains($key, $value, $request);
-            }
-
-            return true;
-        }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('list'));
-
-        $this->assertInstanceOf(EmptyFilter::class, $this->applicationClient->getFilter());
-        $this->assertSame($this->applicationClient, $this->applicationClient->setFilter($filter));
-        $this->assertSame($filter, $this->applicationClient->getFilter());
-
-        $this->applicationClient->rewind();
-    }
-
-    public function testSetPage()
-    {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
-            $this->assertEquals('/v2/applications', $request->getUri()->getPath());
-            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('GET', $request->getMethod());
-            $this->assertRequestQueryContains('page_index', '1', $request);
-            return true;
-        }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('list'));
-
-        $this->assertSame($this->applicationClient, $this->applicationClient->setPage(1));
-        $this->assertEquals(1, $this->applicationClient->getPage());
-
-        $this->applicationClient->rewind();
-    }
-
-    public function testSetSize()
-    {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
-            $this->assertEquals('/v2/applications', $request->getUri()->getPath());
-            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('GET', $request->getMethod());
-            $this->assertRequestQueryContains('page_size', '5', $request);
-            return true;
-        }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('list'));
-
-        $this->assertSame($this->applicationClient, $this->applicationClient->setSize(5));
-        $this->assertEquals(5, $this->applicationClient->getSize());
-
-        $this->applicationClient->rewind();
-    }
-
-    public function testIterationProperties()
-    {
-        $this->nexmoClient->send(Argument::type(RequestInterface::class))
-             ->shouldBeCalledTimes(1)
-             ->willReturn($this->getResponse('list'));
-
-        foreach ($this->applicationClient as $id => $application) {
-            break;
-        }
-
-        $this->assertEquals(7, $this->applicationClient->count());
-        $this->assertCount(7, $this->applicationClient);
-        $this->assertEquals(2, $this->applicationClient->getPage());
-        $this->assertEquals(3, $this->applicationClient->getSize());
-    }
-
-    public function testIteratePages()
-    {
-        $page = $this->getResponse('list');
-        $last = $this->getResponse('last');
-
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
-            //a bit hacky here
-            static $last;
-            if (is_null($last)) { //first call
-                $last = $request;
-            }
-
-            $this->assertEquals('/v2/applications', $request->getUri()->getPath());
-            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('GET', $request->getMethod());
-
-            if ($last !== $request) { //second call
-                $this->assertRequestQueryContains('page_size', '3', $request);
-                $this->assertRequestQueryContains('page_index', '3', $request);
-            }
-
-            return true;
-        }))->shouldBeCalledTimes(2)->willReturn($page, $last);
-
-        foreach ($this->applicationClient as $id => $application) {
-            $this->assertInstanceOf('Nexmo\Application\Application', $application);
-            $this->assertSame($application->getId(), $id);
-        }
-    }
-
-    public function testCanIterateClient()
-    {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
-            $this->assertEquals('/v2/applications', $request->getUri()->getPath());
-            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('GET', $request->getMethod());
-            return true;
-        }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('list'));
-
-        $this->assertInstanceOf('Iterator', $this->applicationClient);
-
-        foreach ($this->applicationClient as $id => $application) {
-            break;
-        }
-
-        $this->assertTrue(isset($application));
-        $this->assertInstanceOf('Nexmo\Application\Application', $application);
-        $this->assertSame($application->getId(), $id);
-    }
-
     /**
-     * @todo Remove error supression when object passing has been removed
      * @dataProvider getApplication
      */
     public function testGetApplication($payload, $id)
@@ -191,7 +68,7 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse());
 
-        $application = @$this->applicationClient->get($payload);
+        $application = $this->applicationClient->get($payload);
         $expectedData = json_decode($this->getResponse()->getBody()->getContents(), true);
 
         $this->assertInstanceOf('Nexmo\Application\Application', $application);
@@ -248,7 +125,6 @@ class ClientTest extends TestCase
     }
 
     /**
-     * @todo Remove error supression when object passing has been removed
      * @todo Rework this whole test, because it uses stock responses it's impossible to test in its current form
      *
      * @dataProvider updateApplication
@@ -268,12 +144,12 @@ class ClientTest extends TestCase
                     'webhooks' => [
                         'answer_url' => [
                             'address' => 'https://example.com/webhooks/answer',
-                            'http_method' => null
+                            'http_method' => 'POST'
 
                         ],
                         'event_url' => [
                             'address' => 'https://example.com/webhooks/event',
-                            'http_method' => null
+                            'http_method' => 'POST'
                         ]
                     ]
                 ],
@@ -281,7 +157,7 @@ class ClientTest extends TestCase
                     'webhooks' => [
                         'event_url' => [
                             'address' => 'https://example.com/webhooks/event',
-                            'http_method' => null
+                            'http_method' => 'POST'
                         ]
                     ]
                 ],
@@ -292,9 +168,9 @@ class ClientTest extends TestCase
         }))->willReturn($this->getResponse());
 
         if ($id) {
-            $application = @$this->applicationClient->$method($payload, $id);
+            $application = $this->applicationClient->$method($payload, $id);
         } else {
-            $application = @$this->applicationClient->$method($payload);
+            $application = $this->applicationClient->$method($payload);
         }
 
         $expectedData = json_decode($this->getResponse()->getBody()->getContents(), true);
@@ -350,15 +226,15 @@ class ClientTest extends TestCase
         $copy = '1a20a124-1775-412b-4444-e6985f4aace0';
         $existing = new Application($id);
         $existing->setName('My Application');
-        @$existing->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'https://example.com/webhooks/answer');
-        @$existing->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'https://example.com/webhooks/event');
-        @$existing->getRtcConfig()->setWebhook(RtcConfig::EVENT, 'https://example.com/webhooks/event');
+        $existing->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, new Webhook('https://example.com/webhooks/answer'));
+        $existing->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, new Webhook('https://example.com/webhooks/event'));
+        $existing->getRtcConfig()->setWebhook(RtcConfig::EVENT, new Webhook('https://example.com/webhooks/event'));
 
         $new = new Application();
         $new->setName('My Application');
-        @$new->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'https://example.com/webhooks/answer');
-        @$new->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'https://example.com/webhooks/event');
-        @$new->getRtcConfig()->setWebhook(RtcConfig::EVENT, 'https://example.com/webhooks/event');
+        $new->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, new Webhook('https://example.com/webhooks/answer'));
+        $new->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, new Webhook('https://example.com/webhooks/event'));
+        $new->getRtcConfig()->setWebhook(RtcConfig::EVENT, new Webhook('https://example.com/webhooks/event'));
 
         $raw = [
             'name' => 'My Application',
@@ -369,10 +245,6 @@ class ClientTest extends TestCase
         return [
             //can send an application to update it
             [clone $existing, 'update', null, $id],
-            //can send raw array and id
-            [$raw, 'update', $id, $id],
-            //one application overwrites another if id provided
-            [clone $existing, 'update', $copy, $copy],
         ];
     }
 
@@ -388,14 +260,13 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn(new Response('php://memory', 204));
 
-        $this->assertTrue(@$this->applicationClient->delete($payload));
+        $this->assertTrue($this->applicationClient->delete($payload));
     }
 
     public function deleteApplication()
     {
         return [
             [new Application('abcd1234'), 'abcd1234'],
-            ['abcd1234', 'abcd1234'],
         ];
     }
 
@@ -408,9 +279,10 @@ class ClientTest extends TestCase
         $response = $this->getResponse($response, $code);
         $this->nexmoClient->send(Argument::type(RequestInterface::class))->willReturn($response);
         $application = new Application('78d335fa323d01149c3dd6f0d48968cf');
+        $application->setName('My Application');
 
         try {
-            @$this->applicationClient->$method($application);
+            $this->applicationClient->$method($application);
             $this->fail('did not throw exception');
         } catch (Exception $e) {
             $response->getBody()->rewind();
@@ -519,7 +391,7 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('success', '201'));
 
-        $application = @$this->applicationClient->$method($payload);
+        $application = $this->applicationClient->$method($payload);
 
         $expectedData = json_decode($this->getResponse()->getBody()->getContents(), true);
         $this->assertInstanceOf('Nexmo\Application\Application', $application);
@@ -571,15 +443,16 @@ class ClientTest extends TestCase
     {
         $application = new Application();
         $application->setName('My Application');
-        @$application->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'https://example.com/webhooks/answer', 'GET');
-        @$application->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'https://example.com/webhooks/event', 'POST');
-        @$application->getMessagesConfig()->setWebhook(MessagesConfig::STATUS, 'https://example.com/webhooks/status', 'POST');
-        @$application->getMessagesConfig()->setWebhook(MessagesConfig::INBOUND, 'https://example.com/webhooks/inbound', 'POST');
-        @$application->getRtcConfig()->setWebhook(RtcConfig::EVENT, 'https://example.com/webhooks/event', 'POST');
+        $application->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, new Webhook('https://example.com/webhooks/answer', 'GET'));
+        $application->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, new Webhook('https://example.com/webhooks/event', 'POST'));
+        $application->getMessagesConfig()->setWebhook(MessagesConfig::STATUS, new Webhook('https://example.com/webhooks/status', 'POST'));
+        $application->getMessagesConfig()->setWebhook(MessagesConfig::INBOUND, new Webhook('https://example.com/webhooks/inbound', 'POST'));
+        $application->getRtcConfig()->setWebhook(RtcConfig::EVENT, new Webhook('https://example.com/webhooks/event', 'POST'));
         $application->setPublicKey("-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSLcjxu33G\nd/vynKnlw9SENi+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xsO\nOUNhPx2LhuLmgwWSRS4L5W851Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n");
         $application->getVbcConfig()->enable();
 
-        $rawV1 = [
+        $hydrator = new Hydrator();
+        $rawV1 = $hydrator->hydrate([
             'name' => 'My Application',
             'answer_url' => 'https://example.com/webhooks/answer',
             'answer_method' => 'GET',
@@ -591,9 +464,9 @@ class ClientTest extends TestCase
             'inbound_method' => 'POST',
             'vbc' => true,
             'public_key' => "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSLcjxu33G\nd/vynKnlw9SENi+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xsO\nOUNhPx2LhuLmgwWSRS4L5W851Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n"
-        ];
+        ]);
 
-        $rawV2 = [
+        $rawV2 = $hydrator->hydrate([
             'name' => 'My Application',
             'keys' => [
                 'public_key' => "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSLcjxu33G\nd/vynKnlw9SENi+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xsO\nOUNhPx2LhuLmgwWSRS4L5W851Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n"
@@ -634,15 +507,12 @@ class ClientTest extends TestCase
                 ],
                 'vbc' => []
             ]
-        ];
+        ]);
 
         return [
             'createApplication' => [clone $application, 'create'],
-            'postApplication' => [clone $application, 'post'],
-            'createRawV1' => [$rawV1, 'create'],
-            'postRawV1' => [$rawV1, 'post'],
-            'createRawV2' => [$rawV2, 'create'],
-            'postRawV2' => [$rawV2, 'post'],
+            'createv1Application' => [clone $rawV1, 'create'],
+            'createv2Application' => [clone $rawV2, 'create'],
         ];
     }
 

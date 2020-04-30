@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Nexmo Client Library for PHP
  *
@@ -23,18 +24,18 @@ class Webhook
      */
     protected $url;
     
-    public function __construct($url, $method = self::METHOD_POST)
+    public function __construct(string $url, string $method = self::METHOD_POST)
     {
         $this->url = $url;
         $this->method = $method;
     }
 
-    public function getMethod()
+    public function getMethod() : string
     {
         return $this->method;
     }
     
-    public function getUrl()
+    public function getUrl() : string
     {
         return $this->url;
     }
