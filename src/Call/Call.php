@@ -152,6 +152,10 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
     public function setTo($endpoint)
     {
         if (!($endpoint instanceof Endpoint)) {
+            trigger_error(
+                'Passing a string to Nexmo\Call\Call::setTo() is deprecated, please pass an Nexmo\Call\NCCO\Endpoint',
+                E_USER_DEPRECATED
+            );
             $endpoint = new Endpoint($endpoint);
         }
 
@@ -174,6 +178,10 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
     public function setFrom($endpoint)
     {
         if (!($endpoint instanceof Endpoint)) {
+            trigger_error(
+                'Passing a string to Nexmo\Call\Call::setTo() is deprecated, please pass a Nexmo\Call\NCCO\Endpoint',
+                E_USER_DEPRECATED
+            );
             $endpoint = new Endpoint($endpoint);
         }
 

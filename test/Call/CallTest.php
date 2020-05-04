@@ -239,7 +239,7 @@ class CallTest extends TestCase
     //split into discrete tests, use trait as can be useful elsewhere for consistency
     public function testToIsSet()
     {
-        $this->new->setTo('14845551212');
+        @$this->new->setTo('14845551212');
         $this->assertSame('14845551212', (string) $this->new->getTo());
         $this->assertSame('14845551212', $this->new->getTo()->getId());
         $this->assertSame('phone', $this->new->getTo()->getType());
@@ -270,7 +270,7 @@ class CallTest extends TestCase
 
     public function testFromIsSet()
     {
-        $this->new->setFrom('14845551212');
+        @$this->new->setFrom('14845551212');
         $this->assertSame('14845551212', (string) $this->new->getFrom());
         $this->assertSame('14845551212', $this->new->getFrom()->getId());
         $this->assertSame('phone', $this->new->getFrom()->getType());

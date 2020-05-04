@@ -281,7 +281,7 @@ class CollectionTest extends TestCase
 
 
         $call = new Call();
-        $call->setTo('14843331234')
+        @$call->setTo('14843331234')
              ->setFrom('14843335555')
              ->setNcco([
                  [
@@ -318,7 +318,7 @@ class CollectionTest extends TestCase
 
 
         $call = new Call();
-        $call->setTo('14843331234')
+        @$call->setTo('14843331234')
              ->setFrom('14843335555')
              ->setWebhook(Call::WEBHOOK_ANSWER, 'https://example.com/answer', 'POST')
              ->setWebhook(Call::WEBHOOK_EVENT, 'https://example.com/event', 'POST');
