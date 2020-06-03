@@ -109,7 +109,7 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
     /**
      * The duration in milliseconds the delivery of an SMS will be attempted
      * By default this is set to 72 hours, but can be overridden if needed.
-     * Nexmo recommends no shorter than 30 minutes, and to keep at deafult
+     * Nexmo recommends no shorter than 30 minutes, and to keep at default
      * when possible.
      *
      * @param int $ttl
