@@ -45,7 +45,7 @@ class CollectionTest extends TestCase
         $this->nexmoClient = $this->prophesize('Nexmo\Client');
         $this->nexmoClient->getApiUrl()->willReturn('https://api.nexmo.com');
 
-        $this->collection = new Collection();
+        $this->collection = @new Collection();
         $this->collection->setClient($this->nexmoClient->reveal());
     }
 
@@ -58,7 +58,7 @@ class CollectionTest extends TestCase
     public function testInvokeWithFilter()
     {
         $collection = $this->collection;
-        $filter = new Filter();
+        $filter = @new Filter();
         $return = @$collection($filter);
 
         $this->assertSame($collection, $return);
@@ -77,7 +77,7 @@ class CollectionTest extends TestCase
         $this->collection->hydrateEntity($data, $call->reveal());
 
         $call->setClient($this->nexmoClient->reveal())->shouldHaveBeenCalled();
-        $call->fromArray($data)->shouldHaveBeenCalled();
+        $call->jsonUnserialize($data)->shouldHaveBeenCalled();
     }
 
     /**
@@ -252,7 +252,7 @@ class CollectionTest extends TestCase
     {
         return [
             ['3fd4d839-493e-4485-b2a5-ace527aacff3', '3fd4d839-493e-4485-b2a5-ace527aacff3'],
-            [new Call('3fd4d839-493e-4485-b2a5-ace527aacff3'), '3fd4d839-493e-4485-b2a5-ace527aacff3']
+            [@new Call('3fd4d839-493e-4485-b2a5-ace527aacff3'), '3fd4d839-493e-4485-b2a5-ace527aacff3']
         ];
     }
 
@@ -280,7 +280,7 @@ class CollectionTest extends TestCase
         ];
 
 
-        $call = new Call();
+        $call = @new Call();
         @$call->setTo('14843331234')
              ->setFrom('14843335555')
              ->setNcco([
@@ -317,11 +317,11 @@ class CollectionTest extends TestCase
         ];
 
 
-        $call = new Call();
+        $call = @new Call();
         @$call->setTo('14843331234')
              ->setFrom('14843335555')
-             ->setWebhook(Call::WEBHOOK_ANSWER, 'https://example.com/answer', 'POST')
-             ->setWebhook(Call::WEBHOOK_EVENT, 'https://example.com/event', 'POST');
+             ->setWebhook(@Call::WEBHOOK_ANSWER, 'https://example.com/answer', 'POST')
+             ->setWebhook(@Call::WEBHOOK_EVENT, 'https://example.com/event', 'POST');
 
         return [
             [clone $call, 'create'],
@@ -346,8 +346,8 @@ class CollectionTest extends TestCase
             ]
         ];
 
-        $call = new Call($id);
-        $transfer = new Transfer('http://example.com');
+        $call = @new Call($id);
+        $transfer = @new Transfer('http://example.com');
 
         return [
             [$id, $id, $payload],

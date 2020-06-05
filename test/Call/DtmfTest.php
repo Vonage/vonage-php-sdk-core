@@ -43,8 +43,8 @@ class DtmfTest extends TestCase
         $this->id = '3fd4d839-493e-4485-b2a5-ace527aacff3';
         $this->class = Dtmf::class;
 
-        $this->entity = new Dtmf('3fd4d839-493e-4485-b2a5-ace527aacff3');
-        $this->new = new Dtmf();
+        $this->entity = @new Dtmf('3fd4d839-493e-4485-b2a5-ace527aacff3');
+        $this->new = @new Dtmf();
 
         $this->nexmoClient = $this->prophesize('Nexmo\Client');
         $this->nexmoClient->getApiUrl()->willReturn('https://api.nexmo.com');
@@ -98,7 +98,7 @@ class DtmfTest extends TestCase
         $callId = $this->id;
         $entity = $this->entity;
 
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($callId, $entity){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($callId, $entity) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/dtmf', 'PUT', $request);
             $expected = json_decode(json_encode($entity), true);
 
@@ -110,7 +110,7 @@ class DtmfTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('dtmf', '200'));
 
-        $event = $this->entity->put();
+        $event = @$this->entity->put();
 
         $this->assertInstanceOf('Nexmo\Call\Event', $event);
         $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
@@ -121,12 +121,12 @@ class DtmfTest extends TestCase
     {
         $class = $this->class;
 
-        $entity = new $class;
+        $entity = @new $class;
         $entity->setDigits('1234');
 
         $callId = $this->id;
 
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($callId, $entity){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($callId, $entity) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/dtmf', 'PUT', $request);
             $expected = json_decode(json_encode($entity), true);
 
@@ -138,7 +138,7 @@ class DtmfTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('dtmf', '200'));
 
-        $event = $this->entity->put($entity);
+        $event = @$this->entity->put($entity);
 
         $this->assertInstanceOf('Nexmo\Call\Event', $event);
         $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
@@ -156,10 +156,10 @@ class DtmfTest extends TestCase
         $this->nexmoClient->send(Argument::any())->shouldNotHaveBeenCalled();
 
         $class = $this->class;
-        $entity = new $class();
+        $entity = @new $class();
         $entity->setDigits(1234);
 
-        $event = $object($entity);
+        $event = @$object($entity);
 
         $this->assertInstanceOf('Nexmo\Call\Event', $event);
         $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);

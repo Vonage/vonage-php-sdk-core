@@ -8,12 +8,20 @@
 
 namespace Nexmo\Call;
 
+/**
+ * @deprecated Will be removed in a future releases
+ */
 class Event implements \ArrayAccess
 {
     protected $data;
 
     public function __construct($data)
     {
+        trigger_error(
+            'Nexmo\Call\Event is deprecated and will be removed in a future release',
+            E_USER_DEPRECATED
+        );
+
         if (!isset($data['uuid']) || !isset($data['message'])) {
             throw new \InvalidArgumentException('missing message or uuid');
         }

@@ -8,11 +8,23 @@
 
 namespace Nexmo\Call;
 
-use Nexmo\Call\NCCO\Earmuff as NCCOEarmuff;
-
 /**
- * @deprecated Use Nexmo\Call\NCCO\Earmuff instead
+ * @deprecated Use Nexmo\Voice\Client::earmuffCall()
  */
-class Earmuff extends NCCOEarmuff
+class Earmuff implements \JsonSerializable
 {
+    public function __construct()
+    {
+        trigger_error(
+            'Nexmo\Call\Earmuff is deprecated, please use Nexmo\Voice\Client::earmuffCall() instead',
+            E_USER_DEPRECATED
+        );
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'action' => 'earmuff'
+        ];
+    }
 }

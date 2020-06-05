@@ -8,11 +8,35 @@
 
 namespace Nexmo\Call;
 
-use Nexmo\Call\NCCO\Transfer as NCCOTransfer;
-
 /**
- * @deprecated Use Nexmo\Call\NCCO\Transfer
+ * @deprecated Please use Nexmo\Voice\Client::transferCall() instead
  */
-class Transfer extends NCCOTransfer
+class Transfer implements \JsonSerializable
 {
+    protected $urls;
+
+    public function __construct($urls)
+    {
+        trigger_error(
+            'Nexmo\Call\Transfer is deprecated, please use Nexmo\Voice\Client::transferCall() instead',
+            E_USER_DEPRECATED
+        );
+
+        if (!is_array($urls)) {
+            $urls = array($urls);
+        }
+
+        $this->urls = $urls;
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'action' => 'transfer',
+            'destination' => [
+                'type' => 'ncco',
+                'url' => $this->urls
+            ]
+        ];
+    }
 }

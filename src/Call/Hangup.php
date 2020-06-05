@@ -8,11 +8,20 @@
 
 namespace Nexmo\Call;
 
-use Nexmo\Call\NCCO\Hangup as NCCOHangup;
-
-/**
- * @deprecated Use Nexmo\Call\NCCO\Hangup
- */
-class Hangup extends NCCOHangup
+class Hangup implements \JsonSerializable
 {
+    public function __construct()
+    {
+        trigger_error(
+            'Nexmo\Call\Hangup is deprecated, please use Nexmo\Voice\Client::hangupCall() instead',
+            E_USER_DEPRECATED
+        );
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'action' => 'hangup'
+        ];
+    }
 }

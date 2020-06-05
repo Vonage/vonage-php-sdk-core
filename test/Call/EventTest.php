@@ -21,19 +21,19 @@ class EventTest extends TestCase
     public function setup()
     {
         $data = $this->getResponseData(['calls', 'event']);
-        $this->entity = new Event($data);
+        $this->entity = @new Event($data);
     }
 
     public function testExpectsMessage()
     {
         $this->expectException('InvalidArgumentException');
-        new Event(['uuid' => 'something_unique']);
+        @new Event(['uuid' => 'something_unique']);
     }
 
     public function testExpectsUUID()
     {
         $this->expectException('InvalidArgumentException');
-        new Event(['message' => 'something happened']);
+        @new Event(['message' => 'something happened']);
     }
 
     public function testGetId()

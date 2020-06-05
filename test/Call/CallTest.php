@@ -48,8 +48,8 @@ class CallTest extends TestCase
         $this->id = '3fd4d839-493e-4485-b2a5-ace527aacff3';
         $this->class = Call::class;
 
-        $this->entity = new Call('3fd4d839-493e-4485-b2a5-ace527aacff3');
-        $this->new = new Call();
+        $this->entity = @new Call('3fd4d839-493e-4485-b2a5-ace527aacff3');
+        $this->new = @new Call();
 
         $this->nexmoClient = $this->prophesize('Nexmo\Client');
         $this->nexmoClient->getApiUrl()->willReturn('https://api.nexmo.com');
@@ -63,7 +63,7 @@ class CallTest extends TestCase
     public function testConstructWithId()
     {
         $class = $this->class;
-        $entity = new $class('3fd4d839-493e-4485-b2a5-ace527aacff3');
+        $entity = @new $class('3fd4d839-493e-4485-b2a5-ace527aacff3');
         $this->assertSame('3fd4d839-493e-4485-b2a5-ace527aacff3', $entity->getId());
     }
 
@@ -77,7 +77,7 @@ class CallTest extends TestCase
         $id = $this->id;
         $response = $this->getResponse('call');
 
-        $entity = new $class($id);
+        $entity = @new $class($id);
         $entity->setClient($this->nexmoClient->reveal());
 
         $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($id) {
@@ -87,7 +87,7 @@ class CallTest extends TestCase
 
         @$entity->get();
 
-        $this->assertEntityMatchesResponse($entity, $response);
+        @$this->assertEntityMatchesResponse($entity, $response);
     }
 
     /**
@@ -131,8 +131,8 @@ class CallTest extends TestCase
 
         return [
             [$transfer, 200, 'updated'],
-            [new Transfer('http://example.com'), 200, 'updated'],
-            [new Transfer('http://example.com'), 204, 'empty']
+            [@new Transfer('http://example.com'), 200, 'updated'],
+            [@new Transfer('http://example.com'), 204, 'empty']
         ];
     }
 
@@ -152,7 +152,7 @@ class CallTest extends TestCase
         $return = @$this->entity->getStatus();
         $this->assertSame('completed', $return);
 
-        $this->assertEntityMatchesResponse($this->entity, $response);
+        @$this->assertEntityMatchesResponse($this->entity, $response);
     }
 
     /**
@@ -253,7 +253,7 @@ class CallTest extends TestCase
         $this->assertEquals('14845551212', $data['to'][0]['number']);
         $this->assertEquals('phone', $data['to'][0]['type']);
 
-        $this->new->setTo(new Endpoint('14845551212'));
+        $this->new->setTo(@new Endpoint('14845551212'));
         $this->assertSame('14845551212', (string) $this->new->getTo());
         $this->assertSame('14845551212', $this->new->getTo()->getId());
         $this->assertSame('phone', $this->new->getTo()->getType());
@@ -283,7 +283,7 @@ class CallTest extends TestCase
         $this->assertEquals('14845551212', $data['from']['number']);
         $this->assertEquals('phone', $data['from']['type']);
 
-        $this->new->setFrom(new Endpoint('14845551212'));
+        $this->new->setFrom(@new Endpoint('14845551212'));
         $this->assertSame('14845551212', (string) $this->new->getFrom());
         $this->assertSame('14845551212', $this->new->getFrom()->getId());
         $this->assertSame('phone', $this->new->getFrom()->getType());
@@ -299,21 +299,21 @@ class CallTest extends TestCase
 
     public function testWebhooks()
     {
-        $this->entity->setWebhook(Call::WEBHOOK_ANSWER, 'http://example.com');
+        @$this->entity->setWebhook(Call::WEBHOOK_ANSWER, 'http://example.com');
 
         $data = $this->entity->jsonSerialize();
         $this->assertArrayHasKey('answer_url', $data);
         $this->assertCount(1, $data['answer_url']);
         $this->assertEquals('http://example.com', $data['answer_url'][0]);
 
-        $this->entity->setWebhook(new Webhook(Call::WEBHOOK_ANSWER, 'http://example.com'));
+        $this->entity->setWebhook(@new Webhook(Call::WEBHOOK_ANSWER, 'http://example.com'));
 
         $data = $this->entity->jsonSerialize();
         $this->assertArrayHasKey('answer_url', $data);
         $this->assertCount(1, $data['answer_url']);
         $this->assertEquals('http://example.com', $data['answer_url'][0]);
 
-        $this->entity->setWebhook(new Webhook(Call::WEBHOOK_ANSWER, ['http://example.com', 'http://example.com/test']));
+        $this->entity->setWebhook(@new Webhook(Call::WEBHOOK_ANSWER, ['http://example.com', 'http://example.com/test']));
 
         $data = $this->entity->jsonSerialize();
         $this->assertArrayHasKey('answer_url', $data);
@@ -321,7 +321,7 @@ class CallTest extends TestCase
         $this->assertEquals('http://example.com', $data['answer_url'][0]);
         $this->assertEquals('http://example.com/test', $data['answer_url'][1]);
 
-        $this->entity->setWebhook(new Webhook(Call::WEBHOOK_ANSWER, 'http://example.com', 'POST'));
+        $this->entity->setWebhook(@new Webhook(Call::WEBHOOK_ANSWER, 'http://example.com', 'POST'));
 
         $data = $this->entity->jsonSerialize();
         $this->assertArrayHasKey('answer_method', $data);
@@ -351,7 +351,7 @@ class CallTest extends TestCase
         $data = json_decode(file_get_contents(__DIR__ . '/responses/call.json'), true);
         $this->entity->jsonUnserialize($data);
 
-        $this->assertEntityMatchesData($this->entity, $data);
+        @$this->assertEntityMatchesData($this->entity, $data);
     }
 
     /**

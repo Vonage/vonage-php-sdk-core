@@ -18,7 +18,7 @@ class HangupTest extends TestCase
 
     public function testStructure()
     {
-        $hangup = new Hangup();
+        $hangup = @new Hangup();
 
         $json = json_decode(json_encode($hangup));
         $this->assertJsonMatchesSchema($json, __DIR__ . '/schema/hangup.json');

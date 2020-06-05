@@ -8,11 +8,23 @@
 
 namespace Nexmo\Call;
 
-use Nexmo\Call\NCCO\Unmute as NCCOUnmute;
-
 /**
- * @deprecated Use Nexmo\Call\NCCO\Unmute
+ * @deprecated Please use Nexmo\Voice\Client::unmuteCall() instead
  */
-class Unmute extends NCCOUnmute
+class Unmute implements \JsonSerializable
 {
+    public function __construct()
+    {
+        trigger_error(
+            'Nexmo\Call\Unmute is deprecated, please use Nexmo\Voice\Client::unmuteCall() instead',
+            E_USER_DEPRECATED
+        );
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'action' => 'unmute'
+        ];
+    }
 }

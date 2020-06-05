@@ -18,7 +18,7 @@ class TransferTest extends TestCase
 
     public function testStructureWithArray()
     {
-        $transfer = new Transfer([
+        $transfer = @new Transfer([
             'http://example.com',
             'http://alternate.example.com'
         ]);
@@ -35,7 +35,7 @@ class TransferTest extends TestCase
     
     public function testStructureWithString()
     {
-        $transfer = new Transfer('http://example.com');
+        $transfer = @new Transfer('http://example.com');
 
         $json = json_decode(json_encode($transfer));
         $this->assertJsonMatchesSchema($json, __DIR__ . '/schema/transfer.json');

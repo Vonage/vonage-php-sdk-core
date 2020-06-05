@@ -21,7 +21,7 @@ class FilterTest extends TestCase
 
     public function setUp()
     {
-        $this->filter = new Filter();
+        $this->filter = @new Filter();
     }
 
     public function testConversation()

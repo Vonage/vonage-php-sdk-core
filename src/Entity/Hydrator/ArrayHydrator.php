@@ -17,6 +17,12 @@ class ArrayHydrator implements HydratorInterface
         return $object;
     }
 
+    public function hydrateObject(array $data, $object)
+    {
+        $object->fromArray($data);
+        return $object;
+    }
+
     public function setPrototype(ArrayHydrateInterface $prototype)
     {
         $this->prototype = $prototype;

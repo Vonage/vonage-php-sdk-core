@@ -90,7 +90,7 @@ class APIResource implements ClientAwareInterface
         return json_decode($response->getBody()->getContents(), true);
     }
 
-    public function delete(string $id) : void
+    public function delete(string $id) : ?array
     {
         $uri = $this->getBaseUrl() . $this->baseUri . '/' . $id;
         $request = new Request($uri, 'DELETE');
@@ -104,6 +104,9 @@ class APIResource implements ClientAwareInterface
             $e->setEntity($id);
             throw $e;
         }
+
+        $response->getBody()->rewind();
+        return json_decode($response->getBody()->getContents(), true);
     }
 
     public function get($id, array $query = [])
@@ -245,10 +248,10 @@ class APIResource implements ClientAwareInterface
     /**
      * Allows form URL-encoded POST requests
      */
-    public function submit(array $formData = []) : string
+    public function submit(array $formData = [], string $uri = '') : string
     {
         $request = new Request(
-            $this->baseUrl . $this->baseUri,
+            $this->baseUrl . $this->baseUri . $uri,
             'POST',
             'php://temp',
             ['content-type' => 'application/x-www-form-urlencoded']
@@ -268,7 +271,7 @@ class APIResource implements ClientAwareInterface
         return $response->getBody()->getContents();
     }
 
-    public function update(string $id, array $body) : array
+    public function update(string $id, array $body) : ?array
     {
         $request = new Request(
             $this->getBaseUrl() . $this->baseUri . '/' . $id,
@@ -282,7 +285,7 @@ class APIResource implements ClientAwareInterface
         $this->lastRequest = $request;
         $this->setLastResponse($response);
 
-        if ($response->getStatusCode() != '200' || $this->errorsOn200()) {
+        if ($this->errorsOn200() || ($response->getStatusCode() < 200 || $response->getStatusCode() > 299)) {
             $e = $this->getException($response, $request);
             $e->setEntity(['id' => $id, 'body' => $body]);
             throw $e;

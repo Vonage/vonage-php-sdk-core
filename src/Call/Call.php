@@ -18,11 +18,12 @@ use Nexmo\Entity\JsonUnserializableInterface;
 use Nexmo\Entity\NoRequestResponseTrait;
 use Psr\Http\Message\ResponseInterface;
 use Nexmo\Client\Exception;
-use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
 use Zend\Diactoros\Request;
 
 /**
  * Class Call
+ *
+ * @deprecated Please use Nexmo\Voice\OutboundCall or Nexmo\Voice\Call instead
  *
  * @property \Nexmo\Call\Stream $stream
  * @property \Nexmo\Call\Talk   $talk
@@ -32,15 +33,11 @@ use Zend\Diactoros\Request;
  * @method \Nexmo\Call\Talk   talk()
  * @method \Nexmo\Call\Dtmf   dtmf()
  */
-class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInterface, ClientAwareInterface, ArrayHydrateInterface
+class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInterface, ClientAwareInterface
 {
     use NoRequestResponseTrait;
     use JsonSerializableTrait;
     use JsonResponseTrait;
-
-    /**
-     * @deprecated This object will no longer be ClientAware and functions will be moved to the Nexmo\Call\Client object
-     */
     use ClientAwareTrait;
 
     const WEBHOOK_ANSWER = 'answer';
@@ -68,19 +65,16 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
 
     public function __construct($id = null)
     {
-        $this->id = $id;
-    }
-
-    /**
-     * @deprecated Use Nexmo\Call\Client::get()
-     */
-    public function get()
-    {
         trigger_error(
-            'Nexmo\Call\Call::get() is deprecated, please use Nexmo\Call\Client::get() instead',
+            'Nexmo\Call\Call is deprecated, please use Nexmo\Voice\Client for functionality instead',
             E_USER_DEPRECATED
         );
 
+        $this->id = $id;
+    }
+
+    public function get()
+    {
         $request = new Request(
             $this->getClient()->getApiUrl() . Collection::getCollectionPath() . '/' . $this->getId(),
             'GET'
@@ -98,9 +92,6 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
         return $this;
     }
 
-    /**
-     * @todo Remove this once this object is no longer ClientAware
-     */
     protected function getException(ResponseInterface $response)
     {
         $body = json_decode($response->getBody()->getContents(), true);
@@ -117,15 +108,8 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
         return $e;
     }
 
-    /**
-     * @deprecated Use Nexmo\Call\Client::update()
-     */
     public function put($payload)
     {
-        trigger_error(
-            'Nexmo\Call\Call::put() is deprecated, please use Nexmo\Call\Client::update() instead',
-            E_USER_DEPRECATED
-        );
         $request = new Request(
             $this->getClient()->getApiUrl() . Collection::getCollectionPath() . '/' . $this->getId(),
             'PUT',
@@ -152,10 +136,6 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
     public function setTo($endpoint)
     {
         if (!($endpoint instanceof Endpoint)) {
-            trigger_error(
-                'Passing a string to Nexmo\Call\Call::setTo() is deprecated, please pass an Nexmo\Call\NCCO\Endpoint',
-                E_USER_DEPRECATED
-            );
             $endpoint = new Endpoint($endpoint);
         }
 
@@ -178,10 +158,6 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
     public function setFrom($endpoint)
     {
         if (!($endpoint instanceof Endpoint)) {
-            trigger_error(
-                'Passing a string to Nexmo\Call\Call::setTo() is deprecated, please pass a Nexmo\Call\NCCO\Endpoint',
-                E_USER_DEPRECATED
-            );
             $endpoint = new Endpoint($endpoint);
         }
 
@@ -246,9 +222,6 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
         }
     }
 
-    /**
-     * @deprecated This will be removed in a future version as Conversations is still considered Beta
-     */
     public function getConversation()
     {
         if ($this->lazyLoad()) {
@@ -279,11 +252,6 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
 
     public function __get($name)
     {
-        trigger_error(
-            'Nexmo\Call\Call::[stream|talk|dtmf] is deprecated, please use the appropriate Nexmo\Call object instead',
-            E_USER_DEPRECATED
-        );
-
         switch ($name) {
             case 'stream':
             case 'talk':
@@ -298,20 +266,8 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
     {
         switch ($name) {
             case 'stream':
-                trigger_error(
-                    'Nexmo\Call\Call::stream() is deprecated, please use Nexmo\Call\Client::streamAudio() instead',
-                    E_USER_DEPRECATED
-                );
             case 'talk':
-                trigger_error(
-                    'Nexmo\Call\Call::talk() is deprecated, please use Nexmo\Call\Client::talk() instead',
-                    E_USER_DEPRECATED
-                );
             case 'dtmf':
-                trigger_error(
-                    'Nexmo\Call\Call::dtmf() is deprecated, please use Nexmo\Call\Client::dtmf() instead',
-                    E_USER_DEPRECATED
-                );
                 $entity = $this->lazySubresource(ucfirst($name));
                 return call_user_func_array($entity, $arguments);
             default:
@@ -319,9 +275,6 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
         }
     }
 
-    /**
-     * @todo Remove once the magic methods are removed
-     */
     protected function lazySubresource($type)
     {
         if (!isset($this->subresources[$type])) {
@@ -335,11 +288,6 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
     }
 
     public function jsonSerialize()
-    {
-        return $this->toArray();
-    }
-
-    public function toArray() : array
     {
         $data = $this->data;
 
@@ -360,12 +308,7 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
 
     public function jsonUnserialize(array $json)
     {
-        $this->fromArray($json);
-    }
-
-    public function fromArray(array $data)
-    {
-        $this->data = $data;
-        $this->id = $data['uuid'] ?? null;
+        $this->data = $json;
+        $this->id = $json['uuid'];
     }
 }

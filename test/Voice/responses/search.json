@@ -1,0 +1,43 @@
+{
+    "count": 100,
+    "page_size": 10,
+    "record_index": 0,
+    "_links": {
+      "self": {
+        "href": "/calls?page_size=10&record_index=20&order=asc"
+      }
+    },
+    "_embedded": {
+      "calls": [
+        {
+          "_links": {
+            "self": {
+              "href": "/calls/63f61863-4a51-4f6b-86e1-46edebcf9356"
+            }
+          },
+          "uuid": "63f61863-4a51-4f6b-86e1-46edebcf9356",
+          "conversation_uuid": "CON-f972836a-550f-45fa-956c-12a2ab5b7d22",
+          "to": [
+            {
+              "type": "phone",
+              "number": "447700900000"
+            }
+          ],
+          "from": [
+            {
+              "type": "phone",
+              "number": "447700900001"
+            }
+          ],
+          "status": "started",
+          "direction": "outbound",
+          "rate": "0.39",
+          "price": "23.40",
+          "duration": "60",
+          "start_time": "2020-01-01 12:00:00",
+          "end_time": "2020-01-01 12:00:00",
+          "network": "65512"
+        }
+      ]
+    }
+  }

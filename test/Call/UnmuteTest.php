@@ -18,7 +18,7 @@ class UnmuteTest extends TestCase
 
     public function testStructure()
     {
-        $mute = new Unmute();
+        $mute = @new Unmute();
 
         $json = json_decode(json_encode($mute));
         $this->assertJsonMatchesSchema($json, __DIR__ . '/schema/unmute.json');

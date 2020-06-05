@@ -8,11 +8,23 @@
 
 namespace Nexmo\Call;
 
-use Nexmo\Call\NCCO\Mute as NCCOMute;
-
 /**
- * @deprecated Use Nexmo\Call\NCCO\Mute
+ * @deprecated Please use Nexmo\Voice\Client::muteCall() instead
  */
-class Mute extends NCCOMute
+class Mute implements \JsonSerializable
 {
+    public function __construct()
+    {
+        trigger_error(
+            'Nexmo\Call\Mute is deprecated, please use Nexmo\Voice\Client::muteCall() instead',
+            E_USER_DEPRECATED
+        );
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'action' => 'mute'
+        ];
+    }
 }

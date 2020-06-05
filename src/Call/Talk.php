@@ -18,7 +18,8 @@ use Nexmo\Client\Exception;
 
 /**
  * Lightweight resource, only has put / delete.
- * @deprecated Use Nexmo\Call\Client::talk() instead
+ * 
+ * @deprecated Please use Nexmo\Voice\Client::playTTS() instead
  */
 class Talk implements JsonSerializableInterface, ClientAwareInterface, \ArrayAccess
 {
@@ -36,6 +37,11 @@ class Talk implements JsonSerializableInterface, ClientAwareInterface, \ArrayAcc
 
     public function __construct($id = null)
     {
+        trigger_error(
+            'Nexmo\Call\Talk is deprecated, please use Nexmo\Voice\Client::playTTS() and Nexmo\Voice\Client::stopTTS() instead',
+            E_USER_DEPRECATED
+        );
+
         $this->id = $id;
     }
 

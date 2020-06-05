@@ -43,8 +43,8 @@ class TalkTest extends TestCase
         $this->id = '3fd4d839-493e-4485-b2a5-ace527aacff3';
         $this->class = Talk::class;
 
-        $this->entity = new Talk('3fd4d839-493e-4485-b2a5-ace527aacff3');
-        $this->new = new Talk();
+        $this->entity = @new Talk('3fd4d839-493e-4485-b2a5-ace527aacff3');
+        $this->new = @new Talk();
 
         $this->nexmoClient = $this->prophesize('Nexmo\Client');
         $this->nexmoClient->getApiUrl()->willReturn('https://api.nexmo.com');
@@ -101,7 +101,7 @@ class TalkTest extends TestCase
         $callId = $this->id;
         $entity = $this->entity;
 
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($callId, $entity){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($callId, $entity) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/talk', 'PUT', $request);
             $expected = json_decode(json_encode($entity), true);
 
@@ -113,7 +113,7 @@ class TalkTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('talk', '200'));
 
-        $event = $this->entity->put();
+        $event = @$this->entity->put();
 
         $this->assertInstanceOf('Nexmo\Call\Event', $event);
         $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
@@ -124,12 +124,12 @@ class TalkTest extends TestCase
     {
         $class = $this->class;
 
-        $entity = new $class;
+        $entity = @new $class;
         $entity->setText('Ding!');
 
         $callId = $this->id;
 
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($callId, $entity){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($callId, $entity) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/talk', 'PUT', $request);
             $expected = json_decode(json_encode($entity), true);
 
@@ -141,7 +141,7 @@ class TalkTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('talk', '200'));
 
-        $event = $this->entity->put($entity);
+        $event = @$this->entity->put($entity);
 
         $this->assertInstanceOf('Nexmo\Call\Event', $event);
         $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
@@ -159,10 +159,10 @@ class TalkTest extends TestCase
         $this->nexmoClient->send(Argument::any())->shouldNotHaveBeenCalled();
 
         $class = $this->class;
-        $entity = new $class();
+        $entity = @new $class();
         $entity->setText('Hello!');
 
-        $event = $object($entity);
+        $event = @$object($entity);
 
         $this->assertInstanceOf('Nexmo\Call\Event', $event);
         $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
@@ -175,12 +175,12 @@ class TalkTest extends TestCase
     {
         $callId = $this->id;
 
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($callId){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($callId) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/talk', 'DELETE', $request);
             return true;
         }))->willReturn($this->getResponse('talk-delete', '200'));
 
-        $event = $this->entity->delete();
+        $event = @$this->entity->delete();
 
         $this->assertInstanceOf('Nexmo\Call\Event', $event);
         $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);

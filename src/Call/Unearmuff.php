@@ -8,11 +8,23 @@
 
 namespace Nexmo\Call;
 
-use Nexmo\Call\NCCO\Unearmuff as NCCOUnearmuff;
-
 /**
- * @deprecated Use Nexmo\Call\NCCO\Unearmuff
+ * @deprecated Please use Nexmo\Voice\Client::unearmuffCall() instead
  */
-class Unearmuff extends NCCOUnearmuff
+class Unearmuff implements \JsonSerializable
 {
+    public function __construct()
+    {
+        trigger_error(
+            'Nexmo\Call\Unearmuff is deprecated, please use Nexmo\Voice\Client::unearmuffCall() instead',
+            E_USER_DEPRECATED
+        );
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'action' => 'unearmuff'
+        ];
+    }
 }
