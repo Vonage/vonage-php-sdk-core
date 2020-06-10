@@ -55,7 +55,7 @@ class Client implements ClientAwareInterface
         $insightsResults = $this->makeRequest('/ni/basic/json', $number);
 
         $basic = new Basic($insightsResults['national_format_number']);
-        $basic->jsonUnserialize($insightsResults);
+        $basic->fromArray($insightsResults);
         return $basic;
     }
 
@@ -63,7 +63,7 @@ class Client implements ClientAwareInterface
     {
         $insightsResults = $this->makeRequest('/ni/standard/json', $number, ['cnam' => 'true']);
         $standard = new StandardCnam($insightsResults['national_format_number']);
-        $standard->jsonUnserialize($insightsResults);
+        $standard->fromArray($insightsResults);
         return $standard;
     }
 
@@ -71,7 +71,7 @@ class Client implements ClientAwareInterface
     {
         $insightsResults = $this->makeRequest('/ni/advanced/json', $number, ['cnam' => 'true']);
         $standard = new AdvancedCnam($insightsResults['national_format_number']);
-        $standard->jsonUnserialize($insightsResults);
+        $standard->fromArray($insightsResults);
         return $standard;
     }
 
@@ -79,7 +79,7 @@ class Client implements ClientAwareInterface
     {
         $insightsResults = $this->makeRequest('/ni/standard/json', $number);
         $standard = new Standard($insightsResults['national_format_number']);
-        $standard->jsonUnserialize($insightsResults);
+        $standard->fromArray($insightsResults);
         return $standard;
     }
 
@@ -87,7 +87,7 @@ class Client implements ClientAwareInterface
     {
         $insightsResults = $this->makeRequest('/ni/advanced/json', $number);
         $advanced = new Advanced($insightsResults['national_format_number']);
-        $advanced->jsonUnserialize($insightsResults);
+        $advanced->fromArray($insightsResults);
         return $advanced;
     }
 

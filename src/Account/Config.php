@@ -15,6 +15,10 @@ class Config implements
     ArrayAccess,
     ArrayHydrateInterface
 {
+    /**
+     * @var array<string, mixed>
+     */
+    protected $data = [];
     public function __construct($sms_callback_url = null, $dr_callback_url = null, $max_outbound_request = null, $max_inbound_request = null, $max_calls_per_second = null)
     {
         if (!is_null($sms_callback_url)) {
@@ -36,31 +40,36 @@ class Config implements
 
     public function getSmsCallbackUrl()
     {
-        return $this['sms_callback_url'];
+        return $this->data['sms_callback_url'];
     }
 
     public function getDrCallbackUrl()
     {
-        return $this['dr_callback_url'];
+        return $this->data['dr_callback_url'];
     }
 
     public function getMaxOutboundRequest()
     {
-        return $this['max_outbound_request'];
+        return $this->data['max_outbound_request'];
     }
 
     public function getMaxInboundRequest()
     {
-        return $this['max_inbound_request'];
+        return $this->data['max_inbound_request'];
     }
 
     public function getMaxCallsPerSecond()
     {
-        return $this['max_calls_per_second'];
+        return $this->data['max_calls_per_second'];
     }
 
     public function jsonUnserialize(array $json)
     {
+        trigger_error(
+            get_class($this) . "::jsonUnserialize is deprecated, please fromArray() instead",
+            E_USER_DEPRECATED
+        );
+
         $this->fromArray($json);
     }
 
@@ -87,11 +96,19 @@ class Config implements
 
     public function offsetExists($offset)
     {
+        trigger_error(
+            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
+            E_USER_DEPRECATED
+        );
         return isset($this->data[$offset]);
     }
 
     public function offsetGet($offset)
     {
+        trigger_error(
+            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
+            E_USER_DEPRECATED
+        );
         return $this->data[$offset];
     }
 

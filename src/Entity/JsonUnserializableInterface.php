@@ -10,6 +10,7 @@ namespace Nexmo\Entity;
 
 /**
  * Identifies the Entity as using JsonSerializable to prepare request data.
+ * @deprecated Please use a more appropriate hydrator, like ArrayHydrator
  */
 interface JsonUnserializableInterface
 {

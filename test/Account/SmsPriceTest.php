@@ -46,11 +46,11 @@ class SmsPriceTest extends TestCase
      */
     public function testArrayAccess($smsPrice)
     {
-        $this->assertEquals("US", $smsPrice['country_code']);
-        $this->assertEquals("United States", $smsPrice['country_name']);
-        $this->assertEquals("United States", $smsPrice['country_display_name']);
-        $this->assertEquals("1", $smsPrice['dialing_prefix']);
-        $this->assertEquals("0.00512", $smsPrice['default_price']);
+        $this->assertEquals("US", @$smsPrice['country_code']);
+        $this->assertEquals("United States", @$smsPrice['country_name']);
+        $this->assertEquals("United States", @$smsPrice['country_display_name']);
+        $this->assertEquals("1", @$smsPrice['dialing_prefix']);
+        $this->assertEquals("0.00512", @$smsPrice['default_price']);
     }
 
     /**
@@ -74,7 +74,7 @@ class SmsPriceTest extends TestCase
         $r = [];
 
         $smsPrice = new SmsPrice();
-        @$smsPrice->jsonUnserialize([
+        @$smsPrice->fromArray([
             'dialing_prefix' => 1,
             'default_price' => '0.00512',
             'currency' => 'EUR',

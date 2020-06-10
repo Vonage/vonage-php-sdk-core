@@ -43,10 +43,10 @@ class MessageTest extends TestCase
     {
         $data = ['test' => 'test'];
         $request = new \Zend\Diactoros\Request('http://example.com?' . http_build_query($data));
-        $this->message->setRequest($request);
+        @$this->message->setRequest($request);
 
-        $this->assertSame($request, $this->message->getRequest());
-        $requestData = $this->message->getRequestData();
+        $this->assertSame($request, @$this->message->getRequest());
+        $requestData = @$this->message->getRequestData();
         $this->assertEquals($data, $requestData);
     }
 
@@ -57,10 +57,10 @@ class MessageTest extends TestCase
         $response->getBody()->write(json_encode($data));
         $response->getBody()->rewind();
 
-        $this->message->setResponse($response);
+        @$this->message->setResponse($response);
 
-        $this->assertSame($response, $this->message->getResponse());
-        $this->assertEquals($data, $this->message->getResponseData());
+        $this->assertSame($response, @$this->message->getResponse());
+        $this->assertEquals($data, @$this->message->getResponseData());
     }
 
     /**

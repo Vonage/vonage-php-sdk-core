@@ -99,7 +99,7 @@ class VerificationTest extends TestCase
         }
 
         $this->verification->$setter($value);
-        $params = $this->verification->getRequestData(false);
+        $params = @$this->verification->getRequestData(false);
         $this->assertEquals($normal, $params[$param]);
         $this->assertEquals($normal, @$this->verification[$param]);
     }
@@ -124,7 +124,7 @@ class VerificationTest extends TestCase
     {
         $this->assertEquals('44a5279b27dd4a638d614d265ad57a77', @$this->existing->getRequestId());
 
-        $this->verification->setResponse($this->getResponse('search'));
+        @$this->verification->setResponse($this->getResponse('search'));
         $this->assertEquals('44a5279b27dd4a638d614d265ad57a77', @$this->verification->getRequestId());
     }
 
@@ -133,7 +133,7 @@ class VerificationTest extends TestCase
      */
     public function testSearchParamsAsObject()
     {
-        $this->existing->setResponse($this->getResponse('search'));
+        @$this->existing->setResponse($this->getResponse('search'));
 
         $this->assertEquals('6cff3913', @$this->existing->getAccountId());
         $this->assertEquals('14845551212', @$this->existing->getNumber());
@@ -179,7 +179,7 @@ class VerificationTest extends TestCase
      */
     public function testResponseDataAsArray($type)
     {
-        $this->existing->setResponse($this->getResponse($type));
+        @$this->existing->setResponse($this->getResponse($type));
         $json = $this->existing->getResponseData();
 
         foreach ($json as $key => $value) {
@@ -274,9 +274,9 @@ class VerificationTest extends TestCase
      */
     public function testSerialize($response)
     {
-        $this->existing->setResponse($response);
-        $this->existing->getResponse()->getBody()->rewind();
-        $this->existing->getResponse()->getBody()->getContents();
+        @$this->existing->setResponse($response);
+        @$this->existing->getResponse()->getBody()->rewind();
+        @$this->existing->getResponse()->getBody()->getContents();
         $serialized   = serialize($this->existing);
         /* @var $unserialized Verification */
         $unserialized = unserialize($serialized);

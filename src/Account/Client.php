@@ -254,7 +254,7 @@ class Client implements ClientAwareInterface
         } catch (ExceptionRequest $e) {
             // @deprectated Throw a Validation exception to preserve old behavior
             // This will change to a general Request exception in the future
-            $rawResponse = json_decode($e->getResponse()->getBody()->getContents(), true);
+            $rawResponse = json_decode(@$e->getResponse()->getBody()->getContents(), true);
             if (array_key_exists('invalid_parameters', $rawResponse)) {
                 throw new Validation($e->getMessage(), $e->getCode(), null, $rawResponse['invalid_parameters']);
             }

@@ -44,10 +44,10 @@ class PrefixPriceTest extends TestCase
      */
     public function testArrayAccess($prefixPrice)
     {
-        $this->assertEquals("ZW", $prefixPrice['country_code']);
-        $this->assertEquals("Zimbabwe", $prefixPrice['country_name']);
-        $this->assertEquals("Zimbabwe", $prefixPrice['country_display_name']);
-        $this->assertEquals("263", $prefixPrice['dialing_prefix']);
+        $this->assertEquals("ZW", @$prefixPrice['country_code']);
+        $this->assertEquals("Zimbabwe", @$prefixPrice['country_name']);
+        $this->assertEquals("Zimbabwe", @$prefixPrice['country_display_name']);
+        $this->assertEquals("263", @$prefixPrice['dialing_prefix']);
     }
 
     /**
@@ -63,7 +63,7 @@ class PrefixPriceTest extends TestCase
         $r = [];
 
         $prefixPrice = new PrefixPrice();
-        @$prefixPrice->jsonUnserialize([
+        @$prefixPrice->fromArray([
             'country' => 'ZW',
             'name' => 'Zimbabwe',
             'prefix' => 263,

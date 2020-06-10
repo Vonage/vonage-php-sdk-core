@@ -27,7 +27,7 @@ trait JsonResponseTrait
             ));
         }
 
-        if (($response = $this->getResponse()) && ($response instanceof ResponseInterface)) {
+        if (($response = @$this->getResponse()) && ($response instanceof ResponseInterface)) {
             if ($response->getBody()->isSeekable()) {
                 $response->getBody()->rewind();
             }

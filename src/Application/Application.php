@@ -73,7 +73,7 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
     {
         if (!isset($this->voiceConfig)) {
             $this->setVoiceConfig(new VoiceConfig());
-            $data = $this->getResponseData();
+            $data = @$this->getResponseData();
             if (isset($data['voice']) and isset($data['voice']['webhooks'])) {
                 foreach ($data['voice']['webhooks'] as $webhook) {
                     $this->voiceConfig->setWebhook($webhook['endpoint_type'], $webhook['endpoint'], $webhook['http_method']);
@@ -165,6 +165,11 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
 
     public function jsonUnserialize(array $json)
     {
+        trigger_error(
+            get_class($this) . "::jsonUnserialize is deprecated, please fromArray() instead",
+            E_USER_DEPRECATED
+        );
+
         $this->fromArray($json);
     }
 

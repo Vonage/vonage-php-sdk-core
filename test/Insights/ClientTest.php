@@ -134,7 +134,7 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse($methodToCall));
 
-        $insightsStandard = $this->insightsClient->$methodToCall('14155550100');
+        $insightsStandard = @$this->insightsClient->$methodToCall('14155550100');
         $this->assertInstanceOf($expectedClass, $insightsStandard);
         $this->assertEquals('(415) 555-0100', $insightsStandard->getNationalFormatNumber());
     }
@@ -151,7 +151,7 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse($methodToCall));
 
-        $insightsStandard = $this->insightsClient->$methodToCall('14155550100');
+        $insightsStandard = @$this->insightsClient->$methodToCall('14155550100');
         $this->assertInstanceOf($expectedClass, $insightsStandard);
         $this->assertEquals('(415) 555-0100', $insightsStandard->getNationalFormatNumber());
     }

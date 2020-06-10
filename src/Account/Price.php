@@ -28,45 +28,48 @@ abstract class Price implements
     use NoRequestResponseTrait;
     use JsonResponseTrait;
 
+    /**
+     * @var array<string, mixed>
+     */
     protected $data = [];
 
     public function getCountryCode()
     {
-        return $this['country_code'];
+        return $this->data['country_code'];
     }
 
     public function getCountryDisplayName()
     {
-        return $this['country_display_name'];
+        return $this->data['country_display_name'];
     }
 
     public function getCountryName()
     {
-        return $this['country_name'];
+        return $this->data['country_name'];
     }
 
     public function getDialingPrefix()
     {
-        return $this['dialing_prefix'];
+        return $this->data['dialing_prefix'];
     }
 
     public function getDefaultPrice()
     {
-        if (isset($this['default_price'])) {
-            return $this['default_price'];
+        if (isset($this->data['default_price'])) {
+            return $this->data['default_price'];
         }
 
-        return $this['mt'];
+        return $this->data['mt'];
     }
 
     public function getCurrency()
     {
-        return $this['currency'];
+        return $this->data['currency'];
     }
 
     public function getNetworks()
     {
-        return $this['networks'];
+        return $this->data['networks'];
     }
 
     public function getPriceForNetwork($networkCode)
@@ -81,7 +84,10 @@ abstract class Price implements
 
     public function jsonUnserialize(array $json)
     {
-        trigger_error('jsonUnserialize has been deprecated, please use fromArray() instead', E_USER_DEPRECATED);
+        trigger_error(
+            get_class($this) . "::jsonUnserialize is deprecated, please fromArray() instead",
+            E_USER_DEPRECATED
+        );
         $this->fromArray($json);
     }
 
@@ -145,11 +151,19 @@ abstract class Price implements
 
     public function offsetExists($offset)
     {
+        trigger_error(
+            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
+            E_USER_DEPRECATED
+        );
         return isset($this->data[$offset]);
     }
 
     public function offsetGet($offset)
     {
+        trigger_error(
+            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
+            E_USER_DEPRECATED
+        );
         return $this->data[$offset];
     }
 

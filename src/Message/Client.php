@@ -117,15 +117,15 @@ class Client implements ClientAwareInterface
             $message = $this->createMessageFromArray($message);
         }
 
-        $params = $message->getRequestData(false);
+        $params = @$message->getRequestData(false);
 
         try {
             $api = $this->getApiResource();
             $api->setBaseUri('/sms/json');
 
             $api->create($params);
-            $message->setRequest($api->getLastRequest());
-            $message->setResponse($api->getLastResponse());
+            @$message->setRequest($api->getLastRequest());
+            @$message->setResponse($api->getLastResponse());
         } catch (ThrottleException $e) {
             sleep($e->getTimeout());
             $this->send($message);
@@ -242,7 +242,7 @@ class Client implements ClientAwareInterface
                     throw $e;
             }
 
-            $new->setResponse($api->getLastResponse());
+            @$new->setResponse($api->getLastResponse());
             $new->setIndex($index);
             $collection[] = $new;
         }
@@ -325,7 +325,7 @@ class Client implements ClientAwareInterface
             $message = $new;
         }
 
-        $message->setResponse($response);
+        @$message->setResponse($response);
         return $message;
     }
 
@@ -386,7 +386,7 @@ class Client implements ClientAwareInterface
                     throw $e;
             }
 
-            $new->setResponse($response);
+            @$new->setResponse($response);
             $new->setIndex($index);
             $collection[] = $new;
         }

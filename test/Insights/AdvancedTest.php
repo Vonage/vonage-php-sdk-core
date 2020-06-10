@@ -19,8 +19,8 @@ class AdvancedTest extends TestCase
      */
     public function testArrayAccess($advanced, $inputData)
     {
-        $this->assertEquals($inputData['valid_number'], $advanced['valid_number']);
-        $this->assertEquals($inputData['reachable'], $advanced['reachable']);
+        $this->assertEquals($inputData['valid_number'], @$advanced['valid_number']);
+        $this->assertEquals($inputData['reachable'], @$advanced['reachable']);
     }
 
     /**
@@ -42,7 +42,7 @@ class AdvancedTest extends TestCase
         ];
 
         $advanced1 = new Advanced('01234567890');
-        $advanced1->jsonUnserialize($input1);
+        $advanced1->fromArray($input1);
         $r['standard-1'] = [$advanced1, $input1];
 
         return $r;

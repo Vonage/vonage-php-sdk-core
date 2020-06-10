@@ -174,6 +174,11 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
      */
     public function jsonUnserialize(array $json)
     {
+        trigger_error(
+            get_class($this) . "::jsonUnserialize is deprecated, please fromArray() instead",
+            E_USER_DEPRECATED
+        );
+
         $this->fromArray($json);
     }
 

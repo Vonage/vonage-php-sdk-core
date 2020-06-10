@@ -63,11 +63,11 @@ class SecretCollectionTest extends TestCase
 
     public function testArrayAccess()
     {
-        $this->assertEquals($this->links, $this->collection['_links']);
+        $this->assertEquals($this->links, @$this->collection['_links']);
 
         $secrets = array_map(function ($v) {
             return @Secret::fromApi($v);
         }, $this->secrets);
-        $this->assertEquals($secrets, $this->collection['secrets']);
+        $this->assertEquals($secrets, @$this->collection['secrets']);
     }
 }

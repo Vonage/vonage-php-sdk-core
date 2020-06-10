@@ -646,11 +646,11 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
             'requestData'  => $this->requestData
         ];
 
-        if ($request = $this->getRequest()) {
+        if ($request = @$this->getRequest()) {
             $data['request'] = \Zend\Diactoros\Request\Serializer::toString($request);
         }
 
-        if ($response = $this->getResponse()) {
+        if ($response = @$this->getResponse()) {
             $data['response'] = \Zend\Diactoros\Response\Serializer::toString($response);
         }
 

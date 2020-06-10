@@ -36,7 +36,7 @@ class ApplicationTest extends TestCase
 
     public function testNameIsSet()
     {
-        $this->assertEquals('test', $this->app->getRequestData()['name']);
+        $this->assertEquals('test', @$this->app->getRequestData()['name']);
     }
 
     public function testVoiceWebhookParams()
@@ -44,7 +44,7 @@ class ApplicationTest extends TestCase
         @$this->app->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'http://example.com/event');
         @$this->app->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'http://example.com/answer');
 
-        $params = $this->app->getRequestData();
+        $params = @$this->app->getRequestData();
 
         $capabilities = $params['capabilities'];
         $this->assertArrayHasKey('event_url', $capabilities['voice']['webhooks']);
@@ -56,7 +56,7 @@ class ApplicationTest extends TestCase
 
     public function testResponseSetsProperties()
     {
-        $this->app->setResponse($this->getResponse());
+        @$this->app->setResponse($this->getResponse());
         $this->assertEquals('My Application', $this->app->getName());
         $this->assertEquals(
             "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSLcjxu33G\nd/vynKnlw9SENi+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xsO\nOUNhPx2LhuLmgwWSRS4L5W851Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n",
@@ -67,7 +67,7 @@ class ApplicationTest extends TestCase
 
     public function testResponseSetsVoiceConfigs()
     {
-        $this->app->setResponse($this->getResponse());
+        @$this->app->setResponse($this->getResponse());
 
         $webhook = $this->app->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER);
         $method  = $this->app->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER)->getMethod();
@@ -82,7 +82,7 @@ class ApplicationTest extends TestCase
 
     public function testResponseSetsMessagesConfigs()
     {
-        $this->app->setResponse($this->getResponse());
+        @$this->app->setResponse($this->getResponse());
 
         $webhook = $this->app->getMessagesConfig()->getWebhook(MessagesConfig::INBOUND);
         $method  = $this->app->getMessagesConfig()->getWebhook(MessagesConfig::INBOUND)->getMethod();
@@ -97,7 +97,7 @@ class ApplicationTest extends TestCase
 
     public function testResponseSetsRtcConfigs()
     {
-        $this->app->setResponse($this->getResponse());
+        @$this->app->setResponse($this->getResponse());
 
         $webhook = $this->app->getRtcConfig()->getWebhook(RtcConfig::EVENT);
         $method  = $this->app->getRtcConfig()->getWebhook(RtcConfig::EVENT)->getMethod();
@@ -107,13 +107,13 @@ class ApplicationTest extends TestCase
 
     public function testResponseSetsVbcConfigs()
     {
-        $this->app->setResponse($this->getResponse());
+        @$this->app->setResponse($this->getResponse());
         $this->assertEquals(true, $this->app->getVbcConfig()->isEnabled());
     }
 
     public function testCanGetDirtyValues()
     {
-        $this->app->setResponse($this->getResponse());
+        @$this->app->setResponse($this->getResponse());
         $this->assertEquals('My Application', $this->app->getName());
 
         $this->app->setName('new');
@@ -129,7 +129,7 @@ class ApplicationTest extends TestCase
 
     public function testConfigCanBeCopied()
     {
-        $this->app->setResponse($this->getResponse());
+        @$this->app->setResponse($this->getResponse());
 
         $otherapp = new Application();
         $otherapp->setName('new app');

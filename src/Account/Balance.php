@@ -35,16 +35,20 @@ class Balance implements
 
     public function getBalance()
     {
-        return $this['balance'];
+        return $this->data['balance'];
     }
 
     public function getAutoReload()
     {
-        return $this['auto_reload'];
+        return $this->data['auto_reload'];
     }
 
     public function jsonUnserialize(array $json)
     {
+        trigger_error(
+            get_class($this) . "::jsonUnserialize is deprecated, please fromArray() instead",
+            E_USER_DEPRECATED
+        );
         $this->fromArray($json);
     }
 
@@ -55,11 +59,19 @@ class Balance implements
 
     public function offsetExists($offset)
     {
+        trigger_error(
+            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
+            E_USER_DEPRECATED
+        );
         return isset($this->data[$offset]);
     }
 
     public function offsetGet($offset)
     {
+        trigger_error(
+            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
+            E_USER_DEPRECATED
+        );
         return $this->data[$offset];
     }
 

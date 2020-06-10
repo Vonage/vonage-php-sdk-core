@@ -37,42 +37,47 @@ class Network implements
 
     public function getCode()
     {
-        return $this['network_code'];
+        return $this->data['network_code'];
     }
 
     public function getName()
     {
-        return $this['network_name'];
+        return $this->data['network_name'];
     }
 
     public function getOutboundSmsPrice()
     {
-        if (isset($this['sms_price'])) {
-            return $this['sms_price'];
+        if (isset($this->data['sms_price'])) {
+            return $this->data['sms_price'];
         }
-        return $this['price'];
+        return $this->data['price'];
     }
 
     public function getOutboundVoicePrice()
     {
-        if (isset($this['voice_price'])) {
-            return $this['voice_price'];
+        if (isset($this->data['voice_price'])) {
+            return $this->data['voice_price'];
         }
-        return $this['price'];
+        return $this->data['price'];
     }
 
     public function getPrefixPrice()
     {
-        return $this['mt_price'];
+        return $this->data['mt_price'];
     }
 
     public function getCurrency()
     {
-        return $this['currency'];
+        return $this->data['currency'];
     }
 
     public function jsonUnserialize(array $json)
     {
+        trigger_error(
+            get_class($this) . "::jsonUnserialize is deprecated, please fromArray() instead",
+            E_USER_DEPRECATED
+        );
+
         $this->fromArray($json);
     }
 
@@ -83,11 +88,19 @@ class Network implements
 
     public function offsetExists($offset)
     {
+        trigger_error(
+            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
+            E_USER_DEPRECATED
+        );
         return isset($this->data[$offset]);
     }
 
     public function offsetGet($offset)
     {
+        trigger_error(
+            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
+            E_USER_DEPRECATED
+        );
         return $this->data[$offset];
     }
 

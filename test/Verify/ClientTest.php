@@ -87,7 +87,7 @@ class ClientTest extends TestCase
     public function testUnserializeSetsClient()
     {
         $verification = new Verification('14845551212', 'Test Verify');
-        $verification->setResponse($this->getResponse('start'));
+        @$verification->setResponse($this->getResponse('start'));
 
         $string = serialize($verification);
         $object = @$this->client->unserialize($string);
@@ -96,13 +96,13 @@ class ClientTest extends TestCase
 
         $search = $this->setupClientForSearch('search');
         @$object->sync();
-        $this->assertSame($search, $object->getResponse());
+        $this->assertSame($search, @$object->getResponse());
     }
 
     public function testSerializeMatchesEntity()
     {
         $verification = new Verification('14845551212', 'Test Verify');
-        $verification->setResponse($this->getResponse('start'));
+        @$verification->setResponse($this->getResponse('start'));
 
         $string = serialize($verification);
         $this->assertSame($string, $this->client->serialize($verification));
@@ -114,7 +114,7 @@ class ClientTest extends TestCase
 
         $verification = new Verification('14845551212', 'Test Verify');
         @$this->client->start($verification);
-        $this->assertSame($success, $verification->getResponse());
+        $this->assertSame($success, @$verification->getResponse());
     }
 
     public function testCanStartArray()
@@ -126,7 +126,7 @@ class ClientTest extends TestCase
             'brand'  => 'Test Verify'
         ]);
 
-        $this->assertSame($response, $verification->getResponse());
+        $this->assertSame($response, @$verification->getResponse());
     }
 
     public function testStartThrowsException()
@@ -142,7 +142,7 @@ class ClientTest extends TestCase
         } catch (\Nexmo\Client\Exception\Request $e) {
             $this->assertEquals('2', $e->getCode());
             $this->assertEquals('Your request is incomplete and missing the mandatory parameter: brand', $e->getMessage());
-            $this->assertSame($response, $e->getEntity()->getResponse());
+            $this->assertSame($response, @$e->getEntity()->getResponse());
         }
     }
 
@@ -159,7 +159,7 @@ class ClientTest extends TestCase
         } catch (\Nexmo\Client\Exception\Server $e) {
             $this->assertEquals('5', $e->getCode());
             $this->assertEquals('Server Error', $e->getMessage());
-            $this->assertSame($response, $e->getEntity()->getResponse());
+            $this->assertSame($response, @$e->getEntity()->getResponse());
         }
     }
 
@@ -184,7 +184,7 @@ class ClientTest extends TestCase
         $verification = new Verification('44a5279b27dd4a638d614d265ad57a77');
         @$this->client->search($verification);
 
-        $this->assertSame($response, $verification->getResponse());
+        $this->assertSame($response, @$verification->getResponse());
     }
 
     public function testCanSearchId()
@@ -193,7 +193,7 @@ class ClientTest extends TestCase
 
         $verification = @$this->client->search('44a5279b27dd4a638d614d265ad57a77');
 
-        $this->assertSame($response, $verification->getResponse());
+        $this->assertSame($response, @$verification->getResponse());
     }
 
     public function testSearchThrowsException()
@@ -206,7 +206,7 @@ class ClientTest extends TestCase
         } catch (\Nexmo\Client\Exception\Request $e) {
             $this->assertEquals('101', $e->getCode());
             $this->assertEquals('No response found', $e->getMessage());
-            $this->assertSame($response, $e->getEntity()->getResponse());
+            $this->assertSame($response, @$e->getEntity()->getResponse());
         }
     }
 
@@ -220,7 +220,7 @@ class ClientTest extends TestCase
         } catch (\Nexmo\Client\Exception\Server $e) {
             $this->assertEquals('5', $e->getCode());
             $this->assertEquals('Server Error', $e->getMessage());
-            $this->assertSame($response, $e->getEntity()->getResponse());
+            $this->assertSame($response, @$e->getEntity()->getResponse());
         }
     }
 
@@ -228,12 +228,12 @@ class ClientTest extends TestCase
     {
         $old = $this->getResponse('start');
         $verification = new Verification('14845551212', 'Test Verify');
-        $verification->setResponse($old);
+        @$verification->setResponse($old);
 
         $response = $this->setupClientForSearch('search');
         @$this->client->search($verification);
 
-        $this->assertSame($response, $verification->getResponse());
+        $this->assertSame($response, @$verification->getResponse());
     }
 
     protected function setupClientForSearch($response)
@@ -257,7 +257,7 @@ class ClientTest extends TestCase
         $result = @$this->client->cancel($verification);
 
         $this->assertSame($verification, $result);
-        $this->assertSame($response, $verification->getResponse());
+        $this->assertSame($response, @$verification->getResponse());
     }
 
     public function testCanCancelId()
@@ -266,7 +266,7 @@ class ClientTest extends TestCase
 
         $verification = @$this->client->cancel('44a5279b27dd4a638d614d265ad57a77');
 
-        $this->assertSame($response, $verification->getResponse());
+        $this->assertSame($response, @$verification->getResponse());
     }
 
     public function testCancelThrowsClientException()
@@ -279,7 +279,7 @@ class ClientTest extends TestCase
         } catch (\Nexmo\Client\Exception\Request $e) {
             $this->assertEquals('19', $e->getCode());
             $this->assertEquals('Verification request  [\'c1878c7451f94c1992d52797df57658e\'] can\'t be cancelled now. Too many attempts to re-deliver have already been made.', $e->getMessage());
-            $this->assertSame($response, $e->getEntity()->getResponse());
+            $this->assertSame($response, @$e->getEntity()->getResponse());
         }
     }
 
@@ -293,7 +293,7 @@ class ClientTest extends TestCase
         } catch (\Nexmo\Client\Exception\Server $e) {
             $this->assertEquals('5', $e->getCode());
             $this->assertEquals('Server Error', $e->getMessage());
-            $this->assertSame($response, $e->getEntity()->getResponse());
+            $this->assertSame($response, @$e->getEntity()->getResponse());
         }
     }
 
@@ -303,7 +303,7 @@ class ClientTest extends TestCase
 
         $verification = @$this->client->trigger('44a5279b27dd4a638d614d265ad57a77');
 
-        $this->assertSame($response, $verification->getResponse());
+        $this->assertSame($response, @$verification->getResponse());
     }
 
     public function testCanTriggerVerification()
@@ -314,7 +314,7 @@ class ClientTest extends TestCase
         $result = @$this->client->trigger($verification);
 
         $this->assertSame($verification, $result);
-        $this->assertSame($response, $verification->getResponse());
+        $this->assertSame($response, @$verification->getResponse());
     }
 
     public function testTriggerThrowsClientException()
@@ -327,7 +327,7 @@ class ClientTest extends TestCase
         } catch (\Nexmo\Client\Exception\Request $e) {
             $this->assertEquals('6', $e->getCode());
             $this->assertEquals('The requestId \'44a5279b27dd4a638d614d265ad57a77\' does not exist or its no longer active.', $e->getMessage());
-            $this->assertSame($response, $e->getEntity()->getResponse());
+            $this->assertSame($response, @$e->getEntity()->getResponse());
         }
     }
 
@@ -341,7 +341,7 @@ class ClientTest extends TestCase
         } catch (\Nexmo\Client\Exception\Server $e) {
             $this->assertEquals('5', $e->getCode());
             $this->assertEquals('Server Error', $e->getMessage());
-            $this->assertSame($response, $e->getEntity()->getResponse());
+            $this->assertSame($response, @$e->getEntity()->getResponse());
         }
     }
 
@@ -352,12 +352,12 @@ class ClientTest extends TestCase
     {
         $response = $this->getResponse('search');
         $verification = new Verification('44a5279b27dd4a638d614d265ad57a77');
-        $verification->setResponse($response);
+        @$verification->setResponse($response);
 
         $this->setupClientForControl($method, $cmd);
         @$this->client->$method($verification);
 
-        $this->assertSame($response, $verification->getResponse());
+        $this->assertSame($response, @$verification->getResponse());
     }
 
     public function getControlCommands()
@@ -389,7 +389,7 @@ class ClientTest extends TestCase
         
         @$this->client->check($verification, '1234');
         
-        $this->assertSame($response, $verification->getResponse());
+        $this->assertSame($response, @$verification->getResponse());
     }
 
     public function testCanCheckId()
@@ -397,7 +397,7 @@ class ClientTest extends TestCase
         $response = $this->setupClientForCheck('check', '1234');
         $verification = @$this->client->check('44a5279b27dd4a638d614d265ad57a77', '1234');
 
-        $this->assertSame($response, $verification->getResponse());
+        $this->assertSame($response, @$verification->getResponse());
     }
 
 
@@ -411,7 +411,7 @@ class ClientTest extends TestCase
         } catch (\Nexmo\Client\Exception\Request $e) {
             $this->assertEquals('16', $e->getCode());
             $this->assertEquals('The code provided does not match the expected value', $e->getMessage());
-            $this->assertSame($response, $e->getEntity()->getResponse());
+            $this->assertSame($response, @$e->getEntity()->getResponse());
         }
     }
 
@@ -425,7 +425,7 @@ class ClientTest extends TestCase
         } catch (\Nexmo\Client\Exception\Server $e) {
             $this->assertEquals('5', $e->getCode());
             $this->assertEquals('Server Error', $e->getMessage());
-            $this->assertSame($response, $e->getEntity()->getResponse());
+            $this->assertSame($response, @$e->getEntity()->getResponse());
         }
     }
 
@@ -433,12 +433,12 @@ class ClientTest extends TestCase
     {
         $old = $this->getResponse('search');
         $verification = new Verification('44a5279b27dd4a638d614d265ad57a77');
-        $verification->setResponse($old);
+        @$verification->setResponse($old);
 
         $this->setupClientForCheck('check', '1234');
 
         @$this->client->check($verification, '1234');
-        $this->assertSame($old, $verification->getResponse());
+        $this->assertSame($old, @$verification->getResponse());
     }
     
     protected function setupClientForCheck($response, $code, $ip = null)

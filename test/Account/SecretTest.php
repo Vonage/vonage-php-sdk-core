@@ -47,7 +47,7 @@ class SecretTest extends TestCase
 
     public function testArrayAccess()
     {
-        $this->assertEquals('ad6dc56f-07b5-46e1-a527-85530e625800', $this->secret['id']);
-        $this->assertEquals('2017-03-02T16:34:49Z', $this->secret['created_at']);
+        $this->assertEquals('ad6dc56f-07b5-46e1-a527-85530e625800', @$this->secret['id']);
+        $this->assertEquals('2017-03-02T16:34:49Z', @$this->secret['created_at']);
     }
 }

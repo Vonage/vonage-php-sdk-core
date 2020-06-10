@@ -62,7 +62,7 @@ trait RequestArrayTrait
             ));
         }
 
-        if ($this->getResponse()) {
+        if (@$this->getResponse()) {
             throw new \RuntimeException(sprintf(
                 'can not set request parameter `%s` for `%s` after API request has be made',
                 $name,

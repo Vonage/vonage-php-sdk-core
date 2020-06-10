@@ -23,17 +23,17 @@ class Secret implements \ArrayAccess
 
     public function getId()
     {
-        return $this['id'];
+        return $this->data['id'];
     }
 
     public function getCreatedAt()
     {
-        return $this['created_at'];
+        return $this->data['created_at'];
     }
 
     public function getLinks()
     {
-        return $this['_links'];
+        return $this->data['_links'];
     }
 
     /**
@@ -47,11 +47,19 @@ class Secret implements \ArrayAccess
 
     public function offsetExists($offset)
     {
+        trigger_error(
+            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
+            E_USER_DEPRECATED
+        );
         return isset($this->data[$offset]);
     }
 
     public function offsetGet($offset)
     {
+        trigger_error(
+            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
+            E_USER_DEPRECATED
+        );
         return $this->data[$offset];
     }
 

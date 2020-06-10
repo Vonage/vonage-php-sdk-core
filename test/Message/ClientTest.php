@@ -111,8 +111,8 @@ class ClientTest extends TestCase
         $this->nexmoClient->send(Argument::type(RequestInterface::class))->willReturn($response);
 
         $message = $this->messageClient->send(new Text('14845551212', '16105551212', 'Not Pats?'));
-        $this->assertSame($response, $message->getResponse());
-        $this->nexmoClient->send($message->getRequest())->shouldHaveBeenCalled();
+        $this->assertSame($response, @$message->getResponse());
+        $this->nexmoClient->send(@$message->getRequest())->shouldHaveBeenCalled();
     }
 
     public function testThrowRequestException()
@@ -378,14 +378,14 @@ class ClientTest extends TestCase
         $message = $this->messageClient->search('02000000D912945A');
 
         $this->assertInstanceOf('Nexmo\Message\Message', $message);
-        $this->assertSame($response, $message->getResponse());
+        $this->assertSame($response, @$message->getResponse());
     }
 
     public function testCanSearchBySingleInboundId()
     {
         $response = $this->getResponse('search-inbound');
 
-        $this->nexmoClient->send(Argument::that(function(Request $request) {
+        $this->nexmoClient->send(Argument::that(function (Request $request) {
             $this->assertRequestQueryContains('id', '02000000DA7C52E7', $request);
             return true;
         }))->willReturn($response);
@@ -393,7 +393,7 @@ class ClientTest extends TestCase
         $message = $this->messageClient->search('02000000DA7C52E7');
 
         $this->assertInstanceOf('Nexmo\Message\InboundMessage', $message);
-        $this->assertSame($response, $message->getResponse());
+        $this->assertSame($response, @$message->getResponse());
     }
 
     public function testSearchThrowsExceptionOnEmptySearchSet()
@@ -495,7 +495,7 @@ class ClientTest extends TestCase
         }))->willReturn($rate, $rate2, $success);
 
         $message = $this->messageClient->send(new Text($args['to'], $args['from'], $args['text']));
-        $this->assertEquals($success, $message->getResponse());
+        $this->assertEquals($success, @$message->getResponse());
     }
 
     public function testRateLimitRetriesWithDefault()
@@ -559,10 +559,10 @@ class ClientTest extends TestCase
 
         // Build up our expected message object
         $message = new Message('0C0000005BA0B864');
-        $message->setResponse($this->getResponse('search-rejections'));
+        @$message->setResponse($this->getResponse('search-rejections'));
         $message->setIndex(0);
         $inboundMessage = new InboundMessage('0C0000005BA0B864');
-        $inboundMessage->setResponse($this->getResponse('search-rejections-inbound'));
+        @$inboundMessage->setResponse($this->getResponse('search-rejections-inbound'));
         $inboundMessage->setIndex(0);
 
         $r['rejection found'] = [new \DateTime(), '123456', 'search-rejections', [$message], 200, null];

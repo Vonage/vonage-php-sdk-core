@@ -20,10 +20,10 @@ class StandardTest extends TestCase
      */
     public function testArrayAccess($standard, $inputData)
     {
-        $this->assertEquals($inputData['current_carrier'], $standard['current_carrier']);
-        $this->assertEquals($inputData['original_carrier'], $standard['original_carrier']);
-        $this->assertEquals($inputData['ported'], $standard['ported']);
-        $this->assertEquals($inputData['roaming'], $standard['roaming']);
+        $this->assertEquals($inputData['current_carrier'], @$standard['current_carrier']);
+        $this->assertEquals($inputData['original_carrier'], @$standard['original_carrier']);
+        $this->assertEquals($inputData['ported'], @$standard['ported']);
+        $this->assertEquals($inputData['roaming'], @$standard['roaming']);
     }
 
     /**
@@ -64,7 +64,7 @@ class StandardTest extends TestCase
         ];
 
         $standard1 = new Standard('01234567890');
-        $standard1->jsonUnserialize($input1);
+        $standard1->fromArray($input1);
         $r['standard-1'] = [$standard1, $input1];
 
         return $r;
