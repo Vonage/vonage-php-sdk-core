@@ -8,7 +8,7 @@
 
 namespace Nexmo\Message;
 
-interface MessageInterface extends \Nexmo\Entity\EntityInterface
+interface MessageInterface
 {
     public function getMessageId();
 }

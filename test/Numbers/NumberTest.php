@@ -8,7 +8,6 @@
 
 namespace NexmoTest\Numbers;
 
-
 use Nexmo\Application\Application;
 use Nexmo\Numbers\Number;
 use PHPUnit\Framework\TestCase;
@@ -105,7 +104,7 @@ class NumberTest extends TestCase
     {
         $this->number->setVoiceDestination('not-valid', NUMBER::ENDPOINT_SIP);
         $this->assertSame(Number::ENDPOINT_SIP, $this->number->getVoiceType());
-        $this->assertArrayHas('voiceCallbackType', Number::ENDPOINT_SIP, $this->number->getRequestData());
+        $this->assertArrayHas('voiceCallbackType', Number::ENDPOINT_SIP, $this->number->toArray());
     }
 
     /**
@@ -118,8 +117,8 @@ class NumberTest extends TestCase
         $this->assertEquals($value, $this->number->getVoiceDestination());
         $this->assertEquals($type, $this->number->getVoiceType());
 
-        $this->assertArrayHas('voiceCallbackType',  $type,  $this->number->getRequestData());
-        $this->assertArrayHas('voiceCallbackValue', $value, $this->number->getRequestData());
+        $this->assertArrayHas('voiceCallbackType', $type, $this->number->toArray());
+        $this->assertArrayHas('voiceCallbackValue', $value, $this->number->toArray());
     }
 
     public function voiceDestinations()
@@ -147,14 +146,14 @@ class NumberTest extends TestCase
     {
         $this->assertSame($this->number, $this->number->setWebhook(Number::WEBHOOK_VOICE_STATUS, 'http://example.com'));
         $this->assertEquals('http://example.com', $this->number->getWebhook(Number::WEBHOOK_VOICE_STATUS));
-        $this->assertArrayHas('voiceStatusCallbackUrl', 'http://example.com', $this->number->getRequestData());
+        $this->assertArrayHas('voiceStatusCallbackUrl', 'http://example.com', $this->number->toArray());
     }
 
     public function testMessageWebhook()
     {
-        $this->assertSame($this->number, $this->number->setWebhook(Number::WEBHOOK_MESSAGE, 'http://example.com'));
+        $this->number->setWebhook(Number::WEBHOOK_MESSAGE, 'http://example.com');
         $this->assertEquals('http://example.com', $this->number->getWebhook(Number::WEBHOOK_MESSAGE));
-        $this->assertArrayHas('moHttpUrl', 'http://example.com', $this->number->getRequestData());
+        $this->assertArrayHas('moHttpUrl', 'http://example.com', $this->number->toArray());
     }
 
     public static function assertArrayHas($key, $value, $array)

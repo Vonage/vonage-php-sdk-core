@@ -90,43 +90,4 @@ class Config implements \JsonSerializable, ArrayHydrateInterface
     {
         return $this->data;
     }
-
-    public function offsetExists($offset)
-    {
-        trigger_error(
-            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
-            E_USER_DEPRECATED
-        );
-        return isset($this->data[$offset]);
-    }
-
-    public function offsetGet($offset)
-    {
-        trigger_error(
-            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
-            E_USER_DEPRECATED
-        );
-        return $this->data[$offset];
-    }
-
-    public function offsetSet($offset, $value)
-    {
-        throw new Exception('Balance is read only');
-    }
-
-    public function offsetUnset($offset)
-    {
-        throw new Exception('Balance is read only');
-    }
-
-    public function __get($key)
-    {
-        if ($key === 'data') {
-            trigger_error(
-                "Direct access to " . get_class($this) . "::data is deprecated, please use getter to toArray() methods",
-                E_USER_DEPRECATED
-            );
-            return $this->data;
-        }
-    }
 }

@@ -15,8 +15,11 @@ use Nexmo\Client\Exception;
 use Zend\Diactoros\Response;
 use Nexmo\Client\APIResource;
 use PHPUnit\Framework\TestCase;
+use Nexmo\Client as NexmoClient;
 use NexmoTest\Psr7AssertionTrait;
 use Nexmo\Client\Exception\Request;
+use Nexmo\Entity\Filter\KeyValueFilter;
+use Nexmo\Numbers\Filter\OwnedNumbers;
 use Psr\Http\Message\RequestInterface;
 
 class ClientTest extends TestCase
@@ -40,108 +43,60 @@ class ClientTest extends TestCase
         $this->nexmoClient = $this->prophesize('Nexmo\Client');
         $this->nexmoClient->getRestUrl()->willReturn('https://rest.nexmo.com');
 
-        $this->numberClient = new Client();
+        $this->apiClient = new APIResource();
+        $this->apiClient->setBaseUrl('https://rest.nexmo.com')
+            ->setIsHAL(false)
+            ->setClient($this->nexmoClient->reveal())
+        ;
+
+        $this->numberClient = new Client($this->apiClient);
         $this->numberClient->setClient($this->nexmoClient->reveal());
     }
 
     /**
      * @dataProvider updateNumber
      */
-    public function testUpdateNumber($payload, $id, $expectedId, $lookup)
+    public function testUpdateNumber($payload, $rawData)
     {
-        //based on the id provided, may need to look up the number first
-        if ($lookup) {
-            if(is_null($id) OR ('1415550100' == $id)){
-                $first = $this->getResponse('single');
-            } else {
-                $first = $this->getResponse('single-update');
-            }
-
-            $second = $this->getResponse('post');
-            $third = $this->getResponse('single');
-        } else {
-            $first = $this->getResponse('post');
-            $second = $this->getResponse('single');
-            $third = null;
-        }
-
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($expectedId, $lookup) {
-            if ($request->getUri()->getPath() == '/account/numbers') {
-                //just getting the number first / last
-                return true;
-            }
-
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($rawData) {
             $this->assertEquals('/number/update', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('POST', $request->getMethod());
             
-            $this->assertRequestFormBodyContains('country', 'US', $request);
-            $this->assertRequestFormBodyContains('msisdn', $expectedId, $request);
-
-
-            $this->assertRequestFormBodyContains('moHttpUrl', 'https://example.com/new_message', $request);
-            $this->assertRequestFormBodyContains('voiceCallbackType', 'vxml', $request);
-            $this->assertRequestFormBodyContains('voiceCallbackValue', 'https://example.com/new_voice', $request);
-            $this->assertRequestFormBodyContains('voiceStatusCallbackUrl' , 'https://example.com/new_status' , $request);
+            $this->assertRequestFormBodyContains('country', $rawData['country'], $request);
+            $this->assertRequestFormBodyContains('msisdn', $rawData['msisdn'], $request);
+            $this->assertRequestFormBodyContains('moHttpUrl', $rawData['moHttpUrl'], $request);
+            $this->assertRequestFormBodyContains('voiceCallbackType', $rawData['voiceCallbackType'], $request);
+            $this->assertRequestFormBodyContains('voiceCallbackValue', $rawData['voiceCallbackValue'], $request);
+            $this->assertRequestFormBodyContains('voiceStatusCallbackUrl', $rawData['voiceStatusCallbackUrl'], $request);
 
             return true;
-        }))->willReturn($first, $second, $third);
+        }))->willReturn($this->getResponse('update-number'));
 
-        if (isset($id)) {
-            $number = @$this->numberClient->update($payload, $id);
-        } else {
-            $number = @$this->numberClient->update($payload);
-        }
+        $number = $this->numberClient->update($payload);
 
-        $this->assertInstanceOf('Nexmo\Numbers\Number', $number);
-        if ($payload instanceof Number) {
-            $this->assertSame($payload, $number);
-        }
+        $this->assertSame($number->toArray(), $payload->toArray());
     }
 
     public function updateNumber()
     {
+        $rawData = json_decode(file_get_contents(__DIR__ . '/responses/list.json'), true)['numbers'];
+        
+        $number = new Number();
+        $number->fromArray($rawData[0]);
 
-        $raw = $rawId = [
-            'moHttpUrl' => 'https://example.com/new_message',
-            'voiceCallbackType' => 'vxml',
-            'voiceCallbackValue' => 'https://example.com/new_voice',
-            'voiceStatusCallbackUrl' => 'https://example.com/new_status'
-        ];
-
-        $rawId['country'] = 'US';
-        $rawId['msisdn'] = '1415550100';
-
-        $number = new Number('1415550100');
-        $number->setWebhook(Number::WEBHOOK_MESSAGE, 'https://example.com/new_message');
-        $number->setWebhook(Number::WEBHOOK_VOICE_STATUS, 'https://example.com/new_status');
-        $number->setVoiceDestination('https://example.com/new_voice');
-
-        $noLookup = new Number('1415550100', 'US');
-        $noLookup->setWebhook(Number::WEBHOOK_MESSAGE, 'https://example.com/new_message');
-        $noLookup->setWebhook(Number::WEBHOOK_VOICE_STATUS, 'https://example.com/new_status');
-        $noLookup->setVoiceDestination('https://example.com/new_voice');
-
-        $fresh = new Number('1415550100', 'US');
-        $fresh->setWebhook(Number::WEBHOOK_MESSAGE, 'https://example.com/new_message');
-        $fresh->setWebhook(Number::WEBHOOK_VOICE_STATUS, 'https://example.com/new_status');
-        $fresh->setVoiceDestination('https://example.com/new_voice');
+        $number2 = new Number();
+        $number2->fromArray($rawData[1]);
         
         return [
-            [$raw, '1415550100', '1415550100', true],
-            [$rawId, null, '1415550100', false],
-            [clone $number, null, '1415550100', true],
-            [clone $number, '1415550100', '1415550100', true],
-            [clone $noLookup, null, '1415550100', false],
-            [clone $fresh, '1415550100', '1415550100', true],
+            [clone $number, $rawData[0]],
+            [clone $number2, $rawData[1]],
         ];
     }
 
-    /**
-     * @dataProvider numbers
-     */
-    public function testGetNumber($payload, $id)
+    public function testGetNumber()
     {
+        $id = '1415550100';
         $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($id) {
             $this->assertEquals('/account/numbers', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
@@ -150,41 +105,10 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('single'));
 
-        $number = @$this->numberClient->get($payload);
+        $number = $this->numberClient->get($id);
 
         $this->assertInstanceOf('Nexmo\Numbers\Number', $number);
-        if ($payload instanceof Number) {
-            $this->assertSame($payload, $number);
-        }
-
         $this->assertSame($id, $number->getId());
-    }
-
-    public function numbers()
-    {
-        return [
-            ['1415550100', '1415550100'],
-            [new Number('1415550100'), '1415550100'],
-        ];
-    }
-
-    public function testListNumbers()
-    {
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request){
-            $this->assertEquals('/account/numbers', $request->getUri()->getPath());
-            $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('GET', $request->getMethod());
-            return true;
-        }))->willReturn($this->getResponse('list'));
-
-        $numbers = $this->numberClient->search();
-
-        $this->assertInternalType('array', $numbers);
-        $this->assertInstanceOf('Nexmo\Numbers\Number', $numbers[0]);
-        $this->assertInstanceOf('Nexmo\Numbers\Number', $numbers[1]);
-
-        $this->assertSame('14155550100', $numbers[0]->getId());
-        $this->assertSame('14155550101', $numbers[1]->getId());
     }
 
     public function testSearchAvailablePassesThroughWhitelistedOptions()
@@ -210,7 +134,7 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('available-numbers'));
 
-        @$this->numberClient->searchAvailable('US', $options);
+        @$this->numberClient->searchAvailable('US', new KeyValueFilter($options));
     }
 
     /**
@@ -221,7 +145,7 @@ class ClientTest extends TestCase
         $this->expectException(Request::class);
         $this->expectExceptionMessage("Unknown option: 'foo'");
 
-        @$this->numberClient->searchAvailable('US', ['foo' => 'bar']);
+        @$this->numberClient->searchAvailable('US', new KeyValueFilter(['foo' => 'bar']));
     }
 
     public function testSearchAvailableReturnsNumberList()
@@ -267,9 +191,10 @@ class ClientTest extends TestCase
         $this->expectException(Exception\Request::class);
         $this->expectExceptionMessage("Unknown option: 'foo'");
         
-        @$this->numberClient->searchOwned('1415550100', [
+        @$this->numberClient->searchOwned(new KeyValueFilter([
+            'pattern' => '1415550100',
             'foo' => 'bar',
-        ]);
+        ]));
     }
 
     public function testSearchOwnedPassesInAllowedAdditionalParameters()
@@ -286,12 +211,13 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('single'));
 
-        @$this->numberClient->searchOwned('1415550100', [
+        $this->numberClient->searchOwned(new OwnedNumbers([
+            'pattern' => '1415550100',
             'index' => 1,
             'size' => '100',
             'search_pattern' => 0,
             'has_application' => false,
-        ]);
+        ]));
     }
 
     public function testSearchOwnedReturnsSingleNumber()
@@ -303,7 +229,7 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('single'));
 
-        $numbers = $this->numberClient->searchOwned('1415550100');
+        $numbers = $this->numberClient->searchOwned(new OwnedNumbers(['pattern' => '1415550100']));
 
         $this->assertInternalType('array', $numbers);
         $this->assertInstanceOf('Nexmo\Numbers\Number', $numbers[0]);
@@ -321,10 +247,7 @@ class ClientTest extends TestCase
         }))->willReturn($this->getResponse('post'));
 
         $number = new Number('1415550100', 'US');
-        $this->numberClient->purchase($number);
-
-        // There's nothing to assert here as we don't do anything with the response.
-        // If there's no exception thrown, everything is fine!
+        $this->numberClient->purchase($number->getMsisdn(), $number->getCountry());
     }
 
     public function testPurchaseNumberWithNumberAndCountry()
@@ -344,10 +267,7 @@ class ClientTest extends TestCase
             }
             return false;
         }))->willReturn($this->getResponse('post'));
-        @$this->numberClient->purchase('1415550100', 'US');
-
-        // There's nothing to assert here as we don't do anything with the response.
-        // If there's no exception thrown, everything is fine!
+        $this->numberClient->purchase('1415550100', 'US');
     }
 
     /**
@@ -365,8 +285,7 @@ class ClientTest extends TestCase
         $this->expectException($expectedException);
         $this->expectExceptionMessage($expectedExceptionMessage);
 
-        $num = new Number($number, $country);
-        @$this->numberClient->purchase($num);
+        $this->numberClient->purchase($number, $country);
     }
 
     public function purchaseNumberErrorProvider()
@@ -390,10 +309,7 @@ class ClientTest extends TestCase
         }))->willReturn($this->getResponse('cancel'));
 
         $number = new Number('1415550100', 'US');
-        @$this->numberClient->cancel($number);
-
-        // There's nothing to assert here as we don't do anything with the response.
-        // If there's no exception thrown, everything is fine!
+        $this->numberClient->cancel($number->getMsisdn(), $number->getCountry());
     }
 
     public function testCancelNumberWithNumberString()
@@ -414,7 +330,7 @@ class ClientTest extends TestCase
             return false;
         }))->willReturn($this->getResponse('cancel'));
 
-        @$this->numberClient->cancel('1415550100');
+        $this->numberClient->cancel('1415550100', 'US');
     }
 
     public function testCancelNumberWithNumberAndCountryString()
@@ -435,7 +351,7 @@ class ClientTest extends TestCase
             return false;
         }))->willReturn($this->getResponse('cancel'));
 
-        @$this->numberClient->cancel('1415550100', 'US');
+        $this->numberClient->cancel('1415550100', 'US');
     }
 
     public function testCancelNumberError()
@@ -451,7 +367,7 @@ class ClientTest extends TestCase
         $this->expectExceptionMessage('method failed');
 
         $num = new Number('1415550100', 'US');
-        @$this->numberClient->cancel($num);
+        $this->numberClient->cancel($num->getMsisdn(), $num->getCountry());
     }
 
     /**
@@ -486,5 +402,4 @@ class ClientTest extends TestCase
     {
         return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'r'), $status);
     }
-
 }

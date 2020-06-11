@@ -9,20 +9,10 @@
 namespace Nexmo\Numbers;
 
 use Nexmo\Application\Application;
-use Nexmo\Entity\EntityInterface;
 use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
-use Nexmo\Entity\JsonResponseTrait;
-use Nexmo\Entity\JsonSerializableInterface;
-use Nexmo\Entity\JsonSerializableTrait;
-use Nexmo\Entity\JsonUnserializableInterface;
-use Nexmo\Entity\NoRequestResponseTrait;
 
-class Number implements EntityInterface, JsonSerializableInterface, JsonUnserializableInterface, ArrayHydrateInterface
+class Number implements ArrayHydrateInterface
 {
-    use JsonSerializableTrait;
-    use NoRequestResponseTrait;
-    use JsonResponseTrait;
-
     const TYPE_MOBILE = 'mobile-lvn';
     const TYPE_FIXED  = 'landline';
 
@@ -172,19 +162,6 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
         }
 
         return $this->data[$name];
-    }
-
-    /**
-     * @todo Either make this take JSON, or rename this to `fromArray`
-     */
-    public function jsonUnserialize(array $json)
-    {
-        trigger_error(
-            get_class($this) . "::jsonUnserialize is deprecated, please fromArray() instead",
-            E_USER_DEPRECATED
-        );
-
-        $this->fromArray($json);
     }
 
     public function fromArray(array $data)

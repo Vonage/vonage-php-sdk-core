@@ -29,12 +29,6 @@ class BalanceTest extends TestCase
         $this->assertEquals(false, $this->balance->getAutoReload());
     }
 
-    public function testArrayAccess()
-    {
-        $this->assertEquals("12.99", @$this->balance['balance']);
-        $this->assertEquals(false, @$this->balance['auto_reload']);
-    }
-
     public function testJsonSerialize()
     {
         $data = $this->balance->jsonSerialize();

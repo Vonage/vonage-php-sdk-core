@@ -8,7 +8,7 @@
 
 namespace Nexmo\Verify;
 
-interface VerificationInterface extends \Nexmo\Entity\EntityInterface
+interface VerificationInterface
 {
     public function getNumber();
     public function setCountry($country);

@@ -38,89 +38,16 @@ class Client implements ClientAwareInterface, APIClient
     }
 
     /**
-     * Shim to handle older instatiations of this class
-     * Will change in v3 to just return the required API object
+     * @param Number $number Number to update
      */
-    public function getApiResource() : APIResource
+    public function update(Number $number) : Number
     {
-        if (is_null($this->api)) {
-            $api = new APIResource();
-            $api->setClient($this->getClient())
-                ->setBaseUrl($this->getClient()->getRestUrl())
-                ->setIsHAL(false)
-            ;
-            $this->api = $api;
-        }
-        return $this->api;
-    }
-
-    /**
-     * @todo Clean up the logic here, we are doing a lot of GET requests
-     *
-     * @param string|Number $number Number to update
-     * @param string $id MSISDN to look
-     */
-    public function update($number, ?string $id = null) : Number
-    {
-        if (!$number instanceof Number) {
-            trigger_error(
-                "Passing a string to `Nexmo\Number\Client::update()` is deprecated, please pass a `Number` object instead",
-                E_USER_DEPRECATED
-            );
+        if (is_null($number->getCountry())) {
+            throw new \InvalidArgumentException("Number is missing required country code");
         }
 
-        if (!is_null($id)) {
-            $update = $this->get($id);
-        }
-
-        if ($number instanceof Number) {
-            $body = $number->toArray();
-            if (!isset($update) and !isset($body['country'])) {
-                $data = $this->get($number->getId());
-                $body['msisdn'] = $data->getId();
-                $body['country'] = $data->getCountry();
-            }
-        } else {
-            $body = $number;
-        }
-
-        if (isset($update)) {
-            $body['msisdn'] = $update->getId();
-            $body['country'] = $update->getCountry();
-        }
-
-        unset($body['features'], $body['type']);
-
-        $api = $this->getApiResource();
-        $api->submit($body, '/number/update');
-
-        // Yes, the following blocks of code are ugly. This will get refactored
-        // in v3 where we no longer have to worry about multiple types of
-        // inputs for $number
-        if (isset($update) and ($number instanceof Number)) {
-            try {
-                return $this->get($number);
-            } catch (ThrottleException $e) {
-                sleep(1); // This API is 1 request per second :/
-                return $this->get($number);
-            }
-        }
-
-        if ($number instanceof Number) {
-            try {
-                return @$this->get($number);
-            } catch (ThrottleException $e) {
-                sleep(1); // This API is 1 request per second :/
-                return @$this->get($number);
-            }
-        }
-
-        try {
-            return $this->get($body['msisdn']);
-        } catch (ThrottleException $e) {
-            sleep(1); // This API is 1 request per second :/
-            return $this->get($body['msisdn']);
-        }
+        $this->api->submit($number->toArray(), '/number/update');
+        return $number;
     }
 
     /**
@@ -128,22 +55,8 @@ class Client implements ClientAwareInterface, APIClient
      *
      * @param Number|string $number Number to fetch, deprecating passing a `Number` object
      */
-    public function get($number = null) : Number
+    public function get($number) : Number
     {
-        if (is_null($number)) {
-            trigger_error(
-                'Calling Nexmo\Numbers\Client::get() without a parameter is deprecated, please use `searchOwned()` or `searchAvailable()` instead',
-                E_USER_DEPRECATED
-            );
-        }
-
-        if ($number instanceof Number) {
-            trigger_error(
-                'Calling Nexmo\Numbers\Client::get() with a `Number` object is deprecated, please pass a string MSISDN instead',
-                E_USER_DEPRECATED
-            );
-        }
-
         $items =  $this->searchOwned($number);
 
         // This is legacy behaviour, so we need to keep it even though
@@ -156,22 +69,11 @@ class Client implements ClientAwareInterface, APIClient
     }
 
     /**
-     * @param null|string|Number $number
-     * @return array []Number
-     * @deprecated Use `searchOwned` instead
-     */
-    public function search($number = null)
-    {
-        return $this->searchOwned($number);
-    }
-
-    /**
      * Returns a set of numbers for the specified country
      *
-     * @param string $country The two character country code in ISO 3166-1 alpha-2 format
-     * @param array $options Additional options, see https://developer.nexmo.com/api/numbers#getAvailableNumbers
+     * @param FilterInterface $options Additional options, see https://developer.nexmo.com/api/numbers#getAvailableNumbers
      */
-    public function searchAvailable($country, $options = []) : array
+    public function searchAvailable(string $country, FilterInterface $options = null) : array
     {
         if (is_array($options)) {
             if (!empty($options)) {
@@ -182,19 +84,24 @@ class Client implements ClientAwareInterface, APIClient
             }
         }
 
-        // These are all optional parameters
-        $possibleParameters = [
-            'country' => 'string',
-            'pattern' => 'string',
-            'search_pattern' => 'integer',
-            'features' => 'array',
-            'size' => 'integer',
-            'type' => 'string',
-            'index' => 'integer'
-        ];
+        if ($options) {
+            // These are all optional parameters
+            $possibleParameters = [
+                'country' => 'string',
+                'pattern' => 'string',
+                'search_pattern' => 'integer',
+                'features' => 'array',
+                'size' => 'integer',
+                'type' => 'string',
+                'index' => 'integer'
+            ];
 
-        $options = $this->parseParameters($possibleParameters, $options);
-        $options = new AvailableNumbers($options);
+            $options = $this->parseParameters($possibleParameters, $option);
+            $options = new AvailableNumbers($options);
+        } else {
+            $options = new AvailableNumbers();
+        }
+
         $api = $this->getApiResource();
         $api->setCollectionName('numbers');
 
@@ -204,8 +111,9 @@ class Client implements ClientAwareInterface, APIClient
         );
         $response->setHydrator(new Hydrator());
         $response->setAutoAdvance(false); // The search results on this can be quite large
+        $query = $this->parseParameters($possibleParameters, $options);
 
-        return $this->handleNumberSearchResult($response, null);
+        return $this->handleNumberSearchResult($collection, null);
     }
 
     /**
@@ -214,27 +122,10 @@ class Client implements ClientAwareInterface, APIClient
      * @param string|Number $number Number to search for, if any
      * @param array $options Additional options, see https://developer.nexmo.com/api/numbers#getOwnedNumbers
      */
-    public function searchOwned($number = null, array $options = []) : array
+    public function searchOwned(FilterInterface $options = null) : array
     {
-        if (!empty($options)) {
-            trigger_error(
-                'Passing a array for Parameter 2 into ' . get_class($this) . '::searchOwned() is deprecated, please pass a FilterInterface as the first parameter only',
-                E_USER_DEPRECATED
-            );
-        }
-
-        if ($number !== null) {
-            if ($number instanceof FilterInterface) {
-                $options = $number->getQuery() + $options;
-            } elseif ($number instanceof Number) {
-                trigger_error(
-                    'Passing a Number object into ' . get_class($this) . '::searchOwned() is deprecated, please pass a FilterInterface',
-                    E_USER_DEPRECATED
-                );
-                $options['pattern'] = (string) $number->getId();
-            } else {
-                $options['pattern'] = (string) $number;
-            }
+        if (is_null($options)) {
+            $options = new OwnedNumbers();
         }
 
         // These are all optional parameters
@@ -247,7 +138,7 @@ class Client implements ClientAwareInterface, APIClient
             'application_id' => 'string'
         ];
 
-        $options = $this->parseParameters($possibleParameters, $options);
+        $options = $this->parseParameters($possibleParameters, $options->getQuery());
         $options = new OwnedNumbers($options);
         $api = $this->getApiResource();
         $api->setCollectionName('numbers');
@@ -256,7 +147,7 @@ class Client implements ClientAwareInterface, APIClient
         $response->setHydrator(new Hydrator());
         $response->setAutoAdvance(false); // The search results on this can be quite large
 
-        return $this->handleNumberSearchResult($response, $number);
+        return $this->handleNumberSearchResult($collection, $number);
     }
 
     /**
@@ -317,62 +208,23 @@ class Client implements ClientAwareInterface, APIClient
         return $numbers;
     }
 
-    /**
-     * @param Number|string $number Number to purchase
-     */
-    public function purchase($number, ?string $country = null) : void
+    public function purchase(string $number, string $country) : void
     {
-        // We cheat here and fetch a number using the API so that we have the country code which is required
-        // to make a purchase request
-        if (!$number instanceof Number) {
-            if (!$country) {
-                throw new Exception\Exception("You must supply a country in addition to a number to purchase a number");
-            }
-
-            trigger_error(
-                'Passing a Number object to Nexmo\Number\Client::purchase() is being deprecated, please pass a string MSISDN instead',
-                E_USER_DEPRECATED
-            );
-            $number = new Number($number, $country);
-        }
-
         $body = [
-            'msisdn' => $number->getMsisdn(),
-            'country' => $number->getCountry()
+            'msisdn' => $number,
+            'country' => $country
         ];
 
-        $api = $this->getApiResource();
-        $api->setBaseUri('/number/buy');
-        $api->submit($body);
+        $this->api->submit($body, '/number/buy');
     }
 
-    /**
-     * @param Number|string $number Number to cancel
-     */
-    public function cancel($number, ?string $country = null) : void
+    public function cancel(string $number, string $country) : void
     {
-        // We cheat here and fetch a number using the API so that we have the country code which is required
-        // to make a cancel request
-        if (!$number instanceof Number) {
-            $number = $this->get($number);
-        } else {
-            trigger_error(
-                'Passing a Number object to Nexmo\Number\Client::cancel() is being deprecated, please pass a string MSISDN instead',
-                E_USER_DEPRECATED
-            );
-
-            if (!is_null($country)) {
-                $number = new Number($number, $country);
-            }
-        }
-
         $body = [
-            'msisdn' => $number->getMsisdn(),
-            'country' => $number->getCountry()
+            'msisdn' => $number,
+            'country' => $country
         ];
 
-        $api = $this->getApiResource();
-        $api->setBaseUri('/number/cancel');
-        $api->submit($body);
+        $this->api->submit($body, '/number/cancel');
     }
 }
