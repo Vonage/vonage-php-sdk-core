@@ -275,14 +275,14 @@ class Client implements ClientAwareInterface
     public function purchase($number, ?string $country = null) : void
     {
         // We cheat here and fetch a number using the API so that we have the country code which is required
-        // to make a cancel request
+        // to make a purchase request
         if (!$number instanceof Number) {
             if (!$country) {
                 throw new Exception\Exception("You must supply a country in addition to a number to purchase a number");
             }
 
             trigger_error(
-                'Passing a string to Nexmo\Number\Client::purchase() is being deprecated, please pass a Nexmo\Number\Number object',
+                'Passing a Number object to Nexmo\Number\Client::purchase() is being deprecated, please pass a string MSISDN instead',
                 E_USER_DEPRECATED
             );
             $number = new Number($number, $country);
@@ -307,7 +307,7 @@ class Client implements ClientAwareInterface
         // to make a cancel request
         if (!$number instanceof Number) {
             trigger_error(
-                'Passing a string to Nexmo\Number\Client::purchase() is being deprecated, please pass a Nexmo\Number\Number object',
+                'Passing a Number object to Nexmo\Number\Client::cancel() is being deprecated, please pass a string MSISDN instead',
                 E_USER_DEPRECATED
             );
             $number = $this->get($number);
