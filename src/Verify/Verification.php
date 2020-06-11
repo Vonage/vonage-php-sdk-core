@@ -53,6 +53,11 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
             $this->dirty = false;
             $this->requestData['request_id'] = $idOrNumber;
         } else {
+            trigger_error(
+                'Using ' . get_class($this) . ' for starting a verification is deprecated, please use Nexmo\Verify\Request instead',
+                E_USER_DEPRECATED
+            );
+
             $this->dirty = true;
             $this->requestData['number'] = $idOrNumber;
             $this->requestData['brand']  = $brand;

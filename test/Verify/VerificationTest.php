@@ -43,7 +43,7 @@ class VerificationTest extends TestCase
      */
     public function setUp()
     {
-        $this->verification = new Verification($this->number, $this->brand);
+        $this->verification = @new Verification($this->number, $this->brand);
         $this->existing    = new Verification('44a5279b27dd4a638d614d265ad57a77');
     }
 
@@ -80,7 +80,7 @@ class VerificationTest extends TestCase
             $normal = $value;
         }
 
-        $verification = new Verification('14845552121', 'brand', [
+        $verification = @new Verification('14845552121', 'brand', [
             $param => $normal
         ]);
 

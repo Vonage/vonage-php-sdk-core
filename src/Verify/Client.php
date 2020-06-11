@@ -47,21 +47,31 @@ class Client implements ClientAwareInterface
     }
 
     /**
-     * @param string|array|Verification $verification
+     * @param string|array|Verification|Request $verification
      */
     public function start($verification) : Verification
     {
         if (is_array($verification)) {
             trigger_error(
-                'Passing an array to Nexmo\Verification\Client::start() is deprecated, please pass a Verification object instead',
+                'Passing an array to Nexmo\Verification\Client::start() is deprecated, please pass a Nexmo\Verify\Request object instead',
                 E_USER_DEPRECATED
             );
         }
         if (is_string($verification)) {
             trigger_error(
-                'Passing a string to Nexmo\Verification\Client::start() is deprecated, please pass a Verification object instead',
+                'Passing a string to Nexmo\Verification\Client::start() is deprecated, please pass a Nexmo\Verify\Request object instead',
                 E_USER_DEPRECATED
             );
+        }
+        if ($verification instanceof Verification) {
+            trigger_error(
+                'Passing a Verification object to Nexmo\Verification\Client::start() is deprecated, please pass a Nexmo\Verify\Request object instead',
+                E_USER_DEPRECATED
+            );
+        }
+        if ($verification instanceof Request) {
+            // Reformat to an array to work with v2.x code, but prep for v3.0.0
+            $verification = $verification->toArray();
         }
 
         $api = $this->getApiResource();

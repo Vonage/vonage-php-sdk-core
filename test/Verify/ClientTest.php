@@ -10,6 +10,7 @@ namespace NexmoTest\Verify;
 
 
 use Nexmo\Verify\Client;
+use Nexmo\Verify\Request;
 use Nexmo\Verify\Verification;
 use NexmoTest\Psr7AssertionTrait;
 use Prophecy\Argument;
@@ -50,7 +51,7 @@ class ClientTest extends TestCase
 
         $this->client->setClient($client->reveal());
 
-        $mock = $this->getMockBuilder('Nexmo\Verify\Verification')
+        $mock = @$this->getMockBuilder('Nexmo\Verify\Verification')
                      ->setConstructorArgs($construct)
                      ->setMethods(['setClient'])
                      ->getMock();
@@ -74,19 +75,19 @@ class ClientTest extends TestCase
 
     public function testUnserializeAcceptsObject()
     {
-        $mock = $this->getMockBuilder('Nexmo\Verify\Verification')
+        $mock = @$this->getMockBuilder('Nexmo\Verify\Verification')
             ->setConstructorArgs(['14845551212', 'Test Verify'])
             ->setMethods(['setClient'])
             ->getMock();
 
         $mock->expects($this->once())->method('setClient')->with($this->client);
 
-        $this->client->unserialize($mock);
+        @$this->client->unserialize($mock);
     }
 
     public function testUnserializeSetsClient()
     {
-        $verification = new Verification('14845551212', 'Test Verify');
+        $verification = @new Verification('14845551212', 'Test Verify');
         @$verification->setResponse($this->getResponse('start'));
 
         $string = serialize($verification);
@@ -101,19 +102,31 @@ class ClientTest extends TestCase
 
     public function testSerializeMatchesEntity()
     {
-        $verification = new Verification('14845551212', 'Test Verify');
+        $verification = @new Verification('14845551212', 'Test Verify');
         @$verification->setResponse($this->getResponse('start'));
 
         $string = serialize($verification);
-        $this->assertSame($string, $this->client->serialize($verification));
+        $this->assertSame($string, @$this->client->serialize($verification));
+    }
+
+    /**
+     * @deprecated
+     */
+    public function testCanStartVerificationWithVerificationObject()
+    {
+        $success = $this->setupClientForStart('start');
+
+        $verification = @new Verification('14845551212', 'Test Verify');
+        @$this->client->start($verification);
+        $this->assertSame($success, @$verification->getResponse());
     }
 
     public function testCanStartVerification()
     {
         $success = $this->setupClientForStart('start');
 
-        $verification = new Verification('14845551212', 'Test Verify');
-        @$this->client->start($verification);
+        $verification = new Request('14845551212', 'Test Verify');
+        $verification = @$this->client->start($verification);
         $this->assertSame($success, @$verification->getResponse());
     }
 
@@ -227,7 +240,7 @@ class ClientTest extends TestCase
     public function testSearchReplacesResponse()
     {
         $old = $this->getResponse('start');
-        $verification = new Verification('14845551212', 'Test Verify');
+        $verification = @new Verification('14845551212', 'Test Verify');
         @$verification->setResponse($old);
 
         $response = $this->setupClientForSearch('search');
