@@ -417,6 +417,27 @@ class ClientTest extends TestCase
         @$this->numberClient->cancel('1415550100');
     }
 
+    public function testCancelNumberWithNumberAndCountryString()
+    {
+        // When providing a number string, the first thing that happens is a GET request to fetch number details
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+            return $request->getUri()->getPath() === '/account/numbers';
+        }))->willReturn($this->getResponse('single'));
+
+
+        // Then we get a POST request to cancel
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+            if ($request->getUri()->getPath() === '/number/cancel') {
+                $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
+                $this->assertEquals('POST', $request->getMethod());
+                return true;
+            }
+            return false;
+        }))->willReturn($this->getResponse('cancel'));
+
+        @$this->numberClient->cancel('1415550100', 'US');
+    }
+
     public function testCancelNumberError()
     {
         $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {

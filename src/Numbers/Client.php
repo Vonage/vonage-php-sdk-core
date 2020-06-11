@@ -301,7 +301,7 @@ class Client implements ClientAwareInterface
     /**
      * @param Number|string $number Number to cancel
      */
-    public function cancel($number) : void
+    public function cancel($number, ?string $country = null) : void
     {
         // We cheat here and fetch a number using the API so that we have the country code which is required
         // to make a cancel request
@@ -311,6 +311,10 @@ class Client implements ClientAwareInterface
                 E_USER_DEPRECATED
             );
             $number = $this->get($number);
+        } else {
+            if (!is_null($country)) {
+                $number = new Number($number, $country);
+            }
         }
 
         $body = [
