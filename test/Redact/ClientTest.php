@@ -15,6 +15,7 @@ use Zend\Diactoros\Response;
 use Nexmo\Client\APIResource;
 use PHPUnit\Framework\TestCase;
 use NexmoTest\Psr7AssertionTrait;
+use Nexmo\Client\APIExceptionHandler;
 use Psr\Http\Message\RequestInterface;
 
 class ClientTest extends TestCase
@@ -38,8 +39,18 @@ class ClientTest extends TestCase
         $this->nexmoClient = $this->prophesize('Nexmo\Client');
         $this->nexmoClient->getApiUrl()->willReturn('https://api.nexmo.com');
 
-        $this->redact = new Client();
-        $this->redact->setClient($this->nexmoClient->reveal());
+        $this->apiClient = new APIResource();
+        $this->apiClient->setBaseUri('/v1/redact/transaction')
+            ->setCollectionName('')
+            ->setClient($this->nexmoClient->reveal())
+        ;
+        $exceptionHandler = $this->apiClient->getExceptionErrorHandler();
+        if ($exceptionHandler instanceof APIExceptionHandler) {
+            $exceptionHandler->setRfc7807Format("%s - %s. See %s for more information");
+        }
+        $this->apiClient->setExceptionErrorHandler($exceptionHandler);
+
+        $this->redact = new Client($this->apiClient);
     }
 
     public function testUrlAndMethod()
