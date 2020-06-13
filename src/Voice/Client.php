@@ -23,7 +23,7 @@ class Client implements APIClient
         $this->api = $api;
     }
 
-    public function getAPIResource(): APIResource
+    public function getApiResource() : APIResource
     {
         return $this->api;
     }

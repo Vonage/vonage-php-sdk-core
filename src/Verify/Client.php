@@ -13,8 +13,6 @@ use Nexmo\Client\APIResource;
 use Nexmo\Client\ClientAwareInterface;
 use Nexmo\Client\ClientAwareTrait;
 use Nexmo\Client\Exception;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 
 class Client implements ClientAwareInterface, APIClient
 {
@@ -25,129 +23,50 @@ class Client implements ClientAwareInterface, APIClient
      */
     protected $api;
 
-    public function __construct(APIResource $api = null)
+    public function __construct(APIResource $api)
     {
         $this->api = $api;
     }
 
-    /**
-     * Shim to handle older instatiations of this class
-     * Will change in v3 to just return the required API object
-     */
-    public function getApiResource() : APIResource
+    public function getAPIResource(): APIResource
     {
-        if (is_null($this->api)) {
-            $api = new APIResource();
-            $api->setClient($this->getClient())
-                ->setIsHAL(false)
-                ->setBaseUri('/verify')
-            ;
-            $this->api = $api;
-        }
         return $this->api;
     }
 
-    /**
-     * @param string|array|Verification|Request $verification
-     */
-    public function start($verification) : Verification
+    public function start(Request $verification) : StartResponse
     {
-        if (is_array($verification)) {
-            trigger_error(
-                'Passing an array to Nexmo\Verification\Client::start() is deprecated, please pass a Nexmo\Verify\Request object instead',
-                E_USER_DEPRECATED
-            );
-        }
-        if (is_string($verification)) {
-            trigger_error(
-                'Passing a string to Nexmo\Verification\Client::start() is deprecated, please pass a Nexmo\Verify\Request object instead',
-                E_USER_DEPRECATED
-            );
-        }
+        $response = $this->api->create($verification->toArray(), '/json');
 
-        if ($verification instanceof Request) {
-            // Reformat to an array to work with v2.x code, but prep for v3.0.0
-            $verification = $verification->toArray();
-        }
-
-        $api = $this->getApiResource();
-        $verification = $this->createVerification($verification);
-        $response = $api->create($verification->toArray(), '/json');
-
-        $this->processReqRes($verification, $api->getLastRequest(), $api->getLastResponse(), true);
-        return $this->checkError($verification, $response);
+        $this->checkError($response);
+        return new StartResponse($response);
     }
 
-    /**
-     * @param string|Verification $verification
-     */
-    public function search($verification)
+    public function search(string $requestId) : Verification
     {
-        if ($verification instanceof Verification) {
-            trigger_error(
-                'Passing a Verification object to Nexmo\Verification\Client::search() is deprecated, please pass a string ID instead',
-                E_USER_DEPRECATED
-            );
-        }
-
-        $api = $this->getApiResource();
-        $verification = $this->createVerification($verification);
-
         $params = [
-            'request_id' => $verification->getRequestId()
+            'request_id' => $requestId
         ];
 
-        $data = $api->create($params, '/search/json');
-        $this->processReqRes($verification, $api->getLastRequest(), $api->getLastResponse(), true);
+        $data = $this->api->create($params, '/search/json');
 
-        return $this->checkError($verification, $data);
+        $this->checkError($data);
+        return new Verification($data);
     }
 
-    public function cancel($verification)
+    public function cancel(string $requestId)
     {
-        if ($verification instanceof Verification) {
-            trigger_error(
-                'Passing a Verification object to Nexmo\Verification\Client::cancel() is deprecated, please pass a string ID instead',
-                E_USER_DEPRECATED
-            );
-        }
-
-        return $this->control($verification, 'cancel');
+        return $this->control($requestId, 'cancel');
     }
 
-    public function trigger($verification)
+    public function trigger(string $requestId)
     {
-        if ($verification instanceof Verification) {
-            trigger_error(
-                'Passing a Verification object to Nexmo\Verification\Client::trigger() is deprecated, please pass a string ID instead',
-                E_USER_DEPRECATED
-            );
-        }
-        return $this->control($verification, 'trigger_next_event');
+        return $this->control($requestId, 'trigger_next_event');
     }
 
-    /**
-     * @param string|array|Verification $verification
-     */
-    public function check($verification, string $code, string $ip = null) : Verification
+    public function check(string $requestId, string $code, string $ip = null) : CheckConfirmation
     {
-        if (is_array($verification)) {
-            trigger_error(
-                'Passing an array for parameter 1 to Nexmo\Verification\Client::check() is deprecated, please pass a string ID instead',
-                E_USER_DEPRECATED
-            );
-        }
-        if ($verification instanceof Verification) {
-            trigger_error(
-                'Passing a Verification object for parameter 1 to Nexmo\Verification\Client::check() is deprecated, please pass a string ID instead',
-                E_USER_DEPRECATED
-            );
-        }
-
-        $api = $this->getApiResource();
-        $verification = $this->createVerification($verification);
         $params = [
-            'request_id' => $verification->getRequestId(),
+            'request_id' => $requestId,
             'code' => $code
         ];
 
@@ -155,76 +74,26 @@ class Client implements ClientAwareInterface, APIClient
             $params['ip'] = $ip;
         }
 
-        $data = $api->create($params, '/check/json');
+        $data = $this->api->create($params, '/check/json');
 
-        $this->processReqRes($verification, $api->getLastRequest(), $api->getLastResponse(), false);
-        return $this->checkError($verification, $data);
+        $data = $this->checkError($data);
+        return new CheckConfirmation($data);
     }
 
-    /**
-     * @deprecated Serialize the Verification object directly instead
-     */
-    public function serialize(Verification $verification)
+    protected function control(string $requestId, string $cmd) : ControlResponse
     {
-        trigger_error(
-            get_class($this) . '::serialize() is deprecated, serialize the Verification object directly',
-            E_USER_DEPRECATED
-        );
-        return serialize($verification);
-    }
-
-    public function unserialize($verification)
-    {
-        trigger_error(
-            get_class($this) . '::unserialize() is deprecated, unserialize the Verification object directly',
-            E_USER_DEPRECATED
-        );
-
-        if (is_string($verification)) {
-            $verification = unserialize($verification);
-        }
-
-        if (!($verification instanceof Verification)) {
-            throw new \InvalidArgumentException('expected verification object or serialize verification object');
-        }
-
-        @$verification->setClient($this);
-        return $verification;
-    }
-
-    /**
-     * @param string|array|Verification $verification
-     * @param string $cmd Next command to execute, must be `cancel` or `trigger_next_event`
-     */
-    protected function control($verification, string $cmd) : Verification
-    {
-        if (is_array($verification)) {
-            trigger_error(
-                'Passing an array for parameter 1 to Nexmo\Verification\Client::control() is deprecated, please pass a string ID instead',
-                E_USER_DEPRECATED
-            );
-        }
-        if ($verification instanceof Verification) {
-            trigger_error(
-                'Passing a Verification object for parameter 1 to Nexmo\Verification\Client::control() is deprecated, please pass a string ID instead',
-                E_USER_DEPRECATED
-            );
-        }
-
-        $api = $this->getApiResource();
-        $verification = $this->createVerification($verification);
-
         $params = [
-            'request_id' => $verification->getRequestId(),
+            'request_id' => $requestId,
             'cmd' => $cmd
         ];
 
-        $data = $api->create($params, '/control/json');
-        $this->processReqRes($verification, $api->getLastRequest(), $api->getLastResponse(), false);
-        return $this->checkError($verification, $data);
+        $data = $this->api->create($params, '/control/json');
+        $this->checkError($data);
+
+        return new ControlResponse($data);
     }
 
-    protected function checkError(Verification $verification, $data)
+    protected function checkError(array $data)
     {
         if (!isset($data['status'])) {
             $e = new Exception\Request('unexpected response from API');
@@ -235,7 +104,7 @@ class Client implements ClientAwareInterface, APIClient
         //normalize errors (client vrs server)
         switch ($data['status']) {
             // These exist because `status` is valid in both the error
-            // response and a success response, but serve different purposes 
+            // response and a success response, but serve different purposes
             // in each case
             case 'IN PROGRESS':
             case 'SUCCESS':
@@ -243,7 +112,7 @@ class Client implements ClientAwareInterface, APIClient
             case 'EXPIRED':
             case 'CANCELLED':
             case '0':
-                return $verification;
+                return $data;
             case '5':
                 $e = new Exception\Server($data['error_text'], $data['status']);
                 $e->setEntity($data);
@@ -254,77 +123,7 @@ class Client implements ClientAwareInterface, APIClient
                 break;
         }
 
-        $e->setEntity($verification);
+        $e->setEntity($data);
         throw $e;
-    }
-
-    protected function processReqRes(
-        Verification $verification,
-        RequestInterface $req,
-        ResponseInterface $res,
-        $replace = true
-    )
-    {
-        @$verification->setClient($this);
-
-        if ($replace || !@$verification->getRequest()) {
-            @$verification->setRequest($req);
-        }
-
-        if ($replace || !@$verification->getResponse()) {
-            @$verification->setResponse($res);
-        }
-
-        if ($res->getBody()->isSeekable()) {
-            $res->getBody()->rewind();
-        }
-    }
-
-    /**
-     * Creates a verification object from a variety of sources
-     *
-     * @throws \RuntimeException
-     * @return Verification
-     */
-    protected function createVerification($verification)
-    {
-        if ($verification instanceof Verification) {
-            return $verification;
-        }
-
-        if (is_array($verification)) {
-            return $this->createVerificationFromArray($verification);
-        }
-
-        if (\is_string($verification)) {
-            return new Verification($verification);
-        }
-
-        throw new \RuntimeException('Unable to create Verification object from source data');
-    }
-
-    /**
-     * @param $array
-     * @return Verification
-     */
-    protected function createVerificationFromArray($array)
-    {
-        if (!is_array($array)) {
-            throw new \RuntimeException('verification must implement `' . VerificationInterface::class . '` or be an array`');
-        }
-
-        foreach (['number', 'brand'] as $param) {
-            if (!isset($array[$param])) {
-                throw new \InvalidArgumentException('missing expected key `' . $param . '`');
-            }
-        }
-
-        $number = $array['number'];
-        $brand  = $array['brand'];
-
-        unset($array['number']);
-        unset($array['brand']);
-
-        return @new Verification($number, $brand, $array);
     }
 }

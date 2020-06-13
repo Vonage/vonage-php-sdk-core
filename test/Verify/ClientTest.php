@@ -8,15 +8,18 @@
 
 namespace NexmoTest\Verify;
 
-
+use Exception;
+use Prophecy\Argument;
 use Nexmo\Verify\Client;
 use Nexmo\Verify\Request;
-use Nexmo\Verify\Verification;
-use NexmoTest\Psr7AssertionTrait;
-use Prophecy\Argument;
-use Psr\Http\Message\RequestInterface;
 use Zend\Diactoros\Response;
+use Nexmo\Client\APIResource;
+use Nexmo\Client\Exception\Request as ExceptionRequest;
+use Nexmo\Client\Exception\Server;
+use Nexmo\Verify\Verification;
 use PHPUnit\Framework\TestCase;
+use NexmoTest\Psr7AssertionTrait;
+use Psr\Http\Message\RequestInterface;
 
 class ClientTest extends TestCase
 {
@@ -30,150 +33,46 @@ class ClientTest extends TestCase
     protected $nexmoClient;
 
     /**
+     * @var APIResource
+     */
+    protected $apiResource;
+
+    /**
      * Create the Message API Client, and mock the Nexmo Client
      */
     public function setUp()
     {
         $this->nexmoClient = $this->prophesize('Nexmo\Client');
         $this->nexmoClient->getApiUrl()->willReturn('https://api.nexmo.com');
-        $this->client = new Client();
-        $this->client->setClient($this->nexmoClient->reveal());
-    }
 
-    /**
-     * @dataProvider getApiMethods
-     */
-    public function testClientSetsSelf($method, $response, $construct, $args = [])
-    {
-        $client = $this->prophesize('Nexmo\Client');
-        $client->send(Argument::cetera())->willReturn($this->getResponse($response));
-        $client->getApiUrl()->willReturn('http://api.nexmo.com');
+        $this->apiResource = new APIResource();
+        $this->apiResource->setClient($this->nexmoClient->reveal())
+            ->setIsHAL(false)
+            ->setBaseUri('/verify')
+        ;
 
-        $this->client->setClient($client->reveal());
-
-        $mock = @$this->getMockBuilder('Nexmo\Verify\Verification')
-                     ->setConstructorArgs($construct)
-                     ->setMethods(['setClient'])
-                     ->getMock();
-
-        $mock->expects($this->once())->method('setClient')->with($this->client);
-
-        array_unshift($args, $mock);
-        @call_user_func_array([$this->client, $method], $args);
-    }
-
-    public function getApiMethods()
-    {
-        return [
-            ['start',   'start',   ['14845551212', 'Test Verify']],
-            ['cancel',  'cancel',  ['44a5279b27dd4a638d614d265ad57a77']],
-            ['trigger', 'trigger', ['44a5279b27dd4a638d614d265ad57a77']],
-            ['search',  'search',  ['44a5279b27dd4a638d614d265ad57a77']],
-            ['check',   'check',   ['44a5279b27dd4a638d614d265ad57a77'], ['1234']],
-        ];
-    }
-
-    public function testUnserializeAcceptsObject()
-    {
-        $mock = @$this->getMockBuilder('Nexmo\Verify\Verification')
-            ->setConstructorArgs(['14845551212', 'Test Verify'])
-            ->setMethods(['setClient'])
-            ->getMock();
-
-        $mock->expects($this->once())->method('setClient')->with($this->client);
-
-        @$this->client->unserialize($mock);
-    }
-
-    public function testUnserializeSetsClient()
-    {
-        $verification = @new Verification('14845551212', 'Test Verify');
-        @$verification->setResponse($this->getResponse('start'));
-
-        $string = serialize($verification);
-        $object = @$this->client->unserialize($string);
-
-        $this->assertInstanceOf('Nexmo\Verify\Verification', $object);
-
-        $search = $this->setupClientForSearch('search');
-        @$object->sync();
-        $this->assertSame($search, @$object->getResponse());
-    }
-
-    public function testSerializeMatchesEntity()
-    {
-        $verification = @new Verification('14845551212', 'Test Verify');
-        @$verification->setResponse($this->getResponse('start'));
-
-        $string = serialize($verification);
-        $this->assertSame($string, @$this->client->serialize($verification));
-    }
-
-    /**
-     * @deprecated
-     */
-    public function testCanStartVerificationWithVerificationObject()
-    {
-        $success = $this->setupClientForStart('start');
-
-        $verification = @new Verification('14845551212', 'Test Verify');
-        @$this->client->start($verification);
-        $this->assertSame($success, @$verification->getResponse());
+        $this->client = new Client($this->apiResource);
     }
 
     public function testCanStartVerification()
     {
-        $success = $this->setupClientForStart('start');
+        $this->setupClientForStart('start');
 
         $verification = new Request('14845551212', 'Test Verify');
-        $verification = @$this->client->start($verification);
-        $this->assertSame($success, @$verification->getResponse());
-    }
-
-    public function testCanStartArray()
-    {
-        $response = $this->setupClientForStart('start');
-
-        @$verification = $this->client->start([
-            'number' => '14845551212',
-            'brand'  => 'Test Verify'
-        ]);
-
-        $this->assertSame($response, @$verification->getResponse());
-    }
-
-    public function testStartThrowsException()
-    {
-        $response = $this->setupClientForStart('start-error');
-
-        try {
-            @$this->client->start([
-                'number' => '14845551212',
-                'brand'  => 'Test Verify'
-            ]);
-            $this->fail('did not throw exception');
-        } catch (\Nexmo\Client\Exception\Request $e) {
-            $this->assertEquals('2', $e->getCode());
-            $this->assertEquals('Your request is incomplete and missing the mandatory parameter: brand', $e->getMessage());
-            $this->assertSame($response, @$e->getEntity()->getResponse());
-        }
+        $response = $this->client->start($verification);
+        $this->assertSame(0, $response->getStatus());
+        $this->assertSame('44a5279b27dd4a638d614d265ad57a77', $response->getRequestId());
     }
 
     public function testStartThrowsServerException()
     {
-        $response = $this->setupClientForStart('server-error');
+        $this->expectException(Server::class);
+        $this->expectExceptionMessage('Server Error');
+        $this->expectExceptionCode('5');
 
-        try {
-            @$this->client->start([
-                'number' => '14845551212',
-                'brand'  => 'Test Verify'
-            ]);
-            $this->fail('did not throw exception');
-        } catch (\Nexmo\Client\Exception\Server $e) {
-            $this->assertEquals('5', $e->getCode());
-            $this->assertEquals('Server Error', $e->getMessage());
-            $this->assertSame($response, @$e->getEntity()->getResponse());
-        }
+        $this->setupClientForStart('server-error');
+        $verification = new Request('14845551212', 'Test Verify');
+        $this->client->start($verification);
     }
 
     protected function setupClientForStart($response)
@@ -193,60 +92,35 @@ class ClientTest extends TestCase
     public function testCanSearchVerification()
     {
         $response = $this->setupClientForSearch('search');
+        $expected = json_decode($response->getBody()->getContents(), true);
+        $response->getBody()->rewind();
 
-        $verification = new Verification('44a5279b27dd4a638d614d265ad57a77');
-        @$this->client->search($verification);
+        $verification = $this->client->search('44a5279b27dd4a638d614d265ad57a77');
 
-        $this->assertSame($response, @$verification->getResponse());
-    }
-
-    public function testCanSearchId()
-    {
-        $response = $this->setupClientForSearch('search');
-
-        $verification = @$this->client->search('44a5279b27dd4a638d614d265ad57a77');
-
-        $this->assertSame($response, @$verification->getResponse());
+        $this->assertSame($expected['request_id'], $verification->getRequestId());
+        $this->assertSame($expected['account_id'], $verification->getAccountId());
+        $this->assertSame($expected['status'], $verification->getStatus());
     }
 
     public function testSearchThrowsException()
     {
-        $response = $this->setupClientForSearch('search-error');
+        $this->expectException(ExceptionRequest::class);
+        $this->expectExceptionMessage("No response found");
+        $this->expectExceptionCode('101');
 
-        try {
-            @$this->client->search('44a5279b27dd4a638d614d265ad57a77');
-            $this->fail('did not throw exception');
-        } catch (\Nexmo\Client\Exception\Request $e) {
-            $this->assertEquals('101', $e->getCode());
-            $this->assertEquals('No response found', $e->getMessage());
-            $this->assertSame($response, @$e->getEntity()->getResponse());
-        }
+        $this->setupClientForSearch('search-error');
+        $this->client->search('44a5279b27dd4a638d614d265ad57a77');
     }
 
     public function testSearchThrowsServerException()
     {
-        $response = $this->setupClientForSearch('server-error');
+        $this->expectException(Server::class);
+        $this->expectExceptionMessage('Server Error');
+        $this->expectExceptionCode('5');
 
-        try {
-            @$this->client->search('44a5279b27dd4a638d614d265ad57a77');
-            $this->fail('did not throw exception');
-        } catch (\Nexmo\Client\Exception\Server $e) {
-            $this->assertEquals('5', $e->getCode());
-            $this->assertEquals('Server Error', $e->getMessage());
-            $this->assertSame($response, @$e->getEntity()->getResponse());
-        }
-    }
+        $this->setupClientForSearch('server-error');
 
-    public function testSearchReplacesResponse()
-    {
-        $old = $this->getResponse('start');
-        $verification = @new Verification('14845551212', 'Test Verify');
-        @$verification->setResponse($old);
-
-        $response = $this->setupClientForSearch('search');
-        @$this->client->search($verification);
-
-        $this->assertSame($response, @$verification->getResponse());
+        $this->client->search('44a5279b27dd4a638d614d265ad57a77');
     }
 
     protected function setupClientForSearch($response)
@@ -264,121 +138,62 @@ class ClientTest extends TestCase
 
     public function testCanCancelVerification()
     {
-        $response = $this->setupClientForControl('cancel', 'cancel');
+        $this->setupClientForControl('cancel', 'cancel');
 
-        $verification = new Verification('44a5279b27dd4a638d614d265ad57a77');
-        $result = @$this->client->cancel($verification);
+        $result = $this->client->cancel('44a5279b27dd4a638d614d265ad57a77');
 
-        $this->assertSame($verification, $result);
-        $this->assertSame($response, @$verification->getResponse());
-    }
-
-    public function testCanCancelId()
-    {
-        $response = $this->setupClientForControl('cancel', 'cancel');
-
-        $verification = @$this->client->cancel('44a5279b27dd4a638d614d265ad57a77');
-
-        $this->assertSame($response, @$verification->getResponse());
+        $this->assertSame(0, $result->getStatus());
+        $this->assertSame('cancel', $result->getCommand());
     }
 
     public function testCancelThrowsClientException()
     {
-        $response = $this->setupClientForControl('cancel-error', 'cancel');
+        $this->expectException(ExceptionRequest::class);
+        $this->expectExceptionMessage("Verification request  ['c1878c7451f94c1992d52797df57658e'] can't be cancelled now. Too many attempts to re-deliver have already been made.");
+        $this->expectExceptionCode('19');
 
-        try {
-            @$this->client->cancel('44a5279b27dd4a638d614d265ad57a77');
-            $this->fail('did not throw exception');
-        } catch (\Nexmo\Client\Exception\Request $e) {
-            $this->assertEquals('19', $e->getCode());
-            $this->assertEquals('Verification request  [\'c1878c7451f94c1992d52797df57658e\'] can\'t be cancelled now. Too many attempts to re-deliver have already been made.', $e->getMessage());
-            $this->assertSame($response, @$e->getEntity()->getResponse());
-        }
+        $this->setupClientForControl('cancel-error', 'cancel');
+        $this->client->cancel('44a5279b27dd4a638d614d265ad57a77');
     }
 
     public function testCancelThrowsServerException()
     {
-        $response = $this->setupClientForControl('server-error', 'cancel');
+        $this->expectException(Server::class);
+        $this->expectExceptionMessage('Server Error');
+        $this->expectExceptionCode('5');
 
-        try {
-            @$this->client->cancel('44a5279b27dd4a638d614d265ad57a77');
-            $this->fail('did not throw exception');
-        } catch (\Nexmo\Client\Exception\Server $e) {
-            $this->assertEquals('5', $e->getCode());
-            $this->assertEquals('Server Error', $e->getMessage());
-            $this->assertSame($response, @$e->getEntity()->getResponse());
-        }
-    }
-
-    public function testCanTriggerId()
-    {
-        $response = $this->setupClientForControl('trigger', 'trigger_next_event');
-
-        $verification = @$this->client->trigger('44a5279b27dd4a638d614d265ad57a77');
-
-        $this->assertSame($response, @$verification->getResponse());
+        $this->setupClientForControl('server-error', 'cancel');
+        $this->client->cancel('44a5279b27dd4a638d614d265ad57a77');
     }
 
     public function testCanTriggerVerification()
     {
-        $response = $this->setupClientForControl('trigger', 'trigger_next_event');
+        $this->setupClientForControl('trigger', 'trigger_next_event');
 
-        $verification = new Verification('44a5279b27dd4a638d614d265ad57a77');
-        $result = @$this->client->trigger($verification);
+        $result = $this->client->trigger('44a5279b27dd4a638d614d265ad57a77');
 
-        $this->assertSame($verification, $result);
-        $this->assertSame($response, @$verification->getResponse());
+        $this->assertSame(0, $result->getStatus());
+        $this->assertSame('trigger_next_event', $result->getCommand());
     }
 
     public function testTriggerThrowsClientException()
     {
-        $response = $this->setupClientForControl('trigger-error', 'trigger_next_event');
+        $this->expectException(ExceptionRequest::class);
+        $this->expectExceptionMessage("The requestId '44a5279b27dd4a638d614d265ad57a77' does not exist or its no longer active.");
+        $this->expectExceptionCode('6');
 
-        try {
-            @$this->client->trigger('44a5279b27dd4a638d614d265ad57a77');
-            $this->fail('did not throw exception');
-        } catch (\Nexmo\Client\Exception\Request $e) {
-            $this->assertEquals('6', $e->getCode());
-            $this->assertEquals('The requestId \'44a5279b27dd4a638d614d265ad57a77\' does not exist or its no longer active.', $e->getMessage());
-            $this->assertSame($response, @$e->getEntity()->getResponse());
-        }
+        $this->setupClientForControl('trigger-error', 'trigger_next_event');
+        $this->client->trigger('44a5279b27dd4a638d614d265ad57a77');
     }
 
     public function testTriggerThrowsServerException()
     {
-        $response = $this->setupClientForControl('server-error', 'trigger_next_event');
+        $this->expectException(Server::class);
+        $this->expectExceptionMessage('Server Error');
+        $this->expectExceptionCode('5');
 
-        try {
-            @$this->client->trigger('44a5279b27dd4a638d614d265ad57a77');
-            $this->fail('did not throw exception');
-        } catch (\Nexmo\Client\Exception\Server $e) {
-            $this->assertEquals('5', $e->getCode());
-            $this->assertEquals('Server Error', $e->getMessage());
-            $this->assertSame($response, @$e->getEntity()->getResponse());
-        }
-    }
-
-    /**
-     * @dataProvider getControlCommands
-     */
-    public function testControlNotReplaceResponse($method, $cmd)
-    {
-        $response = $this->getResponse('search');
-        $verification = new Verification('44a5279b27dd4a638d614d265ad57a77');
-        @$verification->setResponse($response);
-
-        $this->setupClientForControl($method, $cmd);
-        @$this->client->$method($verification);
-
-        $this->assertSame($response, @$verification->getResponse());
-    }
-
-    public function getControlCommands()
-    {
-        return [
-            ['cancel', 'cancel'],
-            ['trigger', 'trigger_next_event']
-        ];
+        $this->setupClientForControl('server-error', 'trigger_next_event');
+        $this->client->trigger('44a5279b27dd4a638d614d265ad57a77');
     }
     
     protected function setupClientForControl($response, $cmd)
@@ -397,63 +212,39 @@ class ClientTest extends TestCase
 
     public function testCanCheckVerification()
     {
-        $response = $this->setupClientForCheck('check', '1234');
-        $verification = new Verification('44a5279b27dd4a638d614d265ad57a77');
-        
-        @$this->client->check($verification, '1234');
-        
-        $this->assertSame($response, @$verification->getResponse());
+        $responseBody = $this->setupClientForCheck('check', '1234')->getBody();
+        $expected = json_decode($responseBody->getContents(), true);
+        $responseBody->rewind();
+        $check = $this->client->check('44a5279b27dd4a638d614d265ad57a77', '1234');
+
+        $this->assertSame($expected['request_id'], $check->getRequestId());
+        $this->assertSame((int) $expected['status'], $check->getStatus());
+        $this->assertSame($expected['price'], $check->getPrice());
+        $this->assertSame($expected['currency'], $check->getCurrency());
     }
-
-    public function testCanCheckId()
-    {
-        $response = $this->setupClientForCheck('check', '1234');
-        $verification = @$this->client->check('44a5279b27dd4a638d614d265ad57a77', '1234');
-
-        $this->assertSame($response, @$verification->getResponse());
-    }
-
 
     public function testCheckThrowsClientException()
     {
-        $response = $this->setupClientForCheck('check-error', '1234');
+        $this->expectException(ExceptionRequest::class);
+        $this->expectExceptionMessage('The code provided does not match the expected value');
+        $this->expectExceptionCode('16');
 
-        try {
-            @$this->client->check('44a5279b27dd4a638d614d265ad57a77', '1234');
-            $this->fail('did not throw exception');
-        } catch (\Nexmo\Client\Exception\Request $e) {
-            $this->assertEquals('16', $e->getCode());
-            $this->assertEquals('The code provided does not match the expected value', $e->getMessage());
-            $this->assertSame($response, @$e->getEntity()->getResponse());
-        }
+        $this->setupClientForCheck('check-error', '1234');
+
+        $this->client->check('44a5279b27dd4a638d614d265ad57a77', '1234');
     }
 
     public function testCheckThrowsServerException()
     {
-        $response = $this->setupClientForCheck('server-error', '1234');
+        $this->expectException(Server::class);
+        $this->expectExceptionMessage('Server Error');
+        $this->expectExceptionCode('5');
 
-        try {
-            @$this->client->check('44a5279b27dd4a638d614d265ad57a77', '1234');
-            $this->fail('did not throw exception');
-        } catch (\Nexmo\Client\Exception\Server $e) {
-            $this->assertEquals('5', $e->getCode());
-            $this->assertEquals('Server Error', $e->getMessage());
-            $this->assertSame($response, @$e->getEntity()->getResponse());
-        }
+        $this->setupClientForCheck('server-error', '1234');
+
+        $this->client->check('44a5279b27dd4a638d614d265ad57a77', '1234');
     }
 
-    public function testCheckNotReplaceResponse()
-    {
-        $old = $this->getResponse('search');
-        $verification = new Verification('44a5279b27dd4a638d614d265ad57a77');
-        @$verification->setResponse($old);
-
-        $this->setupClientForCheck('check', '1234');
-
-        @$this->client->check($verification, '1234');
-        $this->assertSame($old, @$verification->getResponse());
-    }
-    
     protected function setupClientForCheck($response, $code, $ip = null)
     {
         $response = $this->getResponse($response);
