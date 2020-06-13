@@ -412,7 +412,7 @@ class ClientTest extends TestCase
         $client = new Client($this->basic_credentials);
         $client->setFactory($factory->reveal());
 
-        $verification = new Verification('15554441212', 'test app');
+        $verification = @new Verification('15554441212', 'test app');
         $verify->serialize($verification)->willReturn('string data')->shouldBeCalled();
         $verify->unserialize($verification)->willReturn($verification)->shouldBeCalled();
 

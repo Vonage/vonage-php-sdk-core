@@ -118,7 +118,7 @@ class ClientTest extends TestCase
                     'voiceName' => 'kimberly'
                 ]
             ],
-            'machine_detection' => 'hangup',
+            'machine_detection' => 'continue',
             'length_timer' => 7200,
             'ringing_timer' => 60
         ];

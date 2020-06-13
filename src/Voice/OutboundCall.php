@@ -37,7 +37,7 @@ class OutboundCall
      * What to do when Nexmo detects an answering machine.
      * @var string
      */
-    protected $machineDetection = 'hangup';
+    protected $machineDetection = 'continue';
     /**
      * @var NCCO
      */

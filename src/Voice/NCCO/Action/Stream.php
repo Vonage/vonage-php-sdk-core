@@ -120,7 +120,7 @@ class Stream implements ActionInterface
             'bargeIn' => $this->getBargeIn(),
             'level' => $this->getLevel(),
             'loop' => $this->getLoop(),
-            'streamUrl' => $this->getStreamUrl(),
+            'streamUrl' => [$this->getStreamUrl()],
         ];
     }
 }
