@@ -107,7 +107,7 @@ class APIResource implements ClientAwareInterface
         $this->lastRequest = $request;
         $this->setLastResponse($response);
 
-        if ($response->getStatusCode() < 200 || $response->getStatusCode() > 299) {
+        if ($this->errorsOn200() || ($response->getStatusCode() < 200 || $response->getStatusCode() > 299)) {
             $e = $this->getException($response, $request);
             $e->setEntity($id);
             throw $e;
@@ -137,10 +137,12 @@ class APIResource implements ClientAwareInterface
         $this->lastRequest = $request;
         $this->setLastResponse($response);
 
-        if ($response->getStatusCode() < 200 || $response->getStatusCode() > 299) {
+        if ($this->errorsOn200() || ($response->getStatusCode() < 200 || $response->getStatusCode() > 299)) {
             $e = $this->getException($response, $request);
-            $e->setEntity($id);
-            throw $e;
+            if ($e) {
+                $e->setEntity($id);
+                throw $e;
+            }
         }
 
         $body = json_decode($response->getBody()->getContents(), true);
@@ -291,7 +293,7 @@ class APIResource implements ClientAwareInterface
         $this->lastRequest = $request;
         $this->setLastResponse($response);
 
-        if ($response->getStatusCode() < 200 || $response->getStatusCode() > 299) {
+        if ($this->errorsOn200() || ($response->getStatusCode() < 200 || $response->getStatusCode() > 299)) {
             $e = $this->getException($response, $request);
             $e->setEntity($formData);
             throw $e;

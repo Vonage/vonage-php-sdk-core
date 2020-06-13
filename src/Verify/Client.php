@@ -12,12 +12,9 @@ use Nexmo\Client\APIClient;
 use Nexmo\Client\APIResource;
 use Nexmo\Client\ClientAwareInterface;
 use Nexmo\Client\ClientAwareTrait;
-use Nexmo\Client\Exception;
 
-class Client implements ClientAwareInterface, APIClient
+class Client implements APIClient
 {
-    use ClientAwareTrait;
-
     /**
      * @var APIResource
      */
@@ -37,7 +34,6 @@ class Client implements ClientAwareInterface, APIClient
     {
         $response = $this->api->create($verification->toArray(), '/json');
 
-        $this->checkError($response);
         return new StartResponse($response);
     }
 
@@ -49,7 +45,6 @@ class Client implements ClientAwareInterface, APIClient
 
         $data = $this->api->create($params, '/search/json');
 
-        $this->checkError($data);
         return new Verification($data);
     }
 
@@ -76,7 +71,6 @@ class Client implements ClientAwareInterface, APIClient
 
         $data = $this->api->create($params, '/check/json');
 
-        $data = $this->checkError($data);
         return new CheckConfirmation($data);
     }
 
@@ -88,42 +82,7 @@ class Client implements ClientAwareInterface, APIClient
         ];
 
         $data = $this->api->create($params, '/control/json');
-        $this->checkError($data);
 
         return new ControlResponse($data);
-    }
-
-    protected function checkError(array $data)
-    {
-        if (!isset($data['status'])) {
-            $e = new Exception\Request('unexpected response from API');
-            $e->setEntity($data);
-            throw $e;
-        }
-
-        //normalize errors (client vrs server)
-        switch ($data['status']) {
-            // These exist because `status` is valid in both the error
-            // response and a success response, but serve different purposes
-            // in each case
-            case 'IN PROGRESS':
-            case 'SUCCESS':
-            case 'FAILED':
-            case 'EXPIRED':
-            case 'CANCELLED':
-            case '0':
-                return $data;
-            case '5':
-                $e = new Exception\Server($data['error_text'], $data['status']);
-                $e->setEntity($data);
-                break;
-            default:
-                $e = new Exception\Request($data['error_text'], $data['status']);
-                $e->setEntity($data);
-                break;
-        }
-
-        $e->setEntity($data);
-        throw $e;
     }
 }

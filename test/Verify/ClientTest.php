@@ -16,6 +16,7 @@ use Zend\Diactoros\Response;
 use Nexmo\Client\APIResource;
 use Nexmo\Client\Exception\Request as ExceptionRequest;
 use Nexmo\Client\Exception\Server;
+use Nexmo\Verify\ExceptionErrorHandler;
 use Nexmo\Verify\Verification;
 use PHPUnit\Framework\TestCase;
 use NexmoTest\Psr7AssertionTrait;
@@ -49,6 +50,8 @@ class ClientTest extends TestCase
         $this->apiResource->setClient($this->nexmoClient->reveal())
             ->setIsHAL(false)
             ->setBaseUri('/verify')
+            ->setErrorsOn200(true)
+            ->setExceptionErrorHandler(new ExceptionErrorHandler())
         ;
 
         $this->client = new Client($this->apiResource);
