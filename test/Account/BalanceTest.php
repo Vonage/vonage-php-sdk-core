@@ -78,6 +78,6 @@ class BalanceTest extends TestCase
 
     public function testMakeSureDataIsPubliclyVisible()
     {
-        $this->assertSame('12.99', $this->balance->data['balance']);
+        $this->assertSame('12.99', @$this->balance->data['balance']);
     }
 }
