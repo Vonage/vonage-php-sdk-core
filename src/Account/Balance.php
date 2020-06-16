@@ -22,7 +22,7 @@ class Balance implements
     /**
      * @var array
      */
-    public $data;
+    protected $data;
 
     /**
      * @todo Have these take null values, since we offer an unserialize option to populate
@@ -96,5 +96,16 @@ class Balance implements
     public function toArray(): array
     {
         return $this->data;
+    }
+
+    public function __get($key)
+    {
+        if ($key === 'data') {
+            trigger_error(
+                "Direct access to " . get_class($this) . "::data is deprecated, please use getter to toArray() methods",
+                E_USER_DEPRECATED
+            );
+            return $this->data;
+        }
     }
 }

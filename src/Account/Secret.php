@@ -72,4 +72,15 @@ class Secret implements \ArrayAccess
     {
         throw new \Exception('Secret::offsetUnset is not implemented');
     }
+
+    public function __get($key)
+    {
+        if ($key === 'data') {
+            trigger_error(
+                "Direct access to " . get_class($this) . "::data is deprecated, please use getter to toArray() methods",
+                E_USER_DEPRECATED
+            );
+            return $this->data;
+        }
+    }
 }

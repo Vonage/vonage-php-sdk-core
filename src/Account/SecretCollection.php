@@ -14,6 +14,12 @@ class SecretCollection implements \ArrayAccess
             'secrets' => $secrets,
             '_links' => $links
         ];
+
+        foreach ($this->data['secrets'] as $key => $secret) {
+            if (!$secret instanceof Secret) {
+                $this->data['secrets'][$key] = new Secret($secret);
+            }
+        }
     }
 
     public function getSecrets()

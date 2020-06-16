@@ -93,7 +93,15 @@ class APIResource implements ClientAwareInterface
     public function delete(string $id) : ?array
     {
         $uri = $this->getBaseUrl() . $this->baseUri . '/' . $id;
-        $request = new Request($uri, 'DELETE');
+        $request = new Request(
+            $uri,
+            'DELETE',
+            'php://temp',
+            [
+                'accept' => 'application/json',
+                'content-type' => 'application/json'
+            ]
+        );
 
         $response = $this->getClient()->send($request);
         $this->lastRequest = $request;
@@ -115,7 +123,15 @@ class APIResource implements ClientAwareInterface
         if (!empty($query)) {
             $uri .= '?' . http_build_query($query);
         }
-        $request = new Request($uri, 'GET', 'php://temp', ['accept' => 'application/json']);
+        $request = new Request(
+            $uri,
+            'GET',
+            'php://temp',
+            [
+                'accept' => 'application/json',
+                'content-type' => 'application/json'
+            ]
+        );
 
         $response = $this->getClient()->send($request);
         $this->lastRequest = $request;

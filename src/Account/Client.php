@@ -82,6 +82,7 @@ class Client implements ClientAwareInterface, APIClient
 
     /**
      * Returns pricing based on the prefix requested
+     * @return array<PrefixPrice>
      */
     public function getPrefixPricing($prefix) : array
     {
@@ -236,7 +237,7 @@ class Client implements ClientAwareInterface, APIClient
         $api = $this->getSecretsAPI();
         
         $data = $api->get($apiKey . '/secrets');
-        return @SecretCollection::fromApi($data);
+        return new SecretCollection($data['_embedded']['secrets'], $data['_links']);
     }
 
     public function getSecret(string $apiKey, string $secretId) : Secret
@@ -244,7 +245,7 @@ class Client implements ClientAwareInterface, APIClient
         $api = $this->getSecretsAPI();
 
         $data = $api->get($apiKey . '/secrets/' . $secretId);
-        return @Secret::fromApi($data);
+        return new Secret($data);
     }
 
     /**
@@ -267,7 +268,7 @@ class Client implements ClientAwareInterface, APIClient
             throw $e;
         }
 
-        return @Secret::fromApi($response);
+        return new Secret($response);
     }
 
     public function deleteSecret(string $apiKey, string $secretId) : void

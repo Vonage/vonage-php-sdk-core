@@ -59,6 +59,9 @@ abstract class Price implements
             return $this->data['default_price'];
         }
 
+        if (!array_key_exists('mt', $this->data)) {
+            throw new \RuntimeException('Unknown pricing for ' . $this->getCountryName() . ' (' . $this->getCountryCode() . ')');
+        }
         return $this->data['mt'];
     }
 
@@ -175,5 +178,16 @@ abstract class Price implements
     public function offsetUnset($offset)
     {
         throw new Exception('Price is read only');
+    }
+
+    public function __get($key)
+    {
+        if ($key === 'data') {
+            trigger_error(
+                "Direct access to " . get_class($this) . "::data is deprecated, please use getter to toArray() methods",
+                E_USER_DEPRECATED
+            );
+            return $this->data;
+        }
     }
 }

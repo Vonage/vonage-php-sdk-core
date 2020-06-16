@@ -19,6 +19,7 @@ class Config implements
      * @var array<string, mixed>
      */
     protected $data = [];
+
     public function __construct($sms_callback_url = null, $dr_callback_url = null, $max_outbound_request = null, $max_inbound_request = null, $max_calls_per_second = null)
     {
         if (!is_null($sms_callback_url)) {
@@ -120,5 +121,16 @@ class Config implements
     public function offsetUnset($offset)
     {
         throw new Exception('Balance is read only');
+    }
+
+    public function __get($key)
+    {
+        if ($key === 'data') {
+            trigger_error(
+                "Direct access to " . get_class($this) . "::data is deprecated, please use getter to toArray() methods",
+                E_USER_DEPRECATED
+            );
+            return $this->data;
+        }
     }
 }

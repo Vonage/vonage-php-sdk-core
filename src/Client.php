@@ -34,11 +34,13 @@ use Nexmo\Client\Credentials\CredentialsInterface;
  * @property \Nexmo\Message\Client $message
  * @property \Nexmo\Call\Collection|\Nexmo\Call\Call[] $calls
  *
+ * @method \Nexmo\Account\Client account()
  * @method \Nexmo\Message\Client message()
  * @method \Nexmo\Verify\Client  verify()
  * @method \Nexmo\Application\Client applications()
  * @method \Nexmo\Call\Collection calls()
  * @method \Nexmo\Numbers\Client numbers()
+ * @method \Nexmo\Voice\Client voice()
  */
 class Client
 {
@@ -138,21 +140,19 @@ class Client
                 return new \Nexmo\Application\Client($api, new Hydrator());
             },
             'numbers' => 'Nexmo\Numbers\Client',
-            'calls' => function ($factory) {
+            'calls' => \Nexmo\Call\Collection::class,
+            'conversion' => 'Nexmo\Conversion\Client',
+            'conversation' => 'Nexmo\Conversations\Collection',
+            'user' => 'Nexmo\User\Collection',
+            'redact' => 'Nexmo\Redact\Client',
+            'voice' => function ($factory) {
                 /** @var APIResource $api */
                 $api = $factory->get(APIResource::class);
                 $api->setBaseUri('/v1/calls');
                 $api->setCollectionName('calls');
 
-                return new \Nexmo\Call\Client(
-                    $api,
-                    $factory->get(CallHydrator::class)
-                );
+                return new \Nexmo\Voice\Client($api);
             },
-            'conversion' => 'Nexmo\Conversion\Client',
-            'conversation' => 'Nexmo\Conversations\Collection',
-            'user' => 'Nexmo\User\Collection',
-            'redact' => 'Nexmo\Redact\Client',
             APIResource::class => APIResource::class,
             CallHydrator::class => function ($factory) {
                 return new CallHydrator($factory->getClient());
