@@ -8,6 +8,7 @@
 
 namespace Nexmo\Application;
 
+use Nexmo\Client\APIClient;
 use Nexmo\Client\APIResource;
 use Nexmo\Client\ClientAwareTrait;
 use Nexmo\Entity\CollectionInterface;
@@ -15,7 +16,7 @@ use Nexmo\Client\ClientAwareInterface;
 use Nexmo\Entity\Hydrator\HydratorInterface;
 use Nexmo\Entity\IterableServiceShimTrait;
 
-class Client implements ClientAwareInterface, CollectionInterface
+class Client implements ClientAwareInterface, CollectionInterface, APIClient
 {
     use ClientAwareTrait;
     use IterableServiceShimTrait;
@@ -44,9 +45,9 @@ class Client implements ClientAwareInterface, CollectionInterface
 
     /**
      * Shim to handle older instatiations of this class
-     * @deprecated Will remove in v3
+     * Will change in v3 to just return the required API object
      */
-    protected function getApiResource() : APIResource
+    public function getApiResource() : APIResource
     {
         if (is_null($this->api)) {
             $api = new APIResource();

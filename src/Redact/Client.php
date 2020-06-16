@@ -2,12 +2,13 @@
 
 namespace Nexmo\Redact;
 
-use Nexmo\Client\APIExceptionHandler;
+use Nexmo\Client\APIClient;
 use Nexmo\Client\APIResource;
-use Nexmo\Client\ClientAwareInterface;
 use Nexmo\Client\ClientAwareTrait;
+use Nexmo\Client\APIExceptionHandler;
+use Nexmo\Client\ClientAwareInterface;
 
-class Client implements ClientAwareInterface
+class Client implements ClientAwareInterface, APIClient
 {
     /**
      * @deprecated This object no longer needs to be client aware
@@ -29,9 +30,9 @@ class Client implements ClientAwareInterface
 
     /**
      * Shim to handle older instatiations of this class
-     * @deprecated Will remove in v3
+     * Will change in v3 to just return the required API object
      */
-    protected function getApiResource() : APIResource
+    public function getApiResource() : APIResource
     {
         if (is_null($this->api)) {
             $api = new APIResource();

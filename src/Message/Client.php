@@ -168,6 +168,7 @@ class Client implements ClientAwareInterface
 
     /**
      * @todo Fix all this error detection so it's standard
+     * @deprecated Please use the Reports API instead
      * @param $query
      * @return MessageInterface[]
      * @throws Exception\Exception
@@ -252,6 +253,7 @@ class Client implements ClientAwareInterface
 
     /**
      * @todo Fix all this error detection so it's standard
+     * @deprecated Please use the Reports API instead
      * @param string|MessageInterface $idOrMessage
      *
      * @return MessageInterface
@@ -331,6 +333,8 @@ class Client implements ClientAwareInterface
 
     /**
      * @todo Fix all this error detection so it's standard
+     * @deprecated Please use the Reports API instead
+     *
      * @throws Exception\Request
      */
     public function searchRejections(Query $query)

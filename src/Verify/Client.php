@@ -8,6 +8,7 @@
 
 namespace Nexmo\Verify;
 
+use Nexmo\Client\APIClient;
 use Nexmo\Client\APIResource;
 use Nexmo\Client\ClientAwareInterface;
 use Nexmo\Client\ClientAwareTrait;
@@ -15,7 +16,7 @@ use Nexmo\Client\Exception;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class Client implements ClientAwareInterface
+class Client implements ClientAwareInterface, APIClient
 {
     use ClientAwareTrait;
 
@@ -31,9 +32,9 @@ class Client implements ClientAwareInterface
 
     /**
      * Shim to handle older instatiations of this class
-     * @deprecated Will remove in v3
+     * Will change in v3 to just return the required API object
      */
-    protected function getApiResource() : APIResource
+    public function getApiResource() : APIResource
     {
         if (is_null($this->api)) {
             $api = new APIResource();

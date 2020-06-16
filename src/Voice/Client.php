@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Nexmo\Voice;
 
+use Nexmo\Client\APIClient;
 use Nexmo\Voice\NCCO\NCCO;
 use Nexmo\Client\APIResource;
 use Nexmo\Entity\Filter\FilterInterface;
@@ -10,7 +11,7 @@ use Nexmo\Entity\Hydrator\ArrayHydrator;
 use Nexmo\Entity\IterableAPICollection;
 use Nexmo\Voice\NCCO\Action\Talk;
 
-class Client
+class Client implements APIClient
 {
     /**
      * @var APIResource
@@ -20,6 +21,11 @@ class Client
     public function __construct(APIResource $api)
     {
         $this->api = $api;
+    }
+
+    public function getAPIResource(): APIResource
+    {
+        return $this->api;
     }
 
     /**

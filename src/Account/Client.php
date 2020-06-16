@@ -2,6 +2,7 @@
 
 namespace Nexmo\Account;
 
+use Nexmo\Client\APIClient;
 use Nexmo\Client\Exception;
 use Nexmo\Client\APIResource;
 use Nexmo\Client\ClientAwareTrait;
@@ -13,7 +14,7 @@ use Nexmo\Entity\Filter\KeyValueFilter;
 /**
  * @todo Unify the exception handling to avoid duplicated code and logic (ie: getPrefixPricing())
  */
-class Client implements ClientAwareInterface
+class Client implements ClientAwareInterface, APIClient
 {
     /**
      * @deprecated This object will be dropping support for ClientAwareInterface in the future
@@ -53,6 +54,11 @@ class Client implements ClientAwareInterface
             $this->accountAPI = $api;
         }
         return clone $this->accountAPI;
+    }
+
+    public function getAPIResource(): APIResource
+    {
+        return $this->getAccountAPI();
     }
 
     /**

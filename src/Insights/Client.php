@@ -8,6 +8,7 @@
 
 namespace Nexmo\Insights;
 
+use Nexmo\Client\APIClient;
 use Nexmo\Numbers\Number;
 use Nexmo\Client\Exception;
 use Nexmo\Client\APIResource;
@@ -18,7 +19,7 @@ use Nexmo\Client\ClientAwareInterface;
 /**
  * Class Client
  */
-class Client implements ClientAwareInterface
+class Client implements ClientAwareInterface, APIClient
 {
     /**
      * @deprecated This client no longer needs to be ClientAware
@@ -36,9 +37,9 @@ class Client implements ClientAwareInterface
 
     /**
      * Shim to handle older instatiations of this class
-     * @deprecated Will remove in v3
+     * @deprecated Will change in v3 to just return the required API object
      */
-    protected function getApiResource() : APIResource
+    public function getApiResource() : APIResource
     {
         if (is_null($this->api)) {
             $api = new APIResource();
