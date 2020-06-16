@@ -57,7 +57,7 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
             ;
             $this->api = $api;
         }
-        return clone $this->api;
+        return $this->api;
     }
 
     /**
@@ -81,15 +81,15 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
      */
     public function get($application)
     {
-        if (!($application instanceof Application)) {
+        if ($application instanceof Application) {
             trigger_error(
                 "Passing a Application object to Nexmo\\Application\\Client::get is deprecated, please pass the String ID instead.",
                 E_USER_DEPRECATED
             );
-            $application = new Application($application);
+            $application = $application->getId();
         }
 
-        $data = $this->getApiResource()->get($application->getId());
+        $data = $this->getApiResource()->get($application);
         $application = new Application();
         $application->fromArray($data);
 
@@ -111,7 +111,11 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
             $application = $this->fromArray($application);
         }
 
-        $response = $this->getApiResource()->create($application->toArray());
+        // Avoids a mishap in the API where an ID can be set during creation
+        $data = $application->toArray();
+        unset($data['id']);
+
+        $response = $this->getApiResource()->create($data);
         $application = $this->hydrator->hydrate($response);
         return $application;
     }
@@ -177,13 +181,13 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
      */
     public function delete($application) : bool
     {
-        if (($application instanceof Application)) {
-            $id = $application->getId();
-        } else {
+        if ($application instanceof Application) {
             trigger_error(
-                'Passing an ID to Nexmo\Application\Client::delete() is deprecated, please pass an Application object instead',
+                'Passing an Application to Nexmo\Application\Client::delete() is deprecated, please pass a string ID instead',
                 E_USER_DEPRECATED
             );
+            $id = $application->getId();
+        } else {
             $id = $application;
         }
 

@@ -196,11 +196,13 @@ class APIResource implements ClientAwareInterface
 
     public function getLastRequest() : ?RequestInterface
     {
+        $this->lastRequest->getBody()->rewind();
         return $this->lastRequest;
     }
 
     public function getLastResponse() : ?ResponseInterface
     {
+        $this->lastResponse->getBody()->rewind();
         return $this->lastResponse;
     }
 

@@ -186,8 +186,8 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
     public function fromArray(array $data)
     {
         $this->name = $data['name'];
-        $this->id   = $data['id'];
-        $this->keys = $data['keys'];
+        $this->id   = $data['id'] ?? null;
+        $this->keys = $data['keys'] ?? [];
 
         if (isset($data['capabilities'])) {
             $capabilities = $data['capabilities'];
@@ -260,7 +260,7 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
         }
 
         return [
-            'id' => $this->getName(),
+            'id' => $this->getId(),
             'name' => $this->getName(),
             'keys' => [
                 'public_key' => $this->getPublicKey()
