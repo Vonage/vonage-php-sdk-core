@@ -37,6 +37,11 @@ class Client implements ClientAwareInterface, APIClient
         $this->api = $api;
     }
 
+    public function getAPIResource() : APIResource
+    {
+        return $this->api;
+    }
+
     /**
      * @param Number $number Number to update
      */

@@ -35,6 +35,11 @@ class Client implements APIClient
         $this->hydrator = $hydrator;
     }
 
+    public function getAPIResource(): APIResource
+    {
+        return $this->api;
+    }
+
     /**
      * Returns the specified application
      */
