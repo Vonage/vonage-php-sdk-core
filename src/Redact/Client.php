@@ -50,7 +50,7 @@ class Client implements ClientAwareInterface, APIClient
             }
             $this->api->setExceptionErrorHandler($exceptionHandler);
         }
-        return clone $this->api;
+        return $this->api;
     }
 
     public function transaction(string $id, string $product, array $options = []) : void

@@ -37,7 +37,7 @@ class APIExceptionHandler
 
         if (isset($body['title'])) {
             // Have to do this check to handle VAPI errors
-            if (is_string($body['type'])) {
+            if (isset($body['type']) && is_string($body['type'])) {
                 $errorTitle = sprintf(
                     $this->rfc7807Format,
                     $body['title'],
