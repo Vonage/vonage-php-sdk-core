@@ -96,7 +96,6 @@ class ClientTest extends TestCase
         $this->assertInstanceOf('Nexmo\Numbers\Number', $number);
         if ($payload instanceof Number) {
             $this->assertSame($payload, $number);
-
         }
     }
 
@@ -191,7 +190,7 @@ class ClientTest extends TestCase
     public function testSearchAvailablePassesThroughWhitelistedOptions()
     {
         $options = [
-            'pattern' => 'one',
+            'pattern' => '1',
             'search_pattern' => '2',
             'features' => 'SMS,VOICE',
             'size' => '100',
@@ -211,7 +210,7 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('available-numbers'));
 
-        $this->numberClient->searchAvailable('US', $options);
+        @$this->numberClient->searchAvailable('US', $options);
     }
 
     /**
@@ -222,7 +221,7 @@ class ClientTest extends TestCase
         $this->expectException(Request::class);
         $this->expectExceptionMessage("Unknown option: 'foo'");
 
-        $this->numberClient->searchAvailable('US', ['foo' => 'bar']);
+        @$this->numberClient->searchAvailable('US', ['foo' => 'bar']);
     }
 
     public function testSearchAvailableReturnsNumberList()
@@ -256,7 +255,7 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('empty'));
 
-        $numbers = $this->numberClient->searchAvailable('US');
+        $numbers = @$this->numberClient->searchAvailable('US');
 
         $this->assertInternalType('array', $numbers);
         $this->assertEmpty($numbers);
@@ -268,7 +267,7 @@ class ClientTest extends TestCase
         $this->expectException(Exception\Request::class);
         $this->expectExceptionMessage("Unknown option: 'foo'");
         
-        $this->numberClient->searchOwned('1415550100', [
+        @$this->numberClient->searchOwned('1415550100', [
             'foo' => 'bar',
         ]);
     }
@@ -279,14 +278,15 @@ class ClientTest extends TestCase
             $this->assertEquals('/account/numbers', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
-            $this->assertEquals(
-                'index=1&size=100&search_pattern=0&has_application=false&pattern=1415550100',
-                $request->getUri()->getQuery()
-            );
+            $this->assertRequestQueryContains('index', '1', $request);
+            $this->assertRequestQueryContains('size', '100', $request);
+            $this->assertRequestQueryContains('search_pattern', '0', $request);
+            $this->assertRequestQueryContains('has_application', 'false', $request);
+            $this->assertRequestQueryContains('pattern', '1415550100', $request);
             return true;
         }))->willReturn($this->getResponse('single'));
 
-        $this->numberClient->searchOwned('1415550100', [
+        @$this->numberClient->searchOwned('1415550100', [
             'index' => 1,
             'size' => '100',
             'search_pattern' => 0,
@@ -390,7 +390,7 @@ class ClientTest extends TestCase
         }))->willReturn($this->getResponse('cancel'));
 
         $number = new Number('1415550100', 'US');
-        $this->numberClient->cancel($number);
+        @$this->numberClient->cancel($number);
 
         // There's nothing to assert here as we don't do anything with the response.
         // If there's no exception thrown, everything is fine!
@@ -451,7 +451,7 @@ class ClientTest extends TestCase
         $this->expectExceptionMessage('method failed');
 
         $num = new Number('1415550100', 'US');
-        $this->numberClient->cancel($num);
+        @$this->numberClient->cancel($num);
     }
 
     /**
@@ -462,7 +462,7 @@ class ClientTest extends TestCase
         $this->expectException(Request::class);
         $this->expectExceptionMessage("Invalid value: 'size' must be an integer");
 
-        $this->numberClient->searchOwned(null, ['size' => 'bob']);
+        @$this->numberClient->searchOwned(null, ['size' => 'bob']);
     }
 
     /**
@@ -473,7 +473,7 @@ class ClientTest extends TestCase
         $this->expectException(Request::class);
         $this->expectExceptionMessage("Invalid value: 'has_application' must be a boolean value");
 
-        $this->numberClient->searchOwned(null, ['has_application' => 'bob']);
+        @$this->numberClient->searchOwned(null, ['has_application' => 'bob']);
     }
 
     /**

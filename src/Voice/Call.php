@@ -79,11 +79,13 @@ class Call implements ArrayHydrateInterface
     public function fromArray(array $data) : void
     {
         if (array_key_exists('to', $data)) {
-            $this->to = (new EndpointFactory())->create($data['to'][0]);
+            $to = $data['to'][0] ?? $data['to'];
+            $this->to = (new EndpointFactory())->create($to);
         }
 
         if (array_key_exists('from', $data)) {
-            $this->from = (new EndpointFactory())->create($data['from'][0]);
+            $from = $data['from'][0] ?? $data['from'];
+            $this->from = (new EndpointFactory())->create($from);
         }
         
         $this->uuid = $data['uuid'];

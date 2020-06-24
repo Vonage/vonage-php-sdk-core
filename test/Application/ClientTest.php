@@ -52,12 +52,6 @@ class ClientTest extends TestCase
         $this->applicationClient->setClient($this->nexmoClient->reveal());
     }
 
-    public function testPageException()
-    {
-        $this->expectException('RuntimeException');
-        $this->applicationClient->getPage();
-    }
-
     public function testSizeException()
     {
         $this->expectException('RuntimeException');
@@ -151,7 +145,8 @@ class ClientTest extends TestCase
             $this->assertEquals('GET', $request->getMethod());
 
             if ($last !== $request) { //second call
-                $this->assertEquals('page_size=3&page_index=3', $request->getUri()->getQuery());
+                $this->assertRequestQueryContains('page_size', '3', $request);
+                $this->assertRequestQueryContains('page_index', '3', $request);
             }
 
             return true;

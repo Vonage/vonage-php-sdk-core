@@ -9,15 +9,23 @@
 namespace Nexmo\Numbers;
 
 use Nexmo\Client\APIClient;
-use Nexmo\Client\APIResource;
-use Nexmo\Client\ClientAwareInterface;
-use Nexmo\Client\ClientAwareTrait;
 use Nexmo\Client\Exception;
-use Nexmo\Entity\IterableAPICollection;
+use Nexmo\Client\APIResource;
+use Nexmo\Client\ClientAwareTrait;
+use Nexmo\Client\ClientAwareInterface;
+use Nexmo\Client\Exception\ThrottleException;
+use Nexmo\Entity\Filter\FilterInterface;
 use Nexmo\Entity\Filter\KeyValueFilter;
+use Nexmo\Entity\IterableAPICollection;
+use Nexmo\Numbers\Filter\AvailableNumbers;
+use Nexmo\Numbers\Filter\OwnedNumbers;
 
 class Client implements ClientAwareInterface, APIClient
 {
+    const SEARCH_PATTERN_BEGIN = 0;
+    const SEARCH_PATTERN_CONTAINS = 1;
+    const SEARCH_PATTERN_ENDS = 2;
+
     /**
      * @deprecated This client no longer needs to be ClientAware
      */
@@ -47,7 +55,7 @@ class Client implements ClientAwareInterface, APIClient
             ;
             $this->api = $api;
         }
-        return clone $this->api;
+        return $this->api;
     }
 
     /**
@@ -70,7 +78,7 @@ class Client implements ClientAwareInterface, APIClient
         }
 
         if ($number instanceof Number) {
-            $body = $number->getRequestData();
+            $body = $number->toArray();
             if (!isset($update) and !isset($body['country'])) {
                 $data = $this->get($number->getId());
                 $body['msisdn'] = $data->getId();
@@ -85,19 +93,38 @@ class Client implements ClientAwareInterface, APIClient
             $body['country'] = $update->getCountry();
         }
 
-        $api = $this->getApiResource();
-        $api->setBaseUri('/number/update');
-        $api->submit($body);
+        unset($body['features'], $body['type']);
 
+        $api = $this->getApiResource();
+        $api->submit($body, '/number/update');
+
+        // Yes, the following blocks of code are ugly. This will get refactored
+        // in v3 where we no longer have to worry about multiple types of
+        // inputs for $number
         if (isset($update) and ($number instanceof Number)) {
-            return $this->get($number);
+            try {
+                return $this->get($number);
+            } catch (ThrottleException $e) {
+                sleep(1); // This API is 1 request per second :/
+                return $this->get($number);
+            }
         }
 
         if ($number instanceof Number) {
-            return $this->get($number);
+            try {
+                return @$this->get($number);
+            } catch (ThrottleException $e) {
+                sleep(1); // This API is 1 request per second :/
+                return @$this->get($number);
+            }
         }
 
-        return $this->get($body['msisdn']);
+        try {
+            return $this->get($body['msisdn']);
+        } catch (ThrottleException $e) {
+            sleep(1); // This API is 1 request per second :/
+            return $this->get($body['msisdn']);
+        }
     }
 
     /**
@@ -148,9 +175,16 @@ class Client implements ClientAwareInterface, APIClient
      * @param string $country The two character country code in ISO 3166-1 alpha-2 format
      * @param array $options Additional options, see https://developer.nexmo.com/api/numbers#getAvailableNumbers
      */
-    public function searchAvailable(string $country, array $options = []) : array
+    public function searchAvailable($country, $options = []) : array
     {
-        $options['country'] = $country;
+        if (is_array($options)) {
+            if (!empty($options)) {
+                trigger_error(
+                    'Passing an array to ' . get_class($this) . '::searchAvailable() is deprecated, pass a FilterInterface instead',
+                    E_USER_DEPRECATED
+                );
+            }
+        }
 
         // These are all optional parameters
         $possibleParameters = [
@@ -163,13 +197,17 @@ class Client implements ClientAwareInterface, APIClient
             'index' => 'integer'
         ];
 
-        $query = $this->parseParameters($possibleParameters, $options);
-
+        $options = $this->parseParameters($possibleParameters, $options);
+        $options = new AvailableNumbers($options);
         $api = $this->getApiResource();
-        $api->setBaseUri('/number/search');
         $api->setCollectionName('numbers');
 
-        $response = $api->search(new KeyValueFilter($query));
+        $response = $api->search(
+            new AvailableNumbers($options->getQuery() + ['country' => $country]),
+            '/number/search'
+        );
+        $response->setHydrator(new Hydrator());
+        $response->setAutoAdvance(false); // The search results on this can be quite large
 
         return $this->handleNumberSearchResult($response, null);
     }
@@ -182,11 +220,24 @@ class Client implements ClientAwareInterface, APIClient
      */
     public function searchOwned($number = null, array $options = []) : array
     {
+        if (!empty($options)) {
+            trigger_error(
+                'Passing a array for Parameter 2 into ' . get_class($this) . '::searchOwned() is deprecated, please pass a FilterInterface as the first parameter only',
+                E_USER_DEPRECATED
+            );
+        }
+
         if ($number !== null) {
-            if ($number instanceof Number) {
-                $options['pattern'] = $number->getId();
+            if ($number instanceof FilterInterface) {
+                $options = $number->getQuery() + $options;
+            } elseif ($number instanceof Number) {
+                trigger_error(
+                    'Passing a Number object into ' . get_class($this) . '::searchOwned() is deprecated, please pass a FilterInterface',
+                    E_USER_DEPRECATED
+                );
+                $options['pattern'] = (int) $number->getId();
             } else {
-                $options['pattern'] = $number;
+                $options['pattern'] = (int) $number;
             }
         }
 
@@ -200,12 +251,14 @@ class Client implements ClientAwareInterface, APIClient
             'application_id' => 'string'
         ];
 
-        $query = $this->parseParameters($possibleParameters, $options);
+        $options = $this->parseParameters($possibleParameters, $options);
+        $options = new OwnedNumbers($options);
         $api = $this->getApiResource();
-        $api->setBaseUri('/account/numbers');
         $api->setCollectionName('numbers');
 
-        $response = $api->search(new KeyValueFilter($query));
+        $response = $api->search($options, '/account/numbers');
+        $response->setHydrator(new Hydrator());
+        $response->setAutoAdvance(false); // The search results on this can be quite large
 
         return $this->handleNumberSearchResult($response, $number);
     }
@@ -257,13 +310,11 @@ class Client implements ClientAwareInterface, APIClient
         // Legacy - If the user passed in a number object, populate that object
         // @deprecated This will eventually return a new clean object
         if (count($response) === 1 && $number instanceof Number) {
-            $number->fromArray($response->current());
+            $number->fromArray($response->current()->toArray());
             $numbers[] = $number;
         } else {
             foreach ($response as $rawNumber) {
-                $number = new Number();
-                $number->fromArray($rawNumber);
-                $numbers[] = $number;
+                $numbers[] = $rawNumber;
             }
         }
 
@@ -307,12 +358,13 @@ class Client implements ClientAwareInterface, APIClient
         // We cheat here and fetch a number using the API so that we have the country code which is required
         // to make a cancel request
         if (!$number instanceof Number) {
+            $number = $this->get($number);
+        } else {
             trigger_error(
                 'Passing a Number object to Nexmo\Number\Client::cancel() is being deprecated, please pass a string MSISDN instead',
                 E_USER_DEPRECATED
             );
-            $number = $this->get($number);
-        } else {
+
             if (!is_null($country)) {
                 $number = new Number($number, $country);
             }

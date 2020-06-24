@@ -317,14 +317,23 @@ class ClientTest extends TestCase
 
     public function testGetPrefixPricing()
     {
+        $first = $this->getResponse('prefix-pricing');
+        $noResults = $this->getResponse('prefix-pricing-no-results');
         $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+            static $hasRun = false;
+
             $this->assertEquals('/account/get-prefix-pricing/outbound', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
             $this->assertRequestQueryContains('prefix', '263', $request);
 
+            if ($hasRun) {
+                $this->assertRequestQueryContains('page_index', '2', $request);
+            }
+
+            $hasRun = true;
             return true;
-        }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('prefix-pricing'));
+        }))->shouldBeCalledTimes(2)->willReturn($first, $noResults);
 
         $prefixPrice = $this->accountClient->getPrefixPricing('263');
         $this->assertInstanceOf(PrefixPrice::class, @$prefixPrice[0]);

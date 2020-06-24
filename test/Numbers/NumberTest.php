@@ -92,15 +92,13 @@ class NumberTest extends TestCase
         $this->assertInstanceOf('Nexmo\Application\Application', $app);
         $this->assertEquals($id, $app->getId());
 
-        $this->assertArrayHas('voiceCallbackType',  Number::ENDPOINT_APP,  $this->number->getRequestData());
-        $this->assertArrayHas('voiceCallbackValue', $id, $this->number->getRequestData());
+        $this->assertArrayHas('app_id', $id, $this->number->getRequestData());
 
         $app = new Application($id);
         $this->number->setVoiceDestination($app);
         $this->assertSame($app, $this->number->getVoiceDestination());
 
-        $this->assertArrayHas('voiceCallbackType',  Number::ENDPOINT_APP,  $this->number->getRequestData());
-        $this->assertArrayHas('voiceCallbackValue', $id, $this->number->getRequestData());
+        $this->assertArrayHas('app_id', $id, $this->number->getRequestData());
     }
 
     public function testForceVoiceType()

@@ -8,14 +8,15 @@
 
 namespace Nexmo\Message;
 
-use Nexmo\Client\APIResource;
-use Nexmo\Client\ClientAwareInterface;
-use Nexmo\Client\ClientAwareTrait;
 use Nexmo\Client\Exception;
-use Nexmo\Entity\Filter\FilterInterface;
-use Nexmo\Entity\Filter\KeyValueFilter;
+use Nexmo\Client\APIResource;
+use Nexmo\Client\ClientAwareTrait;
+use Nexmo\Client\ClientAwareInterface;
 use Psr\Http\Message\RequestInterface;
+use Nexmo\Entity\Filter\KeyValueFilter;
 use Psr\Http\Message\ResponseInterface;
+use Nexmo\Entity\Filter\FilterInterface;
+use Nexmo\Client\Exception\ThrottleException;
 
 /**
  * Class Client

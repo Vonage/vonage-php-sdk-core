@@ -28,6 +28,11 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
 
     const FEATURE_VOICE = 'VOICE';
     const FEATURE_SMS   = 'SMS';
+    const FEATURE_MMS   = 'MMS';
+    const FEATURE_SMS_VOICE   = 'SMS,VOICE';
+    const FEATURE_SMS_MMS   = 'SMS,MMS';
+    const FEATURE_VOICE_MMS   = 'VOICE,MMS';
+    const FEATURE_ALL   = 'SMS,MMS,VOICE';
 
     const WEBHOOK_MESSAGE      = 'moHttpUrl';
     const WEBHOOK_VOICE_STATUS = 'voiceStatusCallbackUrl';
@@ -195,8 +200,21 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
     public function toArray() : array
     {
         $json = $this->data;
+
+        // Swap to using app_id instead
+        if (isset($json['messagesCallbackType'])) {
+            $json['app_id'] = $json['messagesCallbackValue'];
+            unset($json['messagesCallbackValue'], $json['messagesCallbackType']);
+        }
+
         if (isset($json['voiceCallbackValue']) and ($json['voiceCallbackValue'] instanceof Application)) {
-            $json['voiceCallbackValue'] = $json['voiceCallbackValue']->getId();
+            $json['app_id'] = $json['voiceCallbackValue']->getId();
+            unset($json['voiceCallbackValue'], $json['voiceCallbackType']);
+        }
+
+        if (isset($json['voiceCallbackValue']) and $json['voiceCallbackType'] === 'app') {
+            $json['app_id'] = $json['voiceCallbackValue'];
+            unset($json['voiceCallbackValue'], $json['voiceCallbackType']);
         }
 
         return $json;
@@ -205,5 +223,22 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
     public function __toString()
     {
         return (string) $this->getId();
+    }
+
+    public function setAppId(string $appId) : self
+    {
+        $this->data['messagesCallbackType'] = self::ENDPOINT_APP;
+        $this->data['messagesCallbackValue'] = $appId;
+
+        $this->data['voiceCallbackType'] = self::ENDPOINT_APP;
+        $this->data['voiceCallbackValue'] = $appId;
+
+        return $this;
+    }
+
+    public function getAppId() : ?string
+    {
+        // These should never be different, but might not both be set
+        return $this->data['voiceCallbackValue'] ?? $this->data['messagesCallbackValue'];
     }
 }

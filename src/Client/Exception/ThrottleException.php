@@ -1,9 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Nexmo\Message;
-
-use Nexmo\Client\Exception\Server;
+namespace Nexmo\Client\Exception;
 
 class ThrottleException extends Server
 {

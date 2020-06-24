@@ -211,15 +211,20 @@ class APIResource implements ClientAwareInterface
         return $this->isHAL;
     }
 
-    public function search(FilterInterface $filter = null) : IterableAPICollection
+    public function search(FilterInterface $filter = null, string $uri = '') : IterableAPICollection
     {
         if (is_null($filter)) {
             $filter = new EmptyFilter();
         }
 
+        $api = clone $this;
+        if ($uri) {
+            $api->setBaseUri($uri);
+        }
+
         $collection = $this->getCollectionPrototype();
         $collection
-            ->setApiResource($this)
+            ->setApiResource($api)
             ->setFilter($filter)
         ;
         $collection->setClient($this->client);
@@ -260,6 +265,12 @@ class APIResource implements ClientAwareInterface
     public function setLastResponse(ResponseInterface $response) : self
     {
         $this->lastResponse = $response;
+        return $this;
+    }
+
+    public function setLastRequest(RequestInterface $request) : self
+    {
+        $this->lastRequest = $request;
         return $this;
     }
 

@@ -121,6 +121,7 @@ class Client implements APIClient
     {
         $response = $this->api->search($filter);
         $response->setApiResource(clone $this->api);
+        $response->setNaiveCount(true);
 
         $hydrator = new ArrayHydrator();
         $hydrator->setPrototype(new Call());
