@@ -63,10 +63,10 @@ class APIResource implements ClientAwareInterface
      */
     protected $lastResponse;
 
-    public function create(array $body) : ?array
+    public function create(array $body, string $uri = '') : ?array
     {
         $request = new Request(
-            $this->baseUrl . $this->baseUri,
+            $this->baseUrl . $this->baseUri . $uri,
             'POST',
             'php://temp',
             ['content-type' => 'application/json']

@@ -534,8 +534,9 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
      */
     protected function proxyArrayAccess($param)
     {
-        if (isset($this[$param])) {
-            return $this[$param];
+        $value = @$this[$param];
+        if (isset($value)) {
+            return @$this[$param];
         }
     }
 

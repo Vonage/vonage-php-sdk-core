@@ -44,7 +44,7 @@ class Client implements ClientAwareInterface, APIClient
             ;
             $this->api = $api;
         }
-        return clone $this->api;
+        return $this->api;
     }
 
     /**
@@ -64,12 +64,7 @@ class Client implements ClientAwareInterface, APIClient
                 E_USER_DEPRECATED
             );
         }
-        if ($verification instanceof Verification) {
-            trigger_error(
-                'Passing a Verification object to Nexmo\Verification\Client::start() is deprecated, please pass a Nexmo\Verify\Request object instead',
-                E_USER_DEPRECATED
-            );
-        }
+
         if ($verification instanceof Request) {
             // Reformat to an array to work with v2.x code, but prep for v3.0.0
             $verification = $verification->toArray();
@@ -77,7 +72,7 @@ class Client implements ClientAwareInterface, APIClient
 
         $api = $this->getApiResource();
         $verification = $this->createVerification($verification);
-        $response = $api->get('json', $verification->toArray());
+        $response = $api->create($verification->toArray(), '/json');
 
         $this->processReqRes($verification, $api->getLastRequest(), $api->getLastResponse(), true);
         return $this->checkError($verification, $response);
@@ -102,7 +97,7 @@ class Client implements ClientAwareInterface, APIClient
             'request_id' => $verification->getRequestId()
         ];
 
-        $data = $api->get('search/json', $params);
+        $data = $api->create($params, '/search/json');
         $this->processReqRes($verification, $api->getLastRequest(), $api->getLastResponse(), true);
 
         return $this->checkError($verification, $data);
@@ -160,7 +155,7 @@ class Client implements ClientAwareInterface, APIClient
             $params['ip'] = $ip;
         }
 
-        $data = $api->get('check/json', $params);
+        $data = $api->create($params, '/check/json');
 
         $this->processReqRes($verification, $api->getLastRequest(), $api->getLastResponse(), false);
         return $this->checkError($verification, $data);
@@ -193,7 +188,7 @@ class Client implements ClientAwareInterface, APIClient
             throw new \InvalidArgumentException('expected verification object or serialize verification object');
         }
 
-        $verification->setClient($this);
+        @$verification->setClient($this);
         return $verification;
     }
 
@@ -224,7 +219,7 @@ class Client implements ClientAwareInterface, APIClient
             'cmd' => $cmd
         ];
 
-        $data = $api->get('control/json', $params);
+        $data = $api->create($params, '/control/json');
         $this->processReqRes($verification, $api->getLastRequest(), $api->getLastResponse(), false);
         return $this->checkError($verification, $data);
     }
@@ -270,14 +265,14 @@ class Client implements ClientAwareInterface, APIClient
         $replace = true
     )
     {
-        $verification->setClient($this);
+        @$verification->setClient($this);
 
-        if ($replace || !$verification->getRequest()) {
-            $verification->setRequest($req);
+        if ($replace || !@$verification->getRequest()) {
+            @$verification->setRequest($req);
         }
 
-        if ($replace || !$verification->getResponse()) {
-            $verification->setResponse($res);
+        if ($replace || !@$verification->getResponse()) {
+            @$verification->setResponse($res);
         }
 
         if ($res->getBody()->isSeekable()) {
@@ -330,6 +325,6 @@ class Client implements ClientAwareInterface, APIClient
         unset($array['number']);
         unset($array['brand']);
 
-        return new Verification($number, $brand, $array);
+        return @new Verification($number, $brand, $array);
     }
 }
