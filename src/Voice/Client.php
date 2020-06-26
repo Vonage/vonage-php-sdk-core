@@ -4,12 +4,12 @@ declare(strict_types=1);
 namespace Nexmo\Voice;
 
 use Nexmo\Client\APIClient;
-use Nexmo\Voice\NCCO\NCCO;
 use Nexmo\Client\APIResource;
 use Nexmo\Entity\Filter\FilterInterface;
 use Nexmo\Entity\Hydrator\ArrayHydrator;
 use Nexmo\Entity\IterableAPICollection;
 use Nexmo\Voice\NCCO\Action\Talk;
+use Nexmo\Voice\NCCO\Action\Transfer;
 
 class Client implements APIClient
 {
@@ -39,12 +39,12 @@ class Client implements APIClient
         ];
 
         if (null !== $call->getAnswerWebhook()) {
-            $json['answer_url'] = $call->getAnswerWebhook()->getUrl();
+            $json['answer_url'] = [$call->getAnswerWebhook()->getUrl()];
             $json['answer_method'] = $call->getAnswerWebhook()->getMethod();
         }
 
         if (null !== $call->getEventWebhook()) {
-            $json['event_url'] = $call->getEventWebhook()->getUrl();
+            $json['event_url'] = [$call->getEventWebhook()->getUrl()];
             $json['event_method'] = $call->getEventWebhook()->getMethod();
         }
 
@@ -52,7 +52,10 @@ class Client implements APIClient
             $json['ncco'] = $call->getNCCO();
         }
 
-        $json['machine_detection'] = $call->getMachineDetection();
+        if ($call->getMachineDetection()) {
+            $json['machine_detection'] = $call->getMachineDetection();
+        }
+
         $json['length_timer'] = $call->getLengthTimer();
         $json['ringing_timer'] = $call->getRingingTimer();
 
@@ -158,15 +161,9 @@ class Client implements APIClient
         ]);
     }
 
-    public function transferCall(string $callId, NCCO $ncco) : void
+    public function transferCall(string $callId, Transfer $transfer) : void
     {
-        $this->api->update($callId, [
-            'action' => 'transfer',
-            'destination' => [
-                'type' => 'ncco',
-                'ncco' => $ncco,
-            ]
-        ]);
+        $this->api->update($callId, $transfer->toNCCOArray());
     }
 
     public function unearmuffCall(string $callId) : void

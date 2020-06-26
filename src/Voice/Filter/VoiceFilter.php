@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Nexmo\Voice\Filter;
 
+use DateTimeZone;
 use Nexmo\Entity\Filter\FilterInterface;
 
 class VoiceFilter implements FilterInterface
@@ -70,11 +71,11 @@ class VoiceFilter implements FilterInterface
         }
 
         if ($this->getDateStart()) {
-            $data['date_start'] = $this->getDateStart()->format('Y-m-d H:i:s e');
+            $data['date_start'] = $this->getDateStart()->format('Y-m-d\TH:i:s\Z');
         }
 
         if ($this->getDateEnd()) {
-            $data['date_end'] = $this->getDateEnd()->format('Y-m-d H:i:s e');
+            $data['date_end'] = $this->getDateEnd()->format('Y-m-d\TH:i:s\Z');
         }
 
         if ($this->getConversationUUID()) {
@@ -100,8 +101,9 @@ class VoiceFilter implements FilterInterface
         return $this->dateStart;
     }
 
-    public function setDateStart(\DateTime $dateStart) : self
+    public function setDateStart(\DateTimeInterface $dateStart) : self
     {
+        $dateStart = $dateStart->setTimezone(new DateTimeZone('Z'));
         $this->dateStart = $dateStart;
         return $this;
     }
@@ -111,8 +113,9 @@ class VoiceFilter implements FilterInterface
         return $this->dateEnd;
     }
 
-    public function setDateEnd(\DateTime $dateEnd) : self
+    public function setDateEnd(\DateTimeInterface $dateEnd) : self
     {
+        $dateEnd = $dateEnd->setTimezone(new DateTimeZone('Z'));
         $this->dateEnd = $dateEnd;
         return $this;
     }

@@ -35,9 +35,9 @@ class OutboundCall
 
     /**
      * What to do when Nexmo detects an answering machine.
-     * @var string
+     * @var ?string
      */
-    protected $machineDetection = 'continue';
+    protected $machineDetection;
     /**
      * @var NCCO
      */
@@ -80,7 +80,7 @@ class OutboundCall
         return $this->lengthTimer;
     }
 
-    public function getMachineDetection() : string
+    public function getMachineDetection() : ?string
     {
         return $this->machineDetection;
     }

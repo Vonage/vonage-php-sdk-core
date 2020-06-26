@@ -20,7 +20,7 @@ class Call implements ArrayHydrateInterface
     protected $direction;
 
     /**
-     * @var int
+     * @var string
      */
     protected $duration;
 
@@ -40,12 +40,12 @@ class Call implements ArrayHydrateInterface
     protected $network;
 
     /**
-     * @var float
+     * @var string
      */
     protected $price;
 
     /**
-     * @var float
+     * @var string
      */
     protected $rate;
 
@@ -92,12 +92,12 @@ class Call implements ArrayHydrateInterface
         $this->conversationUuid = $data['conversation_uuid'];
         $this->status = $data['status'];
         $this->direction = $data['direction'];
-        $this->rate = (float) $data['rate'];
-        $this->duration = (int) $data['duration'];
-        $this->price = (float) $data['price'];
+        $this->rate = $data['rate'] ?? null;
+        $this->duration = $data['duration'] ?? null;
+        $this->price = $data['price'] ?? null;
         $this->startTime = new \DateTime($data['start_time']);
         $this->endTime = new \DateTime($data['end_time']);
-        $this->network = $data['network'];
+        $this->network = $data['network'] ?? null;
     }
 
     public function getUuid() : string
@@ -138,7 +138,7 @@ class Call implements ArrayHydrateInterface
         return $this->to;
     }
 
-    public function getRate() : float
+    public function getRate() : string
     {
         return $this->rate;
     }
@@ -158,12 +158,12 @@ class Call implements ArrayHydrateInterface
         return $this->direction;
     }
 
-    public function getPrice() : float
+    public function getPrice() : string
     {
         return $this->price;
     }
 
-    public function getDuration() : int
+    public function getDuration() : string
     {
         return $this->duration;
     }

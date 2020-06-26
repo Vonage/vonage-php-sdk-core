@@ -15,6 +15,7 @@ use Nexmo\Voice\NCCO\Action\Talk;
 use NexmoTest\Psr7AssertionTrait;
 use Nexmo\Voice\Client as VoiceClient;
 use Nexmo\Voice\Filter\VoiceFilter;
+use Nexmo\Voice\NCCO\Action\Transfer;
 use Nexmo\Voice\OutboundCall;
 use Nexmo\Voice\Webhook;
 use Psr\Http\Message\RequestInterface;
@@ -64,9 +65,9 @@ class ClientTest extends TestCase
                 'type' => 'phone',
                 'number' => '16666666666'
             ],
-            'answer_url' => 'http://domain.test/answer',
+            'answer_url' => ['http://domain.test/answer'],
             'answer_method' => 'POST',
-            'event_url' => 'http://domain.test/event',
+            'event_url' => ['http://domain.test/event'],
             'event_method' => 'POST',
             'machine_detection' => 'hangup',
             'length_timer' => 7200,
@@ -106,7 +107,7 @@ class ClientTest extends TestCase
                 'type' => 'phone',
                 'number' => '16666666666'
             ],
-            'event_url' => 'http://domain.test/event',
+            'event_url' => ['http://domain.test/event'],
             'event_method' => 'POST',
             'ncco' => [
                 [
@@ -118,7 +119,6 @@ class ClientTest extends TestCase
                     'voiceName' => 'kimberly'
                 ]
             ],
-            'machine_detection' => 'continue',
             'length_timer' => 7200,
             'ringing_timer' => 60
         ];
@@ -187,7 +187,7 @@ class ClientTest extends TestCase
         $this->assertEquals('started', $call->getStatus());
         $this->assertEquals('outbound', $call->getDirection());
         $this->assertEquals('0.39', $call->getRate());
-        $this->assertEquals('23.4', $call->getPrice());
+        $this->assertEquals('23.40', $call->getPrice());
         $this->assertEquals('60', $call->getDuration());
         $this->assertEquals('2020-01-01 12:00:00', $call->getStartTime()->format('Y-m-d H:i:s'));
         $this->assertEquals('2020-01-01 12:00:00', $call->getEndTime()->format('Y-m-d H:i:s'));
@@ -307,8 +307,9 @@ class ClientTest extends TestCase
         $ncco = (new NCCO)
             ->addAction(new Talk('Thank you for trying Vonage'))
         ;
+        $transfer = new Transfer($ncco);
 
-        $this->voiceClient->transferCall($id, $ncco);
+        $this->voiceClient->transferCall($id, $transfer);
     }
 
     public function testcanStreamAudioIntoCall()

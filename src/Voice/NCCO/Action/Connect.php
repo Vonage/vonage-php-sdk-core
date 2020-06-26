@@ -41,7 +41,7 @@ class Connect implements ActionInterface
     /**
      * @var string
      */
-    protected $machineDetection = 'hangup';
+    protected $machineDetection = 'continue';
 
     /**
      * @var ?Webhook
