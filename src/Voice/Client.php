@@ -31,7 +31,7 @@ class Client implements APIClient
     /**
      * @return array{uuid: string, conversation_uuid: string, status: string, direction: string}
      */
-    public function createOutboundCall(OutboundCall $call) : array
+    public function createOutboundCall(OutboundCall $call) : Event
     {
         $json = [
             'to' => [$call->getTo()],
@@ -59,8 +59,13 @@ class Client implements APIClient
         $json['length_timer'] = $call->getLengthTimer();
         $json['ringing_timer'] = $call->getRingingTimer();
 
-        $response = $this->api->create($json);
-        return $response;
+        $event = $this->api->create($json);
+        $event['to'] = $call->getTo()->getId();
+        $event['from'] = $call->getFrom()->getId();
+        $event['timestamp'] = (new \DateTimeImmutable("now", new \DateTimeZone("UTC")))->format(DATE_ATOM);
+
+        $event = new Event($event);
+        return $event;
     }
 
     public function earmuffCall(string $callId) : void

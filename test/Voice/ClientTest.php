@@ -14,6 +14,7 @@ use PHPUnit\Framework\TestCase;
 use Nexmo\Voice\NCCO\Action\Talk;
 use NexmoTest\Psr7AssertionTrait;
 use Nexmo\Voice\Client as VoiceClient;
+use Nexmo\Voice\Event;
 use Nexmo\Voice\Filter\VoiceFilter;
 use Nexmo\Voice\NCCO\Action\Transfer;
 use Nexmo\Voice\OutboundCall;
@@ -89,11 +90,11 @@ class ClientTest extends TestCase
         ;
         $callData = $this->voiceClient->createOutboundCall($outboundCall);
 
-        $this->assertIsArray($callData);
-        $this->assertEquals('e46fd8bd-504d-4044-9600-26dd18b41111', $callData['uuid']);
-        $this->assertEquals('started', $callData['status']);
-        $this->assertEquals('outbound', $callData['direction']);
-        $this->assertEquals('2541d01c-253e-48be-a8e0-da4bbe4c3722', $callData['conversation_uuid']);
+        $this->assertTrue($callData instanceof Event);
+        $this->assertEquals('e46fd8bd-504d-4044-9600-26dd18b41111', $callData->getUuid());
+        $this->assertEquals('started', $callData->getStatus());
+        $this->assertEquals('outbound', $callData->getDirection());
+        $this->assertEquals('2541d01c-253e-48be-a8e0-da4bbe4c3722', $callData->getConversationUuid());
     }
     
     public function testCanCreateOutboundCallWithNCCO()
@@ -135,11 +136,11 @@ class ClientTest extends TestCase
         ;
         $callData = $this->voiceClient->createOutboundCall($outboundCall);
 
-        $this->assertIsArray($callData);
-        $this->assertEquals('e46fd8bd-504d-4044-9600-26dd18b41111', $callData['uuid']);
-        $this->assertEquals('started', $callData['status']);
-        $this->assertEquals('outbound', $callData['direction']);
-        $this->assertEquals('2541d01c-253e-48be-a8e0-da4bbe4c3722', $callData['conversation_uuid']);
+        $this->assertTrue($callData instanceof Event);
+        $this->assertEquals('e46fd8bd-504d-4044-9600-26dd18b41111', $callData->getUuid());
+        $this->assertEquals('started', $callData->getStatus());
+        $this->assertEquals('outbound', $callData->getDirection());
+        $this->assertEquals('2541d01c-253e-48be-a8e0-da4bbe4c3722', $callData->getConversationUuid());
     }
 
     public function testCanHandleErrorWhileCreatingOutboundCall()
