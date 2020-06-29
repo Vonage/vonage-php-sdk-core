@@ -2,6 +2,7 @@
 
 namespace Nexmo\Account;
 
+use Nexmo\Client\Exception\Server;
 use Nexmo\Client\APIClient;
 use Nexmo\Account\Exception\NotFoundException;
 use Nexmo\Client\Exception;
@@ -117,11 +118,9 @@ class Client implements APIClient
         $data = $this->accountAPI->get('get-balance');
         
         if (is_null($data)) {
-            throw new Exception\Server('Unable to retrieve balance');
+            throw new Server('Unable to retrieve balance');
         }
-
-        $balance = new Balance($data['value'], $data['autoReload']);
-        return $balance;
+        return new Balance($data['value'], $data['autoReload']);
     }
 
     public function topUp(string $trx) : void
@@ -137,19 +136,17 @@ class Client implements APIClient
         $body = $this->accountAPI->submit([], '/settings');
 
         if ($body === '') {
-            throw new Exception\Server('Response was empty');
+            throw new Server('Response was empty');
         }
 
         $body = json_decode($body, true);
-
-        $config = new Config(
+        return new Config(
             $body['mo-callback-url'],
             $body['dr-callback-url'],
             $body['max-outbound-request'],
             $body['max-inbound-request'],
             $body['max-calls-per-second']
         );
-        return $config;
     }
 
     /**
@@ -171,19 +168,17 @@ class Client implements APIClient
         $rawBody = $this->accountAPI->submit($params, '/settings');
 
         if ($rawBody === '') {
-            throw new Exception\Server('Response was empty');
+            throw new Server('Response was empty');
         }
 
         $body = json_decode($rawBody, true);
-
-        $config = new Config(
+        return new Config(
             $body['mo-callback-url'],
             $body['dr-callback-url'],
             $body['max-outbound-request'],
             $body['max-inbound-request'],
             $body['max-calls-per-second']
         );
-        return $config;
     }
 
     public function listSecrets(string $apiKey) : SecretCollection
