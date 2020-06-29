@@ -43,7 +43,8 @@
     "estahn/phpunit-json-assertions": "^3.0.0",
     "squizlabs/php_codesniffer": "^3.1",
     "php-http/guzzle6-adapter": "^1.0",
-    "phpstan/phpstan": "^0.12.11"
+    "phpstan/phpstan": "^0.11",
+    "rector/rector": "^0.5.23"
   },
   "autoload": {
     "psr-4": {
