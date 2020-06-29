@@ -58,6 +58,10 @@ class Client implements APIClient
      */
     public function searchAvailable(string $country, FilterInterface $options = null) : IterableAPICollection
     {
+        if (is_null($options)) {
+            $options = new AvailableNumbers();
+        }
+
         $api = $this->getApiResource();
         $api->setCollectionName('numbers');
 

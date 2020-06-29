@@ -54,10 +54,10 @@ class AvailableNumbers implements FilterInterface
             $this->setCountry($filter['country']);
         }
         if (array_key_exists('size', $filter)) {
-            $this->setPageSize($filter['size']);
+            $this->setPageSize((int) $filter['size']);
         }
         if (array_key_exists('index', $filter)) {
-            $this->setPageIndex($filter['index']);
+            $this->setPageIndex((int) $filter['index']);
         }
         
         if (array_key_exists('pattern', $filter)) {

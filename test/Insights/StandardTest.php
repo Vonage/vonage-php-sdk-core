@@ -8,24 +8,11 @@
 
 namespace NexmoTest\Insights;
 
-use Nexmo\Insights\Basic;
 use Nexmo\Insights\Standard;
 use PHPUnit\Framework\TestCase;
 
 class StandardTest extends TestCase
 {
-
-    /**
-     * @dataProvider standardTestProvider
-     */
-    public function testArrayAccess($standard, $inputData)
-    {
-        $this->assertEquals($inputData['current_carrier'], @$standard['current_carrier']);
-        $this->assertEquals($inputData['original_carrier'], @$standard['original_carrier']);
-        $this->assertEquals($inputData['ported'], @$standard['ported']);
-        $this->assertEquals($inputData['roaming'], @$standard['roaming']);
-    }
-
     /**
      * @dataProvider standardTestProvider
      */

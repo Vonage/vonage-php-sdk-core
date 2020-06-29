@@ -9,6 +9,7 @@ use Nexmo\Client\APIResource;
 use Nexmo\Client\Exception\Request as ExceptionRequest;
 use Nexmo\Client\Exception\Validation;
 use Nexmo\Entity\Filter\KeyValueFilter;
+use Nexmo\Entity\IterableAPICollection;
 
 /**
  * @todo Unify the exception handling to avoid duplicated code and logic (ie: getPrefixPricing())
@@ -49,20 +50,17 @@ class Client implements APIClient
      */
     public function getPrefixPricing(string $prefix) : array
     {
-        $data = $this->accountAPI->get(
-            'get-prefix-pricing/outbound',
-            (new KeyValueFilter(['prefix' => $prefix]))->getQuery()
+        $data = $this->accountAPI->search(
+            new KeyValueFilter(['prefix' => $prefix]),
+            '/account/get-prefix-pricing/outbound'
         );
+        $data->getApiResource()->setCollectionName('prices');
         
         $prices = [];
-        foreach ($data['prices'] as $priceData) {
+        foreach ($data as $priceData) {
             /** @var PrefixPrice $price */
             $price = $this->priceFactory->build($priceData, PriceFactory::TYPE_PREFIX);
             $prices[] = $price;
-        }
-
-        if (empty($prices)) {
-            throw new NotFoundException('No results found');
         }
        
         return $prices;
@@ -219,7 +217,7 @@ class Client implements APIClient
         } catch (ExceptionRequest $e) {
             // @deprectated Throw a Validation exception to preserve old behavior
             // This will change to a general Request exception in the future
-            $rawResponse = json_decode(@$e->getResponse()->getBody()->getContents(), true);
+            $rawResponse = json_decode($api->getLastResponse()->getBody()->getContents(), true);
             if (array_key_exists('invalid_parameters', $rawResponse)) {
                 throw new Validation($e->getMessage(), $e->getCode(), null, $rawResponse['invalid_parameters']);
             }

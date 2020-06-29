@@ -26,6 +26,7 @@ use Nexmo\Client\Credentials\Container;
 use Nexmo\Client\Factory\FactoryInterface;
 use Nexmo\Client\Credentials\SignatureSecret;
 use Nexmo\Client\Credentials\CredentialsInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * Nexmo API Client, allows access to the API from PHP.
@@ -178,11 +179,8 @@ class Client
 
     /**
      * Set the factory used to create API specific clients.
-     *
-     * @param FactoryInterface $factory
-     * @return $this
      */
-    public function setFactory(FactoryInterface $factory)
+    public function setFactory(ContainerInterface $factory)
     {
         $this->factory = $factory;
         return $this;
@@ -502,11 +500,11 @@ class Client
 
     public function __call($name, $args)
     {
-        if (!$this->factory->hasApi($name)) {
+        if (!$this->factory->has($name)) {
             throw new \RuntimeException('no api namespace found: ' . $name);
         }
 
-        $collection = $this->factory->getApi($name);
+        $collection = $this->factory->get($name);
 
         if (empty($args)) {
             return $collection;

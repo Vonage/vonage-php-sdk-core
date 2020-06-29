@@ -10,4 +10,21 @@ namespace Nexmo\Client\Exception;
 
 class Exception extends \Exception
 {
+    protected $entity;
+
+    /**
+     * Sets the entity that generated the exception
+     */
+    public function setEntity($entity)
+    {
+        $this->entity = $entity;
+    }
+
+    /**
+     * Returns the entity that generated the exception
+     */
+    public function getEntity()
+    {
+        return $this->entity;
+    }
 }

@@ -19,6 +19,7 @@ use Nexmo\Verify\Verification;
 use Zend\Diactoros\Request;
 use Zend\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 
 class ClientTest extends TestCase
 {
@@ -326,10 +327,10 @@ class ClientTest extends TestCase
     {
         $api = $this->prophesize('stdClass')->reveal();
         
-        $factory = $this->prophesize('Nexmo\Client\Factory\FactoryInterface');
+        $factory = $this->prophesize(ContainerInterface::class);
 
-        $factory->hasApi('sms')->willReturn(true);
-        $factory->getApi('sms')->willReturn($api);
+        $factory->has('sms')->willReturn(true);
+        $factory->get('sms')->willReturn($api);
         
         $client = new Client(new Basic('key', 'secret'));
         $client->setFactory($factory->reveal());
@@ -399,25 +400,6 @@ class ClientTest extends TestCase
         ]);
 
         $this->assertEquals($expected, $agent);
-    }
-
-    public function testSerializationProxiesVerify()
-    {
-        $verify = $this->prophesize('Nexmo\Verify\Client');
-        $factory = $this->prophesize('Nexmo\Client\Factory\FactoryInterface');
-
-        $factory->hasApi('verify')->willReturn(true);
-        $factory->getApi('verify')->willReturn($verify->reveal());
-
-        $client = new Client($this->basic_credentials);
-        $client->setFactory($factory->reveal());
-
-        $verification = @new Verification('15554441212', 'test app');
-        $verify->serialize($verification)->willReturn('string data')->shouldBeCalled();
-        $verify->unserialize($verification)->willReturn($verification)->shouldBeCalled();
-
-        $this->assertEquals('string data', $client->serialize($verification));
-        $this->assertEquals($verification, $client->unserialize(serialize($verification)));
     }
 
     /**

@@ -42,8 +42,13 @@ class ClientTest extends TestCase
         $this->nexmoClient = $this->prophesize('Nexmo\Client');
         $this->nexmoClient->getApiUrl()->willReturn('http://api.nexmo.com');
 
-        $this->insightsClient = new Client();
-        $this->insightsClient->setClient($this->nexmoClient->reveal());
+        $this->apiClient = new APIResource();
+        $this->apiClient
+            ->setIsHAL(false)
+            ->setClient($this->nexmoClient->reveal())
+        ;
+
+        $this->insightsClient = new Client($this->apiClient);
     }
 
     public function testStandardCnam()
@@ -134,7 +139,7 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse($methodToCall));
 
-        $insightsStandard = @$this->insightsClient->$methodToCall('14155550100');
+        $insightsStandard = $this->insightsClient->$methodToCall('14155550100');
         $this->assertInstanceOf($expectedClass, $insightsStandard);
         $this->assertEquals('(415) 555-0100', $insightsStandard->getNationalFormatNumber());
     }
@@ -151,7 +156,7 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse($methodToCall));
 
-        $insightsStandard = @$this->insightsClient->$methodToCall('14155550100');
+        $insightsStandard = $this->insightsClient->$methodToCall('14155550100');
         $this->assertInstanceOf($expectedClass, $insightsStandard);
         $this->assertEquals('(415) 555-0100', $insightsStandard->getNationalFormatNumber());
     }

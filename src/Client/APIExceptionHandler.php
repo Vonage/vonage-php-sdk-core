@@ -63,12 +63,8 @@ class APIExceptionHandler
 
         if ($status >= 400 and $status < 500) {
             $e = new Exception\Request($errorTitle, $status);
-            @$e->setRequest($request);
-            @$e->setResponse($response);
         } elseif ($status >= 500 and $status < 600) {
             $e = new Exception\Server($errorTitle, $status);
-            @$e->setRequest($request);
-            @$e->setResponse($response);
         } else {
             $e = new Exception\Exception('Unexpected HTTP Status Code');
             throw $e;

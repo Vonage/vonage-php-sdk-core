@@ -13,16 +13,6 @@ use PHPUnit\Framework\TestCase;
 
 class AdvancedTest extends TestCase
 {
-
-    /**
-     * @dataProvider advancedTestProvider
-     */
-    public function testArrayAccess($advanced, $inputData)
-    {
-        $this->assertEquals($inputData['valid_number'], @$advanced['valid_number']);
-        $this->assertEquals($inputData['reachable'], @$advanced['reachable']);
-    }
-
     /**
      * @dataProvider advancedTestProvider
      */

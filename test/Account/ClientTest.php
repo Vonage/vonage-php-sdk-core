@@ -366,9 +366,6 @@ class ClientTest extends TestCase
 
     public function testGetPrefixPricingNoResults()
     {
-        $this->expectException(NotFoundException::class);
-        $this->expectExceptionMessage('No results found');
-
         $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/get-prefix-pricing/outbound', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
@@ -379,6 +376,7 @@ class ClientTest extends TestCase
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('prefix-pricing-no-results'));
 
         $prefixPrice = $this->accountClient->getPrefixPricing('263');
+        $this->assertCount(0, $prefixPrice);
     }
 
     public function testGetPrefixPricingGenerates4xxError()

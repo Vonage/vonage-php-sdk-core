@@ -11,7 +11,7 @@ namespace Nexmo\Client\Factory;
 use Nexmo\Client;
 use Psr\Container\ContainerInterface;
 
-class MapFactory implements FactoryInterface, ContainerInterface
+class MapFactory implements ContainerInterface
 {
     /**
      * Map of api namespaces to classes.
@@ -51,7 +51,7 @@ class MapFactory implements FactoryInterface, ContainerInterface
             return $this->cache[$key];
         }
 
-        if (!$this->hasApi($key)) {
+        if (!$this->has($key)) {
             throw new \RuntimeException(sprintf(
                 'no map defined for `%s`',
                 $key
@@ -80,7 +80,7 @@ class MapFactory implements FactoryInterface, ContainerInterface
         return $this->client;
     }
 
-    public function set($key, $value)
+    public function set(string $key, $value)
     {
         $this->map[$key] = $value;
     }

@@ -15,10 +15,10 @@ use Nexmo\Client\Exception;
 use Zend\Diactoros\Response;
 use Nexmo\Client\APIResource;
 use PHPUnit\Framework\TestCase;
-use Nexmo\Client as NexmoClient;
 use NexmoTest\Psr7AssertionTrait;
 use Nexmo\Client\Exception\Request;
 use Nexmo\Entity\Filter\KeyValueFilter;
+use Nexmo\Entity\IterableAPICollection;
 use Nexmo\Numbers\Filter\OwnedNumbers;
 use Psr\Http\Message\RequestInterface;
 
@@ -50,7 +50,6 @@ class ClientTest extends TestCase
         ;
 
         $this->numberClient = new Client($this->apiClient);
-        $this->numberClient->setClient($this->nexmoClient->reveal());
     }
 
     /**
@@ -134,18 +133,8 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('available-numbers'));
 
-        @$this->numberClient->searchAvailable('US', new KeyValueFilter($options));
-    }
-
-    /**
-     * Make sure that unknown parameters fail validation
-     */
-    public function testUnknownParameterValueForSearchThrowsException()
-    {
-        $this->expectException(Request::class);
-        $this->expectExceptionMessage("Unknown option: 'foo'");
-
-        @$this->numberClient->searchAvailable('US', new KeyValueFilter(['foo' => 'bar']));
+        $response = $this->numberClient->searchAvailable('US', new KeyValueFilter($options));
+        $number = $response->current();
     }
 
     public function testSearchAvailableReturnsNumberList()
@@ -159,12 +148,15 @@ class ClientTest extends TestCase
 
         $numbers = $this->numberClient->searchAvailable('US');
 
-        $this->assertInternalType('array', $numbers);
-        $this->assertInstanceOf('Nexmo\Numbers\Number', $numbers[0]);
-        $this->assertInstanceOf('Nexmo\Numbers\Number', $numbers[1]);
+        $returnedNumbers = [];
+        foreach ($numbers as $number) {
+            $returnedNumbers[] = $number;
+        }
+        $this->assertInstanceOf('Nexmo\Numbers\Number', $returnedNumbers[0]);
+        $this->assertInstanceOf('Nexmo\Numbers\Number', $returnedNumbers[1]);
 
-        $this->assertSame('14155550100', $numbers[0]->getId());
-        $this->assertSame('14155550101', $numbers[1]->getId());
+        $this->assertSame('14155550100', $returnedNumbers[0]->getId());
+        $this->assertSame('14155550101', $returnedNumbers[1]->getId());
     }
 
     /**
@@ -179,22 +171,9 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('empty'));
 
-        $numbers = @$this->numberClient->searchAvailable('US');
+        $numbers = $this->numberClient->searchAvailable('US');
 
-        $this->assertInternalType('array', $numbers);
         $this->assertEmpty($numbers);
-    }
-
-    public function testSearchOwnedErrorsOnUnknownSearchParameters()
-    {
-
-        $this->expectException(Exception\Request::class);
-        $this->expectExceptionMessage("Unknown option: 'foo'");
-        
-        @$this->numberClient->searchOwned(new KeyValueFilter([
-            'pattern' => '1415550100',
-            'foo' => 'bar',
-        ]));
     }
 
     public function testSearchOwnedPassesInAllowedAdditionalParameters()
@@ -211,13 +190,15 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('single'));
 
-        $this->numberClient->searchOwned(new OwnedNumbers([
+        $response = $this->numberClient->searchOwned(new OwnedNumbers([
             'pattern' => '1415550100',
             'index' => 1,
             'size' => '100',
             'search_pattern' => 0,
             'has_application' => false,
         ]));
+
+        $number = $response->current();
     }
 
     public function testSearchOwnedReturnsSingleNumber()
@@ -231,10 +212,9 @@ class ClientTest extends TestCase
 
         $numbers = $this->numberClient->searchOwned(new OwnedNumbers(['pattern' => '1415550100']));
 
-        $this->assertInternalType('array', $numbers);
-        $this->assertInstanceOf('Nexmo\Numbers\Number', $numbers[0]);
+        $this->assertInstanceOf('Nexmo\Numbers\Number', $numbers->current());
 
-        $this->assertSame('1415550100', $numbers[0]->getId());
+        $this->assertSame('1415550100', $numbers->current()->getId());
     }
 
     public function testPurchaseNumberWithNumberObject()
@@ -370,32 +350,10 @@ class ClientTest extends TestCase
         $this->numberClient->cancel($num->getMsisdn(), $num->getCountry());
     }
 
-    /**
-     * Make sure that integer values that fail validation throw properly
-     */
-    public function testInvalidIntegerValueForSearchThrowsException()
-    {
-        $this->expectException(Request::class);
-        $this->expectExceptionMessage("Invalid value: 'size' must be an integer");
-
-        @$this->numberClient->searchOwned(null, ['size' => 'bob']);
-    }
-
-    /**
-     * Make sure that boolean values that fail validation throw properly
-     */
-    public function testInvalidBooleanValueForSearchThrowsException()
-    {
-        $this->expectException(Request::class);
-        $this->expectExceptionMessage("Invalid value: 'has_application' must be a boolean value");
-
-        @$this->numberClient->searchOwned(null, ['has_application' => 'bob']);
-    }
-
-    /**
+   /**
      * Get the API response we'd expect for a call to the API.
      *
-     * @param string $type
+     * param string $type
      * @return Response
      */
     protected function getResponse($type = 'success', $status = 200)

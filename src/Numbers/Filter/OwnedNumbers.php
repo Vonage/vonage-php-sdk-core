@@ -52,10 +52,10 @@ class OwnedNumbers implements FilterInterface
             $this->setCountry($filter['country']);
         }
         if (array_key_exists('size', $filter)) {
-            $this->setPageSize($filter['size']);
+            $this->setPageSize((int) $filter['size']);
         }
         if (array_key_exists('index', $filter)) {
-            $this->setPageIndex($filter['index']);
+            $this->setPageIndex((int) $filter['index']);
         }
         
         if (array_key_exists('pattern', $filter)) {
@@ -68,7 +68,8 @@ class OwnedNumbers implements FilterInterface
             $this->setApplicationId($filter['application_id']);
         }
         if (array_key_exists('has_application', $filter)) {
-            $this->setHasApplication(filter_var($filter['has_application'], FILTER_VALIDATE_BOOLEAN));
+            $value = filter_var($filter['has_application'], FILTER_VALIDATE_BOOLEAN, ['flags' => FILTER_NULL_ON_FAILURE]);
+            $this->setHasApplication($value);
         }
     }
 

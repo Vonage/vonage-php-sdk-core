@@ -13,13 +13,6 @@ use PHPUnit\Framework\TestCase;
 
 class NetworkTest extends TestCase
 {
-    public function testNetworkArrayAccess()
-    {
-        $network = new Network('12345', 'Demo Network');
-        $this->assertEquals(@$network['network_code'], '12345');
-        $this->assertEquals(@$network['network_name'], 'Demo Network');
-    }
-
     public function testNetworkGetters()
     {
         $network = new Network('12345', 'Demo Network');

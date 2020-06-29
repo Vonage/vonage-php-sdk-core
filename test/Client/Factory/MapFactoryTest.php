@@ -35,27 +35,27 @@ class MapFactoryTest extends TestCase
 
     public function testClientInjection()
     {
-        $api = $this->factory->getApi('test');
+        $api = $this->factory->get('test');
         $this->assertSame($this->client, $api->client);
     }
 
     public function testCache()
     {
-        $api = $this->factory->getApi('test');
-        $cache = $this->factory->getApi('test');
+        $api = $this->factory->get('test');
+        $cache = $this->factory->get('test');
 
         $this->assertSame($api, $cache);
     }
 
     public function testClassMap()
     {
-        $this->assertTrue($this->factory->hasApi('test'));
-        $this->assertFalse($this->factory->hasApi('not'));
+        $this->assertTrue($this->factory->has('test'));
+        $this->assertFalse($this->factory->has('not'));
 
-        $api = $this->factory->getApi('test');
+        $api = $this->factory->get('test');
         $this->assertInstanceOf('NexmoTest\Client\Factory\TestDouble', $api);
 
         $this->expectException(\RuntimeException::class);
-        $this->factory->getApi('not');
+        $this->factory->get('not');
     }
 }
