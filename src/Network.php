@@ -50,47 +50,9 @@ class Network implements \JsonSerializable, ArrayHydrateInterface
         return $this->data['currency'];
     }
 
-    public function jsonUnserialize(array $json)
-    {
-        trigger_error(
-            get_class($this) . "::jsonUnserialize is deprecated, please fromArray() instead",
-            E_USER_DEPRECATED
-        );
-
-        $this->fromArray($json);
-    }
-
     public function jsonSerialize()
     {
         return $this->toArray();
-    }
-
-    public function offsetExists($offset)
-    {
-        trigger_error(
-            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
-            E_USER_DEPRECATED
-        );
-        return isset($this->data[$offset]);
-    }
-
-    public function offsetGet($offset)
-    {
-        trigger_error(
-            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
-            E_USER_DEPRECATED
-        );
-        return $this->data[$offset];
-    }
-
-    public function offsetSet($offset, $value)
-    {
-        throw new Exception('Network is read only');
-    }
-
-    public function offsetUnset($offset)
-    {
-        throw new Exception('Network is read only');
     }
 
     public function fromArray(array $data) : void

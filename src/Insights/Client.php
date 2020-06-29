@@ -19,36 +19,21 @@ use Nexmo\Client\ClientAwareInterface;
 /**
  * Class Client
  */
-class Client implements ClientAwareInterface, APIClient
+class Client implements APIClient
 {
-    /**
-     * @deprecated This client no longer needs to be ClientAware
-     */
-    use ClientAwareTrait;
     /**
      * @var APIResource
      */
     protected $api;
 
-    public function __construct(APIResource $api = null)
+    public function __construct(APIResource $api)
     {
         $this->api = $api;
     }
 
-    /**
-     * Shim to handle older instatiations of this class
-     * @deprecated Will change in v3 to just return the required API object
-     */
     public function getApiResource() : APIResource
     {
-        if (is_null($this->api)) {
-            $api = new APIResource();
-            $api->setClient($this->getClient())
-                ->setIsHAL(false)
-            ;
-            $this->api = $api;
-        }
-        return clone $this->api;
+        return $this->api;
     }
 
     public function basic($number) : Basic

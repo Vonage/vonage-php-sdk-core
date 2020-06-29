@@ -40,20 +40,12 @@ class MapFactory implements FactoryInterface, ContainerInterface
         $this->client = $client;
     }
 
-    public function has($key)
+    public function has(string $key)
     {
         return isset($this->map[$key]);
     }
 
-    /**
-     * @deprecated Use has() instead
-     */
-    public function hasApi($api)
-    {
-        return $this->has($api);
-    }
-
-    public function get($key)
+    public function get(string $key)
     {
         if (isset($this->cache[$key])) {
             return $this->cache[$key];
@@ -86,14 +78,6 @@ class MapFactory implements FactoryInterface, ContainerInterface
     public function getClient()
     {
         return $this->client;
-    }
-
-    /**
-     * @deprecated Use get() instead
-     */
-    public function getApi($api)
-    {
-        return $this->get($api);
     }
 
     public function set($key, $value)

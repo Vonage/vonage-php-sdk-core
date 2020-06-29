@@ -2,11 +2,9 @@
 
 namespace Nexmo\Insights;
 
-use Nexmo\Client\Exception\Exception;
 use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
-use Nexmo\Entity\JsonUnserializableInterface;
 
-class Basic implements \JsonSerializable, JsonUnserializableInterface, \ArrayAccess, ArrayHydrateInterface
+class Basic implements \JsonSerializable, ArrayHydrateInterface
 {
     protected $data = [];
 
@@ -74,46 +72,6 @@ class Basic implements \JsonSerializable, JsonUnserializableInterface, \ArrayAcc
     public function jsonSerialize()
     {
         return $this->toArray();
-    }
-
-    public function jsonUnserialize(array $json)
-    {
-        trigger_error(
-            get_class($this) . "::jsonUnserialize is deprecated, please fromArray() instead",
-            E_USER_DEPRECATED
-        );
-
-        $this->fromArray($json);
-    }
-
-    public function offsetExists($offset)
-    {
-        trigger_error(
-            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
-            E_USER_DEPRECATED
-        );
-
-        return isset($this->data[$offset]);
-    }
-
-    public function offsetGet($offset)
-    {
-        trigger_error(
-            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
-            E_USER_DEPRECATED
-        );
-
-        return $this->data[$offset];
-    }
-
-    public function offsetSet($offset, $value)
-    {
-        throw new Exception('Number insights results are read only');
-    }
-
-    public function offsetUnset($offset)
-    {
-        throw new Exception('Number insights results are read only');
     }
 
     public function fromArray(array $data)

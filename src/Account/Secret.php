@@ -49,15 +49,4 @@ class Secret
     {
         return $this->links;
     }
-
-    public function __get($key)
-    {
-        if ($key === 'data') {
-            trigger_error(
-                "Direct access to " . get_class($this) . "::data is deprecated, please use getter to toArray() methods",
-                E_USER_DEPRECATED
-            );
-            return $this->data;
-        }
-    }
 }
