@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Nexmo\SMS;
+namespace Nexmo\SMS\Message;
 
 class WAPPush extends OutboundMessage
 {
