@@ -71,9 +71,7 @@ class Client implements APIClient
     public function create(Application $application) : Application
     {
         $response = $this->api->create($application->toArray());
-
-        $application = $this->hydrator->hydrate($response);
-        return $application;
+        return $this->hydrator->hydrate($response);
     }
 
     /**
@@ -82,9 +80,8 @@ class Client implements APIClient
     public function update(Application $application) : Application
     {
         $data = $this->api->update($application->getId(), $application->toArray());
-        $application = $this->hydrator->hydrate($data);
 
-        return $application;
+        return $this->hydrator->hydrate($data);
     }
 
     /**
