@@ -10,20 +10,21 @@ namespace Nexmo;
 
 use Zend\Diactoros\Uri;
 use Http\Client\HttpClient;
-use Nexmo\Application\Hydrator;
-use Nexmo\Call\Hydrator as CallHydrator;
 use Nexmo\Client\Signature;
 use Zend\Diactoros\Request;
 use Nexmo\Client\APIResource;
 use Nexmo\Verify\Verification;
+use Nexmo\Application\Hydrator;
 use Nexmo\Entity\EntityInterface;
 use Nexmo\Client\Credentials\Basic;
 use Nexmo\Client\Credentials\OAuth;
 use Nexmo\Client\Factory\MapFactory;
+use Nexmo\SMS\ExceptionErrorHandler;
 use Nexmo\Client\Credentials\Keypair;
 use Nexmo\Client\Exception\Exception;
 use Psr\Http\Message\RequestInterface;
 use Nexmo\Client\Credentials\Container;
+use Nexmo\Call\Hydrator as CallHydrator;
 use Nexmo\Client\Factory\FactoryInterface;
 use Nexmo\Client\Credentials\SignatureSecret;
 use Nexmo\Client\Credentials\CredentialsInterface;
@@ -36,6 +37,7 @@ use Nexmo\Client\Credentials\CredentialsInterface;
  *
  * @method \Nexmo\Account\Client account()
  * @method \Nexmo\Message\Client message()
+ * @method \Nexmo\SMS\Client sms()
  * @method \Nexmo\Verify\Client  verify()
  * @method \Nexmo\Application\Client applications()
  * @method \Nexmo\Call\Collection calls()
@@ -152,6 +154,17 @@ class Client
                 $api->setCollectionName('calls');
 
                 return new \Nexmo\Voice\Client($api);
+            },
+            'sms' => function ($factory) {
+                $api = $factory->get(APIResource::class);
+                $api
+                    ->setBaseUrl($api->getClient()->getRestUrl())
+                    ->setCollectionName('messages')
+                    ->setIsHAL(false)
+                    ->setErrorsOn200(true)
+                    ->setExceptionErrorHandler(new ExceptionErrorHandler())
+                ;
+                return new \Nexmo\SMS\Client($api);
             },
             APIResource::class => APIResource::class,
             CallHydrator::class => function ($factory) {

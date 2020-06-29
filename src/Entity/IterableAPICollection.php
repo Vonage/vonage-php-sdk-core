@@ -335,6 +335,11 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
         return $this->page;
     }
 
+    public function setPageData(array $data)
+    {
+        $this->page = $data;
+    }
+
     public function getSize()
     {
         if (isset($this->page)) {
