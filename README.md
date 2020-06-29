@@ -72,57 +72,37 @@ Examples
 
 To use [Nexmo's SMS API][doc_sms] to send an SMS message, call the `$client->message()->send()` method.
 
-The API can be called directly, using a simple array of parameters, the keys match the [parameters of the API][doc_sms].
-
-```php
-$message = $client->message()->send([
-    'to' => NEXMO_TO,
-    'from' => NEXMO_FROM,
-    'text' => 'Test message from the Nexmo PHP Client'
-]);
-```
-    
-The API response data can be accessed as array properties of the message. 
-
-```php
-echo "Sent message to " . $message['to'] . ". Balance is now " . $message['remaining-balance'] . PHP_EOL;
-```
-    
-**A message object** is a more expressive way to create and send messages. Each message type can be constructed with the 
+**A message object** is is used to create the SMS messages. Each message type can be constructed with the 
 required parameters, and a fluent interface provides access to optional parameters.
 
 ```php
-$text = new \Nexmo\Message\Text(NEXMO_TO, NEXMO_FROM, 'Test message using PHP client library');
-$text->setClientRef('test-message')
-     ->setClass(\Nexmo\Message\Text::CLASS_FLASH);
+$text = new \Nexmo\SMS\Message\SMS(NEXMO_TO, NEXMO_FROM, 'Test message using PHP client library');
+$text->setClientRef('test-message');
 ```
 
-The message object is passed to the same `send` method:
+The message object is passed to the `send` method:
 
 ```php
-$client->message()->send($text);
+$response = $client->message()->send($text);
 ```
     
 Once sent, the message object can be used to access the response data.
 
 ```php
-echo "Sent message to " . $text->getTo() . ". Balance is now " . $text->getRemainingBalance() . PHP_EOL;
+$data = $response->current();
+echo "Sent message to " . $data->getTo() . ". Balance is now " . $data->getRemainingBalance() . PHP_EOL;
 ```
     
-Array access can still be used:
+Since each SMS message can be split into multiple messages, the response contains an object for each
+message that was generated. You can check to see how many messages were generated using the standard
+`count()` function in PHP. If you want to get the first message, you can use the `current()` method
+on the response.
 
 ```php
-echo "Sent message to " . $text['to'] . ". Balance is now " . $text['remaining-balance'] . PHP_EOL;
-```
-    
-If the message text had to be sent as multiple messages, by default, the data of the last message is returned. However,
-specific message data can be accessed using array notation, passing an index to a getter, or iterating over the object.
-
-```php
-$text[0]['remaining-balance']
-$text->getRemainingBalance(0);
-foreach($text as $index => $data){
-    $data['remaining-balance'];
+$data = $response->current();
+$data->getRemainingBalance();
+foreach($response as $index => $data){
+    $data->getRemainingBalance();
 }
 ```
 
@@ -134,40 +114,14 @@ Inbound messages are [sent to your application as a webhook][doc_inbound], and t
 create an inbound message object from a webhook:
 
 ```php
-$inbound = \Nexmo\Message\InboundMessage::createFromGlobals();
-if($inbound->isValid()){
-    error_log($inbound->getBody());
-} else {
+try {
+    $inbound = \Nexmo\SMS\InboundSMS::createFromGlobals();
+    error_log($inbound->getText());
+} catch (\InvalidArgumentException $e) {
     error_log('invalid message');
 }
 ```
     
-You can also access the webhook data as an array:
-
-```php
-$inbound = \Nexmo\Message\InboundMessage::createFromGlobals();
-error_log($inbound['to']);
-```
-
-### Fetching a Message
-
-You can retrieve a message log from the API using the ID of the message:
-
-```php
-$message = $client->message()->search('02000000DA7C52E7');
-echo "The body of the message was: " . $message->getBody();
-```
-
-If the message was sent to a Nexmo virtual number, the object will be an instance of `Nexmo\Message\InboundMessage`, if 
-the message was sent from your account, it will be an instance of `Nexmo\Message\Message`. You can also pass a message 
-object to the client:
-
-```php
-$message = new \Nexmo\Message\InboundMessage('02000000DA7C52E7');
-$client->message()->search($message);
-echo "The body of the message was: " . $message->getBody();
-```
-
 ### Signing a Message
 
 _You may also like to read the [documentation about message signing](https://developer.nexmo.com/concepts/guides/signing-messages)._
@@ -213,21 +167,11 @@ or implement second factor authentication during signin.
 You can start a verification process using a simple array:
 
 ```php
-$verification = $client->verify()->start([
-    'number' => '14845551212',
-    'brand'  => 'My App'
-]);
-echo "Started verification with an id of: " . $verification->getRequestId();
+$request = new \Nexmo\Verify\Request('14845551212', 'My App');
+$response = $client->verify()->start($request);
+echo "Started verification with an id of: " . $response->getRequestId();
 ```
 
-Or you can pass the client a verification object:
-
-```php
-$verification = new \Nexmo\Verify\Verification('14845551212', 'My App');
-$client->verify()->start($verification);
-echo "Started verification with an id of: " . $verification->getRequestId();
-```
-    
 ### Controlling a Verification
     
 To cancel an in-progress verification, or to trigger the next attempt to send the confirmation code, you can pass 
@@ -235,48 +179,30 @@ either an existing verification object to the client library, or simply use a re
 
 ```php
 $client->verify()->trigger('00e6c3377e5348cdaf567e1417c707a5');
-
-$verification = new \Nexmo\Verify\Verification('00e6c3377e5348cdaf567e1417c707a5');
-$client->verify()->cancel($verification);
+$client->verify()->cancel('00e6c3377e5348cdaf567e1417c707a5');
 ```
 
 ### Checking a Verification
 
-In the same way, checking a verification requires the code the user provided, and an existing verification object:
-
-```php
-$verification = new \Nexmo\Verify\Verification('00e6c3377e5348cdaf567e1417c707a5');
-try {
-    $client->verify()->check($verification, '1234');
-    echo "Verification was successful (status: " . $verification['status'] . ")\n";
-} catch (Exception $e) {
-    $verification = $e->getEntity();
-    echo "Verification failed with status " . $verification['status']
-        . " and error text \"" . $verification['error_text'] . "\"\n";
-}
-```
- 
-Or a request ID:
+In the same way, checking a verification requires the code the user provided, and the request ID:
 
 ```php
 try {
-    $verification = $client->verify()->check('00e6c3377e5348cdaf567e1417c707a5', '1234');
-    echo "Verification was successful (status: " . $verification['status'] . ")\n";
+    $client->verify()->check('00e6c3377e5348cdaf567e1417c707a5', '1234');
+    echo "Verification was successful (status: " . $verification->getStatus() . ")\n";
 } catch (Exception $e) {
-    $verification = $e->getEntity();
-    echo "Verification failed with status " . $verification['status']
-        . " and error text \"" . $verification['error_text'] . "\"\n";
+    echo "Verification failed with status " . $e->getCode()
+        . " and error text \"" . $e->getMessage() . "\"\n";
 }
 ```
 
 ### Searching For a Verification
 
-You can check the status of a verification, or access the results of past verifications using either an existing 
-verification object, or a request ID. The verification object will then provide a rich interface:
+You can check the status of a verification, or access the results of past verifications using a request ID. 
+The verification object will then provide a rich interface:
 
 ```php
-$verification = new \Nexmo\Verify\Verification('00e6c3377e5348cdaf567e1417c707a5');
-$client->verify()->search($verification);
+$client->verify()->search('00e6c3377e5348cdaf567e1417c707a5');
 
 echo "Codes checked for verification: " . $verification->getRequestId() . PHP_EOL;
 foreach($verification->getChecks() as $check){
@@ -284,17 +210,9 @@ foreach($verification->getChecks() as $check){
 }
 ```
 
-You can also access the raw API response here using array access:
-
-```php
-$verification = new \Nexmo\Verify\Verification('00e6c3377e5348cdaf567e1417c707a5');
-$client->verify()->search($verification);
-echo "Verification cost was: " . $verification['price'] . PHP_EOL;
-```
-
 ### Making a Call 
 
-All `$client->calls()` methods require the client to be constructed with a `Nexmo\Client\Credentials\Keypair`, or a 
+All `$client->voice()` methods require the client to be constructed with a `Nexmo\Client\Credentials\Keypair`, or a 
 `Nexmo\Client\Credentials\Container` that includes the `Keypair` credentials:
 
 ```php
@@ -307,72 +225,37 @@ $keypair = new \Nexmo\Client\Credentials\Keypair(
 $client = new \Nexmo\Client(new \Nexmo\Client\Credentials\Container($basic, $keypair));
 ```
 
-You can start a call using an array as the structure:
+You can start a call using an `OutboundCall` object:
 
 ```php
-$client->calls()->create([
-    'to' => [[
-        'type' => 'phone',
-        'number' => '14843331234'
-    ]],
-    'from' => [
-        'type' => 'phone',
-        'number' => '14843335555'
-    ],
-    'answer_url' => ['https://example.com/answer'],
-    'event_url' => ['https://example.com/event'],
-]);
+$outboundCall = new \Nexmo\Voice\OutboundCall(
+    new \Nexmo\Voice\Endpoint\Phone('14843331234'),
+    new \Nexmo\Voice\Endpoint\Phone('14843335555')
+);
+$outboundCall
+    ->setAnswerWebhook(
+        new \Nexmo\Voice\Webhook('https://example.com/answer')
+    )
+    ->setEventWebhook(
+        new \Nexmo\Voice\Webhook('https://example.com/event')
+    )
+;
+
+$response = $client->voice()->createOutboundCall($outboundCall);
 ```
 
 Or you can provide an NCCO directly in the POST request
 
-```
-$call = $client->calls()->create([
-    'to' => [[
-        'type' => 'phone',
-        'number' => '14843331234'
-    ]],
-    'from' => [
-        'type' => 'phone',
-        'number' => '14843335555'
-    ],
-    'ncco' => [
-        [
-            'action' => 'talk',
-            'text' => 'This is a text to speech call from Nexmo'
-        ]
-    ]
-]);
-```
-
-Or you can create a `Nexmo\Call\Call` object, and use that:
-
 ```php
-use Nexmo\Call\Call;
-$call = new Call();
-$call->setTo('14843331234')
-     ->setFrom('14843335555')
-     ->setWebhook(Call::WEBHOOK_ANSWER, 'https://example.com/answer')
-     ->setWebhook(Call::WEBHOOK_EVENT, 'https://example.com/event');
+$outboundCall = new \Nexmo\Voice\OutboundCall(
+    new \Nexmo\Voice\Endpoint\Phone('14843331234'),
+    new \Nexmo\Voice\Endpoint\Phone('14843335555')
+);
+$ncco = new NCCO();
+$ncco->addAction(new \Nexmo\Voice\NCCO\Action\Talk('This is a text to speech call from Nexmo'));
+$outboundCall->setNCCO($ncco);
 
-$client->calls()->create($call);
-```
-
-The same example, providing an NCCO directly:
-
-```php
-use Nexmo\Call\Call;
-$call = new Call();
-$call->setTo('14843331234')
-     ->setFrom('14843335555')
-     ->setNcco([
-        [
-            'action' => 'talk',
-            'text' => 'This is a text to speech call from Nexmo'
-        ]
-      ]);
-
-$client->calls()->create($call);
+$response = $client->voice()->createOutboundCall($outboundCall);
 ```
 
 ### Fetching a Call
@@ -380,33 +263,17 @@ $client->calls()->create($call);
 You can fetch a call using a `Nexmo\Call\Call` object, or the call's UUID as a string:
 
 ```php
-$call = $client->calls()->get('3fd4d839-493e-4485-b2a5-ace527aacff3');
-
-$call = new Nexmo\Call\Call('3fd4d839-493e-4485-b2a5-ace527aacff3');
-$client->calls()->get($call);
+$call = $client->voice()->get('3fd4d839-493e-4485-b2a5-ace527aacff3');
 
 echo $call->getDirection();
 ```
 
-The call collection can also be treated as an array:
- 
-```php
-echo $client->calls['3fd4d839-493e-4485-b2a5-ace527aacff3']->getDirection();
-```
-
-And iterated over:
+You can also search for calls using a Filter.
 
 ```php
-foreach($client->calls as $call){
-    echo $call->getDirection();
-}
-```
-
-With an optional filter:
-
-```php
-$filter = new \Nexmo\Call\Filter()->setStatus('completed');
-foreach($client->calls($filter) as $call){
+$filter = new \Nexmo\Voice\Filter\VoiceFilter();
+$filter->setStatus('completed');
+foreach($client->search($filter) as $call){
     echo $call->getDirection();
 }
 ```
@@ -416,7 +283,8 @@ foreach($client->calls($filter) as $call){
 Application are configuration containers. You can create one using a simple array structure:
 
 ```php
-$application = [
+$application = new \Nexmo\Application\Application();
+$application->fromArray([
  'name' => 'test application',
  'keys' => [
      'public_key' => '-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSLcjxu33G\nd/vynKnlw9SENi+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xsO\nOUNhPx2LhuLmgwWSRS4L5W851Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n'
@@ -457,7 +325,7 @@ $application = [
      ],
      'vbc' => []
  ]
-];
+]);
 
 $client->applications()->create($application);
 ```
@@ -483,7 +351,7 @@ $client->applications()->create($a);
 You can iterate over all your applications:
 
 ```php
-foreach($client->applications() as $application){
+foreach($client->applications()->getAll() as $application){
     echo $application->getName() . PHP_EOL;
 }
 ```
@@ -492,9 +360,6 @@ Or you can fetch an application using a string UUID, or an application object.
 
 ```php
 $application = $client->applications()->get('1a20a124-1775-412b-b623-e6985f4aace0');
-
-$application = new Application('1a20a124-1775-412b-b623-e6985f4aace0');
-$client->applications()->get($application);
 ```
 
 ### Updating an Application
@@ -508,14 +373,6 @@ $application->setName('Updated Application');
 $client->applications()->update($application);
 ```
 
-You can also pass an array and the application UUID to the client:
-
-```php
-$application = $client->applications()->update([
-    'name' => 'Updated Application',
-], '1a20a124-1775-412b-b623-e6985f4aace0');
-```
-
 ### List Your Numbers
 
 You can list the numbers owned by your account and optionally include filtering:
@@ -526,12 +383,12 @@ You can list the numbers owned by your account and optionally include filtering:
 * `2` - the number ends with `pattern`
 
 ```php
-$client->numbers()->searchOwned(
-    '234',
-    [
-        "search_pattern" => 1,
-    ]
-);
+$filter = new \Nexmo\Numbers\Filter\OwnedNumbers();
+$filter
+    ->setPattern(234)
+    ->setSearchPattern(\Nexmo\Numbers\Filter\OwnedNumbers::SEARCH_PATTERN_CONTAINS)
+;
+$response = $client->numbers()->searchOwned($filter);
 ```
 
 `has_application`:
@@ -539,24 +396,18 @@ $client->numbers()->searchOwned(
 * `false` - The number is not attached to an application
 
 ```php
-$client->numbers()->searchOwned(
-    null,
-    [
-        "has_application" => true,
-    ]
-);
+$filter = new \Nexmo\Numbers\Filter\OwnedNumbers();
+$filter->setHasApplication(true);
+$response = $client->numbers()->searchOwned($filter);
 ```
 
 `application_id`:
 * Supply an application ID to get all of the numbers associated with the requestion application
 
 ```php
-$client->numbers()->searchOwned(
-    null,
-    [
-        "application_id" => "66c04cea-68b2-45e4-9061-3fd847d627b8",
-    ]
-);
+$filter = new \Nexmo\Numbers\Filter\OwnedNumbers();
+$filter->setApplicationId("66c04cea-68b2-45e4-9061-3fd847d627b8");
+$response = $client->numbers()->searchOwned($filter);
 ```
 
 ### Search Available Numbers
@@ -567,13 +418,17 @@ You can search for numbers available to purchase in a specific country:
 $numbers = $client->numbers()->searchAvailable('US');
 ```
 
+By default, this will only return the first 10 results. You can add an additional `\Nexmo\Numbers\Filter\AvailableNumbers`
+filter to narrow down your search.
+
 ### Purchase a Number
 
 To purchase a number, you can pass in a value returned from number search:
 
 ```php
 $numbers = $client->numbers()->searchAvailable('US');
-$client->numbers()->purchase($numbers[0]);
+$number = $numbers->current();
+$client->numbers()->purchase($number->getMsisdn(), $number->getCountry());
 ```
 
 Or you can specify the number and country manually:
@@ -587,14 +442,21 @@ $client->numbers()->purchase('14155550100', 'US');
 To update a number, use `numbers()->update` and pass in the configuration options you want to change. To clear a setting, pass in an empty value.
 
 ```php
-$client->numbers()->update([
-    "messagesCallbackType" => "app",
-    "messagesCallbackValue" => '1a20a124-1775-412b-b623-e6985f4aace0',
-    "voiceCallbackType" => 'tel',
-    "voiceCallbackValue" => '447700900002',
-    "voiceStatusCallback" => 'https://example.com/webhooks/status',
-    "moHttpUrl" => 'https://example.com/webhooks/inbound-sms',
-], NEXMO_NUMBER);
+$number = $client->numbers()->get(NEXMO_NUMBER);
+$number
+    ->setAppId('1a20a124-1775-412b-b623-e6985f4aace0')
+    ->setVoiceDestination('447700900002', 'tel')
+    ->setWebhook(
+        \Nexmo\Number\Number::WEBHOOK_VOICE_STATUS,
+        'https://example.com/webhooks/status'
+    )
+    ->setWebhook(
+        \Nexmo\Number\Number::WEBHOOK_MESSAGE,
+        'https://example.com/webhooks/inbound-sms'
+    )
+;
+$client->numbers()->update($number);
+echo "Number updated" . PHP_EOL;
 ```
 
 ### Cancel a Number
@@ -613,10 +475,10 @@ An API is provided to allow you to rotate your API secrets. You can create a new
 To get a list of the secrets:
 
 ```php
-$secretCollection = $client->account()->listSecrets(API_KEY);
-
-foreach($secretCollection['secrets'] as $secret) {
-    echo "ID: " . $secret['id'] . " (created " . $secret['created_at'] .")\n";
+$secretsCollection = $client->account()->listSecrets(API_KEY);
+/** @var \Nexmo\Account\Secret $secret */
+foreach($secretsCollection->getSecrets() as $secret) {
+    echo "ID: " . $secret->getId() . " (created " . $secret->getCreatedAt() .")\n";
 }
 ```
 
@@ -642,13 +504,13 @@ try {
 If you know the prefix of a country that you want to call, you can use the `prefix-pricing` endpoint to
 find out costs to call that number. Each prefix can return multiple countries (e.g. `1` returns `US`, `CA` and `UM`):
 
-```
+```php
 $results = $client->account()->getPrefixPricing('1');
-foreach ($results as $r) {
-    echo $r['country_code'].PHP_EOL;
-    echo $r['country_name'].PHP_EOL;
-    foreach ($r['networks'] as $n) {
-        echo $n->getName() .' :: '.$n->getCode().' :: '.$n->getPrefixPrice().PHP_EOL;
+foreach ($results as $price) {
+    echo $price->getCountryCode().PHP_EOL;
+    echo $price->getCountryName().PHP_EOL;
+    foreach ($price->getNetworks() as $network) {
+        echo $network->getName() .' :: '.$network->getCode().' :: '.$network->getPrefixPrice().PHP_EOL;
     }
     echo "----------------".PHP_EOL;
 }
@@ -661,7 +523,7 @@ Check how much credit remains on your account:
 
 ```php
 $response = $client->account()->getBalance();
-echo round($response->data['balance'], 2) . " EUR\n";
+echo round($response->getBalance(), 2) . " EUR\n";
 ```
 
 ### View and Change Account Configuration
@@ -670,7 +532,7 @@ Inspect the current settings on the account:
 
 ```php
 $response = $client->account()->getConfig();
-print_r($response->data);
+print_r($response->toArray());
 ```
 
 Update the default callback URLs for incoming SMS messages and delivery receipts:
@@ -680,7 +542,7 @@ $response = $client->account()->updateConfig([
     "sms_callback_url" => "http://example.com/webhooks/incoming-sms",
     "dr_callback_url" => "http://example.com/webhooks/delivery-receipt"
 ]);
-print_r($response->data);
+print_r($response->toArray());
 ```
 
 ### Get Information About a Number
@@ -696,7 +558,7 @@ You can use either the `basic()` or `standard()` methods (an `advanced()` method
 try {
   $insights = $client->insights()->basic(PHONE_NUMBER);
 
-  echo $insights['national_format_number'];
+  echo $insights->getNationalFormatNumber();
 } catch (Exception $e) {
   // for the Nexmo-specific exceptions, try the `getEntity()` method for more diagnostic information
 }
@@ -750,7 +612,7 @@ We allow use of any HTTPlug adapter, so you can create a client with alternative
 
 Here's an example that reduces the default timeout to 5 seconds to avoid long delays if you have no route to our servers:
 
-```
+```php
 $adapter_client = new Http\Adapter\Guzzle6\Client(new GuzzleHttp\Client(['timeout' => 5]));
 $nexmo_client = new Nexmo\Client(new Nexmo\Client\Credentials\Basic($api_key, $api_secret), [], $adapter_client);
 ```

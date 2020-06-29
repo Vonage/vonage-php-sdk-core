@@ -2,23 +2,21 @@
 require_once '../vendor/autoload.php';
 
 $keypair = new \Nexmo\Client\Credentials\Keypair(
-    file_get_contents('/Users/michael/development/nexmo/empty-voice-project/private.key'),
-    '75196d98-d3a0-476c-9fbc-7df9aa326aff'
+    file_get_contents(NEXMO_APPLICATION_PRIVATE_KEY_PATH),
+    NEXMO_APPLICATION_ID
 );
-
 $client = new \Nexmo\Client($keypair);
 
-use Nexmo\Call\Call;
-$call = new Call();
-$call->setTo('447908249481')
-     ->setFrom('123456')
-  ->setNcco([
-        [
-            'action' => 'talk',
-            'text' => 'This is a text to speech call from Nexmo'
-        ]
-      ]);
+$outboundCall = new \Nexmo\Voice\OutboundCall(
+    new \Nexmo\Voice\Endpoint\Phone(TO_NUMBER),
+    new \Nexmo\Voice\Endpoint\Phone(NEXMO_NUMBER)
+);
+$outboundCall->setAnswerWebhook(
+    new \Nexmo\Voice\Webhook(
+        'https://developer.nexmo.com/ncco/tts.json',
+        \Nexmo\Voice\Webhook::METHOD_GET
+    )
+);
+$response = $client->voice()->createOutboundCall($outboundCall);
 
-$response = $client->calls()->create($call);
-
-echo $response->getId();
+var_dump($response);

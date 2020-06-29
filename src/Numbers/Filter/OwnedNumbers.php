@@ -7,6 +7,10 @@ use Nexmo\Entity\Filter\FilterInterface;
 
 class OwnedNumbers implements FilterInterface
 {
+    const SEARCH_PATTERN_BEGIN = 0;
+    const SEARCH_PATTERN_CONTAINS = 1;
+    const SEARCH_PATTERN_ENDS = 2;
+
     /**
      * @var string
      */
@@ -28,7 +32,7 @@ class OwnedNumbers implements FilterInterface
     protected $pageIndex = 1;
 
     /**
-     * @var int
+     * @var string
      */
     protected $pattern;
 
@@ -121,12 +125,12 @@ class OwnedNumbers implements FilterInterface
         return $this;
     }
 
-    public function getPattern() : ?int
+    public function getPattern() : ?string
     {
         return $this->pattern;
     }
 
-    public function setPattern(int $pattern) : self
+    public function setPattern(string $pattern) : self
     {
         $this->pattern = $pattern;
         return $this;

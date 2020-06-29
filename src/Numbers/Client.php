@@ -22,10 +22,6 @@ use Nexmo\Numbers\Filter\OwnedNumbers;
 
 class Client implements ClientAwareInterface, APIClient
 {
-    const SEARCH_PATTERN_BEGIN = 0;
-    const SEARCH_PATTERN_CONTAINS = 1;
-    const SEARCH_PATTERN_ENDS = 2;
-
     /**
      * @deprecated This client no longer needs to be ClientAware
      */
@@ -235,9 +231,9 @@ class Client implements ClientAwareInterface, APIClient
                     'Passing a Number object into ' . get_class($this) . '::searchOwned() is deprecated, please pass a FilterInterface',
                     E_USER_DEPRECATED
                 );
-                $options['pattern'] = (int) $number->getId();
+                $options['pattern'] = (string) $number->getId();
             } else {
-                $options['pattern'] = (int) $number;
+                $options['pattern'] = (string) $number;
             }
         }
 

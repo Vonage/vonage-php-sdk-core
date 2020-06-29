@@ -149,7 +149,7 @@ abstract class OutboundMessage implements Message
             'from' => $this->from,
             'type' => $this->type,
             'ttl' => $this->ttl,
-            'status-report-req' => $this->requestDeliveryReceipt,
+            'status-report-req' => (int) $this->requestDeliveryReceipt,
         ]);
 
         if ($this->requestDeliveryReceipt && !is_null($this->deliveryReceiptCallback)) {

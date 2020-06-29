@@ -9,6 +9,10 @@ use Nexmo\Entity\Filter\FilterInterface;
 
 class AvailableNumbers implements FilterInterface
 {
+    const SEARCH_PATTERN_BEGIN = 0;
+    const SEARCH_PATTERN_CONTAINS = 1;
+    const SEARCH_PATTERN_ENDS = 2;
+
     /**
      * @var string
      */
@@ -30,7 +34,7 @@ class AvailableNumbers implements FilterInterface
     protected $pageSize = 10;
 
     /**
-     * @var int
+     * @var string
      */
     protected $pattern;
 
@@ -57,7 +61,7 @@ class AvailableNumbers implements FilterInterface
         }
         
         if (array_key_exists('pattern', $filter)) {
-            $this->setPattern((int) $filter['pattern']);
+            $this->setPattern($filter['pattern']);
             if (array_key_exists('search_pattern', $filter)) {
                 $this->setSearchPattern((int) $filter['search_pattern']);
             }
@@ -137,12 +141,12 @@ class AvailableNumbers implements FilterInterface
         return $this;
     }
 
-    public function getPattern() : ?int
+    public function getPattern() : ?string
     {
         return $this->pattern;
     }
 
-    public function setPattern(int $pattern) : self
+    public function setPattern(string $pattern) : self
     {
         $this->pattern = $pattern;
         return $this;

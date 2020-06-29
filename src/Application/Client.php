@@ -13,8 +13,10 @@ use Nexmo\Client\APIResource;
 use Nexmo\Client\ClientAwareTrait;
 use Nexmo\Entity\CollectionInterface;
 use Nexmo\Client\ClientAwareInterface;
-use Nexmo\Entity\Hydrator\HydratorInterface;
+use Nexmo\Entity\IterableAPICollection;
+use Nexmo\Entity\Hydrator\ArrayHydrator;
 use Nexmo\Entity\IterableServiceShimTrait;
+use Nexmo\Entity\Hydrator\HydratorInterface;
 
 class Client implements ClientAwareInterface, CollectionInterface, APIClient
 {
@@ -94,6 +96,18 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
         $application->fromArray($data);
 
         return $application;
+    }
+
+    public function getAll() : IterableAPICollection
+    {
+        $response = $this->api->search();
+        $response->setApiResource(clone $this->api);
+
+        $hydrator = new ArrayHydrator();
+        $hydrator->setPrototype(new Application());
+
+        $response->setHydrator($hydrator);
+        return $response;
     }
 
     /**
