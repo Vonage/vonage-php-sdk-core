@@ -1,0 +1,15 @@
+{
+    "message-count": "1",
+    "messages": [
+      {
+        "to": "447700900000",
+        "message-id": "0A0000000123ABCD1",
+        "status": "0",
+        "remaining-balance": "3.14159265",
+        "message-price": "0.03330000",
+        "network": "12345",
+        "client-ref": "my-personal-reference",
+        "account-ref": "customer1234"
+      }
+    ]
+  }
