@@ -14,17 +14,15 @@ use Nexmo\Client\Signature;
 use Zend\Diactoros\Request;
 use Nexmo\Client\APIResource;
 use Nexmo\Verify\Verification;
-use Nexmo\Application\Hydrator;
 use Nexmo\Entity\EntityInterface;
 use Nexmo\Client\Credentials\Basic;
 use Nexmo\Client\Credentials\OAuth;
 use Nexmo\Client\Factory\MapFactory;
-use Nexmo\SMS\ExceptionErrorHandler;
 use Nexmo\Client\Credentials\Keypair;
 use Nexmo\Client\Exception\Exception;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Nexmo\Client\Credentials\Container;
-use Nexmo\Call\Hydrator as CallHydrator;
 use Nexmo\Client\Factory\FactoryInterface;
 use Nexmo\Client\Credentials\SignatureSecret;
 use Nexmo\Client\Credentials\CredentialsInterface;
@@ -32,21 +30,22 @@ use Nexmo\Client\Credentials\CredentialsInterface;
 /**
  * Nexmo API Client, allows access to the API from PHP.
  *
- * @property \Nexmo\Message\Client $message
- * @property \Nexmo\Call\Collection|\Nexmo\Call\Call[] $calls
- *
  * @method \Nexmo\Account\Client account()
  * @method \Nexmo\Message\Client message()
  * @method \Nexmo\SMS\Client sms()
  * @method \Nexmo\Verify\Client  verify()
  * @method \Nexmo\Application\Client applications()
- * @method \Nexmo\Call\Collection calls()
+ * @method \Nexmo\Conversion\Client conversion()
+ * @method \Nexmo\Insights\Client insights()
  * @method \Nexmo\Numbers\Client numbers()
+ * @method \Nexmo\Redact\Client redact()
+ * @method \Nexmo\SMS\Client sms()
+ * @method \Nexmo\Verify\Client  verify()
  * @method \Nexmo\Voice\Client voice()
  */
 class Client
 {
-    const VERSION = '1.2.0';
+    const VERSION = '3.0.0';
 
     const BASE_API  = 'https://api.nexmo.com';
     const BASE_REST = 'https://rest.nexmo.com';
@@ -64,7 +63,7 @@ class Client
     protected $client;
 
     /**
-     * @var FactoryInterface
+     * @var ContainerInterface
      */
     protected $factory;
 
@@ -114,62 +113,25 @@ class Client
         }
 
         $this->setFactory(new MapFactory([
-            'account' => function ($factory) {
-                $api = $factory->get(APIResource::class);
-                $api
-                    ->setBaseUrl(self::BASE_REST)
-                    ->setIsHAL(false)
-                    ->setBaseUri('/account')
-                ;
-
-                return new \Nexmo\Account\Client($api);
-            },
-            'insights' => function ($factory) {
-                $api = $factory->get(APIResource::class);
-                $api->setIsHAL(false);
-
-                return new \Nexmo\Insights\Client($api);
-            },
+            // Legacy Namespaces
             'message' => 'Nexmo\Message\Client',
-            'verify'  => 'Nexmo\Verify\Client',
-            'applications' => function ($factory) {
-                $api = $factory->get(APIResource::class);
-                $api
-                    ->setBaseUri('/v2/applications')
-                    ->setCollectionName('applications')
-                ;
-
-                return new \Nexmo\Application\Client($api, new Hydrator());
-            },
-            'numbers' => 'Nexmo\Numbers\Client',
             'calls' => \Nexmo\Call\Collection::class,
-            'conversion' => 'Nexmo\Conversion\Client',
             'conversation' => 'Nexmo\Conversations\Collection',
             'user' => 'Nexmo\User\Collection',
-            'redact' => 'Nexmo\Redact\Client',
-            'voice' => function ($factory) {
-                /** @var APIResource $api */
-                $api = $factory->get(APIResource::class);
-                $api->setBaseUri('/v1/calls');
-                $api->setCollectionName('calls');
 
-                return new \Nexmo\Voice\Client($api);
-            },
-            'sms' => function ($factory) {
-                $api = $factory->get(APIResource::class);
-                $api
-                    ->setBaseUrl($api->getClient()->getRestUrl())
-                    ->setCollectionName('messages')
-                    ->setIsHAL(false)
-                    ->setErrorsOn200(true)
-                    ->setExceptionErrorHandler(new ExceptionErrorHandler())
-                ;
-                return new \Nexmo\SMS\Client($api);
-            },
+            // Registered Services by name
+            'account' => \Nexmo\Account\ClientFactory::class,
+            'applications' => \Nexmo\Application\ClientFactory::class,
+            'conversion' => \Nexmo\Conversion\ClientFactory::class,
+            'insights' => \Nexmo\Insights\ClientFactory::class,
+            'numbers' => \Nexmo\Numbers\ClientFactory::class,
+            'redact' => \Nexmo\Redact\ClientFactory::class,
+            'sms' => \Nexmo\SMS\ClientFactory::class,
+            'verify' => \Nexmo\Verify\ClientFactory::class,
+            'voice' => \Nexmo\Voice\ClientFactory::class,
+
+            // Additional utility classes
             APIResource::class => APIResource::class,
-            CallHydrator::class => function ($factory) {
-                return new CallHydrator($factory->getClient());
-            }
         ], $this));
     }
 
@@ -218,6 +180,11 @@ class Client
     {
         $this->factory = $factory;
         return $this;
+    }
+
+    public function getFactory() : ContainerInterface
+    {
+        return $this->factory;
     }
 
     /**
@@ -532,11 +499,11 @@ class Client
 
     public function __get($name)
     {
-        if (!$this->factory->hasApi($name)) {
+        if (!$this->factory->has($name)) {
             throw new \RuntimeException('no api namespace found: ' . $name);
         }
 
-        return $this->factory->getApi($name);
+        return $this->factory->get($name);
     }
 
     protected static function requiresBasicAuth(\Psr\Http\Message\RequestInterface $request)

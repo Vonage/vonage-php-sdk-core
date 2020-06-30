@@ -9,8 +9,9 @@
 namespace Nexmo\Client\Factory;
 
 use Nexmo\Client;
+use Psr\Container\ContainerInterface;
 
-class MapFactory implements FactoryInterface
+class MapFactory implements FactoryInterface, ContainerInterface
 {
     /**
      * Map of api namespaces to classes.
@@ -39,7 +40,7 @@ class MapFactory implements FactoryInterface
         $this->client = $client;
     }
 
-    public function has(string $key)
+    public function has($key)
     {
         return isset($this->map[$key]);
     }
@@ -52,7 +53,7 @@ class MapFactory implements FactoryInterface
         return $this->has($api);
     }
 
-    public function get(string $key)
+    public function get($key)
     {
         if (isset($this->cache[$key])) {
             return $this->cache[$key];
@@ -70,6 +71,9 @@ class MapFactory implements FactoryInterface
         } else {
             $class = $this->map[$key];
             $instance = new $class();
+            if (is_callable($instance)) {
+                $instance = $instance($this);
+            }
         }
 
         if ($instance instanceof Client\ClientAwareInterface) {
@@ -90,5 +94,10 @@ class MapFactory implements FactoryInterface
     public function getApi($api)
     {
         return $this->get($api);
+    }
+
+    public function set($key, $value)
+    {
+        $this->map[$key] = $value;
     }
 }

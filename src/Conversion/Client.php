@@ -2,9 +2,10 @@
 
 namespace Nexmo\Conversion;
 
-use Nexmo\Client\ClientAwareInterface;
-use Nexmo\Client\ClientAwareTrait;
 use Nexmo\Client\Exception;
+use Nexmo\Client\ClientAwareTrait;
+use Nexmo\Client\ClientAwareInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class Client implements ClientAwareInterface
 {
