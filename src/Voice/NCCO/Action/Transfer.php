@@ -42,15 +42,13 @@ class Transfer implements ActionInterface
 
     public function toNCCOArray(): array
     {
-        $data = [
+        return [
             'action' => 'transfer',
             'destination' => [
                 'type' => 'ncco',
                 $this->destinationType => $this->destination,
             ]
         ];
-
-        return $data;
     }
 
     public function jsonSerialize()

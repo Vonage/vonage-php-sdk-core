@@ -62,6 +62,38 @@ class Connect implements ActionInterface
     {
         $connect = new Connect($endpoint);
 
+        if (array_key_exists('timeout', $data)) {
+            $connect->setTimeout($data['timeout']);
+        }
+
+        if (array_key_exists('limit', $data)) {
+            $connect->setLimit($data['limit']);
+        }
+
+        if (array_key_exists('machineDetection', $data)) {
+            $connect->setMachineDetection($data['machineDetection']);
+        }
+
+        if (array_key_exists('from', $data)) {
+            $connect->setFrom($data['from']);
+        }
+
+        if (array_key_exists('eventType', $data)) {
+            $connect->setEventType($data['eventType']);
+        }
+
+        if (array_key_exists('ringbackTone', $data)) {
+            $connect->setRingbackTone($data['ringbackTone']);
+        }
+
+        if (array_key_exists('eventUrl', $data)) {
+            if (array_key_exists('eventMethod', $data)) {
+                $connect->setEventWebhook(new Webhook($data['eventUrl'], $data['eventMethod']));
+            } else {
+                $connect->setEventWebhook(new Webhook($data['eventUrl']));
+            }
+        }
+
         return $connect;
     }
 
