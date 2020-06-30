@@ -87,7 +87,6 @@ class Callback extends BaseCallback implements CallbackInterface
                 break;
             case 'has':
                 return isset($this->data[$property]);
-                break;
         }
 
         throw new \BadMethodCallException('method does not exist: ' . $name);
