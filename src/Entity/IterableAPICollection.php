@@ -11,14 +11,16 @@ namespace Nexmo\Entity;
 use \Iterator;
 use Countable;
 use Nexmo\Client;
-use Nexmo\Client\Exception;
 use Zend\Diactoros\Request;
 use Nexmo\Client\APIResource;
 use Nexmo\Client\ClientAwareTrait;
+use Nexmo\Client\Exception\Server;
 use Nexmo\Entity\Filter\EmptyFilter;
+use Nexmo\Client\Exception\Exception;
 use Nexmo\Client\ClientAwareInterface;
 use Psr\Http\Message\ResponseInterface;
 use Nexmo\Entity\Filter\FilterInterface;
+use Nexmo\Client\Exception\Request as RequestException;
 
 /**
  * Common code for iterating over a collection, and using the collection class to discover the API path.
@@ -114,11 +116,10 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
         return $this;
     }
     
-    public function hydrateEntity($data, $id = null)
+    public function hydrateEntity($data)
     {
         if ($this->hydrator) {
-            $object = $this->hydrator->hydrate($data);
-            return $object;
+            return $this->hydrator->hydrate($data);
         }
 
         return $data;
@@ -465,11 +466,11 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
         }
 
         if ($status >= 400 and $status < 500) {
-            $e = new Exception\Request($errorTitle, $status);
+            $e = new RequestException($errorTitle, $status);
         } elseif ($status >= 500 and $status < 600) {
-            $e = new Exception\Server($errorTitle, $status);
+            $e = new Server($errorTitle, $status);
         } else {
-            $e = new Exception\Exception('Unexpected HTTP Status Code');
+            $e = new Exception('Unexpected HTTP Status Code');
             throw $e;
         }
 

@@ -8,6 +8,8 @@
 
 namespace Nexmo;
 
+use Nexmo\Call\Collection;
+use PackageVersions\Versions;
 use Zend\Diactoros\Uri;
 use Http\Client\HttpClient;
 use Nexmo\Client\Signature;
@@ -120,12 +122,6 @@ class Client
         }
 
         $this->setFactory(new MapFactory([
-            // Legacy Namespaces
-            'message' => \Nexmo\Message\Client::class,
-            'calls' => \Nexmo\Call\Collection::class,
-            'conversation' => \Nexmo\Conversations\Collection::class,
-            'user' => \Nexmo\User\Collection::class,
-
             // Registered Services by name
             'account' => \Nexmo\Account\ClientFactory::class,
             'applications' => \Nexmo\Application\ClientFactory::class,
@@ -406,7 +402,7 @@ class Client
     * @param \Psr\Http\Message\RequestInterface $request
     * @return \Psr\Http\Message\ResponseInterface
     */
-    public function send(\Psr\Http\Message\RequestInterface $request)
+    public function send(RequestInterface $request)
     {
         if ($this->credentials instanceof Container) {
             if ($this->needsKeypairAuthentication($request)) {
@@ -455,9 +451,7 @@ class Client
 
         // Set the header. Build by joining all the parts we have with a space
         $request = $request->withHeader('User-Agent', implode(" ", $userAgent));
-
-        $response = $this->client->sendRequest($request);
-        return $response;
+        return $this->client->sendRequest($request);
     }
 
     protected function validateAppOptions($app)
@@ -522,7 +516,7 @@ class Client
         return $this->factory->get($name);
     }
 
-    protected static function requiresBasicAuth(\Psr\Http\Message\RequestInterface $request)
+    protected static function requiresBasicAuth(RequestInterface $request)
     {
         $path = $request->getUri()->getPath();
         $isSecretManagementEndpoint = strpos($path, '/accounts') === 0 && strpos($path, '/secrets') !== false;
@@ -531,15 +525,14 @@ class Client
         return $isSecretManagementEndpoint || $isApplicationV2;
     }
 
-    protected static function requiresAuthInUrlNotBody(\Psr\Http\Message\RequestInterface $request)
+    protected static function requiresAuthInUrlNotBody(RequestInterface $request)
     {
         $path = $request->getUri()->getPath();
-        $isRedactEndpoint = strpos($path, '/v1/redact') === 0;
 
-        return $isRedactEndpoint;
+        return strpos($path, '/v1/redact') === 0;
     }
 
-    protected function needsKeypairAuthentication(\Psr\Http\Message\RequestInterface $request)
+    protected function needsKeypairAuthentication(RequestInterface $request)
     {
         $path = $request->getUri()->getPath();
         $isCallEndpoint = strpos($path, '/v1/calls') === 0;
@@ -552,6 +545,6 @@ class Client
 
     protected function getVersion()
     {
-        return \PackageVersions\Versions::getVersion('nexmo/client-core');
+        return Versions::getVersion('nexmo/client-core');
     }
 }

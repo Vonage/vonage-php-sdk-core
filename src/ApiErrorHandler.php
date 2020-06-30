@@ -2,6 +2,9 @@
 
 namespace Nexmo;
 
+use Nexmo\Client\Exception\Server;
+use Nexmo\Client\Exception\Validation;
+use Nexmo\Client\Exception\Request;
 use Nexmo\Client\Exception;
 
 class ApiErrorHandler
@@ -27,16 +30,16 @@ class ApiErrorHandler
 
         // If it's a 5xx error, throw an exception
         if ($statusCodeType == 5) {
-            throw new Exception\Server($errorMessage, $statusCode);
+            throw new Server($errorMessage, $statusCode);
         }
 
         // Otherwise it's a 4xx, so we may have more context for the user
         // If it's a validation error, share that information
         if (isset($body['invalid_parameters'])) {
-            throw new Exception\Validation($errorMessage, $statusCode, null, $body['invalid_parameters']);
+            throw new Validation($errorMessage, $statusCode, null, $body['invalid_parameters']);
         }
 
         // Otherwise throw a normal error
-        throw new Exception\Request($errorMessage, $statusCode);
+        throw new Request($errorMessage, $statusCode);
     }
 }
