@@ -12,15 +12,15 @@ class OAuth extends AbstractCredentials implements CredentialsInterface
 {
     /**
      * Create a credential set with OAuth credentials.
-     *
-     * @param string $consumerToken
-     * @param string $consumerSecret
-     * @param string $token
-     * @param string $secret
     */
-    public function __construct($consumerToken, $consumerSecret, $token, $secret)
+    public function __construct(string $consumerToken, string $consumerSecret, string $token, string $secret)
     {
         //using keys that match guzzle
-        $this->credentials = array_combine(array('consumer_key', 'consumer_secret', 'token', 'token_secret'), func_get_args());
+        $this->credentials = [
+            'consumer_key' => $consumerToken,
+            'consumer_secret' => $consumerSecret,
+            'token' => $token,
+            'token_secret' => $secret
+        ];
     }
 }

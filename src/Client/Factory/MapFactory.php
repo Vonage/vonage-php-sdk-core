@@ -8,6 +8,7 @@
 
 namespace Nexmo\Client\Factory;
 
+use Nexmo\Client\ClientAwareInterface;
 use Nexmo\Client;
 use Psr\Container\ContainerInterface;
 
@@ -68,7 +69,7 @@ class MapFactory implements ContainerInterface
             }
         }
 
-        if ($instance instanceof Client\ClientAwareInterface) {
+        if ($instance instanceof ClientAwareInterface) {
             $instance->setClient($this->client);
         }
         $this->cache[$key] = $instance;

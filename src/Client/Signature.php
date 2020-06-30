@@ -63,13 +63,11 @@ class Signature
                 // md5hash needs the secret appended
                 $data .= $secret;
                 return md5($data);
-                break;
             case 'md5':
             case 'sha1':
             case 'sha256':
             case 'sha512':
                 return strtoupper(hash_hmac($signatureMethod, $data, $secret));
-                break;
             default:
                 throw new Exception('Unknown signature algorithm: '.$signatureMethod.'. Expected: md5hash, md5, sha1, sha256, or sha512');
         }

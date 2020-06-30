@@ -46,7 +46,7 @@ class APIResource implements ClientAwareInterface
      * Error handler to use when reviewing API responses
      * @var callable
      */
-    protected $exceptionErrorHandler = null;
+    protected $exceptionErrorHandler;
 
     /**
      * @var bool
@@ -145,9 +145,7 @@ class APIResource implements ClientAwareInterface
             }
         }
 
-        $body = json_decode($response->getBody()->getContents(), true);
-
-        return $body;
+        return json_decode($response->getBody()->getContents(), true);
     }
 
     public function getBaseUrl() : string
