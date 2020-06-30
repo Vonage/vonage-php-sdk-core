@@ -34,8 +34,7 @@ use Psr\Container\ContainerInterface;
  * Nexmo API Client, allows access to the API from PHP.
  *
  * @method \Nexmo\Account\Client account()
- * @method \Nexmo\Message\Client message()
- * @method \Nexmo\SMS\Client sms()
+  * @method \Nexmo\SMS\Client sms()
  * @method \Nexmo\Verify\Client  verify()
  * @method \Nexmo\Application\Client applications()
  * @method \Nexmo\Conversion\Client conversion()
@@ -468,28 +467,6 @@ class Client
                 }
             }
         }
-    }
-
-    public function serialize(EntityInterface $entity)
-    {
-        if ($entity instanceof Verification) {
-            return $this->verify()->serialize($entity);
-        }
-
-        throw new \RuntimeException('unknown class `' . get_class($entity) . '``');
-    }
-
-    public function unserialize($entity)
-    {
-        if (is_string($entity)) {
-            $entity = unserialize($entity);
-        }
-
-        if ($entity instanceof Verification) {
-            return $this->verify()->unserialize($entity);
-        }
-
-        throw new \RuntimeException('unknown class `' . get_class($entity) . '``');
     }
 
     public function __call($name, $args)
