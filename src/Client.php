@@ -8,15 +8,12 @@
 
 namespace Nexmo;
 
-use Nexmo\Call\Collection;
 use PackageVersions\Versions;
 use Laminas\Diactoros\Uri;
 use Http\Client\HttpClient;
 use Nexmo\Client\Signature;
 use Laminas\Diactoros\Request;
 use Nexmo\Client\APIResource;
-use Nexmo\Verify\Verification;
-use Nexmo\Entity\EntityInterface;
 use Nexmo\Client\Credentials\Basic;
 use Nexmo\Client\Credentials\OAuth;
 use Nexmo\Client\Factory\MapFactory;
@@ -25,7 +22,6 @@ use Nexmo\Client\Exception\Exception;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Nexmo\Client\Credentials\Container;
-use Nexmo\Client\Factory\FactoryInterface;
 use Nexmo\Client\Credentials\SignatureSecret;
 use Nexmo\Client\Credentials\CredentialsInterface;
 use Psr\Container\ContainerInterface;
@@ -34,8 +30,6 @@ use Psr\Container\ContainerInterface;
  * Nexmo API Client, allows access to the API from PHP.
  *
  * @method \Nexmo\Account\Client account()
-  * @method \Nexmo\SMS\Client sms()
- * @method \Nexmo\Verify\Client  verify()
  * @method \Nexmo\Application\Client applications()
  * @method \Nexmo\Conversion\Client conversion()
  * @method \Nexmo\Insights\Client insights()
