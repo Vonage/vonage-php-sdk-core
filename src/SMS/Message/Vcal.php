@@ -24,9 +24,8 @@ class SMS extends OutboundMessage
     public function toArray(): array
     {
         $data = ['vcal' => $this->getEvent()];
-        $data = $this->appendUniversalOptions($data);
 
-        return $data;
+        return $this->appendUniversalOptions($data);
     }
 
     public function getEvent() : string

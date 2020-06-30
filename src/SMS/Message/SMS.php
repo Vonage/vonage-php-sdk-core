@@ -31,9 +31,8 @@ class SMS extends OutboundMessage
     public function toArray(): array
     {
         $data = ['text' => $this->getMessage()];
-        $data = $this->appendUniversalOptions($data);
 
-        return $data;
+        return $this->appendUniversalOptions($data);
     }
 
     public function getMessage() : string

@@ -41,9 +41,7 @@ class WAPPush extends OutboundMessage
             'validity' => $this->getValidity(),
         ];
 
-        $data = $this->appendUniversalOptions($data);
-
-        return $data;
+        return $this->appendUniversalOptions($data);
     }
 
     public function getTitle() : string

@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Nexmo\SMS;
 
+use Nexmo\Client\Exception\Request;
+use Nexmo\Client\Exception\Server;
 use Nexmo\Client\Exception;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -14,15 +16,15 @@ class ExceptionErrorHandler
     {
         //check for valid data, as well as an error response from the API
         if ($response->getStatusCode() == '429') {
-            throw new Exception\Request('too many concurrent requests', $response->getStatusCode());
+            throw new Request('too many concurrent requests', $response->getStatusCode());
         }
 
         $data = json_decode($response->getBody()->getContents(), true);
         if (!isset($data['messages'])) {
             if (isset($data['error-code']) && isset($data['error-code-label'])) {
-                $e = new Exception\Request($data['error-code-label'], (int) $data['error-code']);
+                $e = new Request($data['error-code-label'], (int) $data['error-code']);
             } else {
-                $e = new Exception\Request('unexpected response from API');
+                $e = new Request('unexpected response from API');
             }
             
             $e->setEntity($data);
@@ -45,11 +47,11 @@ class ExceptionErrorHandler
 
                     throw $e;
                 case '5':
-                    $e = new Exception\Server($part['error-text'], (int) $part['status']);
+                    $e = new Server($part['error-text'], (int) $part['status']);
                     $e->setEntity($data);
                     throw $e;
                 default:
-                    $e = new Exception\Request($part['error-text'], (int) $part['status']);
+                    $e = new Request($part['error-text'], (int) $part['status']);
                     $e->setEntity($data);
                     throw $e;
             }

@@ -44,9 +44,7 @@ class Binary extends OutboundMessage
             $data['protocol-id'] = $this->getProtocolId();
         }
 
-        $data = $this->appendUniversalOptions($data);
-
-        return $data;
+        return $this->appendUniversalOptions($data);
     }
 
     public function getBody() : string
