@@ -3,7 +3,7 @@
 namespace Nexmo\Client;
 
 use Nexmo\Client;
-use Zend\Diactoros\Request;
+use Laminas\Diactoros\Request;
 use Nexmo\Entity\Filter\EmptyFilter;
 use Nexmo\Entity\Filter\FilterInterface;
 use Nexmo\Entity\IterableAPICollection;

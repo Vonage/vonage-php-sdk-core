@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Nexmo\SMS;
 
 use Psr\Http\Message\ServerRequestInterface;
-use Zend\Diactoros\ServerRequestFactory;
+use Laminas\Diactoros\ServerRequestFactory;
 
 class InboundSMS
 {

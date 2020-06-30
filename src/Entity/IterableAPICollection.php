@@ -11,7 +11,7 @@ namespace Nexmo\Entity;
 use \Iterator;
 use Countable;
 use Nexmo\Client;
-use Zend\Diactoros\Request;
+use Laminas\Diactoros\Request;
 use Nexmo\Client\APIResource;
 use Nexmo\Client\ClientAwareTrait;
 use Nexmo\Client\Exception\Server;

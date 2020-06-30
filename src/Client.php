@@ -10,10 +10,10 @@ namespace Nexmo;
 
 use Nexmo\Call\Collection;
 use PackageVersions\Versions;
-use Zend\Diactoros\Uri;
+use Laminas\Diactoros\Uri;
 use Http\Client\HttpClient;
 use Nexmo\Client\Signature;
-use Zend\Diactoros\Request;
+use Laminas\Diactoros\Request;
 use Nexmo\Client\APIResource;
 use Nexmo\Verify\Verification;
 use Nexmo\Entity\EntityInterface;
