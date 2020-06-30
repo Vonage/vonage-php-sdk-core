@@ -8,6 +8,7 @@
 
 namespace Nexmo\Insights;
 
+use Nexmo\Client\Exception\Request;
 use Nexmo\Client\APIClient;
 use Nexmo\Numbers\Number;
 use Nexmo\Client\Exception;
@@ -61,7 +62,7 @@ class Client implements APIClient
         return $standard;
     }
 
-    public function standard($number, bool $useCnam = false) : Standard
+    public function standard($number) : Standard
     {
         $insightsResults = $this->makeRequest('/ni/standard/json', $number);
         $standard = new Standard($insightsResults['national_format_number']);
@@ -113,7 +114,7 @@ class Client implements APIClient
      * This API returns a 200 on an error, so does not get caught by the normal
      * error checking. We check for a status and message manually.
      */
-    protected function getNIException(array $body) : Exception\Request
+    protected function getNIException(array $body) : Request
     {
         $status = $body['status'];
         $message = "Error: ";
@@ -127,8 +128,6 @@ class Client implements APIClient
         if (isset($body['error_text'])) {
             $message .= $body['error_text'];
         }
-
-        $e = new Exception\Request($message, $status);
-        return $e;
+        return new Request($message, $status);
     }
 }
