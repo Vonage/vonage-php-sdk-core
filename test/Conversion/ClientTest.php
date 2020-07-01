@@ -44,7 +44,6 @@ class ClientTest extends TestCase
         ;
 
         $this->conversionClient = new Client($this->apiResource);
-        $this->conversionClient->setClient($this->nexmoClient);
     }
 
     public function testSmsWithTimestamp()

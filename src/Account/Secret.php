@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace Nexmo\Account;
 
-use Nexmo\InvalidResponseException;
-
 class Secret
 {
     /**
