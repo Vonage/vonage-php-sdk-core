@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Nexmo\SMS\Message;
 
-class SMS extends OutboundMessage
+class Vcal extends OutboundMessage
 {
     /**
      * @var string

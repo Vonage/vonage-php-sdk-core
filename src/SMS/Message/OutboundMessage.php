@@ -6,17 +6,17 @@ namespace Nexmo\SMS\Message;
 abstract class OutboundMessage implements Message
 {
     /**
+     * @var ?string
+     */
+    protected $accountRef;
+
+    /**
      * @var string
      */
     protected $clientRef;
 
     /**
-     * @var array<string, string>
-     */
-    protected $customOptions = [];
-
-    /**
-     * @var string
+     * @var ?string
      */
     protected $deliveryReceiptCallback;
 
@@ -85,7 +85,7 @@ abstract class OutboundMessage implements Message
         return $this;
     }
 
-    public function getDeliveryReceiptCallback() : string
+    public function getDeliveryReceiptCallback() : ?string
     {
         return $this->deliveryReceiptCallback;
     }
@@ -126,17 +126,6 @@ abstract class OutboundMessage implements Message
         return $this;
     }
 
-    public function addCustomOption(string $key, string $value) : self
-    {
-        $this->customOptions[$key] = $value;
-        return $this;
-    }
-
-    public function getCustomOptions() : array
-    {
-        return $this->customOptions;
-    }
-
     /**
      * This adds any additional options to an individual SMS request
      * This allows the child classes to set their special request options,
@@ -145,27 +134,27 @@ abstract class OutboundMessage implements Message
     protected function appendUniversalOptions(array $data)
     {
         $data = array_merge($data, [
-            'to' => $this->to,
-            'from' => $this->from,
-            'type' => $this->type,
-            'ttl' => $this->ttl,
-            'status-report-req' => (int) $this->requestDeliveryReceipt,
+            'to' => $this->getTo(),
+            'from' => $this->getFrom(),
+            'type' => $this->getType(),
+            'ttl' => $this->getTtl(),
+            'status-report-req' => (int) $this->getRequestDeliveryReceipt(),
         ]);
 
-        if ($this->requestDeliveryReceipt && !is_null($this->deliveryReceiptCallback)) {
-            $data['callback'] = $this->deliveryReceiptCallback;
+        if ($this->getRequestDeliveryReceipt() && !is_null($this->getDeliveryReceiptCallback())) {
+            $data['callback'] = $this->getDeliveryReceiptCallback();
         }
 
-        if ($this->messageClass) {
-            $data['message-class'] = $this->messageClass;
+        if (!is_null($this->messageClass)) {
+            $data['message-class'] = $this->getMessageClass();
+        }
+
+        if ($this->accountRef) {
+            $data['account-ref'] = $this->getAccountRef();
         }
 
         if ($this->clientRef) {
-            $data['client-ref'] = $this->clientRef;
-        }
-
-        foreach ($this->customOptions as $key => $value) {
-            $data[$key] = $value;
+            $data['client-ref'] = $this->getClientRef();
         }
 
         return $data;
@@ -179,5 +168,21 @@ abstract class OutboundMessage implements Message
     public function getTo() : string
     {
         return $this->to;
+    }
+
+    public function getAccountRef() : ?string
+    {
+        return $this->accountRef;
+    }
+
+    public function setAccountRef(string $accountRef)
+    {
+        $this->accountRef = $accountRef;
+        return $this;
+    }
+
+    public function getType() : string
+    {
+        return $this->type;
     }
 }

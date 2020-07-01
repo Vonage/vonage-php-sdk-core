@@ -119,12 +119,12 @@ class InboundSMS
         
         if (array_key_exists('concat', $data)) {
             $this->concat = true;
-            $this->concatPart = $data['concat-part'];
+            $this->concatPart = (int) $data['concat-part'];
             $this->concatRef = $data['concat-ref'];
             $this->concatTotal = (int) $data['concat-total'];
         }
 
-        if (array_key_exists('data', $data)) {
+        if ($this->type === 'binary' && array_key_exists('data', $data)) {
             $this->data = $data['data'];
             $this->udh = $data['udh'];
         }
@@ -157,8 +157,7 @@ class InboundSMS
                 $params = $request->getQueryParams();
                 break;
             default:
-                $params = [];
-                break;
+                throw new \RuntimeException("Invalid request method for incoming SMS");
         }
 
         return new self($params);

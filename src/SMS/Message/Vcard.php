@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Nexmo\SMS\Message;
 
-class SMS extends OutboundMessage
+class Vcard extends OutboundMessage
 {
     /**
      * @var string
@@ -23,7 +23,7 @@ class SMS extends OutboundMessage
 
     public function toArray(): array
     {
-        $data = ['card' => $this->getCard()];
+        $data = ['vcard' => $this->getCard()];
         $data = $this->appendUniversalOptions($data);
 
         return $data;

@@ -56,17 +56,25 @@ class ClientTest extends TestCase
         $args = [
             'to' => '447700900000',
             'from' => '16105551212',
-            'text' => "Go To Gino's"
+            'text' => "Go To Gino's",
+            'account-ref' => 'customer1234',
+            'client-ref' => 'my-personal-reference'
         ];
 
         $this->nexmoClient->send(Argument::that(function (Request $request) use ($args) {
             $this->assertRequestJsonBodyContains('to', $args['to'], $request);
             $this->assertRequestJsonBodyContains('from', $args['from'], $request);
             $this->assertRequestJsonBodyContains('text', $args['text'], $request);
+            $this->assertRequestJsonBodyContains('account-ref', $args['account-ref'], $request);
+            $this->assertRequestJsonBodyContains('client-ref', $args['client-ref'], $request);
             return true;
         }))->willReturn($this->getResponse('send-success'));
 
         $message = new SMS($args['to'], $args['from'], $args['text']);
+        $message
+            ->setClientRef($args['client-ref'])
+            ->setAccountRef($args['account-ref'])
+        ;
         $response = $this->smsClient->send($message);
         
         $sentData = $response->current();
@@ -76,7 +84,8 @@ class ClientTest extends TestCase
         $this->assertSame("0.03330000", $sentData->getMessagePrice());
         $this->assertSame("12345", $sentData->getNetwork());
         $this->assertSame("3.14159265", $sentData->getRemainingBalance());
-        $this->assertSame(0, $sentData->getStatus());
+        $this->assertSame("customer1234", $sentData->getAccountRef());
+        $this->assertSame("my-personal-reference", $sentData->getClientRef());
     }
 
     public function testHandlesEmptyResponse()

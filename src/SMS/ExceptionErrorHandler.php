@@ -14,7 +14,7 @@ class ExceptionErrorHandler
     {
         //check for valid data, as well as an error response from the API
         if ($response->getStatusCode() == '429') {
-            throw new Exception\Request('too many concurrent requests', $response->getStatusCode());
+            throw new ThrottleException('Too many concurrent requests', $response->getStatusCode());
         }
 
         $data = json_decode($response->getBody()->getContents(), true);
