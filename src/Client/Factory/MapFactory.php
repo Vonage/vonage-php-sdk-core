@@ -41,12 +41,12 @@ class MapFactory implements ContainerInterface
         $this->client = $client;
     }
 
-    public function has(string $key)
+    public function has($key)
     {
         return isset($this->map[$key]);
     }
 
-    public function get(string $key)
+    public function get($key)
     {
         if (isset($this->cache[$key])) {
             return $this->cache[$key];

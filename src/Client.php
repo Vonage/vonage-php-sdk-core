@@ -24,7 +24,6 @@ use Psr\Http\Message\RequestInterface;
 use Nexmo\Client\Credentials\Container;
 use Nexmo\Client\Credentials\SignatureSecret;
 use Nexmo\Client\Credentials\CredentialsInterface;
-use Psr\Container\ContainerInterface;
 
 /**
  * Nexmo API Client, allows access to the API from PHP.
