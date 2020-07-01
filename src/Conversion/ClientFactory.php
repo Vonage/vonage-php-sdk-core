@@ -15,10 +15,7 @@ class ClientFactory
     {
         /** @var APIResource $api */
         $api = $container->get(APIResource::class);
-        $api
-            ->setBaseUrl($api->getClient()->getRestUrl())
-            ->setIsHAL(false)
-        ;
+        $api->setBaseUri('/conversions/');
 
         return new Client($api);
     }

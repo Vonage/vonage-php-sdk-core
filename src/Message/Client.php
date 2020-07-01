@@ -20,6 +20,7 @@ use Nexmo\Client\Exception\ThrottleException;
 
 /**
  * Class Client
+ * @deprecated Use \Nexmo\SMS\Client instead
  * @method Text sendText(string $to, string $from, string $text, array $additional = []) Send a Test Message
  */
 class Client implements ClientAwareInterface

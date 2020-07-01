@@ -114,10 +114,10 @@ class Client
 
         $this->setFactory(new MapFactory([
             // Legacy Namespaces
-            'message' => 'Nexmo\Message\Client',
+            'message' => \Nexmo\Message\Client::class,
             'calls' => \Nexmo\Call\Collection::class,
-            'conversation' => 'Nexmo\Conversations\Collection',
-            'user' => 'Nexmo\User\Collection',
+            'conversation' => \Nexmo\Conversations\Collection::class,
+            'user' => \Nexmo\User\Collection::class,
 
             // Registered Services by name
             'account' => \Nexmo\Account\ClientFactory::class,
