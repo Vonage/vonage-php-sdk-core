@@ -4,39 +4,25 @@ namespace Nexmo\Conversion;
 
 use Nexmo\Client\APIClient;
 use Nexmo\Client\APIResource;
-use Nexmo\Client\ClientAwareTrait;
 use Nexmo\Client\Exception\Server;
 use Nexmo\Client\Exception\Request;
 use Nexmo\Client\Exception\Exception;
-use Nexmo\Client\ClientAwareInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class Client implements ClientAwareInterface, APIClient
+class Client implements APIClient
 {
-    use ClientAwareTrait;
-
     /**
      * @var APIResource
      */
     protected $api;
 
-    public function __construct(APIResource $api = null)
+    public function __construct(APIResource $api)
     {
         $this->api = $api;
     }
 
     public function getAPIResource(): APIResource
     {
-        if (is_null($this->api)) {
-            $api = new APIResource();
-            $api
-                ->setBaseUri('/conversions/')
-                ->setClient($this->getClient())
-            ;
-
-            $this->api = $api;
-        }
-
         return $this->api;
     }
 
