@@ -1,23 +1,25 @@
 <?php
 declare(strict_types=1);
 
-namespace NexmoTest\SMS;
+namespace NexmoTest\SMS\Webhook;
 
-use InvalidArgumentException;
-use Nexmo\SMS\InboundSMS;
-use PHPUnit\Framework\TestCase;
 use RuntimeException;
+use InvalidArgumentException;
+use Nexmo\SMS\Webhook\Factory;
+use PHPUnit\Framework\TestCase;
+use Nexmo\SMS\Webhook\InboundSMS;
 use Zend\Diactoros\ServerRequest;
+use Zend\Diactoros\Request\Serializer;
 use Zend\Diactoros\ServerRequestFactory;
 
 class InboundSMSTest extends TestCase
 {
     public function testCanCreateFromFormPostServerRequest()
     {
-        parse_str(file_get_contents(__DIR__ . '/requests/inbound.txt'), $expected);
+        $expected = $this->getQueryStringFromRequest('inbound');
 
-        $request = $this->getServerRequest('inbound', 'POST');
-        $inboundSMS = InboundSMS::createFromRequest($request);
+        $request = $this->getServerRequest('inbound', 'GET');
+        $inboundSMS = Factory::createFromRequest($request);
 
         $this->assertSame($expected['msisdn'], $inboundSMS->getMsisdn());
         $this->assertSame($expected['msisdn'], $inboundSMS->getFrom());
@@ -34,10 +36,10 @@ class InboundSMSTest extends TestCase
 
     public function testCanCreateIncomingBinaryMessage()
     {
-        parse_str(file_get_contents(__DIR__ . '/requests/inbound-binary.txt'), $expected);
+        $expected = $this->getQueryStringFromRequest('inbound-binary');
 
-        $request = $this->getServerRequest('inbound-binary', 'POST');
-        $inboundSMS = InboundSMS::createFromRequest($request);
+        $request = $this->getServerRequest('inbound-binary', 'GET');
+        $inboundSMS = Factory::createFromRequest($request);
 
         $this->assertSame($expected['msisdn'], $inboundSMS->getMsisdn());
         $this->assertSame($expected['msisdn'], $inboundSMS->getFrom());
@@ -52,12 +54,11 @@ class InboundSMSTest extends TestCase
 
     public function testCanCreateFromConcatMessageFormPostServerRequest()
     {
-        parse_str(file_get_contents(__DIR__ . '/requests/inbound-long.txt'), $expected);
+        $expected = $this->getQueryStringFromRequest('inbound-long');
 
-        $request = $this->getServerRequest('inbound-long', 'POST');
-        $inboundSMS = InboundSMS::createFromRequest($request);
+        $request = $this->getServerRequest('inbound-long');
+        $inboundSMS = Factory::createFromRequest($request);
 
-        $this->assertSame($expected['api-key'], $inboundSMS->getApiKey());
         $this->assertSame($expected['msisdn'], $inboundSMS->getMsisdn());
         $this->assertSame($expected['msisdn'], $inboundSMS->getFrom());
         $this->assertSame($expected['to'], $inboundSMS->getTo());
@@ -75,20 +76,20 @@ class InboundSMSTest extends TestCase
     public function testThrowRuntimeExceptionWhenInvalidRequestDetected()
     {
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage("Invalid request method for incoming SMS");
+        $this->expectExceptionMessage("Invalid method for incoming webhook");
 
         $factory = new ServerRequestFactory();
         $request = $factory->createServerRequest('DELETE', '/');
 
-        InboundSMS::createFromRequest($request);
+        Factory::createFromRequest($request);
     }
 
     public function testCanCreateFromJSONPostServerRequest()
     {
-        $expected = json_decode(file_get_contents(__DIR__ . '/requests/json.txt'), true);
+        $expected = $this->getBodyFromRequest('json');
 
-        $request = $this->getServerRequest('json', 'POST', ['Content-Type' => 'application/json']);
-        $inboundSMS = InboundSMS::createFromRequest($request);
+        $request = $this->getServerRequest('json');
+        $inboundSMS = Factory::createFromRequest($request);
 
         $this->assertSame($expected['msisdn'], $inboundSMS->getMsisdn());
         $this->assertSame($expected['to'], $inboundSMS->getTo());
@@ -104,7 +105,7 @@ class InboundSMSTest extends TestCase
 
     public function testCanCreateFromRawArray()
     {
-        parse_str(file_get_contents(__DIR__ . '/requests/inbound.txt'), $expected);
+        $expected = $this->getQueryStringFromRequest('inbound');
 
         $inboundSMS = new InboundSMS($expected);
 
@@ -123,10 +124,10 @@ class InboundSMSTest extends TestCase
 
     public function testCanCreateFromGetWithBodyServerRequest()
     {
-        parse_str(file_get_contents(__DIR__ . '/requests/inbound.txt'), $expected);
+        $expected = $this->getQueryStringFromRequest('inbound');
 
-        $request = $this->getServerRequest();
-        $inboundSMS = InboundSMS::createFromRequest($request);
+        $request = $this->getServerRequest('inbound');
+        $inboundSMS = Factory::createFromRequest($request);
 
         $this->assertSame($expected['msisdn'], $inboundSMS->getMsisdn());
         $this->assertSame($expected['to'], $inboundSMS->getTo());
@@ -146,37 +147,40 @@ class InboundSMSTest extends TestCase
         $this->expectExceptionMessage('Incoming SMS missing required data `msisdn`');
 
         $request = $this->getServerRequest('invalid');
-        InboundSMS::createFromRequest($request);
+        Factory::createFromRequest($request);
     }
 
-    protected function getServerRequest(
-        string $type = 'inbound',
-        string $method = 'GET',
-        array $headers = [],
-        string $url = 'https://ohyt2ctr9l0z.runscope.net/sms_post'
-    ) {
-        $data = file_get_contents(__DIR__ . '/requests/' . $type . '.txt');
-        $params = [];
-        parse_str($data, $params);
+    protected function getQueryStringFromRequest(string $requestName)
+    {
+        $text = file_get_contents(__DIR__ . '/../requests/' . $requestName . '.txt');
+        $request = Serializer::fromString($text);
+        parse_str($request->getUri()->getQuery(), $query);
 
-        $query = [];
-        $parsed = null;
+        return $query;
+    }
 
-        switch (strtoupper($method)) {
-            case 'GET':
-                $query = $params;
-                $body = 'php://memory';
-                break;
-            default:
-                $body = fopen(__DIR__ . '/requests/' . $type . '.txt', 'r');
-                $query = [];
-                $parsed = $params;
-                if (isset($headers['Content-Type']) && $headers['Content-Type'] === 'application/json') {
-                    $parsed = null;
-                }
-                break;
-        }
+    protected function getBodyFromRequest(string $requestName)
+    {
+        $text = file_get_contents(__DIR__ . '/../requests/' . $requestName . '.txt');
+        $request = Serializer::fromString($text);
+        return json_decode($request->getBody()->getContents(), true);
+    }
 
-        return new ServerRequest([], [], $url, $method, $body, $headers, [], $query, $parsed);
+    protected function getServerRequest(string $requestName)
+    {
+        $text = file_get_contents(__DIR__ . '/../requests/' . $requestName . '.txt');
+        $request = Serializer::fromString($text);
+        parse_str($request->getUri()->getQuery(), $query);
+
+        return new ServerRequest(
+            [],
+            [],
+            $request->getHeader('Host')[0],
+            $request->getMethod(),
+            $request->getBody(),
+            $request->getHeaders(),
+            [],
+            $query
+        );
     }
 }

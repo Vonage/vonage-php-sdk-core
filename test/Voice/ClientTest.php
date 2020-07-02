@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 use Nexmo\Voice\NCCO\Action\Talk;
 use NexmoTest\Psr7AssertionTrait;
 use Nexmo\Voice\Client as VoiceClient;
-use Nexmo\Voice\Event;
+use Nexmo\Voice\Webhook\Event;
 use Nexmo\Voice\Filter\VoiceFilter;
 use Nexmo\Voice\NCCO\Action\Transfer;
 use Nexmo\Voice\OutboundCall;

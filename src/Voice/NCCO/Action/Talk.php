@@ -112,12 +112,6 @@ class Talk implements ActionInterface
         return $this;
     }
 
-    public function setText(string $text) : self
-    {
-        $this->text = $text;
-        return $this;
-    }
-
     public function setVoiceName(string $name) : self
     {
         $this->voiceName = $name;

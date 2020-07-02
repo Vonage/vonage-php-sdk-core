@@ -5,11 +5,12 @@ namespace Nexmo\Voice;
 
 use Nexmo\Client\APIClient;
 use Nexmo\Client\APIResource;
-use Nexmo\Entity\Filter\FilterInterface;
-use Nexmo\Entity\Hydrator\ArrayHydrator;
-use Nexmo\Entity\IterableAPICollection;
 use Nexmo\Voice\NCCO\Action\Talk;
 use Nexmo\Voice\NCCO\Action\Transfer;
+use Nexmo\Voice\Webhook\Event;
+use Nexmo\Entity\IterableAPICollection;
+use Nexmo\Entity\Filter\FilterInterface;
+use Nexmo\Entity\Hydrator\ArrayHydrator;
 
 class Client implements APIClient
 {

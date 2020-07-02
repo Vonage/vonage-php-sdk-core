@@ -98,18 +98,6 @@ class Stream implements ActionInterface
         return $this;
     }
 
-    public function setText(string $text) : self
-    {
-        $this->text = $text;
-        return $this;
-    }
-
-    public function setVoiceName(string $name) : self
-    {
-        $this->voiceName = $name;
-        return $this;
-    }
-
     /**
      * @return array{action: string, bargeIn: bool, level: float, loop: int, streamUrl: string}
      */

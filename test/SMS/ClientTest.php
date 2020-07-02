@@ -283,7 +283,6 @@ class ClientTest extends TestCase
         ;
 
         $this->smsClient->sendAlert('447700900000', ['key' => 'value']);
-        
     }
 
     /**

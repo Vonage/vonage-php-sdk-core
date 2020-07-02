@@ -1,10 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Nexmo\SMS;
-
-use Psr\Http\Message\ServerRequestInterface;
-use Zend\Diactoros\ServerRequestFactory;
+namespace Nexmo\SMS\Webhook;
 
 class InboundSMS
 {
@@ -132,35 +129,6 @@ class InboundSMS
         if (array_key_exists('timestamp', $data)) {
             $this->timestamp = (int) $data['timestamp'];
         }
-    }
-
-    public static function createFromGlobals() : InboundSMS
-    {
-        $request = ServerRequestFactory::fromGlobals();
-        return self::createFromRequest($request);
-    }
-
-    public static function createFromRequest(ServerRequestInterface $request) : InboundSMS
-    {
-        $contentTypes = $request->getHeader('Content-Type');
-
-        $isApplicationJson = false;
-        if (count($contentTypes) && $contentTypes[0] === 'application/json') {
-            $isApplicationJson = true;
-        }
-
-        switch ($request->getMethod()) {
-            case 'POST':
-                $params = $isApplicationJson ? json_decode($request->getBody()->getContents(), true) : $request->getParsedBody();
-                break;
-            case 'GET':
-                $params = $request->getQueryParams();
-                break;
-            default:
-                throw new \RuntimeException("Invalid request method for incoming SMS");
-        }
-
-        return new self($params);
     }
 
     public function getApiKey()

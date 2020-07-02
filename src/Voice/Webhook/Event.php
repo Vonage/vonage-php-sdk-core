@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Nexmo\Voice;
+namespace Nexmo\Voice\Webhook;
 
 class Event
 {
@@ -98,7 +98,7 @@ class Event
         $this->duration = $event['duration'] ?? null;
         $this->price = $event['price'] ?? null;
 
-        if (array_key_exists('start_time', $event)) {
+        if (array_key_exists('start_time', $event) && !is_null($event['start_time'])) {
             $this->startTime = new \DateTimeImmutable($event['start_time']);
         }
 
