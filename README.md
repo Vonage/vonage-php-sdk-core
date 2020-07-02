@@ -70,7 +70,7 @@ Examples
 
 ### Sending a Message
 
-To use [Nexmo's SMS API][doc_sms] to send an SMS message, call the `$client->message()->send()` method.
+To use [Nexmo's SMS API][doc_sms] to send an SMS message, call the `$client->sms()->send()` method.
 
 **A message object** is is used to create the SMS messages. Each message type can be constructed with the 
 required parameters, and a fluent interface provides access to optional parameters.
@@ -83,7 +83,7 @@ $text->setClientRef('test-message');
 The message object is passed to the `send` method:
 
 ```php
-$response = $client->message()->send($text);
+$response = $client->sms()->send($text);
 ```
     
 Once sent, the message object can be used to access the response data.
