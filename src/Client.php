@@ -70,7 +70,7 @@ class Client
     /**
      * @var array
      */
-    protected $options = [];
+    protected $options = ['squelch' => true];
 
     /**
      * Create a new API client using the provided credentials.
@@ -90,7 +90,7 @@ class Client
 
         $this->credentials = $credentials;
 
-        $this->options = $options;
+        $this->options = array_merge($this->options, $options);
 
         // If they've provided an app name, validate it
         if (isset($options['app'])) {
@@ -133,6 +133,22 @@ class Client
             // Additional utility classes
             APIResource::class => APIResource::class,
         ], $this));
+
+        // Disable throwing E_USER_DEPRECATED notices by default, the user can turn it on during development
+        if (array_key_exists('squelch', $this->options) && $this->options['squelch']) {
+            set_error_handler(
+                function (
+                    int $errno,
+                    string $errstr,
+                    string $errfile,
+                    int $errline,
+                    array $errorcontext
+                ) {
+                    return true;
+                },
+                E_USER_DEPRECATED
+            );
+        }
     }
 
     public function getRestUrl()
