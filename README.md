@@ -584,6 +584,31 @@ Check out the [documentation](https://developer.nexmo.com/number-insight/code-sn
 
 ## Troubleshooting
 
+### Checking for Deprecated Features
+
+Over time, the Nexmo APIs evolve and add new features, change how existing 
+features work, and deprecate and remove older methods and features. To help
+developers know when deprecation changes are being made, the SDK will trigger
+an `E_USER_DEPRECATION` warning. These warnings will not stop the exectution
+of code, but can be an annoyance in production environments.
+
+To help with this, by default these notices are supressed. In development,
+you can enable these warnings by passing an additional configuration option
+to the `\Nexmo\Client` constructor, called `show_deprecations`. Enabling this
+option will show all deprecation notices.
+
+```php
+$client = new Nexmo\Client(
+    new Nexmo\Client\Credentials\Basic(API_KEY, API_SECRET),
+    [
+        'show_deprecations' => true
+    ]
+);
+```
+
+If you notice an excessive amount of deprecation notices in production
+environments, make sure that this configuration option is absent, or at least
+set to `false`.
 
 ### `unable to get local issuer certificate`
 

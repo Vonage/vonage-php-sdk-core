@@ -45,7 +45,7 @@ use Nexmo\Client\Credentials\CredentialsInterface;
  */
 class Client
 {
-    const VERSION = '3.0.0';
+    const VERSION = '2.2.0';
 
     const BASE_API  = 'https://api.nexmo.com';
     const BASE_REST = 'https://rest.nexmo.com';
@@ -70,7 +70,7 @@ class Client
     /**
      * @var array
      */
-    protected $options = ['squelch' => true];
+    protected $options = ['show_deprecations' => false];
 
     /**
      * Create a new API client using the provided credentials.
@@ -135,7 +135,7 @@ class Client
         ], $this));
 
         // Disable throwing E_USER_DEPRECATED notices by default, the user can turn it on during development
-        if (array_key_exists('squelch', $this->options) && $this->options['squelch']) {
+        if (array_key_exists('show_deprecations', $this->options) && !$this->options['show_deprecations']) {
             set_error_handler(
                 function (
                     int $errno,
