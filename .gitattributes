@@ -9,5 +9,5 @@
 /README.md export-ignore
 
 # Ignore all differences in line endings for requests
-/test/SMS/requests        -crlf
-/test/Voice/requests      -crlf
+/test/SMS/requests/* text eol=crlf
+/test/Voice/requests/* text eol=crlf
