@@ -11,7 +11,7 @@ use Psr\Container\ContainerInterface;
  */
 class ClientFactory
 {
-    public function __invoke(ContainerInterface $container)
+    public function __invoke(ContainerInterface $container) : Client
     {
         /** @var APIResource $api */
         $api = $container->get(APIResource::class);
