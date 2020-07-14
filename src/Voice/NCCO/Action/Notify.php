@@ -17,9 +17,10 @@ class Notify implements ActionInterface
      */
     protected $eventWebhook;
 
-    public function __construct(array $payload)
+    public function __construct(array $payload, Webhook $eventWebhook)
     {
         $this->payload = $payload;
+        $this->eventWebhook = $eventWebhook;
     }
 
     /**
@@ -27,19 +28,17 @@ class Notify implements ActionInterface
      */
     public static function factory(array $payload, array $data): Notify
     {
-        $action = new Notify($payload);
-
         if (array_key_exists('eventUrl', $data)) {
             if (array_key_exists('eventMethod', $data)) {
                 $webhook = new Webhook($data['eventUrl'], $data['eventMethod']);
             } else {
                 $webhook = new Webhook($data['eventUrl']);
             }
-            
-            $action->setEventWebhook($webhook);
+        } else {
+            throw new \InvalidArgumentException('Must supply at least an eventUrl for Notify NCCO');
         }
 
-        return $action;
+        return new Notify($payload, $webhook);
     }
 
     /**
@@ -55,18 +54,12 @@ class Notify implements ActionInterface
      */
     public function toNCCOArray(): array
     {
-        $data = [
+        return [
             'action' => 'notify',
             'payload' => $this->getPayload(),
+            'eventUrl' => $this->getEventWebhook()->getUrl(),
+            'eventMethod' => $this->getEventWebhook()->getMethod(),
         ];
-
-        $eventWebhook = $this->getEventWebhook();
-        if ($eventWebhook) {
-            $data['eventUrl'] = $eventWebhook->getUrl();
-            $data['eventMethod'] = $eventWebhook->getMethod();
-        }
-
-        return $data;
     }
 
     public function getEventWebhook() : ?Webhook
