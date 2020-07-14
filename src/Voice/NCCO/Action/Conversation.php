@@ -50,12 +50,6 @@ class Conversation implements ActionInterface
         return $this->name;
     }
 
-    public function setName(string $name) : self
-    {
-        $this->name = $name;
-        return $this;
-    }
-
     public function getMusicOnHoldUrl() : ?string
     {
         return $this->musicOnHoldUrl;
@@ -165,15 +159,21 @@ class Conversation implements ActionInterface
         }
 
         if (array_key_exists('startOnEnter', $data)) {
-            $talk->setStartOnEnter($data['startOnEnter']);
+            $talk->setStartOnEnter(
+                filter_var($data['startOnEnter'], FILTER_VALIDATE_BOOLEAN, ['flags' => FILTER_NULL_ON_FAILURE])
+            );
         }
 
         if (array_key_exists('endOnExit', $data)) {
-            $talk->setEndOnExit($data['endOnExit']);
+            $talk->setEndOnExit(
+                filter_var($data['endOnExit'], FILTER_VALIDATE_BOOLEAN, ['flags' => FILTER_NULL_ON_FAILURE])
+            );
         }
 
         if (array_key_exists('record', $data)) {
-            $talk->setRecord($data['record']);
+            $talk->setRecord(
+                filter_var($data['record'], FILTER_VALIDATE_BOOLEAN, ['flags' => FILTER_NULL_ON_FAILURE])
+            );
         }
 
         if (array_key_exists('canSpeak', $data)) {
@@ -203,14 +203,14 @@ class Conversation implements ActionInterface
         $data = [
             'action' => 'conversation',
             'name' => $this->getName(),
-            'startOnEnter' => $this->getStartOnEnter(),
-            'endOnExit' => $this->getEndOnExit(),
-            'record' => $this->getRecord(),
+            'startOnEnter' => $this->getStartOnEnter() ? 'true' : 'false',
+            'endOnExit' => $this->getEndOnExit() ? 'true' : 'false',
+            'record' => $this->getRecord() ? 'true' : 'false',
         ];
 
         $music = $this->getMusicOnHoldUrl();
         if ($music) {
-            $data['musicOnHold'] = [$music];
+            $data['musicOnHoldUrl'] = [$music];
         }
 
         $canSpeak = $this->getCanSpeak();

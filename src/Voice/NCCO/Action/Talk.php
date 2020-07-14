@@ -43,15 +43,21 @@ class Talk implements ActionInterface
         $talk = new Talk($text);
 
         if (array_key_exists('bargeIn', $data)) {
-            $talk->setBargeIn($data['bargeIn']);
+            $talk->setBargeIn(
+                filter_var($data['bargeIn'], FILTER_VALIDATE_BOOLEAN, ['flags' => FILTER_NULL_ON_FAILURE])
+            );
         }
 
         if (array_key_exists('level', $data)) {
-            $talk->setLevel($data['level']);
+            $talk->setLevel(
+                filter_var($data['level'], FILTER_VALIDATE_FLOAT, ['flags' => FILTER_NULL_ON_FAILURE])
+            );
         }
 
         if (array_key_exists('loop', $data)) {
-            $talk->setLoop($data['loop']);
+            $talk->setLoop(
+                filter_var($data['loop'], FILTER_VALIDATE_INT, ['flags' => FILTER_NULL_ON_FAILURE])
+            );
         }
 
         if (array_key_exists('voiceName', $data)) {
@@ -125,9 +131,9 @@ class Talk implements ActionInterface
     {
         return [
             'action' => 'talk',
-            'bargeIn' => $this->getBargeIn(),
-            'level' => $this->getLevel(),
-            'loop' => $this->getLoop(),
+            'bargeIn' => $this->getBargeIn() ? 'true' : 'false',
+            'level' => (string) $this->getLevel(),
+            'loop' => (string) $this->getLoop(),
             'text' => $this->getText(),
             'voiceName' => $this->getVoiceName(),
         ];

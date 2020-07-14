@@ -30,7 +30,7 @@ class Websocket implements EndpointInterface
         $this->setHeaders($headers);
     }
 
-    public static function factory(string $uri, array $data) : Websocket
+    public static function factory(string $uri, array $data = []) : Websocket
     {
         $endpoint = new Websocket($uri);
 

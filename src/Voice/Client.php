@@ -11,6 +11,7 @@ use Nexmo\Voice\Webhook\Event;
 use Nexmo\Entity\IterableAPICollection;
 use Nexmo\Entity\Filter\FilterInterface;
 use Nexmo\Entity\Hydrator\ArrayHydrator;
+use Nexmo\Voice\NCCO\NCCO;
 
 class Client implements APIClient
 {
@@ -57,8 +58,8 @@ class Client implements APIClient
             $json['machine_detection'] = $call->getMachineDetection();
         }
 
-        $json['length_timer'] = $call->getLengthTimer();
-        $json['ringing_timer'] = $call->getRingingTimer();
+        $json['length_timer'] = (string) $call->getLengthTimer();
+        $json['ringing_timer'] = (string) $call->getRingingTimer();
 
         $event = $this->api->create($json);
         $event['to'] = $call->getTo()->getId();
@@ -119,8 +120,8 @@ class Client implements APIClient
         $response = $this->api->update($callId . '/talk', [
             'text' => $action->getText(),
             'voice_name' => $action->getVoiceName(),
-            'loop' => $action->getLoop(),
-            'level' => $action->getLevel(),
+            'loop' => (string) $action->getLoop(),
+            'level' => (string) $action->getLevel(),
         ]);
 
         return $response;
@@ -162,14 +163,30 @@ class Client implements APIClient
     {
         return $this->api->update($callId . '/stream', [
             'stream_url' => [$url],
-            'loop' => $loop,
-            'level' => $volumeLevel,
+            'loop' => (string) $loop,
+            'level' => (string) $volumeLevel,
         ]);
     }
 
-    public function transferCall(string $callId, Transfer $transfer) : void
+    public function transferCallWithNCCO(string $callId, NCCO $ncco) : void
     {
-        $this->api->update($callId, $transfer->toNCCOArray());
+        $this->api->update($callId, [
+            'destination' => [
+                'action' => 'transfer',
+            ],
+            'type' => 'ncco',
+            'ncco' => $ncco->toArray()
+        ]);
+    }
+
+    public function transferCallWithUrl(string $callId, string $url) : void
+    {
+        $this->api->update($callId, [
+            'destination' => [
+                'action' => 'transfer',
+            ],
+            'url' => [$url],
+        ]);
     }
 
     public function unearmuffCall(string $callId) : void

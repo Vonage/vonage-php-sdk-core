@@ -29,12 +29,12 @@ class VoiceFilter implements FilterInterface
     protected $status;
 
     /**
-     * @var \DateTime
+     * @var \DateTimeImmutable
      */
     protected $dateStart;
 
     /**
-     * @var \DateTime
+     * @var \DateTimeImmutable
      */
     protected $dateEnd;
 
@@ -96,24 +96,24 @@ class VoiceFilter implements FilterInterface
         return $this;
     }
 
-    public function getDateStart() : ?\DateTime
+    public function getDateStart() : ?\DateTimeImmutable
     {
         return $this->dateStart;
     }
 
-    public function setDateStart(\DateTimeInterface $dateStart) : self
+    public function setDateStart(\DateTimeImmutable $dateStart) : self
     {
         $dateStart = $dateStart->setTimezone(new DateTimeZone('Z'));
         $this->dateStart = $dateStart;
         return $this;
     }
 
-    public function getDateEnd() : ?\DateTime
+    public function getDateEnd() : ?\DateTimeImmutable
     {
         return $this->dateEnd;
     }
 
-    public function setDateEnd(\DateTimeInterface $dateEnd) : self
+    public function setDateEnd(\DateTimeImmutable $dateEnd) : self
     {
         $dateEnd = $dateEnd->setTimezone(new DateTimeZone('Z'));
         $this->dateEnd = $dateEnd;
@@ -149,6 +149,10 @@ class VoiceFilter implements FilterInterface
 
     public function setOrder(string $order) : self
     {
+        if ($order !== self::ORDER_ASC && $order !== self::ORDER_DESC) {
+            throw new \InvalidArgumentException('Order must be `asc` or `desc`');
+        }
+
         $this->order = $order;
         return $this;
     }

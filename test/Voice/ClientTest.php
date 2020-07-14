@@ -16,7 +16,6 @@ use NexmoTest\Psr7AssertionTrait;
 use Nexmo\Voice\Client as VoiceClient;
 use Nexmo\Voice\Webhook\Event;
 use Nexmo\Voice\Filter\VoiceFilter;
-use Nexmo\Voice\NCCO\Action\Transfer;
 use Nexmo\Voice\OutboundCall;
 use Nexmo\Voice\Webhook;
 use Psr\Http\Message\RequestInterface;
@@ -55,6 +54,11 @@ class ClientTest extends TestCase
         $this->voiceClient = new VoiceClient($this->api);
     }
 
+    public function testHasAPI()
+    {
+        $this->assertTrue($this->voiceClient->getAPIResource() instanceof APIResource);
+    }
+
     public function testCanCreateOutboundCall()
     {
         $payload = [
@@ -71,8 +75,8 @@ class ClientTest extends TestCase
             'event_url' => ['http://domain.test/event'],
             'event_method' => 'POST',
             'machine_detection' => 'hangup',
-            'length_timer' => 7200,
-            'ringing_timer' => 60
+            'length_timer' => '7200',
+            'ringing_timer' => '60'
         ];
 
         $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
@@ -113,15 +117,15 @@ class ClientTest extends TestCase
             'ncco' => [
                 [
                     'action' => 'talk',
-                    'bargeIn' => false,
-                    'level' => 0,
-                    'loop' => 1,
+                    'bargeIn' => 'false',
+                    'level' => '0',
+                    'loop' => '1',
                     'text' => 'Thank you for trying Vonage',
                     'voiceName' => 'kimberly'
                 ]
             ],
-            'length_timer' => 7200,
-            'ringing_timer' => 60
+            'length_timer' => '7200',
+            'ringing_timer' => '60'
         ];
 
         $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
@@ -279,22 +283,22 @@ class ClientTest extends TestCase
         $this->voiceClient->hangupCall($id);
     }
 
-    public function testCanTransferACallLeg()
+    public function testCanTransferACallLegWithNCCO()
     {
         $id = 'ssf61863-4a51-ef6b-11e1-w6edebcf93bb';
         $payload = [
-            'action' => 'transfer',
             'destination' => [
-                'type' => 'ncco',
-                'ncco' => [
-                    [
-                        'action' => 'talk',
-                        'bargeIn' => false,
-                        'level' => 0,
-                        'loop' => 1,
-                        'text' => 'Thank you for trying Vonage',
-                        'voiceName' => 'kimberly'
-                    ]
+                'action' => 'transfer'
+            ],
+            'type' => 'ncco',
+            'ncco' => [
+                [
+                    'action' => 'talk',
+                    'bargeIn' => 'false',
+                    'level' => '0',
+                    'loop' => '1',
+                    'text' => 'Thank you for trying Vonage',
+                    'voiceName' => 'kimberly'
                 ]
             ]
         ];
@@ -308,9 +312,27 @@ class ClientTest extends TestCase
         $ncco = (new NCCO)
             ->addAction(new Talk('Thank you for trying Vonage'))
         ;
-        $transfer = new Transfer($ncco);
 
-        $this->voiceClient->transferCall($id, $transfer);
+        $this->voiceClient->transferCallWithNCCO($id, $ncco);
+    }
+
+    public function testCanTransferACallLegWithURL()
+    {
+        $id = 'ssf61863-4a51-ef6b-11e1-w6edebcf93bb';
+        $payload = [
+            'destination' => [
+                'action' => 'transfer'
+            ],
+            'url' => ['https://test.domain/transfer.json'],
+        ];
+
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'PUT', $request);
+            $this->assertRequestBodyIsJson(json_encode($payload), $request);
+            return true;
+        }))->willReturn($this->getResponse('empty', 204));
+
+        $this->voiceClient->transferCallWithUrl($id, 'https://test.domain/transfer.json');
     }
 
     public function testcanStreamAudioIntoCall()
@@ -319,8 +341,8 @@ class ClientTest extends TestCase
         $url = 'http://domain.test/music.mp3';
         $payload = [
             'stream_url' => [$url],
-            'loop' => 1,
-            'level' => 0,
+            'loop' => '1',
+            'level' => '0',
         ];
 
         $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
@@ -358,8 +380,8 @@ class ClientTest extends TestCase
         $payload = [
             'text' => 'This is sample text',
             'voice_name' => 'kimberly',
-            'loop' => 1,
-            'level' => 0,
+            'loop' => '1',
+            'level' => '0',
         ];
 
         $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {

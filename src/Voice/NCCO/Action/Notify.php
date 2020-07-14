@@ -19,7 +19,7 @@ class Notify implements ActionInterface
 
     public function __construct(array $payload)
     {
-
+        $this->payload = $payload;
     }
 
     /**
@@ -83,5 +83,11 @@ class Notify implements ActionInterface
     public function getPayload() : array
     {
         return $this->payload;
+    }
+
+    public function addToPayload(string $key, string $value) : self
+    {
+        $this->payload[$key] = $value;
+        return $this;
     }
 }

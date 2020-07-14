@@ -25,7 +25,7 @@ class Stream implements ActionInterface
      */
     protected $streamUrl;
 
-    public function __construct(string $streamUrl = null)
+    public function __construct(string $streamUrl)
     {
         $this->streamUrl = $streamUrl;
     }
@@ -38,15 +38,21 @@ class Stream implements ActionInterface
         $stream = new Stream($streamUrl);
 
         if (array_key_exists('bargeIn', $data)) {
-            $stream->setBargeIn($data['bargeIn']);
+            $stream->setBargeIn(
+                filter_var($data['bargeIn'], FILTER_VALIDATE_BOOLEAN, ['flags' => FILTER_NULL_ON_FAILURE])
+            );
         }
 
         if (array_key_exists('level', $data)) {
-            $stream->setLevel($data['level']);
+            $stream->setLevel(
+                filter_var($data['level'], FILTER_VALIDATE_FLOAT, ['flags' => FILTER_NULL_ON_FAILURE])
+            );
         }
 
         if (array_key_exists('loop', $data)) {
-            $stream->setLoop($data['loop']);
+            $stream->setLoop(
+                filter_var($data['loop'], FILTER_VALIDATE_INT, ['flags' => FILTER_NULL_ON_FAILURE])
+            );
         }
 
         return $stream;
@@ -105,9 +111,9 @@ class Stream implements ActionInterface
     {
         return [
             'action' => 'stream',
-            'bargeIn' => $this->getBargeIn(),
-            'level' => $this->getLevel(),
-            'loop' => $this->getLoop(),
+            'bargeIn' => $this->getBargeIn() ? 'true' : 'false',
+            'level' => (string) $this->getLevel(),
+            'loop' => (string) $this->getLoop(),
             'streamUrl' => [$this->getStreamUrl()],
         ];
     }

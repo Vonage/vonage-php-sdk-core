@@ -16,7 +16,7 @@ class Record implements ActionInterface
     /**
      * @var string Record::FORMAT_*
      */
-    protected $format;
+    protected $format = 'mp3';
 
     /**
      * @var string Record::SPLIT
@@ -70,7 +70,9 @@ class Record implements ActionInterface
         }
 
         if (array_key_exists('endOnSilence', $data)) {
-            $action->setEndOnSilence($data['endOnSilence']);
+            $action->setEndOnSilence(
+                filter_var($data['endOnSilence'], FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE)
+            );
         }
 
         if (array_key_exists('endOnKey', $data)) {
@@ -82,7 +84,9 @@ class Record implements ActionInterface
         }
 
         if (array_key_exists('beepStart', $data)) {
-            $action->setBeepStart($data['beepStart']);
+            $action->setBeepStart(
+                filter_var($data['beepStart'], FILTER_VALIDATE_BOOLEAN, ['flags' => FILTER_NULL_ON_FAILURE])
+            );
         }
 
         if (array_key_exists('eventUrl', $data)) {
@@ -111,18 +115,31 @@ class Record implements ActionInterface
      */
     public function toNCCOArray(): array
     {
-        return [
+        $data = [
             'action' => 'record',
-            'format' => $this->format,
-            'split' => $this->split,
-            'channels' => $this->channels,
-            'endOnSilence' => $this->endOnSilence,
-            'endOnKey' => $this->endOnKey,
-            'timeOut' => $this->timeOut,
-            'beepStart' => $this->beepStart,
-            'eventUrl' => $this->eventWebook->getUrl(),
-            'eventMethod' => $this->eventWebook->getMethod(),
+            'format' => $this->getFormat(),
+            'endOnSilence' => (string) $this->getEndOnSilence(),
+            'timeOut' => (string) $this->getTimeout(),
+            'beepStart' => $this->getBeepStart() ? 'true' : 'false',
         ];
+
+        if ($this->getEndOnKey()) {
+            $data['endOnKey'] = $this->getEndOnKey();
+        }
+
+        if ($this->getChannels()) {
+            $data['channels'] = (string) $this->getChannels();
+        }
+
+        if ($this->getSplit()) {
+            $data['split'] = $this->getSplit();
+        }
+
+        if ($this->getEventWebhook()) {
+            $data['eventUrl'] = $this->getEventWebhook()->getUrl();
+            $data['eventMethod'] = $this->getEventWebhook()->getMethod();
+        }
+        return $data;
     }
 
     public function getFormat() : string
@@ -137,7 +154,7 @@ class Record implements ActionInterface
         return $this;
     }
 
-    public function getSplit() : string
+    public function getSplit() : ?string
     {
         return $this->split;
     }
@@ -152,7 +169,7 @@ class Record implements ActionInterface
         return $this;
     }
 
-    public function getEndOnKey() : string
+    public function getEndOnKey() : ?string
     {
         return $this->endOnKey;
     }
@@ -168,14 +185,14 @@ class Record implements ActionInterface
         return $this;
     }
 
-    public function getEventWebhook() : Webhook
+    public function getEventWebhook() : ?Webhook
     {
         return $this->eventWebhook;
     }
 
     public function setEventWebhook(Webhook $eventWebhook) : self
     {
-        $this->eventWebook = $eventWebhook;
+        $this->eventWebhook = $eventWebhook;
         return $this;
     }
 
@@ -220,7 +237,7 @@ class Record implements ActionInterface
         return $this;
     }
 
-    public function getChannels() : int
+    public function getChannels() : ?int
     {
         return $this->channels;
     }
@@ -231,8 +248,14 @@ class Record implements ActionInterface
             throw new \InvalidArgumentException('Number of channels must be 32 or less');
         }
 
-        $this->channels = $channels;
-        $this->setSplit(self::SPLIT);
+        if ($channels > 1) {
+            $this->channels = $channels;
+            $this->setSplit(self::SPLIT);
+            $this->format = self::FORMAT_WAV;
+        } else {
+            $this->channels = null;
+            $this->split = null;
+        }
 
         return $this;
     }

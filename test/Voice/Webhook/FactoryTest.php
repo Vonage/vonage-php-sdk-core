@@ -3,7 +3,11 @@ declare(strict_types=1);
 
 namespace NexmoTest\Voice;
 
+use InvalidArgumentException;
+use Nexmo\Voice\Webhook\Error;
 use Nexmo\Voice\Webhook\Event;
+use Nexmo\Voice\Webhook\Answer;
+use Nexmo\Voice\Webhook\Record;
 use PHPUnit\Framework\TestCase;
 use Nexmo\Voice\Webhook\Factory;
 use Nexmo\Voice\Webhook\Transfer;
@@ -102,6 +106,61 @@ class FactoryTest extends TestCase
         $this->assertSame($expected['conversation_uuid_to'], $event->getConversationUuidTo());
         $this->assertSame($expected['uuid'], $event->getUuid());
         $this->assertEquals(new \DateTimeImmutable($expected['timestamp']), $event->getTimestamp());
+    }
+
+    public function testCanGenerateAnAnswerWebhook()
+    {
+        $request = $this->getRequest('answer-get');
+        $expected = $this->getRequest('answer-get')->getQueryParams();
+
+        /** @var Answer $answer */
+        $answer = Factory::createFromRequest($request);
+
+        $this->assertTrue($answer instanceof Answer);
+        $this->assertSame($expected['conversation_uuid'], $answer->getConversationUuid());
+        $this->assertSame($expected['uuid'], $answer->getUuid());
+        $this->assertSame($expected['to'], $answer->getTo());
+        $this->assertSame($expected['from'], $answer->getFrom());
+    }
+
+    public function testCanGenerateARecordingWebhook()
+    {
+        $request = $this->getRequest('recording-get');
+        $expected = $this->getRequest('recording-get')->getQueryParams();
+
+        /** @var Record $record */
+        $record = Factory::createFromRequest($request);
+
+        $this->assertTrue($record instanceof Record);
+        $this->assertSame($expected['conversation_uuid'], $record->getConversationUuid());
+        $this->assertEquals(new \DateTimeImmutable($expected['end_time']), $record->getEndTime());
+        $this->assertSame($expected['recording_url'], $record->getRecordingUrl());
+        $this->assertSame($expected['recording_uuid'], $record->getRecordingUuid());
+        $this->assertSame((int) $expected['size'], $record->getSize());
+        $this->assertEquals(new \DateTimeImmutable($expected['start_time']), $record->getStartTime());
+        $this->assertEquals(new \DateTimeImmutable($expected['timestamp']), $record->getTimestamp());
+    }
+
+    public function testCanGenerateAnErrorWebhook()
+    {
+        $request = $this->getRequest('error-get');
+        $expected = $this->getRequest('error-get')->getQueryParams();
+
+        /** @var Error $error */
+        $error = Factory::createFromRequest($request);
+
+        $this->assertTrue($error instanceof Error);
+        $this->assertSame($expected['conversation_uuid'], $error->getConversationUuid());
+        $this->assertSame($expected['reason'], $error->getReason());
+        $this->assertEquals(new \DateTimeImmutable($expected['timestamp']), $error->getTimestamp());
+    }
+
+    public function testThrowsExceptionOnUnknownWebhookData()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Unable to detect incoming webhook type');
+
+        Factory::createFromArray(['foo' => 'bar']);
     }
 
     public function getRequest(string $requestName)

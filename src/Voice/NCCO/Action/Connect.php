@@ -159,7 +159,7 @@ class Connect implements ActionInterface
 
     public function setMachineDetection(string $machineDetection) : self
     {
-        if ($machineDetection !== self::MACHINE_CONTINUE ||
+        if ($machineDetection !== self::MACHINE_CONTINUE &&
             $machineDetection !== self::MACHINE_HANGUP
         ) {
             throw new \InvalidArgumentException('Uknown machine detection type');

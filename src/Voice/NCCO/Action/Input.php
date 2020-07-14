@@ -67,16 +67,18 @@ class Input implements ActionInterface
         if (array_key_exists('dtmf', $data)) {
             $dtmf = $data['dtmf'];
 
-            if (array_key_exists('timeout', $dtmf)) {
-                $action->setDtmfTimeout($dtmf['timeout']);
+            if (array_key_exists('timeOut', $dtmf)) {
+                $action->setDtmfTimeout((int) $dtmf['timeOut']);
             }
 
             if (array_key_exists('maxDigits', $dtmf)) {
-                $action->setDtmfMaxDigits($dtmf['maxDigits']);
+                $action->setDtmfMaxDigits((int) $dtmf['maxDigits']);
             }
 
             if (array_key_exists('submitOnHash', $dtmf)) {
-                $action->setDtmfSubmitOnHash($dtmf['submitOnHash']);
+                $action->setDtmfSubmitOnHash(
+                    filter_var($dtmf['submitOnHash'], FILTER_VALIDATE_BOOLEAN, ['flags' => FILTER_NULL_ON_FAILURE])
+                );
             }
         }
 
@@ -88,7 +90,7 @@ class Input implements ActionInterface
             }
 
             if (array_key_exists('endOnSilence', $speech)) {
-                $action->setSpeechEndOnSilence($speech['endOnSilence']);
+                $action->setSpeechEndOnSilence((int) $speech['endOnSilence']);
             }
 
             if (array_key_exists('language', $speech)) {
@@ -100,11 +102,11 @@ class Input implements ActionInterface
             }
 
             if (array_key_exists('startTimeout', $speech)) {
-                $action->setSpeechStartTimeout($speech['startTimeout']);
+                $action->setSpeechStartTimeout((int) $speech['startTimeout']);
             }
 
             if (array_key_exists('maxDuration', $speech)) {
-                $action->setSpeechMaxDuration($speech['maxDuration']);
+                $action->setSpeechMaxDuration((int) $speech['maxDuration']);
             }
         }
 
@@ -139,7 +141,7 @@ class Input implements ActionInterface
             'dtmf' => [
                 'timeOut' => $this->getDtmfTimeout(),
                 'maxDigits' => $this->getDtmfMaxDigits(),
-                'submitOnHash' => $this->getDtmfSubmitOnHash(),
+                'submitOnHash' => $this->getDtmfSubmitOnHash() ? 'true' : 'false',
             ]
         ];
 

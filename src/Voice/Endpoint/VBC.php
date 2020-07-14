@@ -34,7 +34,7 @@ class VBC implements EndpointInterface
     public function toArray() : array
     {
         return [
-            'type' => 'app',
+            'type' => 'vbc',
             'extension' => $this->id,
         ];
     }

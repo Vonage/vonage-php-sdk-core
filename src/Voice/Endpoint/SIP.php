@@ -21,14 +21,9 @@ class SIP implements EndpointInterface
         $this->setHeaders($headers);
     }
 
-    public static function factory(string $uri, array $data) : SIP
+    public static function factory(string $uri, array $headers = []) : SIP
     {
-        $endpoint = new SIP($uri);
-
-        if (array_key_exists('headers', $data)) {
-            $endpoint->setHeaders($data['headers']);
-        }
-
+        $endpoint = new SIP($uri, $headers);
         return $endpoint;
     }
 
