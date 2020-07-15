@@ -1,20 +1,27 @@
 <?php
+
+use Nexmo\Client;
+use Nexmo\Voice\Webhook;
+use Nexmo\Voice\OutboundCall;
+use Nexmo\Voice\Endpoint\Phone;
+use Nexmo\Client\Credentials\Keypair;
+
 require_once '../vendor/autoload.php';
 
-$keypair = new \Nexmo\Client\Credentials\Keypair(
+$keypair = new Keypair(
     file_get_contents(NEXMO_APPLICATION_PRIVATE_KEY_PATH),
     NEXMO_APPLICATION_ID
 );
-$client = new \Nexmo\Client($keypair);
+$client = new Client($keypair);
 
-$outboundCall = new \Nexmo\Voice\OutboundCall(
-    new \Nexmo\Voice\Endpoint\Phone(TO_NUMBER),
-    new \Nexmo\Voice\Endpoint\Phone(NEXMO_NUMBER)
+$outboundCall = new OutboundCall(
+    new Phone(TO_NUMBER),
+    new Phone(NEXMO_NUMBER)
 );
 $outboundCall->setAnswerWebhook(
-    new \Nexmo\Voice\Webhook(
+    new Webhook(
         'https://developer.nexmo.com/ncco/tts.json',
-        \Nexmo\Voice\Webhook::METHOD_GET
+        Webhook::METHOD_GET
     )
 );
 $response = $client->voice()->createOutboundCall($outboundCall);

@@ -1,4 +1,9 @@
 <?php
+
+use Nexmo\Client;
+use Nexmo\SMS\Message\SMS;
+use Nexmo\Client\Exception\Request;
+
 //example of sending an sms using an API key / secret
 require_once '../vendor/autoload.php';
 
@@ -8,11 +13,11 @@ define('NEXMO_TO', getenv('NEXMO_TO'));
 define('NEXMO_FROM', getenv('NEXMO_FROM'));
 
 //create client with api key and secret
-$client = new \Nexmo\Client(new Nexmo\Client\Credentials\Basic(API_KEY, API_SECRET));
+$client = new Client(new Nexmo\Client\Credentials\Basic(API_KEY, API_SECRET));
 
 //send message using simple api params
 $response = $client->sms()->send(
-    new \Nexmo\SMS\Message\SMS(NEXMO_TO, NEXMO_FROM, 'Test message from the Nexmo PHP Client')
+    new SMS(NEXMO_TO, NEXMO_FROM, 'Test message from the Nexmo PHP Client')
 );
 
 //array access provides response data
@@ -30,7 +35,7 @@ Who is already sick and pale with grief,
 That thou, her maid, art far more fair than she.
 EOF;
 
-$text = new \Nexmo\SMS\Message\SMS(NEXMO_TO, NEXMO_FROM, $longwinded);
+$text = new SMS(NEXMO_TO, NEXMO_FROM, $longwinded);
 $response = $client->sms()->send($text);
 $data = $response->current();
 
@@ -42,9 +47,9 @@ foreach ($response as $index => $data) {
 
 //an invalid request
 try {
-    $text = new \Nexmo\SMS\Message\SMS('not valid', NEXMO_FROM, $longwinded);
+    $text = new SMS('not valid', NEXMO_FROM, $longwinded);
     $client->sms()->send($text);
-} catch (Nexmo\Client\Exception\Request $e) {
+} catch (Request $e) {
     //can still get the API response
     $data     = $e->getEntity(); // The parsed response as an array
     $request  = $client->sms()->getAPIResource()->getLastRequest(); //PSR-7 Request Object
