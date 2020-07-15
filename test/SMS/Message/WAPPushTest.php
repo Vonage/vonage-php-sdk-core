@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 class WAPPushTest extends TestCase
 {
-    public function testCanCreateBinaryMessage()
+    public function testCanCreateWAPMessage()
     {
         $message = new WAPPush(
             '447700900000',
