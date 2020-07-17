@@ -5,6 +5,11 @@ namespace Nexmo\SMS\Webhook;
 
 class InboundSMS
 {
+    public static $requiredFields = [
+        'msisdn', 'to', 'messageId', 'text', 'type', 'keyword',
+        'message-timestamp'
+    ];
+
     /**
      * @var string
      */
@@ -92,12 +97,7 @@ class InboundSMS
 
     public function __construct(array $data)
     {
-        $required = [
-            'msisdn', 'to', 'messageId', 'text', 'type', 'keyword',
-            'message-timestamp'
-        ];
-
-        foreach ($required as $key) {
+        foreach (static::$requiredFields as $key) {
             if (!array_key_exists($key, $data)) {
                 throw new \InvalidArgumentException('Incoming SMS missing required data `' . $key . '`');
             }

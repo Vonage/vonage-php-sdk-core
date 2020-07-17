@@ -146,8 +146,8 @@ class InboundSMSTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Incoming SMS missing required data `msisdn`');
 
-        $request = $this->getServerRequest('invalid');
-        Factory::createFromRequest($request);
+        $request = $this->getServerRequest('invalid')->getQueryParams();
+        new InboundSMS($request);
     }
 
     protected function getQueryStringFromRequest(string $requestName)

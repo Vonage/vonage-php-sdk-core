@@ -36,7 +36,12 @@ abstract class Factory
                 $params = $request->getQueryParams();
                 break;
             case 'POST':
-                $params = json_decode($request->getBody()->getContents(), true);
+                $type = $request->getHeader('content-type');
+                if (!isset($type[0]) || $type[0] === 'application/json') {
+                    $params = json_decode($request->getBody()->getContents(), true);
+                } else {
+                    parse_str($request->getBody()->getContents(), $params);
+                }
                 break;
             default:
                 throw new \RuntimeException("Invalid method for incoming webhook");
