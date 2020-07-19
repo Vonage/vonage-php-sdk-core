@@ -26,6 +26,7 @@ use Nexmo\Client\Credentials\Container;
 use Nexmo\Client\Factory\FactoryInterface;
 use Nexmo\Client\Credentials\SignatureSecret;
 use Nexmo\Client\Credentials\CredentialsInterface;
+use Psr\Http\Client\ClientInterface;
 
 /**
  * Nexmo API Client, allows access to the API from PHP.
@@ -75,7 +76,7 @@ class Client
     /**
      * Create a new API client using the provided credentials.
      */
-    public function __construct(CredentialsInterface $credentials, $options = array(), HttpClient $client = null)
+    public function __construct(CredentialsInterface $credentials, $options = array(), ClientInterface $client = null)
     {
         if (is_null($client)) {
             $client = new \Http\Adapter\Guzzle6\Client();
@@ -170,7 +171,7 @@ class Client
      * @param HttpClient $client
      * @return $this
      */
-    public function setHttpClient(HttpClient $client)
+    public function setHttpClient(ClientInterface $client)
     {
         $this->client = $client;
         return $this;
