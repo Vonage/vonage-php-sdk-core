@@ -34,6 +34,12 @@ abstract class Factory
         switch ($request->getMethod()) {
             case 'GET':
                 $params = $request->getQueryParams();
+                // Fix "null" values coming in from GET requests
+                foreach ($params as $key => $value) {
+                    if ($value === 'null') {
+                        $params[$key] = null;
+                    }
+                }
                 break;
             case 'POST':
                 $type = $request->getHeader('content-type');
@@ -41,6 +47,12 @@ abstract class Factory
                     $params = json_decode($request->getBody()->getContents(), true);
                 } else {
                     parse_str($request->getBody()->getContents(), $params);
+                    // Fix "null" values coming in from URL encoded requests
+                    foreach ($params as $key => $value) {
+                        if ($value === 'null') {
+                            $params[$key] = null;
+                        }
+                    }
                 }
                 break;
             default:
