@@ -136,7 +136,7 @@ class Record implements ActionInterface
         }
 
         if ($this->getEventWebhook()) {
-            $data['eventUrl'] = $this->getEventWebhook()->getUrl();
+            $data['eventUrl'] = [$this->getEventWebhook()->getUrl()];
             $data['eventMethod'] = $this->getEventWebhook()->getMethod();
         }
         return $data;
