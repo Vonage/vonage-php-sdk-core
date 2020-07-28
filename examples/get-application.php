@@ -1,7 +1,10 @@
 <?php
+
+use Nexmo\Client;
+
 require_once '../vendor/autoload.php';
 
-$client = new Nexmo\Client(new Nexmo\Client\Credentials\Basic(API_KEY, API_SECRET));
+$client = new Client(new Nexmo\Client\Credentials\Basic(API_KEY, API_SECRET));
 
 $a = $client->applications()->get(APPLICATION_ID);
 echo $a->getName().PHP_EOL;

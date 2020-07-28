@@ -5,11 +5,11 @@ class Advanced extends Standard
 {
     public function getValidNumber()
     {
-        return $this['valid_number'];
+        return $this->data['valid_number'];
     }
 
     public function getReachable()
     {
-        return $this['reachable'];
+        return $this->data['reachable'];
     }
 }

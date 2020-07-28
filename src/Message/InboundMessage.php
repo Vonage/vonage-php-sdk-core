@@ -8,17 +8,23 @@
 
 namespace Nexmo\Message;
 
+use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
 use Nexmo\Entity\JsonResponseTrait;
 use Nexmo\Entity\Psr7Trait;
 use Psr\Http\Message\ServerRequestInterface;
 
-class InboundMessage implements MessageInterface, \ArrayAccess
+class InboundMessage implements MessageInterface, \ArrayAccess, ArrayHydrateInterface
 {
     use Psr7Trait;
     use JsonResponseTrait;
     use CollectionTrait;
 
     protected $id;
+
+    /**
+     * @var array<string, mixed>
+     */
+    protected $data = [];
 
     /**
      * InboundMessage constructor.
@@ -30,7 +36,11 @@ class InboundMessage implements MessageInterface, \ArrayAccess
     public function __construct($idOrRequest)
     {
         if ($idOrRequest instanceof ServerRequestInterface) {
-            $this->setRequest($idOrRequest);
+            trigger_error(
+                'Passing a Request object into ' . get_class($this) . ' has been deprectated. Please use fromArray() instead',
+                E_USER_DEPRECATED
+            );
+            @$this->setRequest($idOrRequest);
             return;
         }
 
@@ -100,16 +110,16 @@ class InboundMessage implements MessageInterface, \ArrayAccess
 
     public function getFrom()
     {
-        if ($this->getRequest()) {
-            return $this['msisdn'];
+        if (@$this->getRequest()) {
+            return $this->data['msisdn'];
         } else {
-            return $this['from'];
+            return $this->data['from'];
         }
     }
 
     public function getTo()
     {
-        return $this['to'];
+        return $this->data['to'];
     }
 
     public function getMessageId()
@@ -118,7 +128,7 @@ class InboundMessage implements MessageInterface, \ArrayAccess
             return $this->id;
         }
 
-        return $this['messageId'];
+        return @$this->data['messageId'];
     }
 
     public function isValid()
@@ -128,26 +138,26 @@ class InboundMessage implements MessageInterface, \ArrayAccess
 
     public function getBody()
     {
-        if ($this->getRequest()) {
-            return $this['text'];
+        if (@$this->getRequest()) {
+            return $this->data['text'];
         } else {
-            return $this['body'];
+            return $this->data['body'];
         }
     }
 
     public function getType()
     {
-        return $this['type'];
+        return $this->data['type'];
     }
 
     public function getAccountId()
     {
-        return $this['account-id'];
+        return $this->data['account-id'];
     }
 
     public function getNetwork()
     {
-        return $this['network'];
+        return $this->data['network'];
     }
 
     /**
@@ -160,14 +170,18 @@ class InboundMessage implements MessageInterface, \ArrayAccess
      */
     public function offsetExists($offset)
     {
-        $response = $this->getResponseData();
+        trigger_error(
+            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
+            E_USER_DEPRECATED
+        );
+        $response = @$this->getResponseData();
 
         if (isset($this->index)) {
             $response = $response['items'][$this->index];
         }
 
-        $request  = $this->getRequestData();
-        $dirty    = $this->getRequestData(false);
+        $request  = @$this->getRequestData();
+        $dirty    = @$this->getRequestData(false);
         return isset($response[$offset]) || isset($request[$offset]) || isset($dirty[$offset]);
     }
 
@@ -181,14 +195,18 @@ class InboundMessage implements MessageInterface, \ArrayAccess
      */
     public function offsetGet($offset)
     {
-        $response = $this->getResponseData();
+        trigger_error(
+            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
+            E_USER_DEPRECATED
+        );
+        $response = @$this->getResponseData();
 
         if (isset($this->index)) {
             $response = $response['items'][$this->index];
         }
 
-        $request  = $this->getRequestData();
-        $dirty    = $this->getRequestData(false);
+        $request  = @$this->getRequestData();
+        $dirty    = @$this->getRequestData(false);
 
         if (isset($response[$offset])) {
             return $response[$offset];
@@ -236,5 +254,15 @@ class InboundMessage implements MessageInterface, \ArrayAccess
             'can not modify `%s` using array access',
             $offset
         ));
+    }
+
+    public function fromArray(array $data)
+    {
+        $this->data = $data;
+    }
+
+    public function toArray(): array
+    {
+        return $this->data;
     }
 }

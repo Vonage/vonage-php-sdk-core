@@ -10,11 +10,12 @@ namespace Nexmo\Application;
 
 use Nexmo\Entity\JsonUnserializableInterface;
 use Nexmo\Entity\EntityInterface;
+use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
 use Nexmo\Entity\JsonResponseTrait;
 use Nexmo\Entity\JsonSerializableTrait;
 use Nexmo\Entity\Psr7Trait;
 
-class Application implements EntityInterface, \JsonSerializable, JsonUnserializableInterface
+class Application implements EntityInterface, \JsonSerializable, JsonUnserializableInterface, ArrayHydrateInterface
 {
     use JsonSerializableTrait;
     use Psr7Trait;
@@ -72,7 +73,7 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
     {
         if (!isset($this->voiceConfig)) {
             $this->setVoiceConfig(new VoiceConfig());
-            $data = $this->getResponseData();
+            $data = @$this->getResponseData();
             if (isset($data['voice']) and isset($data['voice']['webhooks'])) {
                 foreach ($data['voice']['webhooks'] as $webhook) {
                     $this->voiceConfig->setWebhook($webhook['endpoint_type'], $webhook['endpoint'], $webhook['http_method']);
@@ -122,7 +123,7 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
     /**
      * @return RtcConfig
      */
-    public function getVbcConfig()
+    public function getVbcConfig() : VbcConfig
     {
         if (!isset($this->vbcConfig)) {
             $this->setVbcConfig(new VbcConfig());
@@ -164,12 +165,32 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
 
     public function jsonUnserialize(array $json)
     {
-        $this->name = $json['name'];
-        $this->id   = $json['id'];
-        $this->keys = $json['keys'];
+        trigger_error(
+            get_class($this) . "::jsonUnserialize is deprecated, please fromArray() instead",
+            E_USER_DEPRECATED
+        );
 
-        if (isset($json['capabilities'])) {
-            $capabilities = $json['capabilities'];
+        $this->fromArray($json);
+    }
+
+    public function jsonSerialize()
+    {
+        return $this->toArray();
+    }
+
+    public function __toString()
+    {
+        return (string) $this->getId();
+    }
+
+    public function fromArray(array $data)
+    {
+        $this->name = $data['name'];
+        $this->id   = $data['id'] ?? null;
+        $this->keys = $data['keys'] ?? [];
+
+        if (isset($data['capabilities'])) {
+            $capabilities = $data['capabilities'];
 
             //todo: make voice  hydrate-able
             $this->voiceConfig = new VoiceConfig();
@@ -201,9 +222,8 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
         }
     }
 
-    public function jsonSerialize()
+    public function toArray(): array
     {
-
         // Build up capabilities that are set
         $availableCapabilities = [
             'voice' => [VoiceConfig::ANSWER, VoiceConfig::EVENT],
@@ -240,16 +260,12 @@ class Application implements EntityInterface, \JsonSerializable, JsonUnserializa
         }
 
         return [
+            'id' => $this->getId(),
             'name' => $this->getName(),
             'keys' => [
                 'public_key' => $this->getPublicKey()
             ],
             'capabilities' => $capabilities
         ];
-    }
-
-    public function __toString()
-    {
-        return (string) $this->getId();
     }
 }

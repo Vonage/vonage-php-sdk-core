@@ -31,10 +31,10 @@ class InboundMessageTest extends TestCase
      */
     public function testCanCreateWithServerRequest($request)
     {
-        $message = new InboundMessage($request);
+        $message = @new InboundMessage($request);
 
         /** @var array $requestData */
-        $requestData = $message->getRequestData();
+        $requestData = @$message->getRequestData();
 
         $originalData = $request->getQueryParams();
         if ('POST' === $request->getMethod()) {
@@ -55,12 +55,12 @@ class InboundMessageTest extends TestCase
     public function testCanCheckValid()
     {
         $request = $this->getServerRequest();
-        $message = new InboundMessage($request);
+        $message = @new InboundMessage($request);
         
         $this->assertTrue($message->isValid());
         
         $request = $this->getServerRequest('http://example.com', 'GET', 'invalid');
-        $message = new InboundMessage($request);
+        $message = @new InboundMessage($request);
 
         $this->assertFalse($message->isValid());
     }
@@ -71,7 +71,7 @@ class InboundMessageTest extends TestCase
      */
     public function testRequestObjectAccess($request)
     {
-        $message = new InboundMessage($request);
+        $message = @new InboundMessage($request);
 
         $this->assertEquals('14845552121', $message->getFrom());
         $this->assertEquals('16105553939', $message->getTo());
@@ -87,13 +87,13 @@ class InboundMessageTest extends TestCase
      */
     public function testRequestArrayAccess($request)
     {
-        $message = new InboundMessage($request);
+        $message = @new InboundMessage($request);
 
-        $this->assertEquals('14845552121', $message['msisdn']);
-        $this->assertEquals('16105553939', $message['to']);
-        $this->assertEquals('02000000DA7C52E7', $message['messageId']);
-        $this->assertEquals('Test this.', $message['text']);
-        $this->assertEquals('text', $message['type']);
+        $this->assertEquals('14845552121', @$message['msisdn']);
+        $this->assertEquals('16105553939', @$message['to']);
+        $this->assertEquals('02000000DA7C52E7', @$message['messageId']);
+        $this->assertEquals('Test this.', @$message['text']);
+        $this->assertEquals('text', @$message['type']);
     }
 
     /**
@@ -103,7 +103,7 @@ class InboundMessageTest extends TestCase
     public function testResponseObjectAccess($response)
     {
         $message = new InboundMessage('02000000DA7C52E7');
-        $message->setResponse($response);
+        @$message->setResponse($response);
 
         $this->assertEquals('14845552121', $message->getFrom());
         $this->assertEquals('16105553939', $message->getTo());
@@ -120,20 +120,20 @@ class InboundMessageTest extends TestCase
     public function testResponseArrayAccess($response)
     {
         $message = new InboundMessage('02000000DA7C52E7');
-        $message->setResponse($response);
+        @$message->setResponse($response);
 
-        $this->assertEquals('14845552121', $message['from']);
-        $this->assertEquals('16105553939', $message['to']);
-        $this->assertEquals('02000000DA7C52E7', $message['message-id']);
-        $this->assertEquals('Test this.', $message['body']);
-        $this->assertEquals('MO', $message['type']);
-        $this->assertEquals('6cff3913', $message['account-id']);
-        $this->assertEquals('US-VIRTUAL-BANDWIDTH', $message['network']);
+        $this->assertEquals('14845552121', @$message['from']);
+        $this->assertEquals('16105553939', @$message['to']);
+        $this->assertEquals('02000000DA7C52E7', @$message['message-id']);
+        $this->assertEquals('Test this.', @$message['body']);
+        $this->assertEquals('MO', @$message['type']);
+        $this->assertEquals('6cff3913', @$message['account-id']);
+        $this->assertEquals('US-VIRTUAL-BANDWIDTH', @$message['network']);
     }
 
     public function testCanCreateReply()
     {
-        $message = new InboundMessage($this->getServerRequest());
+        $message = @new InboundMessage($this->getServerRequest());
 
         $reply = $message->createReply('this is a reply');
         $this->assertInstanceOf('Nexmo\Message\Message', $reply);

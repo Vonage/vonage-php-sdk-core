@@ -8,18 +8,24 @@
 
 namespace NexmoTest\Conversion;
 
+use Prophecy\Argument;
 use Nexmo\Conversion\Client;
 use Zend\Diactoros\Response;
-use NexmoTest\Psr7AssertionTrait;
-use Prophecy\Argument;
-use Psr\Http\Message\RequestInterface;
+use Nexmo\Client\APIResource;
 use PHPUnit\Framework\TestCase;
+use NexmoTest\Psr7AssertionTrait;
+use Psr\Http\Message\RequestInterface;
 
 class ClientTest extends TestCase
 {
     use Psr7AssertionTrait;
 
     protected $nexmoClient;
+
+    /**
+     * @var APIResource
+     */
+    protected $apiResource;
 
     /**
      * @var Client
@@ -30,7 +36,14 @@ class ClientTest extends TestCase
     {
         $this->nexmoClient = $this->getMockBuilder('Nexmo\Client')->disableOriginalConstructor()->setMethods(['send', 'getApiUrl'])->getMock();
         $this->nexmoClient->method('getApiUrl')->will($this->returnValue('https://api.nexmo.com'));
-        $this->conversionClient = new Client();
+
+        $this->apiResource = new APIResource();
+        $this->apiResource
+            ->setBaseUri('/conversions/')
+            ->setClient($this->nexmoClient)
+        ;
+
+        $this->conversionClient = new Client($this->apiResource);
         $this->conversionClient->setClient($this->nexmoClient);
     }
 

@@ -18,6 +18,8 @@ use Nexmo\Client\Exception;
 
 /**
  * Lightweight resource, only has put / delete.
+ *
+ * @deprecated Use Nexmo\Voice\Client::playDTMF() method instead
  */
 class Dtmf implements JsonSerializableInterface, ClientAwareInterface, \ArrayAccess
 {
@@ -33,6 +35,11 @@ class Dtmf implements JsonSerializableInterface, ClientAwareInterface, \ArrayAcc
 
     public function __construct($id = null)
     {
+        trigger_error(
+            'Nexmo\Call\Dtmf is deprecated, please use Nexmo\Voice\Client::playDTMF() instead',
+            E_USER_DEPRECATED
+        );
+
         $this->id = $id;
     }
 

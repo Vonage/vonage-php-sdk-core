@@ -2,6 +2,8 @@
 
 namespace Nexmo\Account;
 
+use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
+
 class SecretCollection implements \ArrayAccess
 {
     protected $data;
@@ -12,20 +14,30 @@ class SecretCollection implements \ArrayAccess
             'secrets' => $secrets,
             '_links' => $links
         ];
+
+        foreach ($this->data['secrets'] as $key => $secret) {
+            if (!$secret instanceof Secret) {
+                $this->data['secrets'][$key] = new Secret($secret);
+            }
+        }
     }
 
     public function getSecrets()
     {
-        return $this['secrets'];
+        return $this->data['secrets'];
     }
 
     public function getLinks()
     {
-        return $this['_links'];
+        return $this->data['_links'];
     }
 
+    /**
+     * @deprecated Instatiate the object directly
+     */
     public static function fromApi($data)
     {
+        trigger_error('Please instatiate a Nexmo\Account\SecretCollection instead of using fromApi()', E_USER_DEPRECATED);
         $secrets = [];
         foreach ($data['_embedded']['secrets'] as $s) {
             $secrets[] = Secret::fromApi($s);
@@ -35,11 +47,19 @@ class SecretCollection implements \ArrayAccess
 
     public function offsetExists($offset)
     {
+        trigger_error(
+            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
+            E_USER_DEPRECATED
+        );
         return isset($this->data[$offset]);
     }
 
     public function offsetGet($offset)
     {
+        trigger_error(
+            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
+            E_USER_DEPRECATED
+        );
         return $this->data[$offset];
     }
 

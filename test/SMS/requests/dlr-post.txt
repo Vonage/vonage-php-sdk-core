@@ -1,0 +1,9 @@
+POST /webhooks/dlr HTTP/1.1
+Accept: */*
+User-Agent: Nexmo/MessagingHUB/v1.0
+Host: dragonmantank.ngrok.io
+Content-Length: 200
+Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+X-Forwarded-For: 169.63.86.166
+
+msisdn=14845552121&to=16105553939&network-code=310004&messageId=14000000F9DBBBBB&price=0.00845000&status=delivered&scts=1234567890&err-code=0&api-key=a1234567&message-timestamp=2020-07-17+02%3A35%3A15

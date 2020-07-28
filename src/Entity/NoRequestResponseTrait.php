@@ -12,6 +12,8 @@ namespace Nexmo\Entity;
  * Class Psr7Trait
  *
  * Allow an entity to contain last request / response objects.
+ * 
+ * @deprecated This information will no longer be available at the model level but the API client level
  */
 trait NoRequestResponseTrait
 {

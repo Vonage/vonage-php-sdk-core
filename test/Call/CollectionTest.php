@@ -8,20 +8,27 @@
 
 namespace NexmoTest\Calls;
 
-use Nexmo\Call\Filter;
-use Nexmo\Call\Transfer;
+use Nexmo\Call\Hydrator;
 use Nexmo\Call\Call;
-use Nexmo\Call\Collection;
-use NexmoTest\Psr7AssertionTrait;
+use Nexmo\Call\Filter;
 use Prophecy\Argument;
-use Psr\Http\Message\RequestInterface;
-use Zend\Diactoros\Response;
+use Nexmo\Call\Transfer;
+use Nexmo\Call\Collection;
 use Nexmo\Client\Exception;
+use Zend\Diactoros\Response;
+use Nexmo\Client\APIResource;
 use PHPUnit\Framework\TestCase;
+use NexmoTest\Psr7AssertionTrait;
+use Psr\Http\Message\RequestInterface;
 
 class CollectionTest extends TestCase
 {
     use Psr7AssertionTrait;
+
+    /**
+     * @var APIResource
+     */
+    protected $api;
 
     /**
      * @var \Prophecy\Prophecy\ObjectProphecy
@@ -37,7 +44,8 @@ class CollectionTest extends TestCase
     {
         $this->nexmoClient = $this->prophesize('Nexmo\Client');
         $this->nexmoClient->getApiUrl()->willReturn('https://api.nexmo.com');
-        $this->collection = new Collection();
+
+        $this->collection = @new Collection();
         $this->collection->setClient($this->nexmoClient->reveal());
     }
 
@@ -50,8 +58,8 @@ class CollectionTest extends TestCase
     public function testInvokeWithFilter()
     {
         $collection = $this->collection;
-        $filter = new Filter();
-        $return = $collection($filter);
+        $filter = @new Filter();
+        $return = @$collection($filter);
 
         $this->assertSame($collection, $return);
         $this->assertSame($collection->getFilter(), $filter);
@@ -83,17 +91,17 @@ class CollectionTest extends TestCase
         $this->nexmoClient->send(Argument::any())->willReturn($this->getResponse('call'));
 
         $collection = $this->collection;
-        $call = $collection[$payload];
+        $call = @$collection[$payload];
 
         $this->assertInstanceOf('Nexmo\Call\Call', $call);
         $this->nexmoClient->send(Argument::any())->shouldNotHaveBeenCalled();
         $this->assertEquals($id, $call->getId());
 
-        if($payload instanceof Call){
+        if ($payload instanceof Call) {
             $this->assertSame($payload, $call);
         }
 
-        $call->get();
+        @$call->get();
         $this->nexmoClient->send(Argument::any())->shouldHaveBeenCalled();
     }
 
@@ -106,15 +114,15 @@ class CollectionTest extends TestCase
     public function testGetIsNotLazy($payload, $id)
     {
         //this generally proxies the call resource, but we're testing the correct request, not the proxy
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($id){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($id) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'GET', $request);
             return true;
         }))->willReturn($this->getResponse('call'))->shouldBeCalled();
 
-        $call = $this->collection->get($payload);
+        $call = @$this->collection->get($payload);
 
         $this->assertInstanceOf('Nexmo\Call\Call', $call);
-        if($payload instanceof Call){
+        if ($payload instanceof Call) {
             $this->assertSame($payload, $call);
         }
     }
@@ -124,13 +132,13 @@ class CollectionTest extends TestCase
      */
     public function testCreatePostCall($payload, $method)
     {
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($payload){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
             return true;
         }))->willReturn($this->getResponse('created', '201'));
 
-        $call = $this->collection->$method($payload);
+        $call = @$this->collection->$method($payload);
 
         $this->assertInstanceOf('Nexmo\Call\Call', $call);
         $this->assertEquals('e46fd8bd-504d-4044-9600-26dd18b41111', $call->getId());
@@ -139,9 +147,9 @@ class CollectionTest extends TestCase
     /**
      * @dataProvider postCallNcco
      */
-    public function testCreatePostCallNcco($payload)
+    public function testCreateCallNcco($payload)
     {
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($payload){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
             $ncco = [['action' => 'talk', 'text' => 'Hello World']];
 
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
@@ -150,7 +158,7 @@ class CollectionTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('created', '201'));
 
-        $call = $this->collection->post($payload);
+        $call = @$this->collection->create($payload);
 
         $this->assertInstanceOf('Nexmo\Call\Call', $call);
         $this->assertEquals('e46fd8bd-504d-4044-9600-26dd18b41111', $call->getId());
@@ -161,14 +169,14 @@ class CollectionTest extends TestCase
      */
     public function testCreatePostCallErrorFromVApi($payload, $method)
     {
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($payload){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
             return true;
         }))->willReturn($this->getResponse('error_vapi', '400'));
 
         try {
-            $call = $this->collection->$method($payload);
+            $call = @$this->collection->$method($payload);
             $this->fail('Expected to throw request exception');
         } catch (Exception\Request $e) {
             $this->assertEquals($e->getMessage(), 'Bad Request');
@@ -180,14 +188,14 @@ class CollectionTest extends TestCase
      */
     public function testCreatePostCallErrorFromProxy($payload, $method)
     {
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($payload){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
             return true;
         }))->willReturn($this->getResponse('error_proxy', '400'));
 
         try {
-            $call = $this->collection->$method($payload);
+            $call = @$this->collection->$method($payload);
             $this->fail('Expected to throw request exception');
         } catch (Exception\Request $e) {
             $this->assertEquals($e->getMessage(), 'Unsupported Media Type');
@@ -199,14 +207,14 @@ class CollectionTest extends TestCase
      */
     public function testCreatePostCallErrorUnknownFormat($payload, $method)
     {
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($payload){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
             return true;
         }))->willReturn($this->getResponse('error_unknown_format', '400'));
 
         try {
-            $call = $this->collection->$method($payload);
+            $call = @$this->collection->$method($payload);
             $this->fail('Expected to throw request exception');
         } catch (Exception\Request $e) {
             $this->assertEquals($e->getMessage(), "Unexpected error");
@@ -219,16 +227,16 @@ class CollectionTest extends TestCase
     public function testPutCall($expectedId, $id, $payload)
     {
         //this generally proxies the call resource, but we're testing the correct request, not the proxy
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($expectedId, $payload){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($expectedId, $payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $expectedId, 'PUT', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
             return true;
         }))->willReturn($this->getResponse('updated'))->shouldBeCalled();
 
-        $call = $this->collection->put($payload, $id);
+        $call = @$this->collection->put($payload, $id);
         $this->assertInstanceOf('Nexmo\Call\Call', $call);
 
-        if($id instanceof Call){
+        if ($id instanceof Call) {
             $this->assertSame($id, $call);
         } else {
             $this->assertEquals($id, $call->getId());
@@ -244,7 +252,7 @@ class CollectionTest extends TestCase
     {
         return [
             ['3fd4d839-493e-4485-b2a5-ace527aacff3', '3fd4d839-493e-4485-b2a5-ace527aacff3'],
-            [new Call('3fd4d839-493e-4485-b2a5-ace527aacff3'), '3fd4d839-493e-4485-b2a5-ace527aacff3']
+            [@new Call('3fd4d839-493e-4485-b2a5-ace527aacff3'), '3fd4d839-493e-4485-b2a5-ace527aacff3']
         ];
     }
 
@@ -272,8 +280,8 @@ class CollectionTest extends TestCase
         ];
 
 
-        $call = new Call();
-        $call->setTo('14843331234')
+        $call = @new Call();
+        @$call->setTo('14843331234')
              ->setFrom('14843335555')
              ->setNcco([
                  [
@@ -309,11 +317,11 @@ class CollectionTest extends TestCase
         ];
 
 
-        $call = new Call();
-        $call->setTo('14843331234')
+        $call = @new Call();
+        @$call->setTo('14843331234')
              ->setFrom('14843335555')
-             ->setWebhook(Call::WEBHOOK_ANSWER, 'https://example.com/answer', 'POST')
-             ->setWebhook(Call::WEBHOOK_EVENT, 'https://example.com/event', 'POST');
+             ->setWebhook(@Call::WEBHOOK_ANSWER, 'https://example.com/answer', 'POST')
+             ->setWebhook(@Call::WEBHOOK_EVENT, 'https://example.com/event', 'POST');
 
         return [
             [clone $call, 'create'],
@@ -338,8 +346,8 @@ class CollectionTest extends TestCase
             ]
         ];
 
-        $call = new Call($id);
-        $transfer = new Transfer('http://example.com');
+        $call = @new Call($id);
+        $transfer = @new Transfer('http://example.com');
 
         return [
             [$id, $id, $payload],

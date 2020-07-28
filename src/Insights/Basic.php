@@ -3,9 +3,10 @@
 namespace Nexmo\Insights;
 
 use Nexmo\Client\Exception\Exception;
+use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
 use Nexmo\Entity\JsonUnserializableInterface;
 
-class Basic implements \JsonSerializable, JsonUnserializableInterface, \ArrayAccess
+class Basic implements \JsonSerializable, JsonUnserializableInterface, \ArrayAccess, ArrayHydrateInterface
 {
     protected $data = [];
 
@@ -19,7 +20,7 @@ class Basic implements \JsonSerializable, JsonUnserializableInterface, \ArrayAcc
      */
     public function getRequestId()
     {
-        return $this['request_id'];
+        return $this->data['request_id'];
     }
 
     /**
@@ -27,7 +28,7 @@ class Basic implements \JsonSerializable, JsonUnserializableInterface, \ArrayAcc
      */
     public function getNationalFormatNumber()
     {
-        return $this['national_format_number'];
+        return $this->data['national_format_number'];
     }
 
     /**
@@ -35,7 +36,7 @@ class Basic implements \JsonSerializable, JsonUnserializableInterface, \ArrayAcc
      */
     public function getInternationalFormatNumber()
     {
-        return $this['international_format_number'];
+        return $this->data['international_format_number'];
     }
 
     /**
@@ -43,7 +44,7 @@ class Basic implements \JsonSerializable, JsonUnserializableInterface, \ArrayAcc
      */
     public function getCountryCode()
     {
-        return $this['country_code'];
+        return $this->data['country_code'];
     }
 
     /**
@@ -51,7 +52,7 @@ class Basic implements \JsonSerializable, JsonUnserializableInterface, \ArrayAcc
      */
     public function getCountryCodeISO3()
     {
-        return $this['country_code_iso3'];
+        return $this->data['country_code_iso3'];
     }
 
     /**
@@ -59,7 +60,7 @@ class Basic implements \JsonSerializable, JsonUnserializableInterface, \ArrayAcc
      */
     public function getCountryName()
     {
-        return $this['country_name'];
+        return $this->data['country_name'];
     }
 
     /**
@@ -67,26 +68,41 @@ class Basic implements \JsonSerializable, JsonUnserializableInterface, \ArrayAcc
      */
     public function getCountryPrefix()
     {
-        return $this['country_prefix'];
+        return $this->data['country_prefix'];
     }
 
     public function jsonSerialize()
     {
-        return $this->data;
+        return $this->toArray();
     }
 
     public function jsonUnserialize(array $json)
     {
-        $this->data = $json;
+        trigger_error(
+            get_class($this) . "::jsonUnserialize is deprecated, please fromArray() instead",
+            E_USER_DEPRECATED
+        );
+
+        $this->fromArray($json);
     }
 
     public function offsetExists($offset)
     {
+        trigger_error(
+            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
+            E_USER_DEPRECATED
+        );
+
         return isset($this->data[$offset]);
     }
 
     public function offsetGet($offset)
     {
+        trigger_error(
+            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
+            E_USER_DEPRECATED
+        );
+
         return $this->data[$offset];
     }
 
@@ -98,5 +114,15 @@ class Basic implements \JsonSerializable, JsonUnserializableInterface, \ArrayAcc
     public function offsetUnset($offset)
     {
         throw new Exception('Number insights results are read only');
+    }
+
+    public function fromArray(array $data)
+    {
+        $this->data = $data;
+    }
+
+    public function toArray(): array
+    {
+        return $this->data;
     }
 }

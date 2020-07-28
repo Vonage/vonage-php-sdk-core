@@ -16,8 +16,8 @@ class NetworkTest extends TestCase
     public function testNetworkArrayAccess()
     {
         $network = new Network('12345', 'Demo Network');
-        $this->assertEquals($network['network_code'], '12345');
-        $this->assertEquals($network['network_name'], 'Demo Network');
+        $this->assertEquals(@$network['network_code'], '12345');
+        $this->assertEquals(@$network['network_name'], 'Demo Network');
     }
 
     public function testNetworkGetters()
@@ -30,7 +30,7 @@ class NetworkTest extends TestCase
     public function testNetworkFromArray()
     {
         $network = new Network('12345', 'Demo Network');
-        $network->jsonUnserialize([
+        $network->fromArray([
             'type' => 'mobile',
             'networkCode' => '12345',
             'networkName' => 'Demo Network',
@@ -51,7 +51,7 @@ class NetworkTest extends TestCase
     public function testSmsPriceFallback()
     {
         $network = new Network('12345', 'Demo Network');
-        $network->jsonUnserialize([
+        $network->fromArray([
             'price' => '0.0331',
         ]);
 
@@ -61,7 +61,7 @@ class NetworkTest extends TestCase
     public function testVoicePriceFallback()
     {
         $network = new Network('12345', 'Demo Network');
-        $network->jsonUnserialize([
+        $network->fromArray([
             'price' => '0.0331',
         ]);
 

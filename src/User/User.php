@@ -19,6 +19,9 @@ use Zend\Diactoros\Request;
 use Nexmo\Client\Exception;
 use Psr\Http\Message\ResponseInterface;
 
+/**
+ * @deprecated This will be removed in a future version, as this API is still considered Beta
+ */
 class User implements EntityInterface, \JsonSerializable, JsonUnserializableInterface, ClientAwareInterface
 {
     use NoRequestResponseTrait;

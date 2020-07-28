@@ -49,8 +49,8 @@ class MultiMessageTest extends TestCase
      */
     public function testCanCountResponseMessages($size, $response = null)
     {
-        if($response){
-            $this->message->setResponse($response);
+        if ($response) {
+            @$this->message->setResponse($response);
         }
 
         $this->assertCount($size, $this->message);
@@ -67,29 +67,29 @@ class MultiMessageTest extends TestCase
 
     public function testCanAccessLastMessageAsArray()
     {
-        $this->message->setResponse($this->getResponse('multi'));
-        $this->assertEquals('0', $this->message['status']);
-        $this->assertEquals('00000126', $this->message['message-id']);
-        $this->assertEquals('44123456789', $this->message['to']);
-        $this->assertEquals('1.00', $this->message['remaining-balance']);
-        $this->assertEquals('0.05', $this->message['message-price']);
-        $this->assertEquals('23410', $this->message['network']);
+        @$this->message->setResponse($this->getResponse('multi'));
+        $this->assertEquals('0', @$this->message['status']);
+        $this->assertEquals('00000126', @$this->message['message-id']);
+        $this->assertEquals('44123456789', @$this->message['to']);
+        $this->assertEquals('1.00', @$this->message['remaining-balance']);
+        $this->assertEquals('0.05', @$this->message['message-price']);
+        $this->assertEquals('23410', @$this->message['network']);
     }
 
     public function testCanAccessAnyMessageAsArray()
     {
-        $this->message->setResponse($this->getResponse('multi'));
-        $this->assertEquals('00000124', $this->message[0]['message-id']);
-        $this->assertEquals('00000125', $this->message[1]['message-id']);
-        $this->assertEquals('00000126', $this->message[2]['message-id']);
-        $this->assertEquals('1.10', $this->message[0]['remaining-balance']);
-        $this->assertEquals('1.05', $this->message[1]['remaining-balance']);
-        $this->assertEquals('1.00', $this->message[2]['remaining-balance']);
+        @$this->message->setResponse($this->getResponse('multi'));
+        $this->assertEquals('00000124', @$this->message[0]['message-id']);
+        $this->assertEquals('00000125', @$this->message[1]['message-id']);
+        $this->assertEquals('00000126', @$this->message[2]['message-id']);
+        $this->assertEquals('1.10', @$this->message[0]['remaining-balance']);
+        $this->assertEquals('1.05', @$this->message[1]['remaining-balance']);
+        $this->assertEquals('1.00', @$this->message[2]['remaining-balance']);
     }
 
     public function testCanAccessLastMessageAsObject()
     {
-        $this->message->setResponse($this->getResponse('multi'));
+        @$this->message->setResponse($this->getResponse('multi'));
         $this->assertEquals('0', $this->message->getStatus());
         $this->assertEquals('00000126', $this->message->getMessageId());
         $this->assertEquals('44123456789', $this->message->getTo());
@@ -100,7 +100,7 @@ class MultiMessageTest extends TestCase
 
     public function testCanAccessAnyMessagesAsObject()
     {
-        $this->message->setResponse($this->getResponse('multi'));
+        @$this->message->setResponse($this->getResponse('multi'));
         $this->assertEquals('00000124', $this->message->getMessageId(0));
         $this->assertEquals('00000125', $this->message->getMessageId(1));
         $this->assertEquals('00000126', $this->message->getMessageId(2));
@@ -115,7 +115,7 @@ class MultiMessageTest extends TestCase
             $this->fail('should not be able to iterate over empty message');
         }
 
-        $this->message->setResponse($this->getResponse('multi'));
+        @$this->message->setResponse($this->getResponse('multi'));
 
         $iterated = false;
         foreach($this->message as $index => $part){

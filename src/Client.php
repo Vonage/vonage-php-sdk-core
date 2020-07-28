@@ -8,39 +8,45 @@
 
 namespace Nexmo;
 
-use Http\Client\HttpClient;
-use Nexmo\Client\Credentials\Basic;
-use Nexmo\Client\Credentials\Container;
-use Nexmo\Client\Credentials\CredentialsInterface;
-use Nexmo\Client\Credentials\Keypair;
-use Nexmo\Client\Credentials\OAuth;
-use Nexmo\Client\Credentials\SignatureSecret;
-use Nexmo\Client\Exception\Exception;
-use Nexmo\Client\Factory\FactoryInterface;
-use Nexmo\Client\Factory\MapFactory;
-use Nexmo\Client\Response\Response;
-use Nexmo\Client\Signature;
-use Nexmo\Entity\EntityInterface;
-use Nexmo\Verify\Verification;
-use Psr\Http\Message\RequestInterface;
 use Zend\Diactoros\Uri;
+use Http\Client\HttpClient;
+use Nexmo\Client\Signature;
 use Zend\Diactoros\Request;
+use Nexmo\Client\APIResource;
+use Nexmo\Verify\Verification;
+use Nexmo\Entity\EntityInterface;
+use Nexmo\Client\Credentials\Basic;
+use Nexmo\Client\Credentials\OAuth;
+use Nexmo\Client\Factory\MapFactory;
+use Nexmo\Client\Credentials\Keypair;
+use Nexmo\Client\Exception\Exception;
+use Psr\Container\ContainerInterface;
+use Psr\Http\Message\RequestInterface;
+use Nexmo\Client\Credentials\Container;
+use Nexmo\Client\Factory\FactoryInterface;
+use Nexmo\Client\Credentials\SignatureSecret;
+use Nexmo\Client\Credentials\CredentialsInterface;
+use Psr\Http\Client\ClientInterface;
 
 /**
  * Nexmo API Client, allows access to the API from PHP.
  *
- * @property \Nexmo\Message\Client $message
- * @property \Nexmo\Call\Collection|\Nexmo\Call\Call[] $calls
- *
+ * @method \Nexmo\Account\Client account()
  * @method \Nexmo\Message\Client message()
+ * @method \Nexmo\SMS\Client sms()
  * @method \Nexmo\Verify\Client  verify()
  * @method \Nexmo\Application\Client applications()
- * @method \Nexmo\Call\Collection calls()
+ * @method \Nexmo\Conversion\Client conversion()
+ * @method \Nexmo\Insights\Client insights()
  * @method \Nexmo\Numbers\Client numbers()
+ * @method \Nexmo\Redact\Client redact()
+ * @method \Nexmo\SMS\Client sms()
+ * @method \Nexmo\Verify\Client  verify()
+ * @method \Nexmo\Voice\Client voice()
  */
 class Client
 {
-    const VERSION = '1.2.0';
+    const VERSION = '2.2.0';
 
     const BASE_API  = 'https://api.nexmo.com';
     const BASE_REST = 'https://rest.nexmo.com';
@@ -58,19 +64,19 @@ class Client
     protected $client;
 
     /**
-     * @var FactoryInterface
+     * @var ContainerInterface
      */
     protected $factory;
 
     /**
      * @var array
      */
-    protected $options = [];
+    protected $options = ['show_deprecations' => false];
 
     /**
      * Create a new API client using the provided credentials.
      */
-    public function __construct(CredentialsInterface $credentials, $options = array(), HttpClient $client = null)
+    public function __construct(CredentialsInterface $credentials, $options = array(), ClientInterface $client = null)
     {
         if (is_null($client)) {
             $client = new \Http\Adapter\Guzzle6\Client();
@@ -85,7 +91,7 @@ class Client
 
         $this->credentials = $credentials;
 
-        $this->options = $options;
+        $this->options = array_merge($this->options, $options);
 
         // If they've provided an app name, validate it
         if (isset($options['app'])) {
@@ -108,18 +114,42 @@ class Client
         }
 
         $this->setFactory(new MapFactory([
-            'account' => 'Nexmo\Account\Client',
-            'insights' => 'Nexmo\Insights\Client',
-            'message' => 'Nexmo\Message\Client',
-            'verify'  => 'Nexmo\Verify\Client',
-            'applications' => 'Nexmo\Application\Client',
-            'numbers' => 'Nexmo\Numbers\Client',
-            'calls' => 'Nexmo\Call\Collection',
-            'conversion' => 'Nexmo\Conversion\Client',
-            'conversation' => 'Nexmo\Conversations\Collection',
-            'user' => 'Nexmo\User\Collection',
-            'redact' => 'Nexmo\Redact\Client',
+            // Legacy Namespaces
+            'message' => \Nexmo\Message\Client::class,
+            'calls' => \Nexmo\Call\Collection::class,
+            'conversation' => \Nexmo\Conversations\Collection::class,
+            'user' => \Nexmo\User\Collection::class,
+
+            // Registered Services by name
+            'account' => \Nexmo\Account\ClientFactory::class,
+            'applications' => \Nexmo\Application\ClientFactory::class,
+            'conversion' => \Nexmo\Conversion\ClientFactory::class,
+            'insights' => \Nexmo\Insights\ClientFactory::class,
+            'numbers' => \Nexmo\Numbers\ClientFactory::class,
+            'redact' => \Nexmo\Redact\ClientFactory::class,
+            'sms' => \Nexmo\SMS\ClientFactory::class,
+            'verify' => \Nexmo\Verify\ClientFactory::class,
+            'voice' => \Nexmo\Voice\ClientFactory::class,
+
+            // Additional utility classes
+            APIResource::class => APIResource::class,
         ], $this));
+
+        // Disable throwing E_USER_DEPRECATED notices by default, the user can turn it on during development
+        if (array_key_exists('show_deprecations', $this->options) && !$this->options['show_deprecations']) {
+            set_error_handler(
+                function (
+                    int $errno,
+                    string $errstr,
+                    string $errfile,
+                    int $errline,
+                    array $errorcontext
+                ) {
+                    return true;
+                },
+                E_USER_DEPRECATED
+            );
+        }
     }
 
     public function getRestUrl()
@@ -141,7 +171,7 @@ class Client
      * @param HttpClient $client
      * @return $this
      */
-    public function setHttpClient(HttpClient $client)
+    public function setHttpClient(ClientInterface $client)
     {
         $this->client = $client;
         return $this;
@@ -167,6 +197,11 @@ class Client
     {
         $this->factory = $factory;
         return $this;
+    }
+
+    public function getFactory() : ContainerInterface
+    {
+        return $this->factory;
     }
 
     /**
@@ -481,11 +516,11 @@ class Client
 
     public function __get($name)
     {
-        if (!$this->factory->hasApi($name)) {
+        if (!$this->factory->has($name)) {
             throw new \RuntimeException('no api namespace found: ' . $name);
         }
 
-        return $this->factory->getApi($name);
+        return $this->factory->get($name);
     }
 
     protected static function requiresBasicAuth(\Psr\Http\Message\RequestInterface $request)

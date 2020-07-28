@@ -9,8 +9,10 @@
 namespace Nexmo\Client\Exception;
 
 use Nexmo\Entity\HasEntityTrait;
+use Nexmo\Entity\Psr7Trait;
 
 class Server extends Exception
 {
     use HasEntityTrait;
+    use Psr7Trait;
 }

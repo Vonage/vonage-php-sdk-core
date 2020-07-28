@@ -8,309 +8,213 @@
 
 namespace Nexmo\Application;
 
-use Nexmo\ApiErrorHandler;
-use Nexmo\Client\ClientAwareInterface;
+use Nexmo\Client\APIClient;
+use Nexmo\Client\APIResource;
 use Nexmo\Client\ClientAwareTrait;
 use Nexmo\Entity\CollectionInterface;
-use Nexmo\Entity\ModernCollectionTrait;
-use Psr\Http\Message\ResponseInterface;
-use Zend\Diactoros\Request;
-use Nexmo\Client\Exception;
+use Nexmo\Client\ClientAwareInterface;
+use Nexmo\Entity\IterableAPICollection;
+use Nexmo\Entity\Hydrator\ArrayHydrator;
+use Nexmo\Entity\IterableServiceShimTrait;
+use Nexmo\Entity\Hydrator\HydratorInterface;
 
-class Client implements ClientAwareInterface, CollectionInterface
+class Client implements ClientAwareInterface, CollectionInterface, APIClient
 {
     use ClientAwareTrait;
-    use ModernCollectionTrait;
+    use IterableServiceShimTrait;
 
+    /**
+     * @var APIResource
+     */
+    protected $api;
+
+    /**
+     * @var HydratorInterface
+     */
+    protected $hydrator;
+
+    public function __construct(APIResource $api = null, HydratorInterface $hydrator = null)
+    {
+        $this->api = $api;
+        $this->hydrator = $hydrator;
+
+        // Shim to handle BC with old constructor
+        // Will remove in v3
+        if (is_null($this->hydrator)) {
+            $this->hydrator = new Hydrator();
+        }
+    }
+
+    /**
+     * Shim to handle older instatiations of this class
+     * Will change in v3 to just return the required API object
+     */
+    public function getApiResource() : APIResource
+    {
+        if (is_null($this->api)) {
+            $api = new APIResource();
+            $api->setClient($this->getClient())
+                ->setBaseUri('/v2/applications')
+                ->setCollectionName('applications')
+            ;
+            $this->api = $api;
+        }
+        return $this->api;
+    }
+
+    /**
+     * @deprecated Use an IterableAPICollection object instead
+     */
     public static function getCollectionName()
     {
         return 'applications';
     }
 
+    /**
+     * @deprecated Use an IterableAPICollection object instead
+     */
     public static function getCollectionPath()
     {
         return '/v2/' . self::getCollectionName();
     }
 
-    public function hydrateEntity($data, $id)
-    {
-        $application = new Application($id);
-        $application->jsonUnserialize($data);
-        return $application;
-    }
-
+    /**
+     * Returns the specified application
+     */
     public function get($application)
     {
-        if (!($application instanceof Application)) {
-            $application = new Application($application);
+        if ($application instanceof Application) {
+            trigger_error(
+                "Passing a Application object to Nexmo\\Application\\Client::get is deprecated, please pass the String ID instead.",
+                E_USER_DEPRECATED
+            );
+            $application = $application->getId();
         }
 
-        $request = new Request(
-            $this->getClient()->getApiUrl() . $this->getCollectionPath() . '/' . $application->getId(),
-            'GET',
-            'php://memory',
-            ['Content-Type' => 'application/json']
-        );
-
-        $application->setRequest($request);
-        $response = $this->client->send($request);
-        $application->setResponse($response);
-
-        if ($response->getStatusCode() != '200') {
-            throw $this->getException($response, $application);
-        }
+        $data = $this->getApiResource()->get($application);
+        $application = new Application();
+        $application->fromArray($data);
 
         return $application;
     }
 
-    public function create($application)
+    public function getAll() : IterableAPICollection
     {
-        return $this->post($application);
+        $response = $this->api->search();
+        $response->setApiResource(clone $this->api);
+
+        $hydrator = new ArrayHydrator();
+        $hydrator->setPrototype(new Application());
+
+        $response->setHydrator($hydrator);
+        return $response;
     }
 
-    public function post($application)
+    /**
+     * Creates and saves a new Application
+     *
+     * @param array|Application Application to save
+     */
+    public function create($application) : Application
     {
         if (!($application instanceof Application)) {
-            $application = $this->createFromArray($application);
+            trigger_error(
+                'Passing an array to Nexmo\Application\Client::create() is deprecated, please pass an Application object instead.',
+                E_USER_DEPRECATED
+            );
+            $application = $this->fromArray($application);
         }
 
-        $body = $application->getRequestData(false);
+        // Avoids a mishap in the API where an ID can be set during creation
+        $data = $application->toArray();
+        unset($data['id']);
 
-        $request = new Request(
-            $this->getClient()->getApiUrl() . $this->getCollectionPath(),
-            'POST',
-            'php://temp',
-            ['Content-Type' => 'application/json']
-        );
-
-        $request->getBody()->write(json_encode($body));
-        $application->setRequest($request);
-        $response = $this->client->send($request);
-        $application->setResponse($response);
-
-        if ($response->getStatusCode() != '201') {
-            throw $this->getException($response, $application);
-        }
-
+        $response = $this->getApiResource()->create($data);
+        $application = $this->hydrator->hydrate($response);
         return $application;
     }
 
-    public function update($application, $id = null)
+    /**
+     * @deprecated Use `create()` instead
+     */
+    public function post($application) : Application
     {
-        return $this->put($application, $id);
+        trigger_error(
+            'Nexmo\Application\Client::post() has been deprecated in favor of the create() method',
+            E_USER_DEPRECATED
+        );
+        return $this->create($application);
     }
 
-    public function put($application, $id = null)
+    /**
+     * Saves an existing application
+     *
+     * @param array|Application $application
+     */
+    public function update($application, $id = null) : Application
     {
         if (!($application instanceof Application)) {
-            $application = $this->createFromArray($application);
+            trigger_error(
+                'Passing an array to Nexmo\Application\Client::update() is deprecated, please pass an Application object instead.',
+                E_USER_DEPRECATED
+            );
+            $application = $this->fromArray($application);
         }
 
         if (is_null($id)) {
             $id = $application->getId();
+        } else {
+            trigger_error(
+                'Passing an ID to Nexmo\Application\Client::update() is deprecated and will be removed in a future release',
+                E_USER_DEPRECATED
+            );
         }
 
-        $body = $application->getRequestData(false);
-
-        $request = new Request(
-            $this->getClient()->getApiUrl() . $this->getCollectionPath() . '/' . $id,
-            'PUT',
-            'php://temp',
-            ['Content-Type' => 'application/json']
-        );
-
-        $request->getBody()->write(json_encode($body));
-        $application->setRequest($request);
-        $response = $this->client->send($request);
-        $application->setResponse($response);
-
-        if ($response->getStatusCode() != '200') {
-            throw $this->getException($response, $application);
-        }
+        $data = $this->getApiResource()->update($id, $application->toArray());
+        $application = $this->hydrator->hydrate($data);
 
         return $application;
     }
 
-    public function delete($application)
+    /**
+     * @deprecated
+     */
+    public function put($application, $id = null) : Application
     {
-        if (($application instanceof Application)) {
+        trigger_error(
+            'Nexmo\Application\Client::put() has been deprecated in favor of the update() method',
+            E_USER_DEPRECATED
+        );
+        return $this->update($application, $id);
+    }
+
+    /**
+     * Deletes an application from the Nexmo account
+     *
+     * @param string|Application Application to delete
+     */
+    public function delete($application) : bool
+    {
+        if ($application instanceof Application) {
+            trigger_error(
+                'Passing an Application to Nexmo\Application\Client::delete() is deprecated, please pass a string ID instead',
+                E_USER_DEPRECATED
+            );
             $id = $application->getId();
         } else {
             $id = $application;
         }
 
-        $request = new Request(
-            $this->getClient()->getApiUrl(). $this->getCollectionPath() . '/' . $id,
-            'DELETE',
-            'php://temp',
-            ['Content-Type' => 'application/json']
-        );
-
-        if ($application instanceof Application) {
-            $application->setRequest($request);
-        }
-
-        $response = $this->client->send($request);
-
-        if ($application instanceof Application) {
-            $application->setResponse($response);
-        }
-
-        if ($response->getStatusCode() != '204') {
-            throw $this->getException($response, $application);
-        }
+        $this->getApiResource()->delete($id);
 
         return true;
     }
 
-    protected function getException(ResponseInterface $response, $application = null)
+    /**
+     * @deprecated Use Nexmo\Application\Hydrator directly instead
+     */
+    protected function fromArray(array $array) : Application
     {
-        $body = json_decode($response->getBody()->getContents(), true);
-        $status = $response->getStatusCode();
-
-        // Handle new style errors
-        $e = null;
-        try {
-            ApiErrorHandler::check($body, $status);
-        } catch (Exception\Exception $e) {
-            //todo use interfaces here
-            if (($application instanceof Application) and (($e instanceof Exception\Request) or ($e instanceof Exception\Server))) {
-                $e->setEntity($application);
-            }
-        }
-
-        return $e;
-    }
-
-    protected function createFromArray($array)
-    {
-        if (isset($array['answer_url']) || isset($array['event_url'])) {
-            return $this->createFromArrayV1($array);
-        }
-
-        return $this->createFromArrayV2($array);
-    }
-
-    protected function createFromArrayV1($array)
-    {
-        if (!is_array($array)) {
-            throw new \RuntimeException('application must implement `' . ApplicationInterface::class . '` or be an array`');
-        }
-
-        foreach (['name',] as $param) {
-            if (!isset($array[$param])) {
-                throw new \InvalidArgumentException('missing expected key `' . $param . '`');
-            }
-        }
-
-        $application = new Application();
-        $application->setName($array['name']);
-
-        // Public key?
-        if (isset($array['public_key'])) {
-            $application->setPublicKey($array['public_key']);
-        }
-
-        // Voice
-        foreach (['event', 'answer'] as $type) {
-            if (isset($array[$type . '_url'])) {
-                $method = isset($array[$type . '_method']) ? $array[$type . '_method'] : null;
-                $application->getVoiceConfig()->setWebhook($type . '_url', new Webhook($array[$type . '_url'], $method));
-            }
-        }
-
-        // Messages
-        foreach (['status', 'inbound'] as $type) {
-            if (isset($array[$type . '_url'])) {
-                $method = isset($array[$type . '_method']) ? $array[$type . '_method'] : null;
-                $application->getMessagesConfig()->setWebhook($type . '_url', new Webhook($array[$type . '_url'], $method));
-            }
-        }
-
-        // RTC
-        foreach (['event'] as $type) {
-            if (isset($array[$type . '_url'])) {
-                $method = isset($array[$type . '_method']) ? $array[$type . '_method'] : null;
-                $application->getRtcConfig()->setWebhook($type . '_url', new Webhook($array[$type . '_url'], $method));
-            }
-        }
-
-        // VBC
-        if (isset($array['vbc']) && $array['vbc']) {
-            $application->getVbcConfig()->enable();
-        }
-
-        return $application;
-    }
-
-    protected function createFromArrayV2($array)
-    {
-        if (!is_array($array)) {
-            throw new \RuntimeException('application must implement `' . ApplicationInterface::class . '` or be an array`');
-        }
-
-        foreach (['name',] as $param) {
-            if (!isset($array[$param])) {
-                throw new \InvalidArgumentException('missing expected key `' . $param . '`');
-            }
-        }
-
-        $application = new Application();
-        $application->setName($array['name']);
-
-        // Is there a public key?
-        if (isset($array['keys']['public_key'])) {
-            $application->setPublicKey($array['keys']['public_key']);
-        }
-
-        // How about capabilities?
-        if (!isset($array['capabilities'])) {
-            return $application;
-        }
-
-        $capabilities = $array['capabilities'];
-
-        // Handle voice
-        if (isset($capabilities['voice'])) {
-            $voiceCapabilities = $capabilities['voice']['webhooks'];
-
-            foreach (['answer', 'event'] as $type) {
-                $application->getVoiceConfig()->setWebhook($type.'_url', new Webhook(
-                    $voiceCapabilities[$type.'_url']['address'],
-                    $voiceCapabilities[$type.'_url']['http_method']
-                ));
-            }
-        }
-
-        // Handle messages
-        if (isset($capabilities['messages'])) {
-            $messagesCapabilities = $capabilities['messages']['webhooks'];
-
-            foreach (['status', 'inbound'] as $type) {
-                $application->getMessagesConfig()->setWebhook($type.'_url', new Webhook(
-                    $messagesCapabilities[$type.'_url']['address'],
-                    $messagesCapabilities[$type.'_url']['http_method']
-                ));
-            }
-        }
-
-        // Handle RTC
-        if (isset($capabilities['rtc'])) {
-            $rtcCapabilities = $capabilities['rtc']['webhooks'];
-
-            foreach (['event'] as $type) {
-                $application->getRtcConfig()->setWebhook($type.'_url', new Webhook(
-                    $rtcCapabilities[$type.'_url']['address'],
-                    $rtcCapabilities[$type.'_url']['http_method']
-                ));
-            }
-        }
-
-        // Handle VBC
-        if (isset($capabilities['vbc'])) {
-            $application->getVbcConfig()->enable();
-        }
-
-        return $application;
+        return $this->hydrator->hydrate($array);
     }
 }

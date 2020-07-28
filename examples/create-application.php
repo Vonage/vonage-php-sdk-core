@@ -1,10 +1,13 @@
 <?php
 
+use Nexmo\Client;
+use Nexmo\Application\Application;
+
 require_once '../vendor/autoload.php';
 
-$client = new Nexmo\Client(new Nexmo\Client\Credentials\Basic(API_KEY, API_SECRET));
+$client = new Client(new Nexmo\Client\Credentials\Basic(API_KEY, API_SECRET));
 
-$a = new Nexmo\Application\Application;
+$a = new Application();
 
 $a->setName('PHP Client Example');
 $a->getVoiceConfig()->setWebhook('answer_url', 'https://example.com/answer', 'GET');

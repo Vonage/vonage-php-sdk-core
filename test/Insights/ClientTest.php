@@ -8,21 +8,27 @@
 
 namespace NexmoTest\Insights;
 
-use Nexmo\Insights\AdvancedCnam;
+use Prophecy\Argument;
 use Nexmo\Insights\Basic;
-use Nexmo\Insights\Standard;
-use Nexmo\Insights\Advanced;
 use Nexmo\Insights\Client;
+use Nexmo\Insights\Advanced;
+use Nexmo\Insights\Standard;
+use Zend\Diactoros\Response;
+use Nexmo\Client\APIResource;
+use PHPUnit\Framework\TestCase;
+use Nexmo\Insights\AdvancedCnam;
 use Nexmo\Insights\StandardCnam;
 use NexmoTest\Psr7AssertionTrait;
-use Prophecy\Argument;
 use Psr\Http\Message\RequestInterface;
-use Zend\Diactoros\Response;
-use PHPUnit\Framework\TestCase;
 
 class ClientTest extends TestCase
 {
     use Psr7AssertionTrait;
+
+    /**
+     * @var APIResource
+     */
+    protected $apiClient;
 
     protected $nexmoClient;
 
@@ -35,6 +41,7 @@ class ClientTest extends TestCase
     {
         $this->nexmoClient = $this->prophesize('Nexmo\Client');
         $this->nexmoClient->getApiUrl()->willReturn('http://api.nexmo.com');
+
         $this->insightsClient = new Client();
         $this->insightsClient->setClient($this->nexmoClient->reveal());
     }
@@ -85,7 +92,7 @@ class ClientTest extends TestCase
      */
     public function testError()
     {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
             return true;
         }))->willReturn($this->getResponse('error'));
 
@@ -97,7 +104,7 @@ class ClientTest extends TestCase
      */
     public function testClientException()
     {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
             return true;
         }))->willReturn($this->getResponse('error', 401));
 
@@ -109,18 +116,16 @@ class ClientTest extends TestCase
      */
     public function testServerException()
     {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
             return true;
         }))->willReturn($this->getResponse('error', 502));
 
         $insightsStandard = $this->insightsClient->basic('14155550100');
     }
 
-
-
     protected function checkInsightsRequest($methodToCall, $expectedPath, $expectedClass)
     {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request)  use ($expectedPath){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($expectedPath) {
             $this->assertEquals($expectedPath, $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
@@ -129,14 +134,14 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse($methodToCall));
 
-        $insightsStandard = $this->insightsClient->$methodToCall('14155550100');
+        $insightsStandard = @$this->insightsClient->$methodToCall('14155550100');
         $this->assertInstanceOf($expectedClass, $insightsStandard);
         $this->assertEquals('(415) 555-0100', $insightsStandard->getNationalFormatNumber());
     }
 
     protected function checkInsightsRequestCnam($methodToCall, $expectedPath, $expectedClass)
     {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request)  use ($expectedPath){
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($expectedPath) {
             $this->assertEquals($expectedPath, $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
@@ -146,7 +151,7 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse($methodToCall));
 
-        $insightsStandard = $this->insightsClient->$methodToCall('14155550100');
+        $insightsStandard = @$this->insightsClient->$methodToCall('14155550100');
         $this->assertInstanceOf($expectedClass, $insightsStandard);
         $this->assertEquals('(415) 555-0100', $insightsStandard->getNationalFormatNumber());
     }

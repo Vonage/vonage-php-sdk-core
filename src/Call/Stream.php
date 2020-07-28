@@ -18,6 +18,8 @@ use Nexmo\Client\Exception;
 
 /**
  * Lightweight resource, only has put / delete.
+ * 
+ * @deprecated Please use Nexmo\Voice\Client::streamAudio() or Nexmo\Voice\Client::stopStreamAudio() instead
  */
 class Stream implements JsonSerializableInterface, ClientAwareInterface
 {
@@ -29,6 +31,11 @@ class Stream implements JsonSerializableInterface, ClientAwareInterface
 
     public function __construct($id = null)
     {
+        trigger_error(
+            'Nexmo\Call\Stream is deprecated, please use Nexmo\Voice\Client::streamAudio() or Nexmo\Voice\Client::stopStreamAudio() instead',
+            E_USER_DEPRECATED
+        );
+
         $this->id = $id;
     }
 

@@ -2,164 +2,189 @@
 
 namespace Nexmo\Account;
 
-use Nexmo\ApiErrorHandler;
-use Nexmo\Client\ClientAwareInterface;
-use Nexmo\Client\ClientAwareTrait;
-use Nexmo\Network;
-use Psr\Http\Message\ResponseInterface;
-use Zend\Diactoros\Request;
+use Nexmo\Client\APIClient;
 use Nexmo\Client\Exception;
+use Nexmo\Client\APIResource;
+use Nexmo\Client\ClientAwareTrait;
+use Nexmo\Client\ClientAwareInterface;
+use Nexmo\Client\Exception\Request as ExceptionRequest;
+use Nexmo\Client\Exception\Validation;
+use Nexmo\Entity\Filter\KeyValueFilter;
 
 /**
  * @todo Unify the exception handling to avoid duplicated code and logic (ie: getPrefixPricing())
  */
-class Client implements ClientAwareInterface
+class Client implements ClientAwareInterface, APIClient
 {
+    /**
+     * @deprecated This object will be dropping support for ClientAwareInterface in the future
+     */
     use ClientAwareTrait;
 
-    public function getPrefixPricing($prefix)
+    /**
+     * @var APIResource
+     */
+    protected $accountAPI;
+
+    /**
+     * @var APIResource
+     */
+    protected $secretsAPI;
+
+    public function __construct(?APIResource $accountAPI = null, ?APIResource $secretsAPI = null)
     {
-        $queryString = http_build_query([
-            'prefix' => $prefix
-        ]);
+        $this->accountAPI = $accountAPI;
+        $this->secretsAPI = $secretsAPI;
+    }
 
-        $request = new Request(
-            $this->getClient()->getRestUrl() . '/account/get-prefix-pricing/outbound?'.$queryString,
-            'GET',
-            'php://temp'
-        );
-
-        $response = $this->client->send($request);
-        $rawBody = $response->getBody()->getContents();
-
-        $body = json_decode($rawBody, true);
-
-        $codeCategory = (int) ($response->getStatusCode()/100);
-        if ($codeCategory != 2) {
-            if ($codeCategory == 4) {
-                throw new Exception\Request($body['error-code-label']);
-            } elseif ($codeCategory == 5) {
-                throw new Exception\Server($body['error-code-label']);
-            }
+    /**
+     * Shim to handle older instatiations of this class
+     * @deprecated Will remove in v3
+     */
+    protected function getAccountAPI() : APIResource
+    {
+        if (is_null($this->accountAPI)) {
+            $api = new APIResource();
+            $api->setClient($this->getClient())
+                ->setBaseUrl($this->getClient()->getRestUrl())
+                ->setIsHAL(false)
+                ->setBaseUri('/account')
+                ->setCollectionName('')
+            ;
+            $this->accountAPI = $api;
         }
+        return clone $this->accountAPI;
+    }
 
-        if ($body['count'] == 0) {
+    public function getAPIResource(): APIResource
+    {
+        return $this->getAccountAPI();
+    }
+
+    /**
+     * Shim to handle older instatiations of this class
+     * @deprecated Will remove in v3
+     */
+    protected function getSecretsAPI() : APIResource
+    {
+        if (is_null($this->secretsAPI)) {
+            $api = new APIResource();
+            $api->setClient($this->getClient())
+                ->setBaseUrl($this->getClient()->getApiUrl())
+                ->setIsHAL(false)
+                ->setBaseUri('/accounts')
+                ->setCollectionName('')
+            ;
+            $this->secretsAPI = $api;
+        }
+        return clone $this->secretsAPI;
+    }
+
+    /**
+     * Returns pricing based on the prefix requested
+     * @return array<PrefixPrice>
+     */
+    public function getPrefixPricing($prefix) : array
+    {
+        $api = $this->getAccountAPI();
+        $api->setBaseUri('/account/get-prefix-pricing/outbound');
+        $api->setCollectionName('prices');
+
+        $data = $api->search(new KeyValueFilter(['prefix' => $prefix]));
+
+        if (count($data) == 0) {
             return [];
         }
 
         // Multiple countries can match each prefix
         $prices = [];
 
-        foreach ($body['prices'] as $p) {
+        foreach ($data as $p) {
             $prefixPrice = new PrefixPrice();
-            $prefixPrice->jsonUnserialize($p);
+            $prefixPrice->fromArray($p);
             $prices[] = $prefixPrice;
         }
+
         return $prices;
     }
 
-    public function getSmsPrice($country)
+    /**
+     * Get SMS Pricing based on Country
+     */
+    public function getSmsPrice(string $country) : SmsPrice
     {
         $body = $this->makePricingRequest($country, 'sms');
         $smsPrice = new SmsPrice();
-        $smsPrice->jsonUnserialize($body);
+        $smsPrice->fromArray($body);
         return $smsPrice;
     }
 
-    public function getVoicePrice($country)
+    /**
+     * Get Voice pricing based on Country
+     */
+    public function getVoicePrice(string $country) : VoicePrice
     {
         $body = $this->makePricingRequest($country, 'voice');
         $voicePrice = new VoicePrice();
-        $voicePrice->jsonUnserialize($body);
+        $voicePrice->fromArray($body);
         return $voicePrice;
     }
 
     /**
      * @todo This should return an empty result instead of throwing an Exception on no results
      */
-    protected function makePricingRequest($country, $pricingType)
+    protected function makePricingRequest($country, $pricingType) : array
     {
-        $queryString = http_build_query([
-            'country' => $country
-        ]);
+        $api = $this->getAccountAPI();
+        $api->setBaseUri('/account/get-pricing/outbound/' . $pricingType);
+        $results = $api->search(new KeyValueFilter(['country' => $country]));
+        $data = $results->getPageData();
 
-        $request = new Request(
-            $this->getClient()->getRestUrl() . '/account/get-pricing/outbound/'.$pricingType.'?'.$queryString,
-            'GET',
-            'php://temp'
-        );
-
-        $response = $this->client->send($request);
-        $rawBody = $response->getBody()->getContents();
-
-        if ($rawBody === '') {
+        if (is_null($data)) {
             throw new Exception\Server('No results found');
         }
 
-        return json_decode($rawBody, true);
+        return $data;
     }
 
     /**
+     * Gets the accounts current balance in Euros
+     *
      * @todo This needs further investigated to see if '' can even be returned from this endpoint
      */
-    public function getBalance()
+    public function getBalance() : Balance
     {
-        $request = new Request(
-            $this->getClient()->getRestUrl() . '/account/get-balance',
-            'GET',
-            'php://temp'
-        );
-
-        $response = $this->client->send($request);
-        $rawBody = $response->getBody()->getContents();
-
-        if ($rawBody === '') {
+        $data = $this->getAccountAPI()->get('get-balance');
+        
+        if (is_null($data)) {
             throw new Exception\Server('No results found');
         }
 
-        $body = json_decode($rawBody, true);
-
-        $balance = new Balance($body['value'], $body['autoReload']);
+        $balance = new Balance($data['value'], $data['autoReload']);
         return $balance;
     }
 
-    public function topUp($trx)
+    public function topUp($trx) : void
     {
-        $body = [
-            'trx' => $trx
-        ];
-
-        $request = new Request(
-            $this->getClient()->getRestUrl() . '/account/top-up',
-            'POST',
-            'php://temp',
-            ['content-type' => 'application/x-www-form-urlencoded']
-        );
-
-        $request->getBody()->write(http_build_query($body));
-        $response = $this->client->send($request);
-
-        if ($response->getStatusCode() != '200') {
-            throw $this->getException($response);
-        }
+        $api = $this->getAccountAPI();
+        $api->setBaseUri('/account/top-up');
+        $api->submit(['trx' => $trx]);
     }
 
-    public function getConfig()
+    /**
+     * Return the account settings
+     */
+    public function getConfig() : Config
     {
-        $request = new Request(
-            $this->getClient()->getRestUrl() . '/account/settings',
-            'POST',
-            'php://temp'
-        );
+        $api = $this->getAccountAPI();
+        $api->setBaseUri('/account/settings');
+        $body = $api->submit();
 
-        $response = $this->client->send($request);
-        $rawBody = $response->getBody()->getContents();
-
-        if ($rawBody === '') {
+        if ($body === '') {
             throw new Exception\Server('Response was empty');
         }
 
-        $body = json_decode($rawBody, true);
+        $body = json_decode($body, true);
 
         $config = new Config(
             $body['mo-callback-url'],
@@ -171,7 +196,10 @@ class Client implements ClientAwareInterface
         return $config;
     }
 
-    public function updateConfig($options)
+    /**
+     * Update account config
+     */
+    public function updateConfig($options) : Config
     {
         // supported options are SMS Callback and DR Callback
         $params = [];
@@ -183,21 +211,10 @@ class Client implements ClientAwareInterface
             $params['drCallBackUrl'] = $options['dr_callback_url'];
         }
 
-        $request = new Request(
-            $this->getClient()->getRestUrl() . '/account/settings',
-            'POST',
-            'php://temp',
-            ['content-type' => 'application/x-www-form-urlencoded']
-        );
+        $api = $this->getAccountAPI();
+        $api->setBaseUri('/account/settings');
 
-        $request->getBody()->write(http_build_query($params));
-        $response = $this->client->send($request);
-
-        if ($response->getStatusCode() != '200') {
-            throw $this->getException($response);
-        }
-
-        $rawBody = $response->getBody()->getContents();
+        $rawBody = $api->submit($params);
 
         if ($rawBody === '') {
             throw new Exception\Server('Response was empty');
@@ -215,108 +232,49 @@ class Client implements ClientAwareInterface
         return $config;
     }
 
-    public function listSecrets($apiKey)
+    public function listSecrets(string $apiKey) : SecretCollection
     {
-        $body = $this->get($this->getClient()->getApiUrl() . '/accounts/'.$apiKey.'/secrets');
-        return SecretCollection::fromApi($body);
+        $api = $this->getSecretsAPI();
+        
+        $data = $api->get($apiKey . '/secrets');
+        return new SecretCollection($data['_embedded']['secrets'], $data['_links']);
     }
 
-    public function getSecret($apiKey, $secretId)
+    public function getSecret(string $apiKey, string $secretId) : Secret
     {
-        $body = $this->get($this->getClient()->getApiUrl() . '/accounts/'.$apiKey.'/secrets/'. $secretId);
-        return Secret::fromApi($body);
-    }
+        $api = $this->getSecretsAPI();
 
-    public function createSecret($apiKey, $newSecret)
-    {
-        $body = [
-            'secret' => $newSecret
-        ];
-
-        $request = new Request(
-            $this->getClient()->getApiUrl() . '/accounts/'.$apiKey.'/secrets',
-            'POST',
-            'php://temp',
-            ['content-type' => 'application/json']
-        );
-
-        $request->getBody()->write(json_encode($body));
-        $response = $this->client->send($request);
-
-        $rawBody = $response->getBody()->getContents();
-        $responseBody = json_decode($rawBody, true);
-        ApiErrorHandler::check($responseBody, $response->getStatusCode());
-
-        return Secret::fromApi($responseBody);
-    }
-
-    public function deleteSecret($apiKey, $secretId)
-    {
-        $request = new Request(
-            $this->getClient()->getApiUrl() . '/accounts/'.$apiKey.'/secrets/'. $secretId,
-            'DELETE',
-            'php://temp',
-            ['content-type' => 'application/json']
-        );
-
-        $response = $this->client->send($request);
-        $rawBody = $response->getBody()->getContents();
-        $body = json_decode($rawBody, true);
-
-        // This will throw an exception on any error
-        ApiErrorHandler::check($body, $response->getStatusCode());
-
-        // This returns a 204, so no response body
-    }
-
-    protected function get($url)
-    {
-        $request = new Request(
-            $url,
-            'GET',
-            'php://temp',
-            ['content-type' => 'application/json']
-        );
-
-        $response = $this->client->send($request);
-        $rawBody = $response->getBody()->getContents();
-        $body = json_decode($rawBody, true);
-
-        // This will throw an exception on any error
-        ApiErrorHandler::check($body, $response->getStatusCode());
-
-        return $body;
+        $data = $api->get($apiKey . '/secrets/' . $secretId);
+        return new Secret($data);
     }
 
     /**
-     * Generates an appropriate Exception message and object based on HTTP response
-     * This has a bit of logic to it since different error messages have a different
-     * response format.
-     *
-     * @return Exception
+     * Create a new account secret
      */
-    protected function getException(ResponseInterface $response, $application = null)
+    public function createSecret(string $apiKey, string $newSecret) : Secret
     {
-        $body = json_decode($response->getBody()->getContents(), true);
-        $status = $response->getStatusCode();
+        $api = $this->getSecretsAPI();
+        $api->setBaseUri('/accounts/' . $apiKey . '/secrets');
 
-        $errorMessage = "Unexpected HTTP Status Code";
-        if (array_key_exists('error_title', $body)) {
-            $errorMessage = $body['error_title'];
-        } elseif (array_key_exists('error-code-label', $body)) {
-            $errorMessage = $body['error-code-label'];
+        try {
+            $response = $api->create(['secret' => $newSecret]);
+        } catch (ExceptionRequest $e) {
+            // @deprectated Throw a Validation exception to preserve old behavior
+            // This will change to a general Request exception in the future
+            $rawResponse = json_decode(@$e->getResponse()->getBody()->getContents(), true);
+            if (array_key_exists('invalid_parameters', $rawResponse)) {
+                throw new Validation($e->getMessage(), $e->getCode(), null, $rawResponse['invalid_parameters']);
+            }
+            throw $e;
         }
 
-        $e = new Exception\Exception($errorMessage);
-        if ($status >= 400 && $status < 500) {
-            $e = new Exception\Request($errorMessage, $status);
-        } elseif ($status >= 500 && $status < 600) {
-            $e = new Exception\Server($errorMessage, $status);
-        }
+        return new Secret($response);
+    }
 
-        $response->getBody()->rewind();
-        $e->setEntity($response);
-
-        return $e;
+    public function deleteSecret(string $apiKey, string $secretId) : void
+    {
+        $api = $this->getSecretsAPI();
+        $api->setBaseUri('/accounts/' . $apiKey . '/secrets');
+        $api->delete($secretId);
     }
 }

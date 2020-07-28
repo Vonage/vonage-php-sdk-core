@@ -19,6 +19,9 @@ use Psr\Http\Message\ResponseInterface;
 use Zend\Diactoros\Request;
 use Nexmo\Client\Exception;
 
+/**
+ * @deprecated This will be removed in a future version, as this API is still considered Beta
+ */
 class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAccess
 {
     use ClientAwareTrait;

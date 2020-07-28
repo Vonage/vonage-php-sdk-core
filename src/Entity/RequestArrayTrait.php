@@ -12,6 +12,8 @@ namespace Nexmo\Entity;
  * Implements getRequestData from EntityInterface with a simple array. Request data stored in an array, and locked once
  * a request object has been set.
  *
+ * @deprecated This information will be available at API client level as opposed to the model level
+ *
  * @see EntityInterface::getRequestData()
  */
 trait RequestArrayTrait
@@ -60,7 +62,7 @@ trait RequestArrayTrait
             ));
         }
 
-        if ($this->getResponse()) {
+        if (@$this->getResponse()) {
             throw new \RuntimeException(sprintf(
                 'can not set request parameter `%s` for `%s` after API request has be made',
                 $name,

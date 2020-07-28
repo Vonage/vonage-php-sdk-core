@@ -5,21 +5,21 @@ trait CnamTrait
 {
     public function getCallerName()
     {
-        return $this['caller_name'];
+        return $this->data['caller_name'];
     }
 
     public function getFirstName()
     {
-        return $this['first_name'];
+        return $this->data['first_name'];
     }
 
     public function getLastName()
     {
-        return $this['last_name'];
+        return $this->data['last_name'];
     }
 
     public function getCallerType()
     {
-        return $this['caller_type'];
+        return $this->data['caller_type'];
     }
 }

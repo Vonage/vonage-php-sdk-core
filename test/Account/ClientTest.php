@@ -8,21 +8,24 @@
 
 namespace NexmoTest\Account;
 
-use Nexmo\Account\Balance;
+use Nexmo\Network;
+use Prophecy\Argument;
+use Nexmo\Account\Client;
 use Nexmo\Account\Config;
 use Nexmo\Account\Secret;
-use Nexmo\Account\SecretCollection;
-use Nexmo\Network;
+use Nexmo\Account\Balance;
 use Nexmo\Account\SmsPrice;
-use Nexmo\Account\VoicePrice;
-use Nexmo\Account\PrefixPrice;
-use Nexmo\Account\Client;
-use Zend\Diactoros\Response;
-use NexmoTest\Psr7AssertionTrait;
-use Prophecy\Argument;
-use Psr\Http\Message\RequestInterface;
-use PHPUnit\Framework\TestCase;
 use Nexmo\Client\Exception;
+use Zend\Diactoros\Response;
+use Nexmo\Account\VoicePrice;
+use Nexmo\Client\APIResource;
+use Nexmo\Account\PrefixPrice;
+use PHPUnit\Framework\TestCase;
+use NexmoTest\Psr7AssertionTrait;
+use Nexmo\Account\SecretCollection;
+use Nexmo\Client\Exception\Request;
+use Nexmo\Client\Exception\Validation;
+use Psr\Http\Message\RequestInterface;
 
 class ClientTest extends TestCase
 {
@@ -35,11 +38,27 @@ class ClientTest extends TestCase
      */
     protected $accountClient;
 
+    /**
+     * APIResource
+     */
+    protected $api;
+
     public function setUp()
     {
         $this->nexmoClient = $this->prophesize('Nexmo\Client');
         $this->nexmoClient->getRestUrl()->willReturn('https://rest.nexmo.com');
         $this->nexmoClient->getApiUrl()->willReturn('https://api.nexmo.com');
+
+        // $this->apiClient = new APIResource();
+        // $this->apiClient
+        //     ->setBaseUrl('https://rest.nexmo.com')
+        //     ->setIsHAL(false)
+        //     ->setBaseUri('/account')
+        // ;
+        // $this->apiClient->setCollectionName('');
+        // $this->apiClient->setClient($this->nexmoClient->reveal());
+
+        // $this->accountClient = new Client($this->apiClient);
         $this->accountClient = new Client();
         $this->accountClient->setClient($this->nexmoClient->reveal());
     }
@@ -260,7 +279,7 @@ class ClientTest extends TestCase
 
         $smsPrice = $this->accountClient->getSmsPrice('US');
         $this->assertInstanceOf(SmsPrice::class, $smsPrice);
-        $this->assertInstanceOf(Network::class, $smsPrice['networks']['311310']);
+        $this->assertInstanceOf(Network::class, @$smsPrice['networks']['311310']);
     }
 
     public function testGetSmsPricingReturnsEmptySet()
@@ -293,23 +312,32 @@ class ClientTest extends TestCase
 
         $voicePrice = $this->accountClient->getVoicePrice('US');
         $this->assertInstanceOf(VoicePrice::class, $voicePrice);
-        $this->assertInstanceOf(Network::class, $voicePrice['networks']['311310']);
+        $this->assertInstanceOf(Network::class, @$voicePrice['networks']['311310']);
     }
 
     public function testGetPrefixPricing()
     {
+        $first = $this->getResponse('prefix-pricing');
+        $noResults = $this->getResponse('prefix-pricing-no-results');
         $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+            static $hasRun = false;
+
             $this->assertEquals('/account/get-prefix-pricing/outbound', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
             $this->assertRequestQueryContains('prefix', '263', $request);
 
+            if ($hasRun) {
+                $this->assertRequestQueryContains('page_index', '2', $request);
+            }
+
+            $hasRun = true;
             return true;
-        }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('prefix-pricing'));
+        }))->shouldBeCalledTimes(2)->willReturn($first, $noResults);
 
         $prefixPrice = $this->accountClient->getPrefixPricing('263');
-        $this->assertInstanceOf(PrefixPrice::class, $prefixPrice[0]);
-        $this->assertInstanceOf(Network::class, $prefixPrice[0]['networks']['64804']);
+        $this->assertInstanceOf(PrefixPrice::class, @$prefixPrice[0]);
+        $this->assertInstanceOf(Network::class, @$prefixPrice[0]['networks']['64804']);
     }
 
     public function testGetPrefixPricingNoResults()
@@ -447,7 +475,7 @@ class ClientTest extends TestCase
         try {
             $this->nexmoClient->send(Argument::any())->willReturn($this->getResponse('secret-management/create-validation', 400));
             $this->accountClient->createSecret('abcd1234', 'example-4PI-secret');
-        } catch (Exception\Validation $e) {
+        } catch (Validation $e) {
             $this->assertEquals('Bad Request: The request failed due to validation errors. See https://developer.nexmo.com/api-errors/account/secret-management#validation for more information', $e->getMessage());
             $this->assertEquals([['name' => 'secret', 'reason' => 'Does not meet complexity requirements']], $e->getValidationErrors());
         }

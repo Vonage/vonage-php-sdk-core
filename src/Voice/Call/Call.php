@@ -11,6 +11,9 @@ namespace Nexmo\Voice\Call;
 use Nexmo\Client\Request\AbstractRequest;
 use Nexmo\Client\Request\RequestInterface;
 
+/**
+ * @deprecated This objects are no longer viable and will be removed in a future version
+ */
 class Call extends AbstractRequest implements RequestInterface
 {
     public function __construct($url, $to, $from = null)

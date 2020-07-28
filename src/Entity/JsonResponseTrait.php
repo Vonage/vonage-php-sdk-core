@@ -10,6 +10,9 @@ namespace Nexmo\Entity;
 
 use Psr\Http\Message\ResponseInterface;
 
+/**
+ * @deprecated This data will be better exposed at the model level
+ */
 trait JsonResponseTrait
 {
     protected $responseJson;
@@ -24,7 +27,7 @@ trait JsonResponseTrait
             ));
         }
 
-        if (($response = $this->getResponse()) && ($response instanceof ResponseInterface)) {
+        if (($response = @$this->getResponse()) && ($response instanceof ResponseInterface)) {
             if ($response->getBody()->isSeekable()) {
                 $response->getBody()->rewind();
             }

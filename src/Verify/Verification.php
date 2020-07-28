@@ -9,13 +9,17 @@
 namespace Nexmo\Verify;
 
 use Nexmo\Client\Exception\Request as RequestException;
+use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
 use Nexmo\Entity\JsonResponseTrait;
 use Nexmo\Entity\Psr7Trait;
 use Nexmo\Entity\RequestArrayTrait;
 
-class Verification implements VerificationInterface, \ArrayAccess, \Serializable
+class Verification implements VerificationInterface, \ArrayAccess, \Serializable, ArrayHydrateInterface
 {
     use Psr7Trait;
+    /**
+     * @deprecated
+     */
     use RequestArrayTrait;
     use JsonResponseTrait;
 
@@ -30,12 +34,14 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
     protected $dirty = true;
 
     /**
+     * @deprecated Use the Nexmo\Verify\Client instead to interact with the API
      * @var Client;
      */
     protected $client;
 
     /**
      * Create a verification with a number and brand, or the `request_id` of an existing verification.
+     * Note that in the future, this constructor will accept only the ID as the first parameter
      *
      * @param string $idOrNumber The number to verify, or the `request_id` of an existing verification.
      * @param null|string $brand The brand that identifies your application to the user.
@@ -47,6 +53,11 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
             $this->dirty = false;
             $this->requestData['request_id'] = $idOrNumber;
         } else {
+            trigger_error(
+                'Using ' . get_class($this) . ' for starting a verification is deprecated, please use Nexmo\Verify\Request instead',
+                E_USER_DEPRECATED
+            );
+
             $this->dirty = true;
             $this->requestData['number'] = $idOrNumber;
             $this->requestData['brand']  = $brand;
@@ -57,16 +68,22 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
     /**
      * Allow Verification to have actions.
      *
+     * @deprecated Use the Nexmo\Verfication\Client service object directly
      * @param Client $client Verify Client
      * @return $this
      */
     public function setClient(Client $client)
     {
+        trigger_error(
+            'Setting a client directly on a Verification object is deprecated, please use the Nexmo\Verfication\Client service object directly',
+            E_USER_DEPRECATED
+        );
         $this->client = $client;
         return $this;
     }
 
     /**
+     * @deprecated Use the Nexmo\Verification\Client service object directly
      * @return Client
      */
     protected function useClient()
@@ -81,6 +98,7 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
     /**
      * Check if the code is correct. Unlike the method it proxies, an invalid code does not throw an exception.
      *
+     * @deprecated Use Nexmo\Verfication\Client::check()
      * @uses \Nexmo\Verify\Client::check()
      * @param string $code Numeric code provided by the user.
      * @param null|string $ip IP address to be used for the verification.
@@ -89,6 +107,10 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
      */
     public function check($code, $ip = null)
     {
+        trigger_error(
+            'Nexmo\Verify\Verification::check() is deprecated, use Nexmo\Verfication\Client::check()',
+            E_USER_DEPRECATED
+        );
         try {
             $this->useClient()->check($this, $code, $ip);
             return true;
@@ -104,40 +126,60 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
     /**
      * Cancel the verification.
      *
+     * @deprecated Use Nexmo\Verfication\Client::cancel()
      * @uses \Nexmo\Verify\Client::cancel()
      */
     public function cancel()
     {
+        trigger_error(
+            'Nexmo\Verify\Verification::cancel() is deprecated, use Nexmo\Verfication\Client::cancel()',
+            E_USER_DEPRECATED
+        );
         $this->useClient()->cancel($this);
     }
 
     /**
      * Trigger the next verification.
      *
+     * @deprecated Use Nexmo\Verfication\Client::trigger()
      * @uses \Nexmo\Verify\Client::trigger()
      */
     public function trigger()
     {
+        trigger_error(
+            'Nexmo\Verify\Verification::trigger() is deprecated, use Nexmo\Verfication\Client::trigger()',
+            E_USER_DEPRECATED
+        );
         $this->useClient()->trigger($this);
     }
 
     /**
      * Update Verification from the API.
      *
+     * @deprecated Use Nexmo\Verfication\Client::get() to retrieve the object directly
      * @uses \Nexmo\Verify\Client::search()
      */
     public function sync()
     {
+        trigger_error(
+            'Nexmo\Verify\Verification::sync() is deprecated, use Nexmo\Verfication\Client::search() to get a new copy of this object',
+            E_USER_DEPRECATED
+        );
         $this->useClient()->search($this);
     }
 
     /**
      * Check if the user provided data has sent to the API yet.
      *
+     * @deprecated This object will not hold this information in the future
      * @return bool
      */
     public function isDirty()
     {
+        trigger_error(
+            'Nexmo\Verify\Verification::isDirty() is deprecated',
+            E_USER_DEPRECATED
+        );
         return $this->dirty;
     }
 
@@ -492,8 +534,9 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
      */
     protected function proxyArrayAccess($param)
     {
-        if (isset($this[$param])) {
-            return $this[$param];
+        $value = @$this[$param];
+        if (isset($value)) {
+            return @$this[$param];
         }
     }
 
@@ -501,12 +544,17 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
      * Allow the object to access the data from the API response, a sent API request, or the user set data that the
      * request will be created from - in that order.
      *
+     * @deprecated Array access will be removed in the future
      * @param mixed $offset
      * @return bool
      * @throws \Exception
      */
     public function offsetExists($offset)
     {
+        trigger_error(
+            'Using Nexmo\Verify\Verification as an array is deprecated',
+            E_USER_DEPRECATED
+        );
         $response = $this->getResponseData();
         $request  = $this->getRequestData();
         $dirty    = $this->requestData;
@@ -517,12 +565,17 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
      * Allow the object to access the data from the API response, a sent API request, or the user set data that the
      * request will be created from - in that order.
      *
+     * @deprecated Array access will be removed in the future
      * @param mixed $offset
      * @return mixed
      * @throws \Exception
      */
     public function offsetGet($offset)
     {
+        trigger_error(
+            'Using Nexmo\Verify\Verification as an array is deprecated',
+            E_USER_DEPRECATED
+        );
         $response = $this->getResponseData();
         $request  = $this->getRequestData();
         $dirty    = $this->requestData;
@@ -543,55 +596,76 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
     /**
      * All properties are read only.
      *
+     * @deprecated Array access will be removed in the future
      * @param mixed $offset
      * @param mixed $value
      */
     public function offsetSet($offset, $value)
     {
+        trigger_error(
+            'Using Nexmo\Verify\Verification as an array is deprecated',
+            E_USER_DEPRECATED
+        );
         throw $this->getReadOnlyException($offset);
     }
 
     /**
      * All properties are read only.
      *
+     * @deprecated Array access will be removed in the future
      * @param mixed $offset
      */
     public function offsetUnset($offset)
     {
+        trigger_error(
+            'Using Nexmo\Verify\Verification as an array is deprecated',
+            E_USER_DEPRECATED
+        );
         throw $this->getReadOnlyException($offset);
     }
 
     /**
      * All properties are read only.
      *
-     * @param $offset
+     * @deprecated Array access will be removed in the future
+     * @param string $offset
      * @return \RuntimeException
      */
-    protected function getReadOnlyException($offset)
+    protected function getReadOnlyException(string $offset)
     {
+        trigger_error(
+            'Using Nexmo\Verify\Verification as an array is deprecated',
+            E_USER_DEPRECATED
+        );
         return new \RuntimeException(sprintf(
             'can not modify `%s` using array access',
             $offset
         ));
     }
 
+    /**
+     * @todo Will need updated with the Laminas namespace
+     */
     public function serialize()
     {
         $data = [
             'requestData'  => $this->requestData
         ];
 
-        if ($request = $this->getRequest()) {
+        if ($request = @$this->getRequest()) {
             $data['request'] = \Zend\Diactoros\Request\Serializer::toString($request);
         }
 
-        if ($response = $this->getResponse()) {
+        if ($response = @$this->getResponse()) {
             $data['response'] = \Zend\Diactoros\Response\Serializer::toString($response);
         }
 
         return serialize($data);
     }
 
+    /**
+     * @todo Will need updated with the Laminas namespace
+     */
     public function unserialize($serialized)
     {
         $data = unserialize($serialized);
@@ -605,5 +679,21 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
         if (isset($data['response'])) {
             $this->response = \Zend\Diactoros\Response\Serializer::fromString($data['response']);
         }
+    }
+
+    /**
+     * @return array<string, scalar>
+     */
+    public function toArray() : array
+    {
+        return $this->requestData;
+    }
+
+    /**
+     * @param array<string, scalar> $data
+     */
+    public function fromArray(array $data) : void
+    {
+        $this->requestData = $data;
     }
 }

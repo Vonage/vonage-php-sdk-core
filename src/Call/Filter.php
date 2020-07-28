@@ -9,11 +9,22 @@
 namespace Nexmo\Call;
 
 use Nexmo\Conversations\Conversation;
-use Nexmo\Entity\FilterInterface;
+use Nexmo\Entity\Filter\FilterInterface;
 
+/**
+ * @deprecated Use Nexmo\Voice\Filter\VoiceFilter
+ */
 class Filter implements FilterInterface
 {
     protected $query = [];
+
+    public function __construct()
+    {
+        trigger_error(
+            'Nexmo\Call\Filter is deprecated, please use Nexmo\Voice\Filter\VoiceFilter instead',
+            E_USER_DEPRECATED
+        );
+    }
 
     public function getQuery()
     {

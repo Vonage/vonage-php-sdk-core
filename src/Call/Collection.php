@@ -17,10 +17,21 @@ use Psr\Http\Message\ResponseInterface;
 use Zend\Diactoros\Request;
 use Nexmo\Client\Exception;
 
+/**
+ * @deprecated Please use Nexmo\Voice\Client for this functionality
+ */
 class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAccess
 {
     use ClientAwareTrait;
     use CollectionTrait;
+
+    public function __construct()
+    {
+        trigger_error(
+            'Nexmo\Call\Collection is deprecated, please use Nexmo\Voice\Client instead',
+            E_USER_DEPRECATED
+        );
+    }
 
     public static function getCollectionName()
     {
@@ -116,7 +127,9 @@ class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAcc
         $response = $this->client->send($request);
 
         if ($response->getStatusCode() != '201') {
-            throw $this->getException($response);
+            $e = $this->getException($response);
+            $e->setRequest($request);
+            throw $e;
         }
 
         $body = json_decode($response->getBody()->getContents(), true);
@@ -168,6 +181,7 @@ class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAcc
             throw $e;
         }
 
+        $e->setResponse($response);
         return $e;
     }
 

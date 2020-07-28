@@ -13,6 +13,8 @@ namespace Nexmo\Call;
  * Represents a call destination / origin.
  *
  * TODO: Try to unify this and other (message, etc) endpoint identifiers.
+ *
+ * @deprecated Please use Nexmo\Voice\Endpoint\Phone instead
  */
 class Endpoint implements \JsonSerializable
 {
@@ -26,6 +28,11 @@ class Endpoint implements \JsonSerializable
 
     public function __construct($id, $type = self::PHONE, $additional = [])
     {
+        trigger_error(
+            'Nexmo\Call\Endpoint is deprecated, please use Nexmo\Voice\Endpoint\Phone instead',
+            E_USER_DEPRECATED
+        );
+
         $this->id = $id;
         $this->type = $type;
         $this->additional = $additional;

@@ -6,7 +6,7 @@
  * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
  */
 
-namespace Nexmo\Entity;
+namespace Nexmo\Entity\Filter;
 
 class EmptyFilter implements FilterInterface
 {

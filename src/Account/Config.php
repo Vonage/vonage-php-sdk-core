@@ -4,11 +4,22 @@ namespace Nexmo\Account;
 
 use ArrayAccess;
 use Nexmo\Client\Exception\Exception;
+use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
 use Nexmo\Entity\JsonSerializableInterface;
 use Nexmo\Entity\JsonUnserializableInterface;
 
-class Config implements JsonSerializableInterface, JsonUnserializableInterface, ArrayAccess
+class Config implements
+    \JsonSerializable,
+    JsonSerializableInterface,
+    JsonUnserializableInterface,
+    ArrayAccess,
+    ArrayHydrateInterface
 {
+    /**
+     * @var array<string, mixed>
+     */
+    protected $data = [];
+
     public function __construct($sms_callback_url = null, $dr_callback_url = null, $max_outbound_request = null, $max_inbound_request = null, $max_calls_per_second = null)
     {
         if (!is_null($sms_callback_url)) {
@@ -30,52 +41,75 @@ class Config implements JsonSerializableInterface, JsonUnserializableInterface, 
 
     public function getSmsCallbackUrl()
     {
-        return $this['sms_callback_url'];
+        return $this->data['sms_callback_url'];
     }
 
     public function getDrCallbackUrl()
     {
-        return $this['dr_callback_url'];
+        return $this->data['dr_callback_url'];
     }
 
     public function getMaxOutboundRequest()
     {
-        return $this['max_outbound_request'];
+        return $this->data['max_outbound_request'];
     }
 
     public function getMaxInboundRequest()
     {
-        return $this['max_inbound_request'];
+        return $this->data['max_inbound_request'];
     }
 
     public function getMaxCallsPerSecond()
     {
-        return $this['max_calls_per_second'];
+        return $this->data['max_calls_per_second'];
     }
 
     public function jsonUnserialize(array $json)
     {
+        trigger_error(
+            get_class($this) . "::jsonUnserialize is deprecated, please fromArray() instead",
+            E_USER_DEPRECATED
+        );
+
+        $this->fromArray($json);
+    }
+
+    public function fromArray(array $data)
+    {
         $this->data = [
-            'sms_callback_url' => $json['sms_callback_url'],
-            'dr_callback_url' => $json['dr_callback_url'],
-            'max_outbound_request' => $json['max_outbound_request'],
-            'max_inbound_request' => $json['max_inbound_request'],
-            'max_calls_per_second' => $json['max_calls_per_second'],
+            'sms_callback_url' => $data['sms_callback_url'],
+            'dr_callback_url' => $data['dr_callback_url'],
+            'max_outbound_request' => $data['max_outbound_request'],
+            'max_inbound_request' => $data['max_inbound_request'],
+            'max_calls_per_second' => $data['max_calls_per_second'],
         ];
     }
 
     public function jsonSerialize()
+    {
+        return $this->toArray();
+    }
+
+    public function toArray(): array
     {
         return $this->data;
     }
 
     public function offsetExists($offset)
     {
+        trigger_error(
+            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
+            E_USER_DEPRECATED
+        );
         return isset($this->data[$offset]);
     }
 
     public function offsetGet($offset)
     {
+        trigger_error(
+            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
+            E_USER_DEPRECATED
+        );
         return $this->data[$offset];
     }
 
@@ -87,5 +121,16 @@ class Config implements JsonSerializableInterface, JsonUnserializableInterface, 
     public function offsetUnset($offset)
     {
         throw new Exception('Balance is read only');
+    }
+
+    public function __get($key)
+    {
+        if ($key === 'data') {
+            trigger_error(
+                "Direct access to " . get_class($this) . "::data is deprecated, please use getter to toArray() methods",
+                E_USER_DEPRECATED
+            );
+            return $this->data;
+        }
     }
 }

@@ -5,21 +5,21 @@ class Standard extends Basic
 {
     public function getCurrentCarrier()
     {
-        return $this['current_carrier'];
+        return $this->data['current_carrier'];
     }
 
     public function getOriginalCarrier()
     {
-        return $this['original_carrier'];
+        return $this->data['original_carrier'];
     }
 
     public function getPorted()
     {
-        return $this['ported'];
+        return $this->data['ported'];
     }
 
     public function getRoaming()
     {
-        return $this['roaming'];
+        return $this->data['roaming'];
     }
 }

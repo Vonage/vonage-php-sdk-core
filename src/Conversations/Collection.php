@@ -19,6 +19,9 @@ use Psr\Http\Message\ResponseInterface;
 use Zend\Diactoros\Request;
 use Nexmo\Client\Exception;
 
+/**
+ * @deprecated Conversations is not released for General Availability and will be removed in a future release
+ */
 class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAccess
 {
     use ClientAwareTrait;

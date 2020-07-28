@@ -11,6 +11,9 @@ namespace Nexmo\Voice\Message;
 use Nexmo\Client\Request\AbstractRequest;
 use Nexmo\Client\Request\RequestInterface;
 
+/**
+ * @deprecated This objects are no longer viable and will be removed in a future version
+ */
 class Message extends AbstractRequest implements RequestInterface
 {
     protected $params = array();

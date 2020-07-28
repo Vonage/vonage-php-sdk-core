@@ -5,13 +5,23 @@ namespace Nexmo;
 use ArrayAccess;
 use Nexmo\Client\Exception\Exception;
 use Nexmo\Entity\EntityInterface;
+use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
 use Nexmo\Entity\JsonSerializableInterface;
 use Nexmo\Entity\JsonResponseTrait;
 use Nexmo\Entity\JsonSerializableTrait;
 use Nexmo\Entity\NoRequestResponseTrait;
 use Nexmo\Entity\JsonUnserializableInterface;
 
-class Network implements EntityInterface, JsonSerializableInterface, JsonUnserializableInterface, ArrayAccess
+/**
+ * This class will no longer be accessible via array access, nor contain request/response information after v2.
+ */
+class Network implements
+    EntityInterface,
+    \JsonSerializable,
+    JsonSerializableInterface,
+    JsonUnserializableInterface,
+    ArrayAccess,
+    ArrayHydrateInterface
 {
     use JsonSerializableTrait;
     use NoRequestResponseTrait;
@@ -27,63 +37,70 @@ class Network implements EntityInterface, JsonSerializableInterface, JsonUnseria
 
     public function getCode()
     {
-        return $this['network_code'];
+        return $this->data['network_code'];
     }
 
     public function getName()
     {
-        return $this['network_name'];
+        return $this->data['network_name'];
     }
 
     public function getOutboundSmsPrice()
     {
-        if (isset($this['sms_price'])) {
-            return $this['sms_price'];
+        if (isset($this->data['sms_price'])) {
+            return $this->data['sms_price'];
         }
-        return $this['price'];
+        return $this->data['price'];
     }
 
     public function getOutboundVoicePrice()
     {
-        if (isset($this['voice_price'])) {
-            return $this['voice_price'];
+        if (isset($this->data['voice_price'])) {
+            return $this->data['voice_price'];
         }
-        return $this['price'];
+        return $this->data['price'];
     }
 
     public function getPrefixPrice()
     {
-        return $this['mt_price'];
+        return $this->data['mt_price'];
     }
 
     public function getCurrency()
     {
-        return $this['currency'];
+        return $this->data['currency'];
     }
 
     public function jsonUnserialize(array $json)
     {
-        // Convert CamelCase to snake_case as that's how we use array access in every other object
-        $data = [];
-        foreach ($json as $k => $v) {
-            $k = ltrim(strtolower(preg_replace('/[A-Z]([A-Z](?![a-z]))*/', '_$0', $k)), '_');
-            $data[$k] = $v;
-        }
-        $this->data = $data;
+        trigger_error(
+            get_class($this) . "::jsonUnserialize is deprecated, please fromArray() instead",
+            E_USER_DEPRECATED
+        );
+
+        $this->fromArray($json);
     }
 
     public function jsonSerialize()
     {
-        return $this->data;
+        return $this->toArray();
     }
 
     public function offsetExists($offset)
     {
+        trigger_error(
+            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
+            E_USER_DEPRECATED
+        );
         return isset($this->data[$offset]);
     }
 
     public function offsetGet($offset)
     {
+        trigger_error(
+            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
+            E_USER_DEPRECATED
+        );
         return $this->data[$offset];
     }
 
@@ -95,5 +112,21 @@ class Network implements EntityInterface, JsonSerializableInterface, JsonUnseria
     public function offsetUnset($offset)
     {
         throw new Exception('Network is read only');
+    }
+
+    public function fromArray(array $data) : void
+    {
+        // Convert CamelCase to snake_case as that's how we use array access in every other object
+        $storage = [];
+        foreach ($data as $k => $v) {
+            $k = ltrim(strtolower(preg_replace('/[A-Z]([A-Z](?![a-z]))*/', '_$0', $k)), '_');
+            $storage[$k] = $v;
+        }
+        $this->data = $storage;
+    }
+
+    public function toArray(): array
+    {
+        return $this->data;
     }
 }

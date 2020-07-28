@@ -31,8 +31,8 @@ class BalanceTest extends TestCase
 
     public function testArrayAccess()
     {
-        $this->assertEquals("12.99", $this->balance['balance']);
-        $this->assertEquals(false, $this->balance['auto_reload']);
+        $this->assertEquals("12.99", @$this->balance['balance']);
+        $this->assertEquals(false, @$this->balance['auto_reload']);
     }
 
     public function testJsonSerialize()
@@ -48,16 +48,16 @@ class BalanceTest extends TestCase
         $data = ['value' => '5.00', 'autoReload' => false];
 
         $balance = new Balance('1.99', true);
-        $balance->jsonUnserialize($data);
+        $balance->fromArray($data);
 
-        $this->assertSame($data['value'], $balance['balance']);
-        $this->assertSame($data['autoReload'], $balance['auto_reload']);
+        $this->assertSame($data['value'], @$balance['balance']);
+        $this->assertSame($data['autoReload'], @$balance['auto_reload']);
     }
 
     public function testActsLikeArray()
     {
-        $this->assertSame('12.99', $this->balance['balance']);
-        $this->assertTrue(isset($this->balance['balance']));
+        $this->assertSame('12.99', @$this->balance['balance']);
+        $this->assertTrue(@isset($this->balance['balance']));
     }
 
     public function testCannotRemoveArrayKey()
@@ -78,6 +78,6 @@ class BalanceTest extends TestCase
 
     public function testMakeSureDataIsPubliclyVisible()
     {
-        $this->assertSame('12.99', $this->balance->data['balance']);
+        $this->assertSame('12.99', @$this->balance->data['balance']);
     }
 }

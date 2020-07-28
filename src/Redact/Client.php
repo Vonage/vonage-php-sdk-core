@@ -2,78 +2,63 @@
 
 namespace Nexmo\Redact;
 
-use Nexmo\Client\ClientAwareInterface;
+use Nexmo\Client\APIClient;
+use Nexmo\Client\APIResource;
 use Nexmo\Client\ClientAwareTrait;
-use Nexmo\Network;
-use Psr\Http\Message\ResponseInterface;
-use Zend\Diactoros\Request;
-use Nexmo\Client\Exception;
+use Nexmo\Client\APIExceptionHandler;
+use Nexmo\Client\ClientAwareInterface;
 
-class Client implements ClientAwareInterface
+class Client implements ClientAwareInterface, APIClient
 {
+    /**
+     * @deprecated This object no longer needs to be client aware
+     */
     use ClientAwareTrait;
 
-    public function transaction($id, $product, $options = [])
+    /**
+     * @var APIResource
+     */
+    protected $api;
+
+    /**
+     * @todo Stop having this use its own formatting for exceptions
+     */
+    public function __construct(APIResource $api = null)
     {
-        $request = new Request(
-            $this->getClient()->getApiUrl() . '/v1/redact/transaction',
-            'POST',
-            'php://temp',
-            [
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json'
-            ]
-        );
-
-        $body = ['id' => $id, 'product' => $product] + $options;
-
-        $request->getBody()->write(json_encode($body));
-        $response = $this->client->send($request);
-
-        $rawBody = $response->getBody()->getContents();
-
-        if ('204' != $response->getStatusCode()) {
-            throw $this->getException($response);
-        }
-
-        return null;
+        $this->api = $api;
     }
 
-    protected function getException(ResponseInterface $response)
+    /**
+     * Shim to handle older instatiations of this class
+     * Will change in v3 to just return the required API object
+     */
+    public function getApiResource() : APIResource
     {
-        $response->getBody()->rewind();
-        $body = json_decode($response->getBody()->getContents(), true);
-        $status = $response->getStatusCode();
+        if (is_null($this->api)) {
+            $api = new APIResource();
+            $api->setClient($this->getClient())
+                ->setBaseUri('/v1/redact')
+                ->setCollectionName('')
+            ;
+            $this->api = $api;
 
-        $msg = 'Unexpected error';
-
-        // This is an error at the load balancer, likely auth related
-        if (isset($body['error_title'])) {
-            $msg = $body['error_title'];
-        }
-
-        if (isset($body['title'])) {
-            $msg = $body['title'];
-            if (isset($body['detail'])) {
-                $msg .= ' - '.$body['detail'];
+            // This API has been using a different exception response format, so reset it if we can
+            // @todo Move this somewhere more appropriate, has to be here because we can't otherwise guarantee there is an API object
+            $exceptionHandler = $this->api->getExceptionErrorHandler();
+            if ($exceptionHandler instanceof APIExceptionHandler) {
+                $exceptionHandler->setRfc7807Format("%s - %s. See %s for more information");
             }
-
-            $msg .= '. See '.$body['type'];
+            $this->api->setExceptionErrorHandler($exceptionHandler);
         }
+        return $this->api;
+    }
 
-        if ($status >= 400 && $status < 500) {
-            $e = new Exception\Request($msg, $status);
-            $response->getBody()->rewind();
-            $e->setEntity($response);
-        } elseif ($status >= 500 && $status < 600) {
-            $e = new Exception\Server($msg, $status);
-            $response->getBody()->rewind();
-            $e->setEntity($response);
-        } else {
-            $e = new Exception\Exception('Unexpected HTTP Status Code');
-            throw $e;
-        }
+    public function transaction(string $id, string $product, array $options = []) : void
+    {
+        $api = $this->getApiResource();
+        $api->setBaseUri('/v1/redact/transaction');
 
-        return $e;
+        $body = ['id' => $id, 'product' => $product] + $options;
+        $api->create($body);
     }
 }

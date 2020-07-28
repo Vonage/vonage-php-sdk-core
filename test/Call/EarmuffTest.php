@@ -18,7 +18,7 @@ class EarmuffTest extends TestCase
 
     public function testStructure()
     {
-        $mute = new Earmuff();
+        $mute = @new Earmuff();
 
         $json = json_decode(json_encode($mute));
         $this->assertJsonMatchesSchema($json, __DIR__ . '/schema/earmuff.json');

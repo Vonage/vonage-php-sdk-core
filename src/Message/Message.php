@@ -8,6 +8,7 @@
 
 namespace Nexmo\Message;
 
+use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
 use Nexmo\Message\EncodingDetector;
 use Nexmo\Entity\JsonResponseTrait;
 use Nexmo\Entity\Psr7Trait;
@@ -18,7 +19,7 @@ use Nexmo\Entity\RequestArrayTrait;
  *
  * Extended by concrete message types (text, binary, etc).
  */
-class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
+class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator, ArrayHydrateInterface
 {
     use Psr7Trait;
     use JsonResponseTrait;
@@ -171,7 +172,7 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
     
     public function getTo($index = null)
     {
-        $data = $this->getResponseData();
+        $data = @$this->getResponseData();
 
         //check if this is data from a send request
         //(which also has a status, but it's not the same)
@@ -179,7 +180,7 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
             return $this->getMessageData('to', $index);
         }
 
-        return $this['to'];
+        return $this->data['to'];
     }
 
     public function getRemainingBalance($index = null)
@@ -197,7 +198,7 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
             return $this->getMessageData('message-price', $index);
         }
 
-        return $this['price'];
+        return $this->data['price'];
     }
 
     public function getNetwork($index = null)
@@ -207,7 +208,7 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
 
     public function getDeliveryStatus()
     {
-        $data = $this->getResponseData();
+        @$data = $this->getResponseData();
 
         //check if this is data from a send request
         //(which also has a status, but it's not the same)
@@ -215,32 +216,32 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
             return;
         }
 
-        return $this['status'];
+        return $this->data['status'];
     }
 
     public function getFrom()
     {
-        return $this['from'];
+        return $this->data['from'];
     }
 
     public function getBody()
     {
-        return $this['body'];
+        return $this->data['body'];
     }
 
     public function getDateReceived()
     {
-        return new \DateTime($this['date-received']);
+        return new \DateTime($this->data['date-received']);
     }
 
     public function getDeliveryError()
     {
-        return $this['error-code'];
+        return $this->data['error-code'];
     }
 
     public function getDeliveryLabel()
     {
-        return $this['error-code-label'];
+        return $this->data['error-code-label'];
     }
 
     public function isEncodingDetectionEnabled()
@@ -292,14 +293,18 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
 
     public function offsetExists($offset)
     {
-        $response = $this->getResponseData();
+        trigger_error(
+            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
+            E_USER_DEPRECATED
+        );
+        $response = @$this->getResponseData();
 
         if (isset($this->index)) {
             $response = $response['items'][$this->index];
         }
 
-        $request  = $this->getRequestData();
-        $dirty    = $this->getRequestData(false);
+        $request  = @$this->getRequestData();
+        $dirty    = @$this->getRequestData(false);
         if (isset($response[$offset]) || isset($request[$offset]) || isset($dirty[$offset])) {
             return true;
         }
@@ -314,14 +319,18 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
 
     public function offsetGet($offset)
     {
-        $response = $this->getResponseData();
+        trigger_error(
+            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
+            E_USER_DEPRECATED
+        );
+        $response = @$this->getResponseData();
 
         if (isset($this->index)) {
             $response = $response['items'][$this->index];
         }
 
-        $request  = $this->getRequestData();
-        $dirty    = $this->getRequestData(false);
+        $request  = @$this->getRequestData();
+        $dirty    = @$this->getRequestData(false);
 
         if (isset($response[$offset])) {
             return $response[$offset];
@@ -404,5 +413,15 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator
     public function rewind()
     {
         $this->current = 0;
+    }
+
+    public function fromArray(array $data)
+    {
+        $this->data = $data;
+    }
+
+    public function toArray() : array
+    {
+        return $this->data;
     }
 }

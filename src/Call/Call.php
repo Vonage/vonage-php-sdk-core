@@ -23,6 +23,8 @@ use Zend\Diactoros\Request;
 /**
  * Class Call
  *
+ * @deprecated Please use Nexmo\Voice\OutboundCall or Nexmo\Voice\Call instead
+ *
  * @property \Nexmo\Call\Stream $stream
  * @property \Nexmo\Call\Talk   $talk
  * @property \Nexmo\Call\Dtmf   $dtmf
@@ -63,6 +65,11 @@ class Call implements EntityInterface, \JsonSerializable, JsonUnserializableInte
 
     public function __construct($id = null)
     {
+        trigger_error(
+            'Nexmo\Call\Call is deprecated, please use Nexmo\Voice\Client for functionality instead',
+            E_USER_DEPRECATED
+        );
+
         $this->id = $id;
     }
 

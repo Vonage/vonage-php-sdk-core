@@ -4,18 +4,25 @@ namespace Nexmo\Account;
 
 use ArrayAccess;
 use Nexmo\Client\Exception\Exception;
+use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
 use Nexmo\Entity\JsonSerializableInterface;
 use Nexmo\Entity\JsonUnserializableInterface;
 
 /**
+ * This class will no longer be accessible via array keys past v2
  * @todo Have the JSON unserialize/serialize keys match with $this->data keys
  */
-class Balance implements JsonSerializableInterface, JsonUnserializableInterface, ArrayAccess
+class Balance implements
+    \JsonSerializable,
+    JsonSerializableInterface,
+    JsonUnserializableInterface,
+    ArrayAccess,
+    ArrayHydrateInterface
 {
     /**
      * @var array
      */
-    public $data;
+    protected $data;
 
     /**
      * @todo Have these take null values, since we offer an unserialize option to populate
@@ -28,20 +35,21 @@ class Balance implements JsonSerializableInterface, JsonUnserializableInterface,
 
     public function getBalance()
     {
-        return $this['balance'];
+        return $this->data['balance'];
     }
 
     public function getAutoReload()
     {
-        return $this['auto_reload'];
+        return $this->data['auto_reload'];
     }
 
     public function jsonUnserialize(array $json)
     {
-        $this->data = [
-            'balance' => $json['value'],
-            'auto_reload' => $json['autoReload']
-        ];
+        trigger_error(
+            get_class($this) . "::jsonUnserialize is deprecated, please fromArray() instead",
+            E_USER_DEPRECATED
+        );
+        $this->fromArray($json);
     }
 
     public function jsonSerialize()
@@ -51,11 +59,19 @@ class Balance implements JsonSerializableInterface, JsonUnserializableInterface,
 
     public function offsetExists($offset)
     {
+        trigger_error(
+            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
+            E_USER_DEPRECATED
+        );
         return isset($this->data[$offset]);
     }
 
     public function offsetGet($offset)
     {
+        trigger_error(
+            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
+            E_USER_DEPRECATED
+        );
         return $this->data[$offset];
     }
 
@@ -67,5 +83,29 @@ class Balance implements JsonSerializableInterface, JsonUnserializableInterface,
     public function offsetUnset($offset)
     {
         throw new Exception('Balance is read only');
+    }
+
+    public function fromArray(array $data)
+    {
+        $this->data = [
+            'balance' => $data['value'],
+            'auto_reload' => $data['autoReload']
+        ];
+    }
+
+    public function toArray(): array
+    {
+        return $this->data;
+    }
+
+    public function __get($key)
+    {
+        if ($key === 'data') {
+            trigger_error(
+                "Direct access to " . get_class($this) . "::data is deprecated, please use getter to toArray() methods",
+                E_USER_DEPRECATED
+            );
+            return $this->data;
+        }
     }
 }

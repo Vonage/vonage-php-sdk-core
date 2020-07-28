@@ -8,6 +8,9 @@
 
 namespace Nexmo\Call;
 
+/**
+ * @deprecated Please use Nexmo\Voice\Webhook instead
+ */
 class Webhook implements \JsonSerializable
 {
     protected $urls;
@@ -18,6 +21,11 @@ class Webhook implements \JsonSerializable
 
     public function __construct($type, $urls, $method = null)
     {
+        trigger_error(
+            'Nexmo\Call\Webhook is deprecated, please use Nexmo\Voice\Webhook instead',
+            E_USER_DEPRECATED
+        );
+
         if (!is_array($urls)) {
             $urls = [$urls];
         }

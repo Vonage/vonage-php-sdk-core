@@ -43,7 +43,7 @@ class NumberTest extends TestCase
     public function testHydrate()
     {
         $data = json_decode(file_get_contents(__DIR__ . '/responses/single.json'), true);
-        $this->number->jsonUnserialize($data['numbers'][0]);
+        $this->number->fromArray($data['numbers'][0]);
 
         $this->assertEquals('US', $this->number->getCountry());
         $this->assertEquals('1415550100', $this->number->getNumber());
@@ -67,7 +67,7 @@ class NumberTest extends TestCase
     public function testAvailableNumbers()
     {
         $data = json_decode(file_get_contents(__DIR__ . '/responses/available-numbers.json'), true);
-        $this->number->jsonUnserialize($data['numbers'][0]);
+        $this->number->fromArray($data['numbers'][0]);
 
         $this->assertEquals('US', $this->number->getCountry());
         $this->assertEquals('14155550100', $this->number->getNumber());
@@ -92,15 +92,13 @@ class NumberTest extends TestCase
         $this->assertInstanceOf('Nexmo\Application\Application', $app);
         $this->assertEquals($id, $app->getId());
 
-        $this->assertArrayHas('voiceCallbackType',  Number::ENDPOINT_APP,  $this->number->getRequestData());
-        $this->assertArrayHas('voiceCallbackValue', $id, $this->number->getRequestData());
+        $this->assertArrayHas('app_id', $id, $this->number->getRequestData());
 
         $app = new Application($id);
         $this->number->setVoiceDestination($app);
         $this->assertSame($app, $this->number->getVoiceDestination());
 
-        $this->assertArrayHas('voiceCallbackType',  Number::ENDPOINT_APP,  $this->number->getRequestData());
-        $this->assertArrayHas('voiceCallbackValue', $id, $this->number->getRequestData());
+        $this->assertArrayHas('app_id', $id, $this->number->getRequestData());
     }
 
     public function testForceVoiceType()
@@ -140,7 +138,7 @@ class NumberTest extends TestCase
             'type' => Number::TYPE_FIXED,
         ];
         $number = new Number();
-        $number->jsonUnserialize($numberData);
+        $number->fromArray($numberData);
 
         $this->assertEquals($numberData['type'], $number->getType());
     }

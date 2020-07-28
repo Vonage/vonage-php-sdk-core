@@ -19,13 +19,13 @@ class BasicTest extends TestCase
      */
     public function testArrayAccess($basic, $inputData)
     {
-        $this->assertEquals($inputData['request_id'], $basic['request_id']);
-        $this->assertEquals($inputData['international_format_number'], $basic['international_format_number']);
-        $this->assertEquals($inputData['national_format_number'], $basic['national_format_number']);
-        $this->assertEquals($inputData['country_code'], $basic['country_code']);
-        $this->assertEquals($inputData['country_code_iso3'], $basic['country_code_iso3']);
-        $this->assertEquals($inputData['country_name'], $basic['country_name']);
-        $this->assertEquals($inputData['country_prefix'], $basic['country_prefix']);
+        $this->assertEquals($inputData['request_id'], @$basic['request_id']);
+        $this->assertEquals($inputData['international_format_number'], @$basic['international_format_number']);
+        $this->assertEquals($inputData['national_format_number'], @$basic['national_format_number']);
+        $this->assertEquals($inputData['country_code'], @$basic['country_code']);
+        $this->assertEquals($inputData['country_code_iso3'], @$basic['country_code_iso3']);
+        $this->assertEquals($inputData['country_name'], @$basic['country_name']);
+        $this->assertEquals($inputData['country_prefix'], @$basic['country_prefix']);
     }
 
     /**
@@ -59,7 +59,7 @@ class BasicTest extends TestCase
         ];
 
         $basic1 = new Basic($inputBasic1['national_format_number']);
-        $basic1->jsonUnserialize($inputBasic1);
+        $basic1->fromArray($inputBasic1);
         $r['basic-1'] = [$basic1, $inputBasic1];
 
         return $r;

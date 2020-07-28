@@ -1,10 +1,12 @@
 <?php
 
+use Nexmo\Client;
+
 require_once '../vendor/autoload.php';
 
-$client = new Nexmo\Client(new Nexmo\Client\Credentials\Basic('7c9738e6', 'n3w-Api-key!'));
+$client = new Client(new Nexmo\Client\Credentials\Basic(API_KEY, API_SECRET));
 
-$a = $client->applications()->get('a8f93ca3-2a6f-4722-a53e-b7cccabc0bb9');
+$a = $client->applications()->get(APPLICATION_ID);
 
 $a->getVoiceConfig()->setWebhook('answer_url', 'https://example.com/answer', 'GET');
 $a->getVoiceConfig()->setWebhook('event_url', 'https://example.com/event', 'POST');

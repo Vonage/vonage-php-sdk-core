@@ -40,7 +40,7 @@ class MessageCreationTest extends TestCase
      */
     public function testRequiredParams()
     {
-        $params = $this->message->getRequestData();
+        $params = @$this->message->getRequestData();
 
         $this->assertEquals($this->to,   $params['to']);
         $this->assertEquals($this->from, $params['from']);
@@ -51,7 +51,7 @@ class MessageCreationTest extends TestCase
      */
     public function testNoDefaultParams()
     {
-        $params = array_keys($this->message->getRequestData());
+        $params = array_keys(@$this->message->getRequestData());
         $diff = array_diff($params, $this->set); // should be no difference
         $this->assertEmpty($diff, 'message params contain unset values (could change default behaviour)');
     }
@@ -63,13 +63,13 @@ class MessageCreationTest extends TestCase
     public function testOptionalParams($setter, $param, $values)
     {
         //check no default value
-        $params = $this->message->getRequestData();
+        $params = @$this->message->getRequestData();
         $this->assertArrayNotHasKey($param, $params);
 
         //test values
         foreach($values as $value => $expected){
             $this->message->$setter($value);
-            $params = $this->message->getRequestData();
+            $params = @$this->message->getRequestData();
             $this->assertArrayHasKey($param, $params);
             $this->assertEquals($expected, $params[$param]);
         }
@@ -114,7 +114,7 @@ class MessageCreationTest extends TestCase
         $data = ['test' => 'test'];
         $response = new \Zend\Diactoros\Response();
         $response->getBody()->write(json_encode($data));
-        $this->message->setResponse($response);
+        @$this->message->setResponse($response);
 
         $this->message->$method($argument);
     }
