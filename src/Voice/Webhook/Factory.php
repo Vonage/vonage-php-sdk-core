@@ -33,6 +33,10 @@ class Factory extends WebhookFactory
             return new Error($data);
         }
 
+        if (array_key_exists('payload', $data)) {
+            return new Notification($data);
+        }
+
         throw new \InvalidArgumentException('Unable to detect incoming webhook type');
     }
 }

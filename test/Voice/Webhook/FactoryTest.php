@@ -12,6 +12,7 @@ use PHPUnit\Framework\TestCase;
 use Nexmo\Voice\Webhook\Factory;
 use Nexmo\Voice\Webhook\Transfer;
 use Zend\Diactoros\ServerRequest;
+use Nexmo\Voice\Webhook\Notification;
 use Zend\Diactoros\Request\Serializer;
 
 class FactoryTest extends TestCase
@@ -153,6 +154,34 @@ class FactoryTest extends TestCase
         $this->assertSame($expected['conversation_uuid'], $error->getConversationUuid());
         $this->assertSame($expected['reason'], $error->getReason());
         $this->assertEquals(new \DateTimeImmutable($expected['timestamp']), $error->getTimestamp());
+    }
+
+    public function testCanGenerateANotificationGetWebhook()
+    {
+        $request = $this->getRequest('event-get-notify');
+        $expected = $this->getRequest('event-get-notify')->getQueryParams();
+
+        /** @var Notification $notification */
+        $notification = Factory::createFromRequest($request);
+
+        $this->assertTrue($notification instanceof Notification);
+        $this->assertSame($expected['conversation_uuid'], $notification->getConversationUuid());
+        $this->assertSame(json_decode($expected['payload'], true), $notification->getPayload());
+        $this->assertEquals(new \DateTimeImmutable($expected['timestamp']), $notification->getTimestamp());
+    }
+
+    public function testCanGenerateANotificationPostWebhook()
+    {
+        $request = $this->getRequest('event-post-notify');
+        $expected = json_decode($this->getRequest('event-post-notify')->getBody()->getContents(), true);
+
+        /** @var Notification $notification */
+        $notification = Factory::createFromRequest($request);
+
+        $this->assertTrue($notification instanceof Notification);
+        $this->assertSame($expected['conversation_uuid'], $notification->getConversationUuid());
+        $this->assertSame($expected['payload'], $notification->getPayload());
+        $this->assertEquals(new \DateTimeImmutable($expected['timestamp']), $notification->getTimestamp());
     }
 
     public function testThrowsExceptionOnUnknownWebhookData()

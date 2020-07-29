@@ -46,7 +46,7 @@ class NotifyTest extends TestCase
 
         $this->assertSame('notify', $ncco['action']);
         $this->assertSame(['foo' => 'bar'], $ncco['payload']);
-        $this->assertSame('https://test.domain/events', $ncco['eventUrl']);
+        $this->assertSame(['https://test.domain/events'], $ncco['eventUrl']);
         $this->assertSame('POST', $ncco['eventMethod']);
     }
 
@@ -61,7 +61,7 @@ class NotifyTest extends TestCase
 
         $this->assertSame('notify', $ncco['action']);
         $this->assertSame(['foo' => 'bar'], $ncco['payload']);
-        $this->assertSame('https://test.domain/events', $ncco['eventUrl']);
+        $this->assertSame(['https://test.domain/events'], $ncco['eventUrl']);
         $this->assertSame('POST', $ncco['eventMethod']);
     }
 
