@@ -57,7 +57,7 @@ class Notify implements ActionInterface
         return [
             'action' => 'notify',
             'payload' => $this->getPayload(),
-            'eventUrl' => $this->getEventWebhook()->getUrl(),
+            'eventUrl' => [$this->getEventWebhook()->getUrl()],
             'eventMethod' => $this->getEventWebhook()->getMethod(),
         ];
     }
