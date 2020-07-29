@@ -8,17 +8,17 @@ class Talk implements ActionInterface
     /**
      * @var bool
      */
-    protected $bargeIn = false;
+    protected $bargeIn;
 
     /**
      * @var float
      */
-    protected $level = 0;
+    protected $level;
 
     /**
      * @var int
      */
-    protected $loop = 1;
+    protected $loop;
 
     /**
      * @var string
@@ -28,7 +28,7 @@ class Talk implements ActionInterface
     /**
      * @var string
      */
-    protected $voiceName = 'kimberly';
+    protected $voiceName;
 
     public function __construct(string $text = null)
     {
@@ -67,17 +67,17 @@ class Talk implements ActionInterface
         return $talk;
     }
 
-    public function getBargeIn() : bool
+    public function getBargeIn() : ?bool
     {
         return $this->bargeIn;
     }
 
-    public function getLevel() : float
+    public function getLevel() : ?float
     {
         return $this->level;
     }
 
-    public function getLoop() : int
+    public function getLoop() : ?int
     {
         return $this->loop;
     }
@@ -87,7 +87,7 @@ class Talk implements ActionInterface
         return $this->text;
     }
 
-    public function getVoiceName() : string
+    public function getVoiceName() : ?string
     {
         return $this->voiceName;
     }
@@ -129,13 +129,27 @@ class Talk implements ActionInterface
      */
     public function toNCCOArray(): array
     {
-        return [
+        $data = [
             'action' => 'talk',
-            'bargeIn' => $this->getBargeIn() ? 'true' : 'false',
-            'level' => (string) $this->getLevel(),
-            'loop' => (string) $this->getLoop(),
             'text' => $this->getText(),
-            'voiceName' => $this->getVoiceName(),
         ];
+
+        if (!is_null($this->getBargeIn())) {
+            $data['bargeIn'] = $this->getBargeIn() ? 'true' : 'false';
+        }
+
+        if (!is_null($this->getLevel())) {
+            $data['level'] = (string) $this->getLevel();
+        }
+
+        if (!is_null($this->getLoop())) {
+            $data['loop'] = (string) $this->getLoop();
+        }
+
+        if ($this->getVoiceName()) {
+            $data['voiceName'] = $this->getVoiceName();
+        }
+
+        return $data;
     }
 }

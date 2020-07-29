@@ -22,12 +22,12 @@ class InputTest extends TestCase
 
         $ncco = $action->toNCCOArray();
 
-        $this->assertSame(['aaaaaaaa-bbbb-cccc-dddd-0123456789ab'], $ncco['speech']['uuid']);
-        $this->assertSame(5, $ncco['speech']['endOnSilence']);
-        $this->assertSame('en-US', $ncco['speech']['language']);
-        $this->assertSame(['foo', 'bar'], $ncco['speech']['context']);
-        $this->assertSame(2, $ncco['speech']['startTimeout']);
-        $this->assertSame(10, $ncco['speech']['maxDuration']);
+        $this->assertSame(['aaaaaaaa-bbbb-cccc-dddd-0123456789ab'], $ncco['speech']->uuid);
+        $this->assertSame(5, $ncco['speech']->endOnSilence);
+        $this->assertSame('en-US', $ncco['speech']->language);
+        $this->assertSame(['foo', 'bar'], $ncco['speech']->context);
+        $this->assertSame(2, $ncco['speech']->startTimeout);
+        $this->assertSame(10, $ncco['speech']->maxDuration);
     }
 
     public function testSpeechSettingsAreSetInFactory()
@@ -65,9 +65,9 @@ class InputTest extends TestCase
 
         $ncco = $action->toNCCOArray();
 
-        $this->assertSame(2, $ncco['dtmf']['maxDigits']);
-        $this->assertSame('true', $ncco['dtmf']['submitOnHash']);
-        $this->assertSame(5, $ncco['dtmf']['timeOut']);
+        $this->assertSame(2, $ncco['dtmf']->maxDigits);
+        $this->assertSame('true', $ncco['dtmf']->submitOnHash);
+        $this->assertSame(5, $ncco['dtmf']->timeOut);
     }
 
     public function testDTMFSettingsAreSetInFactory()
@@ -93,7 +93,8 @@ class InputTest extends TestCase
         $data = [
             'action' => 'input',
             'eventUrl' => 'https://test.domain/events',
-            'eventMethod' => 'POST'
+            'eventMethod' => 'POST',
+            'speech' => [],
         ];
 
         $action = Input::factory($data);
@@ -111,6 +112,7 @@ class InputTest extends TestCase
         $data = [
             'action' => 'input',
             'eventUrl' => 'https://test.domain/events',
+            'dtmf' => []
         ];
 
         $action = Input::factory($data);
@@ -127,15 +129,21 @@ class InputTest extends TestCase
     {
         $expected = [
             'action' => 'input',
-            'dtmf' => [
-                'timeOut' => 3,
-                'maxDigits' => 4,
-                'submitOnHash' => 'false'
-            ]
+            'dtmf' => (object) []
         ];
 
         $action = new Input();
+        $action->setEnableDtmf(true);
 
-        $this->assertSame($expected, $action->jsonSerialize());
+        $this->assertEquals($expected, $action->jsonSerialize());
+    }
+
+    public function testThrowsRuntimeExceptionIfNoInputDefined()
+    {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Input NCCO action must have either speech or DTMF enabled');
+
+        $action = new Input();
+        $action->toNCCOArray();
     }
 }

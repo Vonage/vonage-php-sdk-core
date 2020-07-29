@@ -21,6 +21,23 @@ class ConnectTest extends TestCase
         $this->endpoint = new Phone('15551231234');
     }
 
+    public function testSimpleSetup()
+    {
+        $expected = [
+            'action' => 'connect',
+            'endpoint' => [
+                [
+                    'type' => 'phone',
+                    'number' => '15551231234'
+                ]
+            ]
+        ];
+
+        $action = new Connect($this->endpoint);
+
+        $this->assertSame($expected, $action->toNCCOArray());
+    }
+
     public function testCanSetAdditionalInformation()
     {
         $webhook = new Webhook('https://test.domain/events');

@@ -31,17 +31,17 @@ class Connect implements ActionInterface
     /**
      * @var int
      */
-    protected $timeout = 60;
+    protected $timeout;
 
     /**
      * @var int
      */
-    protected $limit = 7200;
+    protected $limit;
 
     /**
      * @var string
      */
-    protected $machineDetection = 'continue';
+    protected $machineDetection;
 
     /**
      * @var ?Webhook
@@ -75,10 +75,19 @@ class Connect implements ActionInterface
         $data = [
             'action' => 'connect',
             'endpoint' => [$this->endpoint->toArray()],
-            'timeout' => $this->getTimeout(),
-            'limit' => $this->getLimit(),
-            'machineDetection' => $this->getMachineDetection(),
         ];
+
+        if ($this->getTimeout()) {
+            $data['timeout'] = $this->getTimeout();
+        }
+
+        if ($this->getLimit()) {
+            $data['limit'] = $this->getLimit();
+        }
+
+        if ($this->getMachineDetection()) {
+            $data['machineDetection'] = $this->getMachineDetection();
+        }
 
         $from = $this->getFrom();
         if ($from) {
@@ -130,7 +139,7 @@ class Connect implements ActionInterface
         return $this;
     }
 
-    public function getTimeout() : int
+    public function getTimeout() : ?int
     {
         return $this->timeout;
     }
@@ -141,7 +150,7 @@ class Connect implements ActionInterface
         return $this;
     }
 
-    public function getLimit() : int
+    public function getLimit() : ?int
     {
         return $this->limit;
     }
@@ -152,7 +161,7 @@ class Connect implements ActionInterface
         return $this;
     }
 
-    public function getMachineDetection() : string
+    public function getMachineDetection() : ?string
     {
         return $this->machineDetection;
     }

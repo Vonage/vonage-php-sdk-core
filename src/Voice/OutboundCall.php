@@ -31,7 +31,7 @@ class OutboundCall
      * Length of seconds before Nexmo hangs up after going into `in_progress` status
      * @var int
      */
-    protected $lengthTimer = 7200;
+    protected $lengthTimer;
 
     /**
      * What to do when Nexmo detects an answering machine.
@@ -47,7 +47,7 @@ class OutboundCall
      * Length of time Nexmo will allow a phone number to ring before hanging up
      * @var int
      */
-    protected $ringingTimer = 60;
+    protected $ringingTimer;
 
     /**
      * @var EndpointInterface
@@ -75,7 +75,7 @@ class OutboundCall
         return $this->from;
     }
 
-    public function getLengthTimer() : int
+    public function getLengthTimer() : ?int
     {
         return $this->lengthTimer;
     }
@@ -90,7 +90,7 @@ class OutboundCall
         return $this->ncco;
     }
 
-    public function getRingingTimer() : int
+    public function getRingingTimer() : ?int
     {
         return $this->ringingTimer;
     }

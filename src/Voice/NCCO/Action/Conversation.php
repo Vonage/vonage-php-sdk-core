@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Nexmo\Voice\NCCO\Action;
 
+use Nexmo\Voice\Webhook;
+
 class Conversation implements ActionInterface
 {
     /**
@@ -18,17 +20,17 @@ class Conversation implements ActionInterface
     /**
      * @var bool
      */
-    protected $startOnEnter = true;
+    protected $startOnEnter;
 
     /**
      * @var bool
      */
-    protected $endOnExit = false;
+    protected $endOnExit;
 
     /**
      * @var bool
      */
-    protected $record = false;
+    protected $record;
 
     /**
      * @var ?array<string>
@@ -39,6 +41,11 @@ class Conversation implements ActionInterface
      * @var ?array<string>
      */
     protected $canHear;
+
+    /**
+     * @var Webhook
+     */
+    protected $eventWebhook;
 
     public function __construct(string $name)
     {
@@ -61,7 +68,7 @@ class Conversation implements ActionInterface
         return $this;
     }
 
-    public function getStartOnEnter() : bool
+    public function getStartOnEnter() : ?bool
     {
         return $this->startOnEnter;
     }
@@ -72,7 +79,7 @@ class Conversation implements ActionInterface
         return $this;
     }
 
-    public function getEndOnExit() : bool
+    public function getEndOnExit() : ?bool
     {
         return $this->endOnExit;
     }
@@ -83,7 +90,7 @@ class Conversation implements ActionInterface
         return $this;
     }
 
-    public function getRecord() : bool
+    public function getRecord() : ?bool
     {
         return $this->record;
     }
@@ -183,6 +190,20 @@ class Conversation implements ActionInterface
         if (array_key_exists('canHear', $data)) {
             $talk->setCanHear($data['canHear']);
         }
+
+        if (array_key_exists('eventUrl', $data)) {
+            if (is_array($data['eventUrl'])) {
+                $data['eventUrl'] = $data['eventUrl'][0];
+            }
+
+            if (array_key_exists('eventMethod', $data)) {
+                $webhook = new Webhook($data['eventUrl'], $data['eventMethod']);
+            } else {
+                $webhook = new Webhook($data['eventUrl']);
+            }
+
+            $talk->setEventWebhook($webhook);
+        }
         
         return $talk;
     }
@@ -203,10 +224,19 @@ class Conversation implements ActionInterface
         $data = [
             'action' => 'conversation',
             'name' => $this->getName(),
-            'startOnEnter' => $this->getStartOnEnter() ? 'true' : 'false',
-            'endOnExit' => $this->getEndOnExit() ? 'true' : 'false',
-            'record' => $this->getRecord() ? 'true' : 'false',
         ];
+
+        if (!is_null($this->getStartOnEnter())) {
+            $data['startOnEnter'] = $this->getStartOnEnter() ? 'true' : 'false';
+        }
+
+        if (!is_null($this->getEndOnExit())) {
+            $data['endOnExit'] = $this->getEndOnExit() ? 'true' : 'false';
+        }
+
+        if (!is_null($this->getRecord())) {
+            $data['record'] = $this->getRecord() ? 'true' : 'false';
+        }
 
         $music = $this->getMusicOnHoldUrl();
         if ($music) {
@@ -223,6 +253,22 @@ class Conversation implements ActionInterface
             $data['canHear'] = $canHear;
         }
 
+        if ($this->getEventWebhook()) {
+            $data['eventUrl'] = [$this->getEventWebhook()->getUrl()];
+            $data['eventMethod'] = $this->getEventWebhook()->getMethod();
+        }
+
         return $data;
+    }
+
+    public function getEventWebhook() : ?Webhook
+    {
+        return $this->eventWebhook;
+    }
+
+    public function setEventWebhook(Webhook $eventWebhook)
+    {
+        $this->eventWebhook = $eventWebhook;
+        return $this;
     }
 }

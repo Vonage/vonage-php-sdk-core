@@ -8,17 +8,17 @@ class Stream implements ActionInterface
     /**
      * @var bool
      */
-    protected $bargeIn = false;
+    protected $bargeIn;
 
     /**
      * @var float
      */
-    protected $level = 0;
+    protected $level;
 
     /**
      * @var int
      */
-    protected $loop = 1;
+    protected $loop;
 
     /**
      * @var string
@@ -58,17 +58,17 @@ class Stream implements ActionInterface
         return $stream;
     }
 
-    public function getBargeIn() : bool
+    public function getBargeIn() : ?bool
     {
         return $this->bargeIn;
     }
 
-    public function getLevel() : float
+    public function getLevel() : ?float
     {
         return $this->level;
     }
 
-    public function getLoop() : int
+    public function getLoop() : ?int
     {
         return $this->loop;
     }
@@ -109,12 +109,23 @@ class Stream implements ActionInterface
      */
     public function toNCCOArray(): array
     {
-        return [
+        $data = [
             'action' => 'stream',
-            'bargeIn' => $this->getBargeIn() ? 'true' : 'false',
-            'level' => (string) $this->getLevel(),
-            'loop' => (string) $this->getLoop(),
             'streamUrl' => [$this->getStreamUrl()],
         ];
+
+        if (!is_null($this->getBargeIn())) {
+            $data['bargeIn'] = $this->getBargeIn() ? 'true' : 'false';
+        }
+
+        if (!is_null($this->getLevel())) {
+            $data['level'] = (string) $this->getLevel();
+        }
+
+        if (!is_null($this->getLoop())) {
+            $data['loop'] = (string) $this->getLoop();
+        }
+
+        return $data;
     }
 }

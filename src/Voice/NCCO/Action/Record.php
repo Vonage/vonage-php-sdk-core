@@ -31,7 +31,7 @@ class Record implements ActionInterface
     /**
      * @var int
      */
-    protected $endOnSilence = 3;
+    protected $endOnSilence;
 
     /**
      * @var string '*'|'#'|1'|2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'|'0'
@@ -118,10 +118,13 @@ class Record implements ActionInterface
         $data = [
             'action' => 'record',
             'format' => $this->getFormat(),
-            'endOnSilence' => (string) $this->getEndOnSilence(),
             'timeOut' => (string) $this->getTimeout(),
             'beepStart' => $this->getBeepStart() ? 'true' : 'false',
         ];
+
+        if ($this->getEndOnSilence()) {
+            $data['endOnSilence'] = (string) $this->getEndOnSilence();
+        }
 
         if ($this->getEndOnKey()) {
             $data['endOnKey'] = $this->getEndOnKey();
@@ -196,7 +199,7 @@ class Record implements ActionInterface
         return $this;
     }
 
-    public function getEndOnSilence() : int
+    public function getEndOnSilence() : ?int
     {
         return $this->endOnSilence;
     }

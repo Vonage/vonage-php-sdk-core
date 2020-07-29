@@ -117,11 +117,7 @@ class ClientTest extends TestCase
             'ncco' => [
                 [
                     'action' => 'talk',
-                    'bargeIn' => 'false',
-                    'level' => '0',
-                    'loop' => '1',
                     'text' => 'Thank you for trying Vonage',
-                    'voiceName' => 'kimberly'
                 ]
             ],
             'length_timer' => '7200',
@@ -137,6 +133,8 @@ class ClientTest extends TestCase
         $outboundCall = (new OutboundCall(new Phone('15555555555'), new Phone('16666666666')))
             ->setEventWebhook(new Webhook('http://domain.test/event'))
             ->setNCCO((new NCCO)->addAction(new Talk('Thank you for trying Vonage')))
+            ->setLengthTimer(7200)
+            ->setRingingTimer(60)
         ;
         $callData = $this->voiceClient->createOutboundCall($outboundCall);
 
@@ -294,11 +292,7 @@ class ClientTest extends TestCase
             'ncco' => [
                 [
                     'action' => 'talk',
-                    'bargeIn' => 'false',
-                    'level' => '0',
-                    'loop' => '1',
                     'text' => 'Thank you for trying Vonage',
-                    'voiceName' => 'kimberly'
                 ]
             ]
         ];
@@ -379,9 +373,6 @@ class ClientTest extends TestCase
         $id = 'ssf61863-4a51-ef6b-11e1-w6edebcf93bb';
         $payload = [
             'text' => 'This is sample text',
-            'voice_name' => 'kimberly',
-            'loop' => '1',
-            'level' => '0',
         ];
 
         $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {

@@ -58,8 +58,13 @@ class Client implements APIClient
             $json['machine_detection'] = $call->getMachineDetection();
         }
 
-        $json['length_timer'] = (string) $call->getLengthTimer();
-        $json['ringing_timer'] = (string) $call->getRingingTimer();
+        if (!is_null($call->getLengthTimer())) {
+            $json['length_timer'] = (string) $call->getLengthTimer();
+        }
+
+        if (!is_null($call->getRingingTimer())) {
+            $json['ringing_timer'] = (string) $call->getRingingTimer();
+        }
 
         $event = $this->api->create($json);
         $event['to'] = $call->getTo()->getId();
@@ -117,12 +122,10 @@ class Client implements APIClient
      */
     public function playTTS(string $callId, Talk $action) : array
     {
-        $response = $this->api->update($callId . '/talk', [
-            'text' => $action->getText(),
-            'voice_name' => $action->getVoiceName(),
-            'loop' => (string) $action->getLoop(),
-            'level' => (string) $action->getLevel(),
-        ]);
+        $payload = $action->toNCCOArray();
+        unset($payload['action']);
+
+        $response = $this->api->update($callId . '/talk', $payload);
 
         return $response;
     }

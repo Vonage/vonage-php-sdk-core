@@ -5,9 +5,22 @@ namespace NexmoTest\Voice\NCCO\Action;
 
 use PHPUnit\Framework\TestCase;
 use Nexmo\Voice\NCCO\Action\Conversation;
+use Nexmo\Voice\Webhook;
 
 class ConversationTest extends TestCase
 {
+    public function testSimpleSetup()
+    {
+        $expected = [
+            'action' => 'conversation',
+            'name' => 'my-conversation'
+        ];
+
+        $action = new Conversation('my-conversation');
+
+        $this->assertSame($expected, $action->toNCCOArray());
+    }
+
     public function testCanSetMusicOnHold()
     {
         $action = new Conversation('my-conversation');
@@ -51,8 +64,70 @@ class ConversationTest extends TestCase
         ];
 
         $action = new Conversation('my-conversation');
+        $action->setStartOnEnter(true);
+        $action->setEndOnExit(false);
+        $action->setRecord(false);
+
         $data = $action->jsonSerialize();
 
         $this->assertSame($expected, $data);
+    }
+
+    public function testCanSetRecordEventUrl()
+    {
+        $action = new Conversation('my-conversation');
+        $action->setRecord(true);
+        $action->setEventWebhook(new Webhook('https://test.domain/events'));
+
+        $data = $action->toNCCOArray();
+
+        $this->assertSame(['https://test.domain/events'], $data['eventUrl']);
+        $this->assertSame('POST', $data['eventMethod']);
+    }
+
+    public function testWebhookSetInFactory()
+    {
+        $expected = [
+            'action' => 'conversation',
+            'name' => 'my-conversation',
+            'eventUrl' => ['https://test.domain/events'],
+            'eventMethod' => 'GET',
+        ];
+
+        $action = Conversation::factory($expected['name'], $expected);
+
+        $this->assertTrue($action->getEventWebhook() instanceof Webhook);
+        $this->assertSame($expected['eventUrl'][0], $action->getEventWebhook()->getUrl());
+        $this->assertSame($expected['eventMethod'], $action->getEventWebhook()->getMethod());
+    }
+
+    public function testWebhookSetInFactoryWithoutMethod()
+    {
+        $expected = [
+            'action' => 'conversation',
+            'name' => 'my-conversation',
+            'eventUrl' => ['https://test.domain/events'],
+        ];
+
+        $action = Conversation::factory($expected['name'], $expected);
+
+        $this->assertTrue($action->getEventWebhook() instanceof Webhook);
+        $this->assertSame($expected['eventUrl'][0], $action->getEventWebhook()->getUrl());
+        $this->assertSame('POST', $action->getEventWebhook()->getMethod());
+    }
+
+    public function testWebhookSetInFactoryWithStringEventUrl()
+    {
+        $expected = [
+            'action' => 'conversation',
+            'name' => 'my-conversation',
+            'eventUrl' => 'https://test.domain/events',
+        ];
+
+        $action = Conversation::factory($expected['name'], $expected);
+
+        $this->assertTrue($action->getEventWebhook() instanceof Webhook);
+        $this->assertSame($expected['eventUrl'], $action->getEventWebhook()->getUrl());
+        $this->assertSame('POST', $action->getEventWebhook()->getMethod());
     }
 }

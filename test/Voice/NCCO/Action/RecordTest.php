@@ -25,7 +25,6 @@ class RecordTest extends TestCase
         $expected = [
             'action' => 'record',
             'format' => 'mp3',
-            'endOnSilence' => '3',
             'timeOut' => '7200',
             'beepStart' => 'false'
         ];
