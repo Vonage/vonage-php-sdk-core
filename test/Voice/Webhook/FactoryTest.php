@@ -6,6 +6,7 @@ namespace NexmoTest\Voice;
 use InvalidArgumentException;
 use Nexmo\Voice\Webhook\Error;
 use Nexmo\Voice\Webhook\Event;
+use Nexmo\Voice\Webhook\Input;
 use Nexmo\Voice\Webhook\Answer;
 use Nexmo\Voice\Webhook\Record;
 use PHPUnit\Framework\TestCase;
@@ -182,6 +183,42 @@ class FactoryTest extends TestCase
         $this->assertSame($expected['conversation_uuid'], $notification->getConversationUuid());
         $this->assertSame($expected['payload'], $notification->getPayload());
         $this->assertEquals(new \DateTimeImmutable($expected['timestamp']), $notification->getTimestamp());
+    }
+
+    public function testCanGenerateDtmfInputFromGetWebhook()
+    {
+        $request = $this->getRequest('dtmf-get');
+        $expected = $this->getRequest('dtmf-get')->getQueryParams();
+
+        /** @var Input $input */
+        $input = Factory::createFromRequest($request);
+
+        $this->assertTrue($input instanceof Input);
+        $this->assertSame(json_decode($expected['speech'], true), $input->getSpeech());
+        $this->assertSame(json_decode($expected['dtmf'], true), $input->getDtmf());
+        $this->assertSame($expected['from'], $input->getFrom());
+        $this->assertSame($expected['to'], $input->getTo());
+        $this->assertSame($expected['uuid'], $input->getUuid());
+        $this->assertSame($expected['conversation_uuid'], $input->getConversationUuid());
+        $this->assertEquals(new \DateTimeImmutable($expected['timestamp']), $input->getTimestamp());
+    }
+
+    public function testCanGenerateDtmfInputFromPostWebhook()
+    {
+        $request = $this->getRequest('dtmf-post');
+        $expected = json_decode($this->getRequest('dtmf-post')->getBody()->getContents(), true);
+
+        /** @var Input $input */
+        $input = Factory::createFromRequest($request);
+
+        $this->assertTrue($input instanceof Input);
+        $this->assertSame($expected['speech'], $input->getSpeech());
+        $this->assertSame($expected['dtmf'], $input->getDtmf());
+        $this->assertSame($expected['from'], $input->getFrom());
+        $this->assertSame($expected['to'], $input->getTo());
+        $this->assertSame($expected['uuid'], $input->getUuid());
+        $this->assertSame($expected['conversation_uuid'], $input->getConversationUuid());
+        $this->assertEquals(new \DateTimeImmutable($expected['timestamp']), $input->getTimestamp());
     }
 
     public function testThrowsExceptionOnUnknownWebhookData()

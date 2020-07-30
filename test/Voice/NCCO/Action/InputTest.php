@@ -92,7 +92,7 @@ class InputTest extends TestCase
     {
         $data = [
             'action' => 'input',
-            'eventUrl' => 'https://test.domain/events',
+            'eventUrl' => ['https://test.domain/events'],
             'eventMethod' => 'POST',
             'speech' => [],
         ];
@@ -103,7 +103,7 @@ class InputTest extends TestCase
         $this->assertSame($data['eventUrl'], $ncco['eventUrl']);
         $this->assertSame($data['eventMethod'], $ncco['eventMethod']);
 
-        $this->assertSame($data['eventUrl'], $action->getEventWebhook()->getUrl());
+        $this->assertSame($data['eventUrl'][0], $action->getEventWebhook()->getUrl());
         $this->assertSame($data['eventMethod'], $action->getEventWebhook()->getMethod());
     }
 
@@ -111,7 +111,7 @@ class InputTest extends TestCase
     {
         $data = [
             'action' => 'input',
-            'eventUrl' => 'https://test.domain/events',
+            'eventUrl' => ['https://test.domain/events'],
             'dtmf' => []
         ];
 
@@ -121,7 +121,7 @@ class InputTest extends TestCase
         $this->assertSame($data['eventUrl'], $ncco['eventUrl']);
         $this->assertSame('POST', $ncco['eventMethod']);
 
-        $this->assertSame($data['eventUrl'], $action->getEventWebhook()->getUrl());
+        $this->assertSame($data['eventUrl'][0], $action->getEventWebhook()->getUrl());
         $this->assertSame('POST', $action->getEventWebhook()->getMethod());
     }
 

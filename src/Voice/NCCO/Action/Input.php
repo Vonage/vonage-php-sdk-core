@@ -123,6 +123,10 @@ class Input implements ActionInterface
         }
 
         if (array_key_exists('eventUrl', $data)) {
+            if (is_array($data['eventUrl'])) {
+                $data['eventUrl'] = $data['eventUrl'][0];
+            }
+
             if (array_key_exists('eventMethod', $data)) {
                 $webhook = new Webhook($data['eventUrl'], $data['eventMethod']);
             } else {
@@ -208,7 +212,7 @@ class Input implements ActionInterface
 
         $eventWebhook = $this->getEventWebhook();
         if ($eventWebhook) {
-            $data['eventUrl'] = $eventWebhook->getUrl();
+            $data['eventUrl'] = [$eventWebhook->getUrl()];
             $data['eventMethod'] = $eventWebhook->getMethod();
         }
 
