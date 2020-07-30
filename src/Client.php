@@ -33,8 +33,6 @@ use Psr\Http\Client\ClientInterface;
  *
  * @method \Nexmo\Account\Client account()
  * @method \Nexmo\Message\Client message()
- * @method \Nexmo\SMS\Client sms()
- * @method \Nexmo\Verify\Client  verify()
  * @method \Nexmo\Application\Client applications()
  * @method \Nexmo\Conversion\Client conversion()
  * @method \Nexmo\Insights\Client insights()

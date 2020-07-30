@@ -37,6 +37,10 @@ class Factory extends WebhookFactory
             return new Notification($data);
         }
 
+        if (array_key_exists('speech', $data) || array_key_exists('dtmf', $data)) {
+            return new Input($data);
+        }
+
         throw new \InvalidArgumentException('Unable to detect incoming webhook type');
     }
 }
