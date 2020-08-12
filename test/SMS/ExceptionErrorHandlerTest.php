@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace NexmoTest\SMS;
+namespace VonageTest\SMS;
 
-use Nexmo\Client\Exception\Request as ExceptionRequest;
-use Nexmo\Client\Exception\ThrottleException;
-use Nexmo\SMS\ExceptionErrorHandler;
+use Vonage\Client\Exception\Request as ExceptionRequest;
+use Vonage\Client\Exception\ThrottleException;
+use Vonage\SMS\ExceptionErrorHandler;
 use PHPUnit\Framework\TestCase;
 use Zend\Diactoros\Request;
 use Zend\Diactoros\Response\JsonResponse;

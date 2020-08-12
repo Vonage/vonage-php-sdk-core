@@ -1,17 +1,17 @@
 <?php
 
-namespace Nexmo\Account;
+namespace Vonage\Account;
 
 use ArrayAccess;
-use Nexmo\Client\Exception\Exception;
-use Nexmo\Network;
-use Nexmo\Entity\EntityInterface;
-use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
-use Nexmo\Entity\JsonSerializableInterface;
-use Nexmo\Entity\JsonResponseTrait;
-use Nexmo\Entity\JsonSerializableTrait;
-use Nexmo\Entity\NoRequestResponseTrait;
-use Nexmo\Entity\JsonUnserializableInterface;
+use Vonage\Client\Exception\Exception;
+use Vonage\Network;
+use Vonage\Entity\EntityInterface;
+use Vonage\Entity\Hydrator\ArrayHydrateInterface;
+use Vonage\Entity\JsonSerializableInterface;
+use Vonage\Entity\JsonResponseTrait;
+use Vonage\Entity\JsonSerializableTrait;
+use Vonage\Entity\NoRequestResponseTrait;
+use Vonage\Entity\JsonUnserializableInterface;
 
 /**
  * This class will no longer be accessible via array access, nor contain request/response information after v2.

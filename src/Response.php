@@ -1,17 +1,17 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace Nexmo;
+namespace Vonage;
 
-use Nexmo\Response\Message;
+use Vonage\Response\Message;
 
 /**
- * Wrapper for Nexmo API Response, provides access to the count and status of
+ * Wrapper for Vonage API Response, provides access to the count and status of
  * the messages.
  */
 class Response implements \Countable, \Iterator
@@ -58,7 +58,7 @@ class Response implements \Countable, \Iterator
      * (PHP 5 &gt;= 5.0.0)<br/>
      * Return the current element
      * @link http://php.net/manual/en/iterator.current.php
-     * @return \Nexmo\Response\Message
+     * @return \Vonage\Response\Message
      */
     public function current()
     {

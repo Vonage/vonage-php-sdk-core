@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Nexmo\Webhook;
+namespace Vonage\Webhook;
 
 use PDO;
 use Zend\Diactoros\ServerRequestFactory;

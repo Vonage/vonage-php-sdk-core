@@ -1,14 +1,14 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
 namespace Message;
 
-use Nexmo\Message\InboundMessage;
+use Vonage\Message\InboundMessage;
 use Zend\Diactoros\Response;
 use Zend\Diactoros\ServerRequest;
 use PHPUnit\Framework\TestCase;
@@ -136,7 +136,7 @@ class InboundMessageTest extends TestCase
         $message = @new InboundMessage($this->getServerRequest());
 
         $reply = $message->createReply('this is a reply');
-        $this->assertInstanceOf('Nexmo\Message\Message', $reply);
+        $this->assertInstanceOf('Vonage\Message\Message', $reply);
 
         $params = $reply->getRequestData(false);
 

@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace NexmoTest\Voice\NCCO\Action;
+namespace VonageTest\Voice\NCCO\Action;
 
-use Nexmo\Voice\Webhook;
+use Vonage\Voice\Webhook;
 use PHPUnit\Framework\TestCase;
-use Nexmo\Voice\NCCO\Action\Notify;
+use Vonage\Voice\NCCO\Action\Notify;
 
 class NotifyTest extends TestCase
 {

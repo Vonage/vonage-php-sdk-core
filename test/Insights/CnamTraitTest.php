@@ -1,14 +1,14 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace NexmoTest\Insights;
+namespace VonageTest\Insights;
 
-use Nexmo\Insights\Standard;
+use Vonage\Insights\Standard;
 use PHPUnit\Framework\TestCase;
 
 class CnamTraitTest extends TestCase
@@ -56,5 +56,5 @@ class CnamTraitTest extends TestCase
 }
 
 class Cnam extends Standard {
-    use \Nexmo\Insights\CnamTrait;
+    use \Vonage\Insights\CnamTrait;
 }

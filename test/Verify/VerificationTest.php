@@ -1,15 +1,15 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace NexmoTest\Verify;
+namespace VonageTest\Verify;
 
-use Nexmo\Verify\Check;
-use Nexmo\Verify\Verification;
+use Vonage\Verify\Check;
+use Vonage\Verify\Verification;
 use PHPUnit\Framework\Error\Notice;
 use PHPUnit\Framework\Error\Warning;
 use Prophecy\Argument;
@@ -26,7 +26,7 @@ class VerificationTest extends TestCase
     /**
      * @var string
      */
-    protected $brand  = 'Nexmo-PHP';
+    protected $brand  = 'Vonage-PHP';
 
     /**
      * @var Verification
@@ -151,7 +151,7 @@ class VerificationTest extends TestCase
         $this->assertCount(3, $checks);
 
         foreach ($checks as $index => $check) {
-            $this->assertInstanceOf('Nexmo\Verify\Check', $check);
+            $this->assertInstanceOf('Vonage\Verify\Check', $check);
         }
 
         $this->assertEquals('123456', $checks[0]->getCode());
@@ -201,7 +201,7 @@ class VerificationTest extends TestCase
      */
     public function testMethodsProxyClient($method, $proxy, $code = null, $ip = null)
     {
-        $client = $this->prophesize('Nexmo\Verify\Client');
+        $client = $this->prophesize('Vonage\Verify\Client');
         if (!is_null($ip)) {
             $prediction = $client->$proxy($this->existing, $code, $ip);
         } elseif (!is_null($code)) {
@@ -228,9 +228,9 @@ class VerificationTest extends TestCase
      */
     public function testCheckReturnsBoolForInvalidCode()
     {
-        $client = $this->prophesize('Nexmo\Verify\Client');
+        $client = $this->prophesize('Vonage\Verify\Client');
         $client->check($this->existing, '1234', Argument::cetera())->willReturn($this->existing);
-        $client->check($this->existing, '4321', Argument::cetera())->willThrow(new \Nexmo\Client\Exception\Request('dummy', '16'));
+        $client->check($this->existing, '4321', Argument::cetera())->willThrow(new \Vonage\Client\Exception\Request('dummy', '16'));
 
         @$this->existing->setClient($client->reveal());
 
@@ -243,9 +243,9 @@ class VerificationTest extends TestCase
      */
     public function testCheckReturnsBoolForTooManyAttempts()
     {
-        $client = $this->prophesize('Nexmo\Verify\Client');
+        $client = $this->prophesize('Vonage\Verify\Client');
         $client->check($this->existing, '1234', Argument::cetera())->willReturn($this->existing);
-        $client->check($this->existing, '4321', Argument::cetera())->willThrow(new \Nexmo\Client\Exception\Request('dummy', '17'));
+        $client->check($this->existing, '4321', Argument::cetera())->willThrow(new \Vonage\Client\Exception\Request('dummy', '17'));
 
         @$this->existing->setClient($client->reveal());
 
@@ -258,13 +258,13 @@ class VerificationTest extends TestCase
      */
     public function testExceptionForCheckFail()
     {
-        $client = $this->prophesize('Nexmo\Verify\Client');
+        $client = $this->prophesize('Vonage\Verify\Client');
         $client->check($this->existing, '1234', Argument::cetera())->willReturn($this->existing);
-        $client->check($this->existing, '4321', Argument::cetera())->willThrow(new \Nexmo\Client\Exception\Request('dummy', '6'));
+        $client->check($this->existing, '4321', Argument::cetera())->willThrow(new \Vonage\Client\Exception\Request('dummy', '6'));
 
         @$this->existing->setClient($client->reveal());
 
-        $this->expectException('Nexmo\Client\Exception\Request');
+        $this->expectException('Vonage\Client\Exception\Request');
         @$this->existing->check('4321');
     }
 

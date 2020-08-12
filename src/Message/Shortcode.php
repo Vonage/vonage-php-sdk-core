@@ -1,17 +1,17 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace Nexmo\Message;
+namespace Vonage\Message;
 
-use Nexmo\Client\Exception\Exception;
-use Nexmo\Message\Shortcode\Alert;
-use Nexmo\Message\Shortcode\Marketing;
-use Nexmo\Message\Shortcode\TwoFactor;
+use Vonage\Client\Exception\Exception;
+use Vonage\Message\Shortcode\Alert;
+use Vonage\Message\Shortcode\Marketing;
+use Vonage\Message\Shortcode\TwoFactor;
 
 abstract class Shortcode
 {

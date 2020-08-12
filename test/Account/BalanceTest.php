@@ -1,14 +1,14 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace NexmoTest\Account;
+namespace VonageTest\Account;
 
-use Nexmo\Account\Balance;
+use Vonage\Account\Balance;
 use PHPUnit\Framework\TestCase;
 
 class BalanceTest extends TestCase
@@ -62,7 +62,7 @@ class BalanceTest extends TestCase
 
     public function testCannotRemoveArrayKey()
     {
-        $this->expectException('Nexmo\Client\Exception\Exception');
+        $this->expectException('Vonage\Client\Exception\Exception');
         $this->expectExceptionMessage('Balance is read only');
 
         unset($this->balance['balance']);
@@ -70,7 +70,7 @@ class BalanceTest extends TestCase
 
     public function testCannotDirectlySetArrayKey()
     {
-        $this->expectException('Nexmo\Client\Exception\Exception');
+        $this->expectException('Vonage\Client\Exception\Exception');
         $this->expectExceptionMessage('Balance is read only');
 
         $this->balance['balance'] = '5.00';

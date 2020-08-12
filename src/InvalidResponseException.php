@@ -1,6 +1,6 @@
 <?php
 
-namespace Nexmo;
+namespace Vonage;
 
 class InvalidResponseException extends \Exception
 {

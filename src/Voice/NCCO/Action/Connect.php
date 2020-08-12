@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Nexmo\Voice\NCCO\Action;
+namespace Vonage\Voice\NCCO\Action;
 
-use Nexmo\Voice\Webhook;
-use Nexmo\Voice\Endpoint\EndpointInterface;
+use Vonage\Voice\Webhook;
+use Vonage\Voice\Endpoint\EndpointInterface;
 
 class Connect implements ActionInterface
 {

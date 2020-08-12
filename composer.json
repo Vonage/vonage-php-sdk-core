@@ -1,6 +1,6 @@
 {
-  "name": "nexmo/client-core",
-  "description": "PHP Client for using Nexmo's API.",
+  "name": "vonage/client-core",
+  "description": "PHP Client for using Vonage's API.",
   "license": "MIT",
   "type": "library",
   "authors": [
@@ -47,13 +47,13 @@
   },
   "autoload": {
     "psr-4": {
-      "Nexmo\\": "src/"
+      "Vonage\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "Nexmo\\": "test/",
-      "NexmoTest\\": "test/"
+      "Vonage\\": "test/",
+      "VonageTest\\": "test/"
     }
   }
 }

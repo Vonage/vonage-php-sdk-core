@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace NexmoTest\SMS\Message;
+namespace VonageTest\SMS\Message;
 
-use Nexmo\SMS\Message\WAPPush;
+use Vonage\SMS\Message\WAPPush;
 use PHPUnit\Framework\TestCase;
 
 class WAPPushTest extends TestCase

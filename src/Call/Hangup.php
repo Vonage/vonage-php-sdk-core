@@ -1,19 +1,19 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2017 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2017 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace Nexmo\Call;
+namespace Vonage\Call;
 
 class Hangup implements \JsonSerializable
 {
     public function __construct()
     {
         trigger_error(
-            'Nexmo\Call\Hangup is deprecated, please use Nexmo\Voice\Client::hangupCall() instead',
+            'Vonage\Call\Hangup is deprecated, please use Vonage\Voice\Client::hangupCall() instead',
             E_USER_DEPRECATED
         );
     }

@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Nexmo\SMS\Webhook;
+namespace Vonage\SMS\Webhook;
 
-use Nexmo\SMS\Webhook\InboundSMS;
-use Nexmo\Webhook\Factory as WebhookFactory;
+use Vonage\SMS\Webhook\InboundSMS;
+use Vonage\Webhook\Factory as WebhookFactory;
 
 class Factory extends WebhookFactory
 {

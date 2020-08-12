@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace NexmoTest\Voice\Endpoint;
+namespace VonageTest\Voice\Endpoint;
 
-use Nexmo\Voice\Endpoint\SIP;
+use Vonage\Voice\Endpoint\SIP;
 use PDO;
 use PHPUnit\Framework\TestCase;
 

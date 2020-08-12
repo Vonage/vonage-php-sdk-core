@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Nexmo\Voice;
+namespace Vonage\Voice;
 
-use Nexmo\Voice\Endpoint\EndpointFactory;
-use Nexmo\Voice\Endpoint\EndpointInterface;
-use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
+use Vonage\Voice\Endpoint\EndpointFactory;
+use Vonage\Voice\Endpoint\EndpointInterface;
+use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 
 class Call implements ArrayHydrateInterface
 {

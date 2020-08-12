@@ -1,15 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace NexmoTest\Voice\Endpoint;
+namespace VonageTest\Voice\Endpoint;
 
-use Nexmo\Voice\Endpoint\App;
-use Nexmo\Voice\Endpoint\SIP;
-use Nexmo\Voice\Endpoint\VBC;
-use Nexmo\Voice\Endpoint\Phone;
+use Vonage\Voice\Endpoint\App;
+use Vonage\Voice\Endpoint\SIP;
+use Vonage\Voice\Endpoint\VBC;
+use Vonage\Voice\Endpoint\Phone;
 use PHPUnit\Framework\TestCase;
-use Nexmo\Voice\Endpoint\Websocket;
-use Nexmo\Voice\Endpoint\EndpointFactory;
+use Vonage\Voice\Endpoint\Websocket;
+use Vonage\Voice\Endpoint\EndpointFactory;
 
 class EndpointFactoryTest extends TestCase
 {

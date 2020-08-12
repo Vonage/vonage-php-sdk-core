@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace NexmoTest\Voice\NCCO\Action;
+namespace VonageTest\Voice\NCCO\Action;
 
-use Nexmo\Voice\NCCO\Action\Talk;
+use Vonage\Voice\NCCO\Action\Talk;
 use PHPUnit\Framework\TestCase;
 
 class TalkTest extends TestCase

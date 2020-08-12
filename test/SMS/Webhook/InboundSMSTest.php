@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace NexmoTest\SMS\Webhook;
+namespace VonageTest\SMS\Webhook;
 
 use RuntimeException;
 use InvalidArgumentException;
-use Nexmo\SMS\Webhook\Factory;
+use Vonage\SMS\Webhook\Factory;
 use PHPUnit\Framework\TestCase;
-use Nexmo\SMS\Webhook\InboundSMS;
+use Vonage\SMS\Webhook\InboundSMS;
 use Zend\Diactoros\ServerRequest;
 use Zend\Diactoros\Request\Serializer;
 use Zend\Diactoros\ServerRequestFactory;

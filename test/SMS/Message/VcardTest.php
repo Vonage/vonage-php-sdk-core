@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace NexmoTest\SMS\Message;
+namespace VonageTest\SMS\Message;
 
-use Nexmo\SMS\Message\Vcard;
+use Vonage\SMS\Message\Vcard;
 use PHPUnit\Framework\TestCase;
 
 class VcardTest extends TestCase

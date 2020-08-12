@@ -1,24 +1,24 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace NexmoTest\Calls;
+namespace VonageTest\Calls;
 
-use Nexmo\Call\Hydrator;
-use Nexmo\Call\Call;
-use Nexmo\Call\Filter;
+use Vonage\Call\Hydrator;
+use Vonage\Call\Call;
+use Vonage\Call\Filter;
 use Prophecy\Argument;
-use Nexmo\Call\Transfer;
-use Nexmo\Call\Collection;
-use Nexmo\Client\Exception;
+use Vonage\Call\Transfer;
+use Vonage\Call\Collection;
+use Vonage\Client\Exception;
 use Zend\Diactoros\Response;
-use Nexmo\Client\APIResource;
+use Vonage\Client\APIResource;
 use PHPUnit\Framework\TestCase;
-use NexmoTest\Psr7AssertionTrait;
+use VonageTest\Psr7AssertionTrait;
 use Psr\Http\Message\RequestInterface;
 
 class CollectionTest extends TestCase
@@ -33,7 +33,7 @@ class CollectionTest extends TestCase
     /**
      * @var \Prophecy\Prophecy\ObjectProphecy
      */
-    protected $nexmoClient;
+    protected $vonageClient;
 
     /**
      * @var Collection
@@ -42,18 +42,18 @@ class CollectionTest extends TestCase
 
     public function setUp()
     {
-        $this->nexmoClient = $this->prophesize('Nexmo\Client');
-        $this->nexmoClient->getApiUrl()->willReturn('https://api.nexmo.com');
+        $this->vonageClient = $this->prophesize('Vonage\Client');
+        $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
 
         $this->collection = @new Collection();
-        $this->collection->setClient($this->nexmoClient->reveal());
+        $this->collection->setClient($this->vonageClient->reveal());
     }
 
     /**
      * Collection can be invoked as a method. This allows a fluent inerface from the main client. When invoked with a
      * filter, the collection should use that filter.
      *
-     *     $nexmo->calls($filter)
+     *     $Vonage->calls($filter)
      */
     public function testInvokeWithFilter()
     {
@@ -70,13 +70,13 @@ class CollectionTest extends TestCase
      */
     public function testHydrateSetsDataAndClient()
     {
-        $call = $this->prophesize('Nexmo\Call\Call');
+        $call = $this->prophesize('Vonage\Call\Call');
 
         $data = ['test' => 'data'];
 
         $this->collection->hydrateEntity($data, $call->reveal());
 
-        $call->setClient($this->nexmoClient->reveal())->shouldHaveBeenCalled();
+        $call->setClient($this->vonageClient->reveal())->shouldHaveBeenCalled();
         $call->jsonUnserialize($data)->shouldHaveBeenCalled();
     }
 
@@ -88,13 +88,13 @@ class CollectionTest extends TestCase
     public function testArrayIsLazy($payload, $id)
     {
         //not testing the call resource, just making sure it uses the same client as the collection
-        $this->nexmoClient->send(Argument::any())->willReturn($this->getResponse('call'));
+        $this->vonageClient->send(Argument::any())->willReturn($this->getResponse('call'));
 
         $collection = $this->collection;
         $call = @$collection[$payload];
 
-        $this->assertInstanceOf('Nexmo\Call\Call', $call);
-        $this->nexmoClient->send(Argument::any())->shouldNotHaveBeenCalled();
+        $this->assertInstanceOf('Vonage\Call\Call', $call);
+        $this->vonageClient->send(Argument::any())->shouldNotHaveBeenCalled();
         $this->assertEquals($id, $call->getId());
 
         if ($payload instanceof Call) {
@@ -102,7 +102,7 @@ class CollectionTest extends TestCase
         }
 
         @$call->get();
-        $this->nexmoClient->send(Argument::any())->shouldHaveBeenCalled();
+        $this->vonageClient->send(Argument::any())->shouldHaveBeenCalled();
     }
 
     /**
@@ -114,14 +114,14 @@ class CollectionTest extends TestCase
     public function testGetIsNotLazy($payload, $id)
     {
         //this generally proxies the call resource, but we're testing the correct request, not the proxy
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($id) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'GET', $request);
             return true;
         }))->willReturn($this->getResponse('call'))->shouldBeCalled();
 
         $call = @$this->collection->get($payload);
 
-        $this->assertInstanceOf('Nexmo\Call\Call', $call);
+        $this->assertInstanceOf('Vonage\Call\Call', $call);
         if ($payload instanceof Call) {
             $this->assertSame($payload, $call);
         }
@@ -132,7 +132,7 @@ class CollectionTest extends TestCase
      */
     public function testCreatePostCall($payload, $method)
     {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
             return true;
@@ -140,7 +140,7 @@ class CollectionTest extends TestCase
 
         $call = @$this->collection->$method($payload);
 
-        $this->assertInstanceOf('Nexmo\Call\Call', $call);
+        $this->assertInstanceOf('Vonage\Call\Call', $call);
         $this->assertEquals('e46fd8bd-504d-4044-9600-26dd18b41111', $call->getId());
     }
 
@@ -149,7 +149,7 @@ class CollectionTest extends TestCase
      */
     public function testCreateCallNcco($payload)
     {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
             $ncco = [['action' => 'talk', 'text' => 'Hello World']];
 
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
@@ -160,7 +160,7 @@ class CollectionTest extends TestCase
 
         $call = @$this->collection->create($payload);
 
-        $this->assertInstanceOf('Nexmo\Call\Call', $call);
+        $this->assertInstanceOf('Vonage\Call\Call', $call);
         $this->assertEquals('e46fd8bd-504d-4044-9600-26dd18b41111', $call->getId());
     }
     
@@ -169,7 +169,7 @@ class CollectionTest extends TestCase
      */
     public function testCreatePostCallErrorFromVApi($payload, $method)
     {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
             return true;
@@ -188,7 +188,7 @@ class CollectionTest extends TestCase
      */
     public function testCreatePostCallErrorFromProxy($payload, $method)
     {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
             return true;
@@ -207,7 +207,7 @@ class CollectionTest extends TestCase
      */
     public function testCreatePostCallErrorUnknownFormat($payload, $method)
     {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
             return true;
@@ -227,14 +227,14 @@ class CollectionTest extends TestCase
     public function testPutCall($expectedId, $id, $payload)
     {
         //this generally proxies the call resource, but we're testing the correct request, not the proxy
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($expectedId, $payload) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($expectedId, $payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $expectedId, 'PUT', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
             return true;
         }))->willReturn($this->getResponse('updated'))->shouldBeCalled();
 
         $call = @$this->collection->put($payload, $id);
-        $this->assertInstanceOf('Nexmo\Call\Call', $call);
+        $this->assertInstanceOf('Vonage\Call\Call', $call);
 
         if ($id instanceof Call) {
             $this->assertSame($id, $call);

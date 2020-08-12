@@ -1,12 +1,12 @@
 <?php
 
-namespace Nexmo\Redact;
+namespace Vonage\Redact;
 
-use Nexmo\Client\APIClient;
-use Nexmo\Client\APIResource;
-use Nexmo\Client\ClientAwareTrait;
-use Nexmo\Client\APIExceptionHandler;
-use Nexmo\Client\ClientAwareInterface;
+use Vonage\Client\APIClient;
+use Vonage\Client\APIResource;
+use Vonage\Client\ClientAwareTrait;
+use Vonage\Client\APIExceptionHandler;
+use Vonage\Client\ClientAwareInterface;
 
 class Client implements ClientAwareInterface, APIClient
 {

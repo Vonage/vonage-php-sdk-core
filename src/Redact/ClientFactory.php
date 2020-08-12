@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Nexmo\Redact;
+namespace Vonage\Redact;
 
-use Nexmo\Client\APIResource;
-use Nexmo\Client\APIExceptionHandler;
+use Vonage\Client\APIResource;
+use Vonage\Client\APIExceptionHandler;
 use Psr\Container\ContainerInterface;
 
 /**

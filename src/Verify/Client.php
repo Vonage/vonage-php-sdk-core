@@ -1,18 +1,18 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace Nexmo\Verify;
+namespace Vonage\Verify;
 
-use Nexmo\Client\APIClient;
-use Nexmo\Client\APIResource;
-use Nexmo\Client\ClientAwareInterface;
-use Nexmo\Client\ClientAwareTrait;
-use Nexmo\Client\Exception;
+use Vonage\Client\APIClient;
+use Vonage\Client\APIResource;
+use Vonage\Client\ClientAwareInterface;
+use Vonage\Client\ClientAwareTrait;
+use Vonage\Client\Exception;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -54,13 +54,13 @@ class Client implements ClientAwareInterface, APIClient
     {
         if (is_array($verification)) {
             trigger_error(
-                'Passing an array to Nexmo\Verification\Client::start() is deprecated, please pass a Nexmo\Verify\Request object instead',
+                'Passing an array to Vonage\Verification\Client::start() is deprecated, please pass a Vonage\Verify\Request object instead',
                 E_USER_DEPRECATED
             );
         }
         if (is_string($verification)) {
             trigger_error(
-                'Passing a string to Nexmo\Verification\Client::start() is deprecated, please pass a Nexmo\Verify\Request object instead',
+                'Passing a string to Vonage\Verification\Client::start() is deprecated, please pass a Vonage\Verify\Request object instead',
                 E_USER_DEPRECATED
             );
         }
@@ -85,7 +85,7 @@ class Client implements ClientAwareInterface, APIClient
     {
         if ($verification instanceof Verification) {
             trigger_error(
-                'Passing a Verification object to Nexmo\Verification\Client::search() is deprecated, please pass a string ID instead',
+                'Passing a Verification object to Vonage\Verification\Client::search() is deprecated, please pass a string ID instead',
                 E_USER_DEPRECATED
             );
         }
@@ -107,7 +107,7 @@ class Client implements ClientAwareInterface, APIClient
     {
         if ($verification instanceof Verification) {
             trigger_error(
-                'Passing a Verification object to Nexmo\Verification\Client::cancel() is deprecated, please pass a string ID instead',
+                'Passing a Verification object to Vonage\Verification\Client::cancel() is deprecated, please pass a string ID instead',
                 E_USER_DEPRECATED
             );
         }
@@ -119,7 +119,7 @@ class Client implements ClientAwareInterface, APIClient
     {
         if ($verification instanceof Verification) {
             trigger_error(
-                'Passing a Verification object to Nexmo\Verification\Client::trigger() is deprecated, please pass a string ID instead',
+                'Passing a Verification object to Vonage\Verification\Client::trigger() is deprecated, please pass a string ID instead',
                 E_USER_DEPRECATED
             );
         }
@@ -133,13 +133,13 @@ class Client implements ClientAwareInterface, APIClient
     {
         if (is_array($verification)) {
             trigger_error(
-                'Passing an array for parameter 1 to Nexmo\Verification\Client::check() is deprecated, please pass a string ID instead',
+                'Passing an array for parameter 1 to Vonage\Verification\Client::check() is deprecated, please pass a string ID instead',
                 E_USER_DEPRECATED
             );
         }
         if ($verification instanceof Verification) {
             trigger_error(
-                'Passing a Verification object for parameter 1 to Nexmo\Verification\Client::check() is deprecated, please pass a string ID instead',
+                'Passing a Verification object for parameter 1 to Vonage\Verification\Client::check() is deprecated, please pass a string ID instead',
                 E_USER_DEPRECATED
             );
         }
@@ -200,13 +200,13 @@ class Client implements ClientAwareInterface, APIClient
     {
         if (is_array($verification)) {
             trigger_error(
-                'Passing an array for parameter 1 to Nexmo\Verification\Client::control() is deprecated, please pass a string ID instead',
+                'Passing an array for parameter 1 to Vonage\Verification\Client::control() is deprecated, please pass a string ID instead',
                 E_USER_DEPRECATED
             );
         }
         if ($verification instanceof Verification) {
             trigger_error(
-                'Passing a Verification object for parameter 1 to Nexmo\Verification\Client::control() is deprecated, please pass a string ID instead',
+                'Passing a Verification object for parameter 1 to Vonage\Verification\Client::control() is deprecated, please pass a string ID instead',
                 E_USER_DEPRECATED
             );
         }

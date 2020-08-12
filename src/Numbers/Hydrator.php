@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Nexmo\Numbers;
+namespace Vonage\Numbers;
 
-use Nexmo\Entity\Hydrator\HydratorInterface;
-use Nexmo\Numbers\Number;
+use Vonage\Entity\Hydrator\HydratorInterface;
+use Vonage\Numbers\Number;
 
 class Hydrator implements HydratorInterface
 {

@@ -1,19 +1,19 @@
 <?php
 declare(strict_types=1);
 
-namespace NexmoTest\SMS;
+namespace VonageTest\SMS;
 
-use Nexmo\SMS\Message\SMS;
-use Nexmo\SMS\Client;
+use Vonage\SMS\Message\SMS;
+use Vonage\SMS\Client;
 use Prophecy\Argument;
 use Zend\Diactoros\Request;
 use Zend\Diactoros\Response;
-use Nexmo\Client\APIResource;
+use Vonage\Client\APIResource;
 use PHPUnit\Framework\TestCase;
-use Nexmo\Client as NexmoClient;
-use NexmoTest\Psr7AssertionTrait;
+use Vonage\Client as vonageClient;
+use VonageTest\Psr7AssertionTrait;
 use Psr\Http\Message\RequestInterface;
-use Nexmo\SMS\ExceptionErrorHandler;
+use Vonage\SMS\ExceptionErrorHandler;
 
 class ClientTest extends TestCase
 {
@@ -27,7 +27,7 @@ class ClientTest extends TestCase
     /**
      * @var \Prophecy\Prophecy\ObjectProphecy
      */
-    protected $nexmoClient;
+    protected $vonageClient;
 
     /**
      * @var Client
@@ -36,15 +36,15 @@ class ClientTest extends TestCase
 
     public function setUp()
     {
-        $this->nexmoClient = $this->prophesize(NexmoClient::class);
-        $this->nexmoClient->getRestUrl()->willReturn('https://rest.nexmo.com');
+        $this->vonageClient = $this->prophesize(vonageClient::class);
+        $this->vonageClient->getRestUrl()->willReturn('https://rest.nexmo.com');
 
         $this->api = new APIResource();
         $this->api
             ->setCollectionName('messages')
             ->setIsHAL(false)
             ->setErrorsOn200(true)
-            ->setClient($this->nexmoClient->reveal())
+            ->setClient($this->vonageClient->reveal())
             ->setExceptionErrorHandler(new ExceptionErrorHandler())
         ;
 
@@ -61,7 +61,7 @@ class ClientTest extends TestCase
             'client-ref' => 'my-personal-reference'
         ];
 
-        $this->nexmoClient->send(Argument::that(function (Request $request) use ($args) {
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
             $this->assertRequestJsonBodyContains('to', $args['to'], $request);
             $this->assertRequestJsonBodyContains('from', $args['from'], $request);
             $this->assertRequestJsonBodyContains('text', $args['text'], $request);
@@ -90,10 +90,10 @@ class ClientTest extends TestCase
 
     public function testHandlesEmptyResponse()
     {
-        $this->expectException(\Nexmo\Client\Exception\Request::class);
+        $this->expectException(\Vonage\Client\Exception\Request::class);
         $this->expectExceptionMessage('unexpected response from API');
 
-        $this->nexmoClient
+        $this->vonageClient
             ->send(Argument::type(RequestInterface::class))
             ->willReturn($this->getResponse('empty'))
         ;
@@ -103,10 +103,10 @@ class ClientTest extends TestCase
 
     public function testCanParseErrorsAndThrowException()
     {
-        $this->expectException(\Nexmo\Client\Exception\Request::class);
+        $this->expectException(\Vonage\Client\Exception\Request::class);
         $this->expectExceptionMessage('Missing from param');
 
-        $this->nexmoClient
+        $this->vonageClient
             ->send(Argument::type(RequestInterface::class))
             ->willReturn($this->getResponse('fail'))
         ;
@@ -116,10 +116,10 @@ class ClientTest extends TestCase
 
     public function testCanParseServerErrorsAndThrowException()
     {
-        $this->expectException(\Nexmo\Client\Exception\Server::class);
+        $this->expectException(\Vonage\Client\Exception\Server::class);
         $this->expectExceptionMessage('Server Error');
 
-        $this->nexmoClient
+        $this->vonageClient
             ->send(Argument::type(RequestInterface::class))
             ->willReturn($this->getResponse('fail-server'))
         ;
@@ -139,7 +139,7 @@ class ClientTest extends TestCase
             'text' => 'test message'
         ];
 
-        $this->nexmoClient->send(Argument::that(function (Request $request) use ($args) {
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
             $this->assertRequestJsonBodyContains('to', $args['to'], $request);
             $this->assertRequestJsonBodyContains('from', $args['from'], $request);
             $this->assertRequestJsonBodyContains('text', $args['text'], $request);
@@ -170,7 +170,7 @@ class ClientTest extends TestCase
             'text' => 'test message'
         ];
 
-        $this->nexmoClient->send(Argument::that(function (Request $request) use ($args) {
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
             $this->assertRequestJsonBodyContains('to', $args['to'], $request);
             $this->assertRequestJsonBodyContains('from', $args['from'], $request);
             $this->assertRequestJsonBodyContains('text', $args['text'], $request);
@@ -197,7 +197,7 @@ class ClientTest extends TestCase
             'text' => "This is an incredibly large SMS message This is an incredibly large SMS message This is an incredibly large SMS message This is an incredibly large SMS message This is an incredibly large SMS message"
         ];
 
-        $this->nexmoClient->send(Argument::that(function (Request $request) use ($args) {
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
             $this->assertRequestJsonBodyContains('to', $args['to'], $request);
             $this->assertRequestJsonBodyContains('from', $args['from'], $request);
             $this->assertRequestJsonBodyContains('text', $args['text'], $request);
@@ -221,7 +221,7 @@ class ClientTest extends TestCase
 
     public function testCanSend2FAMessage()
     {
-        $this->nexmoClient->send(Argument::that(function (Request $request) {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
             $this->assertRequestJsonBodyContains('to', '447700900000', $request);
             $this->assertRequestJsonBodyContains('pin', 1245, $request);
             return true;
@@ -239,11 +239,11 @@ class ClientTest extends TestCase
 
     public function testCanHandleMissingShortcodeOn2FA()
     {
-        $this->expectException(\Nexmo\Client\Exception\Request::class);
+        $this->expectException(\Vonage\Client\Exception\Request::class);
         $this->expectExceptionMessage('Invalid Account for Campaign');
         $this->expectExceptionCode(101);
 
-        $this->nexmoClient
+        $this->vonageClient
             ->send(Argument::type(RequestInterface::class))
             ->willReturn($this->getResponse('fail-shortcode'))
         ;
@@ -253,7 +253,7 @@ class ClientTest extends TestCase
 
     public function testCanSendAlert()
     {
-        $this->nexmoClient->send(Argument::that(function (Request $request) {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
             $this->assertRequestJsonBodyContains('to', '447700900000', $request);
             $this->assertRequestJsonBodyContains('key', 'value', $request);
             return true;
@@ -273,11 +273,11 @@ class ClientTest extends TestCase
 
     public function testCanHandleMissingAlertSetup()
     {
-        $this->expectException(\Nexmo\Client\Exception\Request::class);
+        $this->expectException(\Vonage\Client\Exception\Request::class);
         $this->expectExceptionMessage('Invalid Account for Campaign');
         $this->expectExceptionCode(101);
 
-        $this->nexmoClient
+        $this->vonageClient
             ->send(Argument::type(RequestInterface::class))
             ->willReturn($this->getResponse('fail-shortcode'))
         ;

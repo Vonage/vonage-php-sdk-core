@@ -1,16 +1,16 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace Nexmo\Message;
+namespace Vonage\Message;
 
-use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
-use Nexmo\Entity\JsonResponseTrait;
-use Nexmo\Entity\Psr7Trait;
+use Vonage\Entity\Hydrator\ArrayHydrateInterface;
+use Vonage\Entity\JsonResponseTrait;
+use Vonage\Entity\Psr7Trait;
 use Psr\Http\Message\ServerRequestInterface;
 
 class InboundMessage implements MessageInterface, \ArrayAccess, ArrayHydrateInterface
@@ -88,7 +88,7 @@ class InboundMessage implements MessageInterface, \ArrayAccess, ArrayHydrateInte
         $isApplicationJson = false;
         $contentTypes = $request->getHeader('Content-Type');
         // We only respect application/json if it's the first entry without any preference weighting
-        // as that's what Nexmo send
+        // as that's what Vonage send
         if (count($contentTypes) && $contentTypes[0] === 'application/json') {
             $isApplicationJson = true;
         }

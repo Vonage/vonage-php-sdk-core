@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Nexmo\SMS\Webhook;
+namespace Vonage\SMS\Webhook;
 
 class InboundSMS
 {

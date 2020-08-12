@@ -1,24 +1,24 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace Nexmo\Call;
+namespace Vonage\Call;
 
-use Nexmo\Client\ClientAwareInterface;
-use Nexmo\Client\ClientAwareTrait;
-use Nexmo\Conversations\Conversation;
-use Nexmo\Entity\CollectionInterface;
-use Nexmo\Entity\CollectionTrait;
+use Vonage\Client\ClientAwareInterface;
+use Vonage\Client\ClientAwareTrait;
+use Vonage\Conversations\Conversation;
+use Vonage\Entity\CollectionInterface;
+use Vonage\Entity\CollectionTrait;
 use Psr\Http\Message\ResponseInterface;
 use Zend\Diactoros\Request;
-use Nexmo\Client\Exception;
+use Vonage\Client\Exception;
 
 /**
- * @deprecated Please use Nexmo\Voice\Client for this functionality
+ * @deprecated Please use Vonage\Voice\Client for this functionality
  */
 class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAccess
 {
@@ -28,7 +28,7 @@ class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAcc
     public function __construct()
     {
         trigger_error(
-            'Nexmo\Call\Collection is deprecated, please use Nexmo\Voice\Client instead',
+            'Vonage\Call\Collection is deprecated, please use Vonage\Voice\Client instead',
             E_USER_DEPRECATED
         );
     }

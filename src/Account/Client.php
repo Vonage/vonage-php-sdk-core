@@ -1,15 +1,15 @@
 <?php
 
-namespace Nexmo\Account;
+namespace Vonage\Account;
 
-use Nexmo\Client\APIClient;
-use Nexmo\Client\Exception;
-use Nexmo\Client\APIResource;
-use Nexmo\Client\ClientAwareTrait;
-use Nexmo\Client\ClientAwareInterface;
-use Nexmo\Client\Exception\Request as ExceptionRequest;
-use Nexmo\Client\Exception\Validation;
-use Nexmo\Entity\Filter\KeyValueFilter;
+use Vonage\Client\APIClient;
+use Vonage\Client\Exception;
+use Vonage\Client\APIResource;
+use Vonage\Client\ClientAwareTrait;
+use Vonage\Client\ClientAwareInterface;
+use Vonage\Client\Exception\Request as ExceptionRequest;
+use Vonage\Client\Exception\Validation;
+use Vonage\Entity\Filter\KeyValueFilter;
 
 /**
  * @todo Unify the exception handling to avoid duplicated code and logic (ie: getPrefixPricing())

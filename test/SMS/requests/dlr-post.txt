@@ -1,6 +1,6 @@
 POST /webhooks/dlr HTTP/1.1
 Accept: */*
-User-Agent: Nexmo/MessagingHUB/v1.0
+User-Agent: Vonage/MessagingHUB/v1.0
 Host: dragonmantank.ngrok.io
 Content-Length: 200
 Content-Type: application/x-www-form-urlencoded; charset=UTF-8

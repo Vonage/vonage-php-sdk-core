@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace NexmoTest\Voice;
+namespace VonageTest\Voice;
 
-use Nexmo\Voice\OutboundCall;
-use Nexmo\Voice\Endpoint\Phone;
+use Vonage\Voice\OutboundCall;
+use Vonage\Voice\Endpoint\Phone;
 use PHPUnit\Framework\TestCase;
 
 class OutboundCallTest extends TestCase

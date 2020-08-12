@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Nexmo\Numbers\Filter;
+namespace Vonage\Numbers\Filter;
 
-use Nexmo\Numbers\Number;
+use Vonage\Numbers\Number;
 use InvalidArgumentException;
-use Nexmo\Entity\Filter\FilterInterface;
+use Vonage\Entity\Filter\FilterInterface;
 
 class AvailableNumbers implements FilterInterface
 {

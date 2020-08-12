@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Nexmo\Voice\Webhook;
+namespace Vonage\Voice\Webhook;
 
-use Nexmo\Webhook\Factory as WebhookFactory;
+use Vonage\Webhook\Factory as WebhookFactory;
 
 class Factory extends WebhookFactory
 {

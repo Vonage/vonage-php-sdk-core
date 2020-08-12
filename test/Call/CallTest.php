@@ -1,18 +1,18 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace NexmoTest\Calls;
+namespace VonageTest\Calls;
 
-use Nexmo\Call\Call;
-use Nexmo\Call\Endpoint;
-use Nexmo\Call\Transfer;
-use Nexmo\Call\Webhook;
-use NexmoTest\Psr7AssertionTrait;
+use Vonage\Call\Call;
+use Vonage\Call\Endpoint;
+use Vonage\Call\Transfer;
+use Vonage\Call\Webhook;
+use VonageTest\Psr7AssertionTrait;
 use Prophecy\Argument;
 use EnricoStahn\JsonAssert\Assert as JsonAssert;
 use Psr\Http\Message\RequestInterface;
@@ -41,7 +41,7 @@ class CallTest extends TestCase
     /**
      * @var \Prophecy\Prophecy\ObjectProphecy
      */
-    protected $nexmoClient;
+    protected $vonageClient;
 
     public function setUp()
     {
@@ -51,10 +51,10 @@ class CallTest extends TestCase
         $this->entity = @new Call('3fd4d839-493e-4485-b2a5-ace527aacff3');
         $this->new = @new Call();
 
-        $this->nexmoClient = $this->prophesize('Nexmo\Client');
-        $this->nexmoClient->getApiUrl()->willReturn('https://api.nexmo.com');
-        $this->entity->setClient($this->nexmoClient->reveal());
-        $this->new->setClient($this->nexmoClient->reveal());
+        $this->vonageClient = $this->prophesize('Vonage\Client');
+        $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
+        $this->entity->setClient($this->vonageClient->reveal());
+        $this->new->setClient($this->vonageClient->reveal());
     }
 
     /**
@@ -78,9 +78,9 @@ class CallTest extends TestCase
         $response = $this->getResponse('call');
 
         $entity = @new $class($id);
-        $entity->setClient($this->nexmoClient->reveal());
+        $entity->setClient($this->vonageClient->reveal());
 
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($id) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'GET', $request);
             return true;
         }))->willReturn($response);
@@ -100,7 +100,7 @@ class CallTest extends TestCase
         $id = $this->id;
         $expected = json_decode(json_encode($payload), true);
 
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($id, $expected) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id, $expected) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'PUT', $request);
 
             $request->getBody()->rewind();
@@ -144,7 +144,7 @@ class CallTest extends TestCase
         $id = $this->id;
         $response = $this->getResponse('call');
 
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($id) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'GET', $request);
             return true;
         }))->willReturn($response);
@@ -162,7 +162,7 @@ class CallTest extends TestCase
     {
         @$stream = $this->entity->stream;
 
-        $this->assertInstanceOf('Nexmo\Call\Stream', $stream);
+        $this->assertInstanceOf('Vonage\Call\Stream', $stream);
         $this->assertSame($this->entity->getId(), $stream->getId());
 
         $this->assertSame($stream, @$this->entity->stream);
@@ -174,7 +174,7 @@ class CallTest extends TestCase
 
         $id = $this->entity->getId();
 
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($id) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id . '/stream', 'PUT', $request);
             return true;
         }))->willReturn($response)->shouldBeCalled();
@@ -189,7 +189,7 @@ class CallTest extends TestCase
     {
         @$talk = $this->entity->talk;
 
-        $this->assertInstanceOf('Nexmo\Call\Talk', $talk);
+        $this->assertInstanceOf('Vonage\Call\Talk', $talk);
         $this->assertSame($this->entity->getId(), $talk->getId());
 
         $this->assertSame($talk, @$this->entity->talk);
@@ -201,7 +201,7 @@ class CallTest extends TestCase
 
         $id = $this->entity->getId();
 
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($id) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id . '/talk', 'PUT', $request);
             return true;
         }))->willReturn($response)->shouldBeCalled();
@@ -216,7 +216,7 @@ class CallTest extends TestCase
     {
         $dtmf = @$this->entity->dtmf;
 
-        $this->assertInstanceOf('Nexmo\Call\Dtmf', $dtmf);
+        $this->assertInstanceOf('Vonage\Call\Dtmf', $dtmf);
         $this->assertSame($this->entity->getId(), $dtmf->getId());
 
         $this->assertSame($dtmf, @$this->entity->dtmf);
@@ -228,7 +228,7 @@ class CallTest extends TestCase
 
         $id = $this->entity->getId();
 
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($id) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id . '/dtmf', 'PUT', $request);
             return true;
         }))->willReturn($response)->shouldBeCalled();
@@ -393,7 +393,7 @@ class CallTest extends TestCase
         $this->assertEquals($data['status'], $entity->getStatus());
         $this->assertEquals($data['direction'], $entity->getDirection());
 
-        $this->assertInstanceOf('Nexmo\Conversations\Conversation', $entity->getConversation());
+        $this->assertInstanceOf('Vonage\Conversations\Conversation', $entity->getConversation());
         $this->assertEquals($data['conversation_uuid'], $entity->getConversation()->getId());
     }
 

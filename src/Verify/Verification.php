@@ -1,18 +1,18 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace Nexmo\Verify;
+namespace Vonage\Verify;
 
-use Nexmo\Client\Exception\Request as RequestException;
-use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
-use Nexmo\Entity\JsonResponseTrait;
-use Nexmo\Entity\Psr7Trait;
-use Nexmo\Entity\RequestArrayTrait;
+use Vonage\Client\Exception\Request as RequestException;
+use Vonage\Entity\Hydrator\ArrayHydrateInterface;
+use Vonage\Entity\JsonResponseTrait;
+use Vonage\Entity\Psr7Trait;
+use Vonage\Entity\RequestArrayTrait;
 
 class Verification implements VerificationInterface, \ArrayAccess, \Serializable, ArrayHydrateInterface
 {
@@ -34,7 +34,7 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
     protected $dirty = true;
 
     /**
-     * @deprecated Use the Nexmo\Verify\Client instead to interact with the API
+     * @deprecated Use the Vonage\Verify\Client instead to interact with the API
      * @var Client;
      */
     protected $client;
@@ -54,7 +54,7 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
             $this->requestData['request_id'] = $idOrNumber;
         } else {
             trigger_error(
-                'Using ' . get_class($this) . ' for starting a verification is deprecated, please use Nexmo\Verify\Request instead',
+                'Using ' . get_class($this) . ' for starting a verification is deprecated, please use Vonage\Verify\Request instead',
                 E_USER_DEPRECATED
             );
 
@@ -68,14 +68,14 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
     /**
      * Allow Verification to have actions.
      *
-     * @deprecated Use the Nexmo\Verfication\Client service object directly
+     * @deprecated Use the Vonage\Verfication\Client service object directly
      * @param Client $client Verify Client
      * @return $this
      */
     public function setClient(Client $client)
     {
         trigger_error(
-            'Setting a client directly on a Verification object is deprecated, please use the Nexmo\Verfication\Client service object directly',
+            'Setting a client directly on a Verification object is deprecated, please use the Vonage\Verfication\Client service object directly',
             E_USER_DEPRECATED
         );
         $this->client = $client;
@@ -83,7 +83,7 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
     }
 
     /**
-     * @deprecated Use the Nexmo\Verification\Client service object directly
+     * @deprecated Use the Vonage\Verification\Client service object directly
      * @return Client
      */
     protected function useClient()
@@ -98,8 +98,8 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
     /**
      * Check if the code is correct. Unlike the method it proxies, an invalid code does not throw an exception.
      *
-     * @deprecated Use Nexmo\Verfication\Client::check()
-     * @uses \Nexmo\Verify\Client::check()
+     * @deprecated Use Vonage\Verfication\Client::check()
+     * @uses \Vonage\Verify\Client::check()
      * @param string $code Numeric code provided by the user.
      * @param null|string $ip IP address to be used for the verification.
      * @return bool Code is valid.
@@ -108,7 +108,7 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
     public function check($code, $ip = null)
     {
         trigger_error(
-            'Nexmo\Verify\Verification::check() is deprecated, use Nexmo\Verfication\Client::check()',
+            'Vonage\Verify\Verification::check() is deprecated, use Vonage\Verfication\Client::check()',
             E_USER_DEPRECATED
         );
         try {
@@ -126,13 +126,13 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
     /**
      * Cancel the verification.
      *
-     * @deprecated Use Nexmo\Verfication\Client::cancel()
-     * @uses \Nexmo\Verify\Client::cancel()
+     * @deprecated Use Vonage\Verfication\Client::cancel()
+     * @uses \Vonage\Verify\Client::cancel()
      */
     public function cancel()
     {
         trigger_error(
-            'Nexmo\Verify\Verification::cancel() is deprecated, use Nexmo\Verfication\Client::cancel()',
+            'Vonage\Verify\Verification::cancel() is deprecated, use Vonage\Verfication\Client::cancel()',
             E_USER_DEPRECATED
         );
         $this->useClient()->cancel($this);
@@ -141,13 +141,13 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
     /**
      * Trigger the next verification.
      *
-     * @deprecated Use Nexmo\Verfication\Client::trigger()
-     * @uses \Nexmo\Verify\Client::trigger()
+     * @deprecated Use Vonage\Verfication\Client::trigger()
+     * @uses \Vonage\Verify\Client::trigger()
      */
     public function trigger()
     {
         trigger_error(
-            'Nexmo\Verify\Verification::trigger() is deprecated, use Nexmo\Verfication\Client::trigger()',
+            'Vonage\Verify\Verification::trigger() is deprecated, use Vonage\Verfication\Client::trigger()',
             E_USER_DEPRECATED
         );
         $this->useClient()->trigger($this);
@@ -156,13 +156,13 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
     /**
      * Update Verification from the API.
      *
-     * @deprecated Use Nexmo\Verfication\Client::get() to retrieve the object directly
-     * @uses \Nexmo\Verify\Client::search()
+     * @deprecated Use Vonage\Verfication\Client::get() to retrieve the object directly
+     * @uses \Vonage\Verify\Client::search()
      */
     public function sync()
     {
         trigger_error(
-            'Nexmo\Verify\Verification::sync() is deprecated, use Nexmo\Verfication\Client::search() to get a new copy of this object',
+            'Vonage\Verify\Verification::sync() is deprecated, use Vonage\Verfication\Client::search() to get a new copy of this object',
             E_USER_DEPRECATED
         );
         $this->useClient()->search($this);
@@ -177,7 +177,7 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
     public function isDirty()
     {
         trigger_error(
-            'Nexmo\Verify\Verification::isDirty() is deprecated',
+            'Vonage\Verify\Verification::isDirty() is deprecated',
             E_USER_DEPRECATED
         );
         return $this->dirty;
@@ -190,7 +190,7 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
      * @link https://docs.nexmo.com/verify/api-reference/api-reference#vrequest
      *
      * Can only be set before the verification is created.
-     * @uses \Nexmo\Entity\RequestArrayTrait::setRequestData
+     * @uses \Vonage\Entity\RequestArrayTrait::setRequestData
      *
      * @param $country
      * @return $this
@@ -207,7 +207,7 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
      * @link https://docs.nexmo.com/verify/api-reference/api-reference#vrequest
      *
      * Can only be set before the verification is created.
-     * @uses \Nexmo\Entity\RequestArrayTrait::setRequestData
+     * @uses \Vonage\Entity\RequestArrayTrait::setRequestData
      *
      * @param $id
      * @return $this
@@ -223,7 +223,7 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
      * @link https://docs.nexmo.com/verify/api-reference/api-reference#vrequest
      *
      * Can only be set before the verification is created.
-     * @uses \Nexmo\Entity\RequestArrayTrait::setRequestData
+     * @uses \Vonage\Entity\RequestArrayTrait::setRequestData
      *
      * @param $length
      * @return $this
@@ -241,7 +241,7 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
      * @link https://docs.nexmo.com/verify/api-reference/api-reference#vrequest
      *
      * Can only be set before the verification is created.
-     * @uses \Nexmo\Entity\RequestArrayTrait::setRequestData
+     * @uses \Vonage\Entity\RequestArrayTrait::setRequestData
      *
      * @param $language
      * @return $this
@@ -258,11 +258,11 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
      * - Mobile
      * - Landline
      *
-     * Note: contact support@nexmo.com to enable this feature.
+     * Note: contact support@Vonage.com to enable this feature.
      * @link https://docs.nexmo.com/verify/api-reference/api-reference#vrequest
      *
      * Can only be set before the verification is created.
-     * @uses \Nexmo\Entity\RequestArrayTrait::setRequestData
+     * @uses \Vonage\Entity\RequestArrayTrait::setRequestData
      *
      * @param $type
      * @return $this
@@ -280,7 +280,7 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
      * @link https://docs.nexmo.com/verify/api-reference/api-reference#vrequest
      *
      * Can only be set before the verification is created.
-     * @uses \Nexmo\Entity\RequestArrayTrait::setRequestData
+     * @uses \Vonage\Entity\RequestArrayTrait::setRequestData
      *
      * @param $time
      * @return $this
@@ -297,7 +297,7 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
      * @link https://docs.nexmo.com/verify/api-reference/api-reference#vrequest
      *
      * Can only be set before the verification is created.
-     * @uses \Nexmo\Entity\RequestArrayTrait::setRequestData
+     * @uses \Vonage\Entity\RequestArrayTrait::setRequestData
      *
      * @param $time
      * @return $this
@@ -313,7 +313,7 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
      * @link https://developer.nexmo.com/verify/guides/workflows-and-events
      *
      * Can only be set before the verification is created.
-     * @uses \Nexmo\Entity\RequestArrayTrait::setRequestData
+     * @uses \Vonage\Entity\RequestArrayTrait::setRequestData
      *
      * @param int $workflow_id Which workflow to use
      * @return $this
@@ -326,7 +326,7 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
     /**
      * Get the verification request id, if available.
      *
-     * @uses \Nexmo\Verify\Verification::proxyArrayAccess()
+     * @uses \Vonage\Verify\Verification::proxyArrayAccess()
      *
      * @return string|null
      */
@@ -338,8 +338,8 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
     /**
      * Get the number verified / to be verified.
      *
-     * @see \Nexmo\Verify\Verification::__construct()
-     * @uses \Nexmo\Verify\Verification::proxyArrayAccess()
+     * @see \Vonage\Verify\Verification::__construct()
+     * @uses \Vonage\Verify\Verification::proxyArrayAccess()
      *
      * @return string|null
      */
@@ -352,9 +352,9 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
      * Get the account id, if available.
      *
      * Only available after a searching for a verification.
-     * @see \Nexmo\Verify\Client::search();
+     * @see \Vonage\Verify\Client::search();
      *
-     * However still @uses \Nexmo\Verify\Verification::proxyArrayAccess()
+     * However still @uses \Vonage\Verify\Verification::proxyArrayAccess()
      *
      * @return string|null
      */
@@ -366,10 +366,10 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
     /**
      * Get the sender id, if available.
      *
-     * @see \Nexmo\Verify\Verification::setSenderId();
-     * @see \Nexmo\Verify\Client::search();
+     * @see \Vonage\Verify\Verification::setSenderId();
+     * @see \Vonage\Verify\Client::search();
      *
-     * @uses \Nexmo\Verify\Verification::proxyArrayAccess()
+     * @uses \Vonage\Verify\Verification::proxyArrayAccess()
      *
      * @return string|null
      */
@@ -382,9 +382,9 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
      * Get the price of the verification, if available.
      *
      * Only available after a searching for a verification.
-     * @see \Nexmo\Verify\Client::search();
+     * @see \Vonage\Verify\Client::search();
      *
-     * However still @uses \Nexmo\Verify\Verification::proxyArrayAccess()
+     * However still @uses \Vonage\Verify\Verification::proxyArrayAccess()
      *
      * @return string|null
      */
@@ -397,9 +397,9 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
      * Get the currency used to price the verification, if available.
      *
      * Only available after a searching for a verification.
-     * @see \Nexmo\Verify\Client::search();
+     * @see \Vonage\Verify\Client::search();
      *
-     * However still @uses \Nexmo\Verify\Verification::proxyArrayAccess()
+     * However still @uses \Vonage\Verify\Verification::proxyArrayAccess()
      *
      * @return string|null
      */
@@ -412,9 +412,9 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
      * Get the status of the verification, if available.
      *
      * Only available after a searching for a verification.
-     * @see \Nexmo\Verify\Client::search();
+     * @see \Vonage\Verify\Client::search();
      *
-     * However still @uses \Nexmo\Verify\Verification::proxyArrayAccess()
+     * However still @uses \Vonage\Verify\Verification::proxyArrayAccess()
      *
      * @return string|null
      */
@@ -428,11 +428,11 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
      * the data is not available.
      *
      * Only available after a searching for a verification.
-     * @see \Nexmo\Verify\Client::search();
+     * @see \Vonage\Verify\Client::search();
      *
-     * However still @uses \Nexmo\Verify\Verification::proxyArrayAccess()
+     * However still @uses \Vonage\Verify\Verification::proxyArrayAccess()
      *
-     * @return \Nexmo\Verify\Check[]|\Nexmo\Verify\Check
+     * @return \Vonage\Verify\Check[]|\Vonage\Verify\Check
      */
     public function getChecks()
     {
@@ -452,9 +452,9 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
      * Get the date the verification started.
      *
      * Only available after a searching for a verification.
-     * @see \Nexmo\Verify\Client::search();
+     * @see \Vonage\Verify\Client::search();
      *
-     * However still @uses \Nexmo\Verify\Verification::proxyArrayAccessDate()
+     * However still @uses \Vonage\Verify\Verification::proxyArrayAccessDate()
      *
      * @return \DateTime|null
      */
@@ -467,9 +467,9 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
      * Get the date the verification stopped.
      *
      * Only available after a searching for a verification.
-     * @see \Nexmo\Verify\Client::search();
+     * @see \Vonage\Verify\Client::search();
      *
-     * However still @uses \Nexmo\Verify\Verification::proxyArrayAccessDate()
+     * However still @uses \Vonage\Verify\Verification::proxyArrayAccessDate()
      *
      * @return \DateTime|null
      */
@@ -482,9 +482,9 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
      * Get the date of the first verification event.
      *
      * Only available after a searching for a verification.
-     * @see \Nexmo\Verify\Client::search();
+     * @see \Vonage\Verify\Client::search();
      *
-     * However still @uses \Nexmo\Verify\Verification::proxyArrayAccessDate()
+     * However still @uses \Vonage\Verify\Verification::proxyArrayAccessDate()
      *
      * @return \DateTime|null
      */
@@ -497,9 +497,9 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
      * Get the date of the last verification event.
      *
      * Only available after a searching for a verification.
-     * @see \Nexmo\Verify\Client::search();
+     * @see \Vonage\Verify\Client::search();
      *
-     * However still @uses \Nexmo\Verify\Verification::proxyArrayAccessDate()
+     * However still @uses \Vonage\Verify\Verification::proxyArrayAccessDate()
      *
      * @return \DateTime|null
      */
@@ -510,7 +510,7 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
 
     /**
      * Proxies `proxyArrayAccess()` and returns a DateTime if the parameter is found.
-     * @uses \Nexmo\Verify\Verification::proxyArrayAccess()
+     * @uses \Vonage\Verify\Verification::proxyArrayAccess()
      *
      * @param string $param Parameter to look for.
      * @return \DateTime
@@ -526,8 +526,8 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
     /**
      * Simply proxies array access to check for a parameter in the response, request, or user provided data.
      *
-     * @uses \Nexmo\Verify\Verification::offsetGet();
-     * @uses \Nexmo\Verify\Verification::offsetExists();
+     * @uses \Vonage\Verify\Verification::offsetGet();
+     * @uses \Vonage\Verify\Verification::offsetExists();
      *
      * @param string $param Parameter to look for.
      * @return mixed
@@ -552,7 +552,7 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
     public function offsetExists($offset)
     {
         trigger_error(
-            'Using Nexmo\Verify\Verification as an array is deprecated',
+            'Using Vonage\Verify\Verification as an array is deprecated',
             E_USER_DEPRECATED
         );
         $response = $this->getResponseData();
@@ -573,7 +573,7 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
     public function offsetGet($offset)
     {
         trigger_error(
-            'Using Nexmo\Verify\Verification as an array is deprecated',
+            'Using Vonage\Verify\Verification as an array is deprecated',
             E_USER_DEPRECATED
         );
         $response = $this->getResponseData();
@@ -603,7 +603,7 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
     public function offsetSet($offset, $value)
     {
         trigger_error(
-            'Using Nexmo\Verify\Verification as an array is deprecated',
+            'Using Vonage\Verify\Verification as an array is deprecated',
             E_USER_DEPRECATED
         );
         throw $this->getReadOnlyException($offset);
@@ -618,7 +618,7 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
     public function offsetUnset($offset)
     {
         trigger_error(
-            'Using Nexmo\Verify\Verification as an array is deprecated',
+            'Using Vonage\Verify\Verification as an array is deprecated',
             E_USER_DEPRECATED
         );
         throw $this->getReadOnlyException($offset);
@@ -634,7 +634,7 @@ class Verification implements VerificationInterface, \ArrayAccess, \Serializable
     protected function getReadOnlyException(string $offset)
     {
         trigger_error(
-            'Using Nexmo\Verify\Verification as an array is deprecated',
+            'Using Vonage\Verify\Verification as an array is deprecated',
             E_USER_DEPRECATED
         );
         return new \RuntimeException(sprintf(

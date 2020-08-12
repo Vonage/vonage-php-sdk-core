@@ -1,21 +1,21 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace NexmoTest\Conversations;
+namespace VonageTest\Conversations;
 
-use Nexmo\Client;
-use Nexmo\Conversations\Conversation;
-use Nexmo\Conversations\Collection;
-use NexmoTest\Psr7AssertionTrait;
+use Vonage\Client;
+use Vonage\Conversations\Conversation;
+use Vonage\Conversations\Collection;
+use VonageTest\Psr7AssertionTrait;
 use Prophecy\Argument;
 use Psr\Http\Message\RequestInterface;
 use Zend\Diactoros\Response;
-use Nexmo\Client\Exception;
+use Vonage\Client\Exception;
 use PHPUnit\Framework\TestCase;
 
 class CollectionTest extends TestCase
@@ -25,7 +25,7 @@ class CollectionTest extends TestCase
     /**
      * @var \Prophecy\Prophecy\ObjectProphecy
      */
-    protected $nexmoClient;
+    protected $vonageClient;
 
     /**
      * @var Collection
@@ -34,10 +34,10 @@ class CollectionTest extends TestCase
 
     public function setUp()
     {
-        $this->nexmoClient = $this->prophesize(Client::class);
-        $this->nexmoClient->getApiUrl()->willReturn('https://api.nexmo.com');
+        $this->vonageClient = $this->prophesize(Client::class);
+        $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
         $this->collection = new Collection();
-        $this->collection->setClient($this->nexmoClient->reveal());
+        $this->collection->setClient($this->vonageClient->reveal());
     }
 
     /**
@@ -47,12 +47,12 @@ class CollectionTest extends TestCase
      */
     public function testArrayIsLazy($payload, $id)
     {
-        $this->nexmoClient->send(Argument::any())->willReturn($this->getResponse('conversation'));
+        $this->vonageClient->send(Argument::any())->willReturn($this->getResponse('conversation'));
 
         $conversation = $this->collection[$payload];
 
         $this->assertInstanceOf(Conversation::class, $conversation);
-        $this->nexmoClient->send(Argument::any())->shouldNotHaveBeenCalled();
+        $this->vonageClient->send(Argument::any())->shouldNotHaveBeenCalled();
         $this->assertEquals($id, $conversation->getId());
 
         if($payload instanceof Conversation){
@@ -61,7 +61,7 @@ class CollectionTest extends TestCase
 
         // Once we call get() the rest of the data should be populated
         $conversation->get();
-        $this->nexmoClient->send(Argument::any())->shouldHaveBeenCalled();
+        $this->vonageClient->send(Argument::any())->shouldHaveBeenCalled();
     }
 
     /**
@@ -72,7 +72,7 @@ class CollectionTest extends TestCase
      */
     public function testGetIsNotLazy($payload, $id)
     {
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($id){
+        $this->vonageClient->send(Argument::that(function(RequestInterface $request) use ($id){
             $this->assertRequestUrl('api.nexmo.com', '/beta/conversations/' . $id, 'GET', $request);
             return true;
         }))->willReturn($this->getResponse('conversation'))->shouldBeCalled();
@@ -90,7 +90,7 @@ class CollectionTest extends TestCase
      */
     public function testCreatePostConversation($payload, $method)
     {
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($payload){
+        $this->vonageClient->send(Argument::that(function(RequestInterface $request) use ($payload){
             $this->assertRequestUrl('api.nexmo.com', '/beta/conversations', 'POST', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
             return true;
@@ -107,7 +107,7 @@ class CollectionTest extends TestCase
      */
     public function testCreatePostConversationErrorFromVApi($payload, $method)
     {
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($payload){
+        $this->vonageClient->send(Argument::that(function(RequestInterface $request) use ($payload){
             $this->assertRequestUrl('api.nexmo.com', '/beta/conversations', 'POST', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
             return true;
@@ -127,7 +127,7 @@ class CollectionTest extends TestCase
     public function testCreatePostCallErrorFromProxy($payload, $method)
     {
         $this->markTestSkipped();
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($payload){
+        $this->vonageClient->send(Argument::that(function(RequestInterface $request) use ($payload){
             $this->assertRequestUrl('api.nexmo.com', '/v1/conversation', 'POST', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
             return true;
@@ -147,7 +147,7 @@ class CollectionTest extends TestCase
     public function testCreatePostCallErrorUnknownFormat($payload, $method)
     {
         $this->markTestSkipped();
-        $this->nexmoClient->send(Argument::that(function(RequestInterface $request) use ($payload){
+        $this->vonageClient->send(Argument::that(function(RequestInterface $request) use ($payload){
             $this->assertRequestUrl('api.nexmo.com', '/v1/conversation', 'POST', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
             return true;

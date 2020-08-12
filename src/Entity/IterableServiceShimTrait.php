@@ -1,8 +1,8 @@
 <?php
 
-namespace Nexmo\Entity;
+namespace Vonage\Entity;
 
-use Nexmo\Entity\IterableAPICollection;
+use Vonage\Entity\IterableAPICollection;
 
 /**
  * Convience methods for iteratable collections acting as services

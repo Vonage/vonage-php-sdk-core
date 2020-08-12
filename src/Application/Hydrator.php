@@ -1,8 +1,8 @@
 <?php
 
-namespace Nexmo\Application;
+namespace Vonage\Application;
 
-use Nexmo\Entity\Hydrator\HydratorInterface;
+use Vonage\Entity\Hydrator\HydratorInterface;
 
 class Hydrator implements HydratorInterface
 {

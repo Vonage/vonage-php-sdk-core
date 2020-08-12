@@ -1,22 +1,22 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace NexmoTest\Numbers;
+namespace VonageTest\Numbers;
 
 
-use Nexmo\Application\Application;
-use Nexmo\Numbers\Number;
+use Vonage\Application\Application;
+use Vonage\Numbers\Number;
 use PHPUnit\Framework\TestCase;
 
 class NumberTest extends TestCase
 {
     /**
-     * @var \Nexmo\Numbers\Number;
+     * @var \Vonage\Numbers\Number;
      */
     protected $number;
 
@@ -89,7 +89,7 @@ class NumberTest extends TestCase
 
         $this->number->setVoiceDestination($id);
         $app = $this->number->getVoiceDestination();
-        $this->assertInstanceOf('Nexmo\Application\Application', $app);
+        $this->assertInstanceOf('Vonage\Application\Application', $app);
         $this->assertEquals($id, $app->getId());
 
         $this->assertArrayHas('app_id', $id, $this->number->getRequestData());

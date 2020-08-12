@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Nexmo\Voice;
+namespace Vonage\Voice;
 
-use Nexmo\Voice\Endpoint\EndpointInterface;
-use Nexmo\Voice\Endpoint\Phone;
-use Nexmo\Voice\NCCO\NCCO;
+use Vonage\Voice\Endpoint\EndpointInterface;
+use Vonage\Voice\Endpoint\Phone;
+use Vonage\Voice\NCCO\NCCO;
 
 class OutboundCall
 {
@@ -28,13 +28,13 @@ class OutboundCall
     protected $from;
 
     /**
-     * Length of seconds before Nexmo hangs up after going into `in_progress` status
+     * Length of seconds before Vonage hangs up after going into `in_progress` status
      * @var int
      */
     protected $lengthTimer;
 
     /**
-     * What to do when Nexmo detects an answering machine.
+     * What to do when Vonage detects an answering machine.
      * @var ?string
      */
     protected $machineDetection;
@@ -44,7 +44,7 @@ class OutboundCall
     protected $ncco;
 
     /**
-     * Length of time Nexmo will allow a phone number to ring before hanging up
+     * Length of time Vonage will allow a phone number to ring before hanging up
      * @var int
      */
     protected $ringingTimer;

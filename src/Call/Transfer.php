@@ -1,15 +1,15 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2017 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2017 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace Nexmo\Call;
+namespace Vonage\Call;
 
 /**
- * @deprecated Please use Nexmo\Voice\Client::transferCall() instead
+ * @deprecated Please use Vonage\Voice\Client::transferCall() instead
  */
 class Transfer implements \JsonSerializable
 {
@@ -18,7 +18,7 @@ class Transfer implements \JsonSerializable
     public function __construct($urls)
     {
         trigger_error(
-            'Nexmo\Call\Transfer is deprecated, please use Nexmo\Voice\Client::transferCall() instead',
+            'Vonage\Call\Transfer is deprecated, please use Vonage\Voice\Client::transferCall() instead',
             E_USER_DEPRECATED
         );
 

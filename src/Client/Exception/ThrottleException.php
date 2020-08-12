@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Nexmo\Client\Exception;
+namespace Vonage\Client\Exception;
 
 class ThrottleException extends Server
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace Nexmo\Insights;
+namespace Vonage\Insights;
 
-use Nexmo\Client\Exception\Exception;
-use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
-use Nexmo\Entity\JsonUnserializableInterface;
+use Vonage\Client\Exception\Exception;
+use Vonage\Entity\Hydrator\ArrayHydrateInterface;
+use Vonage\Entity\JsonUnserializableInterface;
 
 class Basic implements \JsonSerializable, JsonUnserializableInterface, \ArrayAccess, ArrayHydrateInterface
 {

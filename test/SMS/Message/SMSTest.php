@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace NexmoTest\SMS\Message;
+namespace VonageTest\SMS\Message;
 
 use InvalidArgumentException;
-use Nexmo\SMS\Message\SMS;
+use Vonage\SMS\Message\SMS;
 use PHPUnit\Framework\TestCase;
 
 class SMSTest extends TestCase

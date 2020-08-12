@@ -1,12 +1,12 @@
 <?php
 
-namespace Nexmo\Account;
+namespace Vonage\Account;
 
 use ArrayAccess;
-use Nexmo\Client\Exception\Exception;
-use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
-use Nexmo\Entity\JsonSerializableInterface;
-use Nexmo\Entity\JsonUnserializableInterface;
+use Vonage\Client\Exception\Exception;
+use Vonage\Entity\Hydrator\ArrayHydrateInterface;
+use Vonage\Entity\JsonSerializableInterface;
+use Vonage\Entity\JsonUnserializableInterface;
 
 class Config implements
     \JsonSerializable,

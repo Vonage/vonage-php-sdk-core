@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Nexmo\SMS\Message;
+namespace Vonage\SMS\Message;
 
-use Nexmo\SMS\EncodingDetector;
+use Vonage\SMS\EncodingDetector;
 
 class SMS extends OutboundMessage
 {

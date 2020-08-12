@@ -1,14 +1,14 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace NexmoTest\Message;
+namespace VonageTest\Message;
 
-use Nexmo\Message\Message;
+use Vonage\Message\Message;
 use Zend\Diactoros\Response;
 use Zend\Diactoros\ServerRequest;
 use PHPUnit\Framework\TestCase;
@@ -27,13 +27,13 @@ class FetchedMessageTest extends TestCase
     protected $set = array('to', 'from', 'text');
 
     /**
-     * @var \Nexmo\Message\Message
+     * @var \Vonage\Message\Message
      */
     protected $message;
 
     public function setUp()
     {
-        $this->message = new \Nexmo\Message\Message('02000000D912945A');
+        $this->message = new \Vonage\Message\Message('02000000D912945A');
     }
 
     public function tearDown()

@@ -1,5 +1,5 @@
 <?php
-namespace Nexmo\Message;
+namespace Vonage\Message;
 
 trait CollectionTrait
 {

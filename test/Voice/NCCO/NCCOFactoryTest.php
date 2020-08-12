@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace NexmoTest\Voice\NCCO;
+namespace VonageTest\Voice\NCCO;
 
-use Nexmo\Voice\NCCO\NCCOFactory;
+use Vonage\Voice\NCCO\NCCOFactory;
 use PHPUnit\Framework\TestCase;
 
 class NCCOFactoryTest extends TestCase

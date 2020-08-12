@@ -1,24 +1,24 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace Nexmo\Numbers;
+namespace Vonage\Numbers;
 
-use Nexmo\Client\APIClient;
-use Nexmo\Client\Exception;
-use Nexmo\Client\APIResource;
-use Nexmo\Client\ClientAwareTrait;
-use Nexmo\Client\ClientAwareInterface;
-use Nexmo\Client\Exception\ThrottleException;
-use Nexmo\Entity\Filter\FilterInterface;
-use Nexmo\Entity\Filter\KeyValueFilter;
-use Nexmo\Entity\IterableAPICollection;
-use Nexmo\Numbers\Filter\AvailableNumbers;
-use Nexmo\Numbers\Filter\OwnedNumbers;
+use Vonage\Client\APIClient;
+use Vonage\Client\Exception;
+use Vonage\Client\APIResource;
+use Vonage\Client\ClientAwareTrait;
+use Vonage\Client\ClientAwareInterface;
+use Vonage\Client\Exception\ThrottleException;
+use Vonage\Entity\Filter\FilterInterface;
+use Vonage\Entity\Filter\KeyValueFilter;
+use Vonage\Entity\IterableAPICollection;
+use Vonage\Numbers\Filter\AvailableNumbers;
+use Vonage\Numbers\Filter\OwnedNumbers;
 
 class Client implements ClientAwareInterface, APIClient
 {
@@ -64,7 +64,7 @@ class Client implements ClientAwareInterface, APIClient
     {
         if (!$number instanceof Number) {
             trigger_error(
-                "Passing a string to `Nexmo\Number\Client::update()` is deprecated, please pass a `Number` object instead",
+                "Passing a string to `Vonage\Number\Client::update()` is deprecated, please pass a `Number` object instead",
                 E_USER_DEPRECATED
             );
         }
@@ -132,14 +132,14 @@ class Client implements ClientAwareInterface, APIClient
     {
         if (is_null($number)) {
             trigger_error(
-                'Calling Nexmo\Numbers\Client::get() without a parameter is deprecated, please use `searchOwned()` or `searchAvailable()` instead',
+                'Calling Vonage\Numbers\Client::get() without a parameter is deprecated, please use `searchOwned()` or `searchAvailable()` instead',
                 E_USER_DEPRECATED
             );
         }
 
         if ($number instanceof Number) {
             trigger_error(
-                'Calling Nexmo\Numbers\Client::get() with a `Number` object is deprecated, please pass a string MSISDN instead',
+                'Calling Vonage\Numbers\Client::get() with a `Number` object is deprecated, please pass a string MSISDN instead',
                 E_USER_DEPRECATED
             );
         }
@@ -330,7 +330,7 @@ class Client implements ClientAwareInterface, APIClient
             }
 
             trigger_error(
-                'Passing a Number object to Nexmo\Number\Client::purchase() is being deprecated, please pass a string MSISDN instead',
+                'Passing a Number object to Vonage\Number\Client::purchase() is being deprecated, please pass a string MSISDN instead',
                 E_USER_DEPRECATED
             );
             $number = new Number($number, $country);
@@ -357,7 +357,7 @@ class Client implements ClientAwareInterface, APIClient
             $number = $this->get($number);
         } else {
             trigger_error(
-                'Passing a Number object to Nexmo\Number\Client::cancel() is being deprecated, please pass a string MSISDN instead',
+                'Passing a Number object to Vonage\Number\Client::cancel() is being deprecated, please pass a string MSISDN instead',
                 E_USER_DEPRECATED
             );
 

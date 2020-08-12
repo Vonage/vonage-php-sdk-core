@@ -1,18 +1,18 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace Nexmo\Message;
+namespace Vonage\Message;
 
-use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
-use Nexmo\Message\EncodingDetector;
-use Nexmo\Entity\JsonResponseTrait;
-use Nexmo\Entity\Psr7Trait;
-use Nexmo\Entity\RequestArrayTrait;
+use Vonage\Entity\Hydrator\ArrayHydrateInterface;
+use Vonage\Message\EncodingDetector;
+use Vonage\Entity\JsonResponseTrait;
+use Vonage\Entity\Psr7Trait;
+use Vonage\Entity\RequestArrayTrait;
 
 /**
  * Abstract Message
@@ -110,7 +110,7 @@ class Message implements MessageInterface, \Countable, \ArrayAccess, \Iterator, 
     /**
      * The duration in milliseconds the delivery of an SMS will be attempted
      * By default this is set to 72 hours, but can be overridden if needed.
-     * Nexmo recommends no shorter than 30 minutes, and to keep at default
+     * Vonage recommends no shorter than 30 minutes, and to keep at default
      * when possible.
      *
      * @param int $ttl

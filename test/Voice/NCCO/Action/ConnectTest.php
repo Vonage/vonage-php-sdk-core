@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace NexmoTest\Voice\NCCO\Action;
+namespace VonageTest\Voice\NCCO\Action;
 
-use Nexmo\Voice\Endpoint\Phone;
+use Vonage\Voice\Endpoint\Phone;
 use PHPUnit\Framework\TestCase;
-use Nexmo\Voice\Endpoint\EndpointInterface;
-use Nexmo\Voice\NCCO\Action\Connect;
-use Nexmo\Voice\Webhook;
+use Vonage\Voice\Endpoint\EndpointInterface;
+use Vonage\Voice\NCCO\Action\Connect;
+use Vonage\Voice\Webhook;
 
 class ConnectTest extends TestCase
 {

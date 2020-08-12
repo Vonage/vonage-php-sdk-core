@@ -1,17 +1,17 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace Nexmo\Entity;
+namespace Vonage\Entity;
 
 use Zend\Diactoros\Request;
-use Nexmo\Entity\Filter\EmptyFilter;
+use Vonage\Entity\Filter\EmptyFilter;
 use Psr\Http\Message\ResponseInterface;
-use Nexmo\Entity\Filter\FilterInterface;
+use Vonage\Entity\Filter\FilterInterface;
 
 /**
  * Common code for iterating over a collection, and using the collection class to discover the API path.

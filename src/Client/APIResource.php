@@ -1,12 +1,12 @@
 <?php
 
-namespace Nexmo\Client;
+namespace Vonage\Client;
 
-use Nexmo\Client;
+use Vonage\Client;
 use Zend\Diactoros\Request;
-use Nexmo\Entity\Filter\EmptyFilter;
-use Nexmo\Entity\Filter\FilterInterface;
-use Nexmo\Entity\IterableAPICollection;
+use Vonage\Entity\Filter\EmptyFilter;
+use Vonage\Entity\Filter\FilterInterface;
+use Vonage\Entity\IterableAPICollection;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 

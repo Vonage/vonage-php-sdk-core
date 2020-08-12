@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace NexmoTest\Voice\Endpoint;
+namespace VonageTest\Voice\Endpoint;
 
-use Nexmo\Voice\Endpoint\Websocket;
+use Vonage\Voice\Endpoint\Websocket;
 use PHPUnit\Framework\TestCase;
 
 class WebsocketTest extends TestCase
