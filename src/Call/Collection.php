@@ -59,9 +59,10 @@ class Collection implements ClientAwareInterface, CollectionInterface, \ArrayAcc
      * @param null $callOrFilter
      * @return $this|Call
      */
-    public function __invoke(Filter $filter = null)
+    public function __invoke($filter = null)
     {
-        if (!is_null($filter)) {
+        /** Fix for the smarter MapFactory in v2.2.0 and the uniqueness of this class interface */
+        if (!is_null($filter) && $filter instanceof Filter) {
             $this->setFilter($filter);
         }
 
