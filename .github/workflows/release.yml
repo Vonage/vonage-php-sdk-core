@@ -1,7 +1,7 @@
 name: Release published
 on:
   release:
-    types: [published]
+    types: [published, edited]
 jobs:
   add-changelog:
     name: Add Changelog
