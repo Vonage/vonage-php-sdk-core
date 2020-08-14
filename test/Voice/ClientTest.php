@@ -285,16 +285,16 @@ class ClientTest extends TestCase
     {
         $id = 'ssf61863-4a51-ef6b-11e1-w6edebcf93bb';
         $payload = [
+            'action' => 'transfer',
             'destination' => [
-                'action' => 'transfer'
-            ],
-            'type' => 'ncco',
-            'ncco' => [
-                [
-                    'action' => 'talk',
-                    'text' => 'Thank you for trying Vonage',
+                'type' => 'ncco',
+                'ncco' => [
+                    [
+                        'action' => 'talk',
+                        'text' => 'Thank you for trying Vonage',
+                    ]
                 ]
-            ]
+            ],
         ];
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
@@ -314,10 +314,11 @@ class ClientTest extends TestCase
     {
         $id = 'ssf61863-4a51-ef6b-11e1-w6edebcf93bb';
         $payload = [
+            'action' => 'transfer',
             'destination' => [
-                'action' => 'transfer'
+                'type' => 'ncco',
+                'url' => ['https://test.domain/transfer.json'],
             ],
-            'url' => ['https://test.domain/transfer.json'],
         ];
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
