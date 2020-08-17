@@ -1,0 +1,47 @@
+name: build
+on: [push, pull_request]
+jobs:
+    build:
+        runs-on: 
+            - ubuntu-latest
+        strategy:
+            matrix:
+                php: ['7.1', '7.2', '7.3', '7.4']
+        steps:
+            - name: Configure Git
+              if: ${{ matrix.os == 'windows-latest' }}
+              run: |
+                  git config --system core.autocrlf false
+                  git config --ystem core.eol lf
+
+            - name: Checkout
+              uses: actions/checkout@v2
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                php-version: ${{ matrix.php }}
+                extensions: json
+                tools: composer
+                coverage: xdebug
+
+            - name: Get Composer cache directory
+              id: composercache
+              run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+            - name: Cache Composer dependencies
+              uses: actions/cache@v2
+              with:
+                path: ${{ steps.composercache.outputs.dir }}
+                key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+                restore-keys: ${{ runner.os }}-composer-
+
+            - name: Install dependencies
+              run: composer install --no-interaction --prefer-dist --no-progress --no-suggest ${{ matrix.composer-options }}
+
+            - name: Analyze & test
+              run: |
+                  vendor/bin/phpunit -v --configuration ./phpunit.xml.dist --coverage-clover=coverage.xml
+
+            - name: Run codecov
+              uses: codecov/codecov-action@v1
