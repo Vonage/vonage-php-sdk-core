@@ -11,6 +11,7 @@ namespace VonageTest\Verify;
 
 use Vonage\Verify\Client;
 use Vonage\Verify\Request;
+use Vonage\Verify\RequestPSD2;
 use Vonage\Verify\Verification;
 use VonageTest\Psr7AssertionTrait;
 use Prophecy\Argument;
@@ -128,6 +129,43 @@ class ClientTest extends TestCase
         $verification = new Request('14845551212', 'Test Verify');
         $verification = @$this->client->start($verification);
         $this->assertSame($success, @$verification->getResponse());
+    }
+
+    public function testCanStartPSD2Verification()
+    {
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertRequestJsonBodyContains('number', '14845551212', $request);
+            $this->assertRequestJsonBodyContains('payee', 'Test Verify', $request);
+            $this->assertRequestJsonBodyContains('amount', '5.25', $request);
+            $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/psd2/json', $request);
+            return true;
+        }))->willReturn($this->getResponse('start'))
+           ->shouldBeCalledTimes(1);
+
+        $request = new RequestPSD2('14845551212', 'Test Verify', '5.25');
+        $response = @$this->client->requestPSD2($request);
+
+        $this->assertSame('0', $response['status']);
+        $this->assertSame('44a5279b27dd4a638d614d265ad57a77', $response['request_id']);
+    }
+
+    public function testCanStartPSD2VerificationWithWorkflowID()
+    {
+        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertRequestJsonBodyContains('number', '14845551212', $request);
+            $this->assertRequestJsonBodyContains('payee', 'Test Verify', $request);
+            $this->assertRequestJsonBodyContains('amount', '5.25', $request);
+            $this->assertRequestJsonBodyContains('workflow_id', 5, $request);
+            $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/psd2/json', $request);
+            return true;
+        }))->willReturn($this->getResponse('start'))
+           ->shouldBeCalledTimes(1);
+
+        $request = new RequestPSD2('14845551212', 'Test Verify', '5.25', 5);
+        $response = @$this->client->requestPSD2($request);
+
+        $this->assertSame('0', $response['status']);
+        $this->assertSame('44a5279b27dd4a638d614d265ad57a77', $response['request_id']);
     }
 
     public function testCanStartArray()

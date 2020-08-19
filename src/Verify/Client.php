@@ -79,6 +79,19 @@ class Client implements ClientAwareInterface, APIClient
     }
 
     /**
+     * @return array{request_id: string, status: string}
+     */
+    public function requestPSD2(RequestPSD2 $request) : array
+    {
+        $api = $this->getApiResource();
+        $response = $api->create($request->toArray(), '/psd2/json');
+
+        $this->checkError($request, $response);
+
+        return $response;
+    }
+
+    /**
      * @param string|Verification $verification
      */
     public function search($verification)
@@ -224,7 +237,7 @@ class Client implements ClientAwareInterface, APIClient
         return $this->checkError($verification, $data);
     }
 
-    protected function checkError(Verification $verification, $data)
+    protected function checkError($verification, $data)
     {
         if (!isset($data['status'])) {
             $e = new Exception\Request('unexpected response from API');
