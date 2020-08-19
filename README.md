@@ -580,7 +580,27 @@ try {
 
 Check out the [documentation](https://developer.nexmo.com/number-insight/code-snippets/number-insight-advanced-async-callback) for what to expect in the incoming webhook containing the data you requested.
 
+## Supported APIs
 
+| API   | API Release Status |  Supported?
+|----------|:---------:|:-------------:|
+| Account API | General Availability |✅|
+| Alerts API | General Availability |✅|
+| Application API | General Availability |✅|
+| Audit API | Beta |❌|
+| Conversation API | Beta |❌|
+| Dispatch API | Beta |❌|
+| External Accounts API | Beta |❌|
+| Media API | Beta | ❌|
+| Messages API | Beta |❌|
+| Number Insight API | General Availability |✅|
+| Number Management API | General Availability |✅|
+| Pricing API | General Availability |✅|
+| Redact API | General Availability |✅|
+| Reports API | Beta |❌|
+| SMS API | General Availability |✅|
+| Verify API | General Availability |✅|
+| Voice API | General Availability |✅|
 
 ## Troubleshooting
 
