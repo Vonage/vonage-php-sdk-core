@@ -291,6 +291,7 @@ class ClientTest extends TestCase
             'size' => '100',
             'search_pattern' => 0,
             'has_application' => false,
+            'country' => 'GB',
         ]);
     }
 
