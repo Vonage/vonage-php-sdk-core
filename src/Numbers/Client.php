@@ -239,6 +239,7 @@ class Client implements ClientAwareInterface, APIClient
 
         // These are all optional parameters
         $possibleParameters = [
+            'country' => 'string',
             'pattern' => 'string',
             'search_pattern' => 'integer',
             'size' => 'integer',
