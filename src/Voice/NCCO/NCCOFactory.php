@@ -1,17 +1,17 @@
 <?php
 declare(strict_types=1);
 
-namespace Nexmo\Voice\NCCO;
+namespace Vonage\Voice\NCCO;
 
-use Nexmo\Voice\NCCO\Action\Talk;
-use Nexmo\Voice\NCCO\Action\Input;
-use Nexmo\Voice\NCCO\Action\Record;
-use Nexmo\Voice\NCCO\Action\Stream;
-use Nexmo\Voice\NCCO\Action\Connect;
-use Nexmo\Voice\Endpoint\EndpointFactory;
-use Nexmo\Voice\NCCO\Action\Conversation;
-use Nexmo\Voice\NCCO\Action\ActionInterface;
-use Nexmo\Voice\NCCO\Action\Notify;
+use Vonage\Voice\NCCO\Action\Talk;
+use Vonage\Voice\NCCO\Action\Input;
+use Vonage\Voice\NCCO\Action\Record;
+use Vonage\Voice\NCCO\Action\Stream;
+use Vonage\Voice\NCCO\Action\Connect;
+use Vonage\Voice\Endpoint\EndpointFactory;
+use Vonage\Voice\NCCO\Action\Conversation;
+use Vonage\Voice\NCCO\Action\ActionInterface;
+use Vonage\Voice\NCCO\Action\Notify;
 
 class NCCOFactory
 {

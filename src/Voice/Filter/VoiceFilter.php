@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Nexmo\Voice\Filter;
+namespace Vonage\Voice\Filter;
 
 use DateTimeZone;
-use Nexmo\Entity\Filter\FilterInterface;
+use Vonage\Entity\Filter\FilterInterface;
 
 class VoiceFilter implements FilterInterface
 {

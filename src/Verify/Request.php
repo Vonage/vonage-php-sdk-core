@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Nexmo\Verify;
+namespace Vonage\Verify;
 
-use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
+use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 
 class Request implements ArrayHydrateInterface
 {

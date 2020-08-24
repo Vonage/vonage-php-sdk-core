@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Nexmo\SMS\Message;
+namespace Vonage\SMS\Message;
 
 class Vcal extends OutboundMessage
 {

@@ -1,9 +1,9 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
 namespace Message;
@@ -19,13 +19,13 @@ class MessageCreationTest extends TestCase
     protected $set = array('to', 'from', 'text');
 
     /**
-     * @var \Nexmo\Message\Message
+     * @var \Vonage\Message\Message
      */
     protected $message;
 
     public function setUp()
     {
-        $this->message = new \Nexmo\Message\Message($this->to, $this->from, [
+        $this->message = new \Vonage\Message\Message($this->to, $this->from, [
             'text' => $this->text
         ]);
     }
@@ -83,7 +83,7 @@ class MessageCreationTest extends TestCase
             array('setCallback',  'callback',          array('http://example.com/test-callback' => 'http://example.com/test-callback')),
             array('setNetwork',   'network-code',      array('test' => 'test')),
             array('setTTL',       'ttl',               array('1' => 1)),
-            array('setClass',     'message-class',     array(\Nexmo\Message\Text::CLASS_FLASH => \Nexmo\Message\Text::CLASS_FLASH)),
+            array('setClass',     'message-class',     array(\Vonage\Message\Text::CLASS_FLASH => \Vonage\Message\Text::CLASS_FLASH)),
         );
     }
 

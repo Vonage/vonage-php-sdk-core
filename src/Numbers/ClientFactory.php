@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Nexmo\Numbers;
+namespace Vonage\Numbers;
 
-use Nexmo\Client\APIResource;
+use Vonage\Client\APIResource;
 use Psr\Container\ContainerInterface;
 
 class ClientFactory

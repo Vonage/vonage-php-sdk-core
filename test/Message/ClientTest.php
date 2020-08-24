@@ -1,26 +1,26 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace NexmoTest\Message;
+namespace VonageTest\Message;
 
 use Prophecy\Argument;
-use Nexmo\Message\Text;
-use Nexmo\Message\Query;
-use Nexmo\Message\Client;
-use Nexmo\Message\Message;
-use Nexmo\Client\Exception;
+use Vonage\Message\Text;
+use Vonage\Message\Query;
+use Vonage\Message\Client;
+use Vonage\Message\Message;
+use Vonage\Client\Exception;
 use Zend\Diactoros\Request;
 use Zend\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
-use Nexmo\Message\InboundMessage;
-use NexmoTest\Psr7AssertionTrait;
-use NexmoTest\MessageAssertionTrait;
-use Nexmo\Message\Shortcode\TwoFactor;
+use Vonage\Message\InboundMessage;
+use VonageTest\Psr7AssertionTrait;
+use VonageTest\MessageAssertionTrait;
+use Vonage\Message\Shortcode\TwoFactor;
 use Psr\Http\Message\RequestInterface;
 
 class ClientTest extends TestCase
@@ -28,7 +28,7 @@ class ClientTest extends TestCase
     use Psr7AssertionTrait;
     use MessageAssertionTrait;
 
-    protected $nexmoClient;
+    protected $vonageClient;
 
     /**
      * @var Client
@@ -36,14 +36,14 @@ class ClientTest extends TestCase
     protected $messageClient;
     
     /**
-     * Create the Message API Client, and mock the Nexmo Client
+     * Create the Message API Client, and mock the Vonage Client
      */
     public function setUp()
     {
-        $this->nexmoClient = $this->prophesize('Nexmo\Client');
-        $this->nexmoClient->getRestUrl()->willReturn('https://rest.nexmo.com');
+        $this->vonageClient = $this->prophesize('Vonage\Client');
+        $this->vonageClient->getRestUrl()->willReturn('https://rest.nexmo.com');
         $this->messageClient = new Client();
-        $this->messageClient->setClient($this->nexmoClient->reveal());
+        $this->messageClient->setClient($this->vonageClient->reveal());
     }
 
     public function testCanUseMessage()
@@ -54,7 +54,7 @@ class ClientTest extends TestCase
             'text' => 'Go To Gino\'s'
         ];
 
-        $this->nexmoClient->send(Argument::that(function (Request $request) use ($args){
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($args){
             $this->assertRequestJsonBodyContains('to', $args['to'], $request);
             $this->assertRequestJsonBodyContains('from', $args['from'], $request);
             $this->assertRequestJsonBodyContains('text', $args['text'], $request);
@@ -62,12 +62,12 @@ class ClientTest extends TestCase
         }))->willReturn($this->getResponse());
 
         $message = $this->messageClient->send(new Text($args['to'], $args['from'], $args['text']));
-        $this->assertInstanceOf('Nexmo\Message\Text', $message);
+        $this->assertInstanceOf('Vonage\Message\Text', $message);
     }
 
     public function testThrowsRequestExceptionWhenInvalidAPIResponse()
     {
-        $this->expectException('\Nexmo\Client\Exception\Request');
+        $this->expectException('\Vonage\Client\Exception\Request');
         $this->expectExceptionMessage('unexpected response from API');
 
         $args = [
@@ -76,7 +76,7 @@ class ClientTest extends TestCase
             'text' => 'Go To Gino\'s'
         ];
 
-        $this->nexmoClient->send(Argument::that(function (Request $request) use ($args){
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($args){
             $this->assertRequestJsonBodyContains('to', $args['to'], $request);
             $this->assertRequestJsonBodyContains('from', $args['from'], $request);
             $this->assertRequestJsonBodyContains('text', $args['text'], $request);
@@ -94,7 +94,7 @@ class ClientTest extends TestCase
             'text' => 'Go To Gino\'s'
         ];
 
-        $this->nexmoClient->send(Argument::that(function (Request $request) use ($args) {
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
             $this->assertRequestJsonBodyContains('to', $args['to'], $request);
             $this->assertRequestJsonBodyContains('from', $args['from'], $request);
             $this->assertRequestJsonBodyContains('text', $args['text'], $request);
@@ -102,29 +102,29 @@ class ClientTest extends TestCase
         }))->willReturn($this->getResponse());
 
         @$message = $this->messageClient->send($args);
-        $this->assertInstanceOf('Nexmo\Message\Message', $message);
+        $this->assertInstanceOf('Vonage\Message\Message', $message);
     }
 
     public function testSentMessageHasResponse()
     {
         $response = $this->getResponse();
-        $this->nexmoClient->send(Argument::type(RequestInterface::class))->willReturn($response);
+        $this->vonageClient->send(Argument::type(RequestInterface::class))->willReturn($response);
 
         $message = $this->messageClient->send(new Text('14845551212', '16105551212', 'Not Pats?'));
         $this->assertSame($response, @$message->getResponse());
-        $this->nexmoClient->send(@$message->getRequest())->shouldHaveBeenCalled();
+        $this->vonageClient->send(@$message->getRequest())->shouldHaveBeenCalled();
     }
 
     public function testThrowRequestException()
     {
         $response = $this->getResponse('fail');
-        $this->nexmoClient->send(Argument::type(RequestInterface::class))->willReturn($response);
+        $this->vonageClient->send(Argument::type(RequestInterface::class))->willReturn($response);
         $message = new Text('14845551212', '16105551212', 'Not Pats?');
 
         try {
             $this->messageClient->send($message);
             $this->fail('did not throw exception');
-        } catch (\Nexmo\Client\Exception\Request $e) {
+        } catch (\Vonage\Client\Exception\Request $e) {
             $this->assertSame($message, $e->getEntity());
             $this->assertEquals('2', $e->getCode());
             $this->assertEquals('Missing from param', $e->getMessage());
@@ -134,13 +134,13 @@ class ClientTest extends TestCase
     public function testThrowServerException()
     {
         $response = $this->getResponse('fail-server');
-        $this->nexmoClient->send(Argument::type(RequestInterface::class))->willReturn($response);
+        $this->vonageClient->send(Argument::type(RequestInterface::class))->willReturn($response);
         $message = new Text('14845551212', '16105551212', 'Not Pats?');
 
         try{
             $this->messageClient->send($message);
             $this->fail('did not throw exception');
-        } catch (\Nexmo\Client\Exception\Server $e) {
+        } catch (\Vonage\Client\Exception\Server $e) {
             $this->assertEquals('5', $e->getCode());
             $this->assertEquals('Server Error', $e->getMessage());
         }
@@ -152,14 +152,14 @@ class ClientTest extends TestCase
             $message = new Message('02000000D912945A');
             $response = $this->getResponse('empty', 429);
 
-            $this->nexmoClient->send(Argument::that(function (Request $request) {
+            $this->vonageClient->send(Argument::that(function (Request $request) {
                 $this->assertRequestQueryContains('id', '02000000D912945A', $request);
                 return true;
             }))->willReturn($response);
 
             $this->messageClient->search($message);
             $this->fail('did not throw exception');
-        } catch (\Nexmo\Client\Exception\Request $e) {
+        } catch (\Vonage\Client\Exception\Request $e) {
             $this->assertEquals('429', $e->getCode());
             $this->assertEquals('too many concurrent requests', $e->getMessage());
         }
@@ -170,7 +170,7 @@ class ClientTest extends TestCase
         $message = new Message('02000000D912945A');
         $response = $this->getResponse('get-outbound');
 
-        $this->nexmoClient->send(Argument::that(function (Request $request) {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
             $this->assertRequestQueryContains('ids', ['02000000D912945A'], $request);
             return true;
         }))->willReturn($response);
@@ -187,7 +187,7 @@ class ClientTest extends TestCase
         $message = new Message('0B00000053FFB40F');
         $response = $this->getResponse('get-inbound');
 
-        $this->nexmoClient->send(Argument::that(function (Request $request) {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
             $this->assertRequestQueryContains('ids', ['0B00000053FFB40F'], $request);
             return true;
         }))->willReturn($response);
@@ -208,7 +208,7 @@ class ClientTest extends TestCase
         $message = new Message('0B00000053FFB40F');
         $response = $this->getResponse('get-invalid-type');
 
-        $this->nexmoClient->send(Argument::that(function (Request $request) {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
             $this->assertRequestQueryContains('ids', ['0B00000053FFB40F'], $request);
             return true;
         }))->willReturn($response);
@@ -221,7 +221,7 @@ class ClientTest extends TestCase
         $message = new Message('02000000D912945A');
         $response = $this->getResponse('get-no-results');
 
-        $this->nexmoClient->send(Argument::that(function (Request $request) {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
             $this->assertRequestQueryContains('ids', ['02000000D912945A'], $request);
             return true;
         }))->willReturn($response);
@@ -237,7 +237,7 @@ class ClientTest extends TestCase
         $messageID = '02000000D912945A';
         $response = $this->getResponse('get-outbound');
 
-        $this->nexmoClient->send(Argument::that(function (Request $request) {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
             $this->assertRequestQueryContains('ids', ['02000000D912945A'], $request);
             return true;
         }))->willReturn($response);
@@ -254,7 +254,7 @@ class ClientTest extends TestCase
         $messageIDs = ['02000000D912945A'];
         $response = $this->getResponse('get-outbound');
 
-        $this->nexmoClient->send(Argument::that(function (Request $request) {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
             $this->assertRequestQueryContains('ids', ['02000000D912945A'], $request);
             return true;
         }))->willReturn($response);
@@ -271,7 +271,7 @@ class ClientTest extends TestCase
         $query = new Query(new \DateTime('2016-05-19'), '14845551212');
         $response = $this->getResponse('get-outbound');
 
-        $this->nexmoClient->send(Argument::that(function (Request $request) {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
             $this->assertRequestQueryContains('date', '2016-05-19', $request);
             $this->assertRequestQueryContains('to', '14845551212', $request);
             return true;
@@ -292,7 +292,7 @@ class ClientTest extends TestCase
         $message = new Message('02000000D912945A');
         $response = $this->getResponse('auth-failure', 401);
 
-        $this->nexmoClient->send(Argument::that(function (Request $request) {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
             $this->assertRequestQueryContains('ids', ['02000000D912945A'], $request);
             return true;
         }))->willReturn($response);
@@ -308,7 +308,7 @@ class ClientTest extends TestCase
         $message = new Message('02000000D912945A');
         $response = $this->getResponse('empty', 500);
 
-        $this->nexmoClient->send(Argument::that(function (Request $request) {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
             $this->assertRequestQueryContains('ids', ['02000000D912945A'], $request);
             return true;
         }))->willReturn($response);
@@ -324,7 +324,7 @@ class ClientTest extends TestCase
         $message = new Message('02000000D912945A');
         $response = $this->getResponse('empty');
 
-        $this->nexmoClient->send(Argument::that(function (Request $request) {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
             $this->assertRequestQueryContains('ids', ['02000000D912945A'], $request);
             return true;
         }))->willReturn($response);
@@ -341,7 +341,7 @@ class ClientTest extends TestCase
         $message->ids = ['02000000D912945A'];
         $response = $this->getResponse('empty');
 
-        $this->nexmoClient->send(Argument::that(function (Request $request) {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
             $this->assertRequestQueryContains('ids', ['02000000D912945A'], $request);
             return true;
         }))->willReturn($response);
@@ -354,7 +354,7 @@ class ClientTest extends TestCase
         $message = new Message('02000000D912945A');
         $response = $this->getResponse('search-outbound');
 
-        $this->nexmoClient->send(Argument::that(function (Request $request) {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
             $this->assertRequestQueryContains('id', '02000000D912945A', $request);
             return true;
         }))->willReturn($response);
@@ -370,14 +370,14 @@ class ClientTest extends TestCase
     {
         $response = $this->getResponse('search-outbound');
 
-        $this->nexmoClient->send(Argument::that(function (Request $request) {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
             $this->assertRequestQueryContains('id', '02000000D912945A', $request);
             return true;
         }))->willReturn($response);
 
         $message = $this->messageClient->search('02000000D912945A');
 
-        $this->assertInstanceOf('Nexmo\Message\Message', $message);
+        $this->assertInstanceOf('Vonage\Message\Message', $message);
         $this->assertSame($response, @$message->getResponse());
     }
 
@@ -385,14 +385,14 @@ class ClientTest extends TestCase
     {
         $response = $this->getResponse('search-inbound');
 
-        $this->nexmoClient->send(Argument::that(function (Request $request) {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
             $this->assertRequestQueryContains('id', '02000000DA7C52E7', $request);
             return true;
         }))->willReturn($response);
 
         $message = $this->messageClient->search('02000000DA7C52E7');
 
-        $this->assertInstanceOf('Nexmo\Message\InboundMessage', $message);
+        $this->assertInstanceOf('Vonage\Message\InboundMessage', $message);
         $this->assertSame($response, @$message->getResponse());
     }
 
@@ -402,7 +402,7 @@ class ClientTest extends TestCase
         $this->expectExceptionMessage('no message found for `02000000DA7C52E7`');
         $response = $this->getResponse('search-empty');
 
-        $this->nexmoClient->send(Argument::that(function(Request $request) {
+        $this->vonageClient->send(Argument::that(function(Request $request) {
             $this->assertRequestQueryContains('id', '02000000DA7C52E7', $request);
             return true;
         }))->willReturn($response);
@@ -418,7 +418,7 @@ class ClientTest extends TestCase
         $message = new Message('02000000D912945A');
         $response = $this->getResponse('auth-failure', 401);
 
-        $this->nexmoClient->send(Argument::that(function (Request $request) {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
             $this->assertRequestQueryContains('id', '02000000D912945A', $request);
             return true;
         }))->willReturn($response);
@@ -434,7 +434,7 @@ class ClientTest extends TestCase
         $message = new Message('02000000D912945A');
         $response = $this->getResponse('search-invalid-type');
 
-        $this->nexmoClient->send(Argument::that(function (Request $request) {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
             $this->assertRequestQueryContains('id', '02000000D912945A', $request);
             return true;
         }))->willReturn($response);
@@ -450,7 +450,7 @@ class ClientTest extends TestCase
         $message = new Message('02000000D912945A');
         $response = $this->getResponse('empty', 500);
 
-        $this->nexmoClient->send(Argument::that(function (Request $request) {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
             $this->assertRequestQueryContains('id', '02000000D912945A', $request);
             return true;
         }))->willReturn($response);
@@ -462,12 +462,12 @@ class ClientTest extends TestCase
     {
 
         $this->expectException(Exception\Exception::class);
-        $this->expectExceptionMessage('searched for message with type `Nexmo\Message\Message` but message of type `Nexmo\Message\InboundMessage`');
+        $this->expectExceptionMessage('searched for message with type `Vonage\Message\Message` but message of type `Vonage\Message\InboundMessage`');
 
         $message = new Message('02000000D912945A');
         $response = $this->getResponse('search-inbound');
 
-        $this->nexmoClient->send(Argument::that(function (Request $request) {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
             $this->assertRequestQueryContains('id', '02000000D912945A', $request);
             return true;
         }))->willReturn($response);
@@ -487,7 +487,7 @@ class ClientTest extends TestCase
             'text' => 'test message'
         ];
 
-        $this->nexmoClient->send(Argument::that(function (Request $request) use ($args) {
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
             $this->assertRequestJsonBodyContains('to', $args['to'], $request);
             $this->assertRequestJsonBodyContains('from', $args['from'], $request);
             $this->assertRequestJsonBodyContains('text', $args['text'], $request);
@@ -510,7 +510,7 @@ class ClientTest extends TestCase
             'text' => 'test message'
         ];
 
-        $this->nexmoClient->send(Argument::that(function (Request $request) use ($args)  {
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($args)  {
             $this->assertRequestJsonBodyContains('to', $args['to'], $request);
             $this->assertRequestJsonBodyContains('from', $args['from'], $request);
             $this->assertRequestJsonBodyContains('text', $args['text'], $request);
@@ -529,11 +529,11 @@ class ClientTest extends TestCase
      */
     public function testCanSearchRejections($date, $to, $responseFile, $expectedResponse, $expectedHttpCode, $expectedException)
     {
-        $query = new \Nexmo\Message\Query($date, $to);
+        $query = new \Vonage\Message\Query($date, $to);
 
         $apiResponse = $this->getResponse($responseFile, $expectedHttpCode);
 
-        $this->nexmoClient->send(Argument::that(function (Request $request) use ($to, $date) {
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($to, $date) {
             $this->assertRequestQueryContains('to', $to, $request);
             $this->assertRequestQueryContains('date', $date->format('Y-m-d'), $request);
             return true;
@@ -581,7 +581,7 @@ class ClientTest extends TestCase
     {
         $message = new TwoFactor('14155550100', [ 'link' => 'https://example.com' ], ['status-report-req' => 1]);
 
-        $this->nexmoClient->send(Argument::that(function(Request $request) {
+        $this->vonageClient->send(Argument::that(function(Request $request) {
             $this->assertRequestJsonBodyContains('to', '14155550100', $request);
             $this->assertRequestJsonBodyContains('link', 'https://example.com', $request);
             $this->assertRequestJsonBodyContains('status-report-req', 1, $request);
@@ -614,7 +614,7 @@ class ClientTest extends TestCase
             'type' => '2fa'
         ];
 
-        $this->nexmoClient->send(Argument::that(function(Request $request) use ($args){
+        $this->vonageClient->send(Argument::that(function(Request $request) use ($args){
             return true;
         }))->willReturn($this->getResponse('error-2fa'));
 
@@ -633,7 +633,7 @@ class ClientTest extends TestCase
             'type' => '2fa'
         ];
 
-        $this->nexmoClient->send(Argument::that(function(Request $request) use ($args){
+        $this->vonageClient->send(Argument::that(function(Request $request) use ($args){
             $this->assertRequestJsonBodyContains('to', $args['to'], $request);
             $this->assertRequestJsonBodyContains('link', $args['custom']['link'], $request);
             $this->assertRequestJsonBodyContains('status-report-req', $args['options']['status-report-req'], $request);
@@ -660,7 +660,7 @@ class ClientTest extends TestCase
     public function testCreateMessageThrowsExceptionOnBadData()
     {
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('message must implement `Nexmo\Message\MessageInterface` or be an array`');
+        $this->expectExceptionMessage('message must implement `Vonage\Message\MessageInterface` or be an array`');
 
         @$this->messageClient->send("Bob");
     }
@@ -681,7 +681,7 @@ class ClientTest extends TestCase
             'text' => 'Go To Gino\'s'
         ];
 
-        $this->nexmoClient->send(Argument::that(function (Request $request) use ($args){
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($args){
             $this->assertRequestJsonBodyContains('to', $args['to'], $request);
             $this->assertRequestJsonBodyContains('from', $args['from'], $request);
             $this->assertRequestJsonBodyContains('text', $args['text'], $request);
@@ -689,13 +689,13 @@ class ClientTest extends TestCase
         }))->willReturn($this->getResponse());
 
         $message = $this->messageClient->sendText($args['to'], $args['from'], $args['text']);
-        $this->assertInstanceOf('Nexmo\Message\Text', $message);
+        $this->assertInstanceOf('Vonage\Message\Text', $message);
     }
 
     public function testCreateMessageThrowsExceptionOnNonSendMethod()
     {
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('failsendText` is not a valid method on `Nexmo\Message\Client`');
+        $this->expectExceptionMessage('failsendText` is not a valid method on `Vonage\Message\Client`');
 
         $this->messageClient->failsendText('14845551212', '16105551212', 'Test');
     }
@@ -703,7 +703,7 @@ class ClientTest extends TestCase
     public function testCreateMessageThrowsExceptionOnNonSendMethodTakeTwo()
     {
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('failText` is not a valid method on `Nexmo\Message\Client`');
+        $this->expectExceptionMessage('failText` is not a valid method on `Vonage\Message\Client`');
 
         $this->messageClient->failText('14845551212', '16105551212', 'Test');
     }
@@ -711,7 +711,7 @@ class ClientTest extends TestCase
     public function testCreateMessageThrowsExceptionOnInvalidMessageType()
     {
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('sendGarbage` is not a valid method on `Nexmo\Message\Client`');
+        $this->expectExceptionMessage('sendGarbage` is not a valid method on `Vonage\Message\Client`');
 
         $this->messageClient->sendGarbage('14845551212', '16105551212', 'Test');
     }

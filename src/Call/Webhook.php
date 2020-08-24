@@ -1,15 +1,15 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace Nexmo\Call;
+namespace Vonage\Call;
 
 /**
- * @deprecated Please use Nexmo\Voice\Webhook instead
+ * @deprecated Please use Vonage\Voice\Webhook instead
  */
 class Webhook implements \JsonSerializable
 {
@@ -22,7 +22,7 @@ class Webhook implements \JsonSerializable
     public function __construct($type, $urls, $method = null)
     {
         trigger_error(
-            'Nexmo\Call\Webhook is deprecated, please use Nexmo\Voice\Webhook instead',
+            'Vonage\Call\Webhook is deprecated, please use Vonage\Voice\Webhook instead',
             E_USER_DEPRECATED
         );
 

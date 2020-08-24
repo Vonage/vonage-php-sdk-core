@@ -1,26 +1,26 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace Nexmo\Message;
+namespace Vonage\Message;
 
-use Nexmo\Client\Exception;
-use Nexmo\Client\APIResource;
-use Nexmo\Client\ClientAwareTrait;
-use Nexmo\Client\ClientAwareInterface;
+use Vonage\Client\Exception;
+use Vonage\Client\APIResource;
+use Vonage\Client\ClientAwareTrait;
+use Vonage\Client\ClientAwareInterface;
 use Psr\Http\Message\RequestInterface;
-use Nexmo\Entity\Filter\KeyValueFilter;
+use Vonage\Entity\Filter\KeyValueFilter;
 use Psr\Http\Message\ResponseInterface;
-use Nexmo\Entity\Filter\FilterInterface;
-use Nexmo\Client\Exception\ThrottleException;
+use Vonage\Entity\Filter\FilterInterface;
+use Vonage\Client\Exception\ThrottleException;
 
 /**
  * Class Client
- * @deprecated Use \Nexmo\SMS\Client instead
+ * @deprecated Use \Vonage\SMS\Client instead
  * @method Text sendText(string $to, string $from, string $text, array $additional = []) Send a Test Message
  */
 class Client implements ClientAwareInterface
@@ -113,7 +113,7 @@ class Client implements ClientAwareInterface
     {
         if (!($message instanceof MessageInterface)) {
             trigger_error(
-                'Passing an array to Nexmo\Messages\Client::send() is deprecated, please pass a MessageInterface object instead',
+                'Passing an array to Vonage\Messages\Client::send() is deprecated, please pass a MessageInterface object instead',
                 E_USER_DEPRECATED
             );
             $message = $this->createMessageFromArray($message);
@@ -443,7 +443,7 @@ class Client implements ClientAwareInterface
         }
 
         $class = substr($name, 4);
-        $class = 'Nexmo\\Message\\' . ucfirst(strtolower($class));
+        $class = 'Vonage\\Message\\' . ucfirst(strtolower($class));
 
         if (!class_exists($class)) {
             throw new \RuntimeException(sprintf(

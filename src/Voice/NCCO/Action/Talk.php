@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Nexmo\Voice\NCCO\Action;
+namespace Vonage\Voice\NCCO\Action;
 
 class Talk implements ActionInterface
 {

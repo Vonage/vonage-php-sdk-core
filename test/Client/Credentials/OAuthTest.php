@@ -1,14 +1,14 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace NexmoTest\Client\Credentials;
+namespace VonageTest\Client\Credentials;
 
-use \Nexmo\Client\Credentials\OAuth;
+use \Vonage\Client\Credentials\OAuth;
 use PHPUnit\Framework\TestCase;
 
 class OAuthTest extends TestCase
@@ -31,7 +31,7 @@ class OAuthTest extends TestCase
 
     public function testArrayAccess()
     {
-        $credentials = new \Nexmo\Client\Credentials\OAuth($this->appToken, $this->appSecret, $this->clientToken, $this->clientSecret);
+        $credentials = new \Vonage\Client\Credentials\OAuth($this->appToken, $this->appSecret, $this->clientToken, $this->clientSecret);
 
         $this->assertEquals($this->clientToken,     $credentials['token']);
         $this->assertEquals($this->clientSecret,    $credentials['token_secret']);
@@ -41,7 +41,7 @@ class OAuthTest extends TestCase
 
     public function testProperties()
     {
-        $credentials = new \Nexmo\Client\Credentials\OAuth($this->appToken, $this->appSecret, $this->clientToken, $this->clientSecret);
+        $credentials = new \Vonage\Client\Credentials\OAuth($this->appToken, $this->appSecret, $this->clientToken, $this->clientSecret);
 
         $this->assertEquals($this->clientToken,     $credentials->token);
         $this->assertEquals($this->clientSecret,    $credentials->token_secret);

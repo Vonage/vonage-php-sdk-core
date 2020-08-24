@@ -1,18 +1,18 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace NexmoTest\Verify;
+namespace VonageTest\Verify;
 
 
-use Nexmo\Verify\Client;
-use Nexmo\Verify\Request;
-use Nexmo\Verify\Verification;
-use NexmoTest\Psr7AssertionTrait;
+use Vonage\Verify\Client;
+use Vonage\Verify\Request;
+use Vonage\Verify\Verification;
+use VonageTest\Psr7AssertionTrait;
 use Prophecy\Argument;
 use Psr\Http\Message\RequestInterface;
 use Zend\Diactoros\Response;
@@ -27,17 +27,17 @@ class ClientTest extends TestCase
      */
     protected $client;
 
-    protected $nexmoClient;
+    protected $vonageClient;
 
     /**
-     * Create the Message API Client, and mock the Nexmo Client
+     * Create the Message API Client, and mock the Vonage Client
      */
     public function setUp()
     {
-        $this->nexmoClient = $this->prophesize('Nexmo\Client');
-        $this->nexmoClient->getApiUrl()->willReturn('https://api.nexmo.com');
+        $this->vonageClient = $this->prophesize('Vonage\Client');
+        $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
         $this->client = new Client();
-        $this->client->setClient($this->nexmoClient->reveal());
+        $this->client->setClient($this->vonageClient->reveal());
     }
 
     /**
@@ -45,13 +45,13 @@ class ClientTest extends TestCase
      */
     public function testClientSetsSelf($method, $response, $construct, $args = [])
     {
-        $client = $this->prophesize('Nexmo\Client');
+        $client = $this->prophesize('Vonage\Client');
         $client->send(Argument::cetera())->willReturn($this->getResponse($response));
         $client->getApiUrl()->willReturn('http://api.nexmo.com');
 
         $this->client->setClient($client->reveal());
 
-        $mock = @$this->getMockBuilder('Nexmo\Verify\Verification')
+        $mock = @$this->getMockBuilder('Vonage\Verify\Verification')
                      ->setConstructorArgs($construct)
                      ->setMethods(['setClient'])
                      ->getMock();
@@ -75,7 +75,7 @@ class ClientTest extends TestCase
 
     public function testUnserializeAcceptsObject()
     {
-        $mock = @$this->getMockBuilder('Nexmo\Verify\Verification')
+        $mock = @$this->getMockBuilder('Vonage\Verify\Verification')
             ->setConstructorArgs(['14845551212', 'Test Verify'])
             ->setMethods(['setClient'])
             ->getMock();
@@ -93,7 +93,7 @@ class ClientTest extends TestCase
         $string = serialize($verification);
         $object = @$this->client->unserialize($string);
 
-        $this->assertInstanceOf('Nexmo\Verify\Verification', $object);
+        $this->assertInstanceOf('Vonage\Verify\Verification', $object);
 
         $search = $this->setupClientForSearch('search');
         @$object->sync();
@@ -152,7 +152,7 @@ class ClientTest extends TestCase
                 'brand'  => 'Test Verify'
             ]);
             $this->fail('did not throw exception');
-        } catch (\Nexmo\Client\Exception\Request $e) {
+        } catch (\Vonage\Client\Exception\Request $e) {
             $this->assertEquals('2', $e->getCode());
             $this->assertEquals('Your request is incomplete and missing the mandatory parameter: brand', $e->getMessage());
             $this->assertSame($response, @$e->getEntity()->getResponse());
@@ -169,7 +169,7 @@ class ClientTest extends TestCase
                 'brand'  => 'Test Verify'
             ]);
             $this->fail('did not throw exception');
-        } catch (\Nexmo\Client\Exception\Server $e) {
+        } catch (\Vonage\Client\Exception\Server $e) {
             $this->assertEquals('5', $e->getCode());
             $this->assertEquals('Server Error', $e->getMessage());
             $this->assertSame($response, @$e->getEntity()->getResponse());
@@ -179,7 +179,7 @@ class ClientTest extends TestCase
     protected function setupClientForStart($response)
     {
         $response = $this->getResponse($response);
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertRequestJsonBodyContains('number', '14845551212', $request);
             $this->assertRequestJsonBodyContains('brand', 'Test Verify', $request);
             $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/json', $request);
@@ -216,7 +216,7 @@ class ClientTest extends TestCase
         try {
             @$this->client->search('44a5279b27dd4a638d614d265ad57a77');
             $this->fail('did not throw exception');
-        } catch (\Nexmo\Client\Exception\Request $e) {
+        } catch (\Vonage\Client\Exception\Request $e) {
             $this->assertEquals('101', $e->getCode());
             $this->assertEquals('No response found', $e->getMessage());
             $this->assertSame($response, @$e->getEntity()->getResponse());
@@ -230,7 +230,7 @@ class ClientTest extends TestCase
         try {
             @$this->client->search('44a5279b27dd4a638d614d265ad57a77');
             $this->fail('did not throw exception');
-        } catch (\Nexmo\Client\Exception\Server $e) {
+        } catch (\Vonage\Client\Exception\Server $e) {
             $this->assertEquals('5', $e->getCode());
             $this->assertEquals('Server Error', $e->getMessage());
             $this->assertSame($response, @$e->getEntity()->getResponse());
@@ -252,7 +252,7 @@ class ClientTest extends TestCase
     protected function setupClientForSearch($response)
     {
         $response = $this->getResponse($response);
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertRequestJsonBodyContains('request_id', '44a5279b27dd4a638d614d265ad57a77', $request);
             $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/search/json', $request);
             return true;
@@ -289,7 +289,7 @@ class ClientTest extends TestCase
         try {
             @$this->client->cancel('44a5279b27dd4a638d614d265ad57a77');
             $this->fail('did not throw exception');
-        } catch (\Nexmo\Client\Exception\Request $e) {
+        } catch (\Vonage\Client\Exception\Request $e) {
             $this->assertEquals('19', $e->getCode());
             $this->assertEquals('Verification request  [\'c1878c7451f94c1992d52797df57658e\'] can\'t be cancelled now. Too many attempts to re-deliver have already been made.', $e->getMessage());
             $this->assertSame($response, @$e->getEntity()->getResponse());
@@ -303,7 +303,7 @@ class ClientTest extends TestCase
         try {
             @$this->client->cancel('44a5279b27dd4a638d614d265ad57a77');
             $this->fail('did not throw exception');
-        } catch (\Nexmo\Client\Exception\Server $e) {
+        } catch (\Vonage\Client\Exception\Server $e) {
             $this->assertEquals('5', $e->getCode());
             $this->assertEquals('Server Error', $e->getMessage());
             $this->assertSame($response, @$e->getEntity()->getResponse());
@@ -337,7 +337,7 @@ class ClientTest extends TestCase
         try {
             @$this->client->trigger('44a5279b27dd4a638d614d265ad57a77');
             $this->fail('did not throw exception');
-        } catch (\Nexmo\Client\Exception\Request $e) {
+        } catch (\Vonage\Client\Exception\Request $e) {
             $this->assertEquals('6', $e->getCode());
             $this->assertEquals('The requestId \'44a5279b27dd4a638d614d265ad57a77\' does not exist or its no longer active.', $e->getMessage());
             $this->assertSame($response, @$e->getEntity()->getResponse());
@@ -351,7 +351,7 @@ class ClientTest extends TestCase
         try {
             @$this->client->trigger('44a5279b27dd4a638d614d265ad57a77');
             $this->fail('did not throw exception');
-        } catch (\Nexmo\Client\Exception\Server $e) {
+        } catch (\Vonage\Client\Exception\Server $e) {
             $this->assertEquals('5', $e->getCode());
             $this->assertEquals('Server Error', $e->getMessage());
             $this->assertSame($response, @$e->getEntity()->getResponse());
@@ -384,7 +384,7 @@ class ClientTest extends TestCase
     protected function setupClientForControl($response, $cmd)
     {
         $response = $this->getResponse($response);
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($cmd) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($cmd) {
             $this->assertRequestJsonBodyContains('request_id', '44a5279b27dd4a638d614d265ad57a77', $request);
             $this->assertRequestJsonBodyContains('cmd', $cmd, $request);
             $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/control/json', $request);
@@ -421,7 +421,7 @@ class ClientTest extends TestCase
         try {
             @$this->client->check('44a5279b27dd4a638d614d265ad57a77', '1234');
             $this->fail('did not throw exception');
-        } catch (\Nexmo\Client\Exception\Request $e) {
+        } catch (\Vonage\Client\Exception\Request $e) {
             $this->assertEquals('16', $e->getCode());
             $this->assertEquals('The code provided does not match the expected value', $e->getMessage());
             $this->assertSame($response, @$e->getEntity()->getResponse());
@@ -435,7 +435,7 @@ class ClientTest extends TestCase
         try {
             @$this->client->check('44a5279b27dd4a638d614d265ad57a77', '1234');
             $this->fail('did not throw exception');
-        } catch (\Nexmo\Client\Exception\Server $e) {
+        } catch (\Vonage\Client\Exception\Server $e) {
             $this->assertEquals('5', $e->getCode());
             $this->assertEquals('Server Error', $e->getMessage());
             $this->assertSame($response, @$e->getEntity()->getResponse());
@@ -457,7 +457,7 @@ class ClientTest extends TestCase
     protected function setupClientForCheck($response, $code, $ip = null)
     {
         $response = $this->getResponse($response);
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($code, $ip) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($code, $ip) {
             $this->assertRequestJsonBodyContains('request_id', '44a5279b27dd4a638d614d265ad57a77', $request);
             $this->assertRequestJsonBodyContains('code', $code, $request);
 

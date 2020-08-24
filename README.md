@@ -1,16 +1,16 @@
 Client Library for PHP 
 ============================
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg)](CODE_OF_CONDUCT.md)
-[![Build Status](https://github.com/nexmo/nexmo-php/workflows/build/badge.svg?branch=master)](https://github.com/Nexmo/nexmo-php/actions?query=workflow%3Abuild)
-[![Latest Stable Version](https://poser.pugx.org/nexmo/client/v/stable)](https://packagist.org/packages/nexmo/client)
+[![Build Status](https://api.travis-ci.org/Vonage/vonage-php-core.svg?branch=master)](https://travis-ci.org/Vonage/vonage-php-core)
+[![Latest Stable Version](https://poser.pugx.org/vonage/client/v/stable)](https://packagist.org/packages/vonage/client)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE.txt)
-[![codecov](https://codecov.io/gh/Nexmo/nexmo-php/branch/master/graph/badge.svg)](https://codecov.io/gh/Nexmo/nexmo-php)
+[![codecov](https://codecov.io/gh/Vonage/vonage-php-core/branch/master/graph/badge.svg)](https://codecov.io/gh/vonage/vonage-php-core)
 
 <img src="https://developer.nexmo.com/assets/images/Vonage_Nexmo.svg" height="48px" alt="Nexmo is now known as Vonage" />
 
 *This library requires a minimum PHP version of 7.1*
 
-This is the PHP client library for use Nexmo's API. To use this, you'll need a Nexmo account. Sign up [for free at 
+This is the PHP client library for use Vonage's API. To use this, you'll need a Vonage account. Sign up [for free at 
 nexmo.com][signup].
 
  * [Installation](#installation)
@@ -21,12 +21,12 @@ nexmo.com][signup].
 Installation
 ------------
 
-To use the client library you'll need to have [created a Nexmo account][signup]. 
+To use the client library you'll need to have [created a Vonage account][signup]. 
 
 To install the PHP client library to your project, we recommend using [Composer](https://getcomposer.org/).
 
 ```bash
-composer require nexmo/client
+composer require vonage/client
 ```
 
 > You don't need to clone this repository to use this library in your own projects. Use Composer to install it from Packagist.
@@ -48,14 +48,14 @@ require_once "vendor/autoload.php";
 Create a client with your API key and secret:
 
 ```php
-$client = new Nexmo\Client(new Nexmo\Client\Credentials\Basic(API_KEY, API_SECRET));     
+$client = new Vonage\Client(new Vonage\Client\Credentials\Basic(API_KEY, API_SECRET));     
 ```
 
-For testing purposes you may want to change the URL that `nexmo-php` makes requests to from `api.nexmo.com` to something else. You can do this by providing an array containing `base_api_url` as the second parameter when creating a `Nexmo\Client` instance.
+For testing purposes you may want to change the URL that `vonage/client` makes requests to from `api.nexmo.com` to something else. You can do this by providing an array containing `base_api_url` as the second parameter when creating a `Vonage\Client` instance.
 
 ```php
-$client = new Nexmo\Client(
-    new Nexmo\Client\Credentials\Basic(API_KEY, API_SECRET),
+$client = new Vonage\Client(
+    new Vonage\Client\Credentials\Basic(API_KEY, API_SECRET),
     [
         'base_api_url' => 'https://example.com'
     ]
@@ -70,13 +70,13 @@ Examples
 
 ### Sending a Message
 
-To use [Nexmo's SMS API][doc_sms] to send an SMS message, call the `$client->sms()->send()` method.
+To use [Vonage's SMS API][doc_sms] to send an SMS message, call the `$client->sms()->send()` method.
 
 **A message object** is is used to create the SMS messages. Each message type can be constructed with the 
 required parameters, and a fluent interface provides access to optional parameters.
 
 ```php
-$text = new \Nexmo\SMS\Message\SMS(NEXMO_TO, NEXMO_FROM, 'Test message using PHP client library');
+$text = new \Vonage\SMS\Message\SMS(NEXMO_TO, NEXMO_FROM, 'Test message using PHP client library');
 $text->setClientRef('test-message');
 ```
 
@@ -115,7 +115,7 @@ create an inbound message object from a webhook:
 
 ```php
 try {
-    $inbound = \Nexmo\SMS\InboundSMS::createFromGlobals();
+    $inbound = \Vonage\SMS\InboundSMS::createFromGlobals();
     error_log($inbound->getText());
 } catch (\InvalidArgumentException $e) {
     error_log('invalid message');
@@ -134,12 +134,12 @@ The SMS API supports the ability to sign messages by generating and adding a sig
 * `sha256`
 * `sha512`
 
-Both your application and Nexmo need to agree on which algorithm is used. In the [dashboard](https://dashboard.nexmo.com), visit your account settings page and under "API Settings" you can select the algorithm to use. This is also the location where you will find your "Signature Secret" (it's different from the API secret).
+Both your application and Vonage need to agree on which algorithm is used. In the [dashboard](https://dashboard.nexmo.com), visit your account settings page and under "API Settings" you can select the algorithm to use. This is also the location where you will find your "Signature Secret" (it's different from the API secret).
 
 Create a client using these credentials and the algorithm to use, for example:
 
 ```php
-$client = new Nexmo\Client(new Nexmo\Client\Credentials\SignatureSecret(API_KEY, SIGNATURE_SECRET, 'sha256'));
+$client = new Vonage\Client(new Vonage\Client\Credentials\SignatureSecret(API_KEY, SIGNATURE_SECRET, 'sha256'));
 ```
 
 Using this client, your SMS API messages will be sent as signed messages.
@@ -148,10 +148,10 @@ Using this client, your SMS API messages will be sent as signed messages.
 
 _You may also like to read the [documentation about message signing](https://developer.nexmo.com/concepts/guides/signing-messages)._
 
-If you have message signing enabled for incoming messages, the SMS webhook will include the fields `sig`, `nonce` and `timestamp`. To verify the signature is from Nexmo, you create a Signature object using the incoming data, your signature secret and the signature method. Then use the `check()` method with the actual signature that was received (usually `_GET['sig']`) to make sure that it is correct.
+If you have message signing enabled for incoming messages, the SMS webhook will include the fields `sig`, `nonce` and `timestamp`. To verify the signature is from Vonage, you create a Signature object using the incoming data, your signature secret and the signature method. Then use the `check()` method with the actual signature that was received (usually `_GET['sig']`) to make sure that it is correct.
 
 ```php
-$signature = new \Nexmo\Client\Signature($_GET, SIGNATURE_SECRET, 'sha256');
+$signature = new \Vonage\Client\Signature($_GET, SIGNATURE_SECRET, 'sha256');
 
 // is it valid? Will be true or false
 $isValid = $signature->check($_GET['sig']);
@@ -161,13 +161,13 @@ Using your signature secret and the other supplied parameters, the signature can
 
 ### Starting a Verification
 
-Nexmo's [Verify API][doc_verify] makes it easy to prove that a user has provided their own phone number during signup,
+Vonage's [Verify API][doc_verify] makes it easy to prove that a user has provided their own phone number during signup,
 or implement second factor authentication during signin.
 
 You can start a verification process using a simple array:
 
 ```php
-$request = new \Nexmo\Verify\Request('14845551212', 'My App');
+$request = new \Vonage\Verify\Request('14845551212', 'My App');
 $response = $client->verify()->start($request);
 echo "Started verification with an id of: " . $response->getRequestId();
 ```
@@ -212,32 +212,32 @@ foreach($verification->getChecks() as $check){
 
 ### Making a Call 
 
-All `$client->voice()` methods require the client to be constructed with a `Nexmo\Client\Credentials\Keypair`, or a 
-`Nexmo\Client\Credentials\Container` that includes the `Keypair` credentials:
+All `$client->voice()` methods require the client to be constructed with a `Vonage\Client\Credentials\Keypair`, or a 
+`Vonage\Client\Credentials\Container` that includes the `Keypair` credentials:
 
 ```php
-$basic  = new \Nexmo\Client\Credentials\Basic('key', 'secret');
-$keypair = new \Nexmo\Client\Credentials\Keypair(
+$basic  = new \Vonage\Client\Credentials\Basic('key', 'secret');
+$keypair = new \Vonage\Client\Credentials\Keypair(
     file_get_contents((NEXMO_APPLICATION_PRIVATE_KEY_PATH),
     NEXMO_APPLICATION_ID
 );
 
-$client = new \Nexmo\Client(new \Nexmo\Client\Credentials\Container($basic, $keypair));
+$client = new \Vonage\Client(new \Vonage\Client\Credentials\Container($basic, $keypair));
 ```
 
 You can start a call using an `OutboundCall` object:
 
 ```php
-$outboundCall = new \Nexmo\Voice\OutboundCall(
-    new \Nexmo\Voice\Endpoint\Phone('14843331234'),
-    new \Nexmo\Voice\Endpoint\Phone('14843335555')
+$outboundCall = new \Vonage\Voice\OutboundCall(
+    new \Vonage\Voice\Endpoint\Phone('14843331234'),
+    new \Vonage\Voice\Endpoint\Phone('14843335555')
 );
 $outboundCall
     ->setAnswerWebhook(
-        new \Nexmo\Voice\Webhook('https://example.com/answer')
+        new \Vonage\Voice\Webhook('https://example.com/answer')
     )
     ->setEventWebhook(
-        new \Nexmo\Voice\Webhook('https://example.com/event')
+        new \Vonage\Voice\Webhook('https://example.com/event')
     )
 ;
 
@@ -247,12 +247,12 @@ $response = $client->voice()->createOutboundCall($outboundCall);
 Or you can provide an NCCO directly in the POST request
 
 ```php
-$outboundCall = new \Nexmo\Voice\OutboundCall(
-    new \Nexmo\Voice\Endpoint\Phone('14843331234'),
-    new \Nexmo\Voice\Endpoint\Phone('14843335555')
+$outboundCall = new \Vonage\Voice\OutboundCall(
+    new \Vonage\Voice\Endpoint\Phone('14843331234'),
+    new \Vonage\Voice\Endpoint\Phone('14843335555')
 );
 $ncco = new NCCO();
-$ncco->addAction(new \Nexmo\Voice\NCCO\Action\Talk('This is a text to speech call from Nexmo'));
+$ncco->addAction(new \Vonage\Voice\NCCO\Action\Talk('This is a text to speech call from Vonage'));
 $outboundCall->setNCCO($ncco);
 
 $response = $client->voice()->createOutboundCall($outboundCall);
@@ -260,7 +260,7 @@ $response = $client->voice()->createOutboundCall($outboundCall);
 
 ### Fetching a Call
 
-You can fetch a call using a `Nexmo\Call\Call` object, or the call's UUID as a string:
+You can fetch a call using a `Vonage\Call\Call` object, or the call's UUID as a string:
 
 ```php
 $call = $client->voice()->get('3fd4d839-493e-4485-b2a5-ace527aacff3');
@@ -271,7 +271,7 @@ echo $call->getDirection();
 You can also search for calls using a Filter.
 
 ```php
-$filter = new \Nexmo\Voice\Filter\VoiceFilter();
+$filter = new \Vonage\Voice\Filter\VoiceFilter();
 $filter->setStatus('completed');
 foreach($client->search($filter) as $call){
     echo $call->getDirection();
@@ -283,7 +283,7 @@ foreach($client->search($filter) as $call){
 Application are configuration containers. You can create one using a simple array structure:
 
 ```php
-$application = new \Nexmo\Application\Application();
+$application = new \Vonage\Application\Application();
 $application->fromArray([
  'name' => 'test application',
  'keys' => [
@@ -333,7 +333,7 @@ $client->applications()->create($application);
 You can also pass the client an application object:
 
 ```php
-$a = new Nexmo\Application\Application;
+$a = new Vonage\Application\Application;
 
 $a->setName('PHP Client Example');
 $a->getVoiceConfig()->setWebhook('answer_url', 'https://example.com/answer', 'GET');
@@ -383,10 +383,10 @@ You can list the numbers owned by your account and optionally include filtering:
 * `2` - the number ends with `pattern`
 
 ```php
-$filter = new \Nexmo\Numbers\Filter\OwnedNumbers();
+$filter = new \Vonage\Numbers\Filter\OwnedNumbers();
 $filter
     ->setPattern(234)
-    ->setSearchPattern(\Nexmo\Numbers\Filter\OwnedNumbers::SEARCH_PATTERN_CONTAINS)
+    ->setSearchPattern(\Vonage\Numbers\Filter\OwnedNumbers::SEARCH_PATTERN_CONTAINS)
 ;
 $response = $client->numbers()->searchOwned($filter);
 ```
@@ -396,7 +396,7 @@ $response = $client->numbers()->searchOwned($filter);
 * `false` - The number is not attached to an application
 
 ```php
-$filter = new \Nexmo\Numbers\Filter\OwnedNumbers();
+$filter = new \Vonage\Numbers\Filter\OwnedNumbers();
 $filter->setHasApplication(true);
 $response = $client->numbers()->searchOwned($filter);
 ```
@@ -405,7 +405,7 @@ $response = $client->numbers()->searchOwned($filter);
 * Supply an application ID to get all of the numbers associated with the requestion application
 
 ```php
-$filter = new \Nexmo\Numbers\Filter\OwnedNumbers();
+$filter = new \Vonage\Numbers\Filter\OwnedNumbers();
 $filter->setApplicationId("66c04cea-68b2-45e4-9061-3fd847d627b8");
 $response = $client->numbers()->searchOwned($filter);
 ```
@@ -418,7 +418,7 @@ You can search for numbers available to purchase in a specific country:
 $numbers = $client->numbers()->searchAvailable('US');
 ```
 
-By default, this will only return the first 10 results. You can add an additional `\Nexmo\Numbers\Filter\AvailableNumbers`
+By default, this will only return the first 10 results. You can add an additional `\Vonage\Numbers\Filter\AvailableNumbers`
 filter to narrow down your search.
 
 ### Purchase a Number
@@ -447,11 +447,11 @@ $number
     ->setAppId('1a20a124-1775-412b-b623-e6985f4aace0')
     ->setVoiceDestination('447700900002', 'tel')
     ->setWebhook(
-        \Nexmo\Number\Number::WEBHOOK_VOICE_STATUS,
+        \Vonage\Number\Number::WEBHOOK_VOICE_STATUS,
         'https://example.com/webhooks/status'
     )
     ->setWebhook(
-        \Nexmo\Number\Number::WEBHOOK_MESSAGE,
+        \Vonage\Number\Number::WEBHOOK_MESSAGE,
         'https://example.com/webhooks/inbound-sms'
     )
 ;
@@ -476,7 +476,7 @@ To get a list of the secrets:
 
 ```php
 $secretsCollection = $client->account()->listSecrets(API_KEY);
-/** @var \Nexmo\Account\Secret $secret */
+/** @var \Vonage\Account\Secret $secret */
 foreach($secretsCollection->getSecrets() as $secret) {
     echo "ID: " . $secret->getId() . " (created " . $secret->getCreatedAt() .")\n";
 }
@@ -493,7 +493,7 @@ And delete the old secret (any application still using these credentials will st
 ```php
 try {
     $response = $client->account()->deleteSecret(API_KEY, 'd0f40c7e-91f2-4fe0-8bc6-8942587b622c');
-} catch(\Nexmo\Client\Exception\Request $e) {
+} catch(\Vonage\Client\Exception\Request $e) {
     echo $e->getMessage();
 }
 ```
@@ -560,7 +560,7 @@ try {
 
   echo $insights->getNationalFormatNumber();
 } catch (Exception $e) {
-  // for the Nexmo-specific exceptions, try the `getEntity()` method for more diagnostic information
+  // for the Vonage-specific exceptions, try the `getEntity()` method for more diagnostic information
 }
 ```
 
@@ -574,7 +574,7 @@ To get advanced insights, use the async feature and supply a URL for the webhook
 try {
   $client->insights()->advancedAsync(PHONE_NUMBER, 'http://example.com/webhooks/number-insights');
 } catch (Exception $e) {
-  // for the Nexmo-specific exceptions, try the `getEntity()` method for more diagnostic information
+  // for the Vonage-specific exceptions, try the `getEntity()` method for more diagnostic information
 }
 ```
 
@@ -606,7 +606,7 @@ Check out the [documentation](https://developer.nexmo.com/number-insight/code-sn
 
 ### Checking for Deprecated Features
 
-Over time, the Nexmo APIs evolve and add new features, change how existing 
+Over time, the Vonage APIs evolve and add new features, change how existing 
 features work, and deprecate and remove older methods and features. To help
 developers know when deprecation changes are being made, the SDK will trigger
 an `E_USER_DEPRECATION` warning. These warnings will not stop the exectution
@@ -614,12 +614,12 @@ of code, but can be an annoyance in production environments.
 
 To help with this, by default these notices are supressed. In development,
 you can enable these warnings by passing an additional configuration option
-to the `\Nexmo\Client` constructor, called `show_deprecations`. Enabling this
+to the `\Vonage\Client` constructor, called `show_deprecations`. Enabling this
 option will show all deprecation notices.
 
 ```php
-$client = new Nexmo\Client(
-    new Nexmo\Client\Credentials\Basic(API_KEY, API_SECRET),
+$client = new Vonage\Client(
+    new Vonage\Client\Credentials\Basic(API_KEY, API_SECRET),
     [
         'show_deprecations' => true
     ]
@@ -638,9 +638,9 @@ Some users have issues making requests due to the following error:
 Fatal error: Uncaught exception 'GuzzleHttp\Exception\RequestException' with message 'cURL error 60: SSL certificate problem: unable to get local issuer certificate (see http://curl.haxx.se/libcurl/c/libcurl-errors.html)'
 ```
 
-This is due to some PHP installations not shipping with a list of trusted CA certificates. This is a system configuration problem, and not specific to either cURL or Nexmo.
+This is due to some PHP installations not shipping with a list of trusted CA certificates. This is a system configuration problem, and not specific to either cURL or Vonage.
 
-> *IMPORTANT*: In the next paragraph we provide a link to a CA certificate bundle. Nexmo do not guarantee the safety of this bundle, and you should review it yourself before installing any CA bundle on your machine.
+> *IMPORTANT*: In the next paragraph we provide a link to a CA certificate bundle. Vonage do not guarantee the safety of this bundle, and you should review it yourself before installing any CA bundle on your machine.
 
 To resolve this issue, download a list of trusted CA certificates (e.g. the [curl](https://curl.haxx.se/ca/cacert.pem) bundle) and copy it on to your machine. Once this is done, edit `php.ini` and set the `curl.cainfo` parameter:
 
@@ -659,16 +659,16 @@ Here's an example that reduces the default timeout to 5 seconds to avoid long de
 
 ```php
 $adapter_client = new Http\Adapter\Guzzle6\Client(new GuzzleHttp\Client(['timeout' => 5]));
-$nexmo_client = new Nexmo\Client(new Nexmo\Client\Credentials\Basic($api_key, $api_secret), [], $adapter_client);
+$vonage_client = new Vonage\Client(new Vonage\Client\Credentials\Basic($api_key, $api_secret), [], $adapter_client);
 ```
 
 ### Accessing Response Data
 
-When things go wrong, you'll receive an `Exception`. The Nexmo exception classes `Nexmo\Client\Exception\Request` and `Nexmo\Client\Exception\Server` support an additional `getEntity()` method which you can use in addition to `getCode()` and `getMessage()` to find out more about what went wrong. The entity returned will typically be an object related to the operation, or the response object from the API call.
+When things go wrong, you'll receive an `Exception`. The Vonage exception classes `Vonage\Client\Exception\Request` and `Vonage\Client\Exception\Server` support an additional `getEntity()` method which you can use in addition to `getCode()` and `getMessage()` to find out more about what went wrong. The entity returned will typically be an object related to the operation, or the response object from the API call.
 
 ### Composer installation fails due to Guzzle Adapter
 
-If you have a conflicting package installation that cannot co-exist with our recommended `php-http/guzzle6-adapter` package, then you may install the package `nexmo/client-core` along with any package that satisfies the `php-http/client-implementation` requirement.
+If you have a conflicting package installation that cannot co-exist with our recommended `php-http/guzzle6-adapter` package, then you may install the package `vonage/client-core` along with any package that satisfies the `php-http/client-implementation` requirement.
 
 See the [Packagist page for client-implementation](https://packagist.org/providers/php-http/client-implementation) for options.
 
@@ -684,6 +684,6 @@ This library is actively developed and we love to hear from you! Please feel fre
 [license]: LICENSE.txt
 [send_example]: examples/send.php
 [spec]: https://github.com/Nexmo/client-library-specification
-[issues]: https://github.com/Nexmo/nexmo-php/issues
-[pulls]: https://github.com/Nexmo/nexmo-php/pulls
+[issues]: https://github.com/Vonage/vonage-php-core/issues
+[pulls]: https://github.com/Vonage/vonage-php-core/pulls
 

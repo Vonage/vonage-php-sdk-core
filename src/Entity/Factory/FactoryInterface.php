@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Nexmo\Entity\Factory;
+namespace Vonage\Entity\Factory;
 
 interface FactoryInterface
 {

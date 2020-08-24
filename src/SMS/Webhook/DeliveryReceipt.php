@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Nexmo\SMS\Webhook;
+namespace Vonage\SMS\Webhook;
 
 class DeliveryReceipt
 {
@@ -63,8 +63,8 @@ class DeliveryReceipt
     const CODE_ILLEGAL_MESSAGE = 10;
 
     /**
-     * Nexmo cannot find a suitable route to deliver the message
-     * Contact support@nexmo.com
+     * Vonage cannot find a suitable route to deliver the message
+     * Contact support@Vonage.com
      */
     const CODE_UNROUTABLE = 11;
 
@@ -90,7 +90,7 @@ class DeliveryReceipt
 
     /**
      * Typically refers to an error in the route
-     * Contact support@nexmo.com
+     * Contact support@Vonage.com
      */
     const CODE_GENERAL_ERROR = 99;
 

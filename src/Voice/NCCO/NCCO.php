@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Nexmo\Voice\NCCO;
+namespace Vonage\Voice\NCCO;
 
-use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
-use Nexmo\Voice\NCCO\Action\ActionInterface;
+use Vonage\Entity\Hydrator\ArrayHydrateInterface;
+use Vonage\Voice\NCCO\Action\ActionInterface;
 
 class NCCO implements ArrayHydrateInterface, \JsonSerializable
 {

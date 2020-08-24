@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Nexmo\Voice\Endpoint;
+namespace Vonage\Voice\Endpoint;
 
 interface EndpointInterface extends \JsonSerializable
 {

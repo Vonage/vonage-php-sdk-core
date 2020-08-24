@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace NexmoTest\Voice\Endpoint;
+namespace VonageTest\Voice\Endpoint;
 
-use Nexmo\Voice\Endpoint\App;
+use Vonage\Voice\Endpoint\App;
 use PHPUnit\Framework\TestCase;
 
 class AppTest extends TestCase

@@ -1,21 +1,21 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace NexmoTest;
+namespace VonageTest;
 
 use Http\Adapter\Guzzle6\Client as HttpClient;
 use Http\Message\MessageFactory\DiactorosMessageFactory;
 use Http\Mock\Client as HttpMock;
-use Nexmo\Client;
-use Nexmo\Client\Credentials\Basic;
-use Nexmo\Client\Credentials\OAuth;
-use Nexmo\Client\Signature;
-use Nexmo\Verify\Verification;
+use Vonage\Client;
+use Vonage\Client\Credentials\Basic;
+use Vonage\Client\Credentials\OAuth;
+use Vonage\Client\Signature;
+use Vonage\Verify\Verification;
 use Zend\Diactoros\Request;
 use Zend\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
@@ -326,7 +326,7 @@ class ClientTest extends TestCase
     {
         $api = $this->prophesize('stdClass')->reveal();
         
-        $factory = $this->prophesize('Nexmo\Client\Factory\FactoryInterface');
+        $factory = $this->prophesize('Vonage\Client\Factory\FactoryInterface');
 
         $factory->hasApi('sms')->willReturn(true);
         $factory->getApi('sms')->willReturn($api);
@@ -359,7 +359,7 @@ class ClientTest extends TestCase
         //useragent should match the expected format
         $agent = $this->http->getRequests()[0]->getHeaderLine('user-agent');
         $expected = implode(' ', [
-            'nexmo-php/'.$version,
+            'vonage-php/'.$version,
             $php
         ]);
 
@@ -393,7 +393,7 @@ class ClientTest extends TestCase
         //useragent should match the expected format
         $agent = $this->http->getRequests()[0]->getHeaderLine('user-agent');
         $expected = implode(' ', [
-            'nexmo-php/'.$version,
+            'vonage-php/'.$version,
             $php,
             'TestApp/9.4.5'
         ]);
@@ -403,8 +403,8 @@ class ClientTest extends TestCase
 
     public function testSerializationProxiesVerify()
     {
-        $verify = $this->prophesize('Nexmo\Verify\Client');
-        $factory = $this->prophesize('Nexmo\Client\Factory\FactoryInterface');
+        $verify = $this->prophesize('Vonage\Verify\Client');
+        $factory = $this->prophesize('Vonage\Client\Factory\FactoryInterface');
 
         $factory->hasApi('verify')->willReturn(true);
         $factory->getApi('verify')->willReturn($verify->reveal());

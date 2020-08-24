@@ -1,8 +1,8 @@
 <?php
 
-namespace Nexmo;
+namespace Vonage;
 
-use Nexmo\Client\Exception;
+use Vonage\Client\Exception;
 
 class ApiErrorHandler
 {

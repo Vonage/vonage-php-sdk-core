@@ -1,9 +1,9 @@
 <?php
 
-namespace Nexmo\Account;
+namespace Vonage\Account;
 
-use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
-use Nexmo\InvalidResponseException;
+use Vonage\Entity\Hydrator\ArrayHydrateInterface;
+use Vonage\InvalidResponseException;
 
 class Secret implements \ArrayAccess
 {
@@ -41,7 +41,7 @@ class Secret implements \ArrayAccess
      */
     public static function fromApi($data)
     {
-        trigger_error('Please instatiate a Nexmo\Account\Secret object instead of using fromApi', E_USER_DEPRECATED);
+        trigger_error('Please instatiate a Vonage\Account\Secret object instead of using fromApi', E_USER_DEPRECATED);
         return new self($data);
     }
 

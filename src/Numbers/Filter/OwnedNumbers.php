@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Nexmo\Numbers\Filter;
+namespace Vonage\Numbers\Filter;
 
-use Nexmo\Entity\Filter\FilterInterface;
+use Vonage\Entity\Filter\FilterInterface;
 
 class OwnedNumbers implements FilterInterface
 {

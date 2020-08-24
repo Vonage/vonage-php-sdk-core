@@ -1,15 +1,15 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2017 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2017 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace NexmoTest\Call;
+namespace VonageTest\Call;
 
-use Nexmo\Call\Talk;
-use NexmoTest\Psr7AssertionTrait;
+use Vonage\Call\Talk;
+use VonageTest\Psr7AssertionTrait;
 use Prophecy\Argument;
 use Psr\Http\Message\RequestInterface;
 use Zend\Diactoros\Response;
@@ -36,7 +36,7 @@ class TalkTest extends TestCase
     /**
      * @var \Prophecy\Prophecy\ObjectProphecy
      */
-    protected $nexmoClient;
+    protected $vonageClient;
 
     public function setUp()
     {
@@ -46,10 +46,10 @@ class TalkTest extends TestCase
         $this->entity = @new Talk('3fd4d839-493e-4485-b2a5-ace527aacff3');
         $this->new = @new Talk();
 
-        $this->nexmoClient = $this->prophesize('Nexmo\Client');
-        $this->nexmoClient->getApiUrl()->willReturn('https://api.nexmo.com');
-        $this->entity->setClient($this->nexmoClient->reveal());
-        $this->new->setClient($this->nexmoClient->reveal());
+        $this->vonageClient = $this->prophesize('Vonage\Client');
+        $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
+        $this->entity->setClient($this->vonageClient->reveal());
+        $this->new->setClient($this->vonageClient->reveal());
     }
 
     public function testHasId()
@@ -101,7 +101,7 @@ class TalkTest extends TestCase
         $callId = $this->id;
         $entity = $this->entity;
 
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($callId, $entity) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($callId, $entity) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/talk', 'PUT', $request);
             $expected = json_decode(json_encode($entity), true);
 
@@ -115,7 +115,7 @@ class TalkTest extends TestCase
 
         $event = @$this->entity->put();
 
-        $this->assertInstanceOf('Nexmo\Call\Event', $event);
+        $this->assertInstanceOf('Vonage\Call\Event', $event);
         $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
         $this->assertSame('Talk started', $event['message']);
     }
@@ -129,7 +129,7 @@ class TalkTest extends TestCase
 
         $callId = $this->id;
 
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($callId, $entity) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($callId, $entity) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/talk', 'PUT', $request);
             $expected = json_decode(json_encode($entity), true);
 
@@ -143,7 +143,7 @@ class TalkTest extends TestCase
 
         $event = @$this->entity->put($entity);
 
-        $this->assertInstanceOf('Nexmo\Call\Event', $event);
+        $this->assertInstanceOf('Vonage\Call\Event', $event);
         $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
         $this->assertSame('Talk started', $event['message']);
     }
@@ -152,11 +152,11 @@ class TalkTest extends TestCase
     {
         $object = $this->entity;
 
-        $this->nexmoClient->send(Argument::any())->willReturn($this->getResponse('talk', '200'));
+        $this->vonageClient->send(Argument::any())->willReturn($this->getResponse('talk', '200'));
         $test = $object();
         $this->assertSame($this->entity, $test);
 
-        $this->nexmoClient->send(Argument::any())->shouldNotHaveBeenCalled();
+        $this->vonageClient->send(Argument::any())->shouldNotHaveBeenCalled();
 
         $class = $this->class;
         $entity = @new $class();
@@ -164,25 +164,25 @@ class TalkTest extends TestCase
 
         $event = @$object($entity);
 
-        $this->assertInstanceOf('Nexmo\Call\Event', $event);
+        $this->assertInstanceOf('Vonage\Call\Event', $event);
         $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
         $this->assertSame('Talk started', $event['message']);
 
-        $this->nexmoClient->send(Argument::any())->shouldHaveBeenCalled();
+        $this->vonageClient->send(Argument::any())->shouldHaveBeenCalled();
     }
 
     public function testDeleteMakesRequest()
     {
         $callId = $this->id;
 
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($callId) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($callId) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/talk', 'DELETE', $request);
             return true;
         }))->willReturn($this->getResponse('talk-delete', '200'));
 
         $event = @$this->entity->delete();
 
-        $this->assertInstanceOf('Nexmo\Call\Event', $event);
+        $this->assertInstanceOf('Vonage\Call\Event', $event);
         $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
         $this->assertSame('Talk stopped', $event['message']);
     }

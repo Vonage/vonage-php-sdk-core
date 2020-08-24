@@ -1,25 +1,25 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace Nexmo\Conversations;
+namespace Vonage\Conversations;
 
-use Nexmo\Client\ClientAwareInterface;
-use Nexmo\Client\ClientAwareTrait;
-use Nexmo\Entity\EntityInterface;
-use Nexmo\Entity\JsonResponseTrait;
-use Nexmo\Entity\JsonSerializableTrait;
-use Nexmo\Entity\JsonUnserializableInterface;
-use Nexmo\Entity\NoRequestResponseTrait;
-use Nexmo\User\Collection as UserCollection;
-use Nexmo\User\User;
+use Vonage\Client\ClientAwareInterface;
+use Vonage\Client\ClientAwareTrait;
+use Vonage\Entity\EntityInterface;
+use Vonage\Entity\JsonResponseTrait;
+use Vonage\Entity\JsonSerializableTrait;
+use Vonage\Entity\JsonUnserializableInterface;
+use Vonage\Entity\NoRequestResponseTrait;
+use Vonage\User\Collection as UserCollection;
+use Vonage\User\User;
 use Psr\Http\Message\ResponseInterface;
 use Zend\Diactoros\Request;
-use Nexmo\Client\Exception;
+use Vonage\Client\Exception;
 
 /**
  * @deprecated Conversations is not released for General Availability and will be removed in a future release

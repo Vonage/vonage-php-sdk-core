@@ -1,6 +1,6 @@
 <?php
 
-namespace Nexmo\Entity\Filter;
+namespace Vonage\Entity\Filter;
 
 /**
  * A very simple key-value filter that can be used when less magic is needed

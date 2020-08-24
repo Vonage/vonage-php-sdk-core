@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace NexmoTest\Voice\Endpoint;
+namespace VonageTest\Voice\Endpoint;
 
-use Nexmo\Voice\Endpoint\Phone;
+use Vonage\Voice\Endpoint\Phone;
 use PHPUnit\Framework\TestCase;
 
 class PhoneTest extends TestCase

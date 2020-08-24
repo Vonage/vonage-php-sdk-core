@@ -1,15 +1,15 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace NexmoTest\Client\Factory;
+namespace VonageTest\Client\Factory;
 
-use Nexmo\Client;
-use Nexmo\Client\Factory\MapFactory;
+use Vonage\Client;
+use Vonage\Client\Factory\MapFactory;
 use PHPUnit\Framework\TestCase;
 
 class MapFactoryTest extends TestCase
@@ -29,7 +29,7 @@ class MapFactoryTest extends TestCase
         $this->client = new Client(new Client\Credentials\Basic('key', 'secret'));
 
         $this->factory = new MapFactory([
-            'test' => 'NexmoTest\Client\Factory\TestDouble'
+            'test' => 'VonageTest\Client\Factory\TestDouble'
         ], $this->client);
     }
 
@@ -53,7 +53,7 @@ class MapFactoryTest extends TestCase
         $this->assertFalse($this->factory->hasApi('not'));
 
         $api = $this->factory->getApi('test');
-        $this->assertInstanceOf('NexmoTest\Client\Factory\TestDouble', $api);
+        $this->assertInstanceOf('VonageTest\Client\Factory\TestDouble', $api);
 
         $this->expectException(\RuntimeException::class);
         $this->factory->getApi('not');

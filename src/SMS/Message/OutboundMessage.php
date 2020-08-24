@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Nexmo\SMS\Message;
+namespace Vonage\SMS\Message;
 
 abstract class OutboundMessage implements Message
 {

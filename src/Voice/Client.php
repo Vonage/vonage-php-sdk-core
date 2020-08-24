@@ -1,17 +1,17 @@
 <?php
 declare(strict_types=1);
 
-namespace Nexmo\Voice;
+namespace Vonage\Voice;
 
-use Nexmo\Client\APIClient;
-use Nexmo\Client\APIResource;
-use Nexmo\Voice\NCCO\Action\Talk;
-use Nexmo\Voice\NCCO\Action\Transfer;
-use Nexmo\Voice\Webhook\Event;
-use Nexmo\Entity\IterableAPICollection;
-use Nexmo\Entity\Filter\FilterInterface;
-use Nexmo\Entity\Hydrator\ArrayHydrator;
-use Nexmo\Voice\NCCO\NCCO;
+use Vonage\Client\APIClient;
+use Vonage\Client\APIResource;
+use Vonage\Voice\NCCO\Action\Talk;
+use Vonage\Voice\NCCO\Action\Transfer;
+use Vonage\Voice\Webhook\Event;
+use Vonage\Entity\IterableAPICollection;
+use Vonage\Entity\Filter\FilterInterface;
+use Vonage\Entity\Hydrator\ArrayHydrator;
+use Vonage\Voice\NCCO\NCCO;
 
 class Client implements APIClient
 {

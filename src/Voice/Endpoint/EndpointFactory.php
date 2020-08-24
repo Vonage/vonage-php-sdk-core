@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Nexmo\Voice\Endpoint;
+namespace Vonage\Voice\Endpoint;
 
-use Nexmo\Entity\Factory\FactoryInterface;
+use Vonage\Entity\Factory\FactoryInterface;
 
 class EndpointFactory implements FactoryInterface
 {

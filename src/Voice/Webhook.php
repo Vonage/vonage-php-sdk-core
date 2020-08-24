@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Nexmo\Voice;
+namespace Vonage\Voice;
 
 class Webhook
 {

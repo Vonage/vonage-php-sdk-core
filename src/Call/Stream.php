@@ -1,25 +1,25 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2017 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2017 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace Nexmo\Call;
+namespace Vonage\Call;
 
-use Nexmo\Call\Collection;
-use Nexmo\Client\ClientAwareInterface;
-use Nexmo\Client\ClientAwareTrait;
-use Nexmo\Entity\JsonSerializableInterface;
+use Vonage\Call\Collection;
+use Vonage\Client\ClientAwareInterface;
+use Vonage\Client\ClientAwareTrait;
+use Vonage\Entity\JsonSerializableInterface;
 use Psr\Http\Message\ResponseInterface;
 use Zend\Diactoros\Request;
-use Nexmo\Client\Exception;
+use Vonage\Client\Exception;
 
 /**
  * Lightweight resource, only has put / delete.
  * 
- * @deprecated Please use Nexmo\Voice\Client::streamAudio() or Nexmo\Voice\Client::stopStreamAudio() instead
+ * @deprecated Please use Vonage\Voice\Client::streamAudio() or Vonage\Voice\Client::stopStreamAudio() instead
  */
 class Stream implements JsonSerializableInterface, ClientAwareInterface
 {
@@ -32,7 +32,7 @@ class Stream implements JsonSerializableInterface, ClientAwareInterface
     public function __construct($id = null)
     {
         trigger_error(
-            'Nexmo\Call\Stream is deprecated, please use Nexmo\Voice\Client::streamAudio() or Nexmo\Voice\Client::stopStreamAudio() instead',
+            'Vonage\Call\Stream is deprecated, please use Vonage\Voice\Client::streamAudio() or Vonage\Voice\Client::stopStreamAudio() instead',
             E_USER_DEPRECATED
         );
 

@@ -1,5 +1,5 @@
 <?php
-namespace Nexmo\Insights;
+namespace Vonage\Insights;
 
 trait CnamTrait
 {

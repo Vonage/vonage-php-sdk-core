@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Nexmo\Voice\NCCO\Action;
+namespace Vonage\Voice\NCCO\Action;
 
-use Nexmo\Voice\Webhook;
+use Vonage\Voice\Webhook;
 
 class Record implements ActionInterface
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Nexmo\Entity\Hydrator;
+namespace Vonage\Entity\Hydrator;
 
 /**
  * Interface for allowing an entity to be converted to/from an array

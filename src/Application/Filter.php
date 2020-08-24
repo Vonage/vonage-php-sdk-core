@@ -1,18 +1,18 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace Nexmo\Application;
+namespace Vonage\Application;
 
-use Nexmo\Entity\Filter\DateFilter;
+use Vonage\Entity\Filter\DateFilter;
 
 /**
  * Simple value object for application filtering.
- * @deprecated Please use Nexmo\Entity\Filter\DateFilter instead
+ * @deprecated Please use Vonage\Entity\Filter\DateFilter instead
  */
 class Filter extends DateFilter
 {

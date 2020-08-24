@@ -1,8 +1,8 @@
 <?php
 
-namespace Nexmo\Account;
+namespace Vonage\Account;
 
-use Nexmo\Entity\Hydrator\ArrayHydrateInterface;
+use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 
 class SecretCollection implements \ArrayAccess
 {
@@ -37,7 +37,7 @@ class SecretCollection implements \ArrayAccess
      */
     public static function fromApi($data)
     {
-        trigger_error('Please instatiate a Nexmo\Account\SecretCollection instead of using fromApi()', E_USER_DEPRECATED);
+        trigger_error('Please instatiate a Vonage\Account\SecretCollection instead of using fromApi()', E_USER_DEPRECATED);
         $secrets = [];
         foreach ($data['_embedded']['secrets'] as $s) {
             $secrets[] = Secret::fromApi($s);

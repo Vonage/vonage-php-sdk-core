@@ -1,18 +1,18 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace NexmoTest\Client\Credentials;
+namespace VonageTest\Client\Credentials;
 
-use Nexmo\Client\Credentials\Container;
-use Nexmo\Client\Credentials\Keypair;
-use Nexmo\Client\Credentials\Basic;
-use Nexmo\Client\Credentials\OAuth;
-use Nexmo\Client\Credentials\SignatureSecret;
+use Vonage\Client\Credentials\Container;
+use Vonage\Client\Credentials\Keypair;
+use Vonage\Client\Credentials\Basic;
+use Vonage\Client\Credentials\OAuth;
+use Vonage\Client\Credentials\SignatureSecret;
 use Webmozart\Expression\Selector\Key;
 use PHPUnit\Framework\TestCase;
 

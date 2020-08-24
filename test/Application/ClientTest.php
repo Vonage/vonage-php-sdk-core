@@ -1,37 +1,37 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace NexmoTest\Application;
+namespace VonageTest\Application;
 
 use Prophecy\Argument;
 use Zend\Diactoros\Request;
 use Zend\Diactoros\Response;
-use Nexmo\Application\Client;
-use Nexmo\Application\Filter;
-use Nexmo\Client\APIResource;
-use Nexmo\Application\Hydrator;
+use Vonage\Application\Client;
+use Vonage\Application\Filter;
+use Vonage\Client\APIResource;
+use Vonage\Application\Hydrator;
 use PHPUnit\Framework\TestCase;
-use Nexmo\Application\RtcConfig;
-use NexmoTest\Psr7AssertionTrait;
-use Nexmo\Application\Application;
-use Nexmo\Application\VoiceConfig;
-use Nexmo\Application\MessagesConfig;
-use Nexmo\Client\Exception\Exception;
+use Vonage\Application\RtcConfig;
+use VonageTest\Psr7AssertionTrait;
+use Vonage\Application\Application;
+use Vonage\Application\VoiceConfig;
+use Vonage\Application\MessagesConfig;
+use Vonage\Client\Exception\Exception;
 use Psr\Http\Message\RequestInterface;
-use Nexmo\Client\Exception\Request as ExceptionRequest;
-use Nexmo\Client\Exception\Request as RequestException;
-use Nexmo\Entity\Filter\EmptyFilter;
+use Vonage\Client\Exception\Request as ExceptionRequest;
+use Vonage\Client\Exception\Request as RequestException;
+use Vonage\Entity\Filter\EmptyFilter;
 
 class ClientTest extends TestCase
 {
     use Psr7AssertionTrait;
 
-    protected $nexmoClient;
+    protected $vonageClient;
 
     /**
      * @var APIResource
@@ -45,11 +45,11 @@ class ClientTest extends TestCase
 
     public function setUp()
     {
-        $this->nexmoClient = $this->prophesize('Nexmo\Client');
-        $this->nexmoClient->getApiUrl()->willReturn('http://api.nexmo.com');
+        $this->vonageClient = $this->prophesize('Vonage\Client');
+        $this->vonageClient->getApiUrl()->willReturn('http://api.nexmo.com');
 
         $this->applicationClient = new Client();
-        $this->applicationClient->setClient($this->nexmoClient->reveal());
+        $this->applicationClient->setClient($this->vonageClient->reveal());
     }
 
     public function testSizeException()
@@ -62,7 +62,7 @@ class ClientTest extends TestCase
     {
         $filter = new Filter(new \DateTime('yesterday'), new \DateTime('tomorrow'));
 
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($filter) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($filter) {
             $this->assertEquals('/v2/applications', $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
@@ -82,7 +82,7 @@ class ClientTest extends TestCase
 
     public function testSetPage()
     {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/v2/applications', $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
@@ -98,7 +98,7 @@ class ClientTest extends TestCase
 
     public function testSetSize()
     {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/v2/applications', $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
@@ -114,7 +114,7 @@ class ClientTest extends TestCase
 
     public function testIterationProperties()
     {
-        $this->nexmoClient->send(Argument::type(RequestInterface::class))
+        $this->vonageClient->send(Argument::type(RequestInterface::class))
              ->shouldBeCalledTimes(1)
              ->willReturn($this->getResponse('list'));
 
@@ -133,7 +133,7 @@ class ClientTest extends TestCase
         $page = $this->getResponse('list');
         $last = $this->getResponse('last');
 
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             //a bit hacky here
             static $last;
             if (is_null($last)) { //first call
@@ -153,14 +153,14 @@ class ClientTest extends TestCase
         }))->shouldBeCalledTimes(2)->willReturn($page, $last);
 
         foreach ($this->applicationClient as $id => $application) {
-            $this->assertInstanceOf('Nexmo\Application\Application', $application);
+            $this->assertInstanceOf('Vonage\Application\Application', $application);
             $this->assertSame($application->getId(), $id);
         }
     }
 
     public function testCanIterateClient()
     {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/v2/applications', $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
@@ -174,7 +174,7 @@ class ClientTest extends TestCase
         }
 
         $this->assertTrue(isset($application));
-        $this->assertInstanceOf('Nexmo\Application\Application', $application);
+        $this->assertInstanceOf('Vonage\Application\Application', $application);
         $this->assertSame($application->getId(), $id);
     }
 
@@ -184,7 +184,7 @@ class ClientTest extends TestCase
      */
     public function testGetApplication($payload, $id)
     {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($id) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id) {
             $this->assertEquals('/v2/applications/' . $id, $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
@@ -194,7 +194,7 @@ class ClientTest extends TestCase
         $application = @$this->applicationClient->get($payload);
         $expectedData = json_decode($this->getResponse()->getBody()->getContents(), true);
 
-        $this->assertInstanceOf('Nexmo\Application\Application', $application);
+        $this->assertInstanceOf('Vonage\Application\Application', $application);
         $this->assertSame($expectedData['id'], $application->getId());
         $this->assertSame($expectedData['name'], $application->getName());
         $this->assertSame(
@@ -255,7 +255,7 @@ class ClientTest extends TestCase
      */
     public function testUpdateApplication($payload, $method, $id, $expectedId)
     {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($expectedId) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($expectedId) {
             $this->assertEquals('/v2/applications/' . $expectedId, $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('PUT', $request->getMethod());
@@ -299,7 +299,7 @@ class ClientTest extends TestCase
 
         $expectedData = json_decode($this->getResponse()->getBody()->getContents(), true);
         
-        $this->assertInstanceOf('Nexmo\Application\Application', $application);
+        $this->assertInstanceOf('Vonage\Application\Application', $application);
         $this->assertSame($expectedData['id'], $application->getId());
         $this->assertSame($expectedData['name'], $application->getName());
         $this->assertSame(
@@ -381,7 +381,7 @@ class ClientTest extends TestCase
      */
     public function testDeleteApplication($payload, $id)
     {
-        $this->nexmoClient->send(Argument::that(function (Request $request) use ($id) {
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($id) {
             $this->assertEquals('/v2/applications/' . $id, $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('DELETE', $request->getMethod());
@@ -406,7 +406,7 @@ class ClientTest extends TestCase
     public function testThrowsException($method, $response, $code)
     {
         $response = $this->getResponse($response, $code);
-        $this->nexmoClient->send(Argument::type(RequestInterface::class))->willReturn($response);
+        $this->vonageClient->send(Argument::type(RequestInterface::class))->willReturn($response);
         $application = new Application('78d335fa323d01149c3dd6f0d48968cf');
 
         try {
@@ -424,17 +424,17 @@ class ClientTest extends TestCase
 
             switch ($class) {
                 case '4':
-                    $this->assertInstanceOf('Nexmo\Client\Exception\Request', $e);
+                    $this->assertInstanceOf('Vonage\Client\Exception\Request', $e);
                     $this->assertEquals($msg, $e->getMessage());
                     $this->assertEquals($code, $e->getCode());
                     break;
                 case '5':
-                    $this->assertInstanceOf('Nexmo\Client\Exception\Server', $e);
+                    $this->assertInstanceOf('Vonage\Client\Exception\Server', $e);
                     $this->assertEquals($msg, $e->getMessage());
                     $this->assertEquals($code, $e->getCode());
                     break;
                 default:
-                    $this->assertInstanceOf('Nexmo\Client\Exception\Exception', $e);
+                    $this->assertInstanceOf('Vonage\Client\Exception\Exception', $e);
                     $this->assertEquals('Unexpected HTTP Status Code', $e->getMessage());
                     break;
             }
@@ -460,7 +460,7 @@ class ClientTest extends TestCase
      */
     public function testCreateApplication($payload, $method)
     {
-        $this->nexmoClient->send(Argument::that(function (Request $request) {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
             $this->assertEquals('/v2/applications', $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('POST', $request->getMethod());
@@ -522,7 +522,7 @@ class ClientTest extends TestCase
         $application = @$this->applicationClient->$method($payload);
 
         $expectedData = json_decode($this->getResponse()->getBody()->getContents(), true);
-        $this->assertInstanceOf('Nexmo\Application\Application', $application);
+        $this->assertInstanceOf('Vonage\Application\Application', $application);
         $this->assertSame($expectedData['id'], $application->getId());
         $this->assertSame($expectedData['name'], $application->getName());
         $this->assertSame(

@@ -1,22 +1,22 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace Nexmo\Application;
+namespace Vonage\Application;
 
-use Nexmo\Client\APIClient;
-use Nexmo\Client\APIResource;
-use Nexmo\Client\ClientAwareTrait;
-use Nexmo\Entity\CollectionInterface;
-use Nexmo\Client\ClientAwareInterface;
-use Nexmo\Entity\IterableAPICollection;
-use Nexmo\Entity\Hydrator\ArrayHydrator;
-use Nexmo\Entity\IterableServiceShimTrait;
-use Nexmo\Entity\Hydrator\HydratorInterface;
+use Vonage\Client\APIClient;
+use Vonage\Client\APIResource;
+use Vonage\Client\ClientAwareTrait;
+use Vonage\Entity\CollectionInterface;
+use Vonage\Client\ClientAwareInterface;
+use Vonage\Entity\IterableAPICollection;
+use Vonage\Entity\Hydrator\ArrayHydrator;
+use Vonage\Entity\IterableServiceShimTrait;
+use Vonage\Entity\Hydrator\HydratorInterface;
 
 class Client implements ClientAwareInterface, CollectionInterface, APIClient
 {
@@ -85,7 +85,7 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
     {
         if ($application instanceof Application) {
             trigger_error(
-                "Passing a Application object to Nexmo\\Application\\Client::get is deprecated, please pass the String ID instead.",
+                "Passing a Application object to Vonage\\Application\\Client::get is deprecated, please pass the String ID instead.",
                 E_USER_DEPRECATED
             );
             $application = $application->getId();
@@ -119,7 +119,7 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
     {
         if (!($application instanceof Application)) {
             trigger_error(
-                'Passing an array to Nexmo\Application\Client::create() is deprecated, please pass an Application object instead.',
+                'Passing an array to Vonage\Application\Client::create() is deprecated, please pass an Application object instead.',
                 E_USER_DEPRECATED
             );
             $application = $this->fromArray($application);
@@ -140,7 +140,7 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
     public function post($application) : Application
     {
         trigger_error(
-            'Nexmo\Application\Client::post() has been deprecated in favor of the create() method',
+            'Vonage\Application\Client::post() has been deprecated in favor of the create() method',
             E_USER_DEPRECATED
         );
         return $this->create($application);
@@ -155,7 +155,7 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
     {
         if (!($application instanceof Application)) {
             trigger_error(
-                'Passing an array to Nexmo\Application\Client::update() is deprecated, please pass an Application object instead.',
+                'Passing an array to Vonage\Application\Client::update() is deprecated, please pass an Application object instead.',
                 E_USER_DEPRECATED
             );
             $application = $this->fromArray($application);
@@ -165,7 +165,7 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
             $id = $application->getId();
         } else {
             trigger_error(
-                'Passing an ID to Nexmo\Application\Client::update() is deprecated and will be removed in a future release',
+                'Passing an ID to Vonage\Application\Client::update() is deprecated and will be removed in a future release',
                 E_USER_DEPRECATED
             );
         }
@@ -182,14 +182,14 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
     public function put($application, $id = null) : Application
     {
         trigger_error(
-            'Nexmo\Application\Client::put() has been deprecated in favor of the update() method',
+            'Vonage\Application\Client::put() has been deprecated in favor of the update() method',
             E_USER_DEPRECATED
         );
         return $this->update($application, $id);
     }
 
     /**
-     * Deletes an application from the Nexmo account
+     * Deletes an application from the Vonage account
      *
      * @param string|Application Application to delete
      */
@@ -197,7 +197,7 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
     {
         if ($application instanceof Application) {
             trigger_error(
-                'Passing an Application to Nexmo\Application\Client::delete() is deprecated, please pass a string ID instead',
+                'Passing an Application to Vonage\Application\Client::delete() is deprecated, please pass a string ID instead',
                 E_USER_DEPRECATED
             );
             $id = $application->getId();
@@ -211,7 +211,7 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
     }
 
     /**
-     * @deprecated Use Nexmo\Application\Hydrator directly instead
+     * @deprecated Use Vonage\Application\Hydrator directly instead
      */
     protected function fromArray(array $array) : Application
     {

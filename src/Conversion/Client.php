@@ -1,12 +1,12 @@
 <?php
 
-namespace Nexmo\Conversion;
+namespace Vonage\Conversion;
 
-use Nexmo\Client\APIClient;
-use Nexmo\Client\Exception;
-use Nexmo\Client\APIResource;
-use Nexmo\Client\ClientAwareTrait;
-use Nexmo\Client\ClientAwareInterface;
+use Vonage\Client\APIClient;
+use Vonage\Client\Exception;
+use Vonage\Client\APIResource;
+use Vonage\Client\ClientAwareTrait;
+use Vonage\Client\ClientAwareInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class Client implements ClientAwareInterface, APIClient
@@ -74,7 +74,7 @@ class Client implements ClientAwareInterface, APIClient
         $status = $response->getStatusCode();
 
         if ($status === 402) {
-            $e = new Exception\Request("This endpoint may need activating on your account. Please email support@nexmo.com for more information", $status);
+            $e = new Exception\Request("This endpoint may need activating on your account. Please email support@Vonage.com for more information", $status);
         } elseif ($status >= 400 and $status < 500) {
             $e = new Exception\Request($body['error_title'], $status);
         } elseif ($status >= 500 and $status < 600) {

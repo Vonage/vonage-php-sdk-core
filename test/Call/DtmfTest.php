@@ -1,15 +1,15 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2017 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2017 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace NexmoTest\Call;
+namespace VonageTest\Call;
 
-use Nexmo\Call\Dtmf;
-use NexmoTest\Psr7AssertionTrait;
+use Vonage\Call\Dtmf;
+use VonageTest\Psr7AssertionTrait;
 use Prophecy\Argument;
 use Psr\Http\Message\RequestInterface;
 use Zend\Diactoros\Response;
@@ -36,7 +36,7 @@ class DtmfTest extends TestCase
     /**
      * @var \Prophecy\Prophecy\ObjectProphecy
      */
-    protected $nexmoClient;
+    protected $vonageClient;
 
     public function setUp()
     {
@@ -46,10 +46,10 @@ class DtmfTest extends TestCase
         $this->entity = @new Dtmf('3fd4d839-493e-4485-b2a5-ace527aacff3');
         $this->new = @new Dtmf();
 
-        $this->nexmoClient = $this->prophesize('Nexmo\Client');
-        $this->nexmoClient->getApiUrl()->willReturn('https://api.nexmo.com');
-        $this->entity->setClient($this->nexmoClient->reveal());
-        $this->new->setClient($this->nexmoClient->reveal());
+        $this->vonageClient = $this->prophesize('Vonage\Client');
+        $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
+        $this->entity->setClient($this->vonageClient->reveal());
+        $this->new->setClient($this->vonageClient->reveal());
     }
 
     public function testHasId()
@@ -98,7 +98,7 @@ class DtmfTest extends TestCase
         $callId = $this->id;
         $entity = $this->entity;
 
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($callId, $entity) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($callId, $entity) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/dtmf', 'PUT', $request);
             $expected = json_decode(json_encode($entity), true);
 
@@ -112,7 +112,7 @@ class DtmfTest extends TestCase
 
         $event = @$this->entity->put();
 
-        $this->assertInstanceOf('Nexmo\Call\Event', $event);
+        $this->assertInstanceOf('Vonage\Call\Event', $event);
         $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
         $this->assertSame('DTMF sent', $event['message']);
     }
@@ -126,7 +126,7 @@ class DtmfTest extends TestCase
 
         $callId = $this->id;
 
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($callId, $entity) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($callId, $entity) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/dtmf', 'PUT', $request);
             $expected = json_decode(json_encode($entity), true);
 
@@ -140,7 +140,7 @@ class DtmfTest extends TestCase
 
         $event = @$this->entity->put($entity);
 
-        $this->assertInstanceOf('Nexmo\Call\Event', $event);
+        $this->assertInstanceOf('Vonage\Call\Event', $event);
         $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
         $this->assertSame('DTMF sent', $event['message']);
     }
@@ -149,11 +149,11 @@ class DtmfTest extends TestCase
     {
         $object = $this->entity;
 
-        $this->nexmoClient->send(Argument::any())->willReturn($this->getResponse('dtmf', '200'));
+        $this->vonageClient->send(Argument::any())->willReturn($this->getResponse('dtmf', '200'));
         $test = $object();
         $this->assertSame($this->entity, $test);
 
-        $this->nexmoClient->send(Argument::any())->shouldNotHaveBeenCalled();
+        $this->vonageClient->send(Argument::any())->shouldNotHaveBeenCalled();
 
         $class = $this->class;
         $entity = @new $class();
@@ -161,11 +161,11 @@ class DtmfTest extends TestCase
 
         $event = @$object($entity);
 
-        $this->assertInstanceOf('Nexmo\Call\Event', $event);
+        $this->assertInstanceOf('Vonage\Call\Event', $event);
         $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
         $this->assertSame('DTMF sent', $event['message']);
 
-        $this->nexmoClient->send(Argument::any())->shouldHaveBeenCalled();
+        $this->vonageClient->send(Argument::any())->shouldHaveBeenCalled();
     }
 
     /**

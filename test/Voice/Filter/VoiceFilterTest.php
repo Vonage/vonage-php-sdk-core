@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace NexmoTest\Voice\Filter;
+namespace VonageTest\Voice\Filter;
 
-use Nexmo\Voice\Filter\VoiceFilter;
+use Vonage\Voice\Filter\VoiceFilter;
 use PHPUnit\Framework\TestCase;
 
 class VoiceFilterTest extends TestCase

@@ -1,13 +1,13 @@
 <?php
-namespace NexmoTest;
+namespace VonageTest;
 
 use GuzzleHttp\Psr7\Response;
-use Nexmo\Client\Exception\Exception;
-use Nexmo\Client\Exception\Request;
-use Nexmo\Client\Exception\Server;
-use Nexmo\Client\Exception\Validation;
+use Vonage\Client\Exception\Exception;
+use Vonage\Client\Exception\Request;
+use Vonage\Client\Exception\Server;
+use Vonage\Client\Exception\Validation;
 use PHPUnit\Framework\TestCase;
-use Nexmo\ApiErrorHandler;
+use Vonage\ApiErrorHandler;
 
 class ApiErrorHandlerTest extends TestCase
 {

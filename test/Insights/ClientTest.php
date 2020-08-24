@@ -1,24 +1,24 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace NexmoTest\Insights;
+namespace VonageTest\Insights;
 
 use Prophecy\Argument;
-use Nexmo\Insights\Basic;
-use Nexmo\Insights\Client;
-use Nexmo\Insights\Advanced;
-use Nexmo\Insights\Standard;
+use Vonage\Insights\Basic;
+use Vonage\Insights\Client;
+use Vonage\Insights\Advanced;
+use Vonage\Insights\Standard;
 use Zend\Diactoros\Response;
-use Nexmo\Client\APIResource;
+use Vonage\Client\APIResource;
 use PHPUnit\Framework\TestCase;
-use Nexmo\Insights\AdvancedCnam;
-use Nexmo\Insights\StandardCnam;
-use NexmoTest\Psr7AssertionTrait;
+use Vonage\Insights\AdvancedCnam;
+use Vonage\Insights\StandardCnam;
+use VonageTest\Psr7AssertionTrait;
 use Psr\Http\Message\RequestInterface;
 
 class ClientTest extends TestCase
@@ -30,7 +30,7 @@ class ClientTest extends TestCase
      */
     protected $apiClient;
 
-    protected $nexmoClient;
+    protected $vonageClient;
 
     /**
      * @var Client
@@ -39,11 +39,11 @@ class ClientTest extends TestCase
 
     public function setUp()
     {
-        $this->nexmoClient = $this->prophesize('Nexmo\Client');
-        $this->nexmoClient->getApiUrl()->willReturn('http://api.nexmo.com');
+        $this->vonageClient = $this->prophesize('Vonage\Client');
+        $this->vonageClient->getApiUrl()->willReturn('http://api.nexmo.com');
 
         $this->insightsClient = new Client();
-        $this->insightsClient->setClient($this->nexmoClient->reveal());
+        $this->insightsClient->setClient($this->vonageClient->reveal());
     }
 
     public function testStandardCnam()
@@ -58,7 +58,7 @@ class ClientTest extends TestCase
 
     public function testAdvancedAsync()
     {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/ni/advanced/async/json', $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
@@ -88,11 +88,11 @@ class ClientTest extends TestCase
 
 
     /**
-     * @expectedException \Nexmo\Client\Exception\Request
+     * @expectedException \Vonage\Client\Exception\Request
      */
     public function testError()
     {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             return true;
         }))->willReturn($this->getResponse('error'));
 
@@ -100,11 +100,11 @@ class ClientTest extends TestCase
     }
 
     /**
-     * @expectedException \Nexmo\Client\Exception\Request
+     * @expectedException \Vonage\Client\Exception\Request
      */
     public function testClientException()
     {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             return true;
         }))->willReturn($this->getResponse('error', 401));
 
@@ -112,11 +112,11 @@ class ClientTest extends TestCase
     }
 
     /**
-     * @expectedException \Nexmo\Client\Exception\Server
+     * @expectedException \Vonage\Client\Exception\Server
      */
     public function testServerException()
     {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             return true;
         }))->willReturn($this->getResponse('error', 502));
 
@@ -125,7 +125,7 @@ class ClientTest extends TestCase
 
     protected function checkInsightsRequest($methodToCall, $expectedPath, $expectedClass)
     {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($expectedPath) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($expectedPath) {
             $this->assertEquals($expectedPath, $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
@@ -141,7 +141,7 @@ class ClientTest extends TestCase
 
     protected function checkInsightsRequestCnam($methodToCall, $expectedPath, $expectedClass)
     {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($expectedPath) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($expectedPath) {
             $this->assertEquals($expectedPath, $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());

@@ -1,6 +1,6 @@
 <?php
 
-namespace Nexmo\Account;
+namespace Vonage\Account;
 
 class VoicePrice extends Price
 {

@@ -1,37 +1,37 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace NexmoTest\Account;
+namespace VonageTest\Account;
 
-use Nexmo\Network;
+use Vonage\Network;
 use Prophecy\Argument;
-use Nexmo\Account\Client;
-use Nexmo\Account\Config;
-use Nexmo\Account\Secret;
-use Nexmo\Account\Balance;
-use Nexmo\Account\SmsPrice;
-use Nexmo\Client\Exception;
+use Vonage\Account\Client;
+use Vonage\Account\Config;
+use Vonage\Account\Secret;
+use Vonage\Account\Balance;
+use Vonage\Account\SmsPrice;
+use Vonage\Client\Exception;
 use Zend\Diactoros\Response;
-use Nexmo\Account\VoicePrice;
-use Nexmo\Client\APIResource;
-use Nexmo\Account\PrefixPrice;
+use Vonage\Account\VoicePrice;
+use Vonage\Client\APIResource;
+use Vonage\Account\PrefixPrice;
 use PHPUnit\Framework\TestCase;
-use NexmoTest\Psr7AssertionTrait;
-use Nexmo\Account\SecretCollection;
-use Nexmo\Client\Exception\Request;
-use Nexmo\Client\Exception\Validation;
+use VonageTest\Psr7AssertionTrait;
+use Vonage\Account\SecretCollection;
+use Vonage\Client\Exception\Request;
+use Vonage\Client\Exception\Validation;
 use Psr\Http\Message\RequestInterface;
 
 class ClientTest extends TestCase
 {
     use Psr7AssertionTrait;
 
-    protected $nexmoClient;
+    protected $vonageClient;
 
     /**
      * @var Client
@@ -45,9 +45,9 @@ class ClientTest extends TestCase
 
     public function setUp()
     {
-        $this->nexmoClient = $this->prophesize('Nexmo\Client');
-        $this->nexmoClient->getRestUrl()->willReturn('https://rest.nexmo.com');
-        $this->nexmoClient->getApiUrl()->willReturn('https://api.nexmo.com');
+        $this->vonageClient = $this->prophesize('Vonage\Client');
+        $this->vonageClient->getRestUrl()->willReturn('https://rest.nexmo.com');
+        $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
 
         // $this->apiClient = new APIResource();
         // $this->apiClient
@@ -56,16 +56,16 @@ class ClientTest extends TestCase
         //     ->setBaseUri('/account')
         // ;
         // $this->apiClient->setCollectionName('');
-        // $this->apiClient->setClient($this->nexmoClient->reveal());
+        // $this->apiClient->setClient($this->vonageClient->reveal());
 
         // $this->accountClient = new Client($this->apiClient);
         $this->accountClient = new Client();
-        $this->accountClient->setClient($this->nexmoClient->reveal());
+        $this->accountClient->setClient($this->vonageClient->reveal());
     }
 
     public function testTopUp()
     {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/top-up', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('POST', $request->getMethod());
@@ -79,10 +79,10 @@ class ClientTest extends TestCase
 
     public function testTopUpFailsWith4xx()
     {
-        $this->expectException('\Nexmo\Client\Exception\Request');
+        $this->expectException('\Vonage\Client\Exception\Request');
         $this->expectExceptionMessage('authentication failed');
 
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/top-up', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('POST', $request->getMethod());
@@ -101,10 +101,10 @@ class ClientTest extends TestCase
      */
     public function testTopUpFailsDueToBadRequest()
     {
-        $this->expectException('\Nexmo\Client\Exception\Request');
+        $this->expectException('\Vonage\Client\Exception\Request');
         $this->expectExceptionMessage('Bad Request');
 
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/top-up', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('POST', $request->getMethod());
@@ -123,10 +123,10 @@ class ClientTest extends TestCase
      */
     public function testTopUpFailsDueToBadRequestReturns500()
     {
-        $this->expectException('\Nexmo\Client\Exception\Server');
+        $this->expectException('\Vonage\Client\Exception\Server');
         $this->expectExceptionMessage('Bad Request');
 
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/top-up', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('POST', $request->getMethod());
@@ -140,7 +140,7 @@ class ClientTest extends TestCase
 
     public function testGetBalance()
     {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/get-balance', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
@@ -160,10 +160,10 @@ class ClientTest extends TestCase
      */
     public function testGetBalanceWithNoResults()
     {
-        $this->expectException('\Nexmo\Client\Exception\Server');
+        $this->expectException('\Vonage\Client\Exception\Server');
         $this->expectExceptionMessage('No results found');
 
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/get-balance', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
@@ -177,7 +177,7 @@ class ClientTest extends TestCase
 
     public function testGetConfig()
     {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/settings', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('POST', $request->getMethod());
@@ -197,10 +197,10 @@ class ClientTest extends TestCase
      */
     public function testGetConfigBlankResponse()
     {
-        $this->expectException('\Nexmo\Client\Exception\Server');
+        $this->expectException('\Vonage\Client\Exception\Server');
         $this->expectExceptionMessage('Response was empty');
 
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/settings', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('POST', $request->getMethod());
@@ -214,7 +214,7 @@ class ClientTest extends TestCase
 
     public function testUpdateConfig()
     {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/settings', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('POST', $request->getMethod());
@@ -232,10 +232,10 @@ class ClientTest extends TestCase
 
     public function testUpdateConfigThrowsNon200()
     {
-        $this->expectException('\Nexmo\Client\Exception\Request');
+        $this->expectException('\Vonage\Client\Exception\Request');
         $this->expectExceptionMessage('authentication failed');
 
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/settings', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('POST', $request->getMethod());
@@ -250,10 +250,10 @@ class ClientTest extends TestCase
 
     public function testUpdateConfigReturnsBlankResponse()
     {
-        $this->expectException('\Nexmo\Client\Exception\Server');
+        $this->expectException('\Vonage\Client\Exception\Server');
         $this->expectExceptionMessage('Response was empty');
 
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/settings', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('POST', $request->getMethod());
@@ -268,7 +268,7 @@ class ClientTest extends TestCase
 
     public function testGetSmsPricing()
     {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/get-pricing/outbound/sms', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
@@ -284,10 +284,10 @@ class ClientTest extends TestCase
 
     public function testGetSmsPricingReturnsEmptySet()
     {
-        $this->expectException('\Nexmo\Client\Exception\Server');
+        $this->expectException('\Vonage\Client\Exception\Server');
         $this->expectExceptionMessage('No results found');
 
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/get-pricing/outbound/sms', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
@@ -301,7 +301,7 @@ class ClientTest extends TestCase
 
     public function testGetVoicePricing()
     {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/get-pricing/outbound/voice', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
@@ -319,7 +319,7 @@ class ClientTest extends TestCase
     {
         $first = $this->getResponse('prefix-pricing');
         $noResults = $this->getResponse('prefix-pricing-no-results');
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             static $hasRun = false;
 
             $this->assertEquals('/account/get-prefix-pricing/outbound', $request->getUri()->getPath());
@@ -342,7 +342,7 @@ class ClientTest extends TestCase
 
     public function testGetPrefixPricingNoResults()
     {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/get-prefix-pricing/outbound', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
@@ -357,10 +357,10 @@ class ClientTest extends TestCase
 
     public function testGetPrefixPricingGenerates4xxError()
     {
-        $this->expectException('Nexmo\Client\Exception\Request');
+        $this->expectException('Vonage\Client\Exception\Request');
         $this->expectExceptionMessage('authentication failed');
 
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/get-prefix-pricing/outbound', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
@@ -374,10 +374,10 @@ class ClientTest extends TestCase
 
     public function testGetPrefixPricingGenerates5xxError()
     {
-        $this->expectException('Nexmo\Client\Exception\Server');
+        $this->expectException('Vonage\Client\Exception\Server');
         $this->expectExceptionMessage('unknown error');
 
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/get-prefix-pricing/outbound', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
@@ -391,7 +391,7 @@ class ClientTest extends TestCase
 
     public function testListSecrets()
     {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/accounts/abcd1234/secrets', $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
@@ -405,20 +405,20 @@ class ClientTest extends TestCase
     public function testListSecretsServerError()
     {
         $this->expectException(Exception\Server::class);
-        $this->nexmoClient->send(Argument::any())->willReturn($this->getGenericResponse('500', 500));
+        $this->vonageClient->send(Argument::any())->willReturn($this->getGenericResponse('500', 500));
         $this->accountClient->listSecrets('abcd1234');
     }
 
     public function testListSecretsRequestError()
     {
         $this->expectException(Exception\Request::class);
-        $this->nexmoClient->send(Argument::any())->willReturn($this->getGenericResponse('401', 401));
+        $this->vonageClient->send(Argument::any())->willReturn($this->getGenericResponse('401', 401));
         $this->accountClient->listSecrets('abcd1234');
     }
 
     public function testGetSecret()
     {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/accounts/abcd1234/secrets/ad6dc56f-07b5-46e1-a527-85530e625800', $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
@@ -432,20 +432,20 @@ class ClientTest extends TestCase
     public function testGetSecretsServerError()
     {
         $this->expectException(Exception\Server::class);
-        $this->nexmoClient->send(Argument::any())->willReturn($this->getGenericResponse('500', 500));
+        $this->vonageClient->send(Argument::any())->willReturn($this->getGenericResponse('500', 500));
         $this->accountClient->getSecret('abcd1234', 'ad6dc56f-07b5-46e1-a527-85530e625800');
     }
 
     public function testGetSecretsRequestError()
     {
         $this->expectException(Exception\Request::class);
-        $this->nexmoClient->send(Argument::any())->willReturn($this->getGenericResponse('401', 401));
+        $this->vonageClient->send(Argument::any())->willReturn($this->getGenericResponse('401', 401));
         $this->accountClient->getSecret('abcd1234', 'ad6dc56f-07b5-46e1-a527-85530e625800');
     }
 
     public function testCreateSecret()
     {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/accounts/abcd1234/secrets', $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('POST', $request->getMethod());
@@ -459,21 +459,21 @@ class ClientTest extends TestCase
     public function testCreateSecretsServerError()
     {
         $this->expectException(Exception\Server::class);
-        $this->nexmoClient->send(Argument::any())->willReturn($this->getGenericResponse('500', 500));
+        $this->vonageClient->send(Argument::any())->willReturn($this->getGenericResponse('500', 500));
         $this->accountClient->createSecret('abcd1234', 'example-4PI-secret');
     }
 
     public function testCreateSecretsRequestError()
     {
         $this->expectException(Exception\Request::class);
-        $this->nexmoClient->send(Argument::any())->willReturn($this->getGenericResponse('401', 401));
+        $this->vonageClient->send(Argument::any())->willReturn($this->getGenericResponse('401', 401));
         $this->accountClient->createSecret('abcd1234', 'example-4PI-secret');
     }
 
     public function testCreateSecretsValidationError()
     {
         try {
-            $this->nexmoClient->send(Argument::any())->willReturn($this->getResponse('secret-management/create-validation', 400));
+            $this->vonageClient->send(Argument::any())->willReturn($this->getResponse('secret-management/create-validation', 400));
             $this->accountClient->createSecret('abcd1234', 'example-4PI-secret');
         } catch (Validation $e) {
             $this->assertEquals('Bad Request: The request failed due to validation errors. See https://developer.nexmo.com/api-errors/account/secret-management#validation for more information', $e->getMessage());
@@ -483,7 +483,7 @@ class ClientTest extends TestCase
 
     public function testDeleteSecret()
     {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/accounts/abcd1234/secrets/ad6dc56f-07b5-46e1-a527-85530e625800', $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('DELETE', $request->getMethod());
@@ -496,14 +496,14 @@ class ClientTest extends TestCase
     public function testDeleteSecretsServerError()
     {
         $this->expectException(Exception\Server::class);
-        $this->nexmoClient->send(Argument::any())->willReturn($this->getGenericResponse('500', 500));
+        $this->vonageClient->send(Argument::any())->willReturn($this->getGenericResponse('500', 500));
         $this->accountClient->deleteSecret('abcd1234', 'ad6dc56f-07b5-46e1-a527-85530e625800');
     }
 
     public function testDeleteSecretsRequestError()
     {
         $this->expectException(Exception\Request::class);
-        $this->nexmoClient->send(Argument::any())->willReturn($this->getGenericResponse('401', 401));
+        $this->vonageClient->send(Argument::any())->willReturn($this->getGenericResponse('401', 401));
         $this->accountClient->deleteSecret('abcd1234', 'ad6dc56f-07b5-46e1-a527-85530e625800');
     }
 

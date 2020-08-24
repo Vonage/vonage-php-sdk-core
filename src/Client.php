@@ -1,46 +1,46 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace Nexmo;
+namespace Vonage;
 
 use Zend\Diactoros\Uri;
 use Http\Client\HttpClient;
-use Nexmo\Client\Signature;
+use Vonage\Client\Signature;
 use Zend\Diactoros\Request;
-use Nexmo\Client\APIResource;
-use Nexmo\Verify\Verification;
-use Nexmo\Entity\EntityInterface;
-use Nexmo\Client\Credentials\Basic;
-use Nexmo\Client\Credentials\OAuth;
-use Nexmo\Client\Factory\MapFactory;
-use Nexmo\Client\Credentials\Keypair;
-use Nexmo\Client\Exception\Exception;
+use Vonage\Client\APIResource;
+use Vonage\Verify\Verification;
+use Vonage\Entity\EntityInterface;
+use Vonage\Client\Credentials\Basic;
+use Vonage\Client\Credentials\OAuth;
+use Vonage\Client\Factory\MapFactory;
+use Vonage\Client\Credentials\Keypair;
+use Vonage\Client\Exception\Exception;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
-use Nexmo\Client\Credentials\Container;
-use Nexmo\Client\Factory\FactoryInterface;
-use Nexmo\Client\Credentials\SignatureSecret;
-use Nexmo\Client\Credentials\CredentialsInterface;
+use Vonage\Client\Credentials\Container;
+use Vonage\Client\Factory\FactoryInterface;
+use Vonage\Client\Credentials\SignatureSecret;
+use Vonage\Client\Credentials\CredentialsInterface;
 use Psr\Http\Client\ClientInterface;
 
 /**
- * Nexmo API Client, allows access to the API from PHP.
+ * Vonage API Client, allows access to the API from PHP.
  *
- * @method \Nexmo\Account\Client account()
- * @method \Nexmo\Message\Client message()
- * @method \Nexmo\Application\Client applications()
- * @method \Nexmo\Conversion\Client conversion()
- * @method \Nexmo\Insights\Client insights()
- * @method \Nexmo\Numbers\Client numbers()
- * @method \Nexmo\Redact\Client redact()
- * @method \Nexmo\SMS\Client sms()
- * @method \Nexmo\Verify\Client  verify()
- * @method \Nexmo\Voice\Client voice()
+ * @method \Vonage\Account\Client account()
+ * @method \Vonage\Message\Client message()
+ * @method \Vonage\Application\Client applications()
+ * @method \Vonage\Conversion\Client conversion()
+ * @method \Vonage\Insights\Client insights()
+ * @method \Vonage\Numbers\Client numbers()
+ * @method \Vonage\Redact\Client redact()
+ * @method \Vonage\SMS\Client sms()
+ * @method \Vonage\Verify\Client  verify()
+ * @method \Vonage\Voice\Client voice()
  */
 class Client
 {
@@ -113,21 +113,21 @@ class Client
 
         $this->setFactory(new MapFactory([
             // Legacy Namespaces
-            'message' => \Nexmo\Message\Client::class,
-            'calls' => \Nexmo\Call\Collection::class,
-            'conversation' => \Nexmo\Conversations\Collection::class,
-            'user' => \Nexmo\User\Collection::class,
+            'message' => \Vonage\Message\Client::class,
+            'calls' => \Vonage\Call\Collection::class,
+            'conversation' => \Vonage\Conversations\Collection::class,
+            'user' => \Vonage\User\Collection::class,
 
             // Registered Services by name
-            'account' => \Nexmo\Account\ClientFactory::class,
-            'applications' => \Nexmo\Application\ClientFactory::class,
-            'conversion' => \Nexmo\Conversion\ClientFactory::class,
-            'insights' => \Nexmo\Insights\ClientFactory::class,
-            'numbers' => \Nexmo\Numbers\ClientFactory::class,
-            'redact' => \Nexmo\Redact\ClientFactory::class,
-            'sms' => \Nexmo\SMS\ClientFactory::class,
-            'verify' => \Nexmo\Verify\ClientFactory::class,
-            'voice' => \Nexmo\Voice\ClientFactory::class,
+            'account' => \Vonage\Account\ClientFactory::class,
+            'applications' => \Vonage\Application\ClientFactory::class,
+            'conversion' => \Vonage\Conversion\ClientFactory::class,
+            'insights' => \Vonage\Insights\ClientFactory::class,
+            'numbers' => \Vonage\Numbers\ClientFactory::class,
+            'redact' => \Vonage\Redact\ClientFactory::class,
+            'sms' => \Vonage\SMS\ClientFactory::class,
+            'verify' => \Vonage\Verify\ClientFactory::class,
+            'voice' => \Vonage\Voice\ClientFactory::class,
 
             // Additional utility classes
             APIResource::class => APIResource::class,
@@ -437,11 +437,11 @@ class Client
 
         // The user agent must be in the following format:
         // LIBRARY-NAME/LIBRARY-VERSION LANGUAGE-NAME/LANGUAGE-VERSION [APP-NAME/APP-VERSION]
-        // See https://github.com/Nexmo/client-library-specification/blob/master/SPECIFICATION.md#reporting
+        // See https://github.com/Vonage/client-library-specification/blob/master/SPECIFICATION.md#reporting
         $userAgent = [];
 
         // Library name
-        $userAgent[] = 'nexmo-php/'.$this->getVersion();
+        $userAgent[] = 'vonage-php/'.$this->getVersion();
 
         // Language name
         $userAgent[] = 'php/'.PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION;
@@ -551,6 +551,6 @@ class Client
 
     protected function getVersion()
     {
-        return \PackageVersions\Versions::getVersion('nexmo/client-core');
+        return \PackageVersions\Versions::getVersion('vonage/client-core');
     }
 }

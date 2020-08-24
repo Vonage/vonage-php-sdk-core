@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace NexmoTest\SMS\Message;
+namespace VonageTest\SMS\Message;
 
-use Nexmo\SMS\Message\Vcal;
+use Vonage\SMS\Message\Vcal;
 use PHPUnit\Framework\TestCase;
 
 class VcalTest extends TestCase

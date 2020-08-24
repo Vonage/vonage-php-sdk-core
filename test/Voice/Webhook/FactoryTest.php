@@ -1,19 +1,19 @@
 <?php
 declare(strict_types=1);
 
-namespace NexmoTest\Voice;
+namespace VonageTest\Voice;
 
 use InvalidArgumentException;
-use Nexmo\Voice\Webhook\Error;
-use Nexmo\Voice\Webhook\Event;
-use Nexmo\Voice\Webhook\Input;
-use Nexmo\Voice\Webhook\Answer;
-use Nexmo\Voice\Webhook\Record;
+use Vonage\Voice\Webhook\Error;
+use Vonage\Voice\Webhook\Event;
+use Vonage\Voice\Webhook\Input;
+use Vonage\Voice\Webhook\Answer;
+use Vonage\Voice\Webhook\Record;
 use PHPUnit\Framework\TestCase;
-use Nexmo\Voice\Webhook\Factory;
-use Nexmo\Voice\Webhook\Transfer;
+use Vonage\Voice\Webhook\Factory;
+use Vonage\Voice\Webhook\Transfer;
 use Zend\Diactoros\ServerRequest;
-use Nexmo\Voice\Webhook\Notification;
+use Vonage\Voice\Webhook\Notification;
 use Zend\Diactoros\Request\Serializer;
 
 class FactoryTest extends TestCase

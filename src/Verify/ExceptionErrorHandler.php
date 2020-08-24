@@ -1,10 +1,10 @@
 <?php
 declare(strict_types = 1);
 
-namespace Nexmo\Verify;
+namespace Vonage\Verify;
 
-use Nexmo\Client\Exception\Server;
-use Nexmo\Client\Exception\Request;
+use Vonage\Client\Exception\Server;
+use Vonage\Client\Exception\Request;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 

@@ -1,14 +1,14 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace Nexmo\Message;
+namespace Vonage\Message;
 
-interface MessageInterface extends \Nexmo\Entity\EntityInterface
+interface MessageInterface extends \Vonage\Entity\EntityInterface
 {
     public function getMessageId();
 }

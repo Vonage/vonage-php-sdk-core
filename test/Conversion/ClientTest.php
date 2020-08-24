@@ -1,26 +1,26 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace NexmoTest\Conversion;
+namespace VonageTest\Conversion;
 
 use Prophecy\Argument;
-use Nexmo\Conversion\Client;
+use Vonage\Conversion\Client;
 use Zend\Diactoros\Response;
-use Nexmo\Client\APIResource;
+use Vonage\Client\APIResource;
 use PHPUnit\Framework\TestCase;
-use NexmoTest\Psr7AssertionTrait;
+use VonageTest\Psr7AssertionTrait;
 use Psr\Http\Message\RequestInterface;
 
 class ClientTest extends TestCase
 {
     use Psr7AssertionTrait;
 
-    protected $nexmoClient;
+    protected $vonageClient;
 
     /**
      * @var APIResource
@@ -34,22 +34,22 @@ class ClientTest extends TestCase
 
     public function setUp()
     {
-        $this->nexmoClient = $this->getMockBuilder('Nexmo\Client')->disableOriginalConstructor()->setMethods(['send', 'getApiUrl'])->getMock();
-        $this->nexmoClient->method('getApiUrl')->will($this->returnValue('https://api.nexmo.com'));
+        $this->vonageClient = $this->getMockBuilder('Vonage\Client')->disableOriginalConstructor()->setMethods(['send', 'getApiUrl'])->getMock();
+        $this->vonageClient->method('getApiUrl')->will($this->returnValue('https://api.nexmo.com'));
 
         $this->apiResource = new APIResource();
         $this->apiResource
             ->setBaseUri('/conversions/')
-            ->setClient($this->nexmoClient)
+            ->setClient($this->vonageClient)
         ;
 
         $this->conversionClient = new Client($this->apiResource);
-        $this->conversionClient->setClient($this->nexmoClient);
+        $this->conversionClient->setClient($this->vonageClient);
     }
 
     public function testSmsWithTimestamp()
     {
-        $this->nexmoClient->method('send')->will($this->returnCallback(function (RequestInterface $request) {
+        $this->vonageClient->method('send')->will($this->returnCallback(function (RequestInterface $request) {
             $this->assertEquals('/conversions/sms', $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('POST', $request->getMethod());
@@ -64,7 +64,7 @@ class ClientTest extends TestCase
 
     public function testSmsWithoutTimestamp()
     {
-        $this->nexmoClient->method('send')->will($this->returnCallback(function (RequestInterface $request) {
+        $this->vonageClient->method('send')->will($this->returnCallback(function (RequestInterface $request) {
             $this->assertEquals('/conversions/sms', $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('POST', $request->getMethod());
@@ -79,7 +79,7 @@ class ClientTest extends TestCase
 
     public function testVoiceWithTimestamp()
     {
-        $this->nexmoClient->method('send')->will($this->returnCallback(function (RequestInterface $request) {
+        $this->vonageClient->method('send')->will($this->returnCallback(function (RequestInterface $request) {
             $this->assertEquals('/conversions/voice', $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('POST', $request->getMethod());
@@ -94,7 +94,7 @@ class ClientTest extends TestCase
 
     public function testVoiceWithoutTimestamp()
     {
-        $this->nexmoClient->method('send')->will($this->returnCallback(function (RequestInterface $request) {
+        $this->vonageClient->method('send')->will($this->returnCallback(function (RequestInterface $request) {
             $this->assertEquals('/conversions/voice', $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('POST', $request->getMethod());

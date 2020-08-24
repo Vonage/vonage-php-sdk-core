@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace NexmoTest\SMS\Message;
+namespace VonageTest\SMS\Message;
 
-use Nexmo\SMS\Message\Binary;
+use Vonage\SMS\Message\Binary;
 use PHPUnit\Framework\TestCase;
 
 class BinaryTest extends TestCase

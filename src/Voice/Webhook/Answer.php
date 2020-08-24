@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Nexmo\Voice\Webhook;
+namespace Vonage\Voice\Webhook;
 
 class Answer
 {

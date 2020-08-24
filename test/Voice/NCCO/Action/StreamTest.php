@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace NexmoTest\Voice\NCCO\Action;
+namespace VonageTest\Voice\NCCO\Action;
 
-use Nexmo\Voice\NCCO\Action\ActionInterface;
-use Nexmo\Voice\NCCO\Action\Stream;
+use Vonage\Voice\NCCO\Action\ActionInterface;
+use Vonage\Voice\NCCO\Action\Stream;
 use PHPUnit\Framework\TestCase;
 
 class StreamTest extends TestCase

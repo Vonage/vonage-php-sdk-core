@@ -1,15 +1,15 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2017 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2017 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace NexmoTest\Call;
+namespace VonageTest\Call;
 
-use Nexmo\Call\Event;
-use NexmoTest\Fixture\ResponseTrait;
+use Vonage\Call\Event;
+use VonageTest\Fixture\ResponseTrait;
 use PHPUnit\Framework\TestCase;
 
 class EventTest extends TestCase

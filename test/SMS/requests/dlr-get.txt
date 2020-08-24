@@ -1,5 +1,5 @@
 GET /webhooks/dlr?msisdn=14845552121&to=16105553939&network-code=310004&messageId=14000000F9DBBBBB&price=0.00845000&status=delivered&scts=1234567890&err-code=0&api-key=a1234567&message-timestamp=2020-07-17+02%3A34%3A35 HTTP/1.1
 Accept: */*
-User-Agent: Nexmo/MessagingHUB/v1.0
+User-Agent: Vonage/MessagingHUB/v1.0
 Host: dragonmantank.ngrok.io
 X-Forwarded-For: 169.63.86.165

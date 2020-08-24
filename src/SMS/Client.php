@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace Nexmo\SMS;
+namespace Vonage\SMS;
 
-use Nexmo\Client\APIClient;
-use Nexmo\Client\APIResource;
-use Nexmo\Client\Exception\ThrottleException;
-use Nexmo\SMS\Message\Message;
+use Vonage\Client\APIClient;
+use Vonage\Client\APIResource;
+use Vonage\Client\Exception\ThrottleException;
+use Vonage\SMS\Message\Message;
 
 class Client implements APIClient
 {

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Nexmo\Client;
+namespace Vonage\Client;
 
 interface APIClient
 {

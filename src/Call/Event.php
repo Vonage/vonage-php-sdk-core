@@ -1,12 +1,12 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2017 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2017 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace Nexmo\Call;
+namespace Vonage\Call;
 
 /**
  * @deprecated Will be removed in a future releases
@@ -18,7 +18,7 @@ class Event implements \ArrayAccess
     public function __construct($data)
     {
         trigger_error(
-            'Nexmo\Call\Event is deprecated and will be removed in a future release',
+            'Vonage\Call\Event is deprecated and will be removed in a future release',
             E_USER_DEPRECATED
         );
 

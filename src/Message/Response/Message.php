@@ -1,16 +1,16 @@
 <?php
 /**
- * Nexmo Client Library for PHP
+ * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Nexmo, Inc. (http://nexmo.com)
- * @license   https://github.com/Nexmo/nexmo-php/blob/master/LICENSE.txt MIT License
+ * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
+ * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace Nexmo\Message\Response;
+namespace Vonage\Message\Response;
 
-use Nexmo\Client\Response\Response;
-use Nexmo\Client\Response\ResponseInterface;
-use Nexmo\Message\Callback\Receipt;
+use Vonage\Client\Response\Response;
+use Vonage\Client\Response\ResponseInterface;
+use Vonage\Message\Callback\Receipt;
 
 class Message extends Response implements ResponseInterface
 {

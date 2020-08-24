@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace Nexmo\SMS;
+namespace Vonage\SMS;
 
-use Nexmo\Client\Exception;
+use Vonage\Client\Exception;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Nexmo\Client\Exception\ThrottleException;
+use Vonage\Client\Exception\ThrottleException;
 
 class ExceptionErrorHandler
 {

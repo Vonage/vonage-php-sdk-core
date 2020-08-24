@@ -1,23 +1,23 @@
 <?php
-namespace NexmoTest\Voice;
+namespace VonageTest\Voice;
 
-use Nexmo\Client;
-use Nexmo\Voice\Call;
+use Vonage\Client;
+use Vonage\Voice\Call;
 use Prophecy\Argument;
-use Nexmo\Voice\NCCO\NCCO;
-use Nexmo\Voice\CallAction;
+use Vonage\Voice\NCCO\NCCO;
+use Vonage\Voice\CallAction;
 use Zend\Diactoros\Response;
-use Nexmo\Client\APIResource;
-use Nexmo\Client\Exception\Request;
-use Nexmo\Voice\Endpoint\Phone;
+use Vonage\Client\APIResource;
+use Vonage\Client\Exception\Request;
+use Vonage\Voice\Endpoint\Phone;
 use PHPUnit\Framework\TestCase;
-use Nexmo\Voice\NCCO\Action\Talk;
-use NexmoTest\Psr7AssertionTrait;
-use Nexmo\Voice\Client as VoiceClient;
-use Nexmo\Voice\Webhook\Event;
-use Nexmo\Voice\Filter\VoiceFilter;
-use Nexmo\Voice\OutboundCall;
-use Nexmo\Voice\Webhook;
+use Vonage\Voice\NCCO\Action\Talk;
+use VonageTest\Psr7AssertionTrait;
+use Vonage\Voice\Client as VoiceClient;
+use Vonage\Voice\Webhook\Event;
+use Vonage\Voice\Filter\VoiceFilter;
+use Vonage\Voice\OutboundCall;
+use Vonage\Voice\Webhook;
 use Psr\Http\Message\RequestInterface;
 
 class ClientTest extends TestCase
@@ -32,7 +32,7 @@ class ClientTest extends TestCase
     /**
      * @var \Prophecy\Prophecy\ObjectProphecy
      */
-    protected $nexmoClient;
+    protected $vonageClient;
 
     /**
      * @var VoiceClient
@@ -41,14 +41,14 @@ class ClientTest extends TestCase
     
     public function setUp()
     {
-        $this->nexmoClient = $this->prophesize(Client::class);
-        $this->nexmoClient->getApiUrl()->willReturn('https://api.nexmo.com');
+        $this->vonageClient = $this->prophesize(Client::class);
+        $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
 
         $this->api = new APIResource();
         $this->api
             ->setBaseUri('/v1/calls')
             ->setCollectionName('calls')
-            ->setClient($this->nexmoClient->reveal())
+            ->setClient($this->vonageClient->reveal())
         ;
 
         $this->voiceClient = new VoiceClient($this->api);
@@ -79,7 +79,7 @@ class ClientTest extends TestCase
             'ringing_timer' => '60'
         ];
 
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
             return true;
@@ -124,7 +124,7 @@ class ClientTest extends TestCase
             'ringing_timer' => '60'
         ];
 
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
             return true;
@@ -150,7 +150,7 @@ class ClientTest extends TestCase
         $this->expectException(Request::class);
         $this->expectExceptionMessage('Bad Request');
 
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
             return true;
         }))->willReturn($this->getResponse('error_vapi', 400));
@@ -164,7 +164,7 @@ class ClientTest extends TestCase
         $this->expectException(Request::class);
         $this->expectExceptionMessage("Unexpected error");
 
-        $this->nexmoClient->send(Argument::that(function () {
+        $this->vonageClient->send(Argument::that(function () {
             return true;
         }))->willReturn($this->getResponse('error_unknown_format', '400'))
         ;
@@ -176,7 +176,7 @@ class ClientTest extends TestCase
     public function testCanRetrieveCallInformation()
     {
         $id = '63f61863-4a51-4f6b-86e1-46edebcf9356';
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($id) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'GET', $request);
             return true;
         }))->willReturn($this->getResponse('call', 200));
@@ -202,7 +202,7 @@ class ClientTest extends TestCase
         $id = 'ssf61863-4a51-ef6b-11e1-w6edebcf93bb';
         $payload = ['action' => 'earmuff'];
 
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'PUT', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
             return true;
@@ -216,7 +216,7 @@ class ClientTest extends TestCase
         $id = 'ssf61863-4a51-ef6b-11e1-w6edebcf93bb';
         $payload = ['action' => 'earmuff'];
 
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'PUT', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
             return true;
@@ -230,7 +230,7 @@ class ClientTest extends TestCase
         $id = 'ssf61863-4a51-ef6b-11e1-w6edebcf93bb';
         $payload = ['action' => 'unearmuff'];
 
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'PUT', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
             return true;
@@ -244,7 +244,7 @@ class ClientTest extends TestCase
         $id = 'ssf61863-4a51-ef6b-11e1-w6edebcf93bb';
         $payload = ['action' => 'mute'];
 
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'PUT', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
             return true;
@@ -258,7 +258,7 @@ class ClientTest extends TestCase
         $id = 'ssf61863-4a51-ef6b-11e1-w6edebcf93bb';
         $payload = ['action' => 'unmute'];
 
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'PUT', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
             return true;
@@ -272,7 +272,7 @@ class ClientTest extends TestCase
         $id = 'ssf61863-4a51-ef6b-11e1-w6edebcf93bb';
         $payload = ['action' => 'hangup'];
 
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'PUT', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
             return true;
@@ -297,7 +297,7 @@ class ClientTest extends TestCase
             ]
         ];
 
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'PUT', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
             return true;
@@ -320,7 +320,7 @@ class ClientTest extends TestCase
             'url' => ['https://test.domain/transfer.json'],
         ];
 
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'PUT', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
             return true;
@@ -339,7 +339,7 @@ class ClientTest extends TestCase
             'level' => '0',
         ];
 
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id . '/stream', 'PUT', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
             return true;
@@ -356,7 +356,7 @@ class ClientTest extends TestCase
     {
         $id = '63f61863-4a51-4f6b-86e1-46edebcf9356';
 
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($id) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id . '/stream', 'DELETE', $request);
             return true;
         }))->willReturn($this->getResponse('stream-stopped'));
@@ -375,7 +375,7 @@ class ClientTest extends TestCase
             'text' => 'This is sample text',
         ];
 
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id . '/talk', 'PUT', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
             return true;
@@ -392,7 +392,7 @@ class ClientTest extends TestCase
     {
         $id = '63f61863-4a51-4f6b-86e1-46edebcf9356';
 
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($id) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id . '/talk', 'DELETE', $request);
             return true;
         }))->willReturn($this->getResponse('talk-stopped'));
@@ -409,7 +409,7 @@ class ClientTest extends TestCase
         $id = 'ssf61863-4a51-ef6b-11e1-w6edebcf93bb';
         $payload = ['digits' => '1492'];
 
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id . '/dtmf', 'PUT', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
             return true;
@@ -426,7 +426,7 @@ class ClientTest extends TestCase
         $response = $this->getResponse('search');
         $data = json_decode($response->getBody()->getContents(), true);
         $response->getBody()->rewind();
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'GET', $request);
             $this->assertRequestQueryContains('page_size', '10', $request);
             $this->assertRequestQueryContains('record_index', '0', $request);

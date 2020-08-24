@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace NexmoTest\Voice\Endpoint;
+namespace VonageTest\Voice\Endpoint;
 
-use Nexmo\Voice\Endpoint\VBC;
+use Vonage\Voice\Endpoint\VBC;
 use PHPUnit\Framework\TestCase;
 
 class VBCTest extends TestCase

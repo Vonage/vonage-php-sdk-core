@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace NexmoTest\Voice\NCCO;
+namespace VonageTest\Voice\NCCO;
 
-use Nexmo\Voice\NCCO\Action\Record;
-use Nexmo\Voice\NCCO\NCCO;
+use Vonage\Voice\NCCO\Action\Record;
+use Vonage\Voice\NCCO\NCCO;
 use PHPUnit\Framework\TestCase;
 
 class NCCOTest extends TestCase
