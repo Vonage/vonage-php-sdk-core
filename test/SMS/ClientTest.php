@@ -46,6 +46,7 @@ class ClientTest extends TestCase
             ->setErrorsOn200(true)
             ->setClient($this->vonageClient->reveal())
             ->setExceptionErrorHandler(new ExceptionErrorHandler())
+            ->setBaseUrl('https://rest.nexmo.com')
         ;
 
         $this->smsClient = new Client($this->api);
