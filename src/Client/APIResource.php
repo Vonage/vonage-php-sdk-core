@@ -19,7 +19,7 @@ class APIResource implements ClientAwareInterface
      * client or directly on this class.
      * @var string
      */
-    protected $baseUrl = Client::BASE_API;
+    protected $baseUrl = '';
 
     /**
      * @var string
@@ -66,7 +66,7 @@ class APIResource implements ClientAwareInterface
     public function create(array $body, string $uri = '') : ?array
     {
         $request = new Request(
-            $this->baseUrl . $this->baseUri . $uri,
+            $this->getBaseUrl() . $this->getBaseUri() . $uri,
             'POST',
             'php://temp',
             ['content-type' => 'application/json']
@@ -148,12 +148,18 @@ class APIResource implements ClientAwareInterface
         return $body;
     }
 
-    public function getBaseUrl() : string
+    public function getBaseUrl() : ?string
     {
+        if (!$this->baseUrl) {
+            if ($this->client) {
+                $this->baseUrl = $this->client->getApiUrl();
+            }
+        }
+
         return $this->baseUrl;
     }
 
-    public function getBaseUri() : string
+    public function getBaseUri() : ?string
     {
         return $this->baseUri;
     }
@@ -187,6 +193,7 @@ class APIResource implements ClientAwareInterface
     public function setExceptionErrorHandler(callable $handler)
     {
         $this->exceptionErrorHandler = $handler;
+        return $this;
     }
 
     protected function getException(ResponseInterface $response, RequestInterface $request)
