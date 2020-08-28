@@ -133,7 +133,7 @@ class ClientTest extends TestCase
 
     public function testCanStartPSD2Verification()
     {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertRequestJsonBodyContains('number', '14845551212', $request);
             $this->assertRequestJsonBodyContains('payee', 'Test Verify', $request);
             $this->assertRequestJsonBodyContains('amount', '5.25', $request);
@@ -151,7 +151,7 @@ class ClientTest extends TestCase
 
     public function testCanStartPSD2VerificationWithWorkflowID()
     {
-        $this->nexmoClient->send(Argument::that(function (RequestInterface $request) {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertRequestJsonBodyContains('number', '14845551212', $request);
             $this->assertRequestJsonBodyContains('payee', 'Test Verify', $request);
             $this->assertRequestJsonBodyContains('amount', '5.25', $request);
