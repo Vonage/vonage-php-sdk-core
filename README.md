@@ -164,13 +164,15 @@ Using your signature secret and the other supplied parameters, the signature can
 Vonage's [Verify API][doc_verify] makes it easy to prove that a user has provided their own phone number during signup,
 or implement second factor authentication during signin.
 
-You can start a verification process using a simple array:
+You can start a verification process using code like this:
 
 ```php
 $request = new \Vonage\Verify\Request('14845551212', 'My App');
 $response = $client->verify()->start($request);
 echo "Started verification with an id of: " . $response->getRequestId();
 ```
+
+Once the user inputs the pin code they received, call the `/check` endpoint with the request ID and the pin to confirm the pin is correct.
 
 ### Controlling a Verification
     
@@ -209,6 +211,20 @@ foreach($verification->getChecks() as $check){
     echo $check->getDate()->format('d-m-y') . ' ' . $check->getStatus() . PHP_EOL;
 }
 ```
+
+### Payment Verification
+
+Vonage's [Verify API][doc_verify] has SCA (Secure Customer Authentication) support, required by the PSD2 (Payment Services Directive) and used by applications that need to get confirmation from customers for payments. It includes the payee and the amount in the message.
+
+Start the verification for a payment like this:
+
+```php
+$request = new \Vonage\Verify\RequestPSD2('14845551212', 'My App');
+$response = $client->verify()->requestPSD2($request);
+echo "Started verification with an id of: " . $response['request_id'];
+```
+
+Once the user inputs the pin code they received, call the `/check` endpoint with the request ID and the pin to confirm the pin is correct.
 
 ### Making a Call 
 
