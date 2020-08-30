@@ -174,21 +174,22 @@ class Client implements APIClient
     public function transferCallWithNCCO(string $callId, NCCO $ncco) : void
     {
         $this->api->update($callId, [
+            'action' => 'transfer',
             'destination' => [
-                'action' => 'transfer',
+                'type' => 'ncco',
+                'ncco' => $ncco->toArray()
             ],
-            'type' => 'ncco',
-            'ncco' => $ncco->toArray()
         ]);
     }
 
     public function transferCallWithUrl(string $callId, string $url) : void
     {
         $this->api->update($callId, [
+            'action' => 'transfer',
             'destination' => [
-                'action' => 'transfer',
-            ],
-            'url' => [$url],
+                'type' => 'ncco',
+                'url' => [$url]
+            ]
         ]);
     }
 
