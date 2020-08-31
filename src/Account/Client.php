@@ -154,7 +154,7 @@ class Client implements ClientAwareInterface, APIClient
      */
     public function getBalance() : Balance
     {
-        $data = $this->getAccountAPI()->get('get-balance');
+        $data = $this->getAccountAPI()->get('get-balance', [], ['accept' => 'application/json']);
         
         if (is_null($data)) {
             throw new Exception\Server('No results found');

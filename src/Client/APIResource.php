@@ -63,13 +63,17 @@ class APIResource implements ClientAwareInterface
      */
     protected $lastResponse;
 
-    public function create(array $body, string $uri = '') : ?array
+    public function create(array $body, string $uri = '', $headers = []) : ?array
     {
+        if (empty($headers)) {
+            $headers = ['content-type' => 'application/json'];
+        }
+
         $request = new Request(
             $this->getBaseUrl() . $this->getBaseUri() . $uri,
             'POST',
             'php://temp',
-            ['content-type' => 'application/json']
+            $headers
         );
 
         $request->getBody()->write(json_encode($body));
@@ -90,17 +94,22 @@ class APIResource implements ClientAwareInterface
         return json_decode($response->getBody()->getContents(), true);
     }
 
-    public function delete(string $id) : ?array
+    public function delete(string $id, $headers = []) : ?array
     {
         $uri = $this->getBaseUrl() . $this->baseUri . '/' . $id;
+
+        if (empty($headers)) {
+            $headers = [
+                'accept' => 'application/json',
+                'content-type' => 'application/json'
+            ];
+        }
+
         $request = new Request(
             $uri,
             'DELETE',
             'php://temp',
-            [
-                'accept' => 'application/json',
-                'content-type' => 'application/json'
-            ]
+            $headers
         );
 
         $response = $this->getClient()->send($request);
@@ -117,20 +126,25 @@ class APIResource implements ClientAwareInterface
         return json_decode($response->getBody()->getContents(), true);
     }
 
-    public function get($id, array $query = [])
+    public function get($id, array $query = [], $headers = [])
     {
         $uri = $this->getBaseUrl() . $this->baseUri . '/' . $id;
         if (!empty($query)) {
             $uri .= '?' . http_build_query($query);
         }
+
+        if (empty($headers)) {
+            $headers = [
+                'accept' => 'application/json',
+                'content-type' => 'application/json'
+            ];
+        }
+
         $request = new Request(
             $uri,
             'GET',
             'php://temp',
-            [
-                'accept' => 'application/json',
-                'content-type' => 'application/json'
-            ]
+            $headers
         );
 
         $response = $this->getClient()->send($request);
@@ -284,13 +298,17 @@ class APIResource implements ClientAwareInterface
     /**
      * Allows form URL-encoded POST requests
      */
-    public function submit(array $formData = [], string $uri = '') : string
+    public function submit(array $formData = [], string $uri = '', $headers = []) : string
     {
+        if (empty($headers)) {
+            $headers = ['content-type' => 'application/x-www-form-urlencoded'];
+        }
+
         $request = new Request(
             $this->baseUrl . $this->baseUri . $uri,
             'POST',
             'php://temp',
-            ['content-type' => 'application/x-www-form-urlencoded']
+            $headers
         );
 
         $request->getBody()->write(http_build_query($formData));
@@ -307,13 +325,17 @@ class APIResource implements ClientAwareInterface
         return $response->getBody()->getContents();
     }
 
-    public function update(string $id, array $body) : ?array
+    public function update(string $id, array $body, $headers = []) : ?array
     {
+        if (empty($headers)) {
+            $headers = ['content-type' => 'application/json'];
+        }
+
         $request = new Request(
             $this->getBaseUrl() . $this->baseUri . '/' . $id,
             'PUT',
             'php://temp',
-            ['content-type' => 'application/json']
+            $headers
         );
 
         $request->getBody()->write(json_encode($body));
