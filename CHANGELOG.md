@@ -1,3 +1,47 @@
+# 2.3.0
+
+### Added
+
+* Support for the PSD2 Verify endpoints for EU customers
+* `vonage/nexmo-bridge` as a dependency so `\Nexmo` namespaced code works with the new `\Vonage` namespace
+* Calls using `\Vonage\Client\APIResource` can now specify headers for individual requests
+
+### Changed
+
+* Namespace changed from `\Nexmo` to `\Vonage` for all classes, interfaces, and traits
+
+### Fixed
+
+* Base URL overrides were not being pushed up properly
+* JSON payload for transferring via NCCO or URL was malformed
+
+# 2.2.3
+
+### Added
+
+* Added country as a search option for Nexmo\Numbers\Client::searchOwned()
+
+# 2.2.2
+
+### Fixed
+
+* #235 - Adds a fix for calling the calls() API client
+
+# 2.2.1
+
+### Added
+
+* Allow Conversations NCCO to set event URL information
+* Added missing Notify webhook and new ASR code
+
+### Changed
+
+* NCCOs now set let default options
+
+### Removed
+
+* Redundant comments in client for sms() and verify() clients
+
 # 2.2.0
 This release focuses on deprecation of dead and old code, and preps many internal changes in regards to v3.0.0. Where possible upcoming v3.0.0 changes were backported where backward-compatibility could be maintained.
 
