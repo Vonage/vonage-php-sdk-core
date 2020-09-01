@@ -1,10 +1,10 @@
 Client Library for PHP 
 ============================
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg)](CODE_OF_CONDUCT.md)
-[![Build Status](https://api.travis-ci.org/Vonage/vonage-php-core.svg?branch=master)](https://travis-ci.org/Vonage/vonage-php-core)
+[![Build Status](https://github.com/vonage/vonage-php-sdk-core/workflows/build/badge.svg)](https://github.com/Vonage/vonage-php-sdk-core/actions?query=workflow%3Abuild)
 [![Latest Stable Version](https://poser.pugx.org/vonage/client/v/stable)](https://packagist.org/packages/vonage/client)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE.txt)
-[![codecov](https://codecov.io/gh/Vonage/vonage-php-core/branch/master/graph/badge.svg)](https://codecov.io/gh/vonage/vonage-php-core)
+[![codecov](https://codecov.io/gh/Vonage/vonage-php-sdk-core/branch/master/graph/badge.svg)](https://codecov.io/gh/vonage/vonage-php-sdk-core)
 
 <img src="https://developer.nexmo.com/assets/images/Vonage_Nexmo.svg" height="48px" alt="Nexmo is now known as Vonage" />
 
