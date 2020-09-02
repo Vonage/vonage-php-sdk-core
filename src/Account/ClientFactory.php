@@ -11,14 +11,14 @@ class ClientFactory
     public function __invoke(ContainerInterface $container) : Client
     {
         /** @var APIResource $accountApi */
-        $accountApi = $container->get(APIResource::class);
+        $accountApi = $container->make(APIResource::class);
         $accountApi
             ->setBaseUrl($accountApi->getClient()->getRestUrl())
             ->setIsHAL(false)
             ->setBaseUri('/account')
         ;
 
-        $secretsApi = $container->get(APIResource::class);
+        $secretsApi = $container->make(APIResource::class);
         $secretsApi->setBaseUri('/account');
 
         return new Client($accountApi, $secretsApi);

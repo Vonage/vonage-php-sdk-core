@@ -59,7 +59,28 @@ class MapFactory implements FactoryInterface, ContainerInterface
             return $this->cache[$key];
         }
 
-        if (!$this->hasApi($key)) {
+        $instance = $this->make($key);
+        $this->cache[$key] = $instance;
+
+        return $instance;
+    }
+
+    public function getClient()
+    {
+        return $this->client;
+    }
+
+    /**
+     * @deprecated Use get() instead
+     */
+    public function getApi($api)
+    {
+        return $this->get($api);
+    }
+
+    public function make($key)
+    {
+        if (!$this->has($key)) {
             throw new \RuntimeException(sprintf(
                 'no map defined for `%s`',
                 $key
@@ -79,21 +100,8 @@ class MapFactory implements FactoryInterface, ContainerInterface
         if ($instance instanceof Client\ClientAwareInterface) {
             $instance->setClient($this->client);
         }
-        $this->cache[$key] = $instance;
+
         return $instance;
-    }
-
-    public function getClient()
-    {
-        return $this->client;
-    }
-
-    /**
-     * @deprecated Use get() instead
-     */
-    public function getApi($api)
-    {
-        return $this->get($api);
     }
 
     public function set($key, $value)
