@@ -18,6 +18,21 @@ class Standard extends Basic
         return $this->data['ported'];
     }
 
+    public function getRefundPrice()
+    {
+        return $this->data['refund_price'];
+    }
+
+    public function getRequestPrice()
+    {
+        return $this->data['request_price'];
+    }
+
+    public function getRemainingBalance()
+    {
+        return $this->data['remaining_balance'];
+    }
+
     public function getRoaming()
     {
         return $this->data['roaming'];
