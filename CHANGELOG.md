@@ -1,3 +1,13 @@
+# 2.3.1
+
+### Added
+
+* #247 - Fixed missing fields on Standard/Advanced number insight getters
+
+### Fixed
+
+* #246 - Fixed badge URLs in README
+
 # 2.3.0
 
 ### Added
