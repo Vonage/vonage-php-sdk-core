@@ -20,6 +20,9 @@ class StandardTest extends TestCase
      */
     public function testArrayAccess($standard, $inputData)
     {
+        $this->assertEquals($inputData['refund_price'], @$standard['refund_price']);
+        $this->assertEquals($inputData['request_price'], @$standard['request_price']);
+        $this->assertEquals($inputData['remaining_balance'], @$standard['remaining_balance']);
         $this->assertEquals($inputData['current_carrier'], @$standard['current_carrier']);
         $this->assertEquals($inputData['original_carrier'], @$standard['original_carrier']);
         $this->assertEquals($inputData['ported'], @$standard['ported']);
@@ -31,6 +34,9 @@ class StandardTest extends TestCase
      */
     public function testObjectAccess($standard, $inputData)
     {
+        $this->assertEquals($inputData['refund_price'], @$standard->getRefundPrice());
+        $this->assertEquals($inputData['request_price'], @$standard->getRequestPrice());
+        $this->assertEquals($inputData['remaining_balance'], @$standard->getRemainingBalance());
         $this->assertEquals($inputData['current_carrier'], $standard->getCurrentCarrier());
         $this->assertEquals($inputData['original_carrier'], $standard->getOriginalCarrier());
         $this->assertEquals($inputData['ported'], $standard->getPorted());
@@ -57,6 +63,9 @@ class StandardTest extends TestCase
                     'network_type' => 'mobile',
                 ],
             'ported' => 'assumed_ported',
+            'request_price' => '0.00500000',
+            'refund_price' => '0.00500000',
+            'remaining_balance' => '26.294675',
             'roaming' =>
                 [
                     'status' => 'unknown',
