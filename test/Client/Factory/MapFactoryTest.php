@@ -58,4 +58,25 @@ class MapFactoryTest extends TestCase
         $this->expectException(\RuntimeException::class);
         $this->factory->getApi('not');
     }
+
+    public function testMakeCreatesNewInstance()
+    {
+        $first = $this->factory->make('test');
+        $second = $this->factory->make('test');
+
+        $this->assertNotSame($first, $second);
+        $this->assertInstanceOf('VonageTest\Client\Factory\TestDouble', $first);
+        $this->assertInstanceOf('VonageTest\Client\Factory\TestDouble', $second);
+    }
+
+    public function testMakeDoesNotUseCache()
+    {
+        $cached = $this->factory->get('test');
+        $new = $this->factory->make('test');
+        $secondCached = $this->factory->get('test');
+
+        $this->assertNotSame($cached, $new);
+        $this->assertNotSame($secondCached, $new);
+        $this->assertSame($cached, $secondCached);
+    }
 }
