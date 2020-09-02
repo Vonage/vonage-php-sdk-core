@@ -41,7 +41,7 @@ class Client implements ClientAwareInterface, APIClient
      * Shim to handle older instatiations of this class
      * @deprecated Will remove in v3
      */
-    protected function getAccountAPI() : APIResource
+    public function getAccountAPI() : APIResource
     {
         if (is_null($this->accountAPI)) {
             $api = new APIResource();
@@ -65,7 +65,7 @@ class Client implements ClientAwareInterface, APIClient
      * Shim to handle older instatiations of this class
      * @deprecated Will remove in v3
      */
-    protected function getSecretsAPI() : APIResource
+    public function getSecretsAPI() : APIResource
     {
         if (is_null($this->secretsAPI)) {
             $api = new APIResource();
