@@ -1,3 +1,13 @@
+# 2.3.2
+
+### Added
+
+* #248 - Added `\Vonage\Client\MapFactory::make()` to always instatiate new objects
+
+### Fixed
+
+* #248 - Fixed type in URL for Account Client Factory
+
 # 2.3.1
 
 ### Added
