@@ -669,7 +669,7 @@ curl.cainfo = "C:\php\extras\ssl\cacert.pem"
 
 ### Pass custom HTTP client
 
-We allow use of any HTTPlug adapter, so you can create a client with alternative configuration if you need it, for example to take account of a local proxy, or deal with something else specific to your setup.
+We allow use of any HTTPlug adapter or PSR-18 compatible HTTP client, so you can create a client with alternative configuration if you need it, for example to take account of a local proxy, or deal with something else specific to your setup.
 
 Here's an example that reduces the default timeout to 5 seconds to avoid long delays if you have no route to our servers:
 
@@ -684,7 +684,7 @@ When things go wrong, you'll receive an `Exception`. The Vonage exception classe
 
 ### Composer installation fails due to Guzzle Adapter
 
-If you have a conflicting package installation that cannot co-exist with our recommended `php-http/guzzle6-adapter` package, then you may install the package `vonage/client-core` along with any package that satisfies the `php-http/client-implementation` requirement.
+If you have a conflicting package installation that cannot co-exist with our recommended `guzzlehttp/guzzle` package, then you may install the package `vonage/client-core` along with any package that satisfies the `php-http/client-implementation` requirement.
 
 See the [Packagist page for client-implementation](https://packagist.org/providers/php-http/client-implementation) for options.
 

@@ -30,7 +30,7 @@
     "email": "devrel@nexmo.com"
   },
   "require": {
-    "php": ">=7.1",
+    "php": ">=7.2",
     "psr/http-client-implementation": "^1.0",
     "laminas/laminas-diactoros": "^1.8.4 || ^2.0",
     "lcobucci/jwt": "^3.2",
@@ -43,7 +43,7 @@
     "php-http/mock-client": "^1.4",
     "estahn/phpunit-json-assertions": "^3.0.0",
     "squizlabs/php_codesniffer": "^3.1",
-    "php-http/guzzle6-adapter": "^2.0",
+    "guzzlehttp/guzzle": "^7.0",
     "phpstan/phpstan": "^0.12.11"
   },
   "autoload": {
