@@ -6,7 +6,7 @@ jobs:
             - ubuntu-latest
         strategy:
             matrix:
-                php: ['7.1', '7.2', '7.3', '7.4']
+                php: ['7.2', '7.3', '7.4']
         steps:
             - name: Configure Git
               if: ${{ matrix.os == 'windows-latest' }}

@@ -8,7 +8,7 @@
 
 namespace VonageTest;
 
-use Http\Adapter\Guzzle6\Client as HttpClient;
+use GuzzleHttp\Client as HttpClient;
 use Http\Message\MessageFactory\DiactorosMessageFactory;
 use Http\Mock\Client as HttpMock;
 use Vonage\Client;

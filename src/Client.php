@@ -77,7 +77,13 @@ class Client
     public function __construct(CredentialsInterface $credentials, $options = array(), ClientInterface $client = null)
     {
         if (is_null($client)) {
-            $client = new \Http\Adapter\Guzzle6\Client();
+            // Since the user did not pass a client, try and make a client
+            // using the Guzzle 6 adapter or Guzzle 7
+            if (class_exists(\Http\Adapter\Guzzle6\Client::class)) {
+                $client = new \Http\Adapter\Guzzle6\Client();
+            } elseif (class_exists(\GuzzleHttp\Client::class)) {
+                $client = new \GuzzleHttp\Client();
+            }
         }
 
         $this->setHttpClient($client);
