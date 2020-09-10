@@ -1,3 +1,10 @@
+# 2.4.0
+
+### Changed
+
+* #250 - Bumped minimum PHP version to 7.0
+* #250 - Now supports Guzzle 7 automatically, and swaps to Guzzle 7 as a dev dependency
+
 # 2.3.3
 
 ### Fixed
