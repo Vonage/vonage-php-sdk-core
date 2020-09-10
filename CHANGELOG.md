@@ -1,3 +1,9 @@
+# 2.3.3
+
+### Fixed
+
+* #252 - Connect action's `eventUrl` was being set as a string, changed to single element array of strings
+
 # 2.3.2
 
 ### Added

@@ -101,7 +101,7 @@ class Connect implements ActionInterface
 
         $eventWebhook = $this->getEventWebhook();
         if ($eventWebhook) {
-            $data['eventUrl'] = $eventWebhook->getUrl();
+            $data['eventUrl'] = [$eventWebhook->getUrl()];
             $data['eventMethod'] = $eventWebhook->getMethod();
         }
 

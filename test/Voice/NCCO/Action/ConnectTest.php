@@ -85,7 +85,7 @@ class ConnectTest extends TestCase
         $this->assertSame(6000, $ncco['limit']);
         $this->assertSame('https://test.domain/ringback.mp3', $ncco['ringbackTone']);
         $this->assertSame(10, $ncco['timeout']);
-        $this->assertSame('https://test.domain/events', $ncco['eventUrl']);
+        $this->assertSame(['https://test.domain/events'], $ncco['eventUrl']);
         $this->assertSame('POST', $ncco['eventMethod']);
     }
 
@@ -112,7 +112,7 @@ class ConnectTest extends TestCase
         $this->assertSame(6000, $ncco['limit']);
         $this->assertSame('https://test.domain/ringback.mp3', $ncco['ringbackTone']);
         $this->assertSame(10, $ncco['timeout']);
-        $this->assertSame('https://test.domain/events', $ncco['eventUrl']);
+        $this->assertSame(['https://test.domain/events'], $ncco['eventUrl']);
         $this->assertSame('POST', $ncco['eventMethod']);
     }
 
