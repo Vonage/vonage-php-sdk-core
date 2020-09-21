@@ -234,7 +234,7 @@ All `$client->voice()` methods require the client to be constructed with a `Vona
 ```php
 $basic  = new \Vonage\Client\Credentials\Basic('key', 'secret');
 $keypair = new \Vonage\Client\Credentials\Keypair(
-    file_get_contents((NEXMO_APPLICATION_PRIVATE_KEY_PATH),
+    file_get_contents(NEXMO_APPLICATION_PRIVATE_KEY_PATH),
     NEXMO_APPLICATION_ID
 );
 
