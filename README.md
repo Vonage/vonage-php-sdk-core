@@ -76,7 +76,7 @@ To use [Vonage's SMS API][doc_sms] to send an SMS message, call the `$client->sm
 required parameters, and a fluent interface provides access to optional parameters.
 
 ```php
-$text = new \Vonage\SMS\Message\SMS(NEXMO_TO, NEXMO_FROM, 'Test message using PHP client library');
+$text = new \Vonage\SMS\Message\SMS(VONAGE_TO, VONAGE_FROM, 'Test message using PHP client library');
 $text->setClientRef('test-message');
 ```
 
@@ -234,8 +234,8 @@ All `$client->voice()` methods require the client to be constructed with a `Vona
 ```php
 $basic  = new \Vonage\Client\Credentials\Basic('key', 'secret');
 $keypair = new \Vonage\Client\Credentials\Keypair(
-    file_get_contents((NEXMO_APPLICATION_PRIVATE_KEY_PATH),
-    NEXMO_APPLICATION_ID
+    file_get_contents((VONAGE_APPLICATION_PRIVATE_KEY_PATH),
+    VONAGE_APPLICATION_ID
 );
 
 $client = new \Vonage\Client(new \Vonage\Client\Credentials\Container($basic, $keypair));
@@ -458,7 +458,7 @@ $client->numbers()->purchase('14155550100', 'US');
 To update a number, use `numbers()->update` and pass in the configuration options you want to change. To clear a setting, pass in an empty value.
 
 ```php
-$number = $client->numbers()->get(NEXMO_NUMBER);
+$number = $client->numbers()->get(VONAGE_NUMBER);
 $number
     ->setAppId('1a20a124-1775-412b-b623-e6985f4aace0')
     ->setVoiceDestination('447700900002', 'tel')
