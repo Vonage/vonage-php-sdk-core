@@ -193,6 +193,10 @@ class Client implements ClientAwareInterface, APIClient
             'index' => 'integer'
         ];
 
+        if ($options instanceof FilterInterface) {
+            $options = $options->getQuery();
+        }
+
         $options = $this->parseParameters($possibleParameters, $options);
         $options = new AvailableNumbers($options);
         $api = $this->getApiResource();
