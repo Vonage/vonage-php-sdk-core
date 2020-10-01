@@ -43,7 +43,7 @@ class ClientTest extends TestCase
     protected $key_credentials;
     protected $container;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->http         = $this->getMockHttp();
         $this->request      = $this->getRequest();
