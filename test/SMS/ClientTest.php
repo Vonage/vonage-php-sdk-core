@@ -34,7 +34,7 @@ class ClientTest extends TestCase
      */
     protected $smsClient;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->vonageClient = $this->prophesize(vonageClient::class);
         $this->vonageClient->getRestUrl()->willReturn('https://rest.nexmo.com');
