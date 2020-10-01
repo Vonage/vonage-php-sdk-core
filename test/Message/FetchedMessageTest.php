@@ -31,12 +31,12 @@ class FetchedMessageTest extends TestCase
      */
     protected $message;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->message = new \Vonage\Message\Message('02000000D912945A');
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->message = null;
     }
