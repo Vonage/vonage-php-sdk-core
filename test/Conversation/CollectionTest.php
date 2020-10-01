@@ -32,7 +32,7 @@ class CollectionTest extends TestCase
      */
     protected $collection;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->vonageClient = $this->prophesize(Client::class);
         $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
