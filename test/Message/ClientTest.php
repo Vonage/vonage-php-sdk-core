@@ -38,7 +38,7 @@ class ClientTest extends TestCase
     /**
      * Create the Message API Client, and mock the Vonage Client
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->vonageClient = $this->prophesize('Vonage\Client');
         $this->vonageClient->getRestUrl()->willReturn('https://rest.nexmo.com');
