@@ -28,7 +28,7 @@ class ContainerTest extends TestCase
     protected $secret;
     protected $keypair;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->basic = new Basic('key', 'secret');
         $this->secret = new SignatureSecret('key', 'secret');
