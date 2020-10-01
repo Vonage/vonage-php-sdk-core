@@ -21,7 +21,7 @@ class MessageTest extends TestCase
     protected $to   = '15553331212';
     protected $from = '15554441212';
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->message = new Message($this->text, $this->to, $this->from);
     }
