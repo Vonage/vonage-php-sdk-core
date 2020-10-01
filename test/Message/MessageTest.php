@@ -27,14 +27,14 @@ class MessageTest extends TestCase
      */
     protected $message;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->message = new \Vonage\Message\Message($this->to, $this->from, [
             'text' => $this->text
         ]);
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->message = null;
     }
