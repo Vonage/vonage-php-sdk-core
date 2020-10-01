@@ -41,7 +41,7 @@ class VerificationTest extends TestCase
     /**
      * Create a basic verification object
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->verification = @new Verification($this->number, $this->brand);
         $this->existing    = new Verification('44a5279b27dd4a638d614d265ad57a77');
