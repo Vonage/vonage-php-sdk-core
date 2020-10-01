@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
 
 class ConfigTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         $this->config = new Config(
             "https://example.com/webhooks/inbound-sms",
