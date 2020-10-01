@@ -18,7 +18,7 @@ class EventTest extends TestCase
 
     protected $entity;
 
-    public function setup()
+    public function setup(): void
     {
         $data = $this->getResponseData(['calls', 'event']);
         $this->entity = @new Event($data);
