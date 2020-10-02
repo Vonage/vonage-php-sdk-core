@@ -32,7 +32,7 @@ class ClientTest extends TestCase
      */
     protected $accountClient;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->vonageClient = $this->getMockBuilder('Vonage\Client')->disableOriginalConstructor()->setMethods(['send', 'getApiUrl'])->getMock();
         $this->vonageClient->method('getApiUrl')->will($this->returnValue('https://api.nexmo.com'));

@@ -43,7 +43,7 @@ class ClientTest extends TestCase
      */
     protected $applicationClient;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->vonageClient = $this->prophesize('Vonage\Client');
         $this->vonageClient->getApiUrl()->willReturn('http://api.nexmo.com');

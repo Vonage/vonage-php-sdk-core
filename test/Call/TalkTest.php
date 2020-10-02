@@ -38,7 +38,7 @@ class TalkTest extends TestCase
      */
     protected $vonageClient;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->id = '3fd4d839-493e-4485-b2a5-ace527aacff3';
         $this->class = Talk::class;

@@ -20,7 +20,7 @@ class NumberTest extends TestCase
      */
     protected $number;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->number = new Number();
     }

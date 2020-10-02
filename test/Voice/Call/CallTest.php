@@ -20,7 +20,7 @@ class CallTest extends TestCase
     protected $from = '15551112323';
     protected $url = 'http://example.com';
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->call = new Call($this->url, $this->to, $this->from);
     }

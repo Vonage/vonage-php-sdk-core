@@ -33,7 +33,7 @@ class ClientTest extends TestCase
      */
     protected $redact;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->vonageClient = $this->prophesize('Vonage\Client');
         $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');

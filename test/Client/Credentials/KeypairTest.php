@@ -16,7 +16,7 @@ class KeypairTest extends TestCase
     protected $key;
     protected $application = 'c90ddd99-9a5d-455f-8ade-dde4859e590e';
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->key = file_get_contents(__DIR__ . '/test.key');
     }

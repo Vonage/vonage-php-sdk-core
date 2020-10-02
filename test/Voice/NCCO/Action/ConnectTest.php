@@ -16,7 +16,7 @@ class ConnectTest extends TestCase
      */
     protected $endpoint;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->endpoint = new Phone('15551231234');
     }

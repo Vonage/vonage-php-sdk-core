@@ -24,7 +24,7 @@ class MapFactoryTest extends TestCase
      */
     protected $client;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->client = new Client(new Client\Credentials\Basic('key', 'secret'));
 

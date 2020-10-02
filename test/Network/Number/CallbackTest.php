@@ -25,7 +25,7 @@ class CallbackTest extends TestCase
      */
     protected $callback;
 
-    public function setup()
+    public function setup(): void
     {
         $this->callback = new Callback($this->data);
     }

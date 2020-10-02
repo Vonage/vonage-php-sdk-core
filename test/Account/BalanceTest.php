@@ -18,7 +18,7 @@ class BalanceTest extends TestCase
      */
     protected $balance;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->balance = new Balance('12.99', false);
     }

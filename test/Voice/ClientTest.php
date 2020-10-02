@@ -39,7 +39,7 @@ class ClientTest extends TestCase
      */
     protected $voiceClient;
     
-    public function setUp()
+    public function setUp(): void
     {
         $this->vonageClient = $this->prophesize(Client::class);
         $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');

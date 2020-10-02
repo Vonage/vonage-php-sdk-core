@@ -19,7 +19,7 @@ class ResponseTest extends TestCase
     protected $json = '{"message-count":"1","messages":[{"status":"returnCode","message-id":"messageId","to":"to","client-ref":"client-ref","remaining-balance":"remaining-balance","message-price":"message-price","network":"network","error-text":"error-message"}]}';
     protected $array;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->response = new Response($this->json);
         $this->array = json_decode($this->json, true);

@@ -30,7 +30,7 @@ class ReceiptTest extends TestCase
      */
     protected $receipt;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->receipt = new Receipt($this->data);
     }

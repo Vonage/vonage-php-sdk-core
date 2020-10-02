@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 
 class PrefixPriceTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
     }
 
