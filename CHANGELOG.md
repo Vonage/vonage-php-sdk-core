@@ -1,3 +1,14 @@
+# 2.4.1
+
+### Changed
+
+- #256 - Added support for PHPUnit 8
+
+### Fixed
+
+- #253, #254 - Fixed some typos in the README
+- #255 - `\Vonage\Numbers\Client::searchAvailable()` now correctly handles filters using `FilterInterface`
+
 # 2.4.0
 
 ### Changed
