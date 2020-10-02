@@ -18,6 +18,7 @@ use PHPUnit\Framework\TestCase;
 use VonageTest\Psr7AssertionTrait;
 use Vonage\Client\Exception\Request;
 use Psr\Http\Message\RequestInterface;
+use Vonage\Numbers\Filter\AvailableNumbers;
 
 class ClientTest extends TestCase
 {
@@ -207,6 +208,26 @@ class ClientTest extends TestCase
                 $this->assertRequestQueryContains($name, $value, $request);
             }
 
+            return true;
+        }))->willReturn($this->getResponse('available-numbers'));
+
+        @$this->numberClient->searchAvailable('US', $options);
+    }
+
+    public function testSearchAvailableAcceptsFilterInterfaceOptions()
+    {
+        $options = new AvailableNumbers([
+            'pattern' => '1',
+            'search_pattern' => 2,
+            'features' => 'SMS,VOICE',
+            'size' => 100,
+            'index' => 19
+        ]);
+
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('/number/search', $request->getUri()->getPath());
+            $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('GET', $request->getMethod());
             return true;
         }))->willReturn($this->getResponse('available-numbers'));
 
