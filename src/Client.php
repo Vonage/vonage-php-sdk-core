@@ -2,52 +2,63 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
  */
+declare(strict_types=1);
 
 namespace Vonage;
 
-use Zend\Diactoros\Uri;
 use Http\Client\HttpClient;
-use Vonage\Client\Signature;
-use Zend\Diactoros\Request;
-use Vonage\Client\APIResource;
-use Vonage\Verify\Verification;
-use Vonage\Entity\EntityInterface;
-use Vonage\Client\Credentials\Basic;
-use Vonage\Client\Credentials\OAuth;
-use Vonage\Client\Factory\MapFactory;
-use Vonage\Client\Credentials\Keypair;
-use Vonage\Client\Exception\Exception;
+use InvalidArgumentException;
+use Laminas\Diactoros\Request;
+use Laminas\Diactoros\Uri;
+use Lcobucci\JWT\Token;
+use PackageVersions\Versions;
 use Psr\Container\ContainerInterface;
-use Psr\Http\Message\RequestInterface;
-use Vonage\Client\Credentials\Container;
-use Vonage\Client\Factory\FactoryInterface;
-use Vonage\Client\Credentials\SignatureSecret;
-use Vonage\Client\Credentials\CredentialsInterface;
+use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use RuntimeException;
+use Vonage\Account\ClientFactory;
+use Vonage\Call\Collection;
+use Vonage\Client\APIResource;
+use Vonage\Client\Credentials\Basic;
+use Vonage\Client\Credentials\Container;
+use Vonage\Client\Credentials\CredentialsInterface;
+use Vonage\Client\Credentials\Keypair;
+use Vonage\Client\Credentials\OAuth;
+use Vonage\Client\Credentials\SignatureSecret;
+use Vonage\Client\Exception\Exception;
+use Vonage\Client\Factory\FactoryInterface;
+use Vonage\Client\Factory\MapFactory;
+use Vonage\Client\Signature;
+use Vonage\Entity\EntityInterface;
+use Vonage\Verify\Verification;
 
 /**
  * Vonage API Client, allows access to the API from PHP.
  *
- * @method \Vonage\Account\Client account()
- * @method \Vonage\Message\Client message()
- * @method \Vonage\Application\Client applications()
- * @method \Vonage\Conversion\Client conversion()
- * @method \Vonage\Insights\Client insights()
- * @method \Vonage\Numbers\Client numbers()
- * @method \Vonage\Redact\Client redact()
- * @method \Vonage\SMS\Client sms()
- * @method \Vonage\Verify\Client  verify()
- * @method \Vonage\Voice\Client voice()
+ * @method Account\Client account()
+ * @method Message\Client message()
+ * @method Application\Client applications()
+ * @method Conversion\Client conversion()
+ * @method Insights\Client insights()
+ * @method Numbers\Client numbers()
+ * @method Redact\Client redact()
+ * @method SMS\Client sms()
+ * @method Verify\Client  verify()
+ * @method Voice\Client voice()
+ *
+ * @property string restUrl
+ * @property string apiUrl
  */
 class Client
 {
-    const VERSION = '2.2.0';
-
-    const BASE_API  = 'https://api.nexmo.com';
-    const BASE_REST = 'https://rest.nexmo.com';
+    public const VERSION = '2.4.2';
+    public const BASE_API = 'https://api.nexmo.com';
+    public const BASE_REST = 'https://rest.nexmo.com';
 
     /**
      * API Credentials
@@ -73,24 +84,28 @@ class Client
 
     /**
      * Create a new API client using the provided credentials.
+     *
+     * @param CredentialsInterface $credentials
+     * @param array $options
+     * @param ClientInterface|null $client
      */
-    public function __construct(CredentialsInterface $credentials, $options = array(), ClientInterface $client = null)
+    public function __construct(CredentialsInterface $credentials, $options = [], ClientInterface $client = null)
     {
         if (is_null($client)) {
             // Since the user did not pass a client, try and make a client
-            // using the Guzzle 6 adapter or Guzzle 7
-            if (class_exists(\Http\Adapter\Guzzle6\Client::class)) {
-                $client = new \Http\Adapter\Guzzle6\Client();
-            } elseif (class_exists(\GuzzleHttp\Client::class)) {
-                $client = new \GuzzleHttp\Client();
-            }
+            $client = new \GuzzleHttp\Client();
         }
 
         $this->setHttpClient($client);
 
         //make sure we know how to use the credentials
-        if (!($credentials instanceof Container) && !($credentials instanceof Basic) && !($credentials instanceof SignatureSecret) && !($credentials instanceof OAuth) && !($credentials instanceof Keypair)) {
-            throw new \RuntimeException('unknown credentials type: ' . get_class($credentials));
+        if (!($credentials instanceof Container) &&
+            !($credentials instanceof Basic) &&
+            !($credentials instanceof SignatureSecret) &&
+            !($credentials instanceof OAuth) &&
+            !($credentials instanceof Keypair)
+        ) {
+            throw new RuntimeException('unknown credentials type: ' . get_class($credentials));
         }
 
         $this->credentials = $credentials;
@@ -119,21 +134,21 @@ class Client
 
         $this->setFactory(new MapFactory([
             // Legacy Namespaces
-            'message' => \Vonage\Message\Client::class,
-            'calls' => \Vonage\Call\Collection::class,
-            'conversation' => \Vonage\Conversations\Collection::class,
-            'user' => \Vonage\User\Collection::class,
+            'message' => Message\Client::class,
+            'calls' => Collection::class,
+            'conversation' => Conversations\Collection::class,
+            'user' => User\Collection::class,
 
             // Registered Services by name
-            'account' => \Vonage\Account\ClientFactory::class,
-            'applications' => \Vonage\Application\ClientFactory::class,
-            'conversion' => \Vonage\Conversion\ClientFactory::class,
-            'insights' => \Vonage\Insights\ClientFactory::class,
-            'numbers' => \Vonage\Numbers\ClientFactory::class,
-            'redact' => \Vonage\Redact\ClientFactory::class,
-            'sms' => \Vonage\SMS\ClientFactory::class,
-            'verify' => \Vonage\Verify\ClientFactory::class,
-            'voice' => \Vonage\Voice\ClientFactory::class,
+            'account' => ClientFactory::class,
+            'applications' => Application\ClientFactory::class,
+            'conversion' => Conversion\ClientFactory::class,
+            'insights' => Insights\ClientFactory::class,
+            'numbers' => Numbers\ClientFactory::class,
+            'redact' => Redact\ClientFactory::class,
+            'sms' => SMS\ClientFactory::class,
+            'verify' => Verify\ClientFactory::class,
+            'voice' => Voice\ClientFactory::class,
 
             // Additional utility classes
             APIResource::class => APIResource::class,
@@ -142,13 +157,7 @@ class Client
         // Disable throwing E_USER_DEPRECATED notices by default, the user can turn it on during development
         if (array_key_exists('show_deprecations', $this->options) && !$this->options['show_deprecations']) {
             set_error_handler(
-                function (
-                    int $errno,
-                    string $errstr,
-                    string $errfile,
-                    int $errline,
-                    array $errorcontext
-                ) {
+                static function () {
                     return true;
                 },
                 E_USER_DEPRECATED
@@ -156,12 +165,18 @@ class Client
         }
     }
 
-    public function getRestUrl()
+    /**
+     * @return string
+     */
+    public function getRestUrl(): string
     {
         return $this->restUrl;
     }
 
-    public function getApiUrl()
+    /**
+     * @return string
+     */
+    public function getApiUrl(): string
     {
         return $this->apiUrl;
     }
@@ -172,19 +187,20 @@ class Client
      * This allows the default http client to be swapped out for a HTTPlug compatible
      * replacement.
      *
-     * @param HttpClient $client
+     * @param ClientInterface $client
      * @return $this
      */
-    public function setHttpClient(ClientInterface $client)
+    public function setHttpClient(ClientInterface $client): self
     {
         $this->client = $client;
+
         return $this;
     }
 
     /**
      * Get the Http Client used to make API requests.
      *
-     * @return HttpClient
+     * @return \GuzzleHttp\Client|HttpClient
      */
     public function getHttpClient()
     {
@@ -197,23 +213,28 @@ class Client
      * @param FactoryInterface $factory
      * @return $this
      */
-    public function setFactory(FactoryInterface $factory)
+    public function setFactory(FactoryInterface $factory): self
     {
         $this->factory = $factory;
+
         return $this;
     }
 
-    public function getFactory() : ContainerInterface
+    /**
+     * @return ContainerInterface
+     */
+    public function getFactory(): ContainerInterface
     {
         return $this->factory;
     }
 
     /**
      * @param RequestInterface $request
-     * @param Signature $signature
+     * @param SignatureSecret $credentials
      * @return RequestInterface
+     * @throws Exception
      */
-    public static function signRequest(RequestInterface $request, SignatureSecret $credentials)
+    public static function signRequest(RequestInterface $request, SignatureSecret $credentials): RequestInterface
     {
         switch ($request->getHeaderLine('content-type')) {
             case 'application/json':
@@ -236,40 +257,52 @@ class Client
                 $signature = new Signature($params, $credentials['signature_secret'], $credentials['signature_method']);
                 $params = $signature->getSignedParams();
                 $body->rewind();
-                $body->write(http_build_query($params, null, '&'));
+                $body->write(http_build_query($params, '', '&'));
                 break;
             default:
                 $query = [];
                 parse_str($request->getUri()->getQuery(), $query);
                 $query['api_key'] = $credentials['api_key'];
                 $signature = new Signature($query, $credentials['signature_secret'], $credentials['signature_method']);
-                $request = $request->withUri($request->getUri()->withQuery(http_build_query($signature->getSignedParams())));
+                $request = $request->withUri(
+                    $request->getUri()->withQuery(http_build_query($signature->getSignedParams()))
+                );
                 break;
         }
 
         return $request;
     }
 
-    public static function authRequest(RequestInterface $request, Basic $credentials)
+    /**
+     * @param RequestInterface $request
+     * @param Basic $credentials
+     * @return RequestInterface
+     */
+    public static function authRequest(RequestInterface $request, Basic $credentials): RequestInterface
     {
         switch ($request->getHeaderLine('content-type')) {
             case 'application/json':
                 if (static::requiresBasicAuth($request)) {
                     $c = $credentials->asArray();
-                    $request = $request->withHeader('Authorization', 'Basic ' . base64_encode($c['api_key'] . ':' . $c['api_secret']));
+                    $cx = base64_encode($c['api_key'] . ':' . $c['api_secret']);
+
+                    $request = $request->withHeader('Authorization', 'Basic ' . $cx);
                 } elseif (static::requiresAuthInUrlNotBody($request)) {
                     $query = [];
                     parse_str($request->getUri()->getQuery(), $query);
                     $query = array_merge($query, $credentials->asArray());
+
                     $request = $request->withUri($request->getUri()->withQuery(http_build_query($query)));
                 } else {
                     $body = $request->getBody();
                     $body->rewind();
                     $content = $body->getContents();
                     $params = json_decode($content, true);
+
                     if (!$params) {
                         $params = [];
                     }
+
                     $params = array_merge($params, $credentials->asArray());
                     $body->rewind();
                     $body->write(json_encode($params));
@@ -283,7 +316,7 @@ class Client
                 parse_str($content, $params);
                 $params = array_merge($params, $credentials->asArray());
                 $body->rewind();
-                $body->write(http_build_query($params, null, '&'));
+                $body->write(http_build_query($params, '', '&'));
                 break;
             default:
                 $query = [];
@@ -298,33 +331,33 @@ class Client
 
     /**
      * @param array $claims
-     * @return \Lcobucci\JWT\Token
+     * @return Token
+     * @throws Exception
      */
-    public function generateJwt($claims = [])
+    public function generateJwt($claims = []): Token
     {
         if (method_exists($this->credentials, "generateJwt")) {
             return $this->credentials->generateJwt($claims);
         }
-        throw new Exception(get_class($this->credentials).' does not support JWT generation');
+
+        throw new Exception(get_class($this->credentials) . ' does not support JWT generation');
     }
-    
+
     /**
      * Takes a URL and a key=>value array to generate a GET PSR-7 request object
      *
      * @param string $url The URL to make a request to
      * @param array $params Key=>Value array of data to use as the query string
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return ResponseInterface
+     * @throws ClientExceptionInterface
+     * @throws Exception
      */
-    public function get($url, array $params = [])
+    public function get(string $url, array $params = []): ResponseInterface
     {
         $queryString = '?' . http_build_query($params);
+        $url .= $queryString;
 
-        $url = $url . $queryString;
-
-        $request = new Request(
-            $url,
-            'GET'
-        );
+        $request = new Request($url, 'GET');
 
         return $this->send($request);
     }
@@ -334,9 +367,11 @@ class Client
      *
      * @param string $url The URL to make a request to
      * @param array $params Key=>Value array of data to send
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return ResponseInterface
+     * @throws ClientExceptionInterface
+     * @throws Exception
      */
-    public function post($url, array $params)
+    public function post(string $url, array $params): ResponseInterface
     {
         $request = new Request(
             $url,
@@ -346,6 +381,7 @@ class Client
         );
 
         $request->getBody()->write(json_encode($params));
+
         return $this->send($request);
     }
 
@@ -354,9 +390,11 @@ class Client
      *
      * @param string $url The URL to make a request to
      * @param array $params Key=>Value array of data to send
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return ResponseInterface
+     * @throws ClientExceptionInterface
+     * @throws Exception
      */
-    public function postUrlEncoded($url, array $params)
+    public function postUrlEncoded(string $url, array $params): ResponseInterface
     {
         $request = new Request(
             $url,
@@ -366,6 +404,7 @@ class Client
         );
 
         $request->getBody()->write(http_build_query($params));
+
         return $this->send($request);
     }
 
@@ -374,9 +413,11 @@ class Client
      *
      * @param string $url The URL to make a request to
      * @param array $params Key=>Value array of data to send
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return ResponseInterface
+     * @throws ClientExceptionInterface
+     * @throws Exception
      */
-    public function put($url, array $params)
+    public function put(string $url, array $params): ResponseInterface
     {
         $request = new Request(
             $url,
@@ -386,6 +427,7 @@ class Client
         );
 
         $request->getBody()->write(json_encode($params));
+
         return $this->send($request);
     }
 
@@ -393,9 +435,11 @@ class Client
      * Takes a URL and a key=>value array to generate a DELETE PSR-7 request object
      *
      * @param string $url The URL to make a request to
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return ResponseInterface
+     * @throws ClientExceptionInterface
+     * @throws Exception
      */
-    public function delete($url)
+    public function delete(string $url): ResponseInterface
     {
         $request = new Request(
             $url,
@@ -406,21 +450,27 @@ class Client
     }
 
     /**
-    * Wraps the HTTP Client, creates a new PSR-7 request adding authentication, signatures, etc.
-    *
-    * @param \Psr\Http\Message\RequestInterface $request
-    * @return \Psr\Http\Message\ResponseInterface
-    */
-    public function send(\Psr\Http\Message\RequestInterface $request)
+     * Wraps the HTTP Client, creates a new PSR-7 request adding authentication, signatures, etc.
+     *
+     * @param RequestInterface $request
+     * @return ResponseInterface
+     * @throws ClientExceptionInterface
+     * @throws Exception
+     */
+    public function send(RequestInterface $request): ResponseInterface
     {
         if ($this->credentials instanceof Container) {
             if ($this->needsKeypairAuthentication($request)) {
-                $request = $request->withHeader('Authorization', 'Bearer ' . $this->credentials->get(Keypair::class)->generateJwt());
+                $c = $this->credentials->get(Keypair::class)->generateJwt();
+
+                $request = $request->withHeader('Authorization', 'Bearer ' . $c);
             } else {
                 $request = self::authRequest($request, $this->credentials->get(Basic::class));
             }
         } elseif ($this->credentials instanceof Keypair) {
-            $request = $request->withHeader('Authorization', 'Bearer ' . $this->credentials->generateJwt());
+            $c = $this->credentials->generateJwt();
+
+            $request = $request->withHeader('Authorization', 'Bearer ' . $c);
         } elseif ($this->credentials instanceof SignatureSecret) {
             $request = self::signRequest($request, $this->credentials);
         } elseif ($this->credentials instanceof Basic) {
@@ -432,7 +482,7 @@ class Client
         //allow any part of the URI to be replaced with a simple search
         if (isset($this->options['url'])) {
             foreach ($this->options['url'] as $search => $replace) {
-                $uri = (string) $request->getUri();
+                $uri = (string)$request->getUri();
 
                 $new = str_replace($search, $replace, $uri);
                 if ($uri !== $new) {
@@ -447,66 +497,82 @@ class Client
         $userAgent = [];
 
         // Library name
-        $userAgent[] = 'vonage-php/'.$this->getVersion();
+        $userAgent[] = 'vonage-php/' . $this->getVersion();
 
         // Language name
-        $userAgent[] = 'php/'.PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION;
+        $userAgent[] = 'php/' . PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION;
 
         // If we have an app set, add that to the UA
         if (isset($this->options['app'])) {
             $app = $this->options['app'];
-            $userAgent[] = $app['name'].'/'.$app['version'];
+            $userAgent[] = $app['name'] . '/' . $app['version'];
         }
 
         // Set the header. Build by joining all the parts we have with a space
         $request = $request->withHeader('User-Agent', implode(" ", $userAgent));
 
-        $response = $this->client->sendRequest($request);
-        return $response;
+        return $this->client->sendRequest($request);
     }
 
-    protected function validateAppOptions($app)
+    /**
+     * @param $app
+     */
+    protected function validateAppOptions($app): void
     {
         $disallowedCharacters = ['/', ' ', "\t", "\n"];
+
         foreach (['name', 'version'] as $key) {
             if (!isset($app[$key])) {
-                throw new \InvalidArgumentException('app.'.$key.' has not been set');
+                throw new InvalidArgumentException('app.' . $key . ' has not been set');
             }
 
             foreach ($disallowedCharacters as $char) {
                 if (strpos($app[$key], $char) !== false) {
-                    throw new \InvalidArgumentException('app.'.$key.' cannot contain the '.$char.' character');
+                    throw new InvalidArgumentException('app.' . $key . ' cannot contain the ' . $char . ' character');
                 }
             }
         }
     }
 
-    public function serialize(EntityInterface $entity)
+    /**
+     * @param EntityInterface $entity
+     * @return string
+     */
+    public function serialize(EntityInterface $entity): string
     {
         if ($entity instanceof Verification) {
             return $this->verify()->serialize($entity);
         }
 
-        throw new \RuntimeException('unknown class `' . get_class($entity) . '``');
+        throw new RuntimeException('unknown class `' . get_class($entity) . '``');
     }
 
-    public function unserialize($entity)
+    /**
+     * @param $entity
+     * @return Verification
+     */
+    public function unserialize($entity): Verification
     {
         if (is_string($entity)) {
-            $entity = unserialize($entity);
+            $entity = unserialize($entity, [Verification::class]);
         }
 
         if ($entity instanceof Verification) {
             return $this->verify()->unserialize($entity);
         }
 
-        throw new \RuntimeException('unknown class `' . get_class($entity) . '``');
+        throw new RuntimeException('unknown class `' . get_class($entity) . '``');
     }
 
+    /**
+     * @param $name
+     * @param $args
+     * @return mixed
+     */
     public function __call($name, $args)
     {
         if (!$this->factory->hasApi($name)) {
-            throw new \RuntimeException('no api namespace found: ' . $name);
+            throw new RuntimeException('no api namespace found: ' . $name);
         }
 
         $collection = $this->factory->getApi($name);
@@ -518,16 +584,25 @@ class Client
         return call_user_func_array($collection, $args);
     }
 
+    /**
+     * @param $name
+     * @return mixed
+     * @noinspection MagicMethodsValidityInspection
+     */
     public function __get($name)
     {
-        if (!$this->factory->has($name)) {
-            throw new \RuntimeException('no api namespace found: ' . $name);
+        if (!$this->factory->hasApi($name)) {
+            throw new RuntimeException('no api namespace found: ' . $name);
         }
 
-        return $this->factory->get($name);
+        return $this->factory->getApi($name);
     }
 
-    protected static function requiresBasicAuth(\Psr\Http\Message\RequestInterface $request)
+    /**
+     * @param RequestInterface $request
+     * @return bool
+     */
+    protected static function requiresBasicAuth(RequestInterface $request): bool
     {
         $path = $request->getUri()->getPath();
         $isSecretManagementEndpoint = strpos($path, '/accounts') === 0 && strpos($path, '/secrets') !== false;
@@ -536,15 +611,22 @@ class Client
         return $isSecretManagementEndpoint || $isApplicationV2;
     }
 
-    protected static function requiresAuthInUrlNotBody(\Psr\Http\Message\RequestInterface $request)
+    /**
+     * @param RequestInterface $request
+     * @return bool
+     */
+    protected static function requiresAuthInUrlNotBody(RequestInterface $request): bool
     {
         $path = $request->getUri()->getPath();
-        $isRedactEndpoint = strpos($path, '/v1/redact') === 0;
 
-        return $isRedactEndpoint;
+        return strpos($path, '/v1/redact') === 0;
     }
 
-    protected function needsKeypairAuthentication(\Psr\Http\Message\RequestInterface $request)
+    /**
+     * @param RequestInterface $request
+     * @return bool
+     */
+    protected function needsKeypairAuthentication(RequestInterface $request): bool
     {
         $path = $request->getUri()->getPath();
         $isCallEndpoint = strpos($path, '/v1/calls') === 0;
@@ -555,8 +637,11 @@ class Client
         return $isCallEndpoint || $isRecordingUrl || $isStitchEndpoint || $isUserEndpoint;
     }
 
-    protected function getVersion()
+    /**
+     * @return string
+     */
+    protected function getVersion(): string
     {
-        return \PackageVersions\Versions::getVersion('vonage/client-core');
+        return Versions::getVersion('vonage/client-core');
     }
 }

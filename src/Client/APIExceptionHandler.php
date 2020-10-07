@@ -1,4 +1,10 @@
 <?php
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
+ */
 declare(strict_types=1);
 
 namespace Vonage\Client;
@@ -15,18 +21,24 @@ class APIExceptionHandler
     protected $rfc7807Format = "%s: %s. See %s for more information";
 
     /**
-     * @param string $format sprintf() format to use for error messages
+     * @param string $format
      */
-    public function setRfc7807Format(string $format)
+    public function setRfc7807Format(string $format): void
     {
         $this->rfc7807Format = $format;
     }
 
+    /**
+     * @param ResponseInterface $response
+     * @param RequestInterface $request
+     * @return Exception\Request|Exception\Server
+     * @throws Exception\Exception
+     */
     public function __invoke(ResponseInterface $response, RequestInterface $request)
     {
         $body = json_decode($response->getBody()->getContents(), true);
         $response->getBody()->rewind();
-        $status = $response->getStatusCode();
+        $status = (int)$response->getStatusCode();
 
         // Error responses aren't consistent. Some are generated within the
         // proxy and some are generated within voice itself. This handles
@@ -61,11 +73,11 @@ class APIExceptionHandler
             $errorTitle = $body['description'];
         }
 
-        if ($status >= 400 and $status < 500) {
+        if ($status >= 400 && $status < 500) {
             $e = new Exception\Request($errorTitle, $status);
             @$e->setRequest($request);
             @$e->setResponse($response);
-        } elseif ($status >= 500 and $status < 600) {
+        } elseif ($status >= 500 && $status < 600) {
             $e = new Exception\Server($errorTitle, $status);
             @$e->setRequest($request);
             @$e->setResponse($response);

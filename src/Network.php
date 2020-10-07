@@ -1,23 +1,31 @@
 <?php
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
+ */
+declare(strict_types=1);
 
 namespace Vonage;
 
 use ArrayAccess;
+use JsonSerializable;
 use Vonage\Client\Exception\Exception;
 use Vonage\Entity\EntityInterface;
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
-use Vonage\Entity\JsonSerializableInterface;
 use Vonage\Entity\JsonResponseTrait;
+use Vonage\Entity\JsonSerializableInterface;
 use Vonage\Entity\JsonSerializableTrait;
-use Vonage\Entity\NoRequestResponseTrait;
 use Vonage\Entity\JsonUnserializableInterface;
+use Vonage\Entity\NoRequestResponseTrait;
 
 /**
  * This class will no longer be accessible via array access, nor contain request/response information after v2.
  */
 class Network implements
     EntityInterface,
-    \JsonSerializable,
+    JsonSerializable,
     JsonSerializableInterface,
     JsonUnserializableInterface,
     ArrayAccess,
@@ -27,51 +35,75 @@ class Network implements
     use NoRequestResponseTrait;
     use JsonResponseTrait;
 
+    /**
+     * @var array
+     */
     protected $data = [];
 
+    /**
+     * Network constructor.
+     *
+     * @param $networkCode
+     * @param $networkName
+     */
     public function __construct($networkCode, $networkName)
     {
         $this->data['network_code'] = $networkCode;
         $this->data['network_name'] = $networkName;
     }
 
+    /**
+     * @return mixed
+     */
     public function getCode()
     {
         return $this->data['network_code'];
     }
 
+    /**
+     * @return mixed
+     */
     public function getName()
     {
         return $this->data['network_name'];
     }
 
+    /**
+     * @return mixed
+     */
     public function getOutboundSmsPrice()
     {
-        if (isset($this->data['sms_price'])) {
-            return $this->data['sms_price'];
-        }
-        return $this->data['price'];
+        return $this->data['sms_price'] ?? $this->data['price'];
     }
 
+    /**
+     * @return mixed
+     */
     public function getOutboundVoicePrice()
     {
-        if (isset($this->data['voice_price'])) {
-            return $this->data['voice_price'];
-        }
-        return $this->data['price'];
+        return $this->data['voice_price'] ?? $this->data['price'];
     }
 
+    /**
+     * @return mixed
+     */
     public function getPrefixPrice()
     {
         return $this->data['mt_price'];
     }
 
+    /**
+     * @return mixed
+     */
     public function getCurrency()
     {
         return $this->data['currency'];
     }
 
-    public function jsonUnserialize(array $json)
+    /**
+     * @param array $json
+     */
+    public function jsonUnserialize(array $json): void
     {
         trigger_error(
             get_class($this) . "::jsonUnserialize is deprecated, please fromArray() instead",
@@ -81,47 +113,74 @@ class Network implements
         $this->fromArray($json);
     }
 
+    /**
+     * @return array|mixed
+     */
     public function jsonSerialize()
     {
         return $this->toArray();
     }
 
-    public function offsetExists($offset)
+    /**
+     * @param mixed $offset
+     * @return bool
+     */
+    public function offsetExists($offset): bool
     {
         trigger_error(
             "Array access for " . get_class($this) . " is deprecated, please use getter methods",
             E_USER_DEPRECATED
         );
+
         return isset($this->data[$offset]);
     }
 
+    /**
+     * @param mixed $offset
+     * @return mixed
+     */
     public function offsetGet($offset)
     {
         trigger_error(
             "Array access for " . get_class($this) . " is deprecated, please use getter methods",
             E_USER_DEPRECATED
         );
+
         return $this->data[$offset];
     }
 
-    public function offsetSet($offset, $value)
+    /**
+     * @param mixed $offset
+     * @param mixed $value
+     * @throws Exception
+     */
+    public function offsetSet($offset, $value): void
     {
         throw new Exception('Network is read only');
     }
 
-    public function offsetUnset($offset)
+    /**
+     * @param mixed $offset
+     * @throws Exception
+     */
+    public function offsetUnset($offset): void
     {
         throw new Exception('Network is read only');
     }
 
-    public function fromArray(array $data) : void
+    /**
+     * @param array $data
+     */
+    public function fromArray(array $data): void
     {
         // Convert CamelCase to snake_case as that's how we use array access in every other object
         $storage = [];
+
         foreach ($data as $k => $v) {
-            $k = ltrim(strtolower(preg_replace('/[A-Z]([A-Z](?![a-z]))*/', '_$0', $k)), '_');
+            $k = strtolower(ltrim(preg_replace('/[A-Z]([A-Z](?![a-z]))*/', '_$0', $k), '_'));
             $storage[$k] = $v;
         }
+
         $this->data = $storage;
     }
 

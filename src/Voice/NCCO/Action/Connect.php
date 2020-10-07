@@ -1,17 +1,23 @@
 <?php
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
+ */
 declare(strict_types=1);
 
 namespace Vonage\Voice\NCCO\Action;
 
-use Vonage\Voice\Webhook;
+use InvalidArgumentException;
 use Vonage\Voice\Endpoint\EndpointInterface;
+use Vonage\Voice\Webhook;
 
 class Connect implements ActionInterface
 {
-    const EVENT_TYPE_SYNCHRONOUS = 'syncchronous';
-
-    const MACHINE_CONTINUE = 'continue';
-    const MACHINE_HANGUP = 'hangup';
+    public const EVENT_TYPE_SYNCHRONOUS = 'synchronous';
+    public const MACHINE_CONTINUE = 'continue';
+    public const MACHINE_HANGUP = 'hangup';
 
     /**
      * @var EndpointInterface
@@ -53,23 +59,36 @@ class Connect implements ActionInterface
      */
     protected $ringbackTone;
 
+    /**
+     * Connect constructor.
+     *
+     * @param EndpointInterface $endpoint
+     */
     public function __construct(EndpointInterface $endpoint)
     {
         $this->endpoint = $endpoint;
     }
 
-    public static function factory(EndpointInterface $endpoint, array $data = []) : Connect
+    /**
+     * @param EndpointInterface $endpoint
+     * @return Connect
+     */
+    public static function factory(EndpointInterface $endpoint): Connect
     {
-        $connect = new Connect($endpoint);
-
-        return $connect;
+        return new Connect($endpoint);
     }
 
+    /**
+     * @return array|mixed
+     */
     public function jsonSerialize()
     {
         return $this->toNCCOArray();
     }
 
+    /**
+     * @return array
+     */
     public function toNCCOArray(): array
     {
         $data = [
@@ -90,22 +109,26 @@ class Connect implements ActionInterface
         }
 
         $from = $this->getFrom();
+
         if ($from) {
             $data['from'] = $from;
         }
 
         $eventType = $this->getEventType();
+
         if ($eventType) {
             $data['eventType'] = $eventType;
         }
 
         $eventWebhook = $this->getEventWebhook();
+
         if ($eventWebhook) {
             $data['eventUrl'] = [$eventWebhook->getUrl()];
             $data['eventMethod'] = $eventWebhook->getMethod();
         }
 
         $ringbackTone = $this->getRingbackTone();
+
         if ($ringbackTone) {
             $data['ringbackTone'] = $ringbackTone;
         }
@@ -113,90 +136,146 @@ class Connect implements ActionInterface
         return $data;
     }
 
-    public function getFrom() : ?string
+    /**
+     * @return string|null
+     */
+    public function getFrom(): ?string
     {
         return $this->from;
     }
 
-    public function setFrom(string $from) : self
+    /**
+     * @param string $from
+     * @return $this
+     */
+    public function setFrom(string $from): self
     {
         $this->from = $from;
+
         return $this;
     }
 
-    public function getEventType() : ?string
+    /**
+     * @return string|null
+     */
+    public function getEventType(): ?string
     {
         return $this->eventType;
     }
 
-    public function setEventType(string $eventType) : self
+    /**
+     * @param string $eventType
+     * @return $this
+     */
+    public function setEventType(string $eventType): self
     {
         if ($eventType !== self::EVENT_TYPE_SYNCHRONOUS) {
-            throw new \InvalidArgumentException('Unknown event type for Connection action');
+            throw new InvalidArgumentException('Unknown event type for Connection action');
         }
 
         $this->eventType = $eventType;
+
         return $this;
     }
 
-    public function getTimeout() : ?int
+    /**
+     * @return int|null
+     */
+    public function getTimeout(): ?int
     {
         return $this->timeout;
     }
 
-    public function setTimeout(int $timeout) : self
+    /**
+     * @param int $timeout
+     * @return $this
+     */
+    public function setTimeout(int $timeout): self
     {
         $this->timeout = $timeout;
+
         return $this;
     }
 
-    public function getLimit() : ?int
+    /**
+     * @return int|null
+     */
+    public function getLimit(): ?int
     {
         return $this->limit;
     }
 
-    public function setLimit(int $limit) : self
+    /**
+     * @param int $limit
+     * @return $this
+     */
+    public function setLimit(int $limit): self
     {
         $this->limit = $limit;
+
         return $this;
     }
 
-    public function getMachineDetection() : ?string
+    /**
+     * @return string|null
+     */
+    public function getMachineDetection(): ?string
     {
         return $this->machineDetection;
     }
 
-    public function setMachineDetection(string $machineDetection) : self
+    /**
+     * @param string $machineDetection
+     * @return $this
+     */
+    public function setMachineDetection(string $machineDetection): self
     {
         if ($machineDetection !== self::MACHINE_CONTINUE &&
             $machineDetection !== self::MACHINE_HANGUP
         ) {
-            throw new \InvalidArgumentException('Uknown machine detection type');
+            throw new InvalidArgumentException('Unknown machine detection type');
         }
 
         $this->machineDetection = $machineDetection;
+
         return $this;
     }
 
-    public function getEventWebhook() : ?Webhook
+    /**
+     * @return Webhook|null
+     */
+    public function getEventWebhook(): ?Webhook
     {
         return $this->eventWebhook;
     }
 
-    public function setEventWebhook(Webhook $eventWebhook) : self
+    /**
+     * @param Webhook $eventWebhook
+     * @return $this
+     */
+    public function setEventWebhook(Webhook $eventWebhook): self
     {
         $this->eventWebhook = $eventWebhook;
+
         return $this;
     }
 
-    public function getRingbackTone() : ?string
+    /**
+     * @return string|null
+     */
+    public function getRingbackTone(): ?string
     {
         return $this->ringbackTone;
     }
 
-    public function setRingbackTone(string $ringbackTone) : self
+    /**
+     * @param string $ringbackTone
+     * @return $this
+     */
+    public function setRingbackTone(string $ringbackTone): self
     {
         $this->ringbackTone = $ringbackTone;
+
         return $this;
     }
 }

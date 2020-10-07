@@ -2,41 +2,50 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
  */
+declare(strict_types=1);
 
-namespace VonageTest\Insights;
+namespace Vonage\Test\Insights;
 
-use Vonage\Insights\Standard;
 use PHPUnit\Framework\TestCase;
+use Vonage\Insights\CnamTrait;
+use Vonage\Insights\Standard;
 
 class CnamTraitTest extends TestCase
 {
 
     /**
      * @dataProvider cnamProvider
+     * @param $cnam
+     * @param $inputData
      */
-    public function testArrayAccess($cnam, $inputData)
+    public function testArrayAccess($cnam, $inputData): void
     {
-        $this->assertEquals($inputData['first_name'], @$cnam['first_name']);
-        $this->assertEquals($inputData['last_name'], @$cnam['last_name']);
-        $this->assertEquals($inputData['caller_name'], @$cnam['caller_name']);
-        $this->assertEquals($inputData['caller_type'], @$cnam['caller_type']);
+        self::assertEquals($inputData['first_name'], @$cnam['first_name']);
+        self::assertEquals($inputData['last_name'], @$cnam['last_name']);
+        self::assertEquals($inputData['caller_name'], @$cnam['caller_name']);
+        self::assertEquals($inputData['caller_type'], @$cnam['caller_type']);
     }
 
     /**
      * @dataProvider cnamProvider
+     * @param $cnam
+     * @param $inputData
      */
-    public function testObjectAccess($cnam, $inputData)
+    public function testObjectAccess($cnam, $inputData): void
     {
-        $this->assertEquals($inputData['first_name'], $cnam->getFirstName());
-        $this->assertEquals($inputData['last_name'], $cnam->getLastName());
-        $this->assertEquals($inputData['caller_name'], $cnam->getCallerName());
-        $this->assertEquals($inputData['caller_type'], $cnam->getCallerType());
+        self::assertEquals($inputData['first_name'], $cnam->getFirstName());
+        self::assertEquals($inputData['last_name'], $cnam->getLastName());
+        self::assertEquals($inputData['caller_name'], $cnam->getCallerName());
+        self::assertEquals($inputData['caller_type'], $cnam->getCallerType());
     }
 
-    public function cnamProvider()
+    /**
+     * @return array
+     */
+    public function cnamProvider(): array
     {
         $r = [];
 
@@ -55,6 +64,7 @@ class CnamTraitTest extends TestCase
     }
 }
 
-class Cnam extends Standard {
-    use \Vonage\Insights\CnamTrait;
+class Cnam extends Standard
+{
+    use CnamTrait;
 }

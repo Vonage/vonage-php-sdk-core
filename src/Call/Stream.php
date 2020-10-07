@@ -2,23 +2,24 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2017 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
  */
+declare(strict_types=1);
 
 namespace Vonage\Call;
 
-use Vonage\Call\Collection;
+use Laminas\Diactoros\Request;
+use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Http\Message\ResponseInterface;
 use Vonage\Client\ClientAwareInterface;
 use Vonage\Client\ClientAwareTrait;
-use Vonage\Entity\JsonSerializableInterface;
-use Psr\Http\Message\ResponseInterface;
-use Zend\Diactoros\Request;
 use Vonage\Client\Exception;
+use Vonage\Entity\JsonSerializableInterface;
 
 /**
  * Lightweight resource, only has put / delete.
- * 
+ *
  * @deprecated Please use Vonage\Voice\Client::streamAudio() or Vonage\Voice\Client::stopStreamAudio() instead
  */
 class Stream implements JsonSerializableInterface, ClientAwareInterface
@@ -29,16 +30,30 @@ class Stream implements JsonSerializableInterface, ClientAwareInterface
 
     protected $data = [];
 
+    /**
+     * Stream constructor.
+     *
+     * @param null $id
+     */
     public function __construct($id = null)
     {
         trigger_error(
-            'Vonage\Call\Stream is deprecated, please use Vonage\Voice\Client::streamAudio() or Vonage\Voice\Client::stopStreamAudio() instead',
+            'Vonage\Call\Stream is deprecated, ' .
+            'please use Vonage\Voice\Client::streamAudio() or Vonage\Voice\Client::stopStreamAudio() instead',
             E_USER_DEPRECATED
         );
 
         $this->id = $id;
     }
 
+    /**
+     * @param Stream|null $stream
+     * @return $this|Event
+     * @throws ClientExceptionInterface
+     * @throws Exception\Exception
+     * @throws Exception\Request
+     * @throws Exception\Server
+     */
     public function __invoke(Stream $stream = null)
     {
         if (is_null($stream)) {
@@ -48,26 +63,43 @@ class Stream implements JsonSerializableInterface, ClientAwareInterface
         return $this->put($stream);
     }
 
+    /**
+     * @return mixed
+     */
     public function getId()
     {
         return $this->id;
     }
 
-    public function setUrl($url)
+    /**
+     * @param $url
+     */
+    public function setUrl($url): void
     {
         if (!is_array($url)) {
-            $url = array($url);
+            $url = [$url];
         }
 
         $this->data['stream_url'] = $url;
     }
 
-    public function setLoop($times)
+    /**
+     * @param $times
+     */
+    public function setLoop($times): void
     {
-        $this->data['loop'] = (int) $times;
+        $this->data['loop'] = (int)$times;
     }
 
-    public function put($stream = null)
+    /**
+     * @param null $stream
+     * @return Event
+     * @throws Exception\Exception
+     * @throws Exception\Request
+     * @throws Exception\Server
+     * @throws ClientExceptionInterface
+     */
+    public function put($stream = null): Event
     {
         if (!$stream) {
             $stream = $this;
@@ -82,10 +114,18 @@ class Stream implements JsonSerializableInterface, ClientAwareInterface
 
         $request->getBody()->write(json_encode($stream));
         $response = $this->client->send($request);
+
         return $this->parseEventResponse($response);
     }
 
-    public function delete()
+    /**
+     * @return Event
+     * @throws Exception\Exception
+     * @throws Exception\Request
+     * @throws Exception\Server
+     * @throws ClientExceptionInterface
+     */
+    public function delete(): Event
     {
         $request = new Request(
             $this->getClient()->getApiUrl() . Collection::getCollectionPath() . '/' . $this->getId() . '/stream',
@@ -93,12 +133,20 @@ class Stream implements JsonSerializableInterface, ClientAwareInterface
         );
 
         $response = $this->client->send($request);
+
         return $this->parseEventResponse($response);
     }
 
-    protected function parseEventResponse(ResponseInterface $response)
+    /**
+     * @param ResponseInterface $response
+     * @return Event
+     * @throws Exception\Exception
+     * @throws Exception\Request
+     * @throws Exception\Server
+     */
+    protected function parseEventResponse(ResponseInterface $response): Event
     {
-        if ($response->getStatusCode() != '200') {
+        if ((int)$response->getStatusCode() !== 200) {
             throw $this->getException($response);
         }
 
@@ -111,14 +159,19 @@ class Stream implements JsonSerializableInterface, ClientAwareInterface
         return new Event($json);
     }
 
+    /**
+     * @param ResponseInterface $response
+     * @return Exception\Request|Exception\Server
+     * @throws Exception\Exception
+     */
     protected function getException(ResponseInterface $response)
     {
         $body = json_decode($response->getBody()->getContents(), true);
         $status = $response->getStatusCode();
 
-        if ($status >= 400 and $status < 500) {
+        if ($status >= 400 && $status < 500) {
             $e = new Exception\Request($body['error_title'], $status);
-        } elseif ($status >= 500 and $status < 600) {
+        } elseif ($status >= 500 && $status < 600) {
             $e = new Exception\Server($body['error_title'], $status);
         } else {
             $e = new Exception\Exception('Unexpected HTTP Status Code');
@@ -128,6 +181,9 @@ class Stream implements JsonSerializableInterface, ClientAwareInterface
         return $e;
     }
 
+    /**
+     * @return array|mixed
+     */
     public function jsonSerialize()
     {
         return $this->data;

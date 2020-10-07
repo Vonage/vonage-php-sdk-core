@@ -2,12 +2,15 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
  */
+declare(strict_types=1);
 
 namespace Vonage\Call;
 
+use DateTime;
+use DateTimeZone;
 use Vonage\Conversations\Conversation;
 use Vonage\Entity\Filter\FilterInterface;
 
@@ -18,6 +21,9 @@ class Filter implements FilterInterface
 {
     protected $query = [];
 
+    /**
+     * Filter constructor.
+     */
     public function __construct()
     {
         trigger_error(
@@ -26,60 +32,103 @@ class Filter implements FilterInterface
         );
     }
 
-    public function getQuery()
+    /**
+     * @return array
+     */
+    public function getQuery(): array
     {
         return $this->query;
     }
 
-    public function sortAscending()
+    /**
+     * @return $this
+     */
+    public function sortAscending(): self
     {
         return $this->setOrder('asc');
     }
 
-    public function sortDescending()
+    /**
+     * @return $this
+     */
+    public function sortDescending(): self
     {
         return $this->setOrder('desc');
     }
 
-    public function setStatus($status)
+    /**
+     * @param $status
+     * @return $this
+     */
+    public function setStatus($status): self
     {
-        $this->query['status'] = (string) $status;
+        $this->query['status'] = (string)$status;
+
         return $this;
     }
 
-    public function setStart(\DateTime $start)
+    /**
+     * @param DateTime $start
+     * @return $this
+     */
+    public function setStart(DateTime $start): self
     {
-        $start->setTimezone(new \DateTimeZone("UTC"));
+        $start->setTimezone(new DateTimeZone("UTC"));
         $this->query['date_start'] = $start->format('Y-m-d\TH:i:s\Z');
+
         return $this;
     }
 
-    public function setEnd(\DateTime $end)
+    /**
+     * @param DateTime $end
+     * @return $this
+     */
+    public function setEnd(DateTime $end): self
     {
-        $end->setTimezone(new \DateTimeZone("UTC"));
+        $end->setTimezone(new DateTimeZone("UTC"));
         $this->query['date_end'] = $end->format('Y-m-d\TH:i:s\Z');
+
         return $this;
     }
 
-    public function setSize($size)
+    /**
+     * @param $size
+     * @return $this
+     */
+    public function setSize($size): self
     {
-        $this->query['page_size'] = (int) $size;
+        $this->query['page_size'] = (int)$size;
+
         return $this;
     }
 
-    public function setIndex($index)
+    /**
+     * @param $index
+     * @return $this
+     */
+    public function setIndex($index): self
     {
-        $this->query['record_index'] = (int) $index;
+        $this->query['record_index'] = (int)$index;
+
         return $this;
     }
 
-    public function setOrder($order)
+    /**
+     * @param $order
+     * @return $this
+     */
+    public function setOrder($order): self
     {
-        $this->query['order'] = (string) $order;
+        $this->query['order'] = (string)$order;
+
         return $this;
     }
 
-    public function setConversation($conversation)
+    /**
+     * @param $conversation
+     * @return $this
+     */
+    public function setConversation($conversation): self
     {
         if ($conversation instanceof Conversation) {
             $conversation = $conversation->getId();

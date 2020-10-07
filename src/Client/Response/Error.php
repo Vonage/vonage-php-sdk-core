@@ -2,14 +2,20 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
  */
+declare(strict_types=1);
 
 namespace Vonage\Client\Response;
 
 class Error extends Response
 {
+    /**
+     * Error constructor.
+     *
+     * @param $data
+     */
     public function __construct($data)
     {
         //normalize the data
@@ -19,24 +25,36 @@ class Error extends Response
 
         $this->expected = ['status', 'error-text'];
 
-        return parent::__construct($data);
+        parent::__construct($data);
     }
 
-    public function isError()
+    /**
+     * @return bool
+     */
+    public function isError(): bool
     {
         return true;
     }
 
-    public function isSuccess()
+    /**
+     * @return bool
+     */
+    public function isSuccess(): bool
     {
         return false;
     }
 
+    /**
+     * @return mixed
+     */
     public function getCode()
     {
         return $this->data['status'];
     }
 
+    /**
+     * @return mixed
+     */
     public function getMessage()
     {
         return $this->data['error-text'];

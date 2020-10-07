@@ -2,42 +2,59 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
  */
+declare(strict_types=1);
 
 namespace Vonage;
 
+use Countable;
+use InvalidArgumentException;
+use Iterator;
 use Vonage\Response\Message;
 
 /**
  * Wrapper for Vonage API Response, provides access to the count and status of
  * the messages.
  */
-class Response implements \Countable, \Iterator
+class Response implements Countable, Iterator
 {
+    /**
+     * @var mixed
+     */
     protected $data;
 
-    protected $messages = array();
+    /**
+     * @var array
+     */
+    protected $messages = [];
 
+    /**
+     * @var int
+     */
     protected $position = 0;
-    
+
+    /**
+     * Response constructor.
+     *
+     * @param $data
+     */
     public function __construct($data)
     {
         if (!is_string($data)) {
-            throw new \InvalidArgumentException('expected response data to be a string');
+            throw new InvalidArgumentException('expected response data to be a string');
         }
 
         $this->data = json_decode($data, true);
     }
 
+    /**
+     * @return array|mixed
+     */
     public function getMessages()
     {
-        if (!isset($this->data['messages'])) {
-            return array();
-        }
-
-        return $this->data['messages'];
+        return $this->data['messages'] ?? [];
     }
 
     /**
@@ -49,18 +66,18 @@ class Response implements \Countable, \Iterator
      * <p>
      * The return value is cast to an integer.
      */
-    public function count()
+    public function count(): int
     {
-        return $this->data['message-count'];
+        return (int)$this->data['message-count'];
     }
 
     /**
      * (PHP 5 &gt;= 5.0.0)<br/>
      * Return the current element
      * @link http://php.net/manual/en/iterator.current.php
-     * @return \Vonage\Response\Message
+     * @return Message
      */
-    public function current()
+    public function current(): Message
     {
         if (!isset($this->messages[$this->position])) {
             $this->messages[$this->position] = new Message($this->data['messages'][$this->position]);
@@ -75,7 +92,7 @@ class Response implements \Countable, \Iterator
      * @link http://php.net/manual/en/iterator.next.php
      * @return void Any returned value is ignored.
      */
-    public function next()
+    public function next(): void
     {
         $this->position++;
     }
@@ -86,7 +103,7 @@ class Response implements \Countable, \Iterator
      * @link http://php.net/manual/en/iterator.key.php
      * @return int
      */
-    public function key()
+    public function key(): int
     {
         return $this->position;
     }
@@ -98,7 +115,7 @@ class Response implements \Countable, \Iterator
      * @return boolean The return value will be casted to boolean and then evaluated.
      * Returns true on success or false on failure.
      */
-    public function valid()
+    public function valid(): bool
     {
         return isset($this->data['messages'][$this->position]);
     }
@@ -109,11 +126,14 @@ class Response implements \Countable, \Iterator
      * @link http://php.net/manual/en/iterator.rewind.php
      * @return void Any returned value is ignored.
      */
-    public function rewind()
+    public function rewind(): void
     {
         $this->position = 0;
     }
 
+    /**
+     * @return mixed
+     */
     public function toArray()
     {
         return $this->data;

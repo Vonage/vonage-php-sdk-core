@@ -1,23 +1,32 @@
 <?php
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
+ */
 declare(strict_types=1);
 
 namespace Vonage\Voice\Webhook;
 
+use DateTimeImmutable;
+use Exception;
+
 class Event
 {
-    const STATUS_STARTED = 'started';
-    const STATUS_RINGING = 'ringing';
-    const STATUS_ANSWERED = 'answered';
-    const STATUS_BUSY = 'busy';
-    const STATUS_CANCELLED = 'cancelled';
-    const STATUS_UNANSWERED = 'unanswered';
-    const STATUS_DISCONNECTED = 'disconnected';
-    const STATUS_REJECTED = 'rejected';
-    const STATUS_FAILED = 'failed';
-    const STATUS_HUMAN = 'human';
-    const STATUS_MACHINE = 'machine';
-    const STATUS_TIMEOUT = 'timeout';
-    const STATUS_COMPLETED = 'timeout';
+    public const STATUS_STARTED = 'started';
+    public const STATUS_RINGING = 'ringing';
+    public const STATUS_ANSWERED = 'answered';
+    public const STATUS_BUSY = 'busy';
+    public const STATUS_CANCELLED = 'cancelled';
+    public const STATUS_UNANSWERED = 'unanswered';
+    public const STATUS_DISCONNECTED = 'disconnected';
+    public const STATUS_REJECTED = 'rejected';
+    public const STATUS_FAILED = 'failed';
+    public const STATUS_HUMAN = 'human';
+    public const STATUS_MACHINE = 'machine';
+    public const STATUS_TIMEOUT = 'timeout';
+    public const STATUS_COMPLETED = 'timeout';
 
     /**
      * @var string
@@ -35,7 +44,7 @@ class Event
     protected $duration;
 
     /**
-     * @var ?\DateTimeImmutable
+     * @var ?DateTimeImmutable
      */
     protected $endTime;
 
@@ -65,12 +74,12 @@ class Event
     protected $status;
 
     /**
-     * @var ?\DateTimeImmutable
+     * @var ?DateTimeImmutable
      */
     protected $startTime;
 
     /**
-     * @var \DateTimeImmutable
+     * @var DateTimeImmutable
      */
     protected $timestamp;
 
@@ -84,6 +93,12 @@ class Event
      */
     protected $uuid;
 
+    /**
+     * Event constructor.
+     *
+     * @param array $event
+     * @throws Exception
+     */
     public function __construct(array $event)
     {
         $this->from = $event['from'];
@@ -92,82 +107,121 @@ class Event
         $this->conversationUuid = $event['conversation_uuid'];
         $this->status = $event['status'];
         $this->direction = $event['direction'];
-        $this->timestamp = new \DateTimeImmutable($event['timestamp']);
+        $this->timestamp = new DateTimeImmutable($event['timestamp']);
         $this->rate = $event['rate'] ?? null;
         $this->network = $event['network'] ?? null;
         $this->duration = $event['duration'] ?? null;
         $this->price = $event['price'] ?? null;
 
         if (array_key_exists('start_time', $event) && !is_null($event['start_time'])) {
-            $this->startTime = new \DateTimeImmutable($event['start_time']);
+            $this->startTime = new DateTimeImmutable($event['start_time']);
         }
 
         if (array_key_exists('end_time', $event)) {
-            $this->endTime = new \DateTimeImmutable($event['end_time']);
+            $this->endTime = new DateTimeImmutable($event['end_time']);
         }
     }
 
-    public function getConversationUuid() : string
+    /**
+     * @return string
+     */
+    public function getConversationUuid(): string
     {
         return $this->conversationUuid;
     }
 
-    public function getDirection() : string
+    /**
+     * @return string
+     */
+    public function getDirection(): string
     {
         return $this->direction;
     }
 
-    public function getFrom() : string
+    /**
+     * @return string
+     */
+    public function getFrom(): string
     {
         return $this->from;
     }
 
-    public function getStatus() : string
+    /**
+     * @return string
+     */
+    public function getStatus(): string
     {
         return $this->status;
     }
 
-    public function getTimestamp() : \DateTimeImmutable
+    /**
+     * @return DateTimeImmutable
+     */
+    public function getTimestamp(): DateTimeImmutable
     {
         return $this->timestamp;
     }
 
-    public function getTo() : string
+    /**
+     * @return string
+     */
+    public function getTo(): string
     {
         return $this->to;
     }
 
-    public function getUuid() : string
+    /**
+     * @return string
+     */
+    public function getUuid(): string
     {
         return $this->uuid;
     }
 
-    public function getNetwork() : ?string
+    /**
+     * @return string|null
+     */
+    public function getNetwork(): ?string
     {
         return $this->network;
     }
 
-    public function getRate() : ?string
+    /**
+     * @return string|null
+     */
+    public function getRate(): ?string
     {
         return $this->rate;
     }
 
-    public function getStartTime() : ?\DateTimeImmutable
+    /**
+     * @return DateTimeImmutable|null
+     */
+    public function getStartTime(): ?DateTimeImmutable
     {
         return $this->startTime;
     }
 
-    public function getEndTime() : ?\DateTimeImmutable
+    /**
+     * @return DateTimeImmutable|null
+     */
+    public function getEndTime(): ?DateTimeImmutable
     {
         return $this->endTime;
     }
 
-    public function getDuration() : ?string
+    /**
+     * @return string|null
+     */
+    public function getDuration(): ?string
     {
         return $this->duration;
     }
 
-    public function getPrice() : ?string
+    /**
+     * @return string|null
+     */
+    public function getPrice(): ?string
     {
         return $this->price;
     }

@@ -3,23 +3,47 @@
 ### Changed
 
 - #260 - Swapped out `ocramius/package-versions` for `composer/package-versions-deprecated` to work with Composer 2
+# 2.4.2
+
+### Changed
+
+* #257 Dropped support for PHPUnit 7
+* #257 Added missing PHPDoc blocks
+* #257 Added missing return type hints
+* #257 Replaced qualifiers with imports
+* #257 Updated and optimized examples
+* #257 Applied multiple code optimizations (especially for PHP 7.2+) and simplified some logic
+* #257 Updated code styling to match PSR standards
+* #257 Re-ordered imports where necessary
+* #257 Updated tests to get rid of deprecation messages
+* #257 Updated phpunit.xml.dist
+* #257 Added Roave Security Advisories as dev-requirement to prevent usage of packages with known security vulnerabilities
+* #257 Replaced estahn/phpunit-json-assertions with martin-helmich/phpunit-json-assert due do compatibility issues with PHPUnit
+* #257 Removed test build for PHP 7.1 in .travis.yml
+* #257 Added missing punctuation in CONTRIBUTING.md
+* #257 Updated contact email address in CODE_OF_CONDUCT.md
+
+### Fixed
+
+* #257 Fixed namespaces (Zend => Laminas, Nexmo => Vonage)
+* #257 Fixed typos and some wording in README.md
 
 # 2.4.1
 
 ### Changed
 
-- #256 - Added support for PHPUnit 8
+* #256 - Added support for PHPUnit 8
 
 ### Fixed
 
-- #253, #254 - Fixed some typos in the README
-- #255 - `\Vonage\Numbers\Client::searchAvailable()` now correctly handles filters using `FilterInterface`
+* #253, #254 - Fixed some typos in the README
+* #255 - `\Vonage\Numbers\Client::searchAvailable()` now correctly handles filters using `FilterInterface`
 
 # 2.4.0
 
 ### Changed
 
-* #250 - Bumped minimum PHP version to 7.0
+* #250 - Bumped minimum PHP version to 7.2
 * #250 - Now supports Guzzle 7 automatically, and swaps to Guzzle 7 as a dev dependency
 
 # 2.3.3

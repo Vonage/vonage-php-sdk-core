@@ -1,14 +1,24 @@
 <?php
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
+ */
 declare(strict_types=1);
 
 namespace Vonage\Webhook;
 
-use PDO;
-use Zend\Diactoros\ServerRequestFactory;
+use Laminas\Diactoros\ServerRequestFactory;
 use Psr\Http\Message\ServerRequestInterface;
+use RuntimeException;
 
 abstract class Factory
 {
+    /**
+     * @param array $data
+     * @return mixed
+     */
     abstract public static function createFromArray(array $data);
 
     public static function createFromJson(string $json)
@@ -16,21 +26,30 @@ abstract class Factory
         $data = json_decode($json, true);
 
         if (is_null($data)) {
-            throw new \RuntimeException("Invalid JSON string detected for webhook transformation");
+            throw new RuntimeException("Invalid JSON string detected for webhook transformation");
         }
 
         return static::createFromArray($data);
     }
 
+    /**
+     * @return mixed
+     */
     public static function createFromGlobals()
     {
         $request = ServerRequestFactory::fromGlobals();
+
         return static::createFromRequest($request);
     }
 
+    /**
+     * @param ServerRequestInterface $request
+     * @return mixed
+     */
     public static function createFromRequest(ServerRequestInterface $request)
     {
         $params = [];
+
         switch ($request->getMethod()) {
             case 'GET':
                 $params = $request->getQueryParams();
@@ -56,7 +75,7 @@ abstract class Factory
                 }
                 break;
             default:
-                throw new \RuntimeException("Invalid method for incoming webhook");
+                throw new RuntimeException("Invalid method for incoming webhook");
         }
 
         return static::createFromArray($params);

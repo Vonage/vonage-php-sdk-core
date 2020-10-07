@@ -2,13 +2,14 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
  */
+declare(strict_types=1);
 
-namespace VonageTest\Traits;
+namespace Vonage\Test\Traits;
 
-use Zend\Diactoros\Response;
+use Laminas\Diactoros\Response;
 
 trait Psr7ResponseTrait
 {
@@ -19,8 +20,8 @@ trait Psr7ResponseTrait
      * @param string $type
      * @return Response
      */
-    protected function getResponse($type = 'success')
+    protected function getResponse(string $type = 'success'): Response
     {
-        return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'r'));
+        return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'rb'));
     }
 }

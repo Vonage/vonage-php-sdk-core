@@ -2,18 +2,22 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2017 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
  */
+declare(strict_types=1);
 
-namespace VonageTest\Call;
+namespace Vonage\Test\Call;
 
-use Vonage\Call\Dtmf;
-use VonageTest\Psr7AssertionTrait;
-use Prophecy\Argument;
-use Psr\Http\Message\RequestInterface;
-use Zend\Diactoros\Response;
+use Laminas\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
+use Prophecy\Argument;
+use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Http\Message\RequestInterface;
+use Vonage\Call\Dtmf;
+use Vonage\Call\Event;
+use Vonage\Client;
+use Vonage\Test\Psr7AssertionTrait;
 
 class DtmfTest extends TestCase
 {
@@ -34,7 +38,7 @@ class DtmfTest extends TestCase
     protected $class;
 
     /**
-     * @var \Prophecy\Prophecy\ObjectProphecy
+     * @var mixed
      */
     protected $vonageClient;
 
@@ -46,15 +50,18 @@ class DtmfTest extends TestCase
         $this->entity = @new Dtmf('3fd4d839-493e-4485-b2a5-ace527aacff3');
         $this->new = @new Dtmf();
 
-        $this->vonageClient = $this->prophesize('Vonage\Client');
+        $this->vonageClient = $this->prophesize(Client::class);
         $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
+
+        /** @noinspection PhpParamsInspection */
         $this->entity->setClient($this->vonageClient->reveal());
+        /** @noinspection PhpParamsInspection */
         $this->new->setClient($this->vonageClient->reveal());
     }
 
-    public function testHasId()
+    public function testHasId(): void
     {
-        $this->assertSame($this->id, $this->entity->getId());
+        self::assertSame($this->id, $this->entity->getId());
     }
 
     /**
@@ -64,11 +71,12 @@ class DtmfTest extends TestCase
      * @param $expected
      * @dataProvider setterParameters
      */
-    public function testSetParams($value, $param, $setter, $expected)
+    public function testSetParams($value, $param, $setter, $expected): void
     {
         $this->entity->$setter($value);
         $data = $this->entity->jsonSerialize();
-        $this->assertEquals($expected, $data[$param]);
+
+        self::assertEquals($expected, $data[$param]);
     }
 
     /**
@@ -76,22 +84,31 @@ class DtmfTest extends TestCase
      * @param $param
      * @dataProvider setterParameters
      */
-    public function testArrayParams($value, $param)
+    public function testArrayParams($value, $param): void
     {
         $this->entity[$param] = $value;
-
         $data = $this->entity->jsonSerialize();
-        $this->assertEquals($value, $data[$param]);
+
+        self::assertEquals($value, $data[$param]);
     }
 
-    public function setterParameters()
+    /**
+     * @return string[]
+     */
+    public function setterParameters(): array
     {
         return [
             ['1234', 'digits', 'setDigits', '1234']
         ];
     }
 
-    public function testPutMakesRequest()
+    /**
+     * @throws Client\Exception\Exception
+     * @throws Client\Exception\Request
+     * @throws Client\Exception\Server
+     * @throws ClientExceptionInterface
+     */
+    public function testPutMakesRequest(): void
     {
         $this->entity->setDigits('3119');
 
@@ -99,25 +116,31 @@ class DtmfTest extends TestCase
         $entity = $this->entity;
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($callId, $entity) {
-            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/dtmf', 'PUT', $request);
+            self::assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/dtmf', 'PUT', $request);
             $expected = json_decode(json_encode($entity), true);
 
             $request->getBody()->rewind();
             $body = json_decode($request->getBody()->getContents(), true);
             $request->getBody()->rewind();
 
-            $this->assertEquals($expected, $body);
+            self::assertEquals($expected, $body);
             return true;
-        }))->willReturn($this->getResponse('dtmf', '200'));
+        }))->willReturn($this->getResponse('dtmf', 200));
 
         $event = @$this->entity->put();
 
-        $this->assertInstanceOf('Vonage\Call\Event', $event);
-        $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
-        $this->assertSame('DTMF sent', $event['message']);
+        self::assertInstanceOf(Event::class, $event);
+        self::assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
+        self::assertSame('DTMF sent', $event['message']);
     }
 
-    public function testPutCanReplace()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Client\Exception\Exception
+     * @throws Client\Exception\Request
+     * @throws Client\Exception\Server
+     */
+    public function testPutCanReplace(): void
     {
         $class = $this->class;
 
@@ -127,31 +150,37 @@ class DtmfTest extends TestCase
         $callId = $this->id;
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($callId, $entity) {
-            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/dtmf', 'PUT', $request);
+            self::assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/dtmf', 'PUT', $request);
             $expected = json_decode(json_encode($entity), true);
 
             $request->getBody()->rewind();
             $body = json_decode($request->getBody()->getContents(), true);
             $request->getBody()->rewind();
 
-            $this->assertEquals($expected, $body);
+            self::assertEquals($expected, $body);
             return true;
-        }))->willReturn($this->getResponse('dtmf', '200'));
+        }))->willReturn($this->getResponse('dtmf', 200));
 
         $event = @$this->entity->put($entity);
 
-        $this->assertInstanceOf('Vonage\Call\Event', $event);
-        $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
-        $this->assertSame('DTMF sent', $event['message']);
+        self::assertInstanceOf(Event::class, $event);
+        self::assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
+        self::assertSame('DTMF sent', $event['message']);
     }
 
-    public function testInvokeProxiesPutWithArgument()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Client\Exception\Exception
+     * @throws Client\Exception\Request
+     * @throws Client\Exception\Server
+     */
+    public function testInvokeProxiesPutWithArgument(): void
     {
         $object = $this->entity;
 
-        $this->vonageClient->send(Argument::any())->willReturn($this->getResponse('dtmf', '200'));
+        $this->vonageClient->send(Argument::any())->willReturn($this->getResponse('dtmf', 200));
         $test = $object();
-        $this->assertSame($this->entity, $test);
+        self::assertSame($this->entity, $test);
 
         $this->vonageClient->send(Argument::any())->shouldNotHaveBeenCalled();
 
@@ -161,9 +190,9 @@ class DtmfTest extends TestCase
 
         $event = @$object($entity);
 
-        $this->assertInstanceOf('Vonage\Call\Event', $event);
-        $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
-        $this->assertSame('DTMF sent', $event['message']);
+        self::assertInstanceOf(Event::class, $event);
+        self::assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
+        self::assertSame('DTMF sent', $event['message']);
 
         $this->vonageClient->send(Argument::any())->shouldHaveBeenCalled();
     }
@@ -172,10 +201,11 @@ class DtmfTest extends TestCase
      * Get the API response we'd expect for a call to the API.
      *
      * @param string $type
+     * @param int $status
      * @return Response
      */
-    protected function getResponse($type = 'success', $status = 200)
+    protected function getResponse(string $type = 'success', int $status = 200): Response
     {
-        return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'r'), $status);
+        return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'rb'), $status);
     }
 }

@@ -2,37 +2,44 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
  */
+declare(strict_types=1);
 
-namespace VonageTest\Insights;
+namespace Vonage\Test\Insights;
 
-use Vonage\Insights\Advanced;
 use PHPUnit\Framework\TestCase;
+use Vonage\Insights\Advanced;
 
 class AdvancedTest extends TestCase
 {
-
     /**
      * @dataProvider advancedTestProvider
+     * @param $advanced
+     * @param $inputData
      */
-    public function testArrayAccess($advanced, $inputData)
+    public function testArrayAccess($advanced, $inputData): void
     {
-        $this->assertEquals($inputData['valid_number'], @$advanced['valid_number']);
-        $this->assertEquals($inputData['reachable'], @$advanced['reachable']);
+        self::assertEquals($inputData['valid_number'], @$advanced['valid_number']);
+        self::assertEquals($inputData['reachable'], @$advanced['reachable']);
     }
 
     /**
      * @dataProvider advancedTestProvider
+     * @param $advanced
+     * @param $inputData
      */
-    public function testObjectAccess($advanced, $inputData)
+    public function testObjectAccess($advanced, $inputData): void
     {
-        $this->assertEquals($inputData['valid_number'], $advanced->getValidNumber());
-        $this->assertEquals($inputData['reachable'], $advanced->getReachable());
+        self::assertEquals($inputData['valid_number'], $advanced->getValidNumber());
+        self::assertEquals($inputData['reachable'], $advanced->getReachable());
     }
 
-    public function advancedTestProvider()
+    /**
+     * @return array
+     */
+    public function advancedTestProvider(): array
     {
         $r = [];
 

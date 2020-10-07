@@ -2,49 +2,78 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
  */
+declare(strict_types=1);
 
 namespace Vonage\Client\Credentials;
 
+use RuntimeException;
+
 abstract class AbstractCredentials implements CredentialsInterface
 {
-    protected $credentials = array();
+    protected $credentials = [];
 
-    public function offsetExists($offset)
+    /**
+     * @param mixed $offset
+     * @return bool
+     */
+    public function offsetExists($offset): bool
     {
         return isset($this->credentials[$offset]);
     }
 
+    /**
+     * @param mixed $offset
+     * @return mixed
+     */
     public function offsetGet($offset)
     {
         return $this->credentials[$offset];
     }
 
-    public function offsetSet($offset, $value)
+    /**
+     * @param mixed $offset
+     * @param mixed $value
+     */
+    public function offsetSet($offset, $value): void
     {
         throw $this->readOnlyException();
     }
 
-    public function offsetUnset($offset)
+    /**
+     * @param mixed $offset
+     */
+    public function offsetUnset($offset): void
     {
         throw $this->readOnlyException();
     }
 
+    /**
+     * @param $name
+     * @return mixed
+     * @noinspection MagicMethodsValidityInspection
+     */
     public function __get($name)
     {
         return $this->credentials[$name];
     }
 
-    public function asArray()
+    /**
+     * @return array
+     */
+    public function asArray(): array
     {
         return $this->credentials;
     }
 
-    protected function readOnlyException()
+    /**
+     * @return RuntimeException
+     */
+    protected function readOnlyException(): RuntimeException
     {
-        return new \RuntimeException(sprintf(
+        return new RuntimeException(sprintf(
             '%s is read only, cannot modify using array access.',
             get_class($this)
         ));

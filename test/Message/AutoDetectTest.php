@@ -2,25 +2,25 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
  */
+declare(strict_types=1);
 
-namespace VonageTest\Message;
+namespace Vonage\Test\Message;
 
-use Vonage\Message\AutoDetect;
 use PHPUnit\Framework\TestCase;
+use Vonage\Message\AutoDetect;
 
 class AutoDetectTest extends TestCase
 {
     /**
      * When creating a message, it should not auto-detect encoding by default
      */
-    public function testAutoDetectEnabledByDefault()
+    public function testAutoDetectEnabledByDefault(): void
     {
         $message = new AutoDetect('to', 'from', 'Example Message');
-        $this->assertTrue($message->isEncodingDetectionEnabled());
+
+        self::assertTrue($message->isEncodingDetectionEnabled());
     }
-
-
 }

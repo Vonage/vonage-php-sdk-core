@@ -2,16 +2,19 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
  */
+declare(strict_types=1);
 
 namespace Vonage\Call;
+
+use JsonSerializable;
 
 /**
  * @deprecated Please use Vonage\Voice\Webhook instead
  */
-class Webhook implements \JsonSerializable
+class Webhook implements JsonSerializable
 {
     protected $urls;
 
@@ -19,6 +22,13 @@ class Webhook implements \JsonSerializable
 
     protected $type;
 
+    /**
+     * Webhook constructor.
+     *
+     * @param $type
+     * @param $urls
+     * @param null $method
+     */
     public function __construct($type, $urls, $method = null)
     {
         trigger_error(
@@ -35,17 +45,26 @@ class Webhook implements \JsonSerializable
         $this->method = $method;
     }
 
+    /**
+     * @return mixed
+     */
     public function getType()
     {
         return $this->type;
     }
 
-    public function add($url)
+    /**
+     * @param $url
+     */
+    public function add($url): void
     {
         $this->urls[] = $url;
     }
 
-    public function jsonSerialize()
+    /**
+     * @return array[]
+     */
+    public function jsonSerialize(): array
     {
         $data = [
             $this->type . '_url' => $this->urls

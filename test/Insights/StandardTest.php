@@ -2,48 +2,54 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
  */
+declare(strict_types=1);
 
-namespace VonageTest\Insights;
+namespace Vonage\Test\Insights;
 
-use Vonage\Insights\Basic;
-use Vonage\Insights\Standard;
 use PHPUnit\Framework\TestCase;
+use Vonage\Insights\Standard;
 
 class StandardTest extends TestCase
 {
-
     /**
      * @dataProvider standardTestProvider
+     * @param $standard
+     * @param $inputData
      */
-    public function testArrayAccess($standard, $inputData)
+    public function testArrayAccess($standard, $inputData): void
     {
-        $this->assertEquals($inputData['refund_price'], @$standard['refund_price']);
-        $this->assertEquals($inputData['request_price'], @$standard['request_price']);
-        $this->assertEquals($inputData['remaining_balance'], @$standard['remaining_balance']);
-        $this->assertEquals($inputData['current_carrier'], @$standard['current_carrier']);
-        $this->assertEquals($inputData['original_carrier'], @$standard['original_carrier']);
-        $this->assertEquals($inputData['ported'], @$standard['ported']);
-        $this->assertEquals($inputData['roaming'], @$standard['roaming']);
+        self::assertEquals($inputData['refund_price'], @$standard['refund_price']);
+        self::assertEquals($inputData['request_price'], @$standard['request_price']);
+        self::assertEquals($inputData['remaining_balance'], @$standard['remaining_balance']);
+        self::assertEquals($inputData['current_carrier'], @$standard['current_carrier']);
+        self::assertEquals($inputData['original_carrier'], @$standard['original_carrier']);
+        self::assertEquals($inputData['ported'], @$standard['ported']);
+        self::assertEquals($inputData['roaming'], @$standard['roaming']);
     }
 
     /**
      * @dataProvider standardTestProvider
+     * @param $standard
+     * @param $inputData
      */
-    public function testObjectAccess($standard, $inputData)
+    public function testObjectAccess($standard, $inputData): void
     {
-        $this->assertEquals($inputData['refund_price'], @$standard->getRefundPrice());
-        $this->assertEquals($inputData['request_price'], @$standard->getRequestPrice());
-        $this->assertEquals($inputData['remaining_balance'], @$standard->getRemainingBalance());
-        $this->assertEquals($inputData['current_carrier'], $standard->getCurrentCarrier());
-        $this->assertEquals($inputData['original_carrier'], $standard->getOriginalCarrier());
-        $this->assertEquals($inputData['ported'], $standard->getPorted());
-        $this->assertEquals($inputData['roaming'], $standard->getRoaming());
+        self::assertEquals($inputData['refund_price'], @$standard->getRefundPrice());
+        self::assertEquals($inputData['request_price'], @$standard->getRequestPrice());
+        self::assertEquals($inputData['remaining_balance'], @$standard->getRemainingBalance());
+        self::assertEquals($inputData['current_carrier'], $standard->getCurrentCarrier());
+        self::assertEquals($inputData['original_carrier'], $standard->getOriginalCarrier());
+        self::assertEquals($inputData['ported'], $standard->getPorted());
+        self::assertEquals($inputData['roaming'], $standard->getRoaming());
     }
 
-    public function standardTestProvider()
+    /**
+     * @return array
+     */
+    public function standardTestProvider(): array
     {
         $r = [];
 

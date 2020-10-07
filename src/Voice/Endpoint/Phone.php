@@ -1,4 +1,10 @@
 <?php
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
+ */
 declare(strict_types=1);
 
 namespace Vonage\Voice\Endpoint;
@@ -25,13 +31,24 @@ class Phone implements EndpointInterface
      */
     protected $url;
 
+    /**
+     * Phone constructor.
+     *
+     * @param string $number
+     * @param string|null $dtmfAnswer
+     */
     public function __construct(string $number, string $dtmfAnswer = null)
     {
         $this->id = $number;
         $this->dtmfAnswer = $dtmfAnswer;
     }
 
-    public static function factory(string $number, array $data) : Phone
+    /**
+     * @param string $number
+     * @param array $data
+     * @return Phone
+     */
+    public static function factory(string $number, array $data): Phone
     {
         $endpoint = new Phone($number);
 
@@ -55,7 +72,10 @@ class Phone implements EndpointInterface
         return $endpoint;
     }
 
-    public function getDtmfAnswer() : ?string
+    /**
+     * @return string|null
+     */
+    public function getDtmfAnswer(): ?string
     {
         return $this->dtmfAnswer;
     }
@@ -63,21 +83,26 @@ class Phone implements EndpointInterface
     /**
      * @return array{type: string, number: string, dtmfAnswer?: string}
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->toArray();
     }
 
-    public function setDtmfAnswer(string $dtmf) : self
+    /**
+     * @param string $dtmf
+     * @return $this
+     */
+    public function setDtmfAnswer(string $dtmf): self
     {
         $this->dtmfAnswer = $dtmf;
+
         return $this;
     }
 
     /**
      * @return array{type: string, number: string, dtmfAnswer?: string}
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $data = [
             'type' => 'phone',
@@ -102,28 +127,43 @@ class Phone implements EndpointInterface
     /**
      * @return string
      */
-    public function getId() : string
+    public function getId(): string
     {
         return $this->id;
     }
 
-    public function getRingbackTone() : ?string
+    /**
+     * @return string|null
+     */
+    public function getRingbackTone(): ?string
     {
         return $this->ringbackTone;
     }
 
-    public function setRingbackTone(string $ringbackTone) : self
+    /**
+     * @param string $ringbackTone
+     * @return $this
+     */
+    public function setRingbackTone(string $ringbackTone): self
     {
         $this->ringbackTone = $ringbackTone;
+
         return $this;
     }
 
-    public function getUrl() : ?string
+    /**
+     * @return string|null
+     */
+    public function getUrl(): ?string
     {
         return $this->url;
     }
 
-    public function setUrl(string $url) : self
+    /**
+     * @param string $url
+     * @return $this
+     */
+    public function setUrl(string $url): self
     {
         $this->url = $url;
         return $this;

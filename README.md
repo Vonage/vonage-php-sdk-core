@@ -418,7 +418,7 @@ $response = $client->numbers()->searchOwned($filter);
 ```
 
 `application_id`:
-* Supply an application ID to get all of the numbers associated with the requestion application
+* Supply an application ID to get all the numbers associated with the requesting application
 
 ```php
 $filter = new \Vonage\Numbers\Filter\OwnedNumbers();
@@ -517,7 +517,7 @@ try {
 
 #### Prefix Pricing
 
-If you know the prefix of a country that you want to call, you can use the `prefix-pricing` endpoint to
+If you know the prefix of a country you want to call, you can use the `prefix-pricing` endpoint to
 find out costs to call that number. Each prefix can return multiple countries (e.g. `1` returns `US`, `CA` and `UM`):
 
 ```php
@@ -625,10 +625,10 @@ Check out the [documentation](https://developer.nexmo.com/number-insight/code-sn
 Over time, the Vonage APIs evolve and add new features, change how existing 
 features work, and deprecate and remove older methods and features. To help
 developers know when deprecation changes are being made, the SDK will trigger
-an `E_USER_DEPRECATION` warning. These warnings will not stop the exectution
+an `E_USER_DEPRECATION` warning. These warnings will not stop the execution
 of code, but can be an annoyance in production environments.
 
-To help with this, by default these notices are supressed. In development,
+To help with this, by default these notices are suppressed. In development,
 you can enable these warnings by passing an additional configuration option
 to the `\Vonage\Client` constructor, called `show_deprecations`. Enabling this
 option will show all deprecation notices.
@@ -643,7 +643,7 @@ $client = new Vonage\Client(
 ```
 
 If you notice an excessive amount of deprecation notices in production
-environments, make sure that this configuration option is absent, or at least
+environments, make sure the configuration option is absent, or at least
 set to `false`.
 
 ### `unable to get local issuer certificate`
@@ -691,7 +691,7 @@ See the [Packagist page for client-implementation](https://packagist.org/provide
 Contributing
 ------------
 
-This library is actively developed and we love to hear from you! Please feel free to [create an issue][issues] or [open a pull request][pulls] with your questions, comments, suggestions and feedback.
+This library is actively developed, and we love to hear from you! Please feel free to [create an issue][issues] or [open a pull request][pulls] with your questions, comments, suggestions and feedback.
 
 [signup]: https://dashboard.nexmo.com/sign-up?utm_source=DEV_REL&utm_medium=github&utm_campaign=php-client-library
 [doc_sms]: https://developer.nexmo.com/messaging/sms/overview

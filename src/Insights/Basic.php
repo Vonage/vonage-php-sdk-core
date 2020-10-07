@@ -1,15 +1,29 @@
 <?php
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
+ */
+declare(strict_types=1);
 
 namespace Vonage\Insights;
 
+use ArrayAccess;
+use JsonSerializable;
 use Vonage\Client\Exception\Exception;
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 use Vonage\Entity\JsonUnserializableInterface;
 
-class Basic implements \JsonSerializable, JsonUnserializableInterface, \ArrayAccess, ArrayHydrateInterface
+class Basic implements JsonSerializable, JsonUnserializableInterface, ArrayAccess, ArrayHydrateInterface
 {
     protected $data = [];
 
+    /**
+     * Basic constructor.
+     *
+     * @param $number
+     */
     public function __construct($number)
     {
         $this->data['national_format_number'] = $number;
@@ -18,7 +32,7 @@ class Basic implements \JsonSerializable, JsonUnserializableInterface, \ArrayAcc
     /**
      * @return string
      */
-    public function getRequestId()
+    public function getRequestId(): string
     {
         return $this->data['request_id'];
     }
@@ -26,7 +40,7 @@ class Basic implements \JsonSerializable, JsonUnserializableInterface, \ArrayAcc
     /**
      * @return string
      */
-    public function getNationalFormatNumber()
+    public function getNationalFormatNumber(): string
     {
         return $this->data['national_format_number'];
     }
@@ -34,7 +48,7 @@ class Basic implements \JsonSerializable, JsonUnserializableInterface, \ArrayAcc
     /**
      * @return string
      */
-    public function getInternationalFormatNumber()
+    public function getInternationalFormatNumber(): string
     {
         return $this->data['international_format_number'];
     }
@@ -42,7 +56,7 @@ class Basic implements \JsonSerializable, JsonUnserializableInterface, \ArrayAcc
     /**
      * @return string
      */
-    public function getCountryCode()
+    public function getCountryCode(): string
     {
         return $this->data['country_code'];
     }
@@ -50,7 +64,7 @@ class Basic implements \JsonSerializable, JsonUnserializableInterface, \ArrayAcc
     /**
      * @return string
      */
-    public function getCountryCodeISO3()
+    public function getCountryCodeISO3(): string
     {
         return $this->data['country_code_iso3'];
     }
@@ -58,7 +72,7 @@ class Basic implements \JsonSerializable, JsonUnserializableInterface, \ArrayAcc
     /**
      * @return string
      */
-    public function getCountryName()
+    public function getCountryName(): string
     {
         return $this->data['country_name'];
     }
@@ -66,17 +80,24 @@ class Basic implements \JsonSerializable, JsonUnserializableInterface, \ArrayAcc
     /**
      * @return integer
      */
-    public function getCountryPrefix()
+    public function getCountryPrefix(): int
     {
         return $this->data['country_prefix'];
     }
 
+    /**
+     * @return array|mixed
+     */
     public function jsonSerialize()
     {
         return $this->toArray();
     }
 
-    public function jsonUnserialize(array $json)
+    /**
+     * @param array $json
+     * @return void|null
+     */
+    public function jsonUnserialize(array $json): void
     {
         trigger_error(
             get_class($this) . "::jsonUnserialize is deprecated, please fromArray() instead",
@@ -86,7 +107,11 @@ class Basic implements \JsonSerializable, JsonUnserializableInterface, \ArrayAcc
         $this->fromArray($json);
     }
 
-    public function offsetExists($offset)
+    /**
+     * @param mixed $offset
+     * @return bool
+     */
+    public function offsetExists($offset): bool
     {
         trigger_error(
             "Array access for " . get_class($this) . " is deprecated, please use getter methods",
@@ -96,6 +121,10 @@ class Basic implements \JsonSerializable, JsonUnserializableInterface, \ArrayAcc
         return isset($this->data[$offset]);
     }
 
+    /**
+     * @param mixed $offset
+     * @return mixed
+     */
     public function offsetGet($offset)
     {
         trigger_error(
@@ -106,21 +135,36 @@ class Basic implements \JsonSerializable, JsonUnserializableInterface, \ArrayAcc
         return $this->data[$offset];
     }
 
-    public function offsetSet($offset, $value)
+    /**
+     * @param mixed $offset
+     * @param mixed $value
+     * @throws Exception
+     */
+    public function offsetSet($offset, $value): void
     {
         throw new Exception('Number insights results are read only');
     }
 
-    public function offsetUnset($offset)
+    /**
+     * @param mixed $offset
+     * @throws Exception
+     */
+    public function offsetUnset($offset): void
     {
         throw new Exception('Number insights results are read only');
     }
 
-    public function fromArray(array $data)
+    /**
+     * @param array $data
+     */
+    public function fromArray(array $data): void
     {
         $this->data = $data;
     }
 
+    /**
+     * @return array
+     */
     public function toArray(): array
     {
         return $this->data;

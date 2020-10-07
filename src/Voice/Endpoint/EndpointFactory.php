@@ -1,16 +1,24 @@
 <?php
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
+ */
 declare(strict_types=1);
 
 namespace Vonage\Voice\Endpoint;
 
+use RuntimeException;
 use Vonage\Entity\Factory\FactoryInterface;
 
 class EndpointFactory implements FactoryInterface
 {
     /**
-     * @return EndpointInterface
+     * @param array $data
+     * @return EndpointInterface|null
      */
-    public function create(array $data)
+    public function create(array $data): ?EndpointInterface
     {
         switch ($data['type']) {
             case 'app':
@@ -24,7 +32,7 @@ class EndpointFactory implements FactoryInterface
             case 'websocket':
                 return Websocket::factory($data['uri'], $data);
             default:
-                throw new \RuntimeException('Unknown endpoint type');
+                throw new RuntimeException('Unknown endpoint type');
         }
     }
 }

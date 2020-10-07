@@ -2,26 +2,27 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2017 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
  */
+declare(strict_types=1);
 
-namespace VonageTest\Calls;
+namespace Vonage\Test\Call;
 
-use Vonage\Call\Mute;
-use EnricoStahn\JsonAssert\Assert as JsonAssert;
+use Helmich\JsonAssert\JsonAssertions;
 use PHPUnit\Framework\TestCase;
+use Vonage\Call\Mute;
 
 class MuteTest extends TestCase
 {
-    use JsonAssert;
+    use JsonAssertions;
 
-    public function testStructure()
+    public function testStructure(): void
     {
-        $mute = @new Mute();
+        $schema = file_get_contents(__DIR__ . '/schema/mute.json');
+        $json = json_decode(json_encode(@new Mute()), true);
 
-        $json = json_decode(json_encode($mute));
-        $this->assertJsonMatchesSchema($json, __DIR__ . '/schema/mute.json');
-        $this->assertJsonValueEquals('mute', 'action', $json);
+        self::assertJsonDocumentMatchesSchema($json, json_decode(json_encode($schema), true));
+        self::assertJsonValueEquals($json, '$.action', 'mute');
     }
 }

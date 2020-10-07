@@ -2,35 +2,40 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
  */
+declare(strict_types=1);
 
-namespace VonageTest\Application;
+namespace Vonage\Test\Application;
 
-use Prophecy\Argument;
-use Zend\Diactoros\Request;
-use Zend\Diactoros\Response;
-use Vonage\Application\Client;
-use Vonage\Application\Filter;
-use Vonage\Client\APIResource;
-use Vonage\Application\Hydrator;
+use DateTime;
+use Laminas\Diactoros\Request;
+use Laminas\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
-use Vonage\Application\RtcConfig;
-use VonageTest\Psr7AssertionTrait;
-use Vonage\Application\Application;
-use Vonage\Application\VoiceConfig;
-use Vonage\Application\MessagesConfig;
-use Vonage\Client\Exception\Exception;
+use Prophecy\Argument;
+use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
-use Vonage\Client\Exception\Request as ExceptionRequest;
-use Vonage\Client\Exception\Request as RequestException;
+use Vonage\Application\Application;
+use Vonage\Application\Client as ApplicationClient;
+use Vonage\Application\Filter;
+use Vonage\Application\MessagesConfig;
+use Vonage\Application\RtcConfig;
+use Vonage\Application\VoiceConfig;
+use Vonage\Client;
+use Vonage\Client\APIResource;
+use Vonage\Client\Exception\Exception;
+use Vonage\Client\Exception\Server;
 use Vonage\Entity\Filter\EmptyFilter;
+use Vonage\Test\Psr7AssertionTrait;
 
 class ClientTest extends TestCase
 {
     use Psr7AssertionTrait;
 
+    /**
+     * @var mixed
+     */
     protected $vonageClient;
 
     /**
@@ -39,96 +44,118 @@ class ClientTest extends TestCase
     protected $apiClient;
 
     /**
-     * @var Client
+     * @var ApplicationClient
      */
     protected $applicationClient;
 
     public function setUp(): void
     {
-        $this->vonageClient = $this->prophesize('Vonage\Client');
+        $this->vonageClient = $this->prophesize(Client::class);
         $this->vonageClient->getApiUrl()->willReturn('http://api.nexmo.com');
 
-        $this->applicationClient = new Client();
+        $this->applicationClient = new ApplicationClient();
+        /** @noinspection PhpParamsInspection */
         $this->applicationClient->setClient($this->vonageClient->reveal());
     }
 
-    public function testSizeException()
+    public function testSizeException(): void
     {
         $this->expectException('RuntimeException');
         $this->applicationClient->getSize();
     }
 
-    public function testSetFilter()
+    /**
+     * @throws Exception
+     * @throws ClientExceptionInterface
+     * @throws Client\Exception\Request
+     * @throws Server
+     */
+    public function testSetFilter(): void
     {
-        $filter = new Filter(new \DateTime('yesterday'), new \DateTime('tomorrow'));
+        $filter = new Filter(new DateTime('yesterday'), new DateTime('tomorrow'));
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($filter) {
-            $this->assertEquals('/v2/applications', $request->getUri()->getPath());
-            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('GET', $request->getMethod());
+            self::assertEquals('/v2/applications', $request->getUri()->getPath());
+            self::assertEquals('api.nexmo.com', $request->getUri()->getHost());
+            self::assertEquals('GET', $request->getMethod());
+
             foreach ($filter->getQuery() as $key => $value) {
-                $this->assertRequestQueryContains($key, $value, $request);
+                self::assertRequestQueryContains($key, $value, $request);
             }
 
             return true;
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('list'));
 
-        $this->assertInstanceOf(EmptyFilter::class, $this->applicationClient->getFilter());
-        $this->assertSame($this->applicationClient, $this->applicationClient->setFilter($filter));
-        $this->assertSame($filter, $this->applicationClient->getFilter());
+        self::assertInstanceOf(EmptyFilter::class, $this->applicationClient->getFilter());
+        self::assertSame($this->applicationClient, $this->applicationClient->setFilter($filter));
+        self::assertSame($filter, $this->applicationClient->getFilter());
 
         $this->applicationClient->rewind();
     }
 
-    public function testSetPage()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Client\Exception\Request
+     * @throws Exception
+     * @throws Server
+     */
+    public function testSetPage(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            $this->assertEquals('/v2/applications', $request->getUri()->getPath());
-            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('GET', $request->getMethod());
-            $this->assertRequestQueryContains('page_index', '1', $request);
+            self::assertEquals('/v2/applications', $request->getUri()->getPath());
+            self::assertEquals('api.nexmo.com', $request->getUri()->getHost());
+            self::assertEquals('GET', $request->getMethod());
+            self::assertRequestQueryContains('page_index', '1', $request);
             return true;
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('list'));
 
-        $this->assertSame($this->applicationClient, $this->applicationClient->setPage(1));
-        $this->assertEquals(1, $this->applicationClient->getPage());
+        self::assertSame($this->applicationClient, $this->applicationClient->setPage(1));
+        self::assertEquals(1, $this->applicationClient->getPage());
 
         $this->applicationClient->rewind();
     }
 
-    public function testSetSize()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Client\Exception\Request
+     * @throws Exception
+     * @throws Server
+     */
+    public function testSetSize(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            $this->assertEquals('/v2/applications', $request->getUri()->getPath());
-            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('GET', $request->getMethod());
-            $this->assertRequestQueryContains('page_size', '5', $request);
+            self::assertEquals('/v2/applications', $request->getUri()->getPath());
+            self::assertEquals('api.nexmo.com', $request->getUri()->getHost());
+            self::assertEquals('GET', $request->getMethod());
+            self::assertRequestQueryContains('page_size', '5', $request);
             return true;
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('list'));
 
-        $this->assertSame($this->applicationClient, $this->applicationClient->setSize(5));
-        $this->assertEquals(5, $this->applicationClient->getSize());
+        self::assertSame($this->applicationClient, $this->applicationClient->setSize(5));
+        self::assertEquals(5, $this->applicationClient->getSize());
 
         $this->applicationClient->rewind();
     }
 
-    public function testIterationProperties()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Client\Exception\Request
+     * @throws Exception
+     * @throws Server
+     */
+    public function testIterationProperties(): void
     {
         $this->vonageClient->send(Argument::type(RequestInterface::class))
-             ->shouldBeCalledTimes(1)
-             ->willReturn($this->getResponse('list'));
+            ->shouldBeCalledTimes(1)
+            ->willReturn($this->getResponse('list'));
 
-        foreach ($this->applicationClient as $id => $application) {
-            break;
-        }
-
-        $this->assertEquals(7, $this->applicationClient->count());
-        $this->assertCount(7, $this->applicationClient);
-        $this->assertEquals(2, $this->applicationClient->getPage());
-        $this->assertEquals(3, $this->applicationClient->getSize());
+        self::assertEquals(7, $this->applicationClient->count());
+        self::assertCount(7, $this->applicationClient);
+        self::assertEquals(2, $this->applicationClient->getPage());
+        self::assertEquals(3, $this->applicationClient->getSize());
     }
 
-    public function testIteratePages()
+    public function testIteratePages(): void
     {
         $page = $this->getResponse('list');
         $last = $this->getResponse('last');
@@ -140,106 +167,118 @@ class ClientTest extends TestCase
                 $last = $request;
             }
 
-            $this->assertEquals('/v2/applications', $request->getUri()->getPath());
-            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('GET', $request->getMethod());
+            self::assertEquals('/v2/applications', $request->getUri()->getPath());
+            self::assertEquals('api.nexmo.com', $request->getUri()->getHost());
+            self::assertEquals('GET', $request->getMethod());
 
             if ($last !== $request) { //second call
-                $this->assertRequestQueryContains('page_size', '3', $request);
-                $this->assertRequestQueryContains('page_index', '3', $request);
+                self::assertRequestQueryContains('page_size', '3', $request);
+                self::assertRequestQueryContains('page_index', '3', $request);
             }
 
             return true;
         }))->shouldBeCalledTimes(2)->willReturn($page, $last);
 
         foreach ($this->applicationClient as $id => $application) {
-            $this->assertInstanceOf('Vonage\Application\Application', $application);
-            $this->assertSame($application->getId(), $id);
+            self::assertInstanceOf(Application::class, $application);
+            self::assertSame($application->getId(), $id);
         }
     }
 
-    public function testCanIterateClient()
+    public function testCanIterateClient(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            $this->assertEquals('/v2/applications', $request->getUri()->getPath());
-            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('GET', $request->getMethod());
+            self::assertEquals('/v2/applications', $request->getUri()->getPath());
+            self::assertEquals('api.nexmo.com', $request->getUri()->getHost());
+            self::assertEquals('GET', $request->getMethod());
             return true;
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('list'));
 
-        $this->assertInstanceOf('Iterator', $this->applicationClient);
+        self::assertInstanceOf('Iterator', $this->applicationClient);
 
+        $application = $id = null;
+
+        /** @noinspection LoopWhichDoesNotLoopInspection */
         foreach ($this->applicationClient as $id => $application) {
             break;
         }
 
-        $this->assertTrue(isset($application));
-        $this->assertInstanceOf('Vonage\Application\Application', $application);
-        $this->assertSame($application->getId(), $id);
+        self::assertTrue(isset($application));
+        self::assertInstanceOf(Application::class, $application);
+        self::assertSame($application->getId(), $id);
     }
 
     /**
-     * @todo Remove error supression when object passing has been removed
      * @dataProvider getApplication
+     * @param $payload
+     * @param $id
+     * @throws ClientExceptionInterface
+     * @throws Exception
+     * @throws \Exception
      */
-    public function testGetApplication($payload, $id)
+    public function testGetApplication($payload, $id): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id) {
-            $this->assertEquals('/v2/applications/' . $id, $request->getUri()->getPath());
-            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('GET', $request->getMethod());
+            self::assertEquals('/v2/applications/' . $id, $request->getUri()->getPath());
+            self::assertEquals('api.nexmo.com', $request->getUri()->getHost());
+            self::assertEquals('GET', $request->getMethod());
             return true;
         }))->willReturn($this->getResponse());
 
         $application = @$this->applicationClient->get($payload);
         $expectedData = json_decode($this->getResponse()->getBody()->getContents(), true);
 
-        $this->assertInstanceOf('Vonage\Application\Application', $application);
-        $this->assertSame($expectedData['id'], $application->getId());
-        $this->assertSame($expectedData['name'], $application->getName());
-        $this->assertSame(
+        self::assertInstanceOf(Application::class, $application);
+        self::assertSame($expectedData['id'], $application->getId());
+        self::assertSame($expectedData['name'], $application->getName());
+        self::assertSame(
             $expectedData['capabilities']['voice']['webhooks']['answer_url']['address'],
             $application->getVoiceConfig()->getWebhook('answer_url')->getUrl()
         );
-        $this->assertSame(
+        self::assertSame(
             $expectedData['capabilities']['voice']['webhooks']['answer_url']['http_method'],
             $application->getVoiceConfig()->getWebhook('answer_url')->getMethod()
         );
-        $this->assertSame(
+        self::assertSame(
             $expectedData['capabilities']['voice']['webhooks']['event_url']['address'],
             $application->getVoiceConfig()->getWebhook('event_url')->getUrl()
         );
-        $this->assertSame(
+        self::assertSame(
             $expectedData['capabilities']['voice']['webhooks']['event_url']['http_method'],
             $application->getVoiceConfig()->getWebhook('event_url')->getMethod()
         );
-        $this->assertSame(
+        self::assertSame(
             $expectedData['capabilities']['messages']['webhooks']['inbound_url']['address'],
             $application->getMessagesConfig()->getWebhook('inbound_url')->getUrl()
         );
-        $this->assertSame(
+        self::assertSame(
             $expectedData['capabilities']['messages']['webhooks']['inbound_url']['http_method'],
             $application->getMessagesConfig()->getWebhook('inbound_url')->getMethod()
         );
-        $this->assertSame(
+        self::assertSame(
             $expectedData['capabilities']['messages']['webhooks']['status_url']['address'],
             $application->getMessagesConfig()->getWebhook('status_url')->getUrl()
         );
-        $this->assertSame(
+        self::assertSame(
             $expectedData['capabilities']['messages']['webhooks']['status_url']['http_method'],
             $application->getMessagesConfig()->getWebhook('status_url')->getMethod()
         );
-        $this->assertSame(
+        self::assertSame(
             $expectedData['capabilities']['rtc']['webhooks']['event_url']['address'],
             $application->getRtcConfig()->getWebhook('event_url')->getUrl()
         );
-        $this->assertSame(
+        self::assertSame(
             $expectedData['capabilities']['rtc']['webhooks']['event_url']['address'],
             $application->getRtcConfig()->getWebhook('event_url')->getUrl()
         );
+
+        self::markTestIncomplete('Remove error suppression when object passing has been removed');
     }
 
-    public function getApplication()
+    /**
+     * @return array
+     */
+    public function getApplication(): array
     {
         return [
             ['78d335fa323d01149c3dd6f0d48968cf', '78d335fa323d01149c3dd6f0d48968cf'],
@@ -248,19 +287,20 @@ class ClientTest extends TestCase
     }
 
     /**
-     * @todo Remove error supression when object passing has been removed
-     * @todo Rework this whole test, because it uses stock responses it's impossible to test in its current form
-     *
      * @dataProvider updateApplication
+     * @param $payload
+     * @param $method
+     * @param $id
+     * @param $expectedId
      */
-    public function testUpdateApplication($payload, $method, $id, $expectedId)
+    public function testUpdateApplication($payload, $method, $id, $expectedId): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($expectedId) {
-            $this->assertEquals('/v2/applications/' . $expectedId, $request->getUri()->getPath());
-            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('PUT', $request->getMethod());
+            self::assertEquals('/v2/applications/' . $expectedId, $request->getUri()->getPath());
+            self::assertEquals('api.nexmo.com', $request->getUri()->getHost());
+            self::assertEquals('PUT', $request->getMethod());
 
-            $this->assertRequestJsonBodyContains('name', 'My Application', $request);
+            self::assertRequestJsonBodyContains('name', 'My Application', $request);
 
             // And check all other capabilities
             $capabilities = [
@@ -286,7 +326,7 @@ class ClientTest extends TestCase
                     ]
                 ],
             ];
-            $this->assertRequestJsonBodyContains('capabilities', $capabilities, $request);
+            self::assertRequestJsonBodyContains('capabilities', $capabilities, $request);
 
             return true;
         }))->willReturn($this->getResponse());
@@ -298,53 +338,62 @@ class ClientTest extends TestCase
         }
 
         $expectedData = json_decode($this->getResponse()->getBody()->getContents(), true);
-        
-        $this->assertInstanceOf('Vonage\Application\Application', $application);
-        $this->assertSame($expectedData['id'], $application->getId());
-        $this->assertSame($expectedData['name'], $application->getName());
-        $this->assertSame(
+
+        self::assertInstanceOf(Application::class, $application);
+        self::assertSame($expectedData['id'], $application->getId());
+        self::assertSame($expectedData['name'], $application->getName());
+        self::assertSame(
             $expectedData['capabilities']['voice']['webhooks']['answer_url']['address'],
             $application->getVoiceConfig()->getWebhook('answer_url')->getUrl()
         );
-        $this->assertSame(
+        self::assertSame(
             $expectedData['capabilities']['voice']['webhooks']['answer_url']['http_method'],
             $application->getVoiceConfig()->getWebhook('answer_url')->getMethod()
         );
-        $this->assertSame(
+        self::assertSame(
             $expectedData['capabilities']['voice']['webhooks']['event_url']['address'],
             $application->getVoiceConfig()->getWebhook('event_url')->getUrl()
         );
-        $this->assertSame(
+        self::assertSame(
             $expectedData['capabilities']['voice']['webhooks']['event_url']['http_method'],
             $application->getVoiceConfig()->getWebhook('event_url')->getMethod()
         );
-        $this->assertSame(
+        self::assertSame(
             $expectedData['capabilities']['messages']['webhooks']['inbound_url']['address'],
             $application->getMessagesConfig()->getWebhook('inbound_url')->getUrl()
         );
-        $this->assertSame(
+        self::assertSame(
             $expectedData['capabilities']['messages']['webhooks']['inbound_url']['http_method'],
             $application->getMessagesConfig()->getWebhook('inbound_url')->getMethod()
         );
-        $this->assertSame(
+        self::assertSame(
             $expectedData['capabilities']['messages']['webhooks']['status_url']['address'],
             $application->getMessagesConfig()->getWebhook('status_url')->getUrl()
         );
-        $this->assertSame(
+        self::assertSame(
             $expectedData['capabilities']['messages']['webhooks']['status_url']['http_method'],
             $application->getMessagesConfig()->getWebhook('status_url')->getMethod()
         );
-        $this->assertSame(
+        self::assertSame(
             $expectedData['capabilities']['rtc']['webhooks']['event_url']['address'],
             $application->getRtcConfig()->getWebhook('event_url')->getUrl()
         );
-        $this->assertSame(
+        self::assertSame(
             $expectedData['capabilities']['rtc']['webhooks']['event_url']['address'],
             $application->getRtcConfig()->getWebhook('event_url')->getUrl()
+        );
+
+        @self::markTestIncomplete("Remove error suppression when object passing has been removed");
+        @self::markTestIncomplete(
+            "Rework this whole test, because it uses stock responses it's impossible to test in its current form"
         );
     }
 
-    public function updateApplication()
+    /**
+     * @return array[]
+     * @throws \Exception
+     */
+    public function updateApplication(): array
     {
         $id = '1a20a124-1775-412b-b623-e6985f4aace0';
         $copy = '1a20a124-1775-412b-4444-e6985f4aace0';
@@ -378,20 +427,27 @@ class ClientTest extends TestCase
 
     /**
      * @dataProvider deleteApplication
+     * @param $payload
+     * @param $id
+     * @throws ClientExceptionInterface
+     * @throws Exception
      */
-    public function testDeleteApplication($payload, $id)
+    public function testDeleteApplication($payload, $id): void
     {
         $this->vonageClient->send(Argument::that(function (Request $request) use ($id) {
-            $this->assertEquals('/v2/applications/' . $id, $request->getUri()->getPath());
-            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('DELETE', $request->getMethod());
+            self::assertEquals('/v2/applications/' . $id, $request->getUri()->getPath());
+            self::assertEquals('api.nexmo.com', $request->getUri()->getHost());
+            self::assertEquals('DELETE', $request->getMethod());
             return true;
         }))->willReturn(new Response('php://memory', 204));
 
-        $this->assertTrue(@$this->applicationClient->delete($payload));
+        self::assertTrue(@$this->applicationClient->delete($payload));
     }
 
-    public function deleteApplication()
+    /**
+     * @return array
+     */
+    public function deleteApplication(): array
     {
         return [
             [new Application('abcd1234'), 'abcd1234'],
@@ -400,10 +456,12 @@ class ClientTest extends TestCase
     }
 
     /**
-     * @todo Break this test up, it is doing way too much
      * @dataProvider exceptions
+     * @param $method
+     * @param $response
+     * @param $code
      */
-    public function testThrowsException($method, $response, $code)
+    public function testThrowsException($method, $response, $code): void
     {
         $response = $this->getResponse($response, $code);
         $this->vonageClient->send(Argument::type(RequestInterface::class))->willReturn($response);
@@ -411,65 +469,73 @@ class ClientTest extends TestCase
 
         try {
             @$this->applicationClient->$method($application);
-            $this->fail('did not throw exception');
+
+            self::fail('did not throw exception');
         } catch (Exception $e) {
             $response->getBody()->rewind();
             $data = json_decode($response->getBody()->getContents(), true);
-            $class = substr($code, 0, 1);
+            $class = substr((string)$code, 0, 1);
 
             $msg = $data['title'];
             if ($data['detail']) {
-                $msg .= ': '.$data['detail'].'. See '.$data['type'].' for more information';
+                $msg .= ': ' . $data['detail'] . '. See ' . $data['type'] . ' for more information';
             }
 
             switch ($class) {
                 case '4':
-                    $this->assertInstanceOf('Vonage\Client\Exception\Request', $e);
-                    $this->assertEquals($msg, $e->getMessage());
-                    $this->assertEquals($code, $e->getCode());
+                    self::assertInstanceOf(Client\Exception\Request::class, $e);
+                    self::assertEquals($msg, $e->getMessage());
+                    self::assertEquals($code, $e->getCode());
                     break;
                 case '5':
-                    $this->assertInstanceOf('Vonage\Client\Exception\Server', $e);
-                    $this->assertEquals($msg, $e->getMessage());
-                    $this->assertEquals($code, $e->getCode());
+                    self::assertInstanceOf(Server::class, $e);
+                    self::assertEquals($msg, $e->getMessage());
+                    self::assertEquals($code, $e->getCode());
                     break;
                 default:
-                    $this->assertInstanceOf('Vonage\Client\Exception\Exception', $e);
-                    $this->assertEquals('Unexpected HTTP Status Code', $e->getMessage());
+                    self::assertInstanceOf(Exception::class, $e);
+                    self::assertEquals('Unexpected HTTP Status Code', $e->getMessage());
                     break;
             }
         }
+
+        self::markTestIncomplete('Break this test up, it is doing way too much');
     }
 
-    public function exceptions()
+    /**
+     * @return string[]
+     */
+    public function exceptions(): array
     {
         //todo: add server error
         return [
             //post / create are aliases
-            ['update', 'bad', '400'],
-            ['update', 'unauthorized', '401'],
-            ['create', 'bad', '400'],
-            ['create', 'unauthorized', '401'],
-            ['delete', 'bad', '400'],
-            ['delete', 'unauthorized', '401'],
+            ['update', 'bad', 400],
+            ['update', 'unauthorized', 401],
+            ['create', 'bad', 400],
+            ['create', 'unauthorized', 401],
+            ['delete', 'bad', 400],
+            ['delete', 'unauthorized', 401],
         ];
     }
 
     /**
      * @dataProvider createApplication
+     * @param $payload
+     * @param $method
      */
-    public function testCreateApplication($payload, $method)
+    public function testCreateApplication($payload, $method): void
     {
         $this->vonageClient->send(Argument::that(function (Request $request) {
-            $this->assertEquals('/v2/applications', $request->getUri()->getPath());
-            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('POST', $request->getMethod());
+            self::assertEquals('/v2/applications', $request->getUri()->getPath());
+            self::assertEquals('api.nexmo.com', $request->getUri()->getHost());
+            self::assertEquals('POST', $request->getMethod());
 
-            $this->assertRequestJsonBodyContains('name', 'My Application', $request);
+            self::assertRequestJsonBodyContains('name', 'My Application', $request);
 
             // Check for VBC as an object explicitly
             $request->getBody()->rewind();
-            $this->assertContains('"vbc":{}', $request->getBody()->getContents());
+            self::assertStringContainsString('"vbc":{}', $request->getBody()->getContents());
 
             // And check all other capabilities
             $capabilities = [
@@ -509,74 +575,90 @@ class ClientTest extends TestCase
                 ],
                 'vbc' => []
             ];
-            $this->assertRequestJsonBodyContains('capabilities', $capabilities, $request);
+            self::assertRequestJsonBodyContains('capabilities', $capabilities, $request);
 
             // And the public key
             $keys = [
-                'public_key' => "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSLcjxu33G\nd/vynKnlw9SENi+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xsO\nOUNhPx2LhuLmgwWSRS4L5W851Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n",
+                'public_key' => "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSLcjx" .
+                    "u33G\nd/vynKnlw9SENi+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xs" .
+                    "O\nOUNhPx2LhuLmgwWSRS4L5W851Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n",
             ];
-            $this->assertRequestJsonBodyContains('keys', $keys, $request);
+            self::assertRequestJsonBodyContains('keys', $keys, $request);
             return true;
-        }))->willReturn($this->getResponse('success', '201'));
+        }))->willReturn($this->getResponse('success', 201));
 
         $application = @$this->applicationClient->$method($payload);
 
         $expectedData = json_decode($this->getResponse()->getBody()->getContents(), true);
-        $this->assertInstanceOf('Vonage\Application\Application', $application);
-        $this->assertSame($expectedData['id'], $application->getId());
-        $this->assertSame($expectedData['name'], $application->getName());
-        $this->assertSame(
+        self::assertInstanceOf(Application::class, $application);
+        self::assertSame($expectedData['id'], $application->getId());
+        self::assertSame($expectedData['name'], $application->getName());
+        self::assertSame(
             $expectedData['capabilities']['voice']['webhooks']['answer_url']['address'],
             $application->getVoiceConfig()->getWebhook('answer_url')->getUrl()
         );
-        $this->assertSame(
+        self::assertSame(
             $expectedData['capabilities']['voice']['webhooks']['answer_url']['http_method'],
             $application->getVoiceConfig()->getWebhook('answer_url')->getMethod()
         );
-        $this->assertSame(
+        self::assertSame(
             $expectedData['capabilities']['voice']['webhooks']['event_url']['address'],
             $application->getVoiceConfig()->getWebhook('event_url')->getUrl()
         );
-        $this->assertSame(
+        self::assertSame(
             $expectedData['capabilities']['voice']['webhooks']['event_url']['http_method'],
             $application->getVoiceConfig()->getWebhook('event_url')->getMethod()
         );
-        $this->assertSame(
+        self::assertSame(
             $expectedData['capabilities']['messages']['webhooks']['inbound_url']['address'],
             $application->getMessagesConfig()->getWebhook('inbound_url')->getUrl()
         );
-        $this->assertSame(
+        self::assertSame(
             $expectedData['capabilities']['messages']['webhooks']['inbound_url']['http_method'],
             $application->getMessagesConfig()->getWebhook('inbound_url')->getMethod()
         );
-        $this->assertSame(
+        self::assertSame(
             $expectedData['capabilities']['messages']['webhooks']['status_url']['address'],
             $application->getMessagesConfig()->getWebhook('status_url')->getUrl()
         );
-        $this->assertSame(
+        self::assertSame(
             $expectedData['capabilities']['messages']['webhooks']['status_url']['http_method'],
             $application->getMessagesConfig()->getWebhook('status_url')->getMethod()
         );
-        $this->assertSame(
+        self::assertSame(
             $expectedData['capabilities']['rtc']['webhooks']['event_url']['address'],
             $application->getRtcConfig()->getWebhook('event_url')->getUrl()
         );
-        $this->assertSame(
+        self::assertSame(
             $expectedData['capabilities']['rtc']['webhooks']['event_url']['address'],
             $application->getRtcConfig()->getWebhook('event_url')->getUrl()
         );
     }
 
-    public function createApplication()
+    /**
+     * @return array[]
+     * @throws \Exception
+     */
+    public function createApplication(): array
     {
         $application = new Application();
         $application->setName('My Application');
         @$application->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'https://example.com/webhooks/answer', 'GET');
         @$application->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'https://example.com/webhooks/event', 'POST');
-        @$application->getMessagesConfig()->setWebhook(MessagesConfig::STATUS, 'https://example.com/webhooks/status', 'POST');
-        @$application->getMessagesConfig()->setWebhook(MessagesConfig::INBOUND, 'https://example.com/webhooks/inbound', 'POST');
+        @$application->getMessagesConfig()->setWebhook(
+            MessagesConfig::STATUS,
+            'https://example.com/webhooks/status',
+            'POST'
+        );
+        @$application->getMessagesConfig()->setWebhook(
+            MessagesConfig::INBOUND,
+            'https://example.com/webhooks/inbound',
+            'POST'
+        );
         @$application->getRtcConfig()->setWebhook(RtcConfig::EVENT, 'https://example.com/webhooks/event', 'POST');
-        $application->setPublicKey("-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSLcjxu33G\nd/vynKnlw9SENi+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xsO\nOUNhPx2LhuLmgwWSRS4L5W851Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n");
+        $application->setPublicKey("-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSL" .
+            "cjxu33G\nd/vynKnlw9SENi+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xsO\nOU" .
+            "NhPx2LhuLmgwWSRS4L5W851Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n");
         $application->getVbcConfig()->enable();
 
         $rawV1 = [
@@ -590,13 +672,17 @@ class ClientTest extends TestCase
             'inbound_url' => 'https://example.com/webhooks/inbound',
             'inbound_method' => 'POST',
             'vbc' => true,
-            'public_key' => "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSLcjxu33G\nd/vynKnlw9SENi+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xsO\nOUNhPx2LhuLmgwWSRS4L5W851Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n"
+            'public_key' => "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSLcjxu33G" .
+                "\nd/vynKnlw9SENi+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xsO\nOUNhP" .
+                "x2LhuLmgwWSRS4L5W851Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n"
         ];
 
         $rawV2 = [
             'name' => 'My Application',
             'keys' => [
-                'public_key' => "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSLcjxu33G\nd/vynKnlw9SENi+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xsO\nOUNhPx2LhuLmgwWSRS4L5W851Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n"
+                'public_key' => "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSLcjx" .
+                    "u33G\nd/vynKnlw9SENi+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xs" .
+                    "O\nOUNhPx2LhuLmgwWSRS4L5W851Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n"
             ],
             'capabilities' => [
                 'voice' => [
@@ -650,10 +736,11 @@ class ClientTest extends TestCase
      * Get the API response we'd expect for a call to the API.
      *
      * @param string $type
+     * @param int $status
      * @return Response
      */
-    protected function getResponse($type = 'success', $status = 200)
+    protected function getResponse(string $type = 'success', int $status = 200): Response
     {
-        return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'r'), $status);
+        return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'rb'), $status);
     }
 }

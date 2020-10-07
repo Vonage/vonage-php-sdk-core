@@ -1,15 +1,26 @@
 <?php
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
+ */
+declare(strict_types=1);
 
 namespace Vonage\Entity\Hydrator;
 
 class ArrayHydrator implements HydratorInterface
 {
     /**
-     * @var ArrayHydratorInterface
+     * @var ArrayHydrateInterface
      */
     protected $prototype;
 
-    public function hydrate(array $data)
+    /**
+     * @param array $data
+     * @return ArrayHydrateInterface
+     */
+    public function hydrate(array $data): ArrayHydrateInterface
     {
         $object = clone $this->prototype;
         $object->fromArray($data);
@@ -17,13 +28,22 @@ class ArrayHydrator implements HydratorInterface
         return $object;
     }
 
+    /**
+     * @param array $data
+     * @param $object
+     * @return mixed
+     */
     public function hydrateObject(array $data, $object)
     {
         $object->fromArray($data);
+
         return $object;
     }
 
-    public function setPrototype(ArrayHydrateInterface $prototype)
+    /**
+     * @param ArrayHydrateInterface $prototype
+     */
+    public function setPrototype(ArrayHydrateInterface $prototype): void
     {
         $this->prototype = $prototype;
     }

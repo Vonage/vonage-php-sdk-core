@@ -1,10 +1,10 @@
 <?php
 
-use Nexmo\Client;
+use Vonage\Client;
 
 require_once '../vendor/autoload.php';
 
-$client = new Client(new Nexmo\Client\Credentials\Basic(API_KEY, API_SECRET));
+$client = new Client(new Vonage\Client\Credentials\Basic(API_KEY, API_SECRET));
 
 $a = $client->applications()->get(APPLICATION_ID);
 

@@ -2,15 +2,16 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2017 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
  */
+declare(strict_types=1);
 
-namespace VonageTest\Call;
+namespace Vonage\Test\Call;
 
-use Vonage\Call\Event;
-use VonageTest\Fixture\ResponseTrait;
 use PHPUnit\Framework\TestCase;
+use Vonage\Call\Event;
+use Vonage\Test\Fixture\ResponseTrait;
 
 class EventTest extends TestCase
 {
@@ -24,27 +25,27 @@ class EventTest extends TestCase
         $this->entity = @new Event($data);
     }
 
-    public function testExpectsMessage()
+    public function testExpectsMessage(): void
     {
         $this->expectException('InvalidArgumentException');
         @new Event(['uuid' => 'something_unique']);
     }
 
-    public function testExpectsUUID()
+    public function testExpectsUUID(): void
     {
         $this->expectException('InvalidArgumentException');
         @new Event(['message' => 'something happened']);
     }
 
-    public function testGetId()
+    public function testGetId(): void
     {
-        $this->assertSame('5dd627ff-caff-46a8-99ed-891e5ffebc55', $this->entity->getId());
-        $this->assertSame('5dd627ff-caff-46a8-99ed-891e5ffebc55', $this->entity['uuid']);
+        self::assertSame('5dd627ff-caff-46a8-99ed-891e5ffebc55', $this->entity->getId());
+        self::assertSame('5dd627ff-caff-46a8-99ed-891e5ffebc55', $this->entity['uuid']);
     }
 
-    public function testGetMessage()
+    public function testGetMessage(): void
     {
-        $this->assertSame('Stream stopped', $this->entity->getMessage());
-        $this->assertSame('Stream stopped', $this->entity['message']);
+        self::assertSame('Stream stopped', $this->entity->getMessage());
+        self::assertSame('Stream stopped', $this->entity['message']);
     }
 }

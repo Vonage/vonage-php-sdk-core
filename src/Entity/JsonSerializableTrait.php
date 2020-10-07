@@ -2,11 +2,15 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
  */
+declare(strict_types=1);
 
 namespace Vonage\Entity;
+
+use JsonSerializable;
+use Vonage\Client\Exception\Exception;
 
 /**
  * Implements getRequestData from EntityInterface based on the entity's jsonSerialize().
@@ -19,28 +23,31 @@ trait JsonSerializableTrait
 {
     /**
      * Get an array of params to use in an API request.
+     *
+     * @param bool $sent
+     * @return mixed
+     * @throws Exception
      */
     public function getRequestData($sent = true)
     {
         if (!($this instanceof EntityInterface)) {
-            throw new \Exception(sprintf(
+            throw new Exception(sprintf(
                 '%s can only be used if the class implements %s',
                 __TRAIT__,
                 EntityInterface::class
             ));
         }
 
-        if (!($this instanceof \JsonSerializable)) {
-            throw new \Exception(sprintf(
+        if (!($this instanceof JsonSerializable)) {
+            throw new Exception(sprintf(
                 '%s can only be used if the class implements %s',
                 __TRAIT__,
-                \JsonSerializable::class
+                JsonSerializable::class
             ));
         }
 
-        if ($sent && ($request = $this->getRequest())) {
-            //TODO, figure out what the request data actually was
-        }
+        //TODO, figure out what the request data actually was
+        $sent && $this->getRequest();
 
         return $this->jsonSerialize();
     }

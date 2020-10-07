@@ -2,9 +2,10 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
  */
+declare(strict_types=1);
 
 namespace Vonage\Message;
 
@@ -13,26 +14,27 @@ namespace Vonage\Message;
  */
 class AutoDetect extends Message
 {
-    const TYPE = 'text';
-    
+    public const TYPE = 'text';
+
     /**
      * Message Body
      * @var string
      */
     protected $text;
-    
+
     /**
      * Create a new SMS text message.
      *
-     * @param string $to
-     * @param string $from
-     * @param string $text
-     * @param array  $additional
+     * @param $to
+     * @param $from
+     * @param $text
+     * @param array $additional
      */
     public function __construct($to, $from, $text, $additional = [])
     {
         parent::__construct($to, $from, $additional);
+
         $this->enableEncodingDetection();
-        $this->requestData['text'] = (string) $text;
+        $this->requestData['text'] = (string)$text;
     }
 }

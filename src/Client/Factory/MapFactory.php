@@ -2,14 +2,16 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
  */
+declare(strict_types=1);
 
 namespace Vonage\Client\Factory;
 
-use Vonage\Client;
 use Psr\Container\ContainerInterface;
+use RuntimeException;
+use Vonage\Client;
 
 class MapFactory implements FactoryInterface, ContainerInterface
 {
@@ -34,54 +36,81 @@ class MapFactory implements FactoryInterface, ContainerInterface
      */
     protected $client;
 
+    /**
+     * MapFactory constructor.
+     *
+     * @param $map
+     * @param Client $client
+     */
     public function __construct($map, Client $client)
     {
         $this->map = $map;
         $this->client = $client;
     }
 
-    public function has($key)
+    /**
+     * @param string $id
+     * @return bool
+     * @noinspection PhpMissingParamTypeInspection
+     */
+    public function has($id): bool
     {
-        return isset($this->map[$key]);
+        return isset($this->map[$id]);
     }
 
     /**
+     * @param $api
+     * @return bool
      * @deprecated Use has() instead
      */
-    public function hasApi($api)
+    public function hasApi($api): bool
     {
         return $this->has($api);
     }
 
-    public function get($key)
+    /**
+     * @param string $id
+     * @return mixed
+     * @noinspection PhpMissingParamTypeInspection
+     */
+    public function get($id)
     {
-        if (isset($this->cache[$key])) {
-            return $this->cache[$key];
+        if (isset($this->cache[$id])) {
+            return $this->cache[$id];
         }
 
-        $instance = $this->make($key);
-        $this->cache[$key] = $instance;
+        $instance = $this->make($id);
+        $this->cache[$id] = $instance;
 
         return $instance;
     }
 
-    public function getClient()
+    /**
+     * @return Client
+     */
+    public function getClient(): Client
     {
         return $this->client;
     }
 
     /**
+     * @param $api
+     * @return Client\ClientAwareInterface
      * @deprecated Use get() instead
      */
-    public function getApi($api)
+    public function getApi($api): Client\ClientAwareInterface
     {
         return $this->get($api);
     }
 
-    public function make($key)
+    /**
+     * @param $key
+     * @return Client\ClientAwareInterface
+     */
+    public function make($key): Client\ClientAwareInterface
     {
         if (!$this->has($key)) {
-            throw new \RuntimeException(sprintf(
+            throw new RuntimeException(sprintf(
                 'no map defined for `%s`',
                 $key
             ));
@@ -104,7 +133,11 @@ class MapFactory implements FactoryInterface, ContainerInterface
         return $instance;
     }
 
-    public function set($key, $value)
+    /**
+     * @param $key
+     * @param $value
+     */
+    public function set($key, $value): void
     {
         $this->map[$key] = $value;
     }

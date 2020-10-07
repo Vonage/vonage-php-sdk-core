@@ -1,16 +1,16 @@
 <?php
 
-use Nexmo\Client;
+use Vonage\Client;
 
-require_once '../vendor/autoload.php';
+require_once __DIR__ . '/vonage.php';
 
-$client = new Client(new Nexmo\Client\Credentials\Basic(API_KEY, API_SECRET));
+$client = new Client(new Vonage\Client\Credentials\Basic(API_KEY, API_SECRET));
 
 try {
-    $client->applications()->delete(MESSAGES_APPLICATION_ID);
-    echo "Deleted application " . MESSAGES_APPLICATION_ID . PHP_EOL;
-} catch (\Nexmo\Client\Exception\Request $e) {
-    echo "There was a problem with the request: " . $e->getMessage() . PHP_EOL;
-} catch (\Nexmo\Client\Exception\Server $e) {
-    echo "The server encounted an error: " . $e->getMessage() . PHP_EOL;
+    $client->applications()->delete(APPLICATION_ID);
+    echo "Deleted application " . APPLICATION_ID . PHP_EOL;
+} catch (Exception $e) {
+    echo "The server encountered an error: " . PHP_EOL;
+
+    vonageDebug($e);
 }

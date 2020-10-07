@@ -2,13 +2,14 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
  */
+declare(strict_types=1);
 
 namespace Vonage\Network\Number;
 
-use Vonage\Client\Callback\CallbackInterface;
+use BadMethodCallException;
 use Vonage\Client\Callback\Callback as BaseCallback;
 
 /**
@@ -31,10 +32,10 @@ use Vonage\Client\Callback\Callback as BaseCallback;
  * @method null|string getRoamingNetwork()
  * @method bool hasRoamingNetwork()
  */
-class Callback extends BaseCallback implements CallbackInterface
+class Callback extends BaseCallback
 {
-    protected $expected = array('request_id', 'callback_part', 'callback_total_parts', 'number', 'status');
-    protected $optional = array(
+    protected $expected = ['request_id', 'callback_part', 'callback_total_parts', 'number', 'status'];
+    protected $optional = [
         'Type' => 'number_type',
         'Network' => 'carrier_network_code',
         'NetworkName' => 'carrier_network_name',
@@ -44,52 +45,63 @@ class Callback extends BaseCallback implements CallbackInterface
         'Roaming' => 'roaming',
         'RoamingCountry' => 'roaming_country_code',
         'RoamingNetwork' => 'roaming_network_code',
-    );
+    ];
 
+    /**
+     * @return mixed
+     */
     public function getId()
     {
         return $this->data['request_id'];
     }
 
+    /**
+     * @return mixed
+     */
     public function getCallbackTotal()
     {
         return $this->data['callback_total_parts'];
     }
 
+    /**
+     * @return mixed
+     */
     public function getCallbackIndex()
     {
         return $this->data['callback_part'];
     }
 
+    /**
+     * @return mixed
+     */
     public function getNumber()
     {
         return $this->data['number'];
     }
 
+    /**
+     * @param $name
+     * @param $args
+     * @return mixed
+     */
     public function __call($name, $args)
     {
         $type = substr($name, 0, 3);
         $property = substr($name, 3);
 
         if (!isset($this->optional[$property])) {
-            throw new \BadMethodCallException('property does not exist: ' . $property);
+            throw new BadMethodCallException('property does not exist: ' . $property);
         }
 
         $property = $this->optional[$property];
 
         switch ($type) {
             case 'get':
-                if (isset($this->data[$property])) {
-                    return $this->data[$property];
-                } else {
-                    return null;
-                }
-                break;
+                return $this->data[$property] ?? null;
             case 'has':
                 return isset($this->data[$property]);
-                break;
         }
 
-        throw new \BadMethodCallException('method does not exist: ' . $name);
+        throw new BadMethodCallException('method does not exist: ' . $name);
     }
 }

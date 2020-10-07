@@ -1,24 +1,33 @@
 <?php
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
+ */
+declare(strict_types=1);
 
 namespace Vonage\Account;
 
 use ArrayAccess;
+use JsonSerializable;
+use RuntimeException;
 use Vonage\Client\Exception\Exception;
-use Vonage\Network;
 use Vonage\Entity\EntityInterface;
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
-use Vonage\Entity\JsonSerializableInterface;
 use Vonage\Entity\JsonResponseTrait;
+use Vonage\Entity\JsonSerializableInterface;
 use Vonage\Entity\JsonSerializableTrait;
-use Vonage\Entity\NoRequestResponseTrait;
 use Vonage\Entity\JsonUnserializableInterface;
+use Vonage\Entity\NoRequestResponseTrait;
+use Vonage\Network;
 
 /**
  * This class will no longer be accessible via array access, nor contain request/response information after v2.
  */
 abstract class Price implements
     EntityInterface,
-    \JsonSerializable,
+    JsonSerializable,
     JsonSerializableInterface,
     JsonUnserializableInterface,
     ArrayAccess,
@@ -33,26 +42,41 @@ abstract class Price implements
      */
     protected $data = [];
 
+    /**
+     * @return mixed
+     */
     public function getCountryCode()
     {
         return $this->data['country_code'];
     }
 
+    /**
+     * @return mixed
+     */
     public function getCountryDisplayName()
     {
         return $this->data['country_display_name'];
     }
 
+    /**
+     * @return mixed
+     */
     public function getCountryName()
     {
         return $this->data['country_name'];
     }
 
+    /**
+     * @return mixed
+     */
     public function getDialingPrefix()
     {
         return $this->data['dialing_prefix'];
     }
 
+    /**
+     * @return mixed
+     */
     public function getDefaultPrice()
     {
         if (isset($this->data['default_price'])) {
@@ -60,21 +84,34 @@ abstract class Price implements
         }
 
         if (!array_key_exists('mt', $this->data)) {
-            throw new \RuntimeException('Unknown pricing for ' . $this->getCountryName() . ' (' . $this->getCountryCode() . ')');
+            throw new RuntimeException(
+                'Unknown pricing for ' . $this->getCountryName() . ' (' . $this->getCountryCode() . ')'
+            );
         }
+
         return $this->data['mt'];
     }
 
+    /**
+     * @return mixed
+     */
     public function getCurrency()
     {
         return $this->data['currency'];
     }
 
+    /**
+     * @return mixed
+     */
     public function getNetworks()
     {
         return $this->data['networks'];
     }
 
+    /**
+     * @param $networkCode
+     * @return mixed
+     */
     public function getPriceForNetwork($networkCode)
     {
         $networks = $this->getNetworks();
@@ -85,33 +122,38 @@ abstract class Price implements
         return $this->getDefaultPrice();
     }
 
-    public function jsonUnserialize(array $json)
+    /**
+     * @param array $json
+     * @return void|null
+     */
+    public function jsonUnserialize(array $json): void
     {
         trigger_error(
             get_class($this) . "::jsonUnserialize is deprecated, please fromArray() instead",
             E_USER_DEPRECATED
         );
+
         $this->fromArray($json);
     }
 
-    public function fromArray(array $data)
+    /**
+     * @param array $data
+     */
+    public function fromArray(array $data): void
     {
         // Convert CamelCase to snake_case as that's how we use array access in every other object
         $storage = [];
+
         foreach ($data as $k => $v) {
-            $k = ltrim(strtolower(preg_replace('/[A-Z]([A-Z](?![a-z]))*/', '_$0', $k)), '_');
+            $k = strtolower(ltrim(preg_replace('/[A-Z]([A-Z](?![a-z]))*/', '_$0', $k), '_'));
 
             // PrefixPrice fixes
-            if ($k == 'country') {
+            if ($k === 'country') {
                 $k = 'country_code';
-            }
-
-            if ($k == 'name') {
+            } elseif ($k === 'name') {
                 $storage['country_display_name'] = $v;
                 $storage['country_name'] = $v;
-            }
-
-            if ($k == 'prefix') {
+            } elseif ($k === 'prefix') {
                 $k = 'dialing_prefix';
             }
 
@@ -120,6 +162,7 @@ abstract class Price implements
 
         // Create objects for all the nested networks too
         $networks = [];
+
         if (isset($data['networks'])) {
             foreach ($data['networks'] as $n) {
                 if (isset($n['code'])) {
@@ -142,44 +185,74 @@ abstract class Price implements
         $this->data = $storage;
     }
 
+    /**
+     * @return array|mixed
+     */
     public function jsonSerialize()
     {
         return $this->toArray();
     }
 
+    /**
+     * @return array
+     */
     public function toArray(): array
     {
         return $this->data;
     }
 
-    public function offsetExists($offset)
+    /**
+     * @param mixed $offset
+     * @return bool
+     */
+    public function offsetExists($offset): bool
     {
         trigger_error(
             "Array access for " . get_class($this) . " is deprecated, please use getter methods",
             E_USER_DEPRECATED
         );
+
         return isset($this->data[$offset]);
     }
 
+    /**
+     * @param mixed $offset
+     * @return mixed
+     */
     public function offsetGet($offset)
     {
         trigger_error(
             "Array access for " . get_class($this) . " is deprecated, please use getter methods",
             E_USER_DEPRECATED
         );
+
         return $this->data[$offset];
     }
 
-    public function offsetSet($offset, $value)
+    /**
+     * @param mixed $offset
+     * @param mixed $value
+     * @throws Exception
+     */
+    public function offsetSet($offset, $value): void
     {
         throw new Exception('Price is read only');
     }
 
-    public function offsetUnset($offset)
+    /**
+     * @param mixed $offset
+     * @throws Exception
+     */
+    public function offsetUnset($offset): void
     {
         throw new Exception('Price is read only');
     }
 
+    /**
+     * @param $key
+     * @return array
+     * @noinspection MagicMethodsValidityInspection
+     */
     public function __get($key)
     {
         if ($key === 'data') {
@@ -187,7 +260,10 @@ abstract class Price implements
                 "Direct access to " . get_class($this) . "::data is deprecated, please use getter to toArray() methods",
                 E_USER_DEPRECATED
             );
+
             return $this->data;
         }
+
+        return [];
     }
 }

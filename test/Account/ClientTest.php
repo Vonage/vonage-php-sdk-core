@@ -2,39 +2,40 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
  */
+declare(strict_types=1);
 
-namespace VonageTest\Account;
+namespace Vonage\Test\Account;
 
-use Vonage\Network;
-use Prophecy\Argument;
-use Vonage\Account\Client;
-use Vonage\Account\Config;
-use Vonage\Account\Secret;
-use Vonage\Account\Balance;
-use Vonage\Account\SmsPrice;
-use Vonage\Client\Exception;
-use Zend\Diactoros\Response;
-use Vonage\Account\VoicePrice;
-use Vonage\Client\APIResource;
-use Vonage\Account\PrefixPrice;
+use Laminas\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
-use VonageTest\Psr7AssertionTrait;
-use Vonage\Account\SecretCollection;
-use Vonage\Client\Exception\Request;
-use Vonage\Client\Exception\Validation;
+use Prophecy\Argument;
+use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
+use Vonage\Account\Client as AccountClient;
+use Vonage\Account\PrefixPrice;
+use Vonage\Client;
+use Vonage\Client\Exception;
+use Vonage\Client\Exception\Request;
+use Vonage\Client\Exception\Server;
+use Vonage\Client\Exception\Validation;
+use Vonage\InvalidResponseException;
+use Vonage\Network;
+use Vonage\Test\Psr7AssertionTrait;
 
 class ClientTest extends TestCase
 {
     use Psr7AssertionTrait;
 
+    /**
+     * @var mixed
+     */
     protected $vonageClient;
 
     /**
-     * @var Client
+     * @var AccountClient
      */
     protected $accountClient;
 
@@ -45,25 +46,20 @@ class ClientTest extends TestCase
 
     public function setUp(): void
     {
-        $this->vonageClient = $this->prophesize('Vonage\Client');
+        $this->vonageClient = $this->prophesize(Client::class);
         $this->vonageClient->getRestUrl()->willReturn('https://rest.nexmo.com');
         $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
 
-        // $this->apiClient = new APIResource();
-        // $this->apiClient
-        //     ->setBaseUrl('https://rest.nexmo.com')
-        //     ->setIsHAL(false)
-        //     ->setBaseUri('/account')
-        // ;
-        // $this->apiClient->setCollectionName('');
-        // $this->apiClient->setClient($this->vonageClient->reveal());
-
-        // $this->accountClient = new Client($this->apiClient);
-        $this->accountClient = new Client();
+        $this->accountClient = new AccountClient();
+        /** @noinspection PhpParamsInspection */
         $this->accountClient->setClient($this->vonageClient->reveal());
     }
 
-    public function testTopUp()
+    /**
+     * @throws Exception\Exception
+     * @throws ClientExceptionInterface
+     */
+    public function testTopUp(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/top-up', $request->getUri()->getPath());
@@ -77,9 +73,13 @@ class ClientTest extends TestCase
         $this->accountClient->topUp('ABC123');
     }
 
-    public function testTopUpFailsWith4xx()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Exception\Exception
+     */
+    public function testTopUpFailsWith4xx(): void
     {
-        $this->expectException('\Vonage\Client\Exception\Request');
+        $this->expectException(Request::class);
         $this->expectExceptionMessage('authentication failed');
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
@@ -98,10 +98,13 @@ class ClientTest extends TestCase
      * Handle when a proper error is returned from the top-up API
      * While this client library is building the response correctly, we need to
      * simulate a non-200 response
+     *
+     * @throws ClientExceptionInterface
+     * @throws Exception\Exception
      */
-    public function testTopUpFailsDueToBadRequest()
+    public function testTopUpFailsDueToBadRequest(): void
     {
-        $this->expectException('\Vonage\Client\Exception\Request');
+        $this->expectException(Request::class);
         $this->expectExceptionMessage('Bad Request');
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
@@ -120,10 +123,13 @@ class ClientTest extends TestCase
      * Handle when a proper error is returned from the top-up API
      * While this client library is building the response correctly, we need to
      * simulate a non-200 response
+     *
+     * @throws ClientExceptionInterface
+     * @throws Exception\Exception
      */
-    public function testTopUpFailsDueToBadRequestReturns500()
+    public function testTopUpFailsDueToBadRequestReturns500(): void
     {
-        $this->expectException('\Vonage\Client\Exception\Server');
+        $this->expectException(Server::class);
         $this->expectExceptionMessage('Bad Request');
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
@@ -138,7 +144,12 @@ class ClientTest extends TestCase
         $this->accountClient->topUp('ABC123');
     }
 
-    public function testGetBalance()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Exception\Exception
+     * @throws Server
+     */
+    public function testGetBalance(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/get-balance', $request->getUri()->getPath());
@@ -148,19 +159,22 @@ class ClientTest extends TestCase
             return true;
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('get-balance'));
 
-        $balance = $this->accountClient->getBalance();
-        $this->assertInstanceOf(Balance::class, $balance);
+        $this->accountClient->getBalance();
     }
 
     /**
      * Handle if the balance API returns a completely empty body
      * Not sure how this would happen in real life, but making sure we work
      *
+     * @throws ClientExceptionInterface
+     * @throws Exception\Exception
+     * @throws Server
      * @author Chris Tankersley <chris.tankersley@vonage.com>
+     *
      */
-    public function testGetBalanceWithNoResults()
+    public function testGetBalanceWithNoResults(): void
     {
-        $this->expectException('\Vonage\Client\Exception\Server');
+        $this->expectException(Server::class);
         $this->expectExceptionMessage('No results found');
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
@@ -171,11 +185,15 @@ class ClientTest extends TestCase
             return true;
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('empty'));
 
-        $balance = $this->accountClient->getBalance();
-        $this->assertInstanceOf(Balance::class, $balance);
+        $this->accountClient->getBalance();
     }
 
-    public function testGetConfig()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Exception\Exception
+     * @throws Server
+     */
+    public function testGetConfig(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/settings', $request->getUri()->getPath());
@@ -185,19 +203,22 @@ class ClientTest extends TestCase
             return true;
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('get-config'));
 
-        $config = $this->accountClient->getConfig();
-        $this->assertInstanceOf(Config::class, $config);
+        $this->accountClient->getConfig();
     }
 
     /**
      * Handle if the balance API returns a completely empty body
      * Not sure how this would happen in real life, but making sure we work
      *
+     * @throws ClientExceptionInterface
+     * @throws Exception\Exception
+     * @throws Server
      * @author Chris Tankersley <chris.tankersley@vonage.com>
+     *
      */
-    public function testGetConfigBlankResponse()
+    public function testGetConfigBlankResponse(): void
     {
-        $this->expectException('\Vonage\Client\Exception\Server');
+        $this->expectException(Server::class);
         $this->expectExceptionMessage('Response was empty');
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
@@ -208,11 +229,15 @@ class ClientTest extends TestCase
             return true;
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('empty'));
 
-        $config = $this->accountClient->getConfig();
-        $this->assertInstanceOf(Config::class, $config);
+        $this->accountClient->getConfig();
     }
 
-    public function testUpdateConfig()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Exception\Exception
+     * @throws Server
+     */
+    public function testUpdateConfig(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/settings', $request->getUri()->getPath());
@@ -223,16 +248,20 @@ class ClientTest extends TestCase
             return true;
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('get-config'));
 
-        $config = $this->accountClient->updateConfig([
+        $this->accountClient->updateConfig([
             "sms_callback_url" => "https://example.com/other",
             "dr_callback_url" => "https://example.com/receipt",
         ]);
-        $this->assertInstanceOf(Config::class, $config);
     }
 
-    public function testUpdateConfigThrowsNon200()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Exception\Exception
+     * @throws Server
+     */
+    public function testUpdateConfigThrowsNon200(): void
     {
-        $this->expectException('\Vonage\Client\Exception\Request');
+        $this->expectException(Request::class);
         $this->expectExceptionMessage('authentication failed');
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
@@ -244,13 +273,17 @@ class ClientTest extends TestCase
             return true;
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('auth-failure', 401));
 
-        $config = $this->accountClient->updateConfig(["sms_callback_url" => "https://example.com/other"]);
-        $this->assertInstanceOf(Config::class, $config);
+        $this->accountClient->updateConfig(["sms_callback_url" => "https://example.com/other"]);
     }
 
-    public function testUpdateConfigReturnsBlankResponse()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Exception\Exception
+     * @throws Server
+     */
+    public function testUpdateConfigReturnsBlankResponse(): void
     {
-        $this->expectException('\Vonage\Client\Exception\Server');
+        $this->expectException(Server::class);
         $this->expectExceptionMessage('Response was empty');
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
@@ -262,11 +295,16 @@ class ClientTest extends TestCase
             return true;
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('empty', 200));
 
-        $config = $this->accountClient->updateConfig(["sms_callback_url" => "https://example.com/other"]);
-        $this->assertInstanceOf(Config::class, $config);
+        $this->accountClient->updateConfig(["sms_callback_url" => "https://example.com/other"]);
     }
 
-    public function testGetSmsPricing()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Exception\Exception
+     * @throws Request
+     * @throws Server
+     */
+    public function testGetSmsPricing(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/get-pricing/outbound/sms', $request->getUri()->getPath());
@@ -278,13 +316,19 @@ class ClientTest extends TestCase
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('smsprice-us'));
 
         $smsPrice = $this->accountClient->getSmsPrice('US');
-        $this->assertInstanceOf(SmsPrice::class, $smsPrice);
-        $this->assertInstanceOf(Network::class, @$smsPrice['networks']['311310']);
+
+        self::assertInstanceOf(Network::class, @$smsPrice['networks']['311310']);
     }
 
-    public function testGetSmsPricingReturnsEmptySet()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Exception\Exception
+     * @throws Request
+     * @throws Server
+     */
+    public function testGetSmsPricingReturnsEmptySet(): void
     {
-        $this->expectException('\Vonage\Client\Exception\Server');
+        $this->expectException(Server::class);
         $this->expectExceptionMessage('No results found');
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
@@ -296,10 +340,16 @@ class ClientTest extends TestCase
             return true;
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('empty'));
 
-        $smsPrice = $this->accountClient->getSmsPrice('XX');
+        $this->accountClient->getSmsPrice('XX');
     }
 
-    public function testGetVoicePricing()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Exception\Exception
+     * @throws Request
+     * @throws Server
+     */
+    public function testGetVoicePricing(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/get-pricing/outbound/voice', $request->getUri()->getPath());
@@ -311,14 +361,15 @@ class ClientTest extends TestCase
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('voiceprice-us'));
 
         $voicePrice = $this->accountClient->getVoicePrice('US');
-        $this->assertInstanceOf(VoicePrice::class, $voicePrice);
-        $this->assertInstanceOf(Network::class, @$voicePrice['networks']['311310']);
+
+        self::assertInstanceOf(Network::class, @$voicePrice['networks']['311310']);
     }
 
-    public function testGetPrefixPricing()
+    public function testGetPrefixPricing(): void
     {
         $first = $this->getResponse('prefix-pricing');
         $noResults = $this->getResponse('prefix-pricing-no-results');
+
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             static $hasRun = false;
 
@@ -336,11 +387,11 @@ class ClientTest extends TestCase
         }))->shouldBeCalledTimes(2)->willReturn($first, $noResults);
 
         $prefixPrice = $this->accountClient->getPrefixPricing('263');
-        $this->assertInstanceOf(PrefixPrice::class, @$prefixPrice[0]);
-        $this->assertInstanceOf(Network::class, @$prefixPrice[0]['networks']['64804']);
+        self::assertInstanceOf(PrefixPrice::class, @$prefixPrice[0]);
+        self::assertInstanceOf(Network::class, @$prefixPrice[0]['networks']['64804']);
     }
 
-    public function testGetPrefixPricingNoResults()
+    public function testGetPrefixPricingNoResults(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/get-prefix-pricing/outbound', $request->getUri()->getPath());
@@ -352,12 +403,12 @@ class ClientTest extends TestCase
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('prefix-pricing-no-results'));
 
         $prefixPrice = $this->accountClient->getPrefixPricing('263');
-        $this->assertEmpty($prefixPrice);
+        self::assertEmpty($prefixPrice);
     }
 
-    public function testGetPrefixPricingGenerates4xxError()
+    public function testGetPrefixPricingGenerates4xxError(): void
     {
-        $this->expectException('Vonage\Client\Exception\Request');
+        $this->expectException(Request::class);
         $this->expectExceptionMessage('authentication failed');
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
@@ -369,12 +420,12 @@ class ClientTest extends TestCase
             return true;
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('auth-failure', 401));
 
-        $prefixPrice = $this->accountClient->getPrefixPricing('263');
+        $this->accountClient->getPrefixPricing('263');
     }
 
-    public function testGetPrefixPricingGenerates5xxError()
+    public function testGetPrefixPricingGenerates5xxError(): void
     {
-        $this->expectException('Vonage\Client\Exception\Server');
+        $this->expectException(Server::class);
         $this->expectExceptionMessage('unknown error');
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
@@ -386,10 +437,15 @@ class ClientTest extends TestCase
             return true;
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('prefix-pricing-server-failure', 500));
 
-        $prefixPrice = $this->accountClient->getPrefixPricing('263');
+        $this->accountClient->getPrefixPricing('263');
     }
 
-    public function testListSecrets()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Exception\Exception
+     * @throws InvalidResponseException
+     */
+    public function testListSecrets(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/accounts/abcd1234/secrets', $request->getUri()->getPath());
@@ -398,52 +454,101 @@ class ClientTest extends TestCase
             return true;
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('secret-management/list'));
 
-        $secrets = $this->accountClient->listSecrets('abcd1234');
-        $this->assertInstanceOf(SecretCollection::class, $secrets);
+        $this->accountClient->listSecrets('abcd1234');
     }
 
-    public function testListSecretsServerError()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Exception\Exception
+     * @throws InvalidResponseException
+     */
+    public function testListSecretsServerError(): void
     {
         $this->expectException(Exception\Server::class);
-        $this->vonageClient->send(Argument::any())->willReturn($this->getGenericResponse('500', 500));
+
+        $this->vonageClient->send(
+            Argument::any()
+        )->willReturn($this->getGenericResponse('500', 500));
+
         $this->accountClient->listSecrets('abcd1234');
     }
 
-    public function testListSecretsRequestError()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Exception\Exception
+     * @throws InvalidResponseException
+     */
+    public function testListSecretsRequestError(): void
     {
         $this->expectException(Exception\Request::class);
-        $this->vonageClient->send(Argument::any())->willReturn($this->getGenericResponse('401', 401));
+
+        $this->vonageClient->send(
+            Argument::any()
+        )->willReturn($this->getGenericResponse('401', 401));
+
         $this->accountClient->listSecrets('abcd1234');
     }
 
-    public function testGetSecret()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Exception\Exception
+     * @throws InvalidResponseException
+     */
+    public function testGetSecret(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            $this->assertEquals('/accounts/abcd1234/secrets/ad6dc56f-07b5-46e1-a527-85530e625800', $request->getUri()->getPath());
+            $this->assertEquals(
+                '/accounts/abcd1234/secrets/ad6dc56f-07b5-46e1-a527-85530e625800',
+                $request->getUri()->getPath()
+            );
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
             return true;
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('secret-management/get'));
 
-        $secret = $this->accountClient->getSecret('abcd1234', 'ad6dc56f-07b5-46e1-a527-85530e625800');
-        $this->assertInstanceOf(Secret::class, $secret);
+        $this->accountClient->getSecret('abcd1234', 'ad6dc56f-07b5-46e1-a527-85530e625800');
     }
 
-    public function testGetSecretsServerError()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Exception\Exception
+     * @throws InvalidResponseException
+     */
+    public function testGetSecretsServerError(): void
     {
         $this->expectException(Exception\Server::class);
-        $this->vonageClient->send(Argument::any())->willReturn($this->getGenericResponse('500', 500));
+
+        $this->vonageClient->send(
+            Argument::any()
+        )->willReturn($this->getGenericResponse('500', 500));
+
         $this->accountClient->getSecret('abcd1234', 'ad6dc56f-07b5-46e1-a527-85530e625800');
     }
 
-    public function testGetSecretsRequestError()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Exception\Exception
+     * @throws InvalidResponseException
+     */
+    public function testGetSecretsRequestError(): void
     {
         $this->expectException(Exception\Request::class);
-        $this->vonageClient->send(Argument::any())->willReturn($this->getGenericResponse('401', 401));
+
+        $this->vonageClient->send(
+            Argument::any()
+        )->willReturn($this->getGenericResponse('401', 401));
+
         $this->accountClient->getSecret('abcd1234', 'ad6dc56f-07b5-46e1-a527-85530e625800');
     }
 
-    public function testCreateSecret()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Exception\Exception
+     * @throws InvalidResponseException
+     * @throws Request
+     * @throws Validation
+     */
+    public function testCreateSecret(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/accounts/abcd1234/secrets', $request->getUri()->getPath());
@@ -452,39 +557,85 @@ class ClientTest extends TestCase
             return true;
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('secret-management/create'));
 
-        $secret = $this->accountClient->createSecret('abcd1234', 'example-4PI-secret');
-        $this->assertInstanceOf(Secret::class, $secret);
+        $this->accountClient->createSecret('abcd1234', 'example-4PI-secret');
     }
 
-    public function testCreateSecretsServerError()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Exception\Exception
+     * @throws InvalidResponseException
+     * @throws Request
+     * @throws Validation
+     */
+    public function testCreateSecretsServerError(): void
     {
         $this->expectException(Exception\Server::class);
-        $this->vonageClient->send(Argument::any())->willReturn($this->getGenericResponse('500', 500));
+
+        $this->vonageClient->send(
+            Argument::any()
+        )->willReturn($this->getGenericResponse('500', 500));
+
         $this->accountClient->createSecret('abcd1234', 'example-4PI-secret');
     }
 
-    public function testCreateSecretsRequestError()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Exception\Exception
+     * @throws InvalidResponseException
+     * @throws Request
+     * @throws Validation
+     */
+    public function testCreateSecretsRequestError(): void
     {
         $this->expectException(Exception\Request::class);
+
         $this->vonageClient->send(Argument::any())->willReturn($this->getGenericResponse('401', 401));
+
         $this->accountClient->createSecret('abcd1234', 'example-4PI-secret');
     }
 
-    public function testCreateSecretsValidationError()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Exception\Exception
+     * @throws InvalidResponseException
+     * @throws Request
+     */
+    public function testCreateSecretsValidationError(): void
     {
         try {
-            $this->vonageClient->send(Argument::any())->willReturn($this->getResponse('secret-management/create-validation', 400));
+            $this->vonageClient->send(Argument::any())
+                ->willReturn($this->getResponse('secret-management/create-validation', 400));
             $this->accountClient->createSecret('abcd1234', 'example-4PI-secret');
         } catch (Validation $e) {
-            $this->assertEquals('Bad Request: The request failed due to validation errors. See https://developer.nexmo.com/api-errors/account/secret-management#validation for more information', $e->getMessage());
-            $this->assertEquals([['name' => 'secret', 'reason' => 'Does not meet complexity requirements']], $e->getValidationErrors());
+            self::assertEquals(
+                'Bad Request: The request failed due to validation errors. ' .
+                'See https://developer.nexmo.com/api-errors/account/secret-management#validation ' .
+                'for more information',
+                $e->getMessage()
+            );
+            self::assertEquals(
+                [
+                    [
+                        'name' => 'secret',
+                        'reason' => 'Does not meet complexity requirements'
+                    ]
+                ],
+                $e->getValidationErrors()
+            );
         }
     }
 
-    public function testDeleteSecret()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Exception\Exception
+     */
+    public function testDeleteSecret(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            $this->assertEquals('/accounts/abcd1234/secrets/ad6dc56f-07b5-46e1-a527-85530e625800', $request->getUri()->getPath());
+            $this->assertEquals(
+                '/accounts/abcd1234/secrets/ad6dc56f-07b5-46e1-a527-85530e625800',
+                $request->getUri()->getPath()
+            );
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('DELETE', $request->getMethod());
             return true;
@@ -493,14 +644,22 @@ class ClientTest extends TestCase
         $this->accountClient->deleteSecret('abcd1234', 'ad6dc56f-07b5-46e1-a527-85530e625800');
     }
 
-    public function testDeleteSecretsServerError()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Exception\Exception
+     */
+    public function testDeleteSecretsServerError(): void
     {
         $this->expectException(Exception\Server::class);
         $this->vonageClient->send(Argument::any())->willReturn($this->getGenericResponse('500', 500));
         $this->accountClient->deleteSecret('abcd1234', 'ad6dc56f-07b5-46e1-a527-85530e625800');
     }
 
-    public function testDeleteSecretsRequestError()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Exception\Exception
+     */
+    public function testDeleteSecretsRequestError(): void
     {
         $this->expectException(Exception\Request::class);
         $this->vonageClient->send(Argument::any())->willReturn($this->getGenericResponse('401', 401));
@@ -511,15 +670,21 @@ class ClientTest extends TestCase
      * Get the API response we'd expect for a call to the API.
      *
      * @param string $type
+     * @param int $status
      * @return Response
      */
-    protected function getResponse($type = 'success', $status = 200)
+    protected function getResponse(string $type = 'success', int $status = 200): Response
     {
-        return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'r'), $status);
+        return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'rb'), $status);
     }
 
-    protected function getGenericResponse($type = 'success', $status = 500)
+    /**
+     * @param string $type
+     * @param int $status
+     * @return Response
+     */
+    protected function getGenericResponse(string $type = 'success', int $status = 200): Response
     {
-        return new Response(fopen(__DIR__. '/../responses/general/' . $type . '.json', 'r'), $status);
+        return new Response(fopen(__DIR__ . '/../responses/general/' . $type . '.json', 'rb'), $status);
     }
 }

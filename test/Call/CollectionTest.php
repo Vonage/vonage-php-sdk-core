@@ -2,24 +2,25 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
  */
+declare(strict_types=1);
 
-namespace VonageTest\Calls;
+namespace Vonage\Test\Call;
 
-use Vonage\Call\Hydrator;
-use Vonage\Call\Call;
-use Vonage\Call\Filter;
-use Prophecy\Argument;
-use Vonage\Call\Transfer;
-use Vonage\Call\Collection;
-use Vonage\Client\Exception;
-use Zend\Diactoros\Response;
-use Vonage\Client\APIResource;
+use Laminas\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
-use VonageTest\Psr7AssertionTrait;
+use Prophecy\Argument;
+use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
+use Vonage\Call\Call;
+use Vonage\Call\Collection;
+use Vonage\Call\Filter;
+use Vonage\Call\Transfer;
+use Vonage\Client\APIResource;
+use Vonage\Client\Exception;
+use Vonage\Test\Psr7AssertionTrait;
 
 class CollectionTest extends TestCase
 {
@@ -31,7 +32,7 @@ class CollectionTest extends TestCase
     protected $api;
 
     /**
-     * @var \Prophecy\Prophecy\ObjectProphecy
+     * @var mixed
      */
     protected $vonageClient;
 
@@ -46,6 +47,7 @@ class CollectionTest extends TestCase
         $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
 
         $this->collection = @new Collection();
+        /** @noinspection PhpParamsInspection */
         $this->collection->setClient($this->vonageClient->reveal());
     }
 
@@ -55,22 +57,23 @@ class CollectionTest extends TestCase
      *
      *     $Vonage->calls($filter)
      */
-    public function testInvokeWithFilter()
+    public function testInvokeWithFilter(): void
     {
         $collection = $this->collection;
         $filter = @new Filter();
         $return = @$collection($filter);
 
-        $this->assertSame($collection, $return);
-        $this->assertSame($collection->getFilter(), $filter);
+        self::assertSame($collection, $return);
+        self::assertSame($collection->getFilter(), $filter);
     }
 
     /**
      * Hydrate is used by the common collection paging.
      */
-    public function testHydrateSetsDataAndClient()
+    public function testHydrateSetsDataAndClient(): void
     {
-        $call = $this->prophesize('Vonage\Call\Call');
+        /** @var mixed $call */
+        $call = $this->prophesize(Call::class);
 
         $data = ['test' => 'data'];
 
@@ -84,8 +87,10 @@ class CollectionTest extends TestCase
      * Getting an entity from the collection should not fetch it if we use the array interface.
      *
      * @dataProvider getCall
+     * @param $payload
+     * @param $id
      */
-    public function testArrayIsLazy($payload, $id)
+    public function testArrayIsLazy($payload, $id): void
     {
         //not testing the call resource, just making sure it uses the same client as the collection
         $this->vonageClient->send(Argument::any())->willReturn($this->getResponse('call'));
@@ -93,12 +98,12 @@ class CollectionTest extends TestCase
         $collection = $this->collection;
         $call = @$collection[$payload];
 
-        $this->assertInstanceOf('Vonage\Call\Call', $call);
+        self::assertInstanceOf(Call::class, $call);
         $this->vonageClient->send(Argument::any())->shouldNotHaveBeenCalled();
-        $this->assertEquals($id, $call->getId());
+        self::assertEquals($id, $call->getId());
 
         if ($payload instanceof Call) {
-            $this->assertSame($payload, $call);
+            self::assertSame($payload, $call);
         }
 
         @$call->get();
@@ -110,136 +115,167 @@ class CollectionTest extends TestCase
      * if that's the input.
      *
      * @dataProvider getCall
+     * @param $payload
+     * @param $id
+     * @throws Exception\Exception
+     * @throws Exception\Request
+     * @throws Exception\Server
+     * @throws ClientExceptionInterface
      */
-    public function testGetIsNotLazy($payload, $id)
+    public function testGetIsNotLazy($payload, $id): void
     {
         //this generally proxies the call resource, but we're testing the correct request, not the proxy
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id) {
-            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'GET', $request);
+            self::assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'GET', $request);
             return true;
         }))->willReturn($this->getResponse('call'))->shouldBeCalled();
 
         $call = @$this->collection->get($payload);
 
-        $this->assertInstanceOf('Vonage\Call\Call', $call);
+        self::assertInstanceOf(Call::class, $call);
         if ($payload instanceof Call) {
-            $this->assertSame($payload, $call);
+            self::assertSame($payload, $call);
         }
     }
 
     /**
      * @dataProvider postCall
+     * @param $payload
+     * @param $method
      */
-    public function testCreatePostCall($payload, $method)
+    public function testCreatePostCall($payload, $method): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
-            $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
-            $this->assertRequestBodyIsJson(json_encode($payload), $request);
+            self::assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
+            self::assertRequestBodyIsJson(json_encode($payload), $request);
             return true;
-        }))->willReturn($this->getResponse('created', '201'));
+        }))->willReturn($this->getResponse('created', 201));
 
         $call = @$this->collection->$method($payload);
 
-        $this->assertInstanceOf('Vonage\Call\Call', $call);
-        $this->assertEquals('e46fd8bd-504d-4044-9600-26dd18b41111', $call->getId());
+        self::assertInstanceOf(Call::class, $call);
+        self::assertEquals('e46fd8bd-504d-4044-9600-26dd18b41111', $call->getId());
     }
 
     /**
      * @dataProvider postCallNcco
+     * @param $payload
+     * @throws ClientExceptionInterface
+     * @throws Exception\Exception
+     * @throws Exception\Request
+     * @throws Exception\Server
      */
-    public function testCreateCallNcco($payload)
+    public function testCreateCallNcco($payload): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
             $ncco = [['action' => 'talk', 'text' => 'Hello World']];
 
-            $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
-            $this->assertRequestBodyIsJson(json_encode($payload), $request);
-            $this->assertRequestJsonBodyContains('ncco', $ncco, $request);
+            self::assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
+            self::assertRequestBodyIsJson(json_encode($payload), $request);
+            self::assertRequestJsonBodyContains('ncco', $ncco, $request);
             return true;
-        }))->willReturn($this->getResponse('created', '201'));
+        }))->willReturn($this->getResponse('created', 201));
 
         $call = @$this->collection->create($payload);
 
-        $this->assertInstanceOf('Vonage\Call\Call', $call);
-        $this->assertEquals('e46fd8bd-504d-4044-9600-26dd18b41111', $call->getId());
+        self::assertInstanceOf(Call::class, $call);
+        self::assertEquals('e46fd8bd-504d-4044-9600-26dd18b41111', $call->getId());
     }
-    
+
     /**
      * @dataProvider postCall
+     * @param $payload
+     * @param $method
      */
-    public function testCreatePostCallErrorFromVApi($payload, $method)
+    public function testCreatePostCallErrorFromVApi($payload, $method): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
-            $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
-            $this->assertRequestBodyIsJson(json_encode($payload), $request);
+            self::assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
+            self::assertRequestBodyIsJson(json_encode($payload), $request);
+
             return true;
-        }))->willReturn($this->getResponse('error_vapi', '400'));
+        }))->willReturn($this->getResponse('error_vapi', 400));
 
         try {
-            $call = @$this->collection->$method($payload);
-            $this->fail('Expected to throw request exception');
+            @$this->collection->$method($payload);
+
+            self::fail('Expected to throw request exception');
         } catch (Exception\Request $e) {
-            $this->assertEquals($e->getMessage(), 'Bad Request');
+            self::assertEquals('Bad Request', $e->getMessage());
         }
     }
 
     /**
      * @dataProvider postCall
+     * @param $payload
+     * @param $method
      */
-    public function testCreatePostCallErrorFromProxy($payload, $method)
+    public function testCreatePostCallErrorFromProxy($payload, $method): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
-            $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
-            $this->assertRequestBodyIsJson(json_encode($payload), $request);
+            self::assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
+            self::assertRequestBodyIsJson(json_encode($payload), $request);
+
             return true;
-        }))->willReturn($this->getResponse('error_proxy', '400'));
+        }))->willReturn($this->getResponse('error_proxy', 400));
 
         try {
-            $call = @$this->collection->$method($payload);
-            $this->fail('Expected to throw request exception');
+            @$this->collection->$method($payload);
+
+            self::fail('Expected to throw request exception');
         } catch (Exception\Request $e) {
-            $this->assertEquals($e->getMessage(), 'Unsupported Media Type');
+            self::assertEquals('Unsupported Media Type', $e->getMessage());
         }
     }
 
     /**
      * @dataProvider postCall
+     * @param $payload
+     * @param $method
      */
-    public function testCreatePostCallErrorUnknownFormat($payload, $method)
+    public function testCreatePostCallErrorUnknownFormat($payload, $method): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
-            $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
-            $this->assertRequestBodyIsJson(json_encode($payload), $request);
+            self::assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
+            self::assertRequestBodyIsJson(json_encode($payload), $request);
             return true;
-        }))->willReturn($this->getResponse('error_unknown_format', '400'));
+        }))->willReturn($this->getResponse('error_unknown_format', 400));
 
         try {
-            $call = @$this->collection->$method($payload);
-            $this->fail('Expected to throw request exception');
+            @$this->collection->$method($payload);
+
+            self::fail('Expected to throw request exception');
         } catch (Exception\Request $e) {
-            $this->assertEquals($e->getMessage(), "Unexpected error");
+            self::assertEquals("Unexpected error", $e->getMessage());
         }
     }
 
     /**
      * @dataProvider putCall
+     * @param $expectedId
+     * @param $id
+     * @param $payload
+     * @throws ClientExceptionInterface
+     * @throws Exception\Exception
+     * @throws Exception\Request
+     * @throws Exception\Server
      */
-    public function testPutCall($expectedId, $id, $payload)
+    public function testPutCall($expectedId, $id, $payload): void
     {
         //this generally proxies the call resource, but we're testing the correct request, not the proxy
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($expectedId, $payload) {
-            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $expectedId, 'PUT', $request);
-            $this->assertRequestBodyIsJson(json_encode($payload), $request);
+            self::assertRequestUrl('api.nexmo.com', '/v1/calls/' . $expectedId, 'PUT', $request);
+            self::assertRequestBodyIsJson(json_encode($payload), $request);
             return true;
         }))->willReturn($this->getResponse('updated'))->shouldBeCalled();
 
         $call = @$this->collection->put($payload, $id);
-        $this->assertInstanceOf('Vonage\Call\Call', $call);
+        self::assertInstanceOf(Call::class, $call);
 
         if ($id instanceof Call) {
-            $this->assertSame($id, $call);
+            self::assertSame($id, $call);
         } else {
-            $this->assertEquals($id, $call->getId());
+            self::assertEquals($id, $call->getId());
         }
     }
 
@@ -248,7 +284,7 @@ class CollectionTest extends TestCase
      *
      * @return array
      */
-    public function getCall()
+    public function getCall(): array
     {
         return [
             ['3fd4d839-493e-4485-b2a5-ace527aacff3', '3fd4d839-493e-4485-b2a5-ace527aacff3'],
@@ -258,15 +294,18 @@ class CollectionTest extends TestCase
 
     /**
      * Creating a call with an NCCO can take a Call object or a simple array.
+     *
      * @return array
      */
-    public function postCallNcco()
+    public function postCallNcco(): array
     {
         $raw = [
-            'to' => [[
-                'type' => 'phone',
-                'number' => '14843331234'
-            ]],
+            'to' => [
+                [
+                    'type' => 'phone',
+                    'number' => '14843331234'
+                ]
+            ],
             'from' => [
                 'type' => 'phone',
                 'number' => '14843335555'
@@ -282,30 +321,34 @@ class CollectionTest extends TestCase
 
         $call = @new Call();
         @$call->setTo('14843331234')
-             ->setFrom('14843335555')
-             ->setNcco([
-                 [
-                     'action' => 'talk',
-                     'text' => 'Hello World'
-                 ]
-             ]);
+            ->setFrom('14843335555')
+            ->setNcco([
+                [
+                    'action' => 'talk',
+                    'text' => 'Hello World'
+                ]
+            ]);
 
         return [
             'object' => [clone $call],
             'array' => [$raw]
         ];
     }
+
     /**
      * Creating a call can take a Call object or a simple array.
+     *
      * @return array
      */
-    public function postCall()
+    public function postCall(): array
     {
         $raw = [
-            'to' => [[
-                'type' => 'phone',
-                'number' => '14843331234'
-            ]],
+            'to' => [
+                [
+                    'type' => 'phone',
+                    'number' => '14843331234'
+                ]
+            ],
             'from' => [
                 'type' => 'phone',
                 'number' => '14843335555'
@@ -319,9 +362,9 @@ class CollectionTest extends TestCase
 
         $call = @new Call();
         @$call->setTo('14843331234')
-             ->setFrom('14843335555')
-             ->setWebhook(@Call::WEBHOOK_ANSWER, 'https://example.com/answer', 'POST')
-             ->setWebhook(@Call::WEBHOOK_EVENT, 'https://example.com/event', 'POST');
+            ->setFrom('14843335555')
+            ->setWebhook(@Call::WEBHOOK_ANSWER, 'https://example.com/answer', 'POST')
+            ->setWebhook(@Call::WEBHOOK_EVENT, 'https://example.com/event', 'POST');
 
         return [
             [clone $call, 'create'],
@@ -333,9 +376,10 @@ class CollectionTest extends TestCase
 
     /**
      * Can update the call with an object or a raw array.
+     *
      * @return array
      */
-    public function putCall()
+    public function putCall(): array
     {
         $id = '1234abcd';
         $payload = [
@@ -361,11 +405,11 @@ class CollectionTest extends TestCase
      * Get the API response we'd expect for a call to the API.
      *
      * @param string $type
+     * @param int $status
      * @return Response
      */
-    protected function getResponse($type = 'success', $status = 200)
+    protected function getResponse(string $type = 'success', int $status = 200): Response
     {
-        return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'r'), $status);
+        return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'rb'), $status);
     }
-
 }

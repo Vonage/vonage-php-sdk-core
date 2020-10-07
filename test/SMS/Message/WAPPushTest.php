@@ -1,29 +1,33 @@
 <?php
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
+ */
 declare(strict_types=1);
 
-namespace VonageTest\SMS\Message;
+namespace Vonage\Test\SMS\Message;
 
-use Vonage\SMS\Message\WAPPush;
 use PHPUnit\Framework\TestCase;
+use Vonage\SMS\Message\WAPPush;
 
 class WAPPushTest extends TestCase
 {
-    public function testCanCreateWAPMessage()
+    public function testCanCreateWAPMessage(): void
     {
-        $message = new WAPPush(
+        $data = (new WAPPush(
             '447700900000',
             '16105551212',
             'Check In Now!',
             'https://test.domain/check-in',
             300000
-        );
+        ))->toArray();
 
-        $data = $message->toArray();
-
-        $this->assertSame('447700900000', $data['to']);
-        $this->assertSame('16105551212', $data['from']);
-        $this->assertSame('Check In Now!', $data['title']);
-        $this->assertSame('https://test.domain/check-in', $data['url']);
-        $this->assertSame(300000, $data['validity']);
+        self::assertSame('447700900000', $data['to']);
+        self::assertSame('16105551212', $data['from']);
+        self::assertSame('Check In Now!', $data['title']);
+        self::assertSame('https://test.domain/check-in', $data['url']);
+        self::assertSame(300000, $data['validity']);
     }
 }

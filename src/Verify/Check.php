@@ -2,45 +2,67 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
  */
+declare(strict_types=1);
 
 namespace Vonage\Verify;
+
+use DateTime;
+use Exception;
 
 class Check
 {
     /**
      * Possible status of checking a code.
      */
-    const VALID = 'VALID';
-    const INVALID = 'INVALID';
+    public const VALID = 'VALID';
+    public const INVALID = 'INVALID';
 
     /**
      * @var array
      */
     protected $data;
 
+    /**
+     * Check constructor.
+     *
+     * @param array $data
+     */
     public function __construct(array $data)
     {
         $this->data = $data;
     }
 
+    /**
+     * @return mixed
+     */
     public function getCode()
     {
         return $this->data['code'];
     }
 
-    public function getDate()
+    /**
+     * @return DateTime
+     * @throws Exception
+     */
+    public function getDate(): DateTime
     {
-        return new \DateTime($this->data['date_received']);
+        return new DateTime($this->data['date_received']);
     }
 
+    /**
+     * @return mixed
+     */
     public function getStatus()
     {
         return $this->data['status'];
     }
 
+    /**
+     * @return mixed
+     */
     public function getIpAddress()
     {
         return $this->data['ip_address'];

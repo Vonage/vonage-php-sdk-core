@@ -2,30 +2,34 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
  */
+declare(strict_types=1);
 
-namespace Message;
+namespace Vonage\Test\Message;
 
+use Laminas\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
+use Vonage\Client\Exception\Exception;
+use Vonage\Message\Message;
+use Vonage\Message\Text;
 
 class MessageCreationTest extends TestCase
 {
-    protected $to   = '14845551212';
+    protected $to = '14845551212';
     protected $from = '16105551212';
     protected $text = 'this is test text';
-
-    protected $set = array('to', 'from', 'text');
+    protected $set = ['to', 'from', 'text'];
 
     /**
-     * @var \Vonage\Message\Message
+     * @var Message
      */
     protected $message;
 
     public function setUp(): void
     {
-        $this->message = new \Vonage\Message\Message($this->to, $this->from, [
+        $this->message = new Message($this->to, $this->from, [
             'text' => $this->text
         ]);
     }
@@ -37,60 +41,77 @@ class MessageCreationTest extends TestCase
 
     /**
      * Creating a new message, should result in the correct (matching) parameters.
+     *
+     * @throws Exception
      */
-    public function testRequiredParams()
+    public function testRequiredParams(): void
     {
         $params = @$this->message->getRequestData();
 
-        $this->assertEquals($this->to,   $params['to']);
-        $this->assertEquals($this->from, $params['from']);
+        self::assertEquals($this->to, $params['to']);
+        self::assertEquals($this->from, $params['from']);
     }
 
     /**
      * Optional params shouldn't be in the response, unless set.
+     *
+     * @throws Exception
      */
-    public function testNoDefaultParams()
+    public function testNoDefaultParams(): void
     {
         $params = array_keys(@$this->message->getRequestData());
         $diff = array_diff($params, $this->set); // should be no difference
-        $this->assertEmpty($diff, 'message params contain unset values (could change default behaviour)');
+
+        self::assertEmpty($diff, 'message params contain unset values (could change default behaviour)');
     }
 
     /**
      * Common optional params can be set
+     *
      * @dataProvider optionalParams
+     * @param $setter
+     * @param $param
+     * @param $values
+     * @throws Exception
      */
-    public function testOptionalParams($setter, $param, $values)
+    public function testOptionalParams($setter, $param, $values): void
     {
         //check no default value
         $params = @$this->message->getRequestData();
-        $this->assertArrayNotHasKey($param, $params);
+
+        self::assertArrayNotHasKey($param, $params);
 
         //test values
-        foreach($values as $value => $expected){
+        foreach ($values as $value => $expected) {
             $this->message->$setter($value);
             $params = @$this->message->getRequestData();
-            $this->assertArrayHasKey($param, $params);
-            $this->assertEquals($expected, $params[$param]);
+
+            self::assertArrayHasKey($param, $params);
+            self::assertEquals($expected, $params[$param]);
         }
     }
 
-    public function optionalParams()
+    /**
+     * @return array[]
+     */
+    public function optionalParams(): array
     {
-        return array(
-            array('requestDLR',   'status-report-req', array(true => 1, false => 0)),
-            array('setClientRef', 'client-ref',        array('test' => 'test')),
-            array('setCallback',  'callback',          array('http://example.com/test-callback' => 'http://example.com/test-callback')),
-            array('setNetwork',   'network-code',      array('test' => 'test')),
-            array('setTTL',       'ttl',               array('1' => 1)),
-            array('setClass',     'message-class',     array(\Vonage\Message\Text::CLASS_FLASH => \Vonage\Message\Text::CLASS_FLASH)),
-        );
+        return [
+            ['requestDLR', 'status-report-req', [true => 1, false => 0]],
+            ['setClientRef', 'client-ref', ['test' => 'test']],
+            ['setCallback', 'callback', ['http://example.com/test-callback' => 'http://example.com/test-callback']],
+            ['setNetwork', 'network-code', ['test' => 'test']],
+            ['setTTL', 'ttl', ['1' => 1]],
+            ['setClass', 'message-class', [Text::CLASS_FLASH => Text::CLASS_FLASH]],
+        ];
     }
 
     /**
      * Returns a series of methods/args to test on a Message object
+     *
+     * @return array
      */
-    public static function responseMethodChangeList()
+    public static function responseMethodChangeList(): array
     {
         return [
             ['requestDLR', true],
@@ -106,16 +127,18 @@ class MessageCreationTest extends TestCase
      * Throw an exception when we make a call on a method that cannot change after request
      *
      * @dataProvider responseMethodChangeList
+     * @param $method
+     * @param $argument
      */
-    public function testCanNotChangeCreationAfterResponse($method, $argument)
+    public function testCanNotChangeCreationAfterResponse($method, $argument): void
     {
         $this->expectException('RuntimeException');
 
         $data = ['test' => 'test'];
-        $response = new \Zend\Diactoros\Response();
+        $response = new Response();
         $response->getBody()->write(json_encode($data));
-        @$this->message->setResponse($response);
 
+        @$this->message->setResponse($response);
         $this->message->$method($argument);
     }
 }

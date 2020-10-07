@@ -1,29 +1,34 @@
 <?php
 
-use Nexmo\Client;
-use Nexmo\Voice\Webhook;
-use Nexmo\Voice\OutboundCall;
-use Nexmo\Voice\Endpoint\Phone;
-use Nexmo\Client\Credentials\Keypair;
+use Vonage\Client;
+use Vonage\Client\Credentials\Keypair;
+use Vonage\Voice\Endpoint\Phone;
+use Vonage\Voice\OutboundCall;
+use Vonage\Voice\Webhook;
 
-require_once '../vendor/autoload.php';
+require_once __DIR__ . '/vonage.php';
 
-$keypair = new Keypair(
-    file_get_contents(NEXMO_APPLICATION_PRIVATE_KEY_PATH),
-    NEXMO_APPLICATION_ID
-);
+$keypair = new Keypair(APPLICATION_SECRET, APPLICATION_ID);
 $client = new Client($keypair);
 
 $outboundCall = new OutboundCall(
-    new Phone(TO_NUMBER),
-    new Phone(NEXMO_NUMBER)
+    new Phone(VONAGE_TO),
+    new Phone(VONAGE_FROM)
 );
+
 $outboundCall->setAnswerWebhook(
     new Webhook(
         'https://developer.nexmo.com/ncco/tts.json',
         Webhook::METHOD_GET
     )
 );
-$response = $client->voice()->createOutboundCall($outboundCall);
 
-var_dump($response);
+try {
+    $response = $client->voice()->createOutboundCall($outboundCall);
+
+    vonageDebug($response);
+} catch (Exception $e) {
+    echo "The server encountered an error: " . PHP_EOL;
+
+    vonageDebug($e);
+}

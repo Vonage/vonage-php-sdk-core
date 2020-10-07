@@ -2,19 +2,27 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2017 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
  */
+declare(strict_types=1);
 
 namespace Vonage\Call;
+
+use JsonSerializable;
 
 /**
  * @deprecated Please use Vonage\Voice\Client::transferCall() instead
  */
-class Transfer implements \JsonSerializable
+class Transfer implements JsonSerializable
 {
     protected $urls;
 
+    /**
+     * Transfer constructor.
+     *
+     * @param $urls
+     */
     public function __construct($urls)
     {
         trigger_error(
@@ -23,13 +31,16 @@ class Transfer implements \JsonSerializable
         );
 
         if (!is_array($urls)) {
-            $urls = array($urls);
+            $urls = [$urls];
         }
 
         $this->urls = $urls;
     }
 
-    public function jsonSerialize()
+    /**
+     * @return array
+     */
+    public function jsonSerialize(): array
     {
         return [
             'action' => 'transfer',

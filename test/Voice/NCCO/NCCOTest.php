@@ -1,15 +1,21 @@
 <?php
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
+ */
 declare(strict_types=1);
 
-namespace VonageTest\Voice\NCCO;
+namespace Vonage\Test\Voice\NCCO;
 
+use PHPUnit\Framework\TestCase;
 use Vonage\Voice\NCCO\Action\Record;
 use Vonage\Voice\NCCO\NCCO;
-use PHPUnit\Framework\TestCase;
 
 class NCCOTest extends TestCase
 {
-    public function testCanCreateNCCOFromArray()
+    public function testCanCreateNCCOFromArray(): void
     {
         $data = [
             [
@@ -80,7 +86,7 @@ class NCCOTest extends TestCase
 
         $json = json_decode(json_encode($ncco), true);
 
-        $this->assertCount(7, $json);
-        $this->assertEquals($data[0], $json[0]);
+        self::assertCount(7, $json);
+        self::assertEquals($data[0], $json[0]);
     }
 }

@@ -1,11 +1,19 @@
 <?php
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
+ */
 declare(strict_types=1);
 
 namespace Vonage\Voice;
 
+use DateTime;
+use Exception;
+use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 use Vonage\Voice\Endpoint\EndpointFactory;
 use Vonage\Voice\Endpoint\EndpointInterface;
-use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 
 class Call implements ArrayHydrateInterface
 {
@@ -25,7 +33,7 @@ class Call implements ArrayHydrateInterface
     protected $duration;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     protected $endTime;
 
@@ -50,7 +58,7 @@ class Call implements ArrayHydrateInterface
     protected $rate;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     protected $startTime;
 
@@ -69,6 +77,12 @@ class Call implements ArrayHydrateInterface
      */
     protected $uuid;
 
+    /**
+     * Call constructor.
+     *
+     * @param array $data
+     * @throws Exception
+     */
     public function __construct(array $data = [])
     {
         if (!empty($data)) {
@@ -76,7 +90,11 @@ class Call implements ArrayHydrateInterface
         }
     }
 
-    public function fromArray(array $data) : void
+    /**
+     * @param array $data
+     * @throws Exception
+     */
+    public function fromArray(array $data): void
     {
         if (array_key_exists('to', $data)) {
             $to = $data['to'][0] ?? $data['to'];
@@ -87,7 +105,7 @@ class Call implements ArrayHydrateInterface
             $from = $data['from'][0] ?? $data['from'];
             $this->from = (new EndpointFactory())->create($from);
         }
-        
+
         $this->uuid = $data['uuid'];
         $this->conversationUuid = $data['conversation_uuid'];
         $this->status = $data['status'];
@@ -95,17 +113,23 @@ class Call implements ArrayHydrateInterface
         $this->rate = $data['rate'] ?? null;
         $this->duration = $data['duration'] ?? null;
         $this->price = $data['price'] ?? null;
-        $this->startTime = new \DateTime($data['start_time']);
-        $this->endTime = new \DateTime($data['end_time']);
+        $this->startTime = new DateTime($data['start_time']);
+        $this->endTime = new DateTime($data['end_time']);
         $this->network = $data['network'] ?? null;
     }
 
-    public function getUuid() : string
+    /**
+     * @return string
+     */
+    public function getUuid(): string
     {
         return $this->uuid;
     }
 
-    public function toArray() : array
+    /**
+     * @return array
+     */
+    public function toArray(): array
     {
         $data = [
             'uuid' => $this->uuid,
@@ -121,11 +145,12 @@ class Call implements ArrayHydrateInterface
         ];
 
         $to = $this->getTo();
+        $from = $this->getFrom();
+
         if ($to) {
             $data['to'][] = $to->toArray();
         }
 
-        $from = $this->getFrom();
         if ($from) {
             $data['from'][] = $from->toArray();
         }
@@ -133,52 +158,82 @@ class Call implements ArrayHydrateInterface
         return $data;
     }
 
-    public function getTo() : EndpointInterface
+    /**
+     * @return EndpointInterface
+     */
+    public function getTo(): EndpointInterface
     {
         return $this->to;
     }
 
-    public function getRate() : string
+    /**
+     * @return string
+     */
+    public function getRate(): string
     {
         return $this->rate;
     }
 
-    public function getFrom() : EndpointInterface
+    /**
+     * @return EndpointInterface
+     */
+    public function getFrom(): EndpointInterface
     {
         return $this->from;
     }
 
-    public function getStatus() : string
+    /**
+     * @return string
+     */
+    public function getStatus(): string
     {
         return $this->status;
     }
 
-    public function getDirection() : string
+    /**
+     * @return string
+     */
+    public function getDirection(): string
     {
         return $this->direction;
     }
 
-    public function getPrice() : string
+    /**
+     * @return string
+     */
+    public function getPrice(): string
     {
         return $this->price;
     }
 
-    public function getDuration() : string
+    /**
+     * @return string
+     */
+    public function getDuration(): string
     {
         return $this->duration;
     }
 
-    public function getStartTime() : \DateTime
+    /**
+     * @return DateTime
+     */
+    public function getStartTime(): DateTime
     {
         return $this->startTime;
     }
 
-    public function getEndTime() : \DateTime
+    /**
+     * @return DateTime
+     */
+    public function getEndTime(): DateTime
     {
         return $this->endTime;
     }
 
-    public function getNetwork() : string
+    /**
+     * @return string
+     */
+    public function getNetwork(): string
     {
         return $this->network;
     }

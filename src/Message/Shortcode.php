@@ -2,9 +2,10 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
  */
+declare(strict_types=1);
 
 namespace Vonage\Message;
 
@@ -19,6 +20,13 @@ abstract class Shortcode
     protected $custom;
     protected $options;
 
+    /**
+     * Shortcode constructor.
+     *
+     * @param $to
+     * @param array $custom
+     * @param array $options
+     */
     public function __construct($to, array $custom = [], array $options = [])
     {
         $this->to = $to;
@@ -26,30 +34,45 @@ abstract class Shortcode
         $this->options = $options;
     }
 
-    public function setCustom($custom)
+    /**
+     * @param $custom
+     */
+    public function setCustom($custom): void
     {
         $this->custom = $custom;
     }
 
-    public function setOptions($options)
+    /**
+     * @param $options
+     */
+    public function setOptions($options): void
     {
         $this->options = $options;
     }
 
+    /**
+     * @return mixed
+     */
     public function getType()
     {
         return $this->type;
     }
 
-    public function getRequestData()
+    /**
+     * @return array
+     */
+    public function getRequestData(): array
     {
         // Options, then custom, then to. This is the priority
         // we want so that people can't overwrite to with a custom param
-        return $this->options + $this->custom + [
-            'to' => $this->to
-        ];
+        return $this->options + $this->custom + ['to' => $this->to];
     }
 
+    /**
+     * @param $data
+     * @return Alert|Marketing|TwoFactor|null
+     * @throws Exception
+     */
     public static function createMessageFromArray($data)
     {
         if (!isset($data['type'])) {
@@ -70,14 +93,18 @@ abstract class Shortcode
             $m = new Alert($data['to']);
         }
 
-        if (isset($data['custom'])) {
-            $m->setCustom($data['custom']);
+        if (isset($m)) {
+            if (isset($data['custom'])) {
+                $m->setCustom($data['custom']);
+            }
+
+            if (isset($data['options'])) {
+                $m->setOptions($data['options']);
+            }
+
+            return $m;
         }
 
-        if (isset($data['options'])) {
-            $m->setOptions($data['options']);
-        }
-
-        return $m;
+        return null;
     }
 }

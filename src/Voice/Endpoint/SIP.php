@@ -1,4 +1,10 @@
 <?php
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
+ */
 declare(strict_types=1);
 
 namespace Vonage\Voice\Endpoint;
@@ -15,22 +21,32 @@ class SIP implements EndpointInterface
      */
     protected $id;
 
+    /**
+     * SIP constructor.
+     *
+     * @param string $uri
+     * @param array $headers
+     */
     public function __construct(string $uri, array $headers = [])
     {
         $this->id = $uri;
         $this->setHeaders($headers);
     }
 
-    public static function factory(string $uri, array $headers = []) : SIP
+    /**
+     * @param string $uri
+     * @param array $headers
+     * @return SIP
+     */
+    public static function factory(string $uri, array $headers = []): SIP
     {
-        $endpoint = new SIP($uri, $headers);
-        return $endpoint;
+        return new SIP($uri, $headers);
     }
 
     /**
      * @return array{type: string, uri: string, headers?: array<string, string>}
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->toArray();
     }
@@ -38,7 +54,7 @@ class SIP implements EndpointInterface
     /**
      * @return array{type: string, uri: string, headers?: array<string, string>}
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $data = [
             'type' => 'sip',
@@ -55,25 +71,39 @@ class SIP implements EndpointInterface
     /**
      * @return string
      */
-    public function getId() : string
+    public function getId(): string
     {
         return $this->id;
     }
 
-    public function getHeaders() : array
+    /**
+     * @return array
+     */
+    public function getHeaders(): array
     {
         return $this->headers;
     }
 
-    public function addHeader(string $key, string $value) : self
+    /**
+     * @param string $key
+     * @param string $value
+     * @return $this
+     */
+    public function addHeader(string $key, string $value): self
     {
         $this->headers[$key] = $value;
+
         return $this;
     }
 
-    public function setHeaders(array $headers) : self
+    /**
+     * @param array $headers
+     * @return $this
+     */
+    public function setHeaders(array $headers): self
     {
         $this->headers = $headers;
+
         return $this;
     }
 }

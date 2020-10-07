@@ -1,16 +1,23 @@
 <?php
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
+ */
 declare(strict_types=1);
 
-namespace VonageTest\Voice\NCCO;
+namespace Vonage\Test\Voice\NCCO;
 
-use Vonage\Voice\NCCO\NCCOFactory;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use Vonage\Voice\NCCO\NCCOFactory;
 
 class NCCOFactoryTest extends TestCase
 {
-    public function testThrowsExceptionWithBadAction()
+    public function testThrowsExceptionWithBadAction(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Unknown NCCO Action foo");
 
         $factory = new NCCOFactory();

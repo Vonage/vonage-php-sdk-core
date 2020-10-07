@@ -1,97 +1,96 @@
 <?php
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
+ */
 declare(strict_types=1);
 
-namespace VonageTest\Voice\NCCO\Action;
+namespace Vonage\Test\Voice\NCCO\Action;
 
-use Vonage\Voice\NCCO\Action\Record;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use Vonage\Voice\NCCO\Action\Record;
 
 class RecordTest extends TestCase
 {
-    public function testWebhookMethodCanBeSetInFactory()
+    public function testWebhookMethodCanBeSetInFactory(): void
     {
         $action = Record::factory([
             'eventUrl' => 'https://test.domain/recording',
             'eventMethod' => 'GET'
         ]);
-        $this->assertSame('GET', $action->getEventWebhook()->getMethod());
 
-        $ncco = $action->toNCCOArray();
-        $this->assertSame('GET', $ncco['eventMethod']);
+        self::assertSame('GET', $action->getEventWebhook()->getMethod());
+        self::assertSame('GET', $action->toNCCOArray()['eventMethod']);
     }
 
-    public function testJsonSerializeLooksCorrect()
+    public function testJsonSerializeLooksCorrect(): void
     {
-        $expected = [
+        self::assertSame([
             'action' => 'record',
             'format' => 'mp3',
             'timeOut' => '7200',
             'beepStart' => 'false'
-        ];
-
-        $action = new Record();
-
-        $this->assertSame($expected, $action->jsonSerialize());
+        ], (new Record())->jsonSerialize());
     }
 
-    public function testSettingChannelBackToOneResetsValues()
+    public function testSettingChannelBackToOneResetsValues(): void
     {
         $action = new Record();
 
-        $this->assertNull($action->getSplit());
-        $this->assertNull($action->getChannels());
+        self::assertNull($action->getSplit());
+        self::assertNull($action->getChannels());
 
         $action->setChannels(2);
-        $this->assertSame(Record::SPLIT, $action->getSplit());
-        $this->assertSame(2, $action->getChannels());
+
+        self::assertSame(Record::SPLIT, $action->getSplit());
+        self::assertSame(2, $action->getChannels());
 
         $action->setChannels(1);
-        $this->assertNull($action->getSplit());
-        $this->assertNull($action->getChannels());
+
+        self::assertNull($action->getSplit());
+        self::assertNull($action->getChannels());
     }
 
-    public function testCannotSetTooManyChannels()
+    public function testCannotSetTooManyChannels(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Number of channels must be 32 or less');
 
-        $action = new Record();
-        $action->setChannels(100);
+        (new Record())->setChannels(100);
     }
 
-    public function testCannotSetInvalidTimeout()
+    public function testCannotSetInvalidTimeout(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('TimeOut value must be between 3 and 7200 seconds, inclusive');
 
-        $action = new Record();
-        $action->setTimeout(1);
+        (new Record())->setTimeout(1);
     }
 
-    public function testCannotSetInvalidSilenceTimeout()
+    public function testCannotSetInvalidSilenceTimeout(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('End On Silence value must be between 3 and 10 seconds, inclusive');
 
-        $action = new Record();
-        $action->setEndOnSilence(1);
+        (new Record())->setEndOnSilence(1);
     }
 
-    public function testCannotSetInvalidEndOnKey()
+    public function testCannotSetInvalidEndOnKey(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid End on Key character');
 
-        $action = new Record();
-        $action->setEndOnKey('h');
+        (new Record())->setEndOnKey('h');
     }
 
-    public function testCannotSetInvalidSplitValue()
+    public function testCannotSetInvalidSplitValue(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Split value must be "conversation" if enabling');
 
-        $action = new Record();
-        $action->setSplit('foo');
+        (new Record())->setSplit('foo');
     }
 }

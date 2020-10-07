@@ -1,102 +1,137 @@
 <?php
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
+ */
 declare(strict_types=1);
 
-namespace VonageTest\Voice\Endpoint;
+namespace Vonage\Test\Voice\Endpoint;
 
-use Vonage\Voice\Endpoint\Phone;
 use PHPUnit\Framework\TestCase;
+use Vonage\Voice\Endpoint\Phone;
 
 class PhoneTest extends TestCase
 {
-    public function testDefaultEndpointIsCreatedProperly()
+    /**
+     * @var string
+     */
+    protected $number = '15551112323';
+
+    /**
+     * @var string
+     */
+    protected $url = 'https://test.domain/answerNCCO.json';
+
+    /**
+     * @var string
+     */
+    protected $ringbackTone = 'https://test.domain/ringback.mp3';
+
+    /**
+     * @var string
+     */
+    protected $dtmfAnswer = '12';
+
+    /**
+     * @var string
+     */
+    protected $type = 'phone';
+
+    public function testDefaultEndpointIsCreatedProperly(): void
     {
-        $endpoint = new Phone('15551231234');
-        $this->assertSame("15551231234", $endpoint->getId());
-        $this->assertNull($endpoint->getDtmfAnswer());
-        $this->assertNull($endpoint->getRingbackTone());
-        $this->assertNull($endpoint->getUrl());
+        $endpoint = new Phone($this->number);
+
+        self::assertSame($this->number, $endpoint->getId());
+        self::assertNull($endpoint->getDtmfAnswer());
+        self::assertNull($endpoint->getRingbackTone());
+        self::assertNull($endpoint->getUrl());
     }
 
-    public function testFactoryCreatesPhoneEndpoint()
+    public function testFactoryCreatesPhoneEndpoint(): void
     {
-        $endpoint = Phone::factory('15551231234', [
-            'dtmfAnswer' => '12',
+        $endpoint = Phone::factory($this->number, [
+            'dtmfAnswer' => $this->dtmfAnswer,
             'onAnswer' => [
-                'url' => 'https://test.domain/answerNCCO.json',
-                'ringbackTone' => 'https://test.domain/ringback.mp3'
+                'url' => $this->url,
+                'ringbackTone' => $this->ringbackTone
             ]
         ]);
 
-        $this->assertSame('15551231234', $endpoint->getId());
-        $this->assertSame('https://test.domain/answerNCCO.json', $endpoint->getUrl());
-        $this->assertSame('https://test.domain/ringback.mp3', $endpoint->getRingbackTone());
+        self::assertSame($this->number, $endpoint->getId());
+        self::assertSame($this->url, $endpoint->getUrl());
+        self::assertSame($this->ringbackTone, $endpoint->getRingbackTone());
     }
 
-    public function testFactoryHandlesLegacyRingbackArgument()
+    public function testFactoryHandlesLegacyRingbackArgument(): void
     {
-        $endpoint = Phone::factory('15551231234', [
-            'dtmfAnswer' => '12',
+        $endpoint = Phone::factory($this->number, [
+            'dtmfAnswer' => $this->dtmfAnswer,
             'onAnswer' => [
-                'url' => 'https://test.domain/answerNCCO.json',
-                'ringback' => 'https://test.domain/ringback.mp3'
+                'url' => $this->url,
+                'ringback' => $this->ringbackTone
             ]
         ]);
 
-        $this->assertSame('15551231234', $endpoint->getId());
-        $this->assertSame('https://test.domain/answerNCCO.json', $endpoint->getUrl());
-        $this->assertSame('https://test.domain/ringback.mp3', $endpoint->getRingbackTone());
+        self::assertSame($this->number, $endpoint->getId());
+        self::assertSame($this->url, $endpoint->getUrl());
+        self::assertSame($this->ringbackTone, $endpoint->getRingbackTone());
     }
 
-    public function testToArrayHasCorrectStructure()
+    public function testToArrayHasCorrectStructure(): void
     {
         $expected = [
-            'type' => 'phone',
-            'number' => '15551231234',
+            'type' => $this->type,
+            'number' => $this->number
         ];
-        
-        $endpoint = new Phone("15551231234");
-        $this->assertSame($expected, $endpoint->toArray());
+
+        self::assertSame($expected, (new Phone($this->number))->toArray());
     }
 
-    public function testRingbackNotReturnedIfURLNotSet()
+    public function testRingbackNotReturnedIfURLNotSet(): void
     {
         $expected = [
-            'type' => 'phone',
-            'number' => '15551231234',
+            'type' => $this->type,
+            'number' => $this->number
         ];
-        
-        $endpoint = new Phone("15551231234");
-        $endpoint->setRingbackTone('https://test.domain/ringback.mp3');
-        $this->assertSame($expected, $endpoint->toArray());
+
+        self::assertSame(
+            $expected,
+            (new Phone($this->number))->setRingbackTone($this->ringbackTone)->toArray()
+        );
     }
 
-    public function testRingbackIsReturnedIfURLIsSet()
+    public function testRingbackIsReturnedIfURLIsSet(): void
     {
         $expected = [
-            'type' => 'phone',
-            'number' => '15551231234',
+            'type' => $this->type,
+            'number' => $this->number,
             'onAnswer' => [
-                'url' => 'https://test.domain/answerNCCO.json',
-                'ringbackTone' => 'https://test.domain/ringback.mp3'
+                'url' => $this->url,
+                'ringbackTone' => $this->ringbackTone
             ]
         ];
-        
-        $endpoint = new Phone("15551231234");
-        $endpoint->setRingbackTone('https://test.domain/ringback.mp3');
-        $endpoint->setUrl('https://test.domain/answerNCCO.json');
-        $this->assertSame($expected, $endpoint->toArray());
+
+        self::assertSame(
+            $expected,
+            (new Phone($this->number))
+                ->setRingbackTone($this->ringbackTone)
+                ->setUrl($this->url)->toArray()
+        );
     }
 
-    public function testSerializesToJSONCorrectly()
+    public function testSerializesToJSONCorrectly(): void
     {
         $expected = [
-            'type' => 'phone',
-            'number' => '15551231234',
-            'dtmfAnswer' => '123'
+            'type' => $this->type,
+            'number' => $this->number,
+            'dtmfAnswer' => $this->dtmfAnswer
         ];
-        
-        $endpoint = new Phone("15551231234");
-        $endpoint->setDtmfAnswer('123');
-        $this->assertSame($expected, $endpoint->jsonSerialize());
+
+        $endpoint = new Phone($this->number);
+        $endpoint->setDtmfAnswer($this->dtmfAnswer);
+
+        self::assertSame($expected, $endpoint->jsonSerialize());
     }
 }

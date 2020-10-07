@@ -1,4 +1,10 @@
 <?php
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
+ */
 declare(strict_types=1);
 
 namespace Vonage\Voice\NCCO\Action;
@@ -47,107 +53,162 @@ class Conversation implements ActionInterface
      */
     protected $eventWebhook;
 
+    /**
+     * Conversation constructor.
+     *
+     * @param string $name
+     */
     public function __construct(string $name)
     {
         $this->name = $name;
     }
 
-    public function getName() : string
+    /**
+     * @return string
+     */
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function getMusicOnHoldUrl() : ?string
+    /**
+     * @return string|null
+     */
+    public function getMusicOnHoldUrl(): ?string
     {
         return $this->musicOnHoldUrl;
     }
 
-    public function setMusicOnHoldUrl(string $musicOnHoldUrl) : self
+    /**
+     * @param string $musicOnHoldUrl
+     * @return $this
+     */
+    public function setMusicOnHoldUrl(string $musicOnHoldUrl): self
     {
         $this->musicOnHoldUrl = $musicOnHoldUrl;
+
         return $this;
     }
 
-    public function getStartOnEnter() : ?bool
+    /**
+     * @return bool|null
+     */
+    public function getStartOnEnter(): ?bool
     {
         return $this->startOnEnter;
     }
 
-    public function setStartOnEnter(bool $startOnEnter) : self
+    /**
+     * @param bool $startOnEnter
+     * @return $this
+     */
+    public function setStartOnEnter(bool $startOnEnter): self
     {
         $this->startOnEnter = $startOnEnter;
+
         return $this;
     }
 
-    public function getEndOnExit() : ?bool
+    /**
+     * @return bool|null
+     */
+    public function getEndOnExit(): ?bool
     {
         return $this->endOnExit;
     }
 
-    public function setEndOnExit(bool $endOnExit) : self
+    /**
+     * @param bool $endOnExit
+     * @return $this
+     */
+    public function setEndOnExit(bool $endOnExit): self
     {
         $this->endOnExit = $endOnExit;
+
         return $this;
     }
 
-    public function getRecord() : ?bool
+    /**
+     * @return bool|null
+     */
+    public function getRecord(): ?bool
     {
         return $this->record;
     }
 
-    public function setRecord(bool $record) : self
+    /**
+     * @param bool $record
+     * @return $this
+     */
+    public function setRecord(bool $record): self
     {
         $this->record = $record;
+
         return $this;
     }
 
     /**
      * @return ?array<string>
      */
-    public function getCanSpeak() : ?array
+    public function getCanSpeak(): ?array
     {
         return $this->canSpeak;
     }
 
     /**
      * @param array<string> $canSpeak
+     * @return Conversation
      */
-    public function setCanSpeak(array $canSpeak) : self
+    public function setCanSpeak(array $canSpeak): self
     {
         $this->canSpeak = $canSpeak;
+
         return $this;
     }
 
-    public function addCanSpeak(string $uuid) : self
+    /**
+     * @param string $uuid
+     * @return $this
+     */
+    public function addCanSpeak(string $uuid): self
     {
         $this->canSpeak[] = $uuid;
+
         return $this;
     }
 
     /**
      * @return ?array<string>
      */
-    public function getCanHear() : ?array
+    public function getCanHear(): ?array
     {
         return $this->canHear;
     }
 
     /**
      * @param array<string> $canHear
+     * @return Conversation
      */
-    public function setCanHear(array $canHear) : self
+    public function setCanHear(array $canHear): self
     {
         $this->canHear = $canHear;
-        return $this;
-    }
 
-    public function addCanHear(string $uuid) : self
-    {
-        $this->canHear[] = $uuid;
         return $this;
     }
 
     /**
+     * @param string $uuid
+     * @return $this
+     */
+    public function addCanHear(string $uuid): self
+    {
+        $this->canHear[] = $uuid;
+
+        return $this;
+    }
+
+    /**
+     * @param string $name
      * @param array{
      *      musicOnHoldUrl?: string,
      *      startOnEnter?: bool,
@@ -156,6 +217,7 @@ class Conversation implements ActionInterface
      *      canSpeak?: array,
      *      canHear?: array
      *  } $data
+     * @return Conversation
      */
     public static function factory(string $name, array $data): Conversation
     {
@@ -204,14 +266,14 @@ class Conversation implements ActionInterface
 
             $talk->setEventWebhook($webhook);
         }
-        
+
         return $talk;
     }
 
     /**
      * @return array<string, mixed>
      */
-    public function jsonSerialize() : array
+    public function jsonSerialize(): array
     {
         return $this->toNCCOArray();
     }
@@ -219,7 +281,7 @@ class Conversation implements ActionInterface
     /**
      * @return array<string, mixed>
      */
-    public function toNCCOArray() : array
+    public function toNCCOArray(): array
     {
         $data = [
             'action' => 'conversation',
@@ -239,16 +301,19 @@ class Conversation implements ActionInterface
         }
 
         $music = $this->getMusicOnHoldUrl();
+
         if ($music) {
             $data['musicOnHoldUrl'] = [$music];
         }
 
         $canSpeak = $this->getCanSpeak();
+
         if ($canSpeak) {
             $data['canSpeak'] = $canSpeak;
         }
 
         $canHear = $this->getCanHear();
+
         if ($canHear) {
             $data['canHear'] = $canHear;
         }
@@ -261,14 +326,22 @@ class Conversation implements ActionInterface
         return $data;
     }
 
-    public function getEventWebhook() : ?Webhook
+    /**
+     * @return Webhook|null
+     */
+    public function getEventWebhook(): ?Webhook
     {
         return $this->eventWebhook;
     }
 
-    public function setEventWebhook(Webhook $eventWebhook)
+    /**
+     * @param Webhook $eventWebhook
+     * @return $this
+     */
+    public function setEventWebhook(Webhook $eventWebhook): Conversation
     {
         $this->eventWebhook = $eventWebhook;
+
         return $this;
     }
 }

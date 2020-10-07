@@ -2,26 +2,38 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
  */
+declare(strict_types=1);
 
 namespace Vonage\Client\Credentials;
 
 use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Signer\Key;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
+use Lcobucci\JWT\Token;
 use Vonage\Application\Application;
 
-class Keypair extends AbstractCredentials implements CredentialsInterface
+/**
+ * @property mixed application
+ */
+class Keypair extends AbstractCredentials
 {
     protected $key;
 
     protected $signer;
 
+    /**
+     * Keypair constructor.
+     *
+     * @param $privateKey
+     * @param null $application
+     */
     public function __construct($privateKey, $application = null)
     {
         $this->credentials['key'] = $privateKey;
+
         if ($application) {
             if ($application instanceof Application) {
                 $application = $application->getId();
@@ -34,35 +46,42 @@ class Keypair extends AbstractCredentials implements CredentialsInterface
         $this->signer = new Sha256();
     }
 
-    public function generateJwt(array $claims = [])
+    /**
+     * @param array $claims
+     * @return Token
+     */
+    public function generateJwt(array $claims = []): Token
     {
         $exp = time() + 60;
         $iat = time();
-        $jti = base64_encode(mt_rand());
+        $jti = base64_encode((string)mt_rand());
 
         if (isset($claims['exp'])) {
             $exp = $claims['exp'];
+
             unset($claims['exp']);
         }
 
         if (isset($claims['iat'])) {
             $iat = $claims['iat'];
+
             unset($claims['iat']);
         }
 
         if (isset($claims['jti'])) {
             $jti = $claims['jti'];
+
             unset($claims['jti']);
         }
 
         $builder = new Builder();
         $builder->setIssuedAt($iat)
-                ->setExpiration($exp)
-                ->setId($jti);
-
+            ->setExpiration($exp)
+            ->setId($jti);
 
         if (isset($claims['nbf'])) {
             $builder->setNotBefore($claims['nbf']);
+
             unset($claims['nbf']);
         }
 

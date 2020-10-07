@@ -2,74 +2,75 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
  */
+declare(strict_types=1);
 
-namespace VonageTest\Account;
+namespace Vonage\Test\Account;
 
-use Vonage\Network;
-use Vonage\Account\SmsPrice;
 use PHPUnit\Framework\TestCase;
+use Vonage\Account\SmsPrice;
 
 class SmsPriceTest extends TestCase
 {
-    public function setUp(): void
+    /**
+     * @dataProvider smsPriceProvider
+     * @param $smsPrice
+     */
+    public function testFromArray($smsPrice): void
     {
+        self::assertEquals("US", $smsPrice->getCountryCode());
+        self::assertEquals("United States", $smsPrice->getCountryName());
+        self::assertEquals("1", $smsPrice->getDialingPrefix());
+        self::assertEquals("0.00512", $smsPrice->getDefaultPrice());
     }
 
     /**
      * @dataProvider smsPriceProvider
+     * @param $smsPrice
      */
-    public function testFromArray($smsPrice)
+    public function testGetters($smsPrice): void
     {
-        $this->assertEquals("US", $smsPrice->getCountryCode());
-        $this->assertEquals("United States", $smsPrice->getCountryName());
-        $this->assertEquals("1", $smsPrice->getDialingPrefix());
-        $this->assertEquals("0.00512", $smsPrice->getDefaultPrice());
+        self::assertEquals("US", $smsPrice->getCountryCode());
+        self::assertEquals("United States", $smsPrice->getCountryName());
+        self::assertEquals("United States", $smsPrice->getCountryDisplayName());
+        self::assertEquals("1", $smsPrice->getDialingPrefix());
+        self::assertEquals("0.00512", $smsPrice->getDefaultPrice());
     }
 
     /**
      * @dataProvider smsPriceProvider
+     * @param $smsPrice
      */
-    public function testGetters($smsPrice)
+    public function testArrayAccess($smsPrice): void
     {
-        $this->assertEquals("US", $smsPrice->getCountryCode());
-        $this->assertEquals("United States", $smsPrice->getCountryName());
-        $this->assertEquals("United States", $smsPrice->getCountryDisplayName());
-        $this->assertEquals("1", $smsPrice->getDialingPrefix());
-        $this->assertEquals("0.00512", $smsPrice->getDefaultPrice());
+        self::assertEquals("US", @$smsPrice['country_code']);
+        self::assertEquals("United States", @$smsPrice['country_name']);
+        self::assertEquals("United States", @$smsPrice['country_display_name']);
+        self::assertEquals("1", @$smsPrice['dialing_prefix']);
+        self::assertEquals("0.00512", @$smsPrice['default_price']);
     }
 
     /**
      * @dataProvider smsPriceProvider
+     * @param $smsPrice
      */
-    public function testArrayAccess($smsPrice)
+    public function testUsesCustomPriceForKnownNetwork($smsPrice): void
     {
-        $this->assertEquals("US", @$smsPrice['country_code']);
-        $this->assertEquals("United States", @$smsPrice['country_name']);
-        $this->assertEquals("United States", @$smsPrice['country_display_name']);
-        $this->assertEquals("1", @$smsPrice['dialing_prefix']);
-        $this->assertEquals("0.00512", @$smsPrice['default_price']);
+        self::assertEquals("0.123", $smsPrice->getPriceForNetwork('21039'));
     }
 
     /**
      * @dataProvider smsPriceProvider
+     * @param $smsPrice
      */
-    public function testUsesCustomPriceForKnownNetwork($smsPrice)
+    public function testUsesDefaultPriceForUnknownNetwork($smsPrice): void
     {
-        $this->assertEquals("0.123", $smsPrice->getPriceForNetwork('21039'));
+        self::assertEquals("0.00512", $smsPrice->getPriceForNetwork('007'));
     }
 
-    /**
-     * @dataProvider smsPriceProvider
-     */
-    public function testUsesDefaultPriceForUnknownNetwork($smsPrice)
-    {
-        $this->assertEquals("0.00512", $smsPrice->getPriceForNetwork('007'));
-    }
-
-    public function smsPriceProvider()
+    public function smsPriceProvider(): array
     {
         $r = [];
 

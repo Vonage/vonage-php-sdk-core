@@ -2,13 +2,16 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
  */
+declare(strict_types=1);
 
 namespace Vonage\Entity;
 
+use Exception;
 use Psr\Http\Message\ResponseInterface;
+use RuntimeException;
 
 /**
  * @deprecated This data will be better exposed at the model level
@@ -17,10 +20,14 @@ trait JsonResponseTrait
 {
     protected $responseJson;
 
+    /**
+     * @return array|mixed
+     * @throws Exception
+     */
     public function getResponseData()
     {
         if (!($this instanceof EntityInterface)) {
-            throw new \Exception(sprintf(
+            throw new RuntimeException(sprintf(
                 '%s can only be used if the class implements %s',
                 __TRAIT__,
                 EntityInterface::class
@@ -34,6 +41,7 @@ trait JsonResponseTrait
 
             $body = $response->getBody()->getContents();
             $this->responseJson = json_decode($body, true);
+
             return $this->responseJson;
         }
 

@@ -2,17 +2,20 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
  */
+declare(strict_types=1);
 
-namespace Vonage\Message\Callback;
+namespace Vonage\Test\Message\Callback;
 
+use DateTime;
 use PHPUnit\Framework\TestCase;
+use Vonage\Message\Callback\Receipt;
 
 class ReceiptTest extends TestCase
 {
-    protected $data = array(
+    protected $data = [
         'err-code' => '0',
         'message-timestamp' => '2014-07-23 03:41:03',
         'messageId' => '0300000049CE26E1',
@@ -23,7 +26,7 @@ class ReceiptTest extends TestCase
         'status' => 'accepted',
         'to' => '15673332121',
         //'timestamp' => '1406086863'
-    );
+    ];
 
     /**
      * @var Receipt
@@ -35,43 +38,41 @@ class ReceiptTest extends TestCase
         $this->receipt = new Receipt($this->data);
     }
 
-    public function testServiceCenterTimestamp()
+    public function testServiceCenterTimestamp(): void
     {
         $date = $this->receipt->getTimestamp();
-        $this->assertEquals(new \DateTime('12/30/2014 12:25'), $date);
+
+        self::assertEquals(new DateTime('12/30/2014 12:25'), $date);
     }
 
-    public function testSentTimestamp()
+    public function testSentTimestamp(): void
     {
         $date = $this->receipt->getSent();
-        $this->assertEquals(new \DateTime('7/23/2014 03:41:03'), $date);
+
+        self::assertEquals(new DateTime('7/23/2014 03:41:03'), $date);
     }
 
-    public function testSimpleValues()
+    public function testSimpleValues(): void
     {
-        $this->assertEquals($this->data['err-code'], $this->receipt->getErrorCode());
-        $this->assertEquals($this->data['messageId'], $this->receipt->getId());
-        $this->assertEquals($this->data['network-code'], $this->receipt->getNetwork());
-        $this->assertEquals($this->data['price'], $this->receipt->getPrice());
-        $this->assertEquals($this->data['status'], $this->receipt->getStatus());
-
-        $this->assertEquals($this->data['msisdn'], $this->receipt->getReceiptFrom());
-        $this->assertEquals($this->data['msisdn'], $this->receipt->getTo());
-
-        $this->assertEquals($this->data['to'], $this->receipt->getReceiptTo());
-        $this->assertEquals($this->data['to'], $this->receipt->getFrom());
+        self::assertEquals($this->data['err-code'], $this->receipt->getErrorCode());
+        self::assertEquals($this->data['messageId'], $this->receipt->getId());
+        self::assertEquals($this->data['network-code'], $this->receipt->getNetwork());
+        self::assertEquals($this->data['price'], $this->receipt->getPrice());
+        self::assertEquals($this->data['status'], $this->receipt->getStatus());
+        self::assertEquals($this->data['msisdn'], $this->receipt->getReceiptFrom());
+        self::assertEquals($this->data['msisdn'], $this->receipt->getTo());
+        self::assertEquals($this->data['to'], $this->receipt->getReceiptTo());
+        self::assertEquals($this->data['to'], $this->receipt->getFrom());
     }
 
-    public function testClientRefDefault()
+    public function testClientRefDefault(): void
     {
-        $this->assertNull($this->receipt->getClientRef());
+        self::assertNull($this->receipt->getClientRef());
     }
 
-    public function testClientRef()
+    public function testClientRef(): void
     {
-        $receipt = new Receipt(array_merge(array('client-ref' => 'test'), $this->data));
-        $this->assertEquals('test', $receipt->getClientRef());
+        $receipt = new Receipt(array_merge(['client-ref' => 'test'], $this->data));
+        self::assertEquals('test', $receipt->getClientRef());
     }
-
 }
- 

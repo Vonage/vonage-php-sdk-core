@@ -1,12 +1,25 @@
 <?php
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
+ */
 declare(strict_types=1);
 
 namespace Vonage\Voice\Webhook;
 
+use Exception;
+use InvalidArgumentException;
 use Vonage\Webhook\Factory as WebhookFactory;
 
 class Factory extends WebhookFactory
 {
+    /**
+     * @param array $data
+     * @return mixed|Answer|Error|Event|Input|Notification|Record|Transfer
+     * @throws Exception
+     */
     public static function createFromArray(array $data)
     {
         if (array_key_exists('status', $data)) {
@@ -18,11 +31,8 @@ class Factory extends WebhookFactory
             return new Answer($data);
         }
 
-        if (array_key_exists('type', $data)) {
-            switch ($data['type']) {
-                case 'transfer':
-                    return new Transfer($data);
-            }
+        if (array_key_exists('type', $data) && $data['type'] === 'transfer') {
+            return new Transfer($data);
         }
 
         if (array_key_exists('recording_url', $data)) {
@@ -41,6 +51,6 @@ class Factory extends WebhookFactory
             return new Input($data);
         }
 
-        throw new \InvalidArgumentException('Unable to detect incoming webhook type');
+        throw new InvalidArgumentException('Unable to detect incoming webhook type');
     }
 }

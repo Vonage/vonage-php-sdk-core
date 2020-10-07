@@ -1,42 +1,41 @@
 <?php
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
+ */
 declare(strict_types=1);
 
-namespace VonageTest\Voice\NCCO\Action;
+namespace Vonage\Test\Voice\NCCO\Action;
 
-use Vonage\Voice\NCCO\Action\Talk;
 use PHPUnit\Framework\TestCase;
+use Vonage\Voice\NCCO\Action\Talk;
 
 class TalkTest extends TestCase
 {
-    public function testSimpleSetup()
+    public function testSimpleSetup(): void
     {
-        $expected = [
+        self::assertSame([
             'action' => 'talk',
             'text' => 'Hello',
-        ];
-
-        $action = new Talk('Hello');
-
-        $this->assertSame($expected, $action->jsonSerialize());
+        ], (new Talk('Hello'))->jsonSerialize());
     }
 
-    public function testJsonSerializeLooksCorrect()
+    public function testJsonSerializeLooksCorrect(): void
     {
-        $expected = [
+        self::assertSame([
             'action' => 'talk',
             'text' => 'Hello',
             'bargeIn' => 'false',
             'level' => '0',
             'loop' => '1',
             'voiceName' => 'kimberly'
-        ];
-
-        $action = new Talk('Hello');
-        $action->setBargeIn(false);
-        $action->setLevel(0);
-        $action->setLoop(1);
-        $action->setVoiceName('kimberly');
-
-        $this->assertSame($expected, $action->jsonSerialize());
+        ], (new Talk('Hello'))
+            ->setBargeIn(false)
+            ->setLevel(0)
+            ->setLoop(1)
+            ->setVoiceName('kimberly')
+            ->jsonSerialize());
     }
 }

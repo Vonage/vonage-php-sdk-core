@@ -1,13 +1,25 @@
 <?php
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
+ */
 declare(strict_types=1);
 
 namespace Vonage\SMS\Webhook;
 
-use Vonage\SMS\Webhook\InboundSMS;
+use Exception;
+use InvalidArgumentException;
 use Vonage\Webhook\Factory as WebhookFactory;
 
 class Factory extends WebhookFactory
 {
+    /**
+     * @param array $data
+     * @return mixed|DeliveryReceipt|InboundSMS
+     * @throws Exception
+     */
     public static function createFromArray(array $data)
     {
         if (array_key_exists('scts', $data)) {
@@ -19,7 +31,7 @@ class Factory extends WebhookFactory
         ) {
             return new InboundSMS($data);
         }
-        
-        throw new \InvalidArgumentException("Unable to determine incoming webhook type");
+
+        throw new InvalidArgumentException("Unable to determine incoming webhook type");
     }
 }

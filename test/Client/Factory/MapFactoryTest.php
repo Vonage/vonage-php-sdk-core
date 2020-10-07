@@ -2,15 +2,17 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
  */
+declare(strict_types=1);
 
-namespace VonageTest\Client\Factory;
+namespace Vonage\Test\Client\Factory;
 
+use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use Vonage\Client;
 use Vonage\Client\Factory\MapFactory;
-use PHPUnit\Framework\TestCase;
 
 class MapFactoryTest extends TestCase
 {
@@ -29,54 +31,54 @@ class MapFactoryTest extends TestCase
         $this->client = new Client(new Client\Credentials\Basic('key', 'secret'));
 
         $this->factory = new MapFactory([
-            'test' => 'VonageTest\Client\Factory\TestDouble'
+            'test' => TestDouble::class
         ], $this->client);
     }
 
-    public function testClientInjection()
+    public function testClientInjection(): void
     {
         $api = $this->factory->getApi('test');
-        $this->assertSame($this->client, $api->client);
+        self::assertSame($this->client, $api->client);
     }
 
-    public function testCache()
+    public function testCache(): void
     {
         $api = $this->factory->getApi('test');
         $cache = $this->factory->getApi('test');
 
-        $this->assertSame($api, $cache);
+        self::assertSame($api, $cache);
     }
 
-    public function testClassMap()
+    public function testClassMap(): void
     {
-        $this->assertTrue($this->factory->hasApi('test'));
-        $this->assertFalse($this->factory->hasApi('not'));
+        self::assertTrue($this->factory->hasApi('test'));
+        self::assertFalse($this->factory->hasApi('not'));
 
         $api = $this->factory->getApi('test');
-        $this->assertInstanceOf('VonageTest\Client\Factory\TestDouble', $api);
+        self::assertInstanceOf(TestDouble::class, $api);
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->factory->getApi('not');
     }
 
-    public function testMakeCreatesNewInstance()
+    public function testMakeCreatesNewInstance(): void
     {
         $first = $this->factory->make('test');
         $second = $this->factory->make('test');
 
-        $this->assertNotSame($first, $second);
-        $this->assertInstanceOf('VonageTest\Client\Factory\TestDouble', $first);
-        $this->assertInstanceOf('VonageTest\Client\Factory\TestDouble', $second);
+        self::assertNotSame($first, $second);
+        self::assertInstanceOf(TestDouble::class, $first);
+        self::assertInstanceOf(TestDouble::class, $second);
     }
 
-    public function testMakeDoesNotUseCache()
+    public function testMakeDoesNotUseCache(): void
     {
         $cached = $this->factory->get('test');
         $new = $this->factory->make('test');
         $secondCached = $this->factory->get('test');
 
-        $this->assertNotSame($cached, $new);
-        $this->assertNotSame($secondCached, $new);
-        $this->assertSame($cached, $secondCached);
+        self::assertNotSame($cached, $new);
+        self::assertNotSame($secondCached, $new);
+        self::assertSame($cached, $secondCached);
     }
 }

@@ -2,26 +2,33 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
  */
+declare(strict_types=1);
 
-namespace VonageTest\Calls;
+namespace Vonage\Test\Call;
 
+use Laminas\Diactoros\Response;
+use PHPUnit\Framework\TestCase;
+use Prophecy\Argument;
+use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Http\Message\RequestInterface;
 use Vonage\Call\Call;
+use Vonage\Call\Dtmf;
 use Vonage\Call\Endpoint;
+use Vonage\Call\Stream;
+use Vonage\Call\Talk;
 use Vonage\Call\Transfer;
 use Vonage\Call\Webhook;
-use VonageTest\Psr7AssertionTrait;
-use Prophecy\Argument;
-use EnricoStahn\JsonAssert\Assert as JsonAssert;
-use Psr\Http\Message\RequestInterface;
-use Zend\Diactoros\Response;
-use PHPUnit\Framework\TestCase;
+use Vonage\Client\Exception\Exception;
+use Vonage\Client\Exception\Request;
+use Vonage\Client\Exception\Server;
+use Vonage\Conversations\Conversation;
+use Vonage\Test\Psr7AssertionTrait;
 
 class CallTest extends TestCase
 {
-    use JsonAssert;
     use Psr7AssertionTrait;
 
     /**
@@ -39,7 +46,7 @@ class CallTest extends TestCase
     protected $id;
 
     /**
-     * @var \Prophecy\Prophecy\ObjectProphecy
+     * @var mixed
      */
     protected $vonageClient;
 
@@ -53,26 +60,33 @@ class CallTest extends TestCase
 
         $this->vonageClient = $this->prophesize('Vonage\Client');
         $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
+
+        /** @noinspection PhpParamsInspection */
         $this->entity->setClient($this->vonageClient->reveal());
+        /** @noinspection PhpParamsInspection */
         $this->new->setClient($this->vonageClient->reveal());
     }
 
     /**
      * Entities should be constructable with an ID.
      */
-    public function testConstructWithId()
+    public function testConstructWithId(): void
     {
         $class = $this->class;
         $entity = @new $class('3fd4d839-493e-4485-b2a5-ace527aacff3');
-        $this->assertSame('3fd4d839-493e-4485-b2a5-ace527aacff3', $entity->getId());
+
+        self::assertSame('3fd4d839-493e-4485-b2a5-ace527aacff3', $entity->getId());
     }
 
     /**
-     * get() should explicitly fetch the data.
-     * @todo Remove deprecated tests
+     * @throws ClientExceptionInterface
+     * @throws Exception
+     * @throws Request
+     * @throws Server
      */
-    public function testGetMakesRequest()
+    public function testGetMakesRequest(): void
     {
+        // @todo Remove deprecated tests
         $class = $this->class;
         $id = $this->id;
         $response = $this->getResponse('call');
@@ -81,7 +95,7 @@ class CallTest extends TestCase
         $entity->setClient($this->vonageClient->reveal());
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id) {
-            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'GET', $request);
+            self::assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'GET', $request);
             return true;
         }))->willReturn($response);
 
@@ -92,22 +106,27 @@ class CallTest extends TestCase
 
     /**
      * @param $payload
-     * @todo Remove deprecated tests
+     * @param $expectedHttpCode
+     * @param $expectedResponse
+     * @throws ClientExceptionInterface
+     * @throws Exception
+     * @throws Request
+     * @throws Server
      * @dataProvider putCall
      */
-    public function testPutMakesRequest($payload, $expectedHttpCode, $expectedResponse)
+    public function testPutMakesRequest($payload, $expectedHttpCode, $expectedResponse): void
     {
         $id = $this->id;
         $expected = json_decode(json_encode($payload), true);
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id, $expected) {
-            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'PUT', $request);
+            self::assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'PUT', $request);
 
             $request->getBody()->rewind();
             $body = json_decode($request->getBody()->getContents(), true);
             $request->getBody()->rewind();
 
-            $this->assertEquals($expected, $body);
+            self::assertEquals($expected, $body);
 
             return true;
         }))->willReturn($this->getResponse($expectedResponse, $expectedHttpCode));
@@ -117,9 +136,10 @@ class CallTest extends TestCase
 
     /**
      * Can update the call with an object or a raw array.
+     *
      * @return array
      */
-    public function putCall()
+    public function putCall(): array
     {
         $transfer = [
             'action' => 'transfer',
@@ -137,216 +157,234 @@ class CallTest extends TestCase
     }
 
     /**
-     * @todo Remove deprecated tests
+     * @throws ClientExceptionInterface
+     * @throws Exception
+     * @throws Request
+     * @throws Server
      */
-    public function testLazyLoad()
+    public function testLazyLoad(): void
     {
+        // @todo Remove deprecated tests
         $id = $this->id;
         $response = $this->getResponse('call');
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id) {
-            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'GET', $request);
+            self::assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'GET', $request);
             return true;
         }))->willReturn($response);
 
         $return = @$this->entity->getStatus();
-        $this->assertSame('completed', $return);
+        self::assertSame('completed', $return);
 
         @$this->assertEntityMatchesResponse($this->entity, $response);
     }
 
-    /**
-     * @todo Remove deprecated tests
-     */
-    public function testStream()
+    public function testStream(): void
     {
+        // @todo Remove deprecated tests
         @$stream = $this->entity->stream;
 
-        $this->assertInstanceOf('Vonage\Call\Stream', $stream);
-        $this->assertSame($this->entity->getId(), $stream->getId());
+        self::assertInstanceOf(Stream::class, $stream);
+        self::assertSame($this->entity->getId(), $stream->getId());
 
-        $this->assertSame($stream, @$this->entity->stream);
-        $this->assertSame($stream, @$this->entity->stream());
+        self::assertSame($stream, @$this->entity->stream);
+        self::assertSame($stream, @$this->entity->stream());
 
         @$this->entity->stream->setUrl('http://example.com');
 
-        $response = new Response(fopen(__DIR__ . '/responses/stream.json', 'r'), 200);
+        $response = new Response(fopen(__DIR__ . '/responses/stream.json', 'rb'), 200);
 
         $id = $this->entity->getId();
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id) {
-            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id . '/stream', 'PUT', $request);
+            self::assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id . '/stream', 'PUT', $request);
             return true;
         }))->willReturn($response)->shouldBeCalled();
 
         @$this->entity->stream($stream);
     }
 
-    /**
-     * @todo Remove deprecated tests
-     */
-    public function testSTalk()
+    public function testSTalk(): void
     {
+        // @todo Remove deprecated tests
         @$talk = $this->entity->talk;
 
-        $this->assertInstanceOf('Vonage\Call\Talk', $talk);
-        $this->assertSame($this->entity->getId(), $talk->getId());
+        self::assertInstanceOf(Talk::class, $talk);
+        self::assertSame($this->entity->getId(), $talk->getId());
 
-        $this->assertSame($talk, @$this->entity->talk);
-        $this->assertSame($talk, @$this->entity->talk());
+        self::assertSame($talk, @$this->entity->talk);
+        self::assertSame($talk, @$this->entity->talk());
 
         @$this->entity->talk->setText('Boom!');
 
-        $response = new Response(fopen(__DIR__ . '/responses/talk.json', 'r'), 200);
+        $response = new Response(fopen(__DIR__ . '/responses/talk.json', 'rb'), 200);
 
         $id = $this->entity->getId();
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id) {
-            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id . '/talk', 'PUT', $request);
+            self::assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id . '/talk', 'PUT', $request);
             return true;
         }))->willReturn($response)->shouldBeCalled();
 
         @$this->entity->talk($talk);
     }
 
-    /**
-     * @todo Remove deprecated tests
-     */
-    public function testSDtmf()
+    public function testSDtmf(): void
     {
+        // @todo Remove deprecated tests
         $dtmf = @$this->entity->dtmf;
 
-        $this->assertInstanceOf('Vonage\Call\Dtmf', $dtmf);
-        $this->assertSame($this->entity->getId(), $dtmf->getId());
+        self::assertInstanceOf(Dtmf::class, $dtmf);
+        self::assertSame($this->entity->getId(), $dtmf->getId());
 
-        $this->assertSame($dtmf, @$this->entity->dtmf);
-        $this->assertSame($dtmf, @$this->entity->dtmf());
+        self::assertSame($dtmf, @$this->entity->dtmf);
+        self::assertSame($dtmf, @$this->entity->dtmf());
 
         @$this->entity->dtmf->setDigits(1234);
 
-        $response = new Response(fopen(__DIR__ . '/responses/dtmf.json', 'r'), 200);
+        $response = new Response(fopen(__DIR__ . '/responses/dtmf.json', 'rb'), 200);
 
         $id = $this->entity->getId();
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id) {
-            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id . '/dtmf', 'PUT', $request);
+            self::assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id . '/dtmf', 'PUT', $request);
             return true;
         }))->willReturn($response)->shouldBeCalled();
 
         @$this->entity->dtmf($dtmf);
     }
 
-    //split into discrete tests, use trait as can be useful elsewhere for consistency
-    public function testToIsSet()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Exception
+     * @throws Request
+     * @throws Server
+     */
+    public function testToIsSet(): void
     {
+        // @todo split into discrete tests, use trait as can be useful elsewhere for consistency
         @$this->new->setTo('14845551212');
-        $this->assertSame('14845551212', (string) $this->new->getTo());
-        $this->assertSame('14845551212', $this->new->getTo()->getId());
-        $this->assertSame('phone', $this->new->getTo()->getType());
+        self::assertSame('14845551212', (string)$this->new->getTo());
+        self::assertSame('14845551212', $this->new->getTo()->getId());
+        self::assertSame('phone', $this->new->getTo()->getType());
 
         $data = $this->new->jsonSerialize();
 
-        $this->assertArrayHasKey('to', $data);
-        $this->assertInternalType('array', $data['to']);
-        $this->assertArrayHasKey('number', $data['to'][0]);
-        $this->assertArrayHasKey('type', $data['to'][0]);
-        $this->assertEquals('14845551212', $data['to'][0]['number']);
-        $this->assertEquals('phone', $data['to'][0]['type']);
+        self::assertArrayHasKey('to', $data);
+        self::assertIsArray($data['to']);
+        self::assertArrayHasKey('number', $data['to'][0]);
+        self::assertArrayHasKey('type', $data['to'][0]);
+        self::assertEquals('14845551212', $data['to'][0]['number']);
+        self::assertEquals('phone', $data['to'][0]['type']);
 
         $this->new->setTo(@new Endpoint('14845551212'));
-        $this->assertSame('14845551212', (string) $this->new->getTo());
-        $this->assertSame('14845551212', $this->new->getTo()->getId());
-        $this->assertSame('phone', $this->new->getTo()->getType());
+        self::assertSame('14845551212', (string)$this->new->getTo());
+        self::assertSame('14845551212', $this->new->getTo()->getId());
+        self::assertSame('phone', $this->new->getTo()->getType());
 
         $data = $this->new->jsonSerialize();
 
-        $this->assertArrayHasKey('to', $data);
-        $this->assertInternalType('array', $data['to']);
-        $this->assertArrayHasKey('number', $data['to'][0]);
-        $this->assertArrayHasKey('type', $data['to'][0]);
-        $this->assertEquals('14845551212', $data['to'][0]['number']);
-        $this->assertEquals('phone', $data['to'][0]['type']);
+        self::assertArrayHasKey('to', $data);
+        self::assertIsArray($data['to']);
+        self::assertArrayHasKey('number', $data['to'][0]);
+        self::assertArrayHasKey('type', $data['to'][0]);
+        self::assertEquals('14845551212', $data['to'][0]['number']);
+        self::assertEquals('phone', $data['to'][0]['type']);
     }
 
-    public function testFromIsSet()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Exception
+     * @throws Request
+     * @throws Server
+     */
+    public function testFromIsSet(): void
     {
         @$this->new->setFrom('14845551212');
-        $this->assertSame('14845551212', (string) $this->new->getFrom());
-        $this->assertSame('14845551212', $this->new->getFrom()->getId());
-        $this->assertSame('phone', $this->new->getFrom()->getType());
+        self::assertSame('14845551212', (string)$this->new->getFrom());
+        self::assertSame('14845551212', $this->new->getFrom()->getId());
+        self::assertSame('phone', $this->new->getFrom()->getType());
 
         $data = $this->new->jsonSerialize();
 
-        $this->assertArrayHasKey('from', $data);
-        $this->assertArrayHasKey('number', $data['from']);
-        $this->assertArrayHasKey('type', $data['from']);
-        $this->assertEquals('14845551212', $data['from']['number']);
-        $this->assertEquals('phone', $data['from']['type']);
+        self::assertArrayHasKey('from', $data);
+        self::assertArrayHasKey('number', $data['from']);
+        self::assertArrayHasKey('type', $data['from']);
+        self::assertEquals('14845551212', $data['from']['number']);
+        self::assertEquals('phone', $data['from']['type']);
 
         $this->new->setFrom(@new Endpoint('14845551212'));
-        $this->assertSame('14845551212', (string) $this->new->getFrom());
-        $this->assertSame('14845551212', $this->new->getFrom()->getId());
-        $this->assertSame('phone', $this->new->getFrom()->getType());
+        self::assertSame('14845551212', (string)$this->new->getFrom());
+        self::assertSame('14845551212', $this->new->getFrom()->getId());
+        self::assertSame('phone', $this->new->getFrom()->getType());
 
         $data = $this->new->jsonSerialize();
 
-        $this->assertArrayHasKey('from', $data);
-        $this->assertArrayHasKey('number', $data['from']);
-        $this->assertArrayHasKey('type', $data['from']);
-        $this->assertEquals('14845551212', $data['from']['number']);
-        $this->assertEquals('phone', $data['from']['type']);
+        self::assertArrayHasKey('from', $data);
+        self::assertArrayHasKey('number', $data['from']);
+        self::assertArrayHasKey('type', $data['from']);
+        self::assertEquals('14845551212', $data['from']['number']);
+        self::assertEquals('phone', $data['from']['type']);
     }
 
-    public function testWebhooks()
+    public function testWebhooks(): void
     {
         @$this->entity->setWebhook(Call::WEBHOOK_ANSWER, 'http://example.com');
 
         $data = $this->entity->jsonSerialize();
-        $this->assertArrayHasKey('answer_url', $data);
-        $this->assertCount(1, $data['answer_url']);
-        $this->assertEquals('http://example.com', $data['answer_url'][0]);
+        self::assertArrayHasKey('answer_url', $data[0]);
+        self::assertCount(1, $data[0]['answer_url']);
+        self::assertEquals('http://example.com', $data[0]['answer_url'][0]);
 
         $this->entity->setWebhook(@new Webhook(Call::WEBHOOK_ANSWER, 'http://example.com'));
 
         $data = $this->entity->jsonSerialize();
-        $this->assertArrayHasKey('answer_url', $data);
-        $this->assertCount(1, $data['answer_url']);
-        $this->assertEquals('http://example.com', $data['answer_url'][0]);
+        self::assertArrayHasKey('answer_url', $data[0]);
+        self::assertCount(1, $data[0]['answer_url']);
+        self::assertEquals('http://example.com', $data[0]['answer_url'][0]);
 
-        $this->entity->setWebhook(@new Webhook(Call::WEBHOOK_ANSWER, ['http://example.com', 'http://example.com/test']));
+        $this->entity->setWebhook(
+            @new Webhook(Call::WEBHOOK_ANSWER, ['http://example.com', 'http://example.com/test'])
+        );
 
         $data = $this->entity->jsonSerialize();
-        $this->assertArrayHasKey('answer_url', $data);
-        $this->assertCount(2, $data['answer_url']);
-        $this->assertEquals('http://example.com', $data['answer_url'][0]);
-        $this->assertEquals('http://example.com/test', $data['answer_url'][1]);
+        self::assertArrayHasKey('answer_url', $data[0]);
+        self::assertCount(2, $data[0]['answer_url']);
+        self::assertEquals('http://example.com', $data[0]['answer_url'][0]);
+        self::assertEquals('http://example.com/test', $data[0]['answer_url'][1]);
 
         $this->entity->setWebhook(@new Webhook(Call::WEBHOOK_ANSWER, 'http://example.com', 'POST'));
 
         $data = $this->entity->jsonSerialize();
-        $this->assertArrayHasKey('answer_method', $data);
-        $this->assertEquals('POST', $data['answer_method']);
+        self::assertArrayHasKey('answer_method', $data[0]);
+        self::assertEquals('POST', $data[0]['answer_method']);
     }
 
-    public function testTimers()
+    public function testTimers(): void
     {
         $this->entity->setTimer(Call::TIMER_LENGTH, 10);
-
         $data = $this->entity->jsonSerialize();
-        $this->assertArrayHasKey('length_timer', $data);
-        $this->assertEquals(10, $data['length_timer']);
+
+        self::assertArrayHasKey('length_timer', $data);
+        self::assertEquals(10, $data['length_timer']);
     }
 
-    public function testTimeouts()
+    public function testTimeouts(): void
     {
         $this->entity->setTimeout(Call::TIMEOUT_MACHINE, 10);
-
         $data = $this->entity->jsonSerialize();
-        $this->assertArrayHasKey('machine_timeout', $data);
-        $this->assertEquals(10, $data['machine_timeout']);
+
+        self::assertArrayHasKey('machine_timeout', $data);
+        self::assertEquals(10, $data['machine_timeout']);
     }
 
-    public function testHydrate()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Exception
+     * @throws Request
+     * @throws Server
+     */
+    public function testHydrate(): void
     {
         $data = json_decode(file_get_contents(__DIR__ . '/responses/call.json'), true);
         $this->entity->jsonUnserialize($data);
@@ -359,8 +397,12 @@ class CallTest extends TestCase
      *
      * @param Call $entity
      * @param Response $response
+     * @throws ClientExceptionInterface
+     * @throws Exception
+     * @throws Request
+     * @throws Server
      */
-    public function assertEntityMatchesResponse(Call $entity, Response $response)
+    public function assertEntityMatchesResponse(Call $entity, Response $response): void
     {
         $response->getBody()->rewind();
         $json = $response->getBody()->getContents();
@@ -376,35 +418,40 @@ class CallTest extends TestCase
      *
      * @param Call $entity
      * @param $data
+     * @throws ClientExceptionInterface
+     * @throws Exception
+     * @throws Request
+     * @throws Server
      */
-    public function assertEntityMatchesData(Call $entity, $data)
+    public function assertEntityMatchesData(Call $entity, $data): void
     {
-        $this->assertSame($data['uuid'], $entity->getId());
+        self::assertSame($data['uuid'], $entity->getId());
 
-        $this->assertEquals($data['to']['type'], $entity->getTo()->getType());
-        $this->assertEquals($data['from']['type'], $entity->getFrom()->getType());
+        self::assertEquals($data['to']['type'], $entity->getTo()->getType());
+        self::assertEquals($data['from']['type'], $entity->getFrom()->getType());
 
-        $this->assertEquals($data['to']['number'], $entity->getTo()->getId());
-        $this->assertEquals($data['from']['number'], $entity->getFrom()->getId());
+        self::assertEquals($data['to']['number'], $entity->getTo()->getId());
+        self::assertEquals($data['from']['number'], $entity->getFrom()->getId());
 
-        $this->assertEquals($data['to']['number'], $entity->getTo()->getNumber());
-        $this->assertEquals($data['from']['number'], $entity->getFrom()->getNumber());
+        self::assertEquals($data['to']['number'], $entity->getTo()->getNumber());
+        self::assertEquals($data['from']['number'], $entity->getFrom()->getNumber());
 
-        $this->assertEquals($data['status'], $entity->getStatus());
-        $this->assertEquals($data['direction'], $entity->getDirection());
+        self::assertEquals($data['status'], $entity->getStatus());
+        self::assertEquals($data['direction'], $entity->getDirection());
 
-        $this->assertInstanceOf('Vonage\Conversations\Conversation', $entity->getConversation());
-        $this->assertEquals($data['conversation_uuid'], $entity->getConversation()->getId());
+        self::assertInstanceOf(Conversation::class, $entity->getConversation());
+        self::assertEquals($data['conversation_uuid'], $entity->getConversation()->getId());
     }
 
     /**
      * Get the API response we'd expect for a call to the API.
      *
      * @param string $type
+     * @param int $status
      * @return Response
      */
-    protected function getResponse($type = 'success', $status = 200)
+    protected function getResponse(string $type = 'success', int $status = 200): Response
     {
-        return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'r'), $status);
+        return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'rb'), $status);
     }
 }

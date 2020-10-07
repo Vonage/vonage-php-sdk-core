@@ -2,17 +2,20 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
  */
+declare(strict_types=1);
 
 namespace Vonage\Message\Callback;
 
+use DateTime;
+use UnexpectedValueException;
 use Vonage\Client\Callback\Callback;
 
 class Receipt extends Callback
 {
-    protected $expected = array(
+    protected $expected = [
         'err-code',
         'message-timestamp',
         'msisdn',
@@ -22,12 +25,17 @@ class Receipt extends Callback
         'status',
         //'timestamp',
         'to'
-    );
+    ];
 
+    /**
+     * Receipt constructor.
+     *
+     * @param array $data
+     */
     public function __construct(array $data)
     {
         //default value
-        $data = array_merge(array('client-ref' => null), $data);
+        $data = array_merge(['client-ref' => null], $data);
 
         parent::__construct($data);
     }
@@ -35,39 +43,39 @@ class Receipt extends Callback
     /**
      * @return int
      */
-    public function getErrorCode()
+    public function getErrorCode(): int
     {
-        return (int) $this->data['err-code'];
+        return (int)$this->data['err-code'];
     }
 
     /**
      * @return string
      */
-    public function getNetwork()
+    public function getNetwork(): string
     {
-        return (string) $this->data['network-code'];
+        return (string)$this->data['network-code'];
     }
 
     /**
      * @return string
      */
-    public function getId()
+    public function getId(): string
     {
-        return (string) $this->data['messageId'];
+        return (string)$this->data['messageId'];
     }
 
     /**
      * @return string
      */
-    public function getReceiptFrom()
+    public function getReceiptFrom(): string
     {
-        return (string) $this->data['msisdn'];
+        return (string)$this->data['msisdn'];
     }
 
     /**
      * @return string
      */
-    public function getTo()
+    public function getTo(): string
     {
         return $this->getReceiptFrom();
     }
@@ -75,15 +83,15 @@ class Receipt extends Callback
     /**
      * @return string
      */
-    public function getReceiptTo()
+    public function getReceiptTo(): string
     {
-        return (string) $this->data['to'];
+        return (string)$this->data['to'];
     }
 
     /**
      * @return string
      */
-    public function getFrom()
+    public function getFrom(): string
     {
         return $this->getReceiptTo();
     }
@@ -91,49 +99,51 @@ class Receipt extends Callback
     /**
      * @return string
      */
-    public function getStatus()
+    public function getStatus(): string
     {
-        return (string) $this->data['status'];
+        return (string)$this->data['status'];
     }
 
     /**
      * @return string
      */
-    public function getPrice()
+    public function getPrice(): string
     {
-        return (string) $this->data['price'];
+        return (string)$this->data['price'];
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getTimestamp()
+    public function getTimestamp(): DateTime
     {
-        $date = \DateTime::createFromFormat('ymdHi', $this->data['scts']);
+        $date = DateTime::createFromFormat('ymdHi', $this->data['scts']);
+
         if ($date) {
             return $date;
         }
 
-        throw new \UnexpectedValueException('could not parse message timestamp');
+        throw new UnexpectedValueException('could not parse message timestamp');
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getSent()
+    public function getSent(): DateTime
     {
-        $date = \DateTime::createFromFormat('Y-m-d H:i:s', $this->data['message-timestamp']);
+        $date = DateTime::createFromFormat('Y-m-d H:i:s', $this->data['message-timestamp']);
+
         if ($date) {
             return $date;
         }
 
-        throw new \UnexpectedValueException('could not parse message timestamp');
+        throw new UnexpectedValueException('could not parse message timestamp');
     }
 
     /**
      * @return string|null
      */
-    public function getClientRef()
+    public function getClientRef(): ?string
     {
         return $this->data['client-ref'];
     }

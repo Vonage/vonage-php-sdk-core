@@ -1,16 +1,23 @@
 <?php
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
+ */
 declare(strict_types=1);
 
 namespace Vonage\Voice;
 
+use InvalidArgumentException;
 use Vonage\Voice\Endpoint\EndpointInterface;
 use Vonage\Voice\Endpoint\Phone;
 use Vonage\Voice\NCCO\NCCO;
 
 class OutboundCall
 {
-    const MACHINE_CONTINUE = 'continue';
-    const MACHINE_HANGUP = 'hangup';
+    public const MACHINE_CONTINUE = 'continue';
+    public const MACHINE_HANGUP = 'hangup';
 
     /**
      * @var Webhook
@@ -54,89 +61,149 @@ class OutboundCall
      */
     protected $to;
 
+    /**
+     * OutboundCall constructor.
+     *
+     * @param EndpointInterface $to
+     * @param Phone $from
+     */
     public function __construct(EndpointInterface $to, Phone $from)
     {
         $this->to = $to;
         $this->from = $from;
     }
 
-    public function getAnswerWebhook() : ?Webhook
+    /**
+     * @return Webhook|null
+     */
+    public function getAnswerWebhook(): ?Webhook
     {
         return $this->answerWebhook;
     }
 
-    public function getEventWebhook() : ?Webhook
+    /**
+     * @return Webhook|null
+     */
+    public function getEventWebhook(): ?Webhook
     {
         return $this->eventWebhook;
     }
 
-    public function getFrom() : Phone
+    /**
+     * @return Phone
+     */
+    public function getFrom(): Phone
     {
         return $this->from;
     }
 
-    public function getLengthTimer() : ?int
+    /**
+     * @return int|null
+     */
+    public function getLengthTimer(): ?int
     {
         return $this->lengthTimer;
     }
 
-    public function getMachineDetection() : ?string
+    /**
+     * @return string|null
+     */
+    public function getMachineDetection(): ?string
     {
         return $this->machineDetection;
     }
 
-    public function getNCCO() : ?NCCO
+    /**
+     * @return NCCO|null
+     */
+    public function getNCCO(): ?NCCO
     {
         return $this->ncco;
     }
 
-    public function getRingingTimer() : ?int
+    /**
+     * @return int|null
+     */
+    public function getRingingTimer(): ?int
     {
         return $this->ringingTimer;
     }
 
-    public function getTo() : EndpointInterface
+    /**
+     * @return EndpointInterface
+     */
+    public function getTo(): EndpointInterface
     {
         return $this->to;
     }
 
-    public function setAnswerWebhook(Webhook $webhook) : self
+    /**
+     * @param Webhook $webhook
+     * @return $this
+     */
+    public function setAnswerWebhook(Webhook $webhook): self
     {
         $this->answerWebhook = $webhook;
+
         return $this;
     }
 
-    public function setEventWebhook(Webhook $webhook) : self
+    /**
+     * @param Webhook $webhook
+     * @return $this
+     */
+    public function setEventWebhook(Webhook $webhook): self
     {
         $this->eventWebhook = $webhook;
+
         return $this;
     }
 
-    public function setLengthTimer(int $timer) : self
+    /**
+     * @param int $timer
+     * @return $this
+     */
+    public function setLengthTimer(int $timer): self
     {
         $this->lengthTimer = $timer;
+
         return $this;
     }
 
-    public function setMachineDetection(string $action) : self
+    /**
+     * @param string $action
+     * @return $this
+     */
+    public function setMachineDetection(string $action): self
     {
         if ($action === self::MACHINE_CONTINUE || $action === self::MACHINE_HANGUP) {
             $this->machineDetection = $action;
+
             return $this;
         }
-        
-        throw new \InvalidArgumentException('Unknown machine detection action');
+
+        throw new InvalidArgumentException('Unknown machine detection action');
     }
 
-    public function setNCCO(NCCO $ncco) : self
+    /**
+     * @param NCCO $ncco
+     * @return $this
+     */
+    public function setNCCO(NCCO $ncco): self
     {
         $this->ncco = $ncco;
+
         return $this;
     }
 
-    public function setRingingTimer(int $timer) : self
+    /**
+     * @param int $timer
+     * @return $this
+     */
+    public function setRingingTimer(int $timer): self
     {
         $this->ringingTimer = $timer;
+
         return $this;
     }
 }

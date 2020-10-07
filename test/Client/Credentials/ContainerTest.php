@@ -2,19 +2,18 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
  */
+declare(strict_types=1);
 
-namespace VonageTest\Client\Credentials;
+namespace Vonage\Test\Client\Credentials;
 
+use PHPUnit\Framework\TestCase;
+use Vonage\Client\Credentials\Basic;
 use Vonage\Client\Credentials\Container;
 use Vonage\Client\Credentials\Keypair;
-use Vonage\Client\Credentials\Basic;
-use Vonage\Client\Credentials\OAuth;
 use Vonage\Client\Credentials\SignatureSecret;
-use Webmozart\Expression\Selector\Key;
-use PHPUnit\Framework\TestCase;
 
 class ContainerTest extends TestCase
 {
@@ -37,46 +36,49 @@ class ContainerTest extends TestCase
 
     /**
      * @dataProvider credentials
+     * @param $credential
+     * @param $type
      */
-    public function testBasic($credential, $type)
+    public function testBasic($credential, $type): void
     {
         $container = new Container($credential);
 
-        $this->assertSame($credential, $container->get($type));
-        $this->assertSame($credential, $container[$type]);
+        self::assertSame($credential, $container->get($type));
+        self::assertSame($credential, $container[$type]);
 
-        foreach($this->types as $class){
-            if($type == $class){
-                $this->assertTrue($container->has($class));
+        foreach ($this->types as $class) {
+            if ($type === $class) {
+                self::assertTrue($container->has($class));
             } else {
-                $this->assertFalse($container->has($class));
+                self::assertFalse($container->has($class));
             }
         }
     }
 
     /**
      * @dataProvider credentials
+     * @param $credential
      */
-    public function testOnlyOneType($credential, $type)
+    public function testOnlyOneType($credential): void
     {
-        $other = clone $credential;
-
         $this->expectException('RuntimeException');
 
-        $container = new Container($credential, $other);
+        new Container($credential, clone $credential);
     }
 
-    public function testMultiple()
+    public function testMultiple(): void
     {
         $container = new Container($this->basic, $this->secret, $this->keypair);
 
-        foreach($this->types as $class){
-            $this->assertTrue($container->has($class));
+        foreach ($this->types as $class) {
+            self::assertTrue($container->has($class));
         }
-
     }
 
-    public function credentials()
+    /**
+     * @return array[]
+     */
+    public function credentials(): array
     {
         return [
             [new Basic('key', 'secret'), Basic::class],

@@ -1,128 +1,149 @@
 <?php
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
+ */
 declare(strict_types=1);
 
-namespace VonageTest\SMS\Webhook;
+namespace Vonage\Test\SMS\Webhook;
 
-use RuntimeException;
+use Exception;
 use InvalidArgumentException;
+use Laminas\Diactoros\Request\Serializer;
+use Laminas\Diactoros\ServerRequest;
+use PHPUnit\Framework\TestCase;
 use Vonage\SMS\Webhook\DeliveryReceipt;
 use Vonage\SMS\Webhook\Factory;
-use PHPUnit\Framework\TestCase;
-use Zend\Diactoros\ServerRequest;
-use Zend\Diactoros\Request\Serializer;
-use Zend\Diactoros\ServerRequestFactory;
 
 class DeliveryReceiptTest extends TestCase
 {
-    public function testCanCreateFromGetServerRequest()
+    public function testCanCreateFromGetServerRequest(): void
     {
         $expected = $this->getQueryStringFromRequest('dlr-get');
-
         $request = $this->getServerRequest('dlr-get');
         $dlr = Factory::createFromRequest($request);
 
-        $this->assertSame($expected['msisdn'], $dlr->getMsisdn());
-        $this->assertSame((int) $expected['err-code'], $dlr->getErrCode());
-        $this->assertSame($expected['messageId'], $dlr->getMessageId());
-        $this->assertSame($expected['network-code'], $dlr->getNetworkCode());
-        $this->assertSame($expected['price'], $dlr->getPrice());
-        $this->assertSame($expected['scts'], $dlr->getScts());
-        $this->assertSame($expected['status'], $dlr->getStatus());
-        $this->assertSame($expected['to'], $dlr->getTo());
-        $this->assertSame($expected['api-key'], $dlr->getApiKey());
-        $this->assertSame($expected['message-timestamp'], $dlr->getMessageTimestamp()->format('Y-m-d H:i:s'));
+        self::assertSame($expected['msisdn'], $dlr->getMsisdn());
+        self::assertSame((int)$expected['err-code'], $dlr->getErrCode());
+        self::assertSame($expected['messageId'], $dlr->getMessageId());
+        self::assertSame($expected['network-code'], $dlr->getNetworkCode());
+        self::assertSame($expected['price'], $dlr->getPrice());
+        self::assertSame($expected['scts'], $dlr->getScts());
+        self::assertSame($expected['status'], $dlr->getStatus());
+        self::assertSame($expected['to'], $dlr->getTo());
+        self::assertSame($expected['api-key'], $dlr->getApiKey());
+        self::assertSame($expected['message-timestamp'], $dlr->getMessageTimestamp()->format('Y-m-d H:i:s'));
     }
 
-    public function testCanCreateFromJSONPostServerRequest()
+    public function testCanCreateFromJSONPostServerRequest(): void
     {
         $expected = $this->getBodyFromRequest('dlr-post-json');
-
         $request = $this->getServerRequest('dlr-post-json');
         $dlr = Factory::createFromRequest($request);
 
-        $this->assertSame($expected['msisdn'], $dlr->getMsisdn());
-        $this->assertSame((int) $expected['err-code'], $dlr->getErrCode());
-        $this->assertSame($expected['messageId'], $dlr->getMessageId());
-        $this->assertSame($expected['network-code'], $dlr->getNetworkCode());
-        $this->assertSame($expected['price'], $dlr->getPrice());
-        $this->assertSame($expected['scts'], $dlr->getScts());
-        $this->assertSame($expected['status'], $dlr->getStatus());
-        $this->assertSame($expected['to'], $dlr->getTo());
-        $this->assertSame($expected['api-key'], $dlr->getApiKey());
-        $this->assertSame($expected['message-timestamp'], $dlr->getMessageTimestamp()->format('Y-m-d H:i:s'));
+        self::assertSame($expected['msisdn'], $dlr->getMsisdn());
+        self::assertSame((int)$expected['err-code'], $dlr->getErrCode());
+        self::assertSame($expected['messageId'], $dlr->getMessageId());
+        self::assertSame($expected['network-code'], $dlr->getNetworkCode());
+        self::assertSame($expected['price'], $dlr->getPrice());
+        self::assertSame($expected['scts'], $dlr->getScts());
+        self::assertSame($expected['status'], $dlr->getStatus());
+        self::assertSame($expected['to'], $dlr->getTo());
+        self::assertSame($expected['api-key'], $dlr->getApiKey());
+        self::assertSame($expected['message-timestamp'], $dlr->getMessageTimestamp()->format('Y-m-d H:i:s'));
     }
 
-    public function testCanCreateFromFormPostServerRequest()
+    public function testCanCreateFromFormPostServerRequest(): void
     {
         $expected = $this->getBodyFromRequest('dlr-post', false);
-
         $request = $this->getServerRequest('dlr-post');
         $dlr = Factory::createFromRequest($request);
 
-        $this->assertSame($expected['msisdn'], $dlr->getMsisdn());
-        $this->assertSame((int) $expected['err-code'], $dlr->getErrCode());
-        $this->assertSame($expected['messageId'], $dlr->getMessageId());
-        $this->assertSame($expected['network-code'], $dlr->getNetworkCode());
-        $this->assertSame($expected['price'], $dlr->getPrice());
-        $this->assertSame($expected['scts'], $dlr->getScts());
-        $this->assertSame($expected['status'], $dlr->getStatus());
-        $this->assertSame($expected['to'], $dlr->getTo());
-        $this->assertSame($expected['api-key'], $dlr->getApiKey());
-        $this->assertSame($expected['message-timestamp'], $dlr->getMessageTimestamp()->format('Y-m-d H:i:s'));
+        self::assertSame($expected['msisdn'], $dlr->getMsisdn());
+        self::assertSame((int)$expected['err-code'], $dlr->getErrCode());
+        self::assertSame($expected['messageId'], $dlr->getMessageId());
+        self::assertSame($expected['network-code'], $dlr->getNetworkCode());
+        self::assertSame($expected['price'], $dlr->getPrice());
+        self::assertSame($expected['scts'], $dlr->getScts());
+        self::assertSame($expected['status'], $dlr->getStatus());
+        self::assertSame($expected['to'], $dlr->getTo());
+        self::assertSame($expected['api-key'], $dlr->getApiKey());
+        self::assertSame($expected['message-timestamp'], $dlr->getMessageTimestamp()->format('Y-m-d H:i:s'));
     }
 
-    public function testCanCreateFromRawArray()
+    /**
+     * @throws Exception
+     */
+    public function testCanCreateFromRawArray(): void
     {
         $expected = $this->getQueryStringFromRequest('dlr-get');
         $dlr = new DeliveryReceipt($expected);
 
-        $this->assertSame($expected['msisdn'], $dlr->getMsisdn());
-        $this->assertSame((int) $expected['err-code'], $dlr->getErrCode());
-        $this->assertSame($expected['messageId'], $dlr->getMessageId());
-        $this->assertSame($expected['network-code'], $dlr->getNetworkCode());
-        $this->assertSame($expected['price'], $dlr->getPrice());
-        $this->assertSame($expected['scts'], $dlr->getScts());
-        $this->assertSame($expected['status'], $dlr->getStatus());
-        $this->assertSame($expected['to'], $dlr->getTo());
-        $this->assertSame($expected['api-key'], $dlr->getApiKey());
-        $this->assertSame($expected['message-timestamp'], $dlr->getMessageTimestamp()->format('Y-m-d H:i:s'));
+        self::assertSame($expected['msisdn'], $dlr->getMsisdn());
+        self::assertSame((int)$expected['err-code'], $dlr->getErrCode());
+        self::assertSame($expected['messageId'], $dlr->getMessageId());
+        self::assertSame($expected['network-code'], $dlr->getNetworkCode());
+        self::assertSame($expected['price'], $dlr->getPrice());
+        self::assertSame($expected['scts'], $dlr->getScts());
+        self::assertSame($expected['status'], $dlr->getStatus());
+        self::assertSame($expected['to'], $dlr->getTo());
+        self::assertSame($expected['api-key'], $dlr->getApiKey());
+        self::assertSame($expected['message-timestamp'], $dlr->getMessageTimestamp()->format('Y-m-d H:i:s'));
     }
 
-    public function testThrowsExceptionWithInvalidRequest()
+    /**
+     * @throws Exception
+     */
+    public function testThrowsExceptionWithInvalidRequest(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Delivery Receipt missing required data `err-code`');
 
         $request = $this->getServerRequest('invalid')->getQueryParams();
+
         new DeliveryReceipt($request);
     }
 
+    /**
+     * @param string $requestName
+     * @return mixed
+     */
     protected function getQueryStringFromRequest(string $requestName)
     {
         $text = file_get_contents(__DIR__ . '/../requests/' . $requestName . '.txt');
         $request = Serializer::fromString($text);
+
         parse_str($request->getUri()->getQuery(), $query);
 
         return $query;
     }
 
+    /**
+     * @param string $requestName
+     * @param bool $json
+     * @return mixed
+     */
     protected function getBodyFromRequest(string $requestName, $json = true)
     {
         $text = file_get_contents(__DIR__ . '/../requests/' . $requestName . '.txt');
         $request = Serializer::fromString($text);
+
         if ($json) {
             return json_decode($request->getBody()->getContents(), true);
-        } else {
-            parse_str($request->getBody()->getContents(), $params);
-            return $params;
         }
-        
+
+        parse_str($request->getBody()->getContents(), $params);
+
+        return $params;
     }
 
-    protected function getServerRequest(string $requestName)
+    protected function getServerRequest(string $requestName): ServerRequest
     {
         $text = file_get_contents(__DIR__ . '/../requests/' . $requestName . '.txt');
         $request = Serializer::fromString($text);
+
         parse_str($request->getUri()->getQuery(), $query);
 
         return new ServerRequest(

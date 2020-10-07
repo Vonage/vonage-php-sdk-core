@@ -1,31 +1,48 @@
 <?php
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
+ */
 declare(strict_types=1);
 
-namespace VonageTest\SMS;
+namespace Vonage\Test\SMS;
 
+use Laminas\Diactoros\Request;
+use Laminas\Diactoros\Response\JsonResponse;
+use Laminas\Diactoros\ResponseFactory;
+use PHPUnit\Framework\TestCase;
 use Vonage\Client\Exception\Request as ExceptionRequest;
+use Vonage\Client\Exception\Server;
 use Vonage\Client\Exception\ThrottleException;
 use Vonage\SMS\ExceptionErrorHandler;
-use PHPUnit\Framework\TestCase;
-use Zend\Diactoros\Request;
-use Zend\Diactoros\Response\JsonResponse;
-use Zend\Diactoros\ResponseFactory;
 
 class ExceptionErrorHandlerTest extends TestCase
 {
-    public function test429ThrowsThrottleException()
+    /**
+     * @throws ExceptionRequest
+     * @throws ThrottleException
+     * @throws Server
+     */
+    public function test429ThrowsThrottleException(): void
     {
         $this->expectException(ThrottleException::class);
         $this->expectExceptionMessage('Too many concurrent requests');
 
-        $respFactory = new ResponseFactory();
-        $response = $respFactory->createResponse(429);
+        $response = (new ResponseFactory())
+            ->createResponse(429);
 
         $handler = new ExceptionErrorHandler();
         $handler($response, new Request());
     }
 
-    public function testGenericErrorThrowsRequestException()
+    /**
+     * @throws ExceptionRequest
+     * @throws Server
+     * @throws ThrottleException
+     */
+    public function testGenericErrorThrowsRequestException(): void
     {
         $this->expectException(ExceptionRequest::class);
         $this->expectExceptionMessage('This is a generic error being thrown');

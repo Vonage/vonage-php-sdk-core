@@ -2,14 +2,20 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2017 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
  */
+declare(strict_types=1);
 
 namespace Vonage\Call;
 
-class Hangup implements \JsonSerializable
+use JsonSerializable;
+
+class Hangup implements JsonSerializable
 {
+    /**
+     * Hangup constructor.
+     */
     public function __construct()
     {
         trigger_error(
@@ -18,7 +24,10 @@ class Hangup implements \JsonSerializable
         );
     }
 
-    public function jsonSerialize()
+    /**
+     * @return string[]
+     */
+    public function jsonSerialize(): array
     {
         return [
             'action' => 'hangup'

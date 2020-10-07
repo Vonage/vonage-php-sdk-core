@@ -2,11 +2,16 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
  */
+declare(strict_types=1);
 
 namespace Vonage\Entity;
+
+use RuntimeException;
+use Vonage\Client\Exception\Exception;
+use Vonage\Message\Message;
 
 /**
  * Implements getRequestData from EntityInterface with a simple array. Request data stored in an array, and locked once
@@ -25,11 +30,15 @@ trait RequestArrayTrait
 
     /**
      * Get an array of params to use in an API request.
+     *
+     * @param bool $sent
+     * @return array
+     * @throws Exception
      */
-    public function getRequestData($sent = true)
+    public function getRequestData($sent = true): array
     {
         if (!($this instanceof EntityInterface)) {
-            throw new \Exception(sprintf(
+            throw new Exception(sprintf(
                 '%s can only be used if the class implements %s',
                 __TRAIT__,
                 EntityInterface::class
@@ -51,11 +60,17 @@ trait RequestArrayTrait
 
         return $this->requestData;
     }
-    
+
+    /**
+     * @param $name
+     * @param $value
+     * @return Message|$this
+     * @throws \Exception
+     */
     protected function setRequestData($name, $value)
     {
         if (!($this instanceof EntityInterface)) {
-            throw new \Exception(sprintf(
+            throw new RuntimeException(sprintf(
                 '%s can only be used if the class implements %s',
                 __TRAIT__,
                 EntityInterface::class
@@ -63,7 +78,7 @@ trait RequestArrayTrait
         }
 
         if (@$this->getResponse()) {
-            throw new \RuntimeException(sprintf(
+            throw new RuntimeException(sprintf(
                 'can not set request parameter `%s` for `%s` after API request has be made',
                 $name,
                 get_class($this)
@@ -71,6 +86,7 @@ trait RequestArrayTrait
         }
 
         $this->requestData[$name] = $value;
+
         return $this;
     }
 }

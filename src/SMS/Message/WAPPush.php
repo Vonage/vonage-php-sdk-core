@@ -1,4 +1,10 @@
 <?php
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
+ */
 declare(strict_types=1);
 
 namespace Vonage\SMS\Message;
@@ -25,14 +31,27 @@ class WAPPush extends OutboundMessage
      */
     protected $validity;
 
+    /**
+     * WAPPush constructor.
+     *
+     * @param string $to
+     * @param string $from
+     * @param string $title
+     * @param string $url
+     * @param int $validity
+     */
     public function __construct(string $to, string $from, string $title, string $url, int $validity)
     {
         parent::__construct($to, $from);
+
         $this->title = $title;
         $this->url = $url;
         $this->validity = $validity;
     }
 
+    /**
+     * @return array
+     */
     public function toArray(): array
     {
         $data = [
@@ -46,17 +65,26 @@ class WAPPush extends OutboundMessage
         return $data;
     }
 
-    public function getTitle() : string
+    /**
+     * @return string
+     */
+    public function getTitle(): string
     {
         return $this->title;
     }
 
-    public function getUrl() : string
+    /**
+     * @return string
+     */
+    public function getUrl(): string
     {
         return $this->url;
     }
 
-    public function getValidity() : int
+    /**
+     * @return int
+     */
+    public function getValidity(): int
     {
         return $this->validity;
     }

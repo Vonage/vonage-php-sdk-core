@@ -1,4 +1,10 @@
 <?php
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
+ */
 declare(strict_types=1);
 
 namespace Vonage\Voice\NCCO\Action;
@@ -25,13 +31,20 @@ class Stream implements ActionInterface
      */
     protected $streamUrl;
 
+    /**
+     * Stream constructor.
+     *
+     * @param string $streamUrl
+     */
     public function __construct(string $streamUrl)
     {
         $this->streamUrl = $streamUrl;
     }
 
     /**
+     * @param string $streamUrl
      * @param array{streamUrl: string, bargeIn?: bool, level?: float, loop?: int, voiceName?: string} $data
+     * @return Stream
      */
     public static function factory(string $streamUrl, array $data): Stream
     {
@@ -58,22 +71,34 @@ class Stream implements ActionInterface
         return $stream;
     }
 
-    public function getBargeIn() : ?bool
+    /**
+     * @return bool|null
+     */
+    public function getBargeIn(): ?bool
     {
         return $this->bargeIn;
     }
 
-    public function getLevel() : ?float
+    /**
+     * @return float|null
+     */
+    public function getLevel(): ?float
     {
         return $this->level;
     }
 
-    public function getLoop() : ?int
+    /**
+     * @return int|null
+     */
+    public function getLoop(): ?int
     {
         return $this->loop;
     }
 
-    public function getStreamUrl() : string
+    /**
+     * @return string
+     */
+    public function getStreamUrl(): string
     {
         return $this->streamUrl;
     }
@@ -81,26 +106,41 @@ class Stream implements ActionInterface
     /**
      * @return array{action: string, bargeIn: bool, level: float, loop: int, streamUrl: string}
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->toNCCOArray();
     }
 
-    public function setBargeIn(bool $value) : self
+    /**
+     * @param bool $value
+     * @return $this
+     */
+    public function setBargeIn(bool $value): self
     {
         $this->bargeIn = $value;
+
         return $this;
     }
 
-    public function setLevel(float $level) : self
+    /**
+     * @param float $level
+     * @return $this
+     */
+    public function setLevel(float $level): self
     {
         $this->level = $level;
+
         return $this;
     }
 
-    public function setLoop(int $times) : self
+    /**
+     * @param int $times
+     * @return $this
+     */
+    public function setLoop(int $times): self
     {
         $this->loop = $times;
+
         return $this;
     }
 
@@ -119,11 +159,11 @@ class Stream implements ActionInterface
         }
 
         if (!is_null($this->getLevel())) {
-            $data['level'] = (string) $this->getLevel();
+            $data['level'] = (string)$this->getLevel();
         }
 
         if (!is_null($this->getLoop())) {
-            $data['loop'] = (string) $this->getLoop();
+            $data['loop'] = (string)$this->getLoop();
         }
 
         return $data;

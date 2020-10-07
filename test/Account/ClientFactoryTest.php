@@ -1,12 +1,18 @@
 <?php
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
+ */
 declare(strict_types=1);
 
-namespace NexmoTest\Account;
+namespace Vonage\Test\Account;
 
-use Vonage\Account\Client;
-use Vonage\Client\APIResource;
 use PHPUnit\Framework\TestCase;
 use Vonage\Account\ClientFactory;
+use Vonage\Client;
+use Vonage\Client\APIResource;
 use Vonage\Client\Factory\MapFactory;
 
 class ClientFactoryTest extends TestCase
@@ -17,31 +23,28 @@ class ClientFactoryTest extends TestCase
     protected $mapFactory;
 
     /**
-     * @var Client
+     * @var mixed
      */
     protected $vonageClient;
 
     public function setUp(): void
     {
-        $this->vonageClient = $this->prophesize('Vonage\Client');
+        $this->vonageClient = $this->prophesize(Client::class);
         $this->vonageClient->getRestUrl()->willReturn('https://rest.nexmo.com');
         $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
 
-        $this->mapFactory = new MapFactory([
-            APIResource::class => APIResource::class
-        ], $this->vonageClient->reveal());
+        /** @noinspection PhpParamsInspection */
+        $this->mapFactory = new MapFactory([APIResource::class => APIResource::class], $this->vonageClient->reveal());
     }
-    
-    public function testURIsAreCorrect()
+
+    public function testURIsAreCorrect(): void
     {
         $factory = new ClientFactory();
-        /** @var Client $client */
         $client = $factory($this->mapFactory);
 
-        $this->assertSame('/accounts', $client->getSecretsAPI()->getBaseUri());
-        $this->assertSame('https://api.nexmo.com', $client->getSecretsAPI()->getBaseUrl());
-
-        $this->assertSame('/account', $client->getAccountAPI()->getBaseUri());
-        $this->assertSame('https://rest.nexmo.com', $client->getAccountAPI()->getBaseUrl());
+        self::assertSame('/accounts', $client->getSecretsAPI()->getBaseUri());
+        self::assertSame('https://api.nexmo.com', $client->getSecretsAPI()->getBaseUrl());
+        self::assertSame('/account', $client->getAccountAPI()->getBaseUri());
+        self::assertSame('https://rest.nexmo.com', $client->getAccountAPI()->getBaseUrl());
     }
 }

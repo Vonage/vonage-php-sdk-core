@@ -1,7 +1,16 @@
 <?php
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
+ */
 declare(strict_types=1);
 
 namespace Vonage\Voice\Webhook;
+
+use DateTimeImmutable;
+use Exception;
 
 class Transfer
 {
@@ -21,34 +30,52 @@ class Transfer
     protected $uuid;
 
     /**
-     * @var \DateTimeImmutable
+     * @var DateTimeImmutable
      */
     protected $timestamp;
 
+    /**
+     * Transfer constructor.
+     *
+     * @param array $event
+     * @throws Exception
+     */
     public function __construct(array $event)
     {
         $this->conversationUuidFrom = $event['conversation_uuid_from'];
         $this->conversationUuidTo = $event['conversation_uuid_to'];
-        $this->uuid = $event['uuid'] ?? $event['uuid'];
-        $this->timestamp = new \DateTimeImmutable($event['timestamp']);
+        $this->uuid = $event['uuid'];
+        $this->timestamp = new DateTimeImmutable($event['timestamp']);
     }
 
-    public function getConversationUuidFrom() : string
+    /**
+     * @return string
+     */
+    public function getConversationUuidFrom(): string
     {
         return $this->conversationUuidFrom;
     }
 
-    public function getConversationUuidTo() : string
+    /**
+     * @return string
+     */
+    public function getConversationUuidTo(): string
     {
         return $this->conversationUuidTo;
     }
 
-    public function getUuid() : string
+    /**
+     * @return string
+     */
+    public function getUuid(): string
     {
         return $this->uuid;
     }
 
-    public function getTimestamp() : \DateTimeImmutable
+    /**
+     * @return DateTimeImmutable
+     */
+    public function getTimestamp(): DateTimeImmutable
     {
         return $this->timestamp;
     }

@@ -2,34 +2,35 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
  */
+declare(strict_types=1);
 
-namespace VonageTest\Message;
+namespace Vonage\Test\Message;
 
+use Laminas\Diactoros\Request;
+use Laminas\Diactoros\Response;
+use PHPUnit\Framework\TestCase;
+use Vonage\Client\Exception\Exception;
 use Vonage\Message\Message;
 use Vonage\Message\Text;
-use Zend\Diactoros\Response;
-use Zend\Diactoros\ServerRequest;
-use PHPUnit\Framework\TestCase;
 
 class MessageTest extends TestCase
 {
-    protected $to   = '14845551212';
+    protected $to = '14845551212';
     protected $from = '16105551212';
     protected $text = 'this is test text';
-
-    protected $set = array('to', 'from', 'text');
+    protected $set = ['to', 'from', 'text'];
 
     /**
-     * @var \Vonage\Message\Message
+     * @var Message
      */
     protected $message;
 
     public function setUp(): void
     {
-        $this->message = new \Vonage\Message\Message($this->to, $this->from, [
+        $this->message = new Message($this->to, $this->from, [
             'text' => $this->text
         ]);
     }
@@ -39,72 +40,96 @@ class MessageTest extends TestCase
         $this->message = null;
     }
 
-    public function testRequestSetsData()
+    /**
+     * @throws Exception
+     */
+    public function testRequestSetsData(): void
     {
         $data = ['test' => 'test'];
-        $request = new \Zend\Diactoros\Request('http://example.com?' . http_build_query($data));
+        $request = new Request('http://example.com?' . http_build_query($data));
         @$this->message->setRequest($request);
 
-        $this->assertSame($request, @$this->message->getRequest());
+        self::assertSame($request, @$this->message->getRequest());
+
         $requestData = @$this->message->getRequestData();
-        $this->assertEquals($data, $requestData);
+
+        self::assertEquals($data, $requestData);
     }
 
-    public function testResponseSetsData()
+    /**
+     * @throws \Exception
+     */
+    public function testResponseSetsData(): void
     {
         $data = ['test' => 'test'];
-        $response = new \Zend\Diactoros\Response();
+        $response = new Response();
         $response->getBody()->write(json_encode($data));
         $response->getBody()->rewind();
 
         @$this->message->setResponse($response);
 
-        $this->assertSame($response, @$this->message->getResponse());
-        $this->assertEquals($data, @$this->message->getResponseData());
+        self::assertSame($response, @$this->message->getResponse());
+        self::assertEquals($data, @$this->message->getResponseData());
     }
 
     /**
      * For getting message data from API, can create a simple object with just an ID.
+     *
+     * @throws \Exception
      */
-    public function testCanCreateWithId()
+    public function testCanCreateWithId(): void
     {
-        $message = new Message('00000123');
-        $this->assertEquals('00000123', $message->getMessageId());
+        self::assertEquals('00000123', (new Message('00000123'))->getMessageId());
     }
 
     /**
      * When creating a message, it should not auto-detect encoding by default
+     *
      * @dataProvider messageEncodingProvider
+     * @param $msg
+     * @throws Exception
      */
-    public function testDoesNotAutodetectByDefault($msg, $encoding)
+    public function testDoesNotAutodetectByDefault($msg): void
     {
         $message = new Text('to', 'from', $msg);
-        $this->assertFalse($message->isEncodingDetectionEnabled());
+
+        self::assertFalse($message->isEncodingDetectionEnabled());
+
         $d = $message->getRequestData(false);
-        $this->assertEquals($d['type'], 'text');
+
+        self::assertEquals('text', $d['type']);
     }
 
     /**
      * When creating a message, it should not auto-detect encoding by default
+     *
      * @dataProvider messageEncodingProvider
+     * @param $msg
+     * @param $encoding
+     * @throws Exception
      */
-    public function testDoesAutodetectWhenEnabled($msg, $encoding)
+    public function testDoesAutodetectWhenEnabled($msg, $encoding): void
     {
         $message = new Text('to', 'from', $msg);
         $message->enableEncodingDetection();
-        $this->assertTrue($message->isEncodingDetectionEnabled());
+
+        self::assertTrue($message->isEncodingDetectionEnabled());
 
         $d = $message->getRequestData(false);
-        $this->assertEquals($d['type'], $encoding);
+
+        self::assertEquals($d['type'], $encoding);
     }
 
-    public function messageEncodingProvider() {
-
-        $r = [];
-        $r['text'] = ['Hello World', 'text'];
-        $r['emoji'] = ['Testing 💪', 'unicode'];
-        $r['kanji'] = ['漢字', 'unicode'];
-        return $r;
+    /**
+     * @return array
+     */
+    public function messageEncodingProvider(): array
+    {
+        return [
+            'text' => ['Hello World', 'text'],
+            'emoji' => ['Testing 💪', 'unicode'],
+            'kanji' => ['漢字', 'unicode']
+        ];
     }
 
     /**
@@ -114,8 +139,8 @@ class MessageTest extends TestCase
      * @param string $type
      * @return Response
      */
-    protected function getResponse($type = 'success')
+    protected function getResponse(string $type = 'success'): Response
     {
-        return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'r'));
+        return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'rb'));
     }
 }

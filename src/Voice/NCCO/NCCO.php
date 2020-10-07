@@ -1,27 +1,42 @@
 <?php
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
+ */
 declare(strict_types=1);
 
 namespace Vonage\Voice\NCCO;
 
+use JsonSerializable;
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 use Vonage\Voice\NCCO\Action\ActionInterface;
 
-class NCCO implements ArrayHydrateInterface, \JsonSerializable
+class NCCO implements ArrayHydrateInterface, JsonSerializable
 {
     /**
      * @var array<ActionInterface>
      */
     protected $actions = [];
 
-    public function addAction(ActionInterface $action) : self
+    /**
+     * @param ActionInterface $action
+     * @return $this
+     */
+    public function addAction(ActionInterface $action): self
     {
         $this->actions[] = $action;
         return $this;
     }
 
-    public function fromArray(array $data)
+    /**
+     * @param array $data
+     */
+    public function fromArray(array $data): void
     {
         $factory = new NCCOFactory();
+
         foreach ($data as $rawNCCO) {
             $action = $factory->build($rawNCCO);
             $this->addAction($action);
@@ -31,7 +46,7 @@ class NCCO implements ArrayHydrateInterface, \JsonSerializable
     /**
      * @return array<array<string, string>>
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->toArray();
     }
@@ -39,10 +54,10 @@ class NCCO implements ArrayHydrateInterface, \JsonSerializable
     /**
      * @return array<array<string, string>>
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $data = [];
-        /** @var ActionInterface $action */
+
         foreach ($this->actions as $action) {
             $data[] = $action->toNCCOArray();
         }

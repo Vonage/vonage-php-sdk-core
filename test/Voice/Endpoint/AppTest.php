@@ -1,44 +1,42 @@
 <?php
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
+ */
 declare(strict_types=1);
 
-namespace VonageTest\Voice\Endpoint;
+namespace Vonage\Test\Voice\Endpoint;
 
-use Vonage\Voice\Endpoint\App;
 use PHPUnit\Framework\TestCase;
+use Vonage\Voice\Endpoint\App;
 
 class AppTest extends TestCase
 {
-    public function testSetsUsernameAtCreation()
+    public function testSetsUsernameAtCreation(): void
     {
-        $endpoint = new App("username");
-        $this->assertSame("username", $endpoint->getId());
+        self::assertSame("username", (new App("username"))->getId());
     }
 
-    public function testFactoryCreatesAppEndpoint()
+    public function testFactoryCreatesAppEndpoint(): void
     {
-        $endpoint = App::factory('username');
-        $this->assertSame("username", $endpoint->getId());
+        self::assertSame("username", App::factory('username')->getId());
     }
 
-    public function testToArrayHasCorrectStructure()
+    public function testToArrayHasCorrectStructure(): void
     {
-        $expected = [
+        self::assertSame([
             'type' => 'app',
             'user' => 'username',
-        ];
-        
-        $endpoint = new App("username");
-        $this->assertSame($expected, $endpoint->toArray());
+        ], (new App("username"))->toArray());
     }
 
-    public function testSerializesToJSONCorrectly()
+    public function testSerializesToJSONCorrectly(): void
     {
-        $expected = [
+        self::assertSame([
             'type' => 'app',
             'user' => 'username',
-        ];
-        
-        $endpoint = new App("username");
-        $this->assertSame($expected, $endpoint->jsonSerialize());
+        ], (new App("username"))->jsonSerialize());
     }
 }

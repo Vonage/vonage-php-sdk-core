@@ -2,12 +2,16 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
  */
-namespace Vonage\Voice\Message;
+declare(strict_types=1);
 
+namespace Vonage\Test\Voice\Message;
+
+use DateTime;
 use PHPUnit\Framework\TestCase;
+use Vonage\Voice\Message\Callback;
 
 class CallbackTest extends TestCase
 {
@@ -25,7 +29,7 @@ class CallbackTest extends TestCase
     ];
 
     /**
-     * @var \Vonage\Voice\Message\Callback
+     * @var Callback
      */
     protected $callback;
 
@@ -34,32 +38,31 @@ class CallbackTest extends TestCase
         $this->callback = new Callback($this->data);
     }
 
-    public function testSimpleValues()
+    public function testSimpleValues(): void
     {
-        $this->assertEquals($this->data['call-id'], $this->callback->getId());
-        $this->assertEquals($this->data['status'], $this->callback->getStatus());
-        $this->assertEquals($this->data['call-price'], $this->callback->getPrice());
-        $this->assertEquals($this->data['call-rate'], $this->callback->getRate());
-        $this->assertEquals($this->data['call-duration'], $this->callback->getDuration());
-        $this->assertEquals($this->data['to'], $this->callback->getTo());
-        $this->assertEquals($this->data['network-code'], $this->callback->getNetwork());
+        self::assertEquals($this->data['call-id'], $this->callback->getId());
+        self::assertEquals($this->data['status'], $this->callback->getStatus());
+        self::assertEquals($this->data['call-price'], $this->callback->getPrice());
+        self::assertEquals($this->data['call-rate'], $this->callback->getRate());
+        self::assertEquals($this->data['call-duration'], $this->callback->getDuration());
+        self::assertEquals($this->data['to'], $this->callback->getTo());
+        self::assertEquals($this->data['network-code'], $this->callback->getNetwork());
     }
-    public function testStartAndEndOptional()
+
+    public function testStartAndEndOptional(): void
     {
-        unset($this->data['call-start']);
-        unset($this->data['call-end']);
+        unset($this->data['call-start'], $this->data['call-end']);
 
         $this->callback = new Callback($this->data);
 
-        $this->assertNull($this->callback->getStart());
-        $this->assertNull($this->callback->getEnd());
+        self::assertNull($this->callback->getStart());
+        self::assertNull($this->callback->getEnd());
     }
 
-    public function testDateValues()
+    public function testDateValues(): void
     {
-        $this->assertEquals(new \DateTime('2014-01-01 10:30:15'), $this->callback->getCreated());
-        $this->assertEquals(new \DateTime('2014-01-01 10:30:25'), $this->callback->getStart());
-        $this->assertEquals(new \DateTime('2014-01-01 10:30:35'), $this->callback->getEnd());
+        self::assertEquals(new DateTime('2014-01-01 10:30:15'), $this->callback->getCreated());
+        self::assertEquals(new DateTime('2014-01-01 10:30:25'), $this->callback->getStart());
+        self::assertEquals(new DateTime('2014-01-01 10:30:35'), $this->callback->getEnd());
     }
 }
- 
