@@ -22,6 +22,7 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
 use Vonage\Account\ClientFactory;
+use Vonage\Application\ClientFactory as ApplicationClientFactory;
 use Vonage\Call\Collection;
 use Vonage\Client\APIResource;
 use Vonage\Client\Credentials\Basic;
@@ -34,8 +35,18 @@ use Vonage\Client\Exception\Exception;
 use Vonage\Client\Factory\FactoryInterface;
 use Vonage\Client\Factory\MapFactory;
 use Vonage\Client\Signature;
+use Vonage\Conversations\Collection as ConversationsCollection;
+use Vonage\Conversion\ClientFactory as ConversionClientFactory;
 use Vonage\Entity\EntityInterface;
+use Vonage\Insights\ClientFactory as InsightsClientFactory;
+use Vonage\Message\Client as MessageClient;
+use Vonage\Numbers\ClientFactory as NumbersClientFactory;
+use Vonage\Redact\ClientFactory as RedactClientFactory;
+use Vonage\SMS\ClientFactory as SMSClientFactory;
+use Vonage\User\Collection as UserCollection;
+use Vonage\Verify\ClientFactory as VerifyClientFactory;
 use Vonage\Verify\Verification;
+use Vonage\Voice\ClientFactory as VoiceClientFactory;
 
 /**
  * Vonage API Client, allows access to the API from PHP.
@@ -56,7 +67,7 @@ use Vonage\Verify\Verification;
  */
 class Client
 {
-    public const VERSION = '2.4.2';
+    public const VERSION = '2.5.0';
     public const BASE_API = 'https://api.nexmo.com';
     public const BASE_REST = 'https://rest.nexmo.com';
 
@@ -93,7 +104,12 @@ class Client
     {
         if (is_null($client)) {
             // Since the user did not pass a client, try and make a client
-            $client = new \GuzzleHttp\Client();
+            // using the Guzzle 6 adapter or Guzzle 7 (depending on availability)
+            if (class_exists('\GuzzleHttp\Client')) {
+                $client = new \GuzzleHttp\Client();
+            } elseif (class_exists('\Http\Adapter\Guzzle6\Client')) {
+                $client = new \Http\Adapter\Guzzle6\Client();
+            }
         }
 
         $this->setHttpClient($client);
@@ -134,21 +150,21 @@ class Client
 
         $this->setFactory(new MapFactory([
             // Legacy Namespaces
-            'message' => Message\Client::class,
+            'message' => MessageClient::class,
             'calls' => Collection::class,
-            'conversation' => Conversations\Collection::class,
-            'user' => User\Collection::class,
+            'conversation' => ConversationsCollection::class,
+            'user' => UserCollection::class,
 
             // Registered Services by name
             'account' => ClientFactory::class,
-            'applications' => Application\ClientFactory::class,
-            'conversion' => Conversion\ClientFactory::class,
-            'insights' => Insights\ClientFactory::class,
-            'numbers' => Numbers\ClientFactory::class,
-            'redact' => Redact\ClientFactory::class,
-            'sms' => SMS\ClientFactory::class,
-            'verify' => Verify\ClientFactory::class,
-            'voice' => Voice\ClientFactory::class,
+            'applications' => ApplicationClientFactory::class,
+            'conversion' => ConversionClientFactory::class,
+            'insights' => InsightsClientFactory::class,
+            'numbers' => NumbersClientFactory::class,
+            'redact' => RedactClientFactory::class,
+            'sms' => SMSClientFactory::class,
+            'verify' => VerifyClientFactory::class,
+            'voice' => VoiceClientFactory::class,
 
             // Additional utility classes
             APIResource::class => APIResource::class,
@@ -157,7 +173,13 @@ class Client
         // Disable throwing E_USER_DEPRECATED notices by default, the user can turn it on during development
         if (array_key_exists('show_deprecations', $this->options) && !$this->options['show_deprecations']) {
             set_error_handler(
-                static function () {
+                static function (
+                    int $errno,
+                    string $errstr,
+                    string $errfile,
+                    int $errline,
+                    array $errorcontext
+                ) {
                     return true;
                 },
                 E_USER_DEPRECATED
@@ -200,9 +222,9 @@ class Client
     /**
      * Get the Http Client used to make API requests.
      *
-     * @return \GuzzleHttp\Client|HttpClient
+     * @return ClientInterface
      */
-    public function getHttpClient()
+    public function getHttpClient(): ClientInterface
     {
         return $this->client;
     }
@@ -461,16 +483,16 @@ class Client
     {
         if ($this->credentials instanceof Container) {
             if ($this->needsKeypairAuthentication($request)) {
-                $c = $this->credentials->get(Keypair::class)->generateJwt();
+                $token = $this->credentials->get(Keypair::class)->generateJwt();
 
-                $request = $request->withHeader('Authorization', 'Bearer ' . $c);
+                $request = $request->withHeader('Authorization', 'Bearer ' . $token);
             } else {
                 $request = self::authRequest($request, $this->credentials->get(Basic::class));
             }
         } elseif ($this->credentials instanceof Keypair) {
-            $c = $this->credentials->generateJwt();
+            $token = $this->credentials->generateJwt();
 
-            $request = $request->withHeader('Authorization', 'Bearer ' . $c);
+            $request = $request->withHeader('Authorization', 'Bearer ' . $token);
         } elseif ($this->credentials instanceof SignatureSecret) {
             $request = self::signRequest($request, $this->credentials);
         } elseif ($this->credentials instanceof Basic) {
@@ -483,8 +505,8 @@ class Client
         if (isset($this->options['url'])) {
             foreach ($this->options['url'] as $search => $replace) {
                 $uri = (string)$request->getUri();
-
                 $new = str_replace($search, $replace, $uri);
+
                 if ($uri !== $new) {
                     $request = $request->withUri(new Uri($new));
                 }
@@ -509,9 +531,11 @@ class Client
         }
 
         // Set the header. Build by joining all the parts we have with a space
-        $request = $request->withHeader('User-Agent', implode(" ", $userAgent));
+        $request = $request->withHeader('User-Agent', implode(' ', $userAgent));
+        /** @noinspection PhpUnnecessaryLocalVariableInspection */
+        $response = $this->client->sendRequest($request);
 
-        return $this->client->sendRequest($request);
+        return $response;
     }
 
     /**

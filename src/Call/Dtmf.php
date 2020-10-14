@@ -39,9 +39,9 @@ class Dtmf implements JsonSerializableInterface, ClientAwareInterface, ArrayAcce
     /**
      * Dtmf constructor.
      *
-     * @param null $id
+     * @param string|null $id
      */
-    public function __construct($id = null)
+    public function __construct(?string $id = null)
     {
         trigger_error(
             'Vonage\Call\Dtmf is deprecated, please use Vonage\Voice\Client::playDTMF() instead',
@@ -69,9 +69,9 @@ class Dtmf implements JsonSerializableInterface, ClientAwareInterface, ArrayAcce
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }

@@ -31,11 +31,11 @@ class Config implements
     /**
      * Config constructor.
      *
-     * @param null $sms_callback_url
-     * @param null $dr_callback_url
-     * @param null $max_outbound_request
-     * @param null $max_inbound_request
-     * @param null $max_calls_per_second
+     * @param string|null $sms_callback_url
+     * @param string|null $dr_callback_url
+     * @param string|int|null $max_outbound_request
+     * @param string|int|null $max_inbound_request
+     * @param string|int|null $max_calls_per_second
      */
     public function __construct(
         $sms_callback_url = null,

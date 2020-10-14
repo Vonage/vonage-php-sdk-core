@@ -71,9 +71,9 @@ class Call implements EntityInterface, JsonSerializable, JsonUnserializableInter
     /**
      * Call constructor.
      *
-     * @param null $id
+     * @param string|null $id
      */
-    public function __construct($id = null)
+    public function __construct(?string $id = null)
     {
         trigger_error(
             'Vonage\Call\Call is deprecated, please use Vonage\Voice\Client for functionality instead',
@@ -228,11 +228,11 @@ class Call implements EntityInterface, JsonSerializable, JsonUnserializableInter
 
     /**
      * @param $type
-     * @param null $url
-     * @param null $method
-     * @return $this
+     * @param string|null $url
+     * @param string|null $method
+     * @return $this|null
      */
-    public function setWebhook($type, $url = null, $method = null): self
+    public function setWebhook($type, ?string $url = null, string $method = null): ?self
     {
         if ($type instanceof Webhook) {
             $this->webhooks[$type->getType()] = $type;

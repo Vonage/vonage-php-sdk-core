@@ -24,6 +24,7 @@ class APIResource implements ClientAwareInterface
     /**
      * Base URL that we will hit. This can be overridden from the underlying
      * client or directly on this class.
+     *
      * @var string
      */
     protected $baseUrl = '';
@@ -45,6 +46,7 @@ class APIResource implements ClientAwareInterface
 
     /**
      * Sets flag that says to check for errors even on 200 Success
+     *
      * @var bool
      */
     protected $errorsOn200 = false;
@@ -78,7 +80,7 @@ class APIResource implements ClientAwareInterface
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
      */
-    public function create(array $body, string $uri = '', $headers = []): ?array
+    public function create(array $body, string $uri = '', array $headers = []): ?array
     {
         if (empty($headers)) {
             $headers = ['content-type' => 'application/json'];
@@ -121,7 +123,7 @@ class APIResource implements ClientAwareInterface
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
      */
-    public function delete(string $id, $headers = []): ?array
+    public function delete(string $id, array $headers = []): ?array
     {
         $uri = $this->getBaseUrl() . $this->baseUri . '/' . $id;
 
@@ -165,7 +167,7 @@ class APIResource implements ClientAwareInterface
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
      */
-    public function get($id, array $query = [], $headers = [])
+    public function get($id, array $query = [], array $headers = [])
     {
         $uri = $this->getBaseUrl() . $this->baseUri . '/' . $id;
 
@@ -419,7 +421,7 @@ class APIResource implements ClientAwareInterface
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
      */
-    public function submit(array $formData = [], string $uri = '', $headers = []): string
+    public function submit(array $formData = [], string $uri = '', array $headers = []): string
     {
         if (empty($headers)) {
             $headers = ['content-type' => 'application/x-www-form-urlencoded'];
@@ -457,7 +459,7 @@ class APIResource implements ClientAwareInterface
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
      */
-    public function update(string $id, array $body, $headers = []): ?array
+    public function update(string $id, array $body, array $headers = []): ?array
     {
         if (empty($headers)) {
             $headers = ['content-type' => 'application/json'];

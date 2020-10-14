@@ -219,13 +219,13 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
 
     /**
      * @param $application
-     * @param null $id
+     * @param string|null $id
      * @return Application
      * @throws ClientExceptionInterface
      * @throws Exception
      * @deprecated Use `update()` instead
      */
-    public function put($application, $id = null): Application
+    public function put($application, ?string $id = null): Application
     {
         trigger_error(
             'Vonage\Application\Client::put() has been deprecated in favor of the update() method',

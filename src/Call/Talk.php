@@ -28,10 +28,19 @@ class Talk implements JsonSerializableInterface, ClientAwareInterface, ArrayAcce
 {
     use ClientAwareTrait;
 
+    /**
+     * @var string|null
+     */
     protected $id;
 
+    /**
+     * @var array
+     */
     protected $data = [];
 
+    /**
+     * @var string[]
+     */
     protected $params = [
         'text',
         'voice_name',
@@ -41,9 +50,9 @@ class Talk implements JsonSerializableInterface, ClientAwareInterface, ArrayAcce
     /**
      * Talk constructor.
      *
-     * @param null $id
+     * @param string|null $id
      */
-    public function __construct($id = null)
+    public function __construct(?string $id = null)
     {
         trigger_error(
             'Vonage\Call\Talk is deprecated, please use Vonage\Voice\Client::playTTS() ' .
@@ -72,9 +81,9 @@ class Talk implements JsonSerializableInterface, ClientAwareInterface, ArrayAcce
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
@@ -225,7 +234,7 @@ class Talk implements JsonSerializableInterface, ClientAwareInterface, ArrayAcce
      */
     public function offsetSet($offset, $value): void
     {
-        if (!in_array($offset, $this->params, false)) {
+        if (!in_array($offset, $this->params)) {
             throw new RuntimeException('invalid parameter: ' . $offset);
         }
 
@@ -237,7 +246,7 @@ class Talk implements JsonSerializableInterface, ClientAwareInterface, ArrayAcce
      */
     public function offsetUnset($offset): void
     {
-        if (!in_array($offset, $this->params, false)) {
+        if (!in_array($offset, $this->params)) {
             throw new RuntimeException('invalid parameter: ' . $offset);
         }
 

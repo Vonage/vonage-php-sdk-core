@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace Vonage\Client;
 
-use RuntimeException;
 use Vonage\Client;
 
 trait ClientAwareTrait
@@ -20,7 +19,6 @@ trait ClientAwareTrait
     protected $client;
 
     /**
-     * @param Client $client
      * @return mixed
      */
     public function setClient(Client $client)
@@ -31,14 +29,10 @@ trait ClientAwareTrait
     }
 
     /**
-     * @return Client|null
+     * @return null
      */
     public function getClient(): ?Client
     {
-        if (isset($this->client)) {
-            return $this->client;
-        }
-
-        throw new RuntimeException('Vonage\Client not set');
+        return $this->client ?? null;
     }
 }

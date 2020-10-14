@@ -95,19 +95,19 @@ class MapFactory implements FactoryInterface, ContainerInterface
 
     /**
      * @param $api
-     * @return Client\ClientAwareInterface
+     * @return mixed
      * @deprecated Use get() instead
      */
-    public function getApi($api): Client\ClientAwareInterface
+    public function getApi($api)
     {
         return $this->get($api);
     }
 
     /**
      * @param $key
-     * @return Client\ClientAwareInterface
+     * @return mixed
      */
-    public function make($key): Client\ClientAwareInterface
+    public function make($key)
     {
         if (!$this->has($key)) {
             throw new RuntimeException(sprintf(

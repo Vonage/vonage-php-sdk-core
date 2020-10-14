@@ -40,7 +40,7 @@
     "vonage/nexmo-bridge": "^0.1.0"
   },
   "require-dev": {
-    "guzzlehttp/guzzle": "^7.1",
+    "guzzlehttp/guzzle": ">=6",
     "helmich/phpunit-json-assert": "^3.2",
     "php-http/mock-client": "^1.4",
     "phpstan/phpstan": "^0.12",
