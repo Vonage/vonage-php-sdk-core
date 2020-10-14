@@ -2,9 +2,9 @@
   "name": "vonage/client-core",
   "type": "library",
   "description": "PHP Client for using Vonage's API.",
-  "homepage": "https://www.vonage.com",
-  "version": "2.4.2-dev",
-  "license": "MIT",
+  "homepage": "https://developer.nexmo.com",
+  "version": "2.5.0",
+  "license": "Apache-2.0",
   "authors": [
     {
       "name": "Tim Lytle",
@@ -65,7 +65,7 @@
   },
   "minimum-stability": "stable",
   "support": {
-    "email": "devrel@nexmo.com",
+    "email": "devrel@vonage.com",
     "issues": "https://github.com/Vonage/vonage-php-sdk-core/issues",
     "source": "https://github.com/Vonage/vonage-php-sdk-core",
     "docs": "https://developer.nexmo.com"

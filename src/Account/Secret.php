@@ -3,7 +3,7 @@
  * Vonage Client Library for PHP
  *
  * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
- * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
 declare(strict_types=1);
 
@@ -121,10 +121,10 @@ class Secret implements ArrayAccess
 
     /**
      * @param $key
-     * @return mixed
+     * @return array|null
      * @noinspection MagicMethodsValidityInspection
      */
-    public function __get($key)
+    public function __get($key): ?array
     {
         if ($key === 'data') {
             trigger_error(
@@ -135,6 +135,6 @@ class Secret implements ArrayAccess
             return $this->data;
         }
 
-        return [];
+        return null;
     }
 }

@@ -3,7 +3,7 @@
  * Vonage Client Library for PHP
  *
  * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
- * @license   MIT <https://github.com/vonage/vonage-php/blob/master/LICENSE>
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
 declare(strict_types=1);
 
@@ -148,13 +148,17 @@ abstract class Price implements
             $k = strtolower(ltrim(preg_replace('/[A-Z]([A-Z](?![a-z]))*/', '_$0', $k), '_'));
 
             // PrefixPrice fixes
-            if ($k === 'country') {
-                $k = 'country_code';
-            } elseif ($k === 'name') {
-                $storage['country_display_name'] = $v;
-                $storage['country_name'] = $v;
-            } elseif ($k === 'prefix') {
-                $k = 'dialing_prefix';
+            switch ($k) {
+                case 'country':
+                    $k = 'country_code';
+                    break;
+                case 'name':
+                    $storage['country_display_name'] = $v;
+                    $storage['country_name'] = $v;
+                    break;
+                case 'prefix':
+                    $k = 'dialing_prefix';
+                    break;
             }
 
             $storage[$k] = $v;
@@ -250,10 +254,10 @@ abstract class Price implements
 
     /**
      * @param $key
-     * @return array
+     * @return array|null
      * @noinspection MagicMethodsValidityInspection
      */
-    public function __get($key)
+    public function __get($key): ?array
     {
         if ($key === 'data') {
             trigger_error(
@@ -264,6 +268,6 @@ abstract class Price implements
             return $this->data;
         }
 
-        return [];
+        return null;
     }
 }
