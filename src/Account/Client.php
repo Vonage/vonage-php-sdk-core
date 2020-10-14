@@ -15,8 +15,8 @@ use Vonage\Client\APIResource;
 use Vonage\Client\ClientAwareInterface;
 use Vonage\Client\ClientAwareTrait;
 use Vonage\Client\Exception;
-use Vonage\Client\Exception\Request as ExceptionRequest;
-use Vonage\Client\Exception\Validation;
+use Vonage\Client\Exception\Request as ClientRequestException;
+use Vonage\Client\Exception\Validation as ClientValidationException;
 use Vonage\Entity\Filter\KeyValueFilter;
 use Vonage\InvalidResponseException;
 
@@ -40,12 +40,6 @@ class Client implements ClientAwareInterface, APIClient
      */
     protected $secretsAPI;
 
-    /**
-     * Account Client constructor.
-     *
-     * @param APIResource|null $accountAPI
-     * @param APIResource|null $secretsAPI
-     */
     public function __construct(?APIResource $accountAPI = null, ?APIResource $secretsAPI = null)
     {
         $this->accountAPI = $accountAPI;
@@ -55,7 +49,6 @@ class Client implements ClientAwareInterface, APIClient
     /**
      * Shim to handle older instantiations of this class
      *
-     * @return APIResource
      * @deprecated Will remove in v3
      */
     public function getAccountAPI(): APIResource
@@ -73,9 +66,6 @@ class Client implements ClientAwareInterface, APIClient
         return clone $this->accountAPI;
     }
 
-    /**
-     * @return APIResource
-     */
     public function getAPIResource(): APIResource
     {
         return $this->getAccountAPI();
@@ -84,7 +74,6 @@ class Client implements ClientAwareInterface, APIClient
     /**
      * Shim to handle older instantiations of this class
      *
-     * @return APIResource
      * @deprecated Will remove in v3
      */
     public function getSecretsAPI(): APIResource
@@ -105,7 +94,6 @@ class Client implements ClientAwareInterface, APIClient
     /**
      * Returns pricing based on the prefix requested
      *
-     * @param $prefix
      * @return array<PrefixPrice>
      */
     public function getPrefixPricing($prefix): array
@@ -135,10 +123,8 @@ class Client implements ClientAwareInterface, APIClient
     /**
      * Get SMS Pricing based on Country
      *
-     * @param string $country
-     * @return SmsPrice
      * @throws ClientExceptionInterface
-     * @throws ExceptionRequest
+     * @throws ClientRequestException
      * @throws Exception\Exception
      * @throws Exception\Server
      */
@@ -154,10 +140,8 @@ class Client implements ClientAwareInterface, APIClient
     /**
      * Get Voice pricing based on Country
      *
-     * @param string $country
-     * @return VoicePrice
      * @throws ClientExceptionInterface
-     * @throws ExceptionRequest
+     * @throws ClientRequestException
      * @throws Exception\Exception
      * @throws Exception\Server
      */
@@ -171,10 +155,7 @@ class Client implements ClientAwareInterface, APIClient
     }
 
     /**
-     * @param $country
-     * @param $pricingType
-     * @return array
-     * @throws ExceptionRequest
+     * @throws ClientRequestException
      * @throws Exception\Exception
      * @throws Exception\Server
      * @throws ClientExceptionInterface
@@ -197,7 +178,6 @@ class Client implements ClientAwareInterface, APIClient
     /**
      * Gets the accounts current balance in Euros
      *
-     * @return Balance
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
      * @throws Exception\Server
@@ -215,7 +195,6 @@ class Client implements ClientAwareInterface, APIClient
     }
 
     /**
-     * @param $trx
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
      */
@@ -229,7 +208,6 @@ class Client implements ClientAwareInterface, APIClient
     /**
      * Return the account settings
      *
-     * @return Config
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
      * @throws Exception\Server
@@ -258,16 +236,15 @@ class Client implements ClientAwareInterface, APIClient
     /**
      * Update account config
      *
-     * @param $options
-     * @return Config
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
      * @throws Exception\Server
      */
-    public function updateConfig($options): Config
+    public function updateConfig(array $options): Config
     {
         // supported options are SMS Callback and DR Callback
         $params = [];
+
         if (isset($options['sms_callback_url'])) {
             $params['moCallBackUrl'] = $options['sms_callback_url'];
         }
@@ -297,8 +274,6 @@ class Client implements ClientAwareInterface, APIClient
     }
 
     /**
-     * @param string $apiKey
-     * @return SecretCollection
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
      * @throws InvalidResponseException
@@ -312,9 +287,6 @@ class Client implements ClientAwareInterface, APIClient
     }
 
     /**
-     * @param string $apiKey
-     * @param string $secretId
-     * @return Secret
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
      * @throws InvalidResponseException
@@ -330,14 +302,11 @@ class Client implements ClientAwareInterface, APIClient
     /**
      * Create a new account secret
      *
-     * @param string $apiKey
-     * @param string $newSecret
-     * @return Secret
      * @throws ClientExceptionInterface
-     * @throws ExceptionRequest
+     * @throws ClientRequestException
      * @throws Exception\Exception
      * @throws InvalidResponseException
-     * @throws Validation
+     * @throws ClientValidationException
      */
     public function createSecret(string $apiKey, string $newSecret): Secret
     {
@@ -346,13 +315,13 @@ class Client implements ClientAwareInterface, APIClient
 
         try {
             $response = $api->create(['secret' => $newSecret]);
-        } catch (ExceptionRequest $e) {
+        } catch (ClientRequestException $e) {
             // @deprecated Throw a Validation exception to preserve old behavior
             // This will change to a general Request exception in the future
             $rawResponse = json_decode(@$e->getResponse()->getBody()->getContents(), true);
 
             if (array_key_exists('invalid_parameters', $rawResponse)) {
-                throw new Validation($e->getMessage(), $e->getCode(), null, $rawResponse['invalid_parameters']);
+                throw new ClientValidationException($e->getMessage(), $e->getCode(), null, $rawResponse['invalid_parameters']);
             }
 
             throw $e;
@@ -362,8 +331,6 @@ class Client implements ClientAwareInterface, APIClient
     }
 
     /**
-     * @param string $apiKey
-     * @param string $secretId
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
      */

@@ -11,7 +11,7 @@ namespace Vonage\Account;
 
 use ArrayAccess;
 use JsonSerializable;
-use Vonage\Client\Exception\Exception;
+use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 use Vonage\Entity\JsonSerializableInterface;
 use Vonage\Entity\JsonUnserializableInterface;
@@ -29,17 +29,13 @@ class Config implements
     protected $data = [];
 
     /**
-     * Config constructor.
-     *
-     * @param string|null $sms_callback_url
-     * @param string|null $dr_callback_url
      * @param string|int|null $max_outbound_request
      * @param string|int|null $max_inbound_request
      * @param string|int|null $max_calls_per_second
      */
     public function __construct(
-        $sms_callback_url = null,
-        $dr_callback_url = null,
+        ?string $sms_callback_url = null,
+        ?string $dr_callback_url = null,
         $max_outbound_request = null,
         $max_inbound_request = null,
         $max_calls_per_second = null
@@ -65,24 +61,18 @@ class Config implements
         }
     }
 
-    /**
-     * @return mixed
-     */
-    public function getSmsCallbackUrl()
+    public function getSmsCallbackUrl(): ?string
     {
         return $this->data['sms_callback_url'];
     }
 
-    /**
-     * @return mixed
-     */
-    public function getDrCallbackUrl()
+    public function getDrCallbackUrl(): ?string
     {
         return $this->data['dr_callback_url'];
     }
 
     /**
-     * @return mixed
+     * @return string|int|null
      */
     public function getMaxOutboundRequest()
     {
@@ -90,7 +80,7 @@ class Config implements
     }
 
     /**
-     * @return mixed
+     * @return string|int|null
      */
     public function getMaxInboundRequest()
     {
@@ -98,17 +88,13 @@ class Config implements
     }
 
     /**
-     * @return mixed
+     * @return string|int|null
      */
     public function getMaxCallsPerSecond()
     {
         return $this->data['max_calls_per_second'];
     }
 
-    /**
-     * @param array $json
-     * @return void|null
-     */
     public function jsonUnserialize(array $json): void
     {
         trigger_error(
@@ -119,9 +105,6 @@ class Config implements
         $this->fromArray($json);
     }
 
-    /**
-     * @param array $data
-     */
     public function fromArray(array $data): void
     {
         $this->data = [
@@ -133,26 +116,16 @@ class Config implements
         ];
     }
 
-    /**
-     * @return array|mixed
-     */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->toArray();
     }
 
-    /**
-     * @return array
-     */
     public function toArray(): array
     {
         return $this->data;
     }
 
-    /**
-     * @param mixed $offset
-     * @return bool
-     */
     public function offsetExists($offset): bool
     {
         trigger_error(
@@ -163,10 +136,6 @@ class Config implements
         return isset($this->data[$offset]);
     }
 
-    /**
-     * @param mixed $offset
-     * @return mixed
-     */
     public function offsetGet($offset)
     {
         trigger_error(
@@ -178,27 +147,22 @@ class Config implements
     }
 
     /**
-     * @param mixed $offset
-     * @param mixed $value
-     * @throws Exception
+     * @throws ClientException
      */
     public function offsetSet($offset, $value): void
     {
-        throw new Exception('Balance is read only');
+        throw new ClientException('Balance is read only');
     }
 
     /**
-     * @param mixed $offset
-     * @throws Exception
+     * @throws ClientException
      */
     public function offsetUnset($offset): void
     {
-        throw new Exception('Balance is read only');
+        throw new ClientException('Balance is read only');
     }
 
     /**
-     * @param $key
-     * @return array|null
      * @noinspection MagicMethodsValidityInspection
      */
     public function __get($key): ?array

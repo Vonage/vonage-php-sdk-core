@@ -12,7 +12,7 @@ namespace Vonage\Account;
 use ArrayAccess;
 use JsonSerializable;
 use RuntimeException;
-use Vonage\Client\Exception\Exception;
+use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Entity\EntityInterface;
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 use Vonage\Entity\JsonResponseTrait;
@@ -42,41 +42,26 @@ abstract class Price implements
      */
     protected $data = [];
 
-    /**
-     * @return mixed
-     */
     public function getCountryCode()
     {
         return $this->data['country_code'];
     }
 
-    /**
-     * @return mixed
-     */
-    public function getCountryDisplayName()
+    public function getCountryDisplayName(): ?string
     {
         return $this->data['country_display_name'];
     }
 
-    /**
-     * @return mixed
-     */
-    public function getCountryName()
+    public function getCountryName(): ?string
     {
         return $this->data['country_name'];
     }
 
-    /**
-     * @return mixed
-     */
     public function getDialingPrefix()
     {
         return $this->data['dialing_prefix'];
     }
 
-    /**
-     * @return mixed
-     */
     public function getDefaultPrice()
     {
         if (isset($this->data['default_price'])) {
@@ -92,26 +77,16 @@ abstract class Price implements
         return $this->data['mt'];
     }
 
-    /**
-     * @return mixed
-     */
-    public function getCurrency()
+    public function getCurrency(): ?string
     {
         return $this->data['currency'];
     }
 
-    /**
-     * @return mixed
-     */
     public function getNetworks()
     {
         return $this->data['networks'];
     }
 
-    /**
-     * @param $networkCode
-     * @return mixed
-     */
     public function getPriceForNetwork($networkCode)
     {
         $networks = $this->getNetworks();
@@ -122,10 +97,6 @@ abstract class Price implements
         return $this->getDefaultPrice();
     }
 
-    /**
-     * @param array $json
-     * @return void|null
-     */
     public function jsonUnserialize(array $json): void
     {
         trigger_error(
@@ -136,9 +107,6 @@ abstract class Price implements
         $this->fromArray($json);
     }
 
-    /**
-     * @param array $data
-     */
     public function fromArray(array $data): void
     {
         // Convert CamelCase to snake_case as that's how we use array access in every other object
@@ -189,26 +157,16 @@ abstract class Price implements
         $this->data = $storage;
     }
 
-    /**
-     * @return array|mixed
-     */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->toArray();
     }
 
-    /**
-     * @return array
-     */
     public function toArray(): array
     {
         return $this->data;
     }
 
-    /**
-     * @param mixed $offset
-     * @return bool
-     */
     public function offsetExists($offset): bool
     {
         trigger_error(
@@ -219,10 +177,6 @@ abstract class Price implements
         return isset($this->data[$offset]);
     }
 
-    /**
-     * @param mixed $offset
-     * @return mixed
-     */
     public function offsetGet($offset)
     {
         trigger_error(
@@ -234,27 +188,22 @@ abstract class Price implements
     }
 
     /**
-     * @param mixed $offset
-     * @param mixed $value
-     * @throws Exception
+     * @throws ClientException
      */
     public function offsetSet($offset, $value): void
     {
-        throw new Exception('Price is read only');
+        throw new ClientException('Price is read only');
     }
 
     /**
-     * @param mixed $offset
-     * @throws Exception
+     * @throws ClientException
      */
     public function offsetUnset($offset): void
     {
-        throw new Exception('Price is read only');
+        throw new ClientException('Price is read only');
     }
 
     /**
-     * @param $key
-     * @return array|null
      * @noinspection MagicMethodsValidityInspection
      */
     public function __get($key): ?array

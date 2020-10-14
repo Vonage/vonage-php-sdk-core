@@ -9,18 +9,17 @@ declare(strict_types=1);
 
 namespace Vonage\Account;
 
-use Vonage\Client\Exception\Exception;
+use Vonage\Client\Exception\Exception as ClientException;
 
 class PrefixPrice extends Price
 {
     protected $priceMethod = 'getPrefixPrice';
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @throws ClientException
      */
-    public function getCurrency()
+    public function getCurrency(): ?string
     {
-        throw new Exception('Currency is unavailable from this endpoint');
+        throw new ClientException('Currency is unavailable from this endpoint');
     }
 }

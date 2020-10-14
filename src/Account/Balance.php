@@ -11,7 +11,7 @@ namespace Vonage\Account;
 
 use ArrayAccess;
 use JsonSerializable;
-use Vonage\Client\Exception\Exception;
+use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 use Vonage\Entity\JsonSerializableInterface;
 use Vonage\Entity\JsonUnserializableInterface;
@@ -33,8 +33,6 @@ class Balance implements
     protected $data;
 
     /**
-     * @param $balance
-     * @param $autoReload
      * @todo Have these take null values, since we offer an unserialize option to populate
      */
     public function __construct($balance, $autoReload)
@@ -43,26 +41,16 @@ class Balance implements
         $this->data['auto_reload'] = $autoReload;
     }
 
-    /**
-     * @return mixed
-     */
     public function getBalance()
     {
         return $this->data['balance'];
     }
 
-    /**
-     * @return mixed
-     */
     public function getAutoReload()
     {
         return $this->data['auto_reload'];
     }
 
-    /**
-     * @param array $json
-     * @return void|null
-     */
     public function jsonUnserialize(array $json): void
     {
         trigger_error(
@@ -73,18 +61,11 @@ class Balance implements
         $this->fromArray($json);
     }
 
-    /**
-     * @return array|mixed
-     */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->data;
     }
 
-    /**
-     * @param mixed $offset
-     * @return bool
-     */
     public function offsetExists($offset): bool
     {
         trigger_error(
@@ -95,10 +76,6 @@ class Balance implements
         return isset($this->data[$offset]);
     }
 
-    /**
-     * @param mixed $offset
-     * @return mixed
-     */
     public function offsetGet($offset)
     {
         trigger_error(
@@ -110,27 +87,21 @@ class Balance implements
     }
 
     /**
-     * @param mixed $offset
-     * @param mixed $value
-     * @throws Exception
+     * @throws ClientException
      */
     public function offsetSet($offset, $value): void
     {
-        throw new Exception('Balance is read only');
+        throw new ClientException('Balance is read only');
     }
 
     /**
-     * @param mixed $offset
-     * @throws Exception
+     * @throws ClientException
      */
     public function offsetUnset($offset): void
     {
-        throw new Exception('Balance is read only');
+        throw new ClientException('Balance is read only');
     }
 
-    /**
-     * @param array $data
-     */
     public function fromArray(array $data): void
     {
         $this->data = [
@@ -139,17 +110,12 @@ class Balance implements
         ];
     }
 
-    /**
-     * @return array
-     */
     public function toArray(): array
     {
         return $this->data;
     }
 
     /**
-     * @param $key
-     * @return array|null
      * @noinspection MagicMethodsValidityInspection
      */
     public function __get($key): ?array

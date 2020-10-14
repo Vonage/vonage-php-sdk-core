@@ -14,10 +14,6 @@ use Vonage\Client\APIResource;
 
 class ClientFactory
 {
-    /**
-     * @param ContainerInterface $container
-     * @return Client
-     */
     public function __invoke(ContainerInterface $container): Client
     {
         /** @var APIResource $accountApi */
@@ -25,7 +21,8 @@ class ClientFactory
         $accountApi
             ->setBaseUrl($accountApi->getClient()->getRestUrl())
             ->setIsHAL(false)
-            ->setBaseUri('/account');
+            ->setBaseUri('/account')
+        ;
 
         $secretsApi = $container->make(APIResource::class);
         $secretsApi->setBaseUri('/accounts');

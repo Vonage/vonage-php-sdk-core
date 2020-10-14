@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace Vonage\Account;
 
 use ArrayAccess;
-use Vonage\Client\Exception\Exception;
+use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\InvalidResponseException;
 
 class SecretCollection implements ArrayAccess
@@ -18,13 +18,9 @@ class SecretCollection implements ArrayAccess
     protected $data;
 
     /**
-     * SecretCollection constructor.
-     *
-     * @param $secrets
-     * @param $links
      * @throws InvalidResponseException
      */
-    public function __construct($secrets, $links)
+    public function __construct(array $secrets, array $links)
     {
         $this->data = [
             'secrets' => $secrets,
@@ -38,25 +34,17 @@ class SecretCollection implements ArrayAccess
         }
     }
 
-    /**
-     * @return mixed
-     */
-    public function getSecrets()
+    public function getSecrets(): array
     {
         return $this->data['secrets'];
     }
 
-    /**
-     * @return mixed
-     */
-    public function getLinks()
+    public function getLinks(): array
     {
         return $this->data['_links'];
     }
 
     /**
-     * @param $data
-     * @return SecretCollection
      * @throws InvalidResponseException
      * @deprecated Instantiate the object directly
      */
@@ -76,10 +64,6 @@ class SecretCollection implements ArrayAccess
         return new self($secrets, $data['_links']);
     }
 
-    /**
-     * @param mixed $offset
-     * @return bool
-     */
     public function offsetExists($offset): bool
     {
         trigger_error(
@@ -90,10 +74,6 @@ class SecretCollection implements ArrayAccess
         return isset($this->data[$offset]);
     }
 
-    /**
-     * @param mixed $offset
-     * @return mixed
-     */
     public function offsetGet($offset)
     {
         trigger_error(
@@ -105,21 +85,18 @@ class SecretCollection implements ArrayAccess
     }
 
     /**
-     * @param mixed $offset
-     * @param mixed $value
-     * @throws Exception
+     * @throws ClientException
      */
     public function offsetSet($offset, $value): void
     {
-        throw new Exception('SecretCollection::offsetSet is not implemented');
+        throw new ClientException('SecretCollection::offsetSet is not implemented');
     }
 
     /**
-     * @param mixed $offset
-     * @throws Exception
+     * @throws ClientException
      */
     public function offsetUnset($offset): void
     {
-        throw new Exception('SecretCollection::offsetUnset is not implemented');
+        throw new ClientException('SecretCollection::offsetUnset is not implemented');
     }
 }

@@ -11,5 +11,8 @@ namespace Vonage\Account;
 
 class SmsPrice extends Price
 {
+    /**
+     * @var string
+     */
     protected $priceMethod = 'getOutboundSmsPrice';
 }

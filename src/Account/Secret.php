@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace Vonage\Account;
 
 use ArrayAccess;
-use Vonage\Client\Exception\Exception;
+use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\InvalidResponseException;
 
 class Secret implements ArrayAccess
@@ -18,64 +18,47 @@ class Secret implements ArrayAccess
     protected $data;
 
     /**
-     * Secret constructor.
-     *
-     * @param $data
      * @throws InvalidResponseException
      */
-    public function __construct($data)
+    public function __construct(array $data)
     {
         if (!isset($data['id'])) {
-            throw new InvalidResponseException("Missing key: 'id");
+            throw new InvalidResponseException("Missing key: 'id'");
         }
+
         if (!isset($data['created_at'])) {
-            throw new InvalidResponseException("Missing key: 'created_at");
+            throw new InvalidResponseException("Missing key: 'created_at'");
         }
 
         $this->data = $data;
     }
 
-    /**
-     * @return mixed
-     */
     public function getId()
     {
         return $this->data['id'];
     }
 
-    /**
-     * @return mixed
-     */
     public function getCreatedAt()
     {
         return $this->data['created_at'];
     }
 
-    /**
-     * @return mixed
-     */
     public function getLinks()
     {
         return $this->data['_links'];
     }
 
     /**
-     * @param $data
-     * @return Secret
      * @throws InvalidResponseException
      * @deprecated Instantiate the object directly
      */
-    public static function fromApi($data): Secret
+    public static function fromApi(array $data): self
     {
         trigger_error('Please instantiate a Vonage\Account\Secret object instead of using fromApi', E_USER_DEPRECATED);
 
         return new self($data);
     }
 
-    /**
-     * @param mixed $offset
-     * @return bool
-     */
     public function offsetExists($offset): bool
     {
         trigger_error(
@@ -86,10 +69,6 @@ class Secret implements ArrayAccess
         return isset($this->data[$offset]);
     }
 
-    /**
-     * @param mixed $offset
-     * @return mixed
-     */
     public function offsetGet($offset)
     {
         trigger_error(
@@ -101,27 +80,22 @@ class Secret implements ArrayAccess
     }
 
     /**
-     * @param mixed $offset
-     * @param mixed $value
-     * @throws Exception
+     * @throws ClientException
      */
     public function offsetSet($offset, $value): void
     {
-        throw new Exception('Secret::offsetSet is not implemented');
+        throw new ClientException('Secret::offsetSet is not implemented');
     }
 
     /**
-     * @param mixed $offset
-     * @throws Exception
+     * @throws ClientException
      */
     public function offsetUnset($offset): void
     {
-        throw new Exception('Secret::offsetUnset is not implemented');
+        throw new ClientException('Secret::offsetUnset is not implemented');
     }
 
     /**
-     * @param $key
-     * @return array|null
      * @noinspection MagicMethodsValidityInspection
      */
     public function __get($key): ?array
