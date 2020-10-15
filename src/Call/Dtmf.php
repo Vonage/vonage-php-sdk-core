@@ -28,19 +28,21 @@ class Dtmf implements JsonSerializableInterface, ClientAwareInterface, ArrayAcce
 {
     use ClientAwareTrait;
 
+    /**
+     * @var string|null
+     */
     protected $id;
 
+    /**
+     * @var array
+     */
     protected $data = [];
 
-    protected $params = [
-        'digits'
-    ];
-
     /**
-     * Dtmf constructor.
-     *
-     * @param string|null $id
+     * @var string[]
      */
+    protected $params = ['digits'];
+
     public function __construct(?string $id = null)
     {
         trigger_error(
@@ -52,14 +54,13 @@ class Dtmf implements JsonSerializableInterface, ClientAwareInterface, ArrayAcce
     }
 
     /**
-     * @param Dtmf|null $entity
      * @return $this|Event
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
      * @throws Exception\Request
      * @throws Exception\Server
      */
-    public function __invoke(self $entity = null)
+    public function __invoke(?self $entity = null)
     {
         if (is_null($entity)) {
             return $this;
@@ -68,31 +69,23 @@ class Dtmf implements JsonSerializableInterface, ClientAwareInterface, ArrayAcce
         return $this->put($entity);
     }
 
-    /**
-     * @return string|null
-     */
     public function getId(): ?string
     {
         return $this->id;
     }
 
-    /**
-     * @param $digits
-     */
     public function setDigits($digits): void
     {
         $this->data['digits'] = (string)$digits;
     }
 
     /**
-     * @param null $dtmf
-     * @return Event
      * @throws Exception\Exception
      * @throws Exception\Request
      * @throws Exception\Server
      * @throws ClientExceptionInterface
      */
-    public function put($dtmf = null): Event
+    public function put(?self $dtmf = null): Event
     {
         if (!$dtmf) {
             $dtmf = $this;
@@ -112,8 +105,6 @@ class Dtmf implements JsonSerializableInterface, ClientAwareInterface, ArrayAcce
     }
 
     /**
-     * @param ResponseInterface $response
-     * @return Event
      * @throws Exception\Exception
      * @throws Exception\Request
      * @throws Exception\Server
@@ -134,7 +125,6 @@ class Dtmf implements JsonSerializableInterface, ClientAwareInterface, ArrayAcce
     }
 
     /**
-     * @param ResponseInterface $response
      * @return Exception\Request|Exception\Server
      * @throws Exception\Exception
      */
@@ -155,36 +145,21 @@ class Dtmf implements JsonSerializableInterface, ClientAwareInterface, ArrayAcce
         return $e;
     }
 
-    /**
-     * @return array|mixed
-     */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->data;
     }
 
-    /**
-     * @param mixed $offset
-     * @return bool
-     */
     public function offsetExists($offset): bool
     {
         return isset($this->data[$offset]);
     }
 
-    /**
-     * @param mixed $offset
-     * @return mixed
-     */
     public function offsetGet($offset)
     {
         return $this->data[$offset];
     }
 
-    /**
-     * @param mixed $offset
-     * @param mixed $value
-     */
     public function offsetSet($offset, $value): void
     {
         if (!in_array($offset, $this->params, false)) {
@@ -194,9 +169,6 @@ class Dtmf implements JsonSerializableInterface, ClientAwareInterface, ArrayAcce
         $this->data[$offset] = $value;
     }
 
-    /**
-     * @param mixed $offset
-     */
     public function offsetUnset($offset): void
     {
         if (!in_array($offset, $this->params, false)) {

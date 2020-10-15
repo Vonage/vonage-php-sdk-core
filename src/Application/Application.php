@@ -25,59 +25,62 @@ class Application implements EntityInterface, JsonSerializable, JsonUnserializab
     use Psr7Trait;
     use JsonResponseTrait;
 
+    /**
+     * @var VoiceConfig
+     */
     protected $voiceConfig;
+
+
+    /**
+     * @var MessagesConfig
+     */
     protected $messagesConfig;
+
+    /**
+     * @var RtcConfig
+     */
     protected $rtcConfig;
+
+    /**
+     * @var VbcConfig
+     */
     protected $vbcConfig;
 
     protected $name;
 
+    /**
+     * @var array
+     */
     protected $keys = [];
 
+    /**
+     * @var string|null
+     */
     protected $id;
 
-    /**
-     * Application constructor.
-     *
-     * @param null $id
-     */
-    public function __construct($id = null)
+    public function __construct(?string $id = null)
     {
         $this->id = $id;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    /**
-     * @param VoiceConfig $config
-     * @return $this
-     */
     public function setVoiceConfig(VoiceConfig $config): self
     {
         $this->voiceConfig = $config;
+
         return $this;
     }
 
-    /**
-     * @param MessagesConfig $config
-     * @return $this
-     */
     public function setMessagesConfig(MessagesConfig $config): self
     {
         $this->messagesConfig = $config;
         return $this;
     }
 
-    /**
-     * @param RtcConfig $config
-     * @return $this
-     */
     public function setRtcConfig(RtcConfig $config): self
     {
         $this->rtcConfig = $config;
@@ -93,10 +96,9 @@ class Application implements EntityInterface, JsonSerializable, JsonUnserializab
     }
 
     /**
-     * @return mixed
      * @throws Exception
      */
-    public function getVoiceConfig()
+    public function getVoiceConfig(): VoiceConfig
     {
         if (!isset($this->voiceConfig)) {
             $this->setVoiceConfig(new VoiceConfig());
@@ -117,10 +119,9 @@ class Application implements EntityInterface, JsonSerializable, JsonUnserializab
     }
 
     /**
-     * @return mixed
      * @throws Exception
      */
-    public function getMessagesConfig()
+    public function getMessagesConfig(): MessagesConfig
     {
         if (!isset($this->messagesConfig)) {
             $this->setMessagesConfig(new MessagesConfig());
@@ -141,10 +142,9 @@ class Application implements EntityInterface, JsonSerializable, JsonUnserializab
     }
 
     /**
-     * @return mixed
      * @throws Exception
      */
-    public function getRtcConfig()
+    public function getRtcConfig(): RtcConfig
     {
         if (!isset($this->rtcConfig)) {
             $this->setRtcConfig(new RtcConfig());
@@ -164,9 +164,6 @@ class Application implements EntityInterface, JsonSerializable, JsonUnserializab
         return $this->rtcConfig;
     }
 
-    /**
-     * @return VbcConfig
-     */
     public function getVbcConfig(): VbcConfig
     {
         if (!isset($this->vbcConfig)) {
@@ -176,55 +173,35 @@ class Application implements EntityInterface, JsonSerializable, JsonUnserializab
         return $this->vbcConfig;
     }
 
-    /**
-     * @param $key
-     * @return $this
-     */
-    public function setPublicKey($key): self
+    public function setPublicKey(?string $key): self
     {
         $this->keys['public_key'] = $key;
 
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getPublicKey()
+    public function getPublicKey(): ?string
     {
         return $this->keys['public_key'] ?? null;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getPrivateKey()
+    public function getPrivateKey(): ?string
     {
         return $this->keys['private_key'] ?? null;
     }
 
-    /**
-     * @param $name
-     * @return $this
-     */
-    public function setName($name): self
+    public function setName(string $name): self
     {
         $this->name = $name;
 
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    /**
-     * @param array $json
-     */
     public function jsonUnserialize(array $json): void
     {
         trigger_error(
@@ -235,25 +212,16 @@ class Application implements EntityInterface, JsonSerializable, JsonUnserializab
         $this->fromArray($json);
     }
 
-    /**
-     * @return array
-     */
     public function jsonSerialize(): array
     {
         return $this->toArray();
     }
 
-    /**
-     * @return string
-     */
     public function __toString(): string
     {
         return (string)$this->getId();
     }
 
-    /**
-     * @param array $data
-     */
     public function fromArray(array $data): void
     {
         $this->name = $data['name'];
@@ -293,9 +261,6 @@ class Application implements EntityInterface, JsonSerializable, JsonUnserializab
         }
     }
 
-    /**
-     * @return array
-     */
     public function toArray(): array
     {
         // Build up capabilities that are set

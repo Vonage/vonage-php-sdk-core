@@ -39,7 +39,7 @@ class Talk implements JsonSerializableInterface, ClientAwareInterface, ArrayAcce
     protected $data = [];
 
     /**
-     * @var string[]
+     * @var array
      */
     protected $params = [
         'text',
@@ -47,11 +47,6 @@ class Talk implements JsonSerializableInterface, ClientAwareInterface, ArrayAcce
         'loop'
     ];
 
-    /**
-     * Talk constructor.
-     *
-     * @param string|null $id
-     */
     public function __construct(?string $id = null)
     {
         trigger_error(
@@ -64,14 +59,13 @@ class Talk implements JsonSerializableInterface, ClientAwareInterface, ArrayAcce
     }
 
     /**
-     * @param Talk|null $entity
      * @return $this|Event
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
      * @throws Exception\Request
      * @throws Exception\Server
      */
-    public function __invoke(self $entity = null)
+    public function __invoke(?self $entity = null)
     {
         if (is_null($entity)) {
             return $this;
@@ -80,32 +74,23 @@ class Talk implements JsonSerializableInterface, ClientAwareInterface, ArrayAcce
         return $this->put($entity);
     }
 
-    /**
-     * @return string|null
-     */
     public function getId(): ?string
     {
         return $this->id;
     }
 
-    /**
-     * @param $text
-     */
     public function setText($text): void
     {
         $this->data['text'] = (string)$text;
     }
 
-    /**
-     * @param $name
-     */
     public function setVoiceName($name): void
     {
         $this->data['voice_name'] = (string)$name;
     }
 
     /**
-     * @param $times
+     * @param string|int $times
      */
     public function setLoop($times): void
     {
@@ -113,8 +98,6 @@ class Talk implements JsonSerializableInterface, ClientAwareInterface, ArrayAcce
     }
 
     /**
-     * @param null $talk
-     * @return Event
      * @throws Exception\Exception
      * @throws Exception\Request
      * @throws Exception\Server
@@ -140,7 +123,6 @@ class Talk implements JsonSerializableInterface, ClientAwareInterface, ArrayAcce
     }
 
     /**
-     * @return Event
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
      * @throws Exception\Request
@@ -159,8 +141,6 @@ class Talk implements JsonSerializableInterface, ClientAwareInterface, ArrayAcce
     }
 
     /**
-     * @param ResponseInterface $response
-     * @return Event
      * @throws Exception\Exception
      * @throws Exception\Request
      * @throws Exception\Server
@@ -181,7 +161,6 @@ class Talk implements JsonSerializableInterface, ClientAwareInterface, ArrayAcce
     }
 
     /**
-     * @param ResponseInterface $response
      * @return Exception\Request|Exception\Server
      * @throws Exception\Exception
      */
@@ -202,51 +181,33 @@ class Talk implements JsonSerializableInterface, ClientAwareInterface, ArrayAcce
         return $e;
     }
 
-    /**
-     * @return array|mixed
-     */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->data;
     }
 
-    /**
-     * @param mixed $offset
-     * @return bool
-     */
     public function offsetExists($offset): bool
     {
         return isset($this->data[$offset]);
     }
 
-    /**
-     * @param mixed $offset
-     * @return mixed
-     */
     public function offsetGet($offset)
     {
         return $this->data[$offset];
     }
 
-    /**
-     * @param mixed $offset
-     * @param mixed $value
-     */
     public function offsetSet($offset, $value): void
     {
-        if (!in_array($offset, $this->params)) {
+        if (!in_array($offset, $this->params, true)) {
             throw new RuntimeException('invalid parameter: ' . $offset);
         }
 
         $this->data[$offset] = $value;
     }
 
-    /**
-     * @param mixed $offset
-     */
     public function offsetUnset($offset): void
     {
-        if (!in_array($offset, $this->params)) {
+        if (!in_array($offset, $this->params, true)) {
             throw new RuntimeException('invalid parameter: ' . $offset);
         }
 

@@ -13,5 +13,5 @@ use Vonage\Entity\EntityInterface;
 
 interface ApplicationInterface extends EntityInterface
 {
-    public function getId();
+    public function getId(): ?string;
 }

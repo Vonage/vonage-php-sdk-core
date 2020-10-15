@@ -13,14 +13,11 @@ class RtcConfig
 {
     public const EVENT = 'event_url';
 
+    /**
+     * @var array
+     */
     protected $webhooks = [];
 
-    /**
-     * @param $type
-     * @param $url
-     * @param null $method
-     * @return $this
-     */
     public function setWebhook($type, $url, $method = null): self
     {
         if (!$url instanceof Webhook) {
@@ -37,10 +34,6 @@ class RtcConfig
         return $this;
     }
 
-    /**
-     * @param $type
-     * @return mixed
-     */
     public function getWebhook($type)
     {
         return $this->webhooks[$type] ?? null;

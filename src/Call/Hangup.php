@@ -13,9 +13,6 @@ use JsonSerializable;
 
 class Hangup implements JsonSerializable
 {
-    /**
-     * Hangup constructor.
-     */
     public function __construct()
     {
         trigger_error(
@@ -24,13 +21,8 @@ class Hangup implements JsonSerializable
         );
     }
 
-    /**
-     * @return string[]
-     */
     public function jsonSerialize(): array
     {
-        return [
-            'action' => 'hangup'
-        ];
+        return ['action' => 'hangup'];
     }
 }

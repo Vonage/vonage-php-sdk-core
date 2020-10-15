@@ -53,26 +53,36 @@ class Call implements EntityInterface, JsonSerializable, JsonUnserializableInter
 
     public const TIMEOUT_MACHINE = 'machine';
 
+    /**
+     * @var string|null
+     */
     protected $id;
 
+    /**
+     * @var Endpoint|string|null
+     */
     protected $to;
 
+    /**
+     * @var Endpoint|string|null
+     */
     protected $from;
 
     /**
-     * @var Webhook[]
+     * @var array
      */
     protected $webhooks = [];
 
+    /**
+     * @var array
+     */
     protected $data = [];
 
+    /**
+     * @var array
+     */
     protected $subresources = [];
 
-    /**
-     * Call constructor.
-     *
-     * @param string|null $id
-     */
     public function __construct(?string $id = null)
     {
         trigger_error(
@@ -84,7 +94,6 @@ class Call implements EntityInterface, JsonSerializable, JsonUnserializableInter
     }
 
     /**
-     * @return $this
      * @throws Exception\Exception
      * @throws Exception\Request
      * @throws Exception\Server
@@ -110,7 +119,6 @@ class Call implements EntityInterface, JsonSerializable, JsonUnserializableInter
     }
 
     /**
-     * @param ResponseInterface $response
      * @return Exception\Exception|Exception\Request|Exception\Server
      */
     protected function getException(ResponseInterface $response)
@@ -130,8 +138,6 @@ class Call implements EntityInterface, JsonSerializable, JsonUnserializableInter
     }
 
     /**
-     * @param $payload
-     * @return $this
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
      * @throws Exception\Request
@@ -157,17 +163,13 @@ class Call implements EntityInterface, JsonSerializable, JsonUnserializableInter
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
     /**
-     * @param $endpoint
-     * @return $this
+     * @param Endpoint|string|null $endpoint
      */
     public function setTo($endpoint): self
     {
@@ -180,7 +182,6 @@ class Call implements EntityInterface, JsonSerializable, JsonUnserializableInter
     }
 
     /**
-     * @return Endpoint
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
      * @throws Exception\Request
@@ -196,7 +197,7 @@ class Call implements EntityInterface, JsonSerializable, JsonUnserializableInter
     }
 
     /**
-     * @param $endpoint
+     * @param Endpoint|string|null $endpoint
      * @return $this
      */
     public function setFrom($endpoint): self
@@ -211,7 +212,6 @@ class Call implements EntityInterface, JsonSerializable, JsonUnserializableInter
     }
 
     /**
-     * @return Endpoint
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
      * @throws Exception\Request
@@ -226,12 +226,6 @@ class Call implements EntityInterface, JsonSerializable, JsonUnserializableInter
         return $this->from;
     }
 
-    /**
-     * @param $type
-     * @param string|null $url
-     * @param string|null $method
-     * @return $this|null
-     */
     public function setWebhook($type, ?string $url = null, string $method = null): ?self
     {
         if ($type instanceof Webhook) {
@@ -251,35 +245,29 @@ class Call implements EntityInterface, JsonSerializable, JsonUnserializableInter
     }
 
     /**
-     * @param $type
-     * @param $length
+     * @param string|int $length
      */
-    public function setTimer($type, $length): void
+    public function setTimer(string $type, $length): void
     {
         $this->data[$type . '_timer'] = $length;
     }
 
     /**
-     * @param $type
-     * @param $length
+     * @param string|int $length
      */
-    public function setTimeout($type, $length): void
+    public function setTimeout(string $type, $length): void
     {
         $this->data[$type . '_timeout'] = $length;
     }
 
-    /**
-     * @param $ncco
-     * @return $this
-     */
-    public function setNcco($ncco): Call
+    public function setNcco($ncco): self
     {
         $this->data['ncco'] = $ncco;
+
         return $this;
     }
 
     /**
-     * @return mixed|null
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
      * @throws Exception\Request
@@ -295,7 +283,6 @@ class Call implements EntityInterface, JsonSerializable, JsonUnserializableInter
     }
 
     /**
-     * @return mixed|null
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
      * @throws Exception\Request
@@ -311,7 +298,6 @@ class Call implements EntityInterface, JsonSerializable, JsonUnserializableInter
     }
 
     /**
-     * @return Conversation|null
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
      * @throws Exception\Request
@@ -331,7 +317,6 @@ class Call implements EntityInterface, JsonSerializable, JsonUnserializableInter
      *
      * Will attempt to load the data if it's not already.
      *
-     * @return bool
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
      * @throws Exception\Request
@@ -357,7 +342,7 @@ class Call implements EntityInterface, JsonSerializable, JsonUnserializableInter
      * @return mixed
      * @noinspection MagicMethodsValidityInspection
      */
-    public function __get($name)
+    public function __get(string $name)
     {
         switch ($name) {
             case 'stream':
@@ -387,10 +372,6 @@ class Call implements EntityInterface, JsonSerializable, JsonUnserializableInter
         }
     }
 
-    /**
-     * @param $type
-     * @return mixed
-     */
     protected function lazySubresource($type)
     {
         if (!isset($this->subresources[$type])) {
@@ -403,9 +384,6 @@ class Call implements EntityInterface, JsonSerializable, JsonUnserializableInter
         return $this->subresources[$type];
     }
 
-    /**
-     * @return array|mixed
-     */
     public function jsonSerialize(): array
     {
         $dataA = $this->data;
@@ -426,9 +404,6 @@ class Call implements EntityInterface, JsonSerializable, JsonUnserializableInter
         return array_merge($dataA, $dataB);
     }
 
-    /**
-     * @param array $json
-     */
     public function jsonUnserialize(array $json): void
     {
         $this->data = $json;

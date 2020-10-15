@@ -19,6 +19,9 @@ use Vonage\Entity\Filter\FilterInterface;
  */
 class Filter implements FilterInterface
 {
+    /**
+     * @var array
+     */
     protected $query = [];
 
     /**
@@ -32,34 +35,21 @@ class Filter implements FilterInterface
         );
     }
 
-    /**
-     * @return array
-     */
     public function getQuery(): array
     {
         return $this->query;
     }
 
-    /**
-     * @return $this
-     */
     public function sortAscending(): self
     {
         return $this->setOrder('asc');
     }
 
-    /**
-     * @return $this
-     */
     public function sortDescending(): self
     {
         return $this->setOrder('desc');
     }
 
-    /**
-     * @param $status
-     * @return $this
-     */
     public function setStatus($status): self
     {
         $this->query['status'] = (string)$status;
@@ -67,10 +57,6 @@ class Filter implements FilterInterface
         return $this;
     }
 
-    /**
-     * @param DateTime $start
-     * @return $this
-     */
     public function setStart(DateTime $start): self
     {
         $start->setTimezone(new DateTimeZone("UTC"));
@@ -79,10 +65,6 @@ class Filter implements FilterInterface
         return $this;
     }
 
-    /**
-     * @param DateTime $end
-     * @return $this
-     */
     public function setEnd(DateTime $end): self
     {
         $end->setTimezone(new DateTimeZone("UTC"));
@@ -92,8 +74,7 @@ class Filter implements FilterInterface
     }
 
     /**
-     * @param $size
-     * @return $this
+     * @param string|int $size
      */
     public function setSize($size): self
     {
@@ -103,8 +84,7 @@ class Filter implements FilterInterface
     }
 
     /**
-     * @param $index
-     * @return $this
+     * @param string|int $index
      */
     public function setIndex($index): self
     {
@@ -113,21 +93,13 @@ class Filter implements FilterInterface
         return $this;
     }
 
-    /**
-     * @param $order
-     * @return $this
-     */
-    public function setOrder($order): self
+    public function setOrder(string $order): self
     {
-        $this->query['order'] = (string)$order;
+        $this->query['order'] = $order;
 
         return $this;
     }
 
-    /**
-     * @param $conversation
-     * @return $this
-     */
     public function setConversation($conversation): self
     {
         if ($conversation instanceof Conversation) {

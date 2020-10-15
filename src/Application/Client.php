@@ -36,12 +36,6 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
      */
     protected $hydrator;
 
-    /**
-     * Client constructor.
-     *
-     * @param APIResource|null $api
-     * @param HydratorInterface|null $hydrator
-     */
     public function __construct(APIResource $api = null, HydratorInterface $hydrator = null)
     {
         $this->api = $api;
@@ -57,8 +51,6 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
     /**
      * Shim to handle older instantiations of this class
      * Will change in v3 to just return the required API object
-     *
-     * @return APIResource
      */
     public function getApiResource(): APIResource
     {
@@ -74,7 +66,6 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
     }
 
     /**
-     * @return string
      * @deprecated Use an IterableAPICollection object instead
      */
     public static function getCollectionName(): string
@@ -83,7 +74,6 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
     }
 
     /**
-     * @return string
      * @deprecated Use an IterableAPICollection object instead
      */
     public static function getCollectionPath(): string
@@ -94,8 +84,6 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
     /**
      * Returns the specified application
      *
-     * @param $application
-     * @return Application
      * @throws ClientExceptionInterface
      * @throws Exception
      */
@@ -117,9 +105,6 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
         return $application;
     }
 
-    /**
-     * @return IterableAPICollection
-     */
     public function getAll(): IterableAPICollection
     {
         $response = $this->api->search();
@@ -135,8 +120,6 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
     /**
      * Creates and saves a new Application
      *
-     * @param $application
-     * @return Application
      * @throws ClientExceptionInterface
      * @throws Exception
      * @throws \Exception
@@ -163,8 +146,6 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
     }
 
     /**
-     * @param $application
-     * @return Application
      * @throws ClientExceptionInterface
      * @throws Exception
      * @deprecated Use `create()` instead
@@ -182,14 +163,12 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
     /**
      * Saves an existing application
      *
-     * @param $application
-     * @param null $id
      * @return Application
      * @throws ClientExceptionInterface
      * @throws Exception
      * @throws \Exception
      */
-    public function update($application, $id = null): Application
+    public function update($application, ?string $id = null): Application
     {
         if (!($application instanceof Application)) {
             trigger_error(
@@ -218,8 +197,6 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
     }
 
     /**
-     * @param $application
-     * @param string|null $id
      * @return Application
      * @throws ClientExceptionInterface
      * @throws Exception
@@ -238,8 +215,6 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
     /**
      * Deletes an application from the Vonage account
      *
-     * @param $application
-     * @return bool
      * @throws ClientExceptionInterface
      * @throws Exception
      */
@@ -262,8 +237,6 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
     }
 
     /**
-     * @param array $array
-     * @return Application
      * @throws \Exception
      * @deprecated Use Vonage\Application\Hydrator directly instead
      */

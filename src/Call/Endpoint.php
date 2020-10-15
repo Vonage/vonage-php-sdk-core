@@ -24,20 +24,22 @@ class Endpoint implements JsonSerializable
 {
     public const PHONE = 'phone';
 
+    /**
+     * @var string|null
+     */
     protected $id;
 
+    /**
+     * @var string
+     */
     protected $type;
 
+    /**
+     * @var array
+     */
     protected $additional;
 
-    /**
-     * Endpoint constructor.
-     *
-     * @param $id
-     * @param string $type
-     * @param array $additional
-     */
-    public function __construct($id, $type = self::PHONE, $additional = [])
+    public function __construct(?string $id, string $type = self::PHONE, array $additional = [])
     {
         trigger_error(
             'Vonage\Call\Endpoint is deprecated, please use Vonage\Voice\Endpoint\Phone instead',
@@ -49,27 +51,16 @@ class Endpoint implements JsonSerializable
         $this->additional = $additional;
     }
 
-    /**
-     * @return string
-     */
     public function getType(): string
     {
         return $this->type;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    /**
-     * @param $property
-     * @param $value
-     * @return $this
-     */
     public function set($property, $value): self
     {
         $this->additional[$property] = $value;
@@ -77,19 +68,12 @@ class Endpoint implements JsonSerializable
         return $this;
     }
 
-    /**
-     * @param $property
-     * @return mixed
-     */
     public function get($property)
     {
         return $this->additional[$property] ?? null;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getNumber()
+    public function getNumber(): ?string
     {
         if (!self::PHONE === $this->type) {
             throw new RuntimeException('number not defined for this type');
@@ -98,17 +82,11 @@ class Endpoint implements JsonSerializable
         return $this->getId();
     }
 
-    /**
-     * @return string
-     */
     public function __toString(): string
     {
         return (string)$this->getId();
     }
 
-    /**
-     * @return array|null
-     */
     public function jsonSerialize(): ?array
     {
         if ($this->type === 'phone') {

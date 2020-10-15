@@ -28,9 +28,6 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
     use ClientAwareTrait;
     use CollectionTrait;
 
-    /**
-     * Collection constructor.
-     */
     public function __construct()
     {
         trigger_error(
@@ -39,28 +36,17 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
         );
     }
 
-    /**
-     * @return string
-     */
     public static function getCollectionName(): string
     {
         return 'calls';
     }
 
-    /**
-     * @return string
-     */
     public static function getCollectionPath(): string
     {
         return '/v1/' . self::getCollectionName();
     }
 
-    /**
-     * @param $data
-     * @param $idOrCall
-     * @return mixed
-     */
-    public function hydrateEntity($data, $idOrCall)
+    public function hydrateEntity($data, $idOrCall): Call
     {
         if (!($idOrCall instanceof Call)) {
             $idOrCall = new Call($idOrCall);
@@ -72,10 +58,6 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
         return $idOrCall;
     }
 
-    /**
-     * @param null $filter
-     * @return $this
-     */
     public function __invoke($filter = null): self
     {
         /** Fix for the smarter MapFactory in v2.2.0 and the uniqueness of this class interface */
@@ -87,8 +69,6 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
     }
 
     /**
-     * @param $call
-     * @return Call
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
      * @throws Exception\Request
@@ -100,9 +80,6 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
     }
 
     /**
-     * @param $payload
-     * @param $idOrCall
-     * @return Call
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
      * @throws Exception\Request
@@ -121,8 +98,6 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
     }
 
     /**
-     * @param $call
-     * @param $type
      * @return Call
      * @throws Exception\Exception
      * @throws Exception\Request
@@ -154,8 +129,6 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
     }
 
     /**
-     * @param $call
-     * @return Call
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
      * @throws Exception\Request
@@ -195,8 +168,6 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
     }
 
     /**
-     * @param $call
-     * @return Call
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
      * @throws Exception\Request
@@ -215,7 +186,6 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
     }
 
     /**
-     * @param ResponseInterface $response
      * @return Exception\Request|Exception\Server
      * @throws Exception\Exception
      */
@@ -245,20 +215,12 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
         return $e;
     }
 
-    /**
-     * @param mixed $offset
-     * @return bool
-     */
     public function offsetExists($offset): bool
     {
         //todo: validate form of id
         return true;
     }
 
-    /**
-     * @param mixed $call
-     * @return Call
-     */
     public function offsetGet($call): Call
     {
         if (!($call instanceof Call)) {
@@ -270,18 +232,11 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
         return $call;
     }
 
-    /**
-     * @param mixed $offset
-     * @param mixed $value
-     */
     public function offsetSet($offset, $value): void
     {
         throw new RuntimeException('can not set collection properties');
     }
 
-    /**
-     * @param mixed $offset
-     */
     public function offsetUnset($offset): void
     {
         throw new RuntimeException('can not unset collection properties');

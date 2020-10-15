@@ -16,8 +16,6 @@ use Vonage\Entity\Hydrator\HydratorInterface;
 class Hydrator implements HydratorInterface
 {
     /**
-     * @param array $data
-     * @return Application
      * @throws Exception
      */
     public function hydrate(array $data): Application
@@ -27,9 +25,6 @@ class Hydrator implements HydratorInterface
     }
 
     /**
-     * @param array $data
-     * @param $object
-     * @return Application
      * @throws Exception
      */
     public function hydrateObject(array $data, $object): Application
@@ -41,11 +36,6 @@ class Hydrator implements HydratorInterface
         return $this->createFromArrayV2($data);
     }
 
-    /**
-     * @param array $array
-     * @param $application
-     * @return Application
-     */
     protected function createFromArrayV1(array $array, $application): Application
     {
         foreach (['name',] as $param) {
@@ -100,8 +90,6 @@ class Hydrator implements HydratorInterface
     }
 
     /**
-     * @param array $array
-     * @return Application
      * @throws Exception
      */
     protected function createFromArrayV2(array $array): Application

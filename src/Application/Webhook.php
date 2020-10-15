@@ -15,46 +15,31 @@ class Webhook
     public const METHOD_GET = 'GET';
 
     /**
-     * @var string;
+     * @var string|null
      */
     protected $method;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $url;
 
-    /**
-     * Webhook constructor.
-     *
-     * @param $url
-     * @param string $method
-     */
-    public function __construct($url, $method = self::METHOD_POST)
+    public function __construct(?string $url, ?string $method = self::METHOD_POST)
     {
         $this->url = $url;
         $this->method = $method;
     }
 
-    /**
-     * @return string|null
-     */
     public function getMethod(): ?string
     {
         return $this->method;
     }
 
-    /**
-     * @return string
-     */
-    public function getUrl(): string
+    public function getUrl(): ?string
     {
         return $this->url;
     }
 
-    /**
-     * @return string
-     */
     public function __toString(): string
     {
         return $this->getUrl();

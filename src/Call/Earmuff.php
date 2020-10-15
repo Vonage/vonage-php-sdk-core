@@ -16,9 +16,6 @@ use JsonSerializable;
  */
 class Earmuff implements JsonSerializable
 {
-    /**
-     * Earmuff constructor.
-     */
     public function __construct()
     {
         trigger_error(
@@ -27,13 +24,8 @@ class Earmuff implements JsonSerializable
         );
     }
 
-    /**
-     * @return string[]
-     */
     public function jsonSerialize(): array
     {
-        return [
-            'action' => 'earmuff'
-        ];
+        return ['action' => 'earmuff'];
     }
 }

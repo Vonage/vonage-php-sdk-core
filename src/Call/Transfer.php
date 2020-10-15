@@ -16,13 +16,11 @@ use JsonSerializable;
  */
 class Transfer implements JsonSerializable
 {
+    /**
+     * @var array
+     */
     protected $urls;
 
-    /**
-     * Transfer constructor.
-     *
-     * @param $urls
-     */
     public function __construct($urls)
     {
         trigger_error(
@@ -37,9 +35,6 @@ class Transfer implements JsonSerializable
         $this->urls = $urls;
     }
 
-    /**
-     * @return array
-     */
     public function jsonSerialize(): array
     {
         return [

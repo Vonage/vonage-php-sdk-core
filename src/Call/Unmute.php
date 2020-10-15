@@ -16,9 +16,6 @@ use JsonSerializable;
  */
 class Unmute implements JsonSerializable
 {
-    /**
-     * Unmute constructor.
-     */
     public function __construct()
     {
         trigger_error(
@@ -27,9 +24,6 @@ class Unmute implements JsonSerializable
         );
     }
 
-    /**
-     * @return string[]
-     */
     public function jsonSerialize(): array
     {
         return [

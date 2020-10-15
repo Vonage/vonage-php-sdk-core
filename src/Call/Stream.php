@@ -26,16 +26,17 @@ class Stream implements JsonSerializableInterface, ClientAwareInterface
 {
     use ClientAwareTrait;
 
+    /**
+     * @var string|null
+     */
     protected $id;
 
+    /**
+     * @var array
+     */
     protected $data = [];
 
-    /**
-     * Stream constructor.
-     *
-     * @param null $id
-     */
-    public function __construct($id = null)
+    public function __construct(?string $id = null)
     {
         trigger_error(
             'Vonage\Call\Stream is deprecated, ' .
@@ -47,14 +48,13 @@ class Stream implements JsonSerializableInterface, ClientAwareInterface
     }
 
     /**
-     * @param Stream|null $stream
      * @return $this|Event
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
      * @throws Exception\Request
      * @throws Exception\Server
      */
-    public function __invoke(Stream $stream = null)
+    public function __invoke(?Stream $stream = null)
     {
         if (is_null($stream)) {
             return $this;
@@ -63,17 +63,11 @@ class Stream implements JsonSerializableInterface, ClientAwareInterface
         return $this->put($stream);
     }
 
-    /**
-     * @return mixed
-     */
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    /**
-     * @param $url
-     */
     public function setUrl($url): void
     {
         if (!is_array($url)) {
@@ -84,7 +78,7 @@ class Stream implements JsonSerializableInterface, ClientAwareInterface
     }
 
     /**
-     * @param $times
+     * @param string|int $times
      */
     public function setLoop($times): void
     {
@@ -92,8 +86,6 @@ class Stream implements JsonSerializableInterface, ClientAwareInterface
     }
 
     /**
-     * @param null $stream
-     * @return Event
      * @throws Exception\Exception
      * @throws Exception\Request
      * @throws Exception\Server
@@ -119,7 +111,6 @@ class Stream implements JsonSerializableInterface, ClientAwareInterface
     }
 
     /**
-     * @return Event
      * @throws Exception\Exception
      * @throws Exception\Request
      * @throws Exception\Server
@@ -138,8 +129,6 @@ class Stream implements JsonSerializableInterface, ClientAwareInterface
     }
 
     /**
-     * @param ResponseInterface $response
-     * @return Event
      * @throws Exception\Exception
      * @throws Exception\Request
      * @throws Exception\Server
@@ -160,8 +149,6 @@ class Stream implements JsonSerializableInterface, ClientAwareInterface
     }
 
     /**
-     * @param ResponseInterface $response
-     * @return Exception\Request|Exception\Server
      * @throws Exception\Exception
      */
     protected function getException(ResponseInterface $response)
@@ -181,10 +168,7 @@ class Stream implements JsonSerializableInterface, ClientAwareInterface
         return $e;
     }
 
-    /**
-     * @return array|mixed
-     */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->data;
     }

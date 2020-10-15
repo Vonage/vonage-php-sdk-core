@@ -11,6 +11,9 @@ namespace Vonage\Application;
 
 class VbcConfig
 {
+    /**
+     * @var bool
+     */
     protected $enabled = false;
 
     public function enable(): void
@@ -23,9 +26,6 @@ class VbcConfig
         $this->enabled = false;
     }
 
-    /**
-     * @return bool
-     */
     public function isEnabled(): bool
     {
         return $this->enabled;

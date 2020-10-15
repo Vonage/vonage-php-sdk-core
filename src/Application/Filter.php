@@ -13,6 +13,7 @@ use Vonage\Entity\Filter\DateFilter;
 
 /**
  * Simple value object for application filtering.
+ *
  * @deprecated Please use Vonage\Entity\Filter\DateFilter instead
  */
 class Filter extends DateFilter

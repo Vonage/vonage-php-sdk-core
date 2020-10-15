@@ -14,14 +14,11 @@ class MessagesConfig
     public const INBOUND = 'inbound_url';
     public const STATUS = 'status_url';
 
+    /**
+     * @var array
+     */
     protected $webhooks = [];
 
-    /**
-     * @param $type
-     * @param $url
-     * @param null $method
-     * @return $this
-     */
     public function setWebhook($type, $url, $method = null): self
     {
         if (!$url instanceof Webhook) {
@@ -38,10 +35,6 @@ class MessagesConfig
         return $this;
     }
 
-    /**
-     * @param $type
-     * @return mixed
-     */
     public function getWebhook($type)
     {
         return $this->webhooks[$type] ?? null;

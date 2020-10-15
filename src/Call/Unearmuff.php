@@ -16,9 +16,6 @@ use JsonSerializable;
  */
 class Unearmuff implements JsonSerializable
 {
-    /**
-     * Unearmuff constructor.
-     */
     public function __construct()
     {
         trigger_error(
@@ -27,13 +24,8 @@ class Unearmuff implements JsonSerializable
         );
     }
 
-    /**
-     * @return string[]
-     */
     public function jsonSerialize(): array
     {
-        return [
-            'action' => 'unearmuff'
-        ];
+        return ['action' => 'unearmuff'];
     }
 }

@@ -16,9 +16,6 @@ use JsonSerializable;
  */
 class Mute implements JsonSerializable
 {
-    /**
-     * Mute constructor.
-     */
     public function __construct()
     {
         trigger_error(
@@ -27,13 +24,8 @@ class Mute implements JsonSerializable
         );
     }
 
-    /**
-     * @return string[]
-     */
     public function jsonSerialize(): array
     {
-        return [
-            'action' => 'mute'
-        ];
+        return ['action' => 'mute'];
     }
 }

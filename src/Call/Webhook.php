@@ -16,19 +16,15 @@ use JsonSerializable;
  */
 class Webhook implements JsonSerializable
 {
+    /**
+     * @var array
+     */
     protected $urls;
 
     protected $method;
 
     protected $type;
 
-    /**
-     * Webhook constructor.
-     *
-     * @param $type
-     * @param $urls
-     * @param null $method
-     */
     public function __construct($type, $urls, $method = null)
     {
         trigger_error(
@@ -45,25 +41,16 @@ class Webhook implements JsonSerializable
         $this->method = $method;
     }
 
-    /**
-     * @return mixed
-     */
     public function getType()
     {
         return $this->type;
     }
 
-    /**
-     * @param $url
-     */
     public function add($url): void
     {
         $this->urls[] = $url;
     }
 
-    /**
-     * @return array[]
-     */
     public function jsonSerialize(): array
     {
         $data = [
