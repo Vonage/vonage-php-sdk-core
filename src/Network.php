@@ -11,7 +11,7 @@ namespace Vonage;
 
 use ArrayAccess;
 use JsonSerializable;
-use Vonage\Client\Exception\Exception;
+use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Entity\EntityInterface;
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 use Vonage\Entity\JsonResponseTrait;
@@ -41,68 +41,45 @@ class Network implements
     protected $data = [];
 
     /**
-     * Network constructor.
-     *
-     * @param $networkCode
-     * @param $networkName
+     * @param string|int $networkCode
+     * @param string|int $networkName
      */
     public function __construct($networkCode, $networkName)
     {
-        $this->data['network_code'] = $networkCode;
-        $this->data['network_name'] = $networkName;
+        $this->data['network_code'] = (string)$networkCode;
+        $this->data['network_name'] = (string)$networkName;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getCode()
+    public function getCode(): string
     {
         return $this->data['network_code'];
     }
 
-    /**
-     * @return mixed
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->data['network_name'];
     }
 
-    /**
-     * @return mixed
-     */
     public function getOutboundSmsPrice()
     {
         return $this->data['sms_price'] ?? $this->data['price'];
     }
 
-    /**
-     * @return mixed
-     */
     public function getOutboundVoicePrice()
     {
         return $this->data['voice_price'] ?? $this->data['price'];
     }
 
-    /**
-     * @return mixed
-     */
     public function getPrefixPrice()
     {
         return $this->data['mt_price'];
     }
 
-    /**
-     * @return mixed
-     */
     public function getCurrency()
     {
         return $this->data['currency'];
     }
 
-    /**
-     * @param array $json
-     */
     public function jsonUnserialize(array $json): void
     {
         trigger_error(
@@ -113,18 +90,11 @@ class Network implements
         $this->fromArray($json);
     }
 
-    /**
-     * @return array|mixed
-     */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->toArray();
     }
 
-    /**
-     * @param mixed $offset
-     * @return bool
-     */
     public function offsetExists($offset): bool
     {
         trigger_error(
@@ -135,10 +105,6 @@ class Network implements
         return isset($this->data[$offset]);
     }
 
-    /**
-     * @param mixed $offset
-     * @return mixed
-     */
     public function offsetGet($offset)
     {
         trigger_error(
@@ -150,27 +116,21 @@ class Network implements
     }
 
     /**
-     * @param mixed $offset
-     * @param mixed $value
-     * @throws Exception
+     * @throws ClientException
      */
     public function offsetSet($offset, $value): void
     {
-        throw new Exception('Network is read only');
+        throw new ClientException('Network is read only');
     }
 
     /**
-     * @param mixed $offset
-     * @throws Exception
+     * @throws ClientException
      */
     public function offsetUnset($offset): void
     {
-        throw new Exception('Network is read only');
+        throw new ClientException('Network is read only');
     }
 
-    /**
-     * @param array $data
-     */
     public function fromArray(array $data): void
     {
         // Convert CamelCase to snake_case as that's how we use array access in every other object

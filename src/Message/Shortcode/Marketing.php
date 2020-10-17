@@ -13,5 +13,8 @@ use Vonage\Message\Shortcode;
 
 class Marketing extends Shortcode
 {
+    /**
+     * @var string
+     */
     protected $type = 'marketing';
 }

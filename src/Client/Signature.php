@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace Vonage\Client;
 
 use InvalidArgumentException;
-use Vonage\Client\Exception\Exception;
+use Vonage\Client\Exception\Exception as ClientException;
 
 class Signature
 {
@@ -32,7 +32,7 @@ class Signature
      * @param array $params
      * @param $secret
      * @param $signatureMethod
-     * @throws Exception
+     * @throws ClientException
      */
     public function __construct(array $params, $secret, $signatureMethod)
     {
@@ -66,7 +66,7 @@ class Signature
      * @param $data
      * @param $secret
      * @return string
-     * @throws Exception
+     * @throws ClientException
      */
     protected function sign($signatureMethod, $data, $secret): string
     {
@@ -82,7 +82,7 @@ class Signature
             case 'sha512':
                 return strtoupper(hash_hmac($signatureMethod, $data, $secret));
             default:
-                throw new Exception(
+                throw new ClientException(
                     'Unknown signature algorithm: ' . $signatureMethod .
                     '. Expected: md5hash, md5, sha1, sha256, or sha512'
                 );

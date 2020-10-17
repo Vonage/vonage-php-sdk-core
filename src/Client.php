@@ -31,7 +31,7 @@ use Vonage\Client\Credentials\CredentialsInterface;
 use Vonage\Client\Credentials\Keypair;
 use Vonage\Client\Credentials\OAuth;
 use Vonage\Client\Credentials\SignatureSecret;
-use Vonage\Client\Exception\Exception;
+use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Client\Factory\FactoryInterface;
 use Vonage\Client\Factory\MapFactory;
 use Vonage\Client\Signature;
@@ -95,19 +95,19 @@ class Client
 
     /**
      * Create a new API client using the provided credentials.
-     *
-     * @param CredentialsInterface $credentials
-     * @param array $options
-     * @param ClientInterface|null $client
      */
-    public function __construct(CredentialsInterface $credentials, $options = [], ClientInterface $client = null)
+    public function __construct(CredentialsInterface $credentials, $options = [], ?ClientInterface $client = null)
     {
         if (is_null($client)) {
             // Since the user did not pass a client, try and make a client
             // using the Guzzle 6 adapter or Guzzle 7 (depending on availability)
+            /** @noinspection ClassConstantCanBeUsedInspection */
             if (class_exists('\GuzzleHttp\Client')) {
                 $client = new \GuzzleHttp\Client();
             } elseif (class_exists('\Http\Adapter\Guzzle6\Client')) {
+                /** @noinspection CallableParameterUseCaseInTypeContextInspection */
+                /** @noinspection PhpUndefinedNamespaceInspection */
+                /** @noinspection PhpUndefinedClassInspection */
                 $client = new \Http\Adapter\Guzzle6\Client();
             }
         }
@@ -187,17 +187,11 @@ class Client
         }
     }
 
-    /**
-     * @return string
-     */
     public function getRestUrl(): string
     {
         return $this->restUrl;
     }
 
-    /**
-     * @return string
-     */
     public function getApiUrl(): string
     {
         return $this->apiUrl;
@@ -208,9 +202,6 @@ class Client
      *
      * This allows the default http client to be swapped out for a HTTPlug compatible
      * replacement.
-     *
-     * @param ClientInterface $client
-     * @return $this
      */
     public function setHttpClient(ClientInterface $client): self
     {
@@ -221,8 +212,6 @@ class Client
 
     /**
      * Get the Http Client used to make API requests.
-     *
-     * @return ClientInterface
      */
     public function getHttpClient(): ClientInterface
     {
@@ -231,9 +220,6 @@ class Client
 
     /**
      * Set the factory used to create API specific clients.
-     *
-     * @param FactoryInterface $factory
-     * @return $this
      */
     public function setFactory(FactoryInterface $factory): self
     {
@@ -242,19 +228,13 @@ class Client
         return $this;
     }
 
-    /**
-     * @return ContainerInterface
-     */
     public function getFactory(): ContainerInterface
     {
         return $this->factory;
     }
 
     /**
-     * @param RequestInterface $request
-     * @param SignatureSecret $credentials
-     * @return RequestInterface
-     * @throws Exception
+     * @throws ClientException
      */
     public static function signRequest(RequestInterface $request, SignatureSecret $credentials): RequestInterface
     {
@@ -295,11 +275,6 @@ class Client
         return $request;
     }
 
-    /**
-     * @param RequestInterface $request
-     * @param Basic $credentials
-     * @return RequestInterface
-     */
     public static function authRequest(RequestInterface $request, Basic $credentials): RequestInterface
     {
         switch ($request->getHeaderLine('content-type')) {
@@ -352,9 +327,7 @@ class Client
     }
 
     /**
-     * @param array $claims
-     * @return Token
-     * @throws Exception
+     * @throws ClientException
      */
     public function generateJwt($claims = []): Token
     {
@@ -362,17 +335,14 @@ class Client
             return $this->credentials->generateJwt($claims);
         }
 
-        throw new Exception(get_class($this->credentials) . ' does not support JWT generation');
+        throw new ClientException(get_class($this->credentials) . ' does not support JWT generation');
     }
 
     /**
      * Takes a URL and a key=>value array to generate a GET PSR-7 request object
      *
-     * @param string $url The URL to make a request to
-     * @param array $params Key=>Value array of data to use as the query string
-     * @return ResponseInterface
      * @throws ClientExceptionInterface
-     * @throws Exception
+     * @throws ClientException
      */
     public function get(string $url, array $params = []): ResponseInterface
     {
@@ -387,11 +357,8 @@ class Client
     /**
      * Takes a URL and a key=>value array to generate a POST PSR-7 request object
      *
-     * @param string $url The URL to make a request to
-     * @param array $params Key=>Value array of data to send
-     * @return ResponseInterface
      * @throws ClientExceptionInterface
-     * @throws Exception
+     * @throws ClientException
      */
     public function post(string $url, array $params): ResponseInterface
     {
@@ -410,11 +377,8 @@ class Client
     /**
      * Takes a URL and a key=>value array to generate a POST PSR-7 request object
      *
-     * @param string $url The URL to make a request to
-     * @param array $params Key=>Value array of data to send
-     * @return ResponseInterface
      * @throws ClientExceptionInterface
-     * @throws Exception
+     * @throws ClientException
      */
     public function postUrlEncoded(string $url, array $params): ResponseInterface
     {
@@ -433,11 +397,8 @@ class Client
     /**
      * Takes a URL and a key=>value array to generate a PUT PSR-7 request object
      *
-     * @param string $url The URL to make a request to
-     * @param array $params Key=>Value array of data to send
-     * @return ResponseInterface
      * @throws ClientExceptionInterface
-     * @throws Exception
+     * @throws ClientException
      */
     public function put(string $url, array $params): ResponseInterface
     {
@@ -456,10 +417,8 @@ class Client
     /**
      * Takes a URL and a key=>value array to generate a DELETE PSR-7 request object
      *
-     * @param string $url The URL to make a request to
-     * @return ResponseInterface
      * @throws ClientExceptionInterface
-     * @throws Exception
+     * @throws ClientException
      */
     public function delete(string $url): ResponseInterface
     {
@@ -474,10 +433,8 @@ class Client
     /**
      * Wraps the HTTP Client, creates a new PSR-7 request adding authentication, signatures, etc.
      *
-     * @param RequestInterface $request
-     * @return ResponseInterface
      * @throws ClientExceptionInterface
-     * @throws Exception
+     * @throws ClientException
      */
     public function send(RequestInterface $request): ResponseInterface
     {
@@ -538,9 +495,6 @@ class Client
         return $response;
     }
 
-    /**
-     * @param $app
-     */
     protected function validateAppOptions($app): void
     {
         $disallowedCharacters = ['/', ' ', "\t", "\n"];
@@ -558,10 +512,6 @@ class Client
         }
     }
 
-    /**
-     * @param EntityInterface $entity
-     * @return string
-     */
     public function serialize(EntityInterface $entity): string
     {
         if ($entity instanceof Verification) {
@@ -572,13 +522,13 @@ class Client
     }
 
     /**
-     * @param $entity
-     * @return Verification
+     * @param string|Verification $entity
+     * @deprecated
      */
     public function unserialize($entity): Verification
     {
         if (is_string($entity)) {
-            $entity = unserialize($entity, [Verification::class]);
+            $entity = unserialize($entity);
         }
 
         if ($entity instanceof Verification) {
@@ -588,11 +538,6 @@ class Client
         throw new RuntimeException('unknown class `' . get_class($entity) . '``');
     }
 
-    /**
-     * @param $name
-     * @param $args
-     * @return mixed
-     */
     public function __call($name, $args)
     {
         if (!$this->factory->hasApi($name)) {
@@ -609,8 +554,6 @@ class Client
     }
 
     /**
-     * @param $name
-     * @return mixed
      * @noinspection MagicMethodsValidityInspection
      */
     public function __get($name)
@@ -622,10 +565,6 @@ class Client
         return $this->factory->getApi($name);
     }
 
-    /**
-     * @param RequestInterface $request
-     * @return bool
-     */
     protected static function requiresBasicAuth(RequestInterface $request): bool
     {
         $path = $request->getUri()->getPath();
@@ -635,10 +574,6 @@ class Client
         return $isSecretManagementEndpoint || $isApplicationV2;
     }
 
-    /**
-     * @param RequestInterface $request
-     * @return bool
-     */
     protected static function requiresAuthInUrlNotBody(RequestInterface $request): bool
     {
         $path = $request->getUri()->getPath();
@@ -646,10 +581,6 @@ class Client
         return strpos($path, '/v1/redact') === 0;
     }
 
-    /**
-     * @param RequestInterface $request
-     * @return bool
-     */
     protected function needsKeypairAuthentication(RequestInterface $request): bool
     {
         $path = $request->getUri()->getPath();
@@ -661,9 +592,6 @@ class Client
         return $isCallEndpoint || $isRecordingUrl || $isStitchEndpoint || $isUserEndpoint;
     }
 
-    /**
-     * @return string
-     */
     protected function getVersion(): string
     {
         return Versions::getVersion('vonage/client-core');

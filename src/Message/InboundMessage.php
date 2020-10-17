@@ -30,16 +30,13 @@ class InboundMessage implements MessageInterface, ArrayAccess, ArrayHydrateInter
     protected $id;
 
     /**
-     * @var array<string, mixed>
+     * @var array
      */
     protected $data = [];
 
     /**
-     * InboundMessage constructor.
-     *
      * @param string|ServerRequestInterface $idOrRequest Message ID, or inbound HTTP request.
      * @todo Find a cleaner way to create this object
-     *
      */
     public function __construct($idOrRequest)
     {
@@ -67,9 +64,6 @@ class InboundMessage implements MessageInterface, ArrayAccess, ArrayHydrateInter
         ));
     }
 
-    /**
-     * @return $this
-     */
     public static function createFromGlobals(): self
     {
         return new self(ServerRequestFactory::fromGlobals());
@@ -77,16 +71,13 @@ class InboundMessage implements MessageInterface, ArrayAccess, ArrayHydrateInter
 
     /**
      * Create a matching reply to the inbound message. Currently only supports text replies.
-     *
-     * @param $body
-     * @return Text
      */
-    public function createReply($body): Text
+    public function createReply(string $body): Text
     {
         return new Text($this->getFrom(), $this->getTo(), $body);
     }
 
-    public function getRequestData($sent = true)
+    public function getRequestData(bool $sent = true)
     {
         $request = $this->getRequest();
 
@@ -127,9 +118,6 @@ class InboundMessage implements MessageInterface, ArrayAccess, ArrayHydrateInter
         return $params;
     }
 
-    /**
-     * @return mixed
-     */
     public function getFrom()
     {
         if (@$this->getRequest()) {
@@ -139,33 +127,21 @@ class InboundMessage implements MessageInterface, ArrayAccess, ArrayHydrateInter
         return $this->data['from'];
     }
 
-    /**
-     * @return mixed
-     */
     public function getTo()
     {
         return $this->data['to'];
     }
 
-    /**
-     * @return string|null
-     */
     public function getMessageId(): ?string
     {
         return $this->id ?? @$this->data['messageId'];
     }
 
-    /**
-     * @return bool
-     */
     public function isValid(): bool
     {
         return (bool)$this->getMessageId();
     }
 
-    /**
-     * @return mixed
-     */
     public function getBody()
     {
         if (@$this->getRequest()) {
@@ -175,25 +151,16 @@ class InboundMessage implements MessageInterface, ArrayAccess, ArrayHydrateInter
         return $this->data['body'];
     }
 
-    /**
-     * @return mixed
-     */
     public function getType()
     {
         return $this->data['type'];
     }
 
-    /**
-     * @return mixed
-     */
     public function getAccountId()
     {
         return $this->data['account-id'];
     }
 
-    /**
-     * @return mixed
-     */
     public function getNetwork()
     {
         return $this->data['network'];
@@ -203,8 +170,6 @@ class InboundMessage implements MessageInterface, ArrayAccess, ArrayHydrateInter
      * Allow the object to access the data from the API response, a sent API request, or the user set data that the
      * request will be created from - in that order.
      *
-     * @param mixed $offset
-     * @return bool
      * @throws Exception
      */
     public function offsetExists($offset): bool
@@ -230,8 +195,6 @@ class InboundMessage implements MessageInterface, ArrayAccess, ArrayHydrateInter
      * Allow the object to access the data from the API response, a sent API request, or the user set data that the
      * request will be created from - in that order.
      *
-     * @param mixed $offset
-     * @return mixed
      * @throws Exception
      */
     public function offsetGet($offset)
@@ -255,9 +218,6 @@ class InboundMessage implements MessageInterface, ArrayAccess, ArrayHydrateInter
 
     /**
      * All properties are read only.
-     *
-     * @param mixed $offset
-     * @param mixed $value
      */
     public function offsetSet($offset, $value): void
     {
@@ -266,8 +226,6 @@ class InboundMessage implements MessageInterface, ArrayAccess, ArrayHydrateInter
 
     /**
      * All properties are read only.
-     *
-     * @param mixed $offset
      */
     public function offsetUnset($offset): void
     {
@@ -277,7 +235,6 @@ class InboundMessage implements MessageInterface, ArrayAccess, ArrayHydrateInter
     /**
      * All properties are read only.
      *
-     * @param $offset
      * @return RuntimeException
      */
     protected function getReadOnlyException($offset): RuntimeException
@@ -288,17 +245,11 @@ class InboundMessage implements MessageInterface, ArrayAccess, ArrayHydrateInter
         ));
     }
 
-    /**
-     * @param array $data
-     */
     public function fromArray(array $data): void
     {
         $this->data = $data;
     }
 
-    /**
-     * @return array
-     */
     public function toArray(): array
     {
         return $this->data;

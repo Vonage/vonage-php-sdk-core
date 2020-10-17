@@ -14,7 +14,7 @@ use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
 use Vonage\Client\ClientAwareInterface;
 use Vonage\Client\ClientAwareTrait;
-use Vonage\Client\Exception;
+use Vonage\Client\Exception as ClientException;
 use Vonage\Entity\Filter\KeyValueFilter;
 use Vonage\Numbers\Number;
 
@@ -64,9 +64,9 @@ class Client implements ClientAwareInterface, APIClient
      * @param $number
      * @return Basic
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      */
     public function basic($number): Basic
     {
@@ -81,9 +81,9 @@ class Client implements ClientAwareInterface, APIClient
      * @param $number
      * @return StandardCnam
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      */
     public function standardCNam($number): StandardCnam
     {
@@ -97,9 +97,9 @@ class Client implements ClientAwareInterface, APIClient
      * @param $number
      * @return AdvancedCnam
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      */
     public function advancedCnam($number): AdvancedCnam
     {
@@ -113,9 +113,9 @@ class Client implements ClientAwareInterface, APIClient
      * @param $number
      * @return Standard
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      */
     public function standard($number): Standard
     {
@@ -129,9 +129,9 @@ class Client implements ClientAwareInterface, APIClient
      * @param $number
      * @return Advanced
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      */
     public function advanced($number): Advanced
     {
@@ -145,9 +145,9 @@ class Client implements ClientAwareInterface, APIClient
      * @param $number
      * @param string $webhook
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      */
     public function advancedAsync($number, string $webhook): void
     {
@@ -163,9 +163,9 @@ class Client implements ClientAwareInterface, APIClient
      * @param $number
      * @param array $additionalParams
      * @return array
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      * @throws ClientExceptionInterface
      */
     public function makeRequest(string $path, $number, array $additionalParams = []): array
@@ -195,9 +195,9 @@ class Client implements ClientAwareInterface, APIClient
      * error checking. We check for a status and message manually.
      *
      * @param array $body
-     * @return Exception\Request
+     * @return ClientException\Request
      */
-    protected function getNIException(array $body): Exception\Request
+    protected function getNIException(array $body): ClientException\Request
     {
         $status = $body['status'];
         $message = "Error: ";
@@ -212,6 +212,6 @@ class Client implements ClientAwareInterface, APIClient
             $message .= $body['error_text'];
         }
 
-        return new Exception\Request($message, $status);
+        return new ClientException\Request($message, $status);
     }
 }

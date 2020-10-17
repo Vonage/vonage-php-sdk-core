@@ -11,6 +11,9 @@ namespace Vonage\Message;
 
 trait CollectionTrait
 {
+    /**
+     * @var int
+     */
     protected $index;
 
     /**

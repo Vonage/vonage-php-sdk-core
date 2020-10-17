@@ -15,7 +15,7 @@ use Vonage\Client\APIExceptionHandler;
 use Vonage\Client\APIResource;
 use Vonage\Client\ClientAwareInterface;
 use Vonage\Client\ClientAwareTrait;
-use Vonage\Client\Exception\Exception;
+use Vonage\Client\Exception\Exception as ClientException;
 
 class Client implements ClientAwareInterface, APIClient
 {
@@ -70,7 +70,7 @@ class Client implements ClientAwareInterface, APIClient
      * @param string $product
      * @param array $options
      * @throws ClientExceptionInterface
-     * @throws Exception
+     * @throws ClientException
      */
     public function transaction(string $id, string $product, array $options = []): void
     {

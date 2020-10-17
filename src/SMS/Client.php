@@ -12,7 +12,7 @@ namespace Vonage\SMS;
 use Psr\Http\Client\ClientExceptionInterface;
 use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
-use Vonage\Client\Exception\Exception;
+use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Client\Exception\ThrottleException;
 use Vonage\SMS\Message\Message;
 
@@ -45,7 +45,7 @@ class Client implements APIClient
      * @param Message $message
      * @return Collection
      * @throws ClientExceptionInterface
-     * @throws Exception
+     * @throws ClientException
      */
     public function send(Message $message): Collection
     {
@@ -63,7 +63,7 @@ class Client implements APIClient
      * @param int $pin
      * @return SentSMS
      * @throws ClientExceptionInterface
-     * @throws Exception
+     * @throws ClientException
      */
     public function sendTwoFactor(string $number, int $pin): SentSMS
     {
@@ -80,7 +80,7 @@ class Client implements APIClient
      * @param array $templateReplacements
      * @return Collection
      * @throws ClientExceptionInterface
-     * @throws Exception
+     * @throws ClientException
      */
     public function sendAlert(string $number, array $templateReplacements): Collection
     {

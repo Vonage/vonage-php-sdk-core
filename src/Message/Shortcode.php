@@ -9,58 +9,50 @@ declare(strict_types=1);
 
 namespace Vonage\Message;
 
-use Vonage\Client\Exception\Exception;
+use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Message\Shortcode\Alert;
 use Vonage\Message\Shortcode\Marketing;
 use Vonage\Message\Shortcode\TwoFactor;
 
 abstract class Shortcode
 {
+    /**
+     * @var string
+     */
     protected $to;
-    protected $custom;
-    protected $options;
 
     /**
-     * Shortcode constructor.
-     *
-     * @param $to
-     * @param array $custom
-     * @param array $options
+     * @var array
      */
-    public function __construct($to, array $custom = [], array $options = [])
+    protected $custom;
+
+    /**
+     * @var array
+     */
+    protected $options;
+
+    public function __construct(string $to, array $custom = [], array $options = [])
     {
         $this->to = $to;
         $this->custom = $custom;
         $this->options = $options;
     }
 
-    /**
-     * @param $custom
-     */
-    public function setCustom($custom): void
+    public function setCustom(array $custom): void
     {
         $this->custom = $custom;
     }
 
-    /**
-     * @param $options
-     */
-    public function setOptions($options): void
+    public function setOptions(array $options): void
     {
         $this->options = $options;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getType()
+    public function getType(): string
     {
         return $this->type;
     }
 
-    /**
-     * @return array
-     */
     public function getRequestData(): array
     {
         // Options, then custom, then to. This is the priority
@@ -69,18 +61,17 @@ abstract class Shortcode
     }
 
     /**
-     * @param $data
      * @return Alert|Marketing|TwoFactor|null
-     * @throws Exception
+     * @throws ClientException
      */
-    public static function createMessageFromArray($data)
+    public static function createMessageFromArray(array $data)
     {
         if (!isset($data['type'])) {
-            throw new Exception('No type provided when creating a shortcode message');
+            throw new ClientException('No type provided when creating a shortcode message');
         }
 
         if (!isset($data['to'])) {
-            throw new Exception('No to provided when creating a shortcode message');
+            throw new ClientException('No to provided when creating a shortcode message');
         }
 
         $data['type'] = strtolower($data['type']);

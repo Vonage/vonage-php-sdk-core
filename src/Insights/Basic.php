@@ -11,7 +11,7 @@ namespace Vonage\Insights;
 
 use ArrayAccess;
 use JsonSerializable;
-use Vonage\Client\Exception\Exception;
+use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 use Vonage\Entity\JsonUnserializableInterface;
 
@@ -138,20 +138,20 @@ class Basic implements JsonSerializable, JsonUnserializableInterface, ArrayAcces
     /**
      * @param mixed $offset
      * @param mixed $value
-     * @throws Exception
+     * @throws ClientException
      */
     public function offsetSet($offset, $value): void
     {
-        throw new Exception('Number insights results are read only');
+        throw new ClientException('Number insights results are read only');
     }
 
     /**
      * @param mixed $offset
-     * @throws Exception
+     * @throws ClientException
      */
     public function offsetUnset($offset): void
     {
-        throw new Exception('Number insights results are read only');
+        throw new ClientException('Number insights results are read only');
     }
 
     /**

@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Vonage\Message;
 
-use Vonage\Client\Exception\Exception;
+use Vonage\Client\Exception\Exception as ClientException;
 
 /**
  * SMS Text Message
@@ -20,32 +20,27 @@ class Vcard extends Message
 
     /**
      * Message Body
+     *
      * @var string
      */
     protected $vcard;
 
     /**
      * Create a new SMS text message.
-     *
-     * @param $to
-     * @param $from
-     * @param $vcard
      */
-    public function __construct($to, $from, $vcard)
+    public function __construct(string $to, string $from, string $vcard)
     {
         parent::__construct($to, $from);
 
-        $this->vcard = (string)$vcard;
+        $this->vcard = $vcard;
     }
 
     /**
      * Get an array of params to use in an API request.
      *
-     * @param bool $sent
-     * @return array
-     * @throws Exception
+     * @throws ClientException
      */
-    public function getRequestData($sent = true): array
+    public function getRequestData(bool $sent = true): array
     {
         return array_merge(parent::getRequestData($sent), ['vcard' => $this->vcard]);
     }

@@ -13,22 +13,17 @@ use DateTime;
 
 class Query
 {
+    /**
+     * @var array
+     */
     protected $params = [];
 
-    /**
-     * Query constructor.
-     * @param DateTime $date
-     * @param $to
-     */
-    public function __construct(DateTime $date, $to)
+    public function __construct(DateTime $date, string $to)
     {
         $this->params['date'] = $date->format('Y-m-d');
         $this->params['to'] = $to;
     }
 
-    /**
-     * @return array
-     */
     public function getParams(): array
     {
         return $this->params;

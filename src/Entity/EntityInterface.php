@@ -16,7 +16,7 @@ interface EntityInterface
 {
     public function getRequest();
 
-    public function getRequestData($sent = true);
+    public function getRequestData(bool $sent = true);
 
     public function getResponse();
 

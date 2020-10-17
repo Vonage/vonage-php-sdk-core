@@ -17,7 +17,7 @@ use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
 use Vonage\Client\ClientAwareInterface;
 use Vonage\Client\ClientAwareTrait;
-use Vonage\Client\Exception;
+use Vonage\Client\Exception as ClientException;
 use Vonage\Conversations\Conversation;
 use Vonage\Entity\EntityInterface;
 use Vonage\Entity\JsonResponseTrait;
@@ -94,9 +94,9 @@ class Call implements EntityInterface, JsonSerializable, JsonUnserializableInter
     }
 
     /**
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      * @throws ClientExceptionInterface
      */
     public function get(): self
@@ -119,7 +119,7 @@ class Call implements EntityInterface, JsonSerializable, JsonUnserializableInter
     }
 
     /**
-     * @return Exception\Exception|Exception\Request|Exception\Server
+     * @return ClientException\Exception|ClientException\Request|ClientException\Server
      */
     protected function getException(ResponseInterface $response)
     {
@@ -127,11 +127,11 @@ class Call implements EntityInterface, JsonSerializable, JsonUnserializableInter
         $status = $response->getStatusCode();
 
         if ($status >= 400 && $status < 500) {
-            $e = new Exception\Request($body['error_title'], $status);
+            $e = new ClientException\Request($body['error_title'], $status);
         } elseif ($status >= 500 && $status < 600) {
-            $e = new Exception\Server($body['error_title'], $status);
+            $e = new ClientException\Server($body['error_title'], $status);
         } else {
-            $e = new Exception\Exception('Unexpected HTTP Status Code');
+            $e = new ClientException\Exception('Unexpected HTTP Status Code');
         }
 
         return $e;
@@ -139,9 +139,9 @@ class Call implements EntityInterface, JsonSerializable, JsonUnserializableInter
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      */
     public function put($payload): self
     {
@@ -183,9 +183,9 @@ class Call implements EntityInterface, JsonSerializable, JsonUnserializableInter
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      */
     public function getTo(): Endpoint
     {
@@ -213,9 +213,9 @@ class Call implements EntityInterface, JsonSerializable, JsonUnserializableInter
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      */
     public function getFrom(): Endpoint
     {
@@ -269,9 +269,9 @@ class Call implements EntityInterface, JsonSerializable, JsonUnserializableInter
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      */
     public function getStatus()
     {
@@ -284,9 +284,9 @@ class Call implements EntityInterface, JsonSerializable, JsonUnserializableInter
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      */
     public function getDirection()
     {
@@ -299,9 +299,9 @@ class Call implements EntityInterface, JsonSerializable, JsonUnserializableInter
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      */
     public function getConversation(): ?Conversation
     {
@@ -318,9 +318,9 @@ class Call implements EntityInterface, JsonSerializable, JsonUnserializableInter
      * Will attempt to load the data if it's not already.
      *
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      */
     protected function lazyLoad(): bool
     {

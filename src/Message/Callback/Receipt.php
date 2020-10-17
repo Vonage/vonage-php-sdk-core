@@ -27,11 +27,6 @@ class Receipt extends Callback
         'to'
     ];
 
-    /**
-     * Receipt constructor.
-     *
-     * @param array $data
-     */
     public function __construct(array $data)
     {
         //default value
@@ -40,81 +35,51 @@ class Receipt extends Callback
         parent::__construct($data);
     }
 
-    /**
-     * @return int
-     */
     public function getErrorCode(): int
     {
         return (int)$this->data['err-code'];
     }
 
-    /**
-     * @return string
-     */
     public function getNetwork(): string
     {
         return (string)$this->data['network-code'];
     }
 
-    /**
-     * @return string
-     */
     public function getId(): string
     {
         return (string)$this->data['messageId'];
     }
 
-    /**
-     * @return string
-     */
     public function getReceiptFrom(): string
     {
         return (string)$this->data['msisdn'];
     }
 
-    /**
-     * @return string
-     */
     public function getTo(): string
     {
         return $this->getReceiptFrom();
     }
 
-    /**
-     * @return string
-     */
     public function getReceiptTo(): string
     {
         return (string)$this->data['to'];
     }
 
-    /**
-     * @return string
-     */
     public function getFrom(): string
     {
         return $this->getReceiptTo();
     }
 
-    /**
-     * @return string
-     */
     public function getStatus(): string
     {
         return (string)$this->data['status'];
     }
 
-    /**
-     * @return string
-     */
     public function getPrice(): string
     {
         return (string)$this->data['price'];
     }
 
-    /**
-     * @return DateTime
-     */
     public function getTimestamp(): DateTime
     {
         $date = DateTime::createFromFormat('ymdHi', $this->data['scts']);
@@ -126,9 +91,6 @@ class Receipt extends Callback
         throw new UnexpectedValueException('could not parse message timestamp');
     }
 
-    /**
-     * @return DateTime
-     */
     public function getSent(): DateTime
     {
         $date = DateTime::createFromFormat('Y-m-d H:i:s', $this->data['message-timestamp']);
@@ -140,9 +102,6 @@ class Receipt extends Callback
         throw new UnexpectedValueException('could not parse message timestamp');
     }
 
-    /**
-     * @return string|null
-     */
     public function getClientRef(): ?string
     {
         return $this->data['client-ref'];

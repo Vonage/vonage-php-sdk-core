@@ -14,7 +14,7 @@ use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
 use Vonage\Client\ClientAwareInterface;
 use Vonage\Client\ClientAwareTrait;
-use Vonage\Client\Exception;
+use Vonage\Client\Exception as ClientException;
 use Vonage\Client\Exception\ThrottleException;
 use Vonage\Entity\Filter\FilterInterface;
 use Vonage\Entity\IterableAPICollection;
@@ -67,8 +67,8 @@ class Client implements ClientAwareInterface, APIClient
      * @param string|null $id MSISDN to look
      * @return Number
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
      * @todo Clean up the logic here, we are doing a lot of GET requests
      */
     public function update($number, ?string $id = null): Number
@@ -141,9 +141,9 @@ class Client implements ClientAwareInterface, APIClient
      * @param null $number Number to fetch, deprecating passing a `Number` object
      * @return Number
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      */
     public function get($number = null): Number
     {
@@ -168,7 +168,7 @@ class Client implements ClientAwareInterface, APIClient
         // This is legacy behaviour, so we need to keep it even though
         // it isn't technically the correct message
         if (count($items) !== 1) {
-            throw new Exception\Request('number not found', 404);
+            throw new ClientException\Request('number not found', 404);
         }
 
         return $items[0];
@@ -178,9 +178,9 @@ class Client implements ClientAwareInterface, APIClient
      * @param null|string|Number $number
      * @return array []Number
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      * @deprecated Use `searchOwned` instead
      */
     public function search($number = null): array
@@ -195,9 +195,9 @@ class Client implements ClientAwareInterface, APIClient
      * @param array $options Additional options, see https://developer.nexmo.com/api/numbers#getAvailableNumbers
      * @return array
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      */
     public function searchAvailable(string $country, $options = []): array
     {
@@ -247,9 +247,9 @@ class Client implements ClientAwareInterface, APIClient
      * @param array $options
      * @return array
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      */
     public function searchOwned($number = null, array $options = []): array
     {
@@ -305,7 +305,7 @@ class Client implements ClientAwareInterface, APIClient
      * @param array $possibleParameters
      * @param array $data
      * @return array
-     * @throws Exception\Request
+     * @throws ClientException\Request
      */
     protected function parseParameters(array $possibleParameters, array $data = []): array
     {
@@ -313,21 +313,21 @@ class Client implements ClientAwareInterface, APIClient
 
         foreach ($data as $param => $value) {
             if (!array_key_exists($param, $possibleParameters)) {
-                throw new Exception\Request("Unknown option: '" . $param . "'");
+                throw new ClientException\Request("Unknown option: '" . $param . "'");
             }
 
             switch ($possibleParameters[$param]) {
                 case 'boolean':
                     $value = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
                     if (is_null($value)) {
-                        throw new Exception\Request("Invalid value: '" . $param . "' must be a boolean value");
+                        throw new ClientException\Request("Invalid value: '" . $param . "' must be a boolean value");
                     }
                     $value = $value ? "true" : "false";
                     break;
                 case 'integer':
                     $value = filter_var($value, FILTER_VALIDATE_INT);
                     if ($value === false) {
-                        throw new Exception\Request("Invalid value: '" . $param . "' must be an integer");
+                        throw new ClientException\Request("Invalid value: '" . $param . "' must be an integer");
                     }
                     break;
                 default:
@@ -345,9 +345,9 @@ class Client implements ClientAwareInterface, APIClient
      * @param IterableAPICollection $response
      * @param null $number deprecated
      * @return array
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      * @throws ClientExceptionInterface
      */
     private function handleNumberSearchResult(IterableAPICollection $response, $number = null): array
@@ -373,7 +373,7 @@ class Client implements ClientAwareInterface, APIClient
      * @param $number
      * @param string|null $country
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
+     * @throws ClientException\Exception
      */
     public function purchase($number, ?string $country = null): void
     {
@@ -381,7 +381,7 @@ class Client implements ClientAwareInterface, APIClient
         // to make a purchase request
         if (!$number instanceof Number) {
             if (!$country) {
-                throw new Exception\Exception("You must supply a country in addition to a number to purchase a number");
+                throw new ClientException\Exception("You must supply a country in addition to a number to purchase a number");
             }
 
             trigger_error(
@@ -407,9 +407,9 @@ class Client implements ClientAwareInterface, APIClient
      * @param $number
      * @param string|null $country
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      */
     public function cancel($number, ?string $country = null): void
     {

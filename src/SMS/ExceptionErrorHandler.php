@@ -11,7 +11,7 @@ namespace Vonage\SMS;
 
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Vonage\Client\Exception;
+use Vonage\Client\Exception as ClientException;
 use Vonage\Client\Exception\ThrottleException;
 
 class ExceptionErrorHandler
@@ -19,8 +19,8 @@ class ExceptionErrorHandler
     /**
      * @param ResponseInterface $response
      * @param RequestInterface $request
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      * @throws ThrottleException
      */
     public function __invoke(ResponseInterface $response, RequestInterface $request)
@@ -34,9 +34,9 @@ class ExceptionErrorHandler
 
         if (!isset($data['messages'])) {
             if (isset($data['error-code'], $data['error-code-label'])) {
-                $e = new Exception\Request($data['error-code-label'], (int)$data['error-code']);
+                $e = new ClientException\Request($data['error-code-label'], (int)$data['error-code']);
             } else {
-                $e = new Exception\Request('unexpected response from API');
+                $e = new ClientException\Request('unexpected response from API');
             }
 
             $e->setEntity($data);
@@ -59,11 +59,11 @@ class ExceptionErrorHandler
 
                     throw $e;
                 case '5':
-                    $e = new Exception\Server($part['error-text'], (int)$part['status']);
+                    $e = new ClientException\Server($part['error-text'], (int)$part['status']);
                     $e->setEntity($data);
                     throw $e;
                 default:
-                    $e = new Exception\Request($part['error-text'], (int)$part['status']);
+                    $e = new ClientException\Request($part['error-text'], (int)$part['status']);
                     $e->setEntity($data);
                     throw $e;
             }

@@ -18,7 +18,7 @@ use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
 use Vonage\Client\ClientAwareInterface;
 use Vonage\Client\ClientAwareTrait;
-use Vonage\Client\Exception;
+use Vonage\Client\Exception as ClientException;
 
 class Client implements ClientAwareInterface, APIClient
 {
@@ -60,9 +60,9 @@ class Client implements ClientAwareInterface, APIClient
      * @param string|array|Verification|Request $verification
      * @return Verification
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      */
     public function start($verification): Verification
     {
@@ -98,9 +98,9 @@ class Client implements ClientAwareInterface, APIClient
      * @param RequestPSD2 $request
      * @return array{request_id: string, status: string}
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      */
     public function requestPSD2(RequestPSD2 $request): array
     {
@@ -116,9 +116,9 @@ class Client implements ClientAwareInterface, APIClient
      * @param string|Verification $verification
      * @return mixed
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      */
     public function search($verification)
     {
@@ -147,9 +147,9 @@ class Client implements ClientAwareInterface, APIClient
      * @param $verification
      * @return Verification
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      */
     public function cancel($verification): Verification
     {
@@ -168,9 +168,9 @@ class Client implements ClientAwareInterface, APIClient
      * @param $verification
      * @return Verification
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      */
     public function trigger($verification): Verification
     {
@@ -191,9 +191,9 @@ class Client implements ClientAwareInterface, APIClient
      * @param string|null $ip
      * @return Verification
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      */
     public function check($verification, string $code, string $ip = null): Verification
     {
@@ -272,9 +272,9 @@ class Client implements ClientAwareInterface, APIClient
      * @param string $cmd Next command to execute, must be `cancel` or `trigger_next_event`
      * @return Verification
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      */
     protected function control($verification, string $cmd): Verification
     {
@@ -310,13 +310,13 @@ class Client implements ClientAwareInterface, APIClient
      * @param $verification
      * @param $data
      * @return mixed
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      */
     protected function checkError($verification, $data)
     {
         if (!isset($data['status'])) {
-            $e = new Exception\Request('unexpected response from API');
+            $e = new ClientException\Request('unexpected response from API');
             $e->setEntity($data);
 
             throw $e;
@@ -335,11 +335,11 @@ class Client implements ClientAwareInterface, APIClient
             case '0':
                 return $verification;
             case '5':
-                $e = new Exception\Server($data['error_text'], (int)$data['status']);
+                $e = new ClientException\Server($data['error_text'], (int)$data['status']);
                 $e->setEntity($data);
                 break;
             default:
-                $e = new Exception\Request($data['error_text'], (int)$data['status']);
+                $e = new ClientException\Request($data['error_text'], (int)$data['status']);
                 $e->setEntity($data);
                 break;
         }

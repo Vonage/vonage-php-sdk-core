@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace Vonage\Entity;
 
 use JsonSerializable;
-use Vonage\Client\Exception\Exception;
+use Vonage\Client\Exception\Exception as ClientException;
 
 /**
  * Implements getRequestData from EntityInterface based on the entity's jsonSerialize().
@@ -26,12 +26,12 @@ trait JsonSerializableTrait
      *
      * @param bool $sent
      * @return mixed
-     * @throws Exception
+     * @throws ClientException
      */
     public function getRequestData($sent = true)
     {
         if (!($this instanceof EntityInterface)) {
-            throw new Exception(sprintf(
+            throw new ClientException(sprintf(
                 '%s can only be used if the class implements %s',
                 __TRAIT__,
                 EntityInterface::class
@@ -39,7 +39,7 @@ trait JsonSerializableTrait
         }
 
         if (!($this instanceof JsonSerializable)) {
-            throw new Exception(sprintf(
+            throw new ClientException(sprintf(
                 '%s can only be used if the class implements %s',
                 __TRAIT__,
                 JsonSerializable::class

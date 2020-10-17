@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace Vonage\Entity;
 
 use Psr\Http\Client\ClientExceptionInterface;
-use Vonage\Client\Exception\Exception;
+use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Client\Exception\Request;
 use Vonage\Client\Exception\Server;
 
@@ -56,7 +56,7 @@ trait IterableServiceShimTrait
      *
      * @return int
      * @throws ClientExceptionInterface
-     * @throws Exception
+     * @throws ClientException
      * @throws Request
      * @throws Server
      * @deprecated This will be removed in a future release, and will be part of a search response
@@ -75,7 +75,7 @@ trait IterableServiceShimTrait
      *
      * @return mixed
      * @throws ClientExceptionInterface
-     * @throws Exception
+     * @throws ClientException
      * @throws Request
      * @throws Server
      * @deprecated This will be removed in a future release, and will be part of a search response
@@ -122,7 +122,7 @@ trait IterableServiceShimTrait
      *
      * @return bool
      * @throws ClientExceptionInterface
-     * @throws Exception
+     * @throws ClientException
      * @throws Request
      * @throws Server
      * @deprecated This will be removed in a future release, and will be part of a search response
@@ -140,7 +140,7 @@ trait IterableServiceShimTrait
      * Rewinds the current iterable
      *
      * @throws ClientExceptionInterface
-     * @throws Exception
+     * @throws ClientException
      * @throws Request
      * @throws Server
      * @deprecated This will be removed in a future release, and will be part of a search response

@@ -13,5 +13,8 @@ use Vonage\Message\Shortcode;
 
 class TwoFactor extends Shortcode
 {
+    /**
+     * @var string
+     */
     protected $type = '2fa';
 }

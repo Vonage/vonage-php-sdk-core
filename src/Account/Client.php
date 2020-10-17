@@ -14,7 +14,7 @@ use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
 use Vonage\Client\ClientAwareInterface;
 use Vonage\Client\ClientAwareTrait;
-use Vonage\Client\Exception;
+use Vonage\Client\Exception as ClientException;
 use Vonage\Client\Exception\Request as ClientRequestException;
 use Vonage\Client\Exception\Validation as ClientValidationException;
 use Vonage\Entity\Filter\KeyValueFilter;
@@ -125,8 +125,8 @@ class Client implements ClientAwareInterface, APIClient
      *
      * @throws ClientExceptionInterface
      * @throws ClientRequestException
-     * @throws Exception\Exception
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Server
      */
     public function getSmsPrice(string $country): SmsPrice
     {
@@ -142,8 +142,8 @@ class Client implements ClientAwareInterface, APIClient
      *
      * @throws ClientExceptionInterface
      * @throws ClientRequestException
-     * @throws Exception\Exception
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Server
      */
     public function getVoicePrice(string $country): VoicePrice
     {
@@ -156,8 +156,8 @@ class Client implements ClientAwareInterface, APIClient
 
     /**
      * @throws ClientRequestException
-     * @throws Exception\Exception
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Server
      * @throws ClientExceptionInterface
      * @todo This should return an empty result instead of throwing an Exception on no results
      */
@@ -169,7 +169,7 @@ class Client implements ClientAwareInterface, APIClient
         $data = $results->getPageData();
 
         if (is_null($data)) {
-            throw new Exception\Server('No results found');
+            throw new ClientException\Server('No results found');
         }
 
         return $data;
@@ -179,8 +179,8 @@ class Client implements ClientAwareInterface, APIClient
      * Gets the accounts current balance in Euros
      *
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Server
      * @todo This needs further investigated to see if '' can even be returned from this endpoint
      */
     public function getBalance(): Balance
@@ -188,7 +188,7 @@ class Client implements ClientAwareInterface, APIClient
         $data = $this->getAccountAPI()->get('get-balance', [], ['accept' => 'application/json']);
 
         if (is_null($data)) {
-            throw new Exception\Server('No results found');
+            throw new ClientException\Server('No results found');
         }
 
         return new Balance($data['value'], $data['autoReload']);
@@ -196,7 +196,7 @@ class Client implements ClientAwareInterface, APIClient
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
+     * @throws ClientException\Exception
      */
     public function topUp($trx): void
     {
@@ -209,8 +209,8 @@ class Client implements ClientAwareInterface, APIClient
      * Return the account settings
      *
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Server
      */
     public function getConfig(): Config
     {
@@ -219,7 +219,7 @@ class Client implements ClientAwareInterface, APIClient
         $body = $api->submit();
 
         if ($body === '') {
-            throw new Exception\Server('Response was empty');
+            throw new ClientException\Server('Response was empty');
         }
 
         $body = json_decode($body, true);
@@ -237,8 +237,8 @@ class Client implements ClientAwareInterface, APIClient
      * Update account config
      *
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Server
      */
     public function updateConfig(array $options): Config
     {
@@ -259,7 +259,7 @@ class Client implements ClientAwareInterface, APIClient
         $rawBody = $api->submit($params);
 
         if ($rawBody === '') {
-            throw new Exception\Server('Response was empty');
+            throw new ClientException\Server('Response was empty');
         }
 
         $body = json_decode($rawBody, true);
@@ -275,7 +275,7 @@ class Client implements ClientAwareInterface, APIClient
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
+     * @throws ClientException\Exception
      * @throws InvalidResponseException
      */
     public function listSecrets(string $apiKey): SecretCollection
@@ -288,7 +288,7 @@ class Client implements ClientAwareInterface, APIClient
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
+     * @throws ClientException\Exception
      * @throws InvalidResponseException
      */
     public function getSecret(string $apiKey, string $secretId): Secret
@@ -304,7 +304,7 @@ class Client implements ClientAwareInterface, APIClient
      *
      * @throws ClientExceptionInterface
      * @throws ClientRequestException
-     * @throws Exception\Exception
+     * @throws ClientException\Exception
      * @throws InvalidResponseException
      * @throws ClientValidationException
      */
@@ -332,7 +332,7 @@ class Client implements ClientAwareInterface, APIClient
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
+     * @throws ClientException\Exception
      */
     public function deleteSecret(string $apiKey, string $secretId): void
     {

@@ -9,12 +9,13 @@ declare(strict_types=1);
 
 namespace Vonage\Application;
 
+use Exception;
 use Psr\Http\Client\ClientExceptionInterface;
 use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
 use Vonage\Client\ClientAwareInterface;
 use Vonage\Client\ClientAwareTrait;
-use Vonage\Client\Exception\Exception;
+use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Entity\CollectionInterface;
 use Vonage\Entity\Hydrator\ArrayHydrator;
 use Vonage\Entity\Hydrator\HydratorInterface;
@@ -85,7 +86,7 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
      * Returns the specified application
      *
      * @throws ClientExceptionInterface
-     * @throws Exception
+     * @throws ClientException
      */
     public function get($application): Application
     {
@@ -121,8 +122,8 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
      * Creates and saves a new Application
      *
      * @throws ClientExceptionInterface
+     * @throws ClientException
      * @throws Exception
-     * @throws \Exception
      */
     public function create($application): Application
     {
@@ -147,7 +148,7 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception
+     * @throws ClientException
      * @deprecated Use `create()` instead
      */
     public function post($application): Application
@@ -165,8 +166,8 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
      *
      * @return Application
      * @throws ClientExceptionInterface
+     * @throws ClientException
      * @throws Exception
-     * @throws \Exception
      */
     public function update($application, ?string $id = null): Application
     {
@@ -199,7 +200,7 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
     /**
      * @return Application
      * @throws ClientExceptionInterface
-     * @throws Exception
+     * @throws ClientException
      * @deprecated Use `update()` instead
      */
     public function put($application, ?string $id = null): Application
@@ -216,7 +217,7 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
      * Deletes an application from the Vonage account
      *
      * @throws ClientExceptionInterface
-     * @throws Exception
+     * @throws ClientException
      */
     public function delete($application): bool
     {
@@ -237,7 +238,7 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      * @deprecated Use Vonage\Application\Hydrator directly instead
      */
     protected function fromArray(array $array): Application

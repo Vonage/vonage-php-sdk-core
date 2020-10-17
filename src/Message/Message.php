@@ -12,9 +12,10 @@ namespace Vonage\Message;
 use ArrayAccess;
 use Countable;
 use DateTime;
+use Exception;
 use Iterator;
 use RuntimeException;
-use Vonage\Client\Exception\Exception;
+use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 use Vonage\Entity\JsonResponseTrait;
 use Vonage\Entity\Psr7Trait;
@@ -49,16 +50,17 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
 
     protected $id;
 
+    /**
+     * @var bool
+     */
     protected $autodetectEncoding = false;
 
+    /**
+     * @var array
+     */
     protected $data = [];
 
-    /**
-     * @param string $idOrTo Message ID or E.164 (international) formatted number to send the message
-     * @param null|string $from Number or name the message is from
-     * @param array $additional Additional API Params
-     */
-    public function __construct(string $idOrTo, $from = null, $additional = [])
+    public function __construct(string $idOrTo, ?string $from = null, array $additional = [])
     {
         if (is_null($from)) {
             $this->id = $idOrTo;
@@ -67,7 +69,7 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
         }
 
         $this->requestData['to'] = $idOrTo;
-        $this->requestData['from'] = (string)$from;
+        $this->requestData['from'] = $from;
 
         if (static::TYPE) {
             $this->requestData['type'] = static::TYPE;
@@ -79,11 +81,9 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
     /**
      * Boolean indicating if you would like to receive a Delivery Receipt
      *
-     * @param bool $dlr
-     * @return RequestArrayTrait|$this
-     * @throws \Exception
+     * @throws Exception
      */
-    public function requestDLR($dlr = true)
+    public function requestDLR($dlr = true): self
     {
         return $this->setRequestData('status-report-req', $dlr ? 1 : 0);
     }
@@ -92,11 +92,9 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
      * Webhook endpoint the delivery receipt is sent to for this message
      * This overrides the setting in the Dashboard, and should be a full URL
      *
-     * @param string $callback
-     * @return RequestArrayTrait|$this
-     * @throws \Exception
+     * @throws Exception
      */
-    public function setCallback(string $callback)
+    public function setCallback(string $callback): self
     {
         return $this->setRequestData('callback', $callback);
     }
@@ -104,11 +102,9 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
     /**
      * Optional reference of up to 40 characters
      *
-     * @param string $ref
-     * @return RequestArrayTrait|$this
-     * @throws \Exception
+     * @throws Exception
      */
-    public function setClientRef(string $ref)
+    public function setClientRef(string $ref): self
     {
         return $this->setRequestData('client-ref', $ref);
     }
@@ -116,11 +112,9 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
     /**
      * The Mobile Country Code Mobile Network Code (MCCMNC) this number is registered with
      *
-     * @param string $network
-     * @return RequestArrayTrait|$this
-     * @throws \Exception
+     * @throws Exception
      */
-    public function setNetwork(string $network)
+    public function setNetwork(string $network): self
     {
         return $this->setRequestData('network-code', $network);
     }
@@ -131,11 +125,9 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
      * Vonage recommends no shorter than 30 minutes, and to keep at default
      * when possible.
      *
-     * @param int $ttl
-     * @return RequestArrayTrait|Message
-     * @throws \Exception
+     * @throws Exception
      */
-    public function setTTL(int $ttl)
+    public function setTTL(int $ttl): self
     {
         return $this->setRequestData('ttl', $ttl);
     }
@@ -144,11 +136,9 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
      * The Data Coding Scheme value of this message
      * Should be 0, 1, 2, or 3
      *
-     * @param int $class
-     * @return RequestArrayTrait|Message
-     * @throws \Exception
+     * @throws Exception
      */
-    public function setClass(int $class)
+    public function setClass(int $class): self
     {
         return $this->setRequestData('message-class', $class);
     }
@@ -164,8 +154,7 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
     }
 
     /**
-     * @return int|void
-     * @throws \Exception
+     * @throws Exception
      */
     public function count(): int
     {
@@ -179,9 +168,7 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
     }
 
     /**
-     * @param null $index
-     * @return mixed|string|null
-     * @throws \Exception
+     * @throws Exception
      */
     public function getMessageId($index = null): ?string
     {
@@ -189,9 +176,7 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
     }
 
     /**
-     * @param null $index
-     * @return mixed|null
-     * @throws \Exception
+     * @throws Exception
      */
     public function getStatus($index = null)
     {
@@ -199,9 +184,7 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
     }
 
     /**
-     * @param null $index
-     * @return mixed|null
-     * @throws \Exception
+     * @throws Exception
      */
     public function getFinalStatus($index = null)
     {
@@ -209,9 +192,7 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
     }
 
     /**
-     * @param null $index
-     * @return mixed|null
-     * @throws \Exception
+     * @throws Exception
      */
     public function getTo($index = null)
     {
@@ -227,9 +208,7 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
     }
 
     /**
-     * @param null $index
-     * @return mixed|null
-     * @throws \Exception
+     * @throws Exception
      */
     public function getRemainingBalance($index = null)
     {
@@ -237,9 +216,7 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
     }
 
     /**
-     * @param null $index
-     * @return mixed|null
-     * @throws \Exception
+     * @throws Exception
      */
     public function getPrice($index = null)
     {
@@ -255,9 +232,7 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
     }
 
     /**
-     * @param null $index
-     * @return mixed|null
-     * @throws \Exception
+     * @throws Exception
      */
     public function getNetwork($index = null)
     {
@@ -265,8 +240,7 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
     }
 
     /**
-     * @return mixed|void
-     * @throws \Exception
+     * @throws Exception
      */
     public function getDeliveryStatus()
     {
@@ -275,66 +249,47 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
         //check if this is data from a send request
         //(which also has a status, but it's not the same)
         if (isset($data['messages'])) {
-            return;
+            return null;
         }
 
         return $this->data['status'];
     }
 
-    /**
-     * @return mixed
-     */
     public function getFrom()
     {
         return $this->data['from'];
     }
 
-    /**
-     * @return mixed
-     */
     public function getBody()
     {
         return $this->data['body'];
     }
 
     /**
-     * @return DateTime
-     * @throws \Exception
+     * @throws Exception
      */
     public function getDateReceived(): DateTime
     {
         return new DateTime($this->data['date-received']);
     }
 
-    /**
-     * @return mixed
-     */
     public function getDeliveryError()
     {
         return $this->data['error-code'];
     }
 
-    /**
-     * @return mixed
-     */
     public function getDeliveryLabel()
     {
         return $this->data['error-code-label'];
     }
 
-    /**
-     * @return bool
-     */
     public function isEncodingDetectionEnabled(): bool
     {
         return $this->autodetectEncoding;
     }
 
     /**
-     * @param $name
-     * @param null $index
-     * @return mixed|null
-     * @throws \Exception
+     * @throws Exception
      */
     protected function getMessageData($name, $index = null)
     {
@@ -364,9 +319,6 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
         }
     }
 
-    /**
-     * @return string|null
-     */
     protected function detectEncoding(): ?string
     {
         if (!isset($this->requestData['text'])) {
@@ -384,10 +336,8 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
     }
 
     /**
-     * @param mixed $offset
-     * @return bool
+     * @throws ClientException
      * @throws Exception
-     * @throws \Exception
      */
     public function offsetExists($offset): bool
     {
@@ -396,14 +346,14 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
             E_USER_DEPRECATED
         );
 
-        $response = $this->getResponseData();
+        $response = @$this->getResponseData();
 
         if (isset($this->index)) {
             $response = $response['items'][$this->index];
         }
 
-        $request = $this->getRequestData();
-        $dirty = $this->getRequestData(false);
+        $request = @$this->getRequestData();
+        $dirty = @$this->getRequestData(false);
 
         if (isset($response[$offset]) || isset($request[$offset]) || isset($dirty[$offset])) {
             return true;
@@ -418,10 +368,8 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
     }
 
     /**
-     * @param mixed $offset
-     * @return mixed
+     * @throws ClientException
      * @throws Exception
-     * @throws \Exception
      */
     public function offsetGet($offset)
     {
@@ -430,14 +378,14 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
             E_USER_DEPRECATED
         );
 
-        $response = $this->getResponseData();
+        $response = @$this->getResponseData();
 
         if (isset($this->index)) {
             $response = $response['items'][$this->index];
         }
 
-        $request = $this->getRequestData();
-        $dirty = $this->getRequestData(false);
+        $request = @$this->getRequestData();
+        $dirty = @$this->getRequestData(false);
 
         if (isset($response[$offset])) {
             return $response[$offset];
@@ -459,25 +407,17 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
         return $request[$offset] ?? $dirty[$offset] ?? null;
     }
 
-    /**
-     * @param mixed $offset
-     * @param mixed $value
-     */
     public function offsetSet($offset, $value): void
     {
         throw $this->getReadOnlyException($offset);
     }
 
-    /**
-     * @param mixed $offset
-     */
     public function offsetUnset($offset): void
     {
         throw $this->getReadOnlyException($offset);
     }
 
     /**
-     * @param $offset
      * @return RuntimeException
      */
     protected function getReadOnlyException($offset): RuntimeException
@@ -489,8 +429,7 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
     }
 
     /**
-     * @return mixed|null
-     * @throws \Exception
+     * @throws Exception
      */
     public function current()
     {
@@ -507,9 +446,6 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
         $this->current++;
     }
 
-    /**
-     * @return bool|float|int|string|null
-     */
     public function key()
     {
         if (!isset($this->response)) {
@@ -520,8 +456,7 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
     }
 
     /**
-     * @return bool|null
-     * @throws \Exception
+     * @throws Exception
      */
     public function valid(): ?bool
     {
@@ -538,17 +473,11 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
         $this->current = 0;
     }
 
-    /**
-     * @param array $data
-     */
     public function fromArray(array $data): void
     {
         $this->data = $data;
     }
 
-    /**
-     * @return array
-     */
     public function toArray(): array
     {
         return $this->data;

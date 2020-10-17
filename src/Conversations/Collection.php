@@ -10,13 +10,14 @@ declare(strict_types=1);
 namespace Vonage\Conversations;
 
 use ArrayAccess;
+use Exception;
 use Laminas\Diactoros\Request;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
 use Vonage\Client\ClientAwareInterface;
 use Vonage\Client\ClientAwareTrait;
-use Vonage\Client\Exception;
+use Vonage\Client\Exception as ClientException;
 use Vonage\Entity\CollectionInterface;
 use Vonage\Entity\CollectionTrait;
 use Vonage\Entity\JsonResponseTrait;
@@ -99,9 +100,9 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
      * @param $conversation
      * @return Conversation
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      */
     public function create($conversation): Conversation
     {
@@ -111,11 +112,11 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
     /**
      * @param $conversation
      * @return Conversation
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      * @throws ClientExceptionInterface
-     * @throws \Exception
+     * @throws Exception
      */
     public function post($conversation): Conversation
     {
@@ -151,9 +152,9 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
      * @param $conversation
      * @return Conversation
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      */
     public function get($conversation): Conversation
     {
@@ -169,8 +170,8 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
 
     /**
      * @param ResponseInterface $response
-     * @return Exception\Request|Exception\Server
-     * @throws Exception\Exception
+     * @return ClientException\Request|ClientException\Server
+     * @throws ClientException\Exception
      */
     protected function getException(ResponseInterface $response)
     {
@@ -181,11 +182,11 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
         $errorTitle = $body['error_title'] ?? $body['description'] ?? 'Unexpected error';
 
         if ($status >= 400 && $status < 500) {
-            $e = new Exception\Request($errorTitle, $status);
+            $e = new ClientException\Request($errorTitle, $status);
         } elseif ($status >= 500 && $status < 600) {
-            $e = new Exception\Server($errorTitle, $status);
+            $e = new ClientException\Server($errorTitle, $status);
         } else {
-            $e = new Exception\Exception('Unexpected HTTP Status Code');
+            $e = new ClientException\Exception('Unexpected HTTP Status Code');
             throw $e;
         }
 

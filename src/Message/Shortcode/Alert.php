@@ -13,5 +13,8 @@ use Vonage\Message\Shortcode;
 
 class Alert extends Shortcode
 {
+    /**
+     * @var string
+     */
     protected $type = 'alert';
 }

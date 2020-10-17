@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Vonage\Message;
 
-use Vonage\Client\Exception\Exception;
+use Vonage\Client\Exception\Exception as ClientException;
 
 /**
  * SMS Binary Message
@@ -20,48 +20,43 @@ class Wap extends Message
 
     /**
      * Message Title
+     *
      * @var string
      */
     protected $title;
 
     /**
      * Message URL
+     *
      * @var string
      */
     protected $url;
 
     /**
      * Message Timeout
+     *
      * @var int
      */
     protected $validity;
 
     /**
      * Create a new SMS text message.
-     *
-     * @param $to
-     * @param $from
-     * @param $title
-     * @param $url
-     * @param $validity
      */
-    public function __construct($to, $from, $title, $url, $validity)
+    public function __construct(string $to, string $from, string $title, string $url, int $validity)
     {
         parent::__construct($to, $from);
 
-        $this->title = (string)$title;
-        $this->url = (string)$url;
-        $this->validity = (int)$validity;
+        $this->title = $title;
+        $this->url = $url;
+        $this->validity = $validity;
     }
 
     /**
      * Get an array of params to use in an API request.
      *
-     * @param bool $sent
-     * @return array
-     * @throws Exception
+     * @throws ClientException
      */
-    public function getRequestData($sent = true): array
+    public function getRequestData(bool $sent = true): array
     {
         return array_merge(parent::getRequestData($sent), [
             'title' => $this->title,

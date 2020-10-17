@@ -15,7 +15,7 @@ use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
 use Vonage\Client\ClientAwareInterface;
 use Vonage\Client\ClientAwareTrait;
-use Vonage\Client\Exception;
+use Vonage\Client\Exception as ClientException;
 
 class Client implements ClientAwareInterface, APIClient
 {
@@ -58,9 +58,9 @@ class Client implements ClientAwareInterface, APIClient
      * @param $delivered
      * @param null $timestamp
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      */
     public function sms($message_id, $delivered, $timestamp = null): void
     {
@@ -72,9 +72,9 @@ class Client implements ClientAwareInterface, APIClient
      * @param $delivered
      * @param null $timestamp
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      */
     public function voice($message_id, $delivered, $timestamp = null): void
     {
@@ -86,9 +86,9 @@ class Client implements ClientAwareInterface, APIClient
      * @param $message_id
      * @param $delivered
      * @param null $timestamp
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      * @throws ClientExceptionInterface
      */
     protected function sendConversion($type, $message_id, $delivered, $timestamp = null): void
@@ -114,7 +114,7 @@ class Client implements ClientAwareInterface, APIClient
 
     /**
      * @param ResponseInterface $response
-     * @return Exception\Exception|Exception\Request|Exception\Server
+     * @return ClientException\Exception|ClientException\Request|ClientException\Server
      */
     protected function getException(ResponseInterface $response)
     {
@@ -122,14 +122,14 @@ class Client implements ClientAwareInterface, APIClient
         $status = (int)$response->getStatusCode();
 
         if ($status === 402) {
-            $e = new Exception\Request('This endpoint may need activating on your account. ' .
+            $e = new ClientException\Request('This endpoint may need activating on your account. ' .
                 '"Please email support@Vonage.com for more information', $status);
         } elseif ($status >= 400 && $status < 500) {
-            $e = new Exception\Request($body['error_title'], $status);
+            $e = new ClientException\Request($body['error_title'], $status);
         } elseif ($status >= 500 && $status < 600) {
-            $e = new Exception\Server($body['error_title'], $status);
+            $e = new ClientException\Server($body['error_title'], $status);
         } else {
-            $e = new Exception\Exception('Unexpected HTTP Status Code (' . $status . ')');
+            $e = new ClientException\Exception('Unexpected HTTP Status Code (' . $status . ')');
         }
 
         return $e;

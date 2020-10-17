@@ -11,14 +11,15 @@ namespace Vonage\Verify;
 
 use ArrayAccess;
 use DateTime;
+use Exception;
 use Laminas\Diactoros\Request\Serializer as RequestSerializer;
 use Laminas\Diactoros\Response\Serializer as ResponseSerializer;
 use Psr\Http\Client\ClientExceptionInterface;
 use RuntimeException;
 use Serializable;
-use Vonage\Client\Exception\Exception;
+use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Client\Exception\Request as RequestException;
-use Vonage\Client\Exception\Server;
+use Vonage\Client\Exception\Server as ServerException;
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 use Vonage\Entity\JsonResponseTrait;
 use Vonage\Entity\Psr7Trait;
@@ -118,9 +119,9 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      * @param $code
      * @param null $ip
      * @return bool|null
-     * @throws Exception
+     * @throws ClientException
      * @throws RequestException
-     * @throws Server
+     * @throws ServerException
      * @throws ClientExceptionInterface
      */
     public function check($code, $ip = null): ?bool
@@ -152,9 +153,9 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      * Cancel the verification.
      *
      * @throws ClientExceptionInterface
-     * @throws Exception
+     * @throws ClientException
      * @throws RequestException
-     * @throws Server
+     * @throws ServerException
      * @deprecated Use Vonage\Verification\Client::cancel()
      */
     public function cancel(): void
@@ -173,9 +174,9 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      * Trigger the next verification.
      *
      * @throws ClientExceptionInterface
-     * @throws Exception
+     * @throws ClientException
      * @throws RequestException
-     * @throws Server
+     * @throws ServerException
      * @deprecated Use Vonage\Verification\Client::trigger()
      */
     public function trigger(): void
@@ -194,9 +195,9 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      * Update Verification from the API.
      *
      * @throws ClientExceptionInterface
-     * @throws Exception
+     * @throws ClientException
      * @throws RequestException
-     * @throws Server
+     * @throws ServerException
      * @deprecated Use Vonage\Verification\Client::get() to retrieve the object directly
      */
     public function sync(): void
@@ -238,7 +239,7 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      * @link https://developer.nexmo.com/verify/overview#vrequest
      * @param $country
      * @return RequestArrayTrait|Verification
-     * @throws \Exception
+     * @throws Exception
      */
     public function setCountry($country)
     {
@@ -254,7 +255,7 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      * @link https://developer.nexmo.com/verify/overview#vrequest
      * @param $id
      * @return RequestArrayTrait|Verification
-     * @throws \Exception
+     * @throws Exception
      */
     public function setSenderId($id)
     {
@@ -269,7 +270,7 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      * @link https://developer.nexmo.com/verify/overview#vrequest
      * @param $length
      * @return RequestArrayTrait|Verification
-     * @throws \Exception
+     * @throws Exception
      */
     public function setCodeLength($length)
     {
@@ -286,7 +287,7 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      * @link https://developer.nexmo.com/verify/overview#vrequest
      * @param $language
      * @return RequestArrayTrait|Verification
-     * @throws \Exception
+     * @throws Exception
      */
     public function setLanguage($language)
     {
@@ -306,7 +307,7 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      * @link https://developer.nexmo.com/verify/overview#vrequest
      * @param $type
      * @return RequestArrayTrait|Verification
-     * @throws \Exception
+     * @throws Exception
      */
     public function setRequireType($type)
     {
@@ -323,7 +324,7 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      * @link https://developer.nexmo.com/verify/overview#vrequest
      * @param $time
      * @return RequestArrayTrait|Verification
-     * @throws \Exception
+     * @throws Exception
      */
     public function setPinExpiry($time)
     {
@@ -339,7 +340,7 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      * @link https://developer.nexmo.com/verify/overview#vrequest
      * @param $time
      * @return RequestArrayTrait|Verification
-     * @throws \Exception
+     * @throws Exception
      */
     public function setWaitTime($time)
     {
@@ -354,7 +355,7 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      * @link https://developer.nexmo.com/verify/guides/workflows-and-events
      * @param $workflow_id
      * @return RequestArrayTrait|Verification
-     * @throws \Exception
+     * @throws Exception
      */
     public function setWorkflowId($workflow_id)
     {
@@ -475,7 +476,7 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      * Only available after a searching for a verification.
      *
      * @return mixed
-     * @throws \Exception
+     * @throws Exception
      * @see \Vonage\Verify\Client::search();
      */
     public function getSubmitted()
@@ -489,7 +490,7 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      * Only available after a searching for a verification.
      *
      * @return mixed
-     * @throws \Exception
+     * @throws Exception
      * @see \Vonage\Verify\Client::search();
      */
     public function getFinalized()
@@ -502,7 +503,7 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      *
      * Only available after a searching for a verification.
      *
-     * @throws \Exception
+     * @throws Exception
      * @see \Vonage\Verify\Client::search();
      */
     public function getFirstEvent()
@@ -515,7 +516,7 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      *
      * Only available after a searching for a verification.
      *
-     * @throws \Exception
+     * @throws Exception
      * @see \Vonage\Verify\Client::search();
      */
     public function getLastEvent()
@@ -528,7 +529,7 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      *
      * @param $param
      * @return DateTime|null
-     * @throws \Exception
+     * @throws Exception
      */
     protected function proxyArrayAccessDate($param): ?DateTime
     {
@@ -564,8 +565,8 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      *
      * @param mixed $offset
      * @return bool
+     * @throws ClientException
      * @throws Exception
-     * @throws \Exception
      */
     public function offsetExists($offset): bool
     {
@@ -587,8 +588,8 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      *
      * @param mixed $offset
      * @return mixed|null
+     * @throws ClientException
      * @throws Exception
-     * @throws \Exception
      */
     public function offsetGet($offset)
     {

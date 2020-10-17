@@ -9,8 +9,9 @@ declare(strict_types=1);
 
 namespace Vonage\Entity;
 
+use Exception;
 use RuntimeException;
-use Vonage\Client\Exception\Exception;
+use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Message\Message;
 
 /**
@@ -31,14 +32,12 @@ trait RequestArrayTrait
     /**
      * Get an array of params to use in an API request.
      *
-     * @param bool $sent
-     * @return array
-     * @throws Exception
+     * @throws ClientException
      */
-    public function getRequestData($sent = true): array
+    public function getRequestData(bool $sent = true): array
     {
         if (!($this instanceof EntityInterface)) {
-            throw new Exception(sprintf(
+            throw new ClientException(sprintf(
                 '%s can only be used if the class implements %s',
                 __TRAIT__,
                 EntityInterface::class
@@ -62,12 +61,9 @@ trait RequestArrayTrait
     }
 
     /**
-     * @param $name
-     * @param $value
-     * @return Message|$this
-     * @throws \Exception
+     * @throws Exception
      */
-    protected function setRequestData($name, $value)
+    protected function setRequestData($name, $value): self
     {
         if (!($this instanceof EntityInterface)) {
             throw new RuntimeException(sprintf(

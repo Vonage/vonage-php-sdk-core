@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Vonage\Message;
 
-use Vonage\Client\Exception\Exception;
+use Vonage\Client\Exception\Exception as ClientException;
 
 /**
  * SMS Text Message
@@ -20,35 +20,28 @@ class Unicode extends Message
 
     /**
      * Message Body
+     *
      * @var string
      */
     protected $text;
 
     /**
      * Create a new SMS text message.
-     *
-     * @param $to
-     * @param $from
-     * @param $text
      */
-    public function __construct($to, $from, $text)
+    public function __construct(string $to, string $from, string $text)
     {
         parent::__construct($to, $from);
 
-        $this->text = (string)$text;
+        $this->text = $text;
     }
 
     /**
      * Get an array of params to use in an API request.
      *
-     * @param bool $sent
-     * @return array
-     * @throws Exception
+     * @throws ClientException
      */
     public function getRequestData($sent = true): array
     {
-        return array_merge(parent::getRequestData($sent), [
-            'text' => $this->text
-        ]);
+        return array_merge(parent::getRequestData($sent), ['text' => $this->text]);
     }
 }

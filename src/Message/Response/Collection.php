@@ -28,7 +28,7 @@ class Collection extends Response implements Countable, Iterator
     protected $data;
 
     /**
-     * @var Message[]
+     * @var array
      */
     protected $messages = [];
 
@@ -37,18 +37,12 @@ class Collection extends Response implements Countable, Iterator
      */
     protected $position = 0;
 
-    /**
-     * Collection constructor.
-     *
-     * @param array $data
-     */
     public function __construct(array $data)
     {
-        parent::__construct($data);
-
         $this->expected = ['message-count', 'messages'];
-
         $this->count = $data['message-count'];
+
+        parent::__construct($data);
 
         if (count($data['messages']) !== $data['message-count']) {
             throw new RuntimeException('invalid message count');
@@ -65,17 +59,11 @@ class Collection extends Response implements Countable, Iterator
         $this->data = $data;
     }
 
-    /**
-     * @return Message[]
-     */
     public function getMessages(): array
     {
         return $this->messages;
     }
 
-    /**
-     * @return bool
-     */
     public function isSuccess(): bool
     {
         foreach ($this->messages as $message) {
@@ -87,17 +75,11 @@ class Collection extends Response implements Countable, Iterator
         return true;
     }
 
-    /**
-     * @return int|mixed
-     */
-    public function count()
+    public function count(): int
     {
         return $this->count;
     }
 
-    /**
-     * @return Message
-     */
     public function current(): Message
     {
         return $this->messages[$this->position];
@@ -108,17 +90,11 @@ class Collection extends Response implements Countable, Iterator
         $this->position++;
     }
 
-    /**
-     * @return int
-     */
     public function key(): int
     {
         return $this->position;
     }
 
-    /**
-     * @return bool
-     */
     public function valid(): bool
     {
         return $this->position < $this->count;

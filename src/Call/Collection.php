@@ -16,7 +16,7 @@ use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
 use Vonage\Client\ClientAwareInterface;
 use Vonage\Client\ClientAwareTrait;
-use Vonage\Client\Exception;
+use Vonage\Client\Exception as ClientException;
 use Vonage\Entity\CollectionInterface;
 use Vonage\Entity\CollectionTrait;
 
@@ -70,9 +70,9 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      */
     public function create($call): Call
     {
@@ -81,9 +81,9 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      */
     public function put($payload, $idOrCall): Call
     {
@@ -99,9 +99,9 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
 
     /**
      * @return Call
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      * @throws ClientExceptionInterface
      */
     public function delete($call, $type): Call
@@ -130,9 +130,9 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      */
     public function post($call): Call
     {
@@ -169,9 +169,9 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      */
     public function get($call): Call
     {
@@ -186,8 +186,8 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
     }
 
     /**
-     * @return Exception\Request|Exception\Server
-     * @throws Exception\Exception
+     * @return ClientException\Request|ClientException\Server
+     * @throws ClientException\Exception
      */
     protected function getException(ResponseInterface $response)
     {
@@ -202,11 +202,11 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
         $errorTitle = $body['error_title'] ?? $body['title'] ?? 'Unexpected error';
 
         if ($status >= 400 && $status < 500) {
-            $e = new Exception\Request($errorTitle, $status);
+            $e = new ClientException\Request($errorTitle, $status);
         } elseif ($status >= 500 && $status < 600) {
-            $e = new Exception\Server($errorTitle, $status);
+            $e = new ClientException\Server($errorTitle, $status);
         } else {
-            $e = new Exception\Exception('Unexpected HTTP Status Code');
+            $e = new ClientException\Exception('Unexpected HTTP Status Code');
             throw $e;
         }
 

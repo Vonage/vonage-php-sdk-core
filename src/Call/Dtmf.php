@@ -16,7 +16,7 @@ use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
 use Vonage\Client\ClientAwareInterface;
 use Vonage\Client\ClientAwareTrait;
-use Vonage\Client\Exception;
+use Vonage\Client\Exception as ClientException;
 use Vonage\Entity\JsonSerializableInterface;
 
 /**
@@ -56,9 +56,9 @@ class Dtmf implements JsonSerializableInterface, ClientAwareInterface, ArrayAcce
     /**
      * @return $this|Event
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      */
     public function __invoke(?self $entity = null)
     {
@@ -80,9 +80,9 @@ class Dtmf implements JsonSerializableInterface, ClientAwareInterface, ArrayAcce
     }
 
     /**
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      * @throws ClientExceptionInterface
      */
     public function put(?self $dtmf = null): Event
@@ -105,9 +105,9 @@ class Dtmf implements JsonSerializableInterface, ClientAwareInterface, ArrayAcce
     }
 
     /**
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      */
     protected function parseEventResponse(ResponseInterface $response): Event
     {
@@ -118,15 +118,15 @@ class Dtmf implements JsonSerializableInterface, ClientAwareInterface, ArrayAcce
         $json = json_decode($response->getBody()->getContents(), true);
 
         if (!$json) {
-            throw new Exception\Exception('Unexpected Response Body Format');
+            throw new ClientException\Exception('Unexpected Response Body Format');
         }
 
         return new Event($json);
     }
 
     /**
-     * @return Exception\Request|Exception\Server
-     * @throws Exception\Exception
+     * @return ClientException\Request|ClientException\Server
+     * @throws ClientException\Exception
      */
     protected function getException(ResponseInterface $response)
     {
@@ -134,11 +134,11 @@ class Dtmf implements JsonSerializableInterface, ClientAwareInterface, ArrayAcce
         $status = $response->getStatusCode();
 
         if ($status >= 400 && $status < 500) {
-            $e = new Exception\Request($body['error_title'], $status);
+            $e = new ClientException\Request($body['error_title'], $status);
         } elseif ($status >= 500 && $status < 600) {
-            $e = new Exception\Server($body['error_title'], $status);
+            $e = new ClientException\Server($body['error_title'], $status);
         } else {
-            $e = new Exception\Exception('Unexpected HTTP Status Code');
+            $e = new ClientException\Exception('Unexpected HTTP Status Code');
             throw $e;
         }
 

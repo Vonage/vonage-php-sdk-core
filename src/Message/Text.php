@@ -18,22 +18,18 @@ class Text extends Message
 
     /**
      * Message Body
+     *
      * @var string
      */
     protected $text;
 
     /**
      * Create a new SMS text message.
-     *
-     * @param $to
-     * @param $from
-     * @param $text
-     * @param array $additional
      */
-    public function __construct($to, $from, $text, $additional = [])
+    public function __construct(string $to, string $from, string $text, array $additional = [])
     {
         parent::__construct($to, $from, $additional);
 
-        $this->requestData['text'] = (string)$text;
+        $this->requestData['text'] = $text;
     }
 }

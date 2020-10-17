@@ -14,7 +14,7 @@ use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 use Vonage\Client\ClientAwareInterface;
 use Vonage\Client\ClientAwareTrait;
-use Vonage\Client\Exception;
+use Vonage\Client\Exception as ClientException;
 use Vonage\Entity\JsonSerializableInterface;
 
 /**
@@ -50,9 +50,9 @@ class Stream implements JsonSerializableInterface, ClientAwareInterface
     /**
      * @return $this|Event
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      */
     public function __invoke(?Stream $stream = null)
     {
@@ -86,9 +86,9 @@ class Stream implements JsonSerializableInterface, ClientAwareInterface
     }
 
     /**
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      * @throws ClientExceptionInterface
      */
     public function put($stream = null): Event
@@ -111,9 +111,9 @@ class Stream implements JsonSerializableInterface, ClientAwareInterface
     }
 
     /**
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      * @throws ClientExceptionInterface
      */
     public function delete(): Event
@@ -129,9 +129,9 @@ class Stream implements JsonSerializableInterface, ClientAwareInterface
     }
 
     /**
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      */
     protected function parseEventResponse(ResponseInterface $response): Event
     {
@@ -142,14 +142,14 @@ class Stream implements JsonSerializableInterface, ClientAwareInterface
         $json = json_decode($response->getBody()->getContents(), true);
 
         if (!$json) {
-            throw new Exception\Exception('Unexpected Response Body Format');
+            throw new ClientException\Exception('Unexpected Response Body Format');
         }
 
         return new Event($json);
     }
 
     /**
-     * @throws Exception\Exception
+     * @throws ClientException\Exception
      */
     protected function getException(ResponseInterface $response)
     {
@@ -157,11 +157,11 @@ class Stream implements JsonSerializableInterface, ClientAwareInterface
         $status = $response->getStatusCode();
 
         if ($status >= 400 && $status < 500) {
-            $e = new Exception\Request($body['error_title'], $status);
+            $e = new ClientException\Request($body['error_title'], $status);
         } elseif ($status >= 500 && $status < 600) {
-            $e = new Exception\Server($body['error_title'], $status);
+            $e = new ClientException\Server($body['error_title'], $status);
         } else {
-            $e = new Exception\Exception('Unexpected HTTP Status Code');
+            $e = new ClientException\Exception('Unexpected HTTP Status Code');
             throw $e;
         }
 

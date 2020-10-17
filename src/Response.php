@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace Vonage;
 
 use Countable;
-use InvalidArgumentException;
 use Iterator;
 use Vonage\Response\Message;
 
@@ -21,9 +20,9 @@ use Vonage\Response\Message;
 class Response implements Countable, Iterator
 {
     /**
-     * @var mixed
+     * @var array
      */
-    protected $data;
+    protected $data = [];
 
     /**
      * @var array
@@ -35,24 +34,12 @@ class Response implements Countable, Iterator
      */
     protected $position = 0;
 
-    /**
-     * Response constructor.
-     *
-     * @param $data
-     */
-    public function __construct($data)
+    public function __construct(string $data)
     {
-        if (!is_string($data)) {
-            throw new InvalidArgumentException('expected response data to be a string');
-        }
-
         $this->data = json_decode($data, true);
     }
 
-    /**
-     * @return array|mixed
-     */
-    public function getMessages()
+    public function getMessages(): array
     {
         return $this->data['messages'] ?? [];
     }
@@ -61,7 +48,6 @@ class Response implements Countable, Iterator
      * (PHP 5 &gt;= 5.1.0)<br/>
      * Count elements of an object
      * @link http://php.net/manual/en/countable.count.php
-     * @return int The custom count as an integer.
      * </p>
      * <p>
      * The return value is cast to an integer.
@@ -75,7 +61,6 @@ class Response implements Countable, Iterator
      * (PHP 5 &gt;= 5.0.0)<br/>
      * Return the current element
      * @link http://php.net/manual/en/iterator.current.php
-     * @return Message
      */
     public function current(): Message
     {
@@ -90,7 +75,6 @@ class Response implements Countable, Iterator
      * (PHP 5 &gt;= 5.0.0)<br/>
      * Move forward to next element
      * @link http://php.net/manual/en/iterator.next.php
-     * @return void Any returned value is ignored.
      */
     public function next(): void
     {
@@ -101,7 +85,6 @@ class Response implements Countable, Iterator
      * (PHP 5 &gt;= 5.0.0)<br/>
      * Return the key of the current element
      * @link http://php.net/manual/en/iterator.key.php
-     * @return int
      */
     public function key(): int
     {
@@ -112,7 +95,6 @@ class Response implements Countable, Iterator
      * (PHP 5 &gt;= 5.0.0)<br/>
      * Checks if current position is valid
      * @link http://php.net/manual/en/iterator.valid.php
-     * @return boolean The return value will be casted to boolean and then evaluated.
      * Returns true on success or false on failure.
      */
     public function valid(): bool
@@ -124,17 +106,13 @@ class Response implements Countable, Iterator
      * (PHP 5 &gt;= 5.0.0)<br/>
      * Rewind the Iterator to the first element
      * @link http://php.net/manual/en/iterator.rewind.php
-     * @return void Any returned value is ignored.
      */
     public function rewind(): void
     {
         $this->position = 0;
     }
 
-    /**
-     * @return mixed
-     */
-    public function toArray()
+    public function toArray(): array
     {
         return $this->data;
     }

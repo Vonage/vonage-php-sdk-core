@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Vonage\Message;
 
-use Vonage\Client\Exception\Exception;
+use Vonage\Client\Exception\Exception as ClientException;
 
 /**
  * SMS Binary Message
@@ -20,40 +20,32 @@ class Binary extends Message
 
     /**
      * Message Body
+     *
      * @var string
      */
     protected $body;
 
     /**
      * Message UDH
+     *
      * @var string
      */
     protected $udh;
 
-    /**
-     * Create a new SMS text message.
-     *
-     * @param $to
-     * @param $from
-     * @param $body
-     * @param $udh
-     */
-    public function __construct($to, $from, $body, $udh)
+    public function __construct(string $to, string $from, string $body, string $udh)
     {
         parent::__construct($to, $from);
 
-        $this->body = (string)$body;
-        $this->udh = (string)$udh;
+        $this->body = $body;
+        $this->udh = $udh;
     }
 
     /**
      * Get an array of params to use in an API request.
      *
-     * @param bool $sent
-     * @return array
-     * @throws Exception
+     * @throws ClientException
      */
-    public function getRequestData($sent = true): array
+    public function getRequestData(bool $sent = true): array
     {
         return array_merge(parent::getRequestData($sent), [
             'body' => $this->body,
