@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Voice\NCCO\Action;
+namespace VonageTest\Voice\NCCO\Action;
 
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;

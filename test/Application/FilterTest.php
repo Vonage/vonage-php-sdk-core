@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Application;
+namespace VonageTest\Application;
 
 use DateTime;
 use PHPUnit\Framework\TestCase;

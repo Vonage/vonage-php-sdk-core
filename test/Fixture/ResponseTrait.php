@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Fixture;
+namespace VonageTest\Fixture;
 
 use Laminas\Diactoros\Response;
 

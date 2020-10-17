@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Voice;
+namespace VonageTest\Voice;
 
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;

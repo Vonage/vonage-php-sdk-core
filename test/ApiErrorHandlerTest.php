@@ -7,14 +7,14 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test;
+namespace VonageTest;
 
 use Exception;
 use PHPUnit\Framework\TestCase;
 use Vonage\ApiErrorHandler;
-use Vonage\Client\Exception\Request;
-use Vonage\Client\Exception\Server;
-use Vonage\Client\Exception\Validation;
+use Vonage\Client\Exception\Request as RequestException;
+use Vonage\Client\Exception\Server as ServerException;
+use Vonage\Client\Exception\Validation as ValidationException;
 
 class ApiErrorHandlerTest extends TestCase
 {
@@ -33,13 +33,13 @@ class ApiErrorHandlerTest extends TestCase
     }
 
     /**
-     * @throws Request
-     * @throws Server
-     * @throws Validation
+     * @throws RequestException
+     * @throws ServerException
+     * @throws ValidationException
      */
     public function testThrowsOn4xx(): void
     {
-        $this->expectException(Request::class);
+        $this->expectException(RequestException::class);
         $this->expectExceptionMessage(
             'Maximum number of flibbets met. See http://example.com/error for more information'
         );
@@ -54,13 +54,13 @@ class ApiErrorHandlerTest extends TestCase
     }
 
     /**
-     * @throws Request
-     * @throws Server
-     * @throws Validation
+     * @throws RequestException
+     * @throws ServerException
+     * @throws ValidationException
      */
     public function testThrowsOn4xxWithDetail(): void
     {
-        $this->expectException(Request::class);
+        $this->expectException(RequestException::class);
         $this->expectExceptionMessage(
             'Maximum number of flibbets met: Only allowed 3. See http://example.com/error for more information'
         );
@@ -89,8 +89,8 @@ class ApiErrorHandlerTest extends TestCase
                     ]
                 ]
             ], 400);
-        } catch (Validation $e) {
-            self::assertInstanceOf(Validation::class, $e);
+        } catch (ValidationException $e) {
+            self::assertInstanceOf(ValidationException::class, $e);
             self::assertEquals(
                 'Bad Request: The request failed due to validation errors. ' .
                 'See http://example.com/error for more information',
@@ -109,26 +109,26 @@ class ApiErrorHandlerTest extends TestCase
     }
 
     /**
-     * @throws Request
-     * @throws Server
-     * @throws Validation
+     * @throws RequestException
+     * @throws ServerException
+     * @throws ValidationException
      */
     public function testThrowsOn5xx(): void
     {
-        $this->expectException(Server::class);
+        $this->expectException(ServerException::class);
         $this->expectExceptionMessage('Server Error. See http://example.com/error for more information');
 
         ApiErrorHandler::check(['type' => 'http://example.com/error', 'title' => 'Server Error'], 500);
     }
 
     /**
-     * @throws Request
-     * @throws Server
-     * @throws Validation
+     * @throws RequestException
+     * @throws ServerException
+     * @throws ValidationException
      */
     public function testThrowsOn5xxWithDetail(): void
     {
-        $this->expectException(Server::class);
+        $this->expectException(ServerException::class);
         $this->expectExceptionMessage(
             'Server Error: More Information. See http://example.com/error for more information'
         );

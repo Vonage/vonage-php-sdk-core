@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Account;
+namespace VonageTest\Account;
 
 use Laminas\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
@@ -17,13 +17,13 @@ use Psr\Http\Message\RequestInterface;
 use Vonage\Account\Client as AccountClient;
 use Vonage\Account\PrefixPrice;
 use Vonage\Client;
-use Vonage\Client\Exception;
-use Vonage\Client\Exception\Request;
-use Vonage\Client\Exception\Server;
-use Vonage\Client\Exception\Validation;
+use Vonage\Client\Exception as ClientException;
+use Vonage\Client\Exception\Request as RequestException;
+use Vonage\Client\Exception\Server as ServerException;
+use Vonage\Client\Exception\Validation as ValidationException;
 use Vonage\InvalidResponseException;
 use Vonage\Network;
-use Vonage\Test\Psr7AssertionTrait;
+use VonageTest\Psr7AssertionTrait;
 
 class ClientTest extends TestCase
 {
@@ -56,7 +56,7 @@ class ClientTest extends TestCase
     }
 
     /**
-     * @throws Exception\Exception
+     * @throws ClientException\Exception
      * @throws ClientExceptionInterface
      */
     public function testTopUp(): void
@@ -75,11 +75,11 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
+     * @throws ClientException\Exception
      */
     public function testTopUpFailsWith4xx(): void
     {
-        $this->expectException(Request::class);
+        $this->expectException(RequestException::class);
         $this->expectExceptionMessage('authentication failed');
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
@@ -100,11 +100,11 @@ class ClientTest extends TestCase
      * simulate a non-200 response
      *
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
+     * @throws ClientException\Exception
      */
     public function testTopUpFailsDueToBadRequest(): void
     {
-        $this->expectException(Request::class);
+        $this->expectException(RequestException::class);
         $this->expectExceptionMessage('Bad Request');
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
@@ -125,11 +125,11 @@ class ClientTest extends TestCase
      * simulate a non-200 response
      *
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
+     * @throws ClientException\Exception
      */
     public function testTopUpFailsDueToBadRequestReturns500(): void
     {
-        $this->expectException(Server::class);
+        $this->expectException(ServerException::class);
         $this->expectExceptionMessage('Bad Request');
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
@@ -146,8 +146,8 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Server
+     * @throws ClientException\Exception
+     * @throws ServerException
      */
     public function testGetBalance(): void
     {
@@ -167,14 +167,14 @@ class ClientTest extends TestCase
      * Not sure how this would happen in real life, but making sure we work
      *
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Server
+     * @throws ClientException\Exception
+     * @throws ServerException
      * @author Chris Tankersley <chris.tankersley@vonage.com>
      *
      */
     public function testGetBalanceWithNoResults(): void
     {
-        $this->expectException(Server::class);
+        $this->expectException(ServerException::class);
         $this->expectExceptionMessage('No results found');
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
@@ -190,8 +190,8 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Server
+     * @throws ClientException\Exception
+     * @throws ServerException
      */
     public function testGetConfig(): void
     {
@@ -211,14 +211,14 @@ class ClientTest extends TestCase
      * Not sure how this would happen in real life, but making sure we work
      *
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Server
+     * @throws ClientException\Exception
+     * @throws ServerException
      * @author Chris Tankersley <chris.tankersley@vonage.com>
      *
      */
     public function testGetConfigBlankResponse(): void
     {
-        $this->expectException(Server::class);
+        $this->expectException(ServerException::class);
         $this->expectExceptionMessage('Response was empty');
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
@@ -234,8 +234,8 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Server
+     * @throws ClientException\Exception
+     * @throws ServerException
      */
     public function testUpdateConfig(): void
     {
@@ -256,12 +256,12 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Server
+     * @throws ClientException\Exception
+     * @throws ServerException
      */
     public function testUpdateConfigThrowsNon200(): void
     {
-        $this->expectException(Request::class);
+        $this->expectException(RequestException::class);
         $this->expectExceptionMessage('authentication failed');
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
@@ -278,12 +278,12 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Server
+     * @throws ClientException\Exception
+     * @throws ServerException
      */
     public function testUpdateConfigReturnsBlankResponse(): void
     {
-        $this->expectException(Server::class);
+        $this->expectException(ServerException::class);
         $this->expectExceptionMessage('Response was empty');
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
@@ -300,9 +300,9 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Request
-     * @throws Server
+     * @throws ClientException\Exception
+     * @throws RequestException
+     * @throws ServerException
      */
     public function testGetSmsPricing(): void
     {
@@ -322,13 +322,13 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Request
-     * @throws Server
+     * @throws ClientException\Exception
+     * @throws RequestException
+     * @throws ServerException
      */
     public function testGetSmsPricingReturnsEmptySet(): void
     {
-        $this->expectException(Server::class);
+        $this->expectException(ServerException::class);
         $this->expectExceptionMessage('No results found');
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
@@ -345,9 +345,9 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Request
-     * @throws Server
+     * @throws ClientException\Exception
+     * @throws RequestException
+     * @throws ServerException
      */
     public function testGetVoicePricing(): void
     {
@@ -408,7 +408,7 @@ class ClientTest extends TestCase
 
     public function testGetPrefixPricingGenerates4xxError(): void
     {
-        $this->expectException(Request::class);
+        $this->expectException(RequestException::class);
         $this->expectExceptionMessage('authentication failed');
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
@@ -425,7 +425,7 @@ class ClientTest extends TestCase
 
     public function testGetPrefixPricingGenerates5xxError(): void
     {
-        $this->expectException(Server::class);
+        $this->expectException(ServerException::class);
         $this->expectExceptionMessage('unknown error');
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
@@ -442,7 +442,7 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
+     * @throws ClientException\Exception
      * @throws InvalidResponseException
      */
     public function testListSecrets(): void
@@ -459,12 +459,12 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
+     * @throws ClientException\Exception
      * @throws InvalidResponseException
      */
     public function testListSecretsServerError(): void
     {
-        $this->expectException(Exception\Server::class);
+        $this->expectException(ClientException\Server::class);
 
         $this->vonageClient->send(
             Argument::any()
@@ -475,12 +475,12 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
+     * @throws ClientException\Exception
      * @throws InvalidResponseException
      */
     public function testListSecretsRequestError(): void
     {
-        $this->expectException(Exception\Request::class);
+        $this->expectException(ClientException\Request::class);
 
         $this->vonageClient->send(
             Argument::any()
@@ -491,7 +491,7 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
+     * @throws ClientException\Exception
      * @throws InvalidResponseException
      */
     public function testGetSecret(): void
@@ -511,12 +511,12 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
+     * @throws ClientException\Exception
      * @throws InvalidResponseException
      */
     public function testGetSecretsServerError(): void
     {
-        $this->expectException(Exception\Server::class);
+        $this->expectException(ClientException\Server::class);
 
         $this->vonageClient->send(
             Argument::any()
@@ -527,12 +527,12 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
+     * @throws ClientException\Exception
      * @throws InvalidResponseException
      */
     public function testGetSecretsRequestError(): void
     {
-        $this->expectException(Exception\Request::class);
+        $this->expectException(ClientException\Request::class);
 
         $this->vonageClient->send(
             Argument::any()
@@ -543,10 +543,10 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
+     * @throws ClientException\Exception
      * @throws InvalidResponseException
-     * @throws Request
-     * @throws Validation
+     * @throws RequestException
+     * @throws ValidationException
      */
     public function testCreateSecret(): void
     {
@@ -562,14 +562,14 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
+     * @throws ClientException\Exception
      * @throws InvalidResponseException
-     * @throws Request
-     * @throws Validation
+     * @throws RequestException
+     * @throws ValidationException
      */
     public function testCreateSecretsServerError(): void
     {
-        $this->expectException(Exception\Server::class);
+        $this->expectException(ClientException\Server::class);
 
         $this->vonageClient->send(
             Argument::any()
@@ -580,14 +580,14 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
+     * @throws ClientException\Exception
      * @throws InvalidResponseException
-     * @throws Request
-     * @throws Validation
+     * @throws RequestException
+     * @throws ValidationException
      */
     public function testCreateSecretsRequestError(): void
     {
-        $this->expectException(Exception\Request::class);
+        $this->expectException(ClientException\Request::class);
 
         $this->vonageClient->send(Argument::any())->willReturn($this->getGenericResponse('401', 401));
 
@@ -596,9 +596,9 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
+     * @throws ClientException\Exception
      * @throws InvalidResponseException
-     * @throws Request
+     * @throws RequestException
      */
     public function testCreateSecretsValidationError(): void
     {
@@ -606,7 +606,7 @@ class ClientTest extends TestCase
             $this->vonageClient->send(Argument::any())
                 ->willReturn($this->getResponse('secret-management/create-validation', 400));
             $this->accountClient->createSecret('abcd1234', 'example-4PI-secret');
-        } catch (Validation $e) {
+        } catch (ValidationException $e) {
             self::assertEquals(
                 'Bad Request: The request failed due to validation errors. ' .
                 'See https://developer.nexmo.com/api-errors/account/secret-management#validation ' .
@@ -627,7 +627,7 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
+     * @throws ClientException\Exception
      */
     public function testDeleteSecret(): void
     {
@@ -646,22 +646,22 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
+     * @throws ClientException\Exception
      */
     public function testDeleteSecretsServerError(): void
     {
-        $this->expectException(Exception\Server::class);
+        $this->expectException(ClientException\Server::class);
         $this->vonageClient->send(Argument::any())->willReturn($this->getGenericResponse('500', 500));
         $this->accountClient->deleteSecret('abcd1234', 'ad6dc56f-07b5-46e1-a527-85530e625800');
     }
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
+     * @throws ClientException\Exception
      */
     public function testDeleteSecretsRequestError(): void
     {
-        $this->expectException(Exception\Request::class);
+        $this->expectException(ClientException\Request::class);
         $this->vonageClient->send(Argument::any())->willReturn($this->getGenericResponse('401', 401));
         $this->accountClient->deleteSecret('abcd1234', 'ad6dc56f-07b5-46e1-a527-85530e625800');
     }

@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\SMS;
+namespace VonageTest\SMS;
 
 use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
@@ -15,13 +15,13 @@ use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
-use Vonage\Client as vonageClient;
+use Vonage\Client;
 use Vonage\Client\APIResource;
-use Vonage\Client\Exception\Server;
+use Vonage\Client\Exception\Server as ServerException;
 use Vonage\SMS\Client as SMSClient;
 use Vonage\SMS\ExceptionErrorHandler;
 use Vonage\SMS\Message\SMS;
-use Vonage\Test\Psr7AssertionTrait;
+use VonageTest\Psr7AssertionTrait;
 
 class ClientTest extends TestCase
 {
@@ -44,7 +44,7 @@ class ClientTest extends TestCase
 
     public function setUp(): void
     {
-        $this->vonageClient = $this->prophesize(vonageClient::class);
+        $this->vonageClient = $this->prophesize(Client::class);
         $this->vonageClient->getRestUrl()->willReturn('https://rest.nexmo.com');
         /** @noinspection PhpParamsInspection */
         $this->api = (new APIResource())
@@ -59,7 +59,7 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws vonageClient\Exception\Exception
+     * @throws Client\Exception\Exception
      */
     public function testCanSendSMS(): void
     {
@@ -99,11 +99,11 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws vonageClient\Exception\Exception
+     * @throws Client\Exception\Exception
      */
     public function testHandlesEmptyResponse(): void
     {
-        $this->expectException(vonageClient\Exception\Request::class);
+        $this->expectException(Client\Exception\Request::class);
         $this->expectExceptionMessage('unexpected response from API');
 
         $this->vonageClient
@@ -115,11 +115,11 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws vonageClient\Exception\Exception
+     * @throws Client\Exception\Exception
      */
     public function testCanParseErrorsAndThrowException(): void
     {
-        $this->expectException(vonageClient\Exception\Request::class);
+        $this->expectException(Client\Exception\Request::class);
         $this->expectExceptionMessage('Missing from param');
 
         $this->vonageClient
@@ -131,11 +131,11 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws vonageClient\Exception\Exception
+     * @throws Client\Exception\Exception
      */
     public function testCanParseServerErrorsAndThrowException(): void
     {
-        $this->expectException(Server::class);
+        $this->expectException(ServerException::class);
         $this->expectExceptionMessage('Server Error');
 
         $this->vonageClient
@@ -147,7 +147,7 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws vonageClient\Exception\Exception
+     * @throws Client\Exception\Exception
      */
     public function testCanHandleRateLimitRequests(): void
     {
@@ -182,7 +182,7 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws vonageClient\Exception\Exception
+     * @throws Client\Exception\Exception
      */
     public function testCanHandleRateLimitRequestsWithNoDeclaredTimeout(): void
     {
@@ -218,7 +218,7 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws vonageClient\Exception\Exception
+     * @throws Client\Exception\Exception
      */
     public function testCanUnderstandMultiMessageResponses(): void
     {
@@ -253,7 +253,7 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws vonageClient\Exception\Exception
+     * @throws Client\Exception\Exception
      */
     public function testCanSend2FAMessage(): void
     {
@@ -276,11 +276,11 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws vonageClient\Exception\Exception
+     * @throws Client\Exception\Exception
      */
     public function testCanHandleMissingShortcodeOn2FA(): void
     {
-        $this->expectException(vonageClient\Exception\Request::class);
+        $this->expectException(Client\Exception\Request::class);
         $this->expectExceptionMessage('Invalid Account for Campaign');
         $this->expectExceptionCode(101);
 
@@ -292,7 +292,7 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws vonageClient\Exception\Exception
+     * @throws Client\Exception\Exception
      */
     public function testCanSendAlert(): void
     {
@@ -317,11 +317,11 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws vonageClient\Exception\Exception
+     * @throws Client\Exception\Exception
      */
     public function testCanHandleMissingAlertSetup(): void
     {
-        $this->expectException(vonageClient\Exception\Request::class);
+        $this->expectException(Client\Exception\Request::class);
         $this->expectExceptionMessage('Invalid Account for Campaign');
         $this->expectExceptionCode(101);
 

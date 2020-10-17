@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Verify;
+namespace VonageTest\Verify;
 
 use Laminas\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
@@ -15,8 +15,8 @@ use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
 use Vonage\Client;
-use Vonage\Client\Exception\Server;
-use Vonage\Test\Psr7AssertionTrait;
+use Vonage\Client\Exception\Server as ServerException;
+use VonageTest\Psr7AssertionTrait;
 use Vonage\Verify\Client as VerifyClient;
 use Vonage\Verify\Request;
 use Vonage\Verify\RequestPSD2;
@@ -106,7 +106,7 @@ class ClientTest extends TestCase
     /**
      * @throws Client\Exception\Exception
      * @throws Client\Exception\Request
-     * @throws Server
+     * @throws ServerException
      * @throws ClientExceptionInterface
      */
     public function testUnserializeSetsClient(): void
@@ -139,7 +139,7 @@ class ClientTest extends TestCase
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Exception
      * @throws Client\Exception\Request
-     * @throws Server
+     * @throws ServerException
      * @deprecated
      */
     public function testCanStartVerificationWithVerificationObject(): void
@@ -156,7 +156,7 @@ class ClientTest extends TestCase
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Exception
      * @throws Client\Exception\Request
-     * @throws Server
+     * @throws ServerException
      */
     public function testCanStartVerification(): void
     {
@@ -172,7 +172,7 @@ class ClientTest extends TestCase
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Exception
      * @throws Client\Exception\Request
-     * @throws Server
+     * @throws ServerException
      */
     public function testCanStartPSD2Verification(): void
     {
@@ -197,7 +197,7 @@ class ClientTest extends TestCase
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Exception
      * @throws Client\Exception\Request
-     * @throws Server
+     * @throws ServerException
      */
     public function testCanStartPSD2VerificationWithWorkflowID(): void
     {
@@ -223,7 +223,7 @@ class ClientTest extends TestCase
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Exception
      * @throws Client\Exception\Request
-     * @throws Server
+     * @throws ServerException
      */
     public function testCanStartArray(): void
     {
@@ -240,7 +240,7 @@ class ClientTest extends TestCase
     /**
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Exception
-     * @throws Server
+     * @throws ServerException
      */
     public function testStartThrowsException(): void
     {
@@ -279,7 +279,7 @@ class ClientTest extends TestCase
             ]);
 
             self::fail('did not throw exception');
-        } catch (Server $e) {
+        } catch (ServerException $e) {
             self::assertEquals('5', $e->getCode());
             self::assertEquals('Server Error', $e->getMessage());
             self::assertSame($response, @$e->getEntity()->getResponse());
@@ -309,7 +309,7 @@ class ClientTest extends TestCase
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Exception
      * @throws Client\Exception\Request
-     * @throws Server
+     * @throws ServerException
      */
     public function testCanSearchVerification(): void
     {
@@ -325,7 +325,7 @@ class ClientTest extends TestCase
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Exception
      * @throws Client\Exception\Request
-     * @throws Server
+     * @throws ServerException
      */
     public function testCanSearchId(): void
     {
@@ -339,7 +339,7 @@ class ClientTest extends TestCase
     /**
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Exception
-     * @throws Server
+     * @throws ServerException
      */
     public function testSearchThrowsException(): void
     {
@@ -369,7 +369,7 @@ class ClientTest extends TestCase
             @$this->client->search('44a5279b27dd4a638d614d265ad57a77');
 
             self::fail('did not throw exception');
-        } catch (Server $e) {
+        } catch (ServerException $e) {
             self::assertEquals('5', $e->getCode());
             self::assertEquals('Server Error', $e->getMessage());
             self::assertSame($response, @$e->getEntity()->getResponse());
@@ -380,7 +380,7 @@ class ClientTest extends TestCase
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Exception
      * @throws Client\Exception\Request
-     * @throws Server
+     * @throws ServerException
      */
     public function testSearchReplacesResponse(): void
     {
@@ -416,7 +416,7 @@ class ClientTest extends TestCase
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Exception
      * @throws Client\Exception\Request
-     * @throws Server
+     * @throws ServerException
      */
     public function testCanCancelVerification(): void
     {
@@ -433,7 +433,7 @@ class ClientTest extends TestCase
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Exception
      * @throws Client\Exception\Request
-     * @throws Server
+     * @throws ServerException
      */
     public function testCanCancelId(): void
     {
@@ -447,7 +447,7 @@ class ClientTest extends TestCase
     /**
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Exception
-     * @throws Server
+     * @throws ServerException
      */
     public function testCancelThrowsClientException(): void
     {
@@ -481,7 +481,7 @@ class ClientTest extends TestCase
             @$this->client->cancel('44a5279b27dd4a638d614d265ad57a77');
 
             self::fail('did not throw exception');
-        } catch (Server $e) {
+        } catch (ServerException $e) {
             self::assertEquals('5', $e->getCode());
             self::assertEquals('Server Error', $e->getMessage());
             self::assertSame($response, @$e->getEntity()->getResponse());
@@ -492,7 +492,7 @@ class ClientTest extends TestCase
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Exception
      * @throws Client\Exception\Request
-     * @throws Server
+     * @throws ServerException
      */
     public function testCanTriggerId(): void
     {
@@ -507,7 +507,7 @@ class ClientTest extends TestCase
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Exception
      * @throws Client\Exception\Request
-     * @throws Server
+     * @throws ServerException
      */
     public function testCanTriggerVerification(): void
     {
@@ -523,7 +523,7 @@ class ClientTest extends TestCase
     /**
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Exception
-     * @throws Server
+     * @throws ServerException
      */
     public function testTriggerThrowsClientException(): void
     {
@@ -557,7 +557,7 @@ class ClientTest extends TestCase
             @$this->client->trigger('44a5279b27dd4a638d614d265ad57a77');
 
             self::fail('did not throw exception');
-        } catch (Server $e) {
+        } catch (ServerException $e) {
             self::assertEquals('5', $e->getCode());
             self::assertEquals('Server Error', $e->getMessage());
             self::assertSame($response, @$e->getEntity()->getResponse());
@@ -616,7 +616,7 @@ class ClientTest extends TestCase
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Exception
      * @throws Client\Exception\Request
-     * @throws Server
+     * @throws ServerException
      */
     public function testCanCheckVerification(): void
     {
@@ -632,7 +632,7 @@ class ClientTest extends TestCase
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Exception
      * @throws Client\Exception\Request
-     * @throws Server
+     * @throws ServerException
      */
     public function testCanCheckId(): void
     {
@@ -645,7 +645,7 @@ class ClientTest extends TestCase
     /**
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Exception
-     * @throws Server
+     * @throws ServerException
      */
     public function testCheckThrowsClientException(): void
     {
@@ -675,7 +675,7 @@ class ClientTest extends TestCase
             @$this->client->check('44a5279b27dd4a638d614d265ad57a77', '1234');
 
             self::fail('did not throw exception');
-        } catch (Server $e) {
+        } catch (ServerException $e) {
             self::assertEquals('5', $e->getCode());
             self::assertEquals('Server Error', $e->getMessage());
             self::assertSame($response, @$e->getEntity()->getResponse());
@@ -686,7 +686,7 @@ class ClientTest extends TestCase
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Exception
      * @throws Client\Exception\Request
-     * @throws Server
+     * @throws ServerException
      */
     public function testCheckNotReplaceResponse(): void
     {

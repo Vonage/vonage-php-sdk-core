@@ -7,11 +7,11 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Numbers;
+namespace VonageTest\Numbers;
 
 use PHPUnit\Framework\TestCase;
 use Vonage\Application\Application;
-use Vonage\Client\Exception\Exception;
+use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Numbers\Number;
 
 class NumberTest extends TestCase
@@ -78,7 +78,7 @@ class NumberTest extends TestCase
     }
 
     /**
-     * @throws Exception
+     * @throws ClientException
      */
     public function testVoiceApplication(): void
     {
@@ -99,7 +99,7 @@ class NumberTest extends TestCase
     }
 
     /**
-     * @throws Exception
+     * @throws ClientException
      */
     public function testForceVoiceType(): void
     {
@@ -113,7 +113,7 @@ class NumberTest extends TestCase
      * @dataProvider voiceDestinations
      * @param $type
      * @param $value
-     * @throws Exception
+     * @throws ClientException
      */
     public function testVoiceDestination($type, $value): void
     {
@@ -149,7 +149,7 @@ class NumberTest extends TestCase
     }
 
     /**
-     * @throws Exception
+     * @throws ClientException
      */
     public function testStatusWebhook(): void
     {
@@ -159,7 +159,7 @@ class NumberTest extends TestCase
     }
 
     /**
-     * @throws Exception
+     * @throws ClientException
      */
     public function testMessageWebhook(): void
     {

@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Numbers;
+namespace VonageTest\Numbers;
 
 use Laminas\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
@@ -15,12 +15,12 @@ use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
 use Vonage\Client\APIResource;
-use Vonage\Client\Exception;
-use Vonage\Client\Exception\Request;
+use Vonage\Client\Exception as ClientException;
+use Vonage\Client\Exception\Request as RequestException;
 use Vonage\Numbers\Client as NumbersClient;
 use Vonage\Numbers\Filter\AvailableNumbers;
 use Vonage\Numbers\Number;
-use Vonage\Test\Psr7AssertionTrait;
+use VonageTest\Psr7AssertionTrait;
 
 class ClientTest extends TestCase
 {
@@ -56,8 +56,8 @@ class ClientTest extends TestCase
      * @param $id
      * @param $expectedId
      * @param $lookup
-     * @throws Exception\Exception
-     * @throws Request
+     * @throws ClientException\Exception
+     * @throws RequestException
      * @throws ClientExceptionInterface
      */
     public function testUpdateNumber($payload, $id, $expectedId, $lookup): void
@@ -158,9 +158,9 @@ class ClientTest extends TestCase
      * @param $payload
      * @param $id
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Server
-     * @throws Request
+     * @throws ClientException\Exception
+     * @throws ClientException\Server
+     * @throws RequestException
      */
     public function testGetNumber($payload, $id): void
     {
@@ -196,9 +196,9 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Server
-     * @throws Request
+     * @throws ClientException\Exception
+     * @throws ClientException\Server
+     * @throws RequestException
      */
     public function testListNumbers(): void
     {
@@ -220,9 +220,9 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Server
-     * @throws Request
+     * @throws ClientException\Exception
+     * @throws ClientException\Server
+     * @throws RequestException
      */
     public function testSearchAvailablePassesThroughWhitelistedOptions(): void
     {
@@ -252,9 +252,9 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Server
-     * @throws Request
+     * @throws ClientException\Exception
+     * @throws ClientException\Server
+     * @throws RequestException
      */
     public function testSearchAvailableAcceptsFilterInterfaceOptions(): void
     {
@@ -281,13 +281,13 @@ class ClientTest extends TestCase
      * Make sure that unknown parameters fail validation
      *
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Server
-     * @throws Request
+     * @throws ClientException\Exception
+     * @throws ClientException\Server
+     * @throws RequestException
      */
     public function testUnknownParameterValueForSearchThrowsException(): void
     {
-        $this->expectException(Request::class);
+        $this->expectException(RequestException::class);
         $this->expectExceptionMessage("Unknown option: 'foo'");
 
         @$this->numberClient->searchAvailable('US', ['foo' => 'bar']);
@@ -295,9 +295,9 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Server
-     * @throws Request
+     * @throws ClientException\Exception
+     * @throws ClientException\Server
+     * @throws RequestException
      */
     public function testSearchAvailableReturnsNumberList(): void
     {
@@ -322,9 +322,9 @@ class ClientTest extends TestCase
      * A search can return an empty set `[]` result when no numbers are found
      *
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Server
-     * @throws Request
+     * @throws ClientException\Exception
+     * @throws ClientException\Server
+     * @throws RequestException
      */
     public function testSearchAvailableReturnsEmptyNumberList(): void
     {
@@ -344,13 +344,13 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Server
-     * @throws Request
+     * @throws ClientException\Exception
+     * @throws ClientException\Server
+     * @throws RequestException
      */
     public function testSearchOwnedErrorsOnUnknownSearchParameters(): void
     {
-        $this->expectException(Exception\Request::class);
+        $this->expectException(ClientException\Request::class);
         $this->expectExceptionMessage("Unknown option: 'foo'");
 
         @$this->numberClient->searchOwned('1415550100', ['foo' => 'bar']);
@@ -358,9 +358,9 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Server
-     * @throws Request
+     * @throws ClientException\Exception
+     * @throws ClientException\Server
+     * @throws RequestException
      */
     public function testSearchOwnedPassesInAllowedAdditionalParameters(): void
     {
@@ -388,9 +388,9 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Server
-     * @throws Request
+     * @throws ClientException\Exception
+     * @throws ClientException\Server
+     * @throws RequestException
      */
     public function testSearchOwnedReturnsSingleNumber(): void
     {
@@ -411,7 +411,7 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
+     * @throws ClientException\Exception
      */
     public function testPurchaseNumberWithNumberObject(): void
     {
@@ -432,7 +432,7 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
+     * @throws ClientException\Exception
      */
     public function testPurchaseNumberWithNumberAndCountry(): void
     {
@@ -466,7 +466,7 @@ class ClientTest extends TestCase
      * @param $expectedException
      * @param $expectedExceptionMessage
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
+     * @throws ClientException\Exception
      */
     public function testPurchaseNumberErrors(
         $number,
@@ -502,7 +502,7 @@ class ClientTest extends TestCase
             'GB',
             'method-failed',
             420,
-            Exception\Request::class,
+            ClientException\Request::class,
             'method failed'
         ];
 
@@ -511,7 +511,7 @@ class ClientTest extends TestCase
             'GB',
             'method-failed',
             420,
-            Exception\Request::class,
+            ClientException\Request::class,
             'method failed'
         ];
 
@@ -520,7 +520,7 @@ class ClientTest extends TestCase
             'GB',
             'method-failed',
             420,
-            Exception\Request::class,
+            ClientException\Request::class,
             'method failed'
         ];
 
@@ -529,9 +529,9 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Server
-     * @throws Request
+     * @throws ClientException\Exception
+     * @throws ClientException\Server
+     * @throws RequestException
      */
     public function testCancelNumberWithNumberObject(): void
     {
@@ -552,9 +552,9 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Server
-     * @throws Request
+     * @throws ClientException\Exception
+     * @throws ClientException\Server
+     * @throws RequestException
      */
     public function testCancelNumberWithNumberString(): void
     {
@@ -580,9 +580,9 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Server
-     * @throws Request
+     * @throws ClientException\Exception
+     * @throws ClientException\Server
+     * @throws RequestException
      */
     public function testCancelNumberWithNumberAndCountryString(): void
     {
@@ -608,9 +608,9 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Server
-     * @throws Request
+     * @throws ClientException\Exception
+     * @throws ClientException\Server
+     * @throws RequestException
      */
     public function testCancelNumberError(): void
     {
@@ -622,7 +622,7 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('method-failed', 420));
 
-        $this->expectException(Exception\Request::class);
+        $this->expectException(ClientException\Request::class);
         $this->expectExceptionMessage('method failed');
 
         $num = new Number('1415550100', 'US');
@@ -633,13 +633,13 @@ class ClientTest extends TestCase
      * Make sure that integer values that fail validation throw properly
      *
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Server
-     * @throws Request
+     * @throws ClientException\Exception
+     * @throws ClientException\Server
+     * @throws RequestException
      */
     public function testInvalidIntegerValueForSearchThrowsException(): void
     {
-        $this->expectException(Request::class);
+        $this->expectException(RequestException::class);
         $this->expectExceptionMessage("Invalid value: 'size' must be an integer");
 
         @$this->numberClient->searchOwned(null, ['size' => 'bob']);
@@ -649,13 +649,13 @@ class ClientTest extends TestCase
      * Make sure that boolean values that fail validation throw properly
      *
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Server
-     * @throws Request
+     * @throws ClientException\Exception
+     * @throws ClientException\Server
+     * @throws RequestException
      */
     public function testInvalidBooleanValueForSearchThrowsException(): void
     {
-        $this->expectException(Request::class);
+        $this->expectException(RequestException::class);
         $this->expectExceptionMessage("Invalid value: 'has_application' must be a boolean value");
 
         @$this->numberClient->searchOwned(null, ['has_application' => 'bob']);

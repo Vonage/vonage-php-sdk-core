@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Call;
+namespace VonageTest\Call;
 
 use Laminas\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
@@ -16,10 +16,10 @@ use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
 use Vonage\Call\Event;
 use Vonage\Call\Talk;
-use Vonage\Client\Exception\Exception;
-use Vonage\Client\Exception\Request;
-use Vonage\Client\Exception\Server;
-use Vonage\Test\Psr7AssertionTrait;
+use Vonage\Client\Exception\Exception as ClientException;
+use Vonage\Client\Exception\Request as RequestException;
+use Vonage\Client\Exception\Server as ServerException;
+use VonageTest\Psr7AssertionTrait;
 
 class TalkTest extends TestCase
 {
@@ -109,9 +109,9 @@ class TalkTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception
-     * @throws Request
-     * @throws Server
+     * @throws ClientException
+     * @throws RequestException
+     * @throws ServerException
      */
     public function testPutMakesRequest(): void
     {
@@ -141,9 +141,9 @@ class TalkTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception
-     * @throws Request
-     * @throws Server
+     * @throws ClientException
+     * @throws RequestException
+     * @throws ServerException
      */
     public function testPutCanReplace(): void
     {
@@ -175,9 +175,9 @@ class TalkTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception
-     * @throws Request
-     * @throws Server
+     * @throws ClientException
+     * @throws RequestException
+     * @throws ServerException
      */
     public function testInvokeProxiesPutWithArgument(): void
     {
@@ -204,9 +204,9 @@ class TalkTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception
-     * @throws Request
-     * @throws Server
+     * @throws ClientException
+     * @throws RequestException
+     * @throws ServerException
      */
     public function testDeleteMakesRequest(): void
     {

@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Network\Number;
+namespace VonageTest\Network\Number;
 
 use BadMethodCallException;
 use PHPUnit\Framework\TestCase;

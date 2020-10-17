@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Message;
+namespace VonageTest\Message;
 
 use Exception;
 use Laminas\Diactoros\Response;

@@ -7,15 +7,16 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Application;
+namespace VonageTest\Application;
 
+use Exception;
 use Laminas\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
 use Vonage\Application\Application;
 use Vonage\Application\MessagesConfig;
 use Vonage\Application\RtcConfig;
 use Vonage\Application\VoiceConfig;
-use Vonage\Client\Exception\Exception;
+use Vonage\Client\Exception\Exception as ClientException;
 
 class ApplicationTest extends TestCase
 {
@@ -37,7 +38,7 @@ class ApplicationTest extends TestCase
     }
 
     /**
-     * @throws Exception
+     * @throws ClientException
      */
     public function testNameIsSet(): void
     {
@@ -45,7 +46,7 @@ class ApplicationTest extends TestCase
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function testVoiceWebhookParams(): void
     {
@@ -76,7 +77,7 @@ class ApplicationTest extends TestCase
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function testResponseSetsVoiceConfigs(): void
     {
@@ -94,7 +95,7 @@ class ApplicationTest extends TestCase
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function testResponseSetsMessagesConfigs(): void
     {
@@ -112,7 +113,7 @@ class ApplicationTest extends TestCase
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function testResponseSetsRtcConfigs(): void
     {
@@ -131,7 +132,7 @@ class ApplicationTest extends TestCase
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function testCanGetDirtyValues(): void
     {
@@ -150,7 +151,7 @@ class ApplicationTest extends TestCase
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function testConfigCanBeCopied(): void
     {

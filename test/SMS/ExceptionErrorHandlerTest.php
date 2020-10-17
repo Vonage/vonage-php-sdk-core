@@ -7,23 +7,23 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\SMS;
+namespace VonageTest\SMS;
 
 use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response\JsonResponse;
 use Laminas\Diactoros\ResponseFactory;
 use PHPUnit\Framework\TestCase;
-use Vonage\Client\Exception\Request as ExceptionRequest;
-use Vonage\Client\Exception\Server;
+use Vonage\Client\Exception\Request as RequestException;
+use Vonage\Client\Exception\Server as ServerException;
 use Vonage\Client\Exception\ThrottleException;
 use Vonage\SMS\ExceptionErrorHandler;
 
 class ExceptionErrorHandlerTest extends TestCase
 {
     /**
-     * @throws ExceptionRequest
+     * @throws RequestException
      * @throws ThrottleException
-     * @throws Server
+     * @throws ServerException
      */
     public function test429ThrowsThrottleException(): void
     {
@@ -38,13 +38,13 @@ class ExceptionErrorHandlerTest extends TestCase
     }
 
     /**
-     * @throws ExceptionRequest
-     * @throws Server
+     * @throws RequestException
+     * @throws ServerException
      * @throws ThrottleException
      */
     public function testGenericErrorThrowsRequestException(): void
     {
-        $this->expectException(ExceptionRequest::class);
+        $this->expectException(RequestException::class);
         $this->expectExceptionMessage('This is a generic error being thrown');
         $this->expectExceptionCode(499);
 

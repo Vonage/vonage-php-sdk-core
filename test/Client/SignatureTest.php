@@ -7,10 +7,10 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Client;
+namespace VonageTest\Client;
 
 use PHPUnit\Framework\TestCase;
-use Vonage\Client\Exception\Exception;
+use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Client\Signature;
 
 class SignatureTest extends TestCase
@@ -19,7 +19,7 @@ class SignatureTest extends TestCase
     {
         $fakeAlgo = 'fake_algo';
 
-        $this->expectException(Exception::class);
+        $this->expectException(ClientException::class);
         $this->expectExceptionMessage('Unknown signature algorithm: ' . $fakeAlgo . '. ' .
             'Expected: md5hash, md5, sha1, sha256, or sha512');
 
@@ -30,7 +30,7 @@ class SignatureTest extends TestCase
      * @dataProvider hmacSignatureProvider
      * @param $algorithm
      * @param $expected
-     * @throws Exception
+     * @throws ClientException
      */
     public function testHmacSignature($algorithm, $expected): void
     {
@@ -73,7 +73,7 @@ class SignatureTest extends TestCase
      * @param $sig
      * @param $params
      * @param $secret
-     * @throws Exception
+     * @throws ClientException
      */
     public function testSignature($algo, $sig, $params, $secret): void
     {

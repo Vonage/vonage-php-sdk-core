@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Response;
+namespace VonageTest\Response;
 
 use PHPUnit\Framework\TestCase;
 use RuntimeException;

@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Message;
+namespace VonageTest\Message;
 
 use DateTime;
 use Exception;

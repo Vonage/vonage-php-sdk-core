@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Insights;
+namespace VonageTest\Insights;
 
 use Laminas\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
@@ -16,15 +16,15 @@ use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
 use Vonage\Client;
 use Vonage\Client\APIResource;
-use Vonage\Client\Exception\Request;
-use Vonage\Client\Exception\Server;
+use Vonage\Client\Exception\Request as RequestException;
+use Vonage\Client\Exception\Server as ServerException;
 use Vonage\Insights\Advanced;
 use Vonage\Insights\AdvancedCnam;
 use Vonage\Insights\Basic;
 use Vonage\Insights\Client as InsightsClient;
 use Vonage\Insights\Standard;
 use Vonage\Insights\StandardCnam;
-use Vonage\Test\Psr7AssertionTrait;
+use VonageTest\Psr7AssertionTrait;
 
 class ClientTest extends TestCase
 {
@@ -67,8 +67,8 @@ class ClientTest extends TestCase
 
     /**
      * @throws Client\Exception\Exception
-     * @throws Request
-     * @throws Server
+     * @throws RequestException
+     * @throws ServerException
      * @throws ClientExceptionInterface
      */
     public function testAdvancedAsync(): void
@@ -104,12 +104,12 @@ class ClientTest extends TestCase
     /**
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Exception
-     * @throws Request
-     * @throws Server
+     * @throws RequestException
+     * @throws ServerException
      */
     public function testError(): void
     {
-        $this->expectException(Request::class);
+        $this->expectException(RequestException::class);
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             return $request instanceof RequestInterface;
@@ -121,12 +121,12 @@ class ClientTest extends TestCase
     /**
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Exception
-     * @throws Request
-     * @throws Server
+     * @throws RequestException
+     * @throws ServerException
      */
     public function testClientException(): void
     {
-        $this->expectException(Request::class);
+        $this->expectException(RequestException::class);
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             return $request instanceof RequestInterface;
@@ -138,12 +138,12 @@ class ClientTest extends TestCase
     /**
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Exception
-     * @throws Request
-     * @throws Server
+     * @throws RequestException
+     * @throws ServerException
      */
     public function testServerException(): void
     {
-        $this->expectException(Server::class);
+        $this->expectException(ServerException::class);
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             return $request instanceof RequestInterface;

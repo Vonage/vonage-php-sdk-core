@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Call;
+namespace VonageTest\Call;
 
 use Laminas\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
@@ -17,7 +17,7 @@ use Psr\Http\Message\RequestInterface;
 use Vonage\Call\Dtmf;
 use Vonage\Call\Event;
 use Vonage\Client;
-use Vonage\Test\Psr7AssertionTrait;
+use VonageTest\Psr7AssertionTrait;
 
 class DtmfTest extends TestCase
 {

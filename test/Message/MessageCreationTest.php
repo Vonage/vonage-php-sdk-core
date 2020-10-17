@@ -7,11 +7,11 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Message;
+namespace VonageTest\Message;
 
 use Laminas\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
-use Vonage\Client\Exception\Exception;
+use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Message\Message;
 use Vonage\Message\Text;
 
@@ -42,7 +42,7 @@ class MessageCreationTest extends TestCase
     /**
      * Creating a new message, should result in the correct (matching) parameters.
      *
-     * @throws Exception
+     * @throws ClientException
      */
     public function testRequiredParams(): void
     {
@@ -55,7 +55,7 @@ class MessageCreationTest extends TestCase
     /**
      * Optional params shouldn't be in the response, unless set.
      *
-     * @throws Exception
+     * @throws ClientException
      */
     public function testNoDefaultParams(): void
     {
@@ -72,7 +72,7 @@ class MessageCreationTest extends TestCase
      * @param $setter
      * @param $param
      * @param $values
-     * @throws Exception
+     * @throws ClientException
      */
     public function testOptionalParams($setter, $param, $values): void
     {

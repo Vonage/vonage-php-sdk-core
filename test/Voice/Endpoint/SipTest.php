@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Voice\Endpoint;
+namespace VonageTest\Voice\Endpoint;
 
 use PHPUnit\Framework\TestCase;
 use Vonage\Voice\Endpoint\SIP;

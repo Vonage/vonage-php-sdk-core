@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Voice\NCCO;
+namespace VonageTest\Voice\NCCO;
 
 use PHPUnit\Framework\TestCase;
 use Vonage\Voice\NCCO\Action\Record;

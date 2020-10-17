@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\SMS\Message;
+namespace VonageTest\SMS\Message;
 
 use PHPUnit\Framework\TestCase;
 use Vonage\SMS\Message\WAPPush;

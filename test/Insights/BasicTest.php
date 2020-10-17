@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Insights;
+namespace VonageTest\Insights;
 
 use PHPUnit\Framework\TestCase;
 use Vonage\Insights\Basic;

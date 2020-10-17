@@ -7,9 +7,10 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Application;
+namespace VonageTest\Application;
 
 use DateTime;
+use Exception;
 use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
@@ -24,10 +25,10 @@ use Vonage\Application\RtcConfig;
 use Vonage\Application\VoiceConfig;
 use Vonage\Client;
 use Vonage\Client\APIResource;
-use Vonage\Client\Exception\Exception;
-use Vonage\Client\Exception\Server;
+use Vonage\Client\Exception\Exception as ClientException;
+use Vonage\Client\Exception\Server as ServerException;
 use Vonage\Entity\Filter\EmptyFilter;
-use Vonage\Test\Psr7AssertionTrait;
+use VonageTest\Psr7AssertionTrait;
 
 class ClientTest extends TestCase
 {
@@ -65,10 +66,10 @@ class ClientTest extends TestCase
     }
 
     /**
-     * @throws Exception
+     * @throws ClientException
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Request
-     * @throws Server
+     * @throws ServerException
      */
     public function testSetFilter(): void
     {
@@ -96,8 +97,8 @@ class ClientTest extends TestCase
     /**
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Request
-     * @throws Exception
-     * @throws Server
+     * @throws ClientException
+     * @throws ServerException
      */
     public function testSetPage(): void
     {
@@ -118,8 +119,8 @@ class ClientTest extends TestCase
     /**
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Request
-     * @throws Exception
-     * @throws Server
+     * @throws ClientException
+     * @throws ServerException
      */
     public function testSetSize(): void
     {
@@ -140,8 +141,8 @@ class ClientTest extends TestCase
     /**
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Request
-     * @throws Exception
-     * @throws Server
+     * @throws ClientException
+     * @throws ServerException
      */
     public function testIterationProperties(): void
     {
@@ -213,8 +214,8 @@ class ClientTest extends TestCase
      * @param $payload
      * @param $id
      * @throws ClientExceptionInterface
+     * @throws ClientException
      * @throws Exception
-     * @throws \Exception
      */
     public function testGetApplication($payload, $id): void
     {
@@ -391,7 +392,7 @@ class ClientTest extends TestCase
 
     /**
      * @return array[]
-     * @throws \Exception
+     * @throws Exception
      */
     public function updateApplication(): array
     {
@@ -430,7 +431,7 @@ class ClientTest extends TestCase
      * @param $payload
      * @param $id
      * @throws ClientExceptionInterface
-     * @throws Exception
+     * @throws ClientException
      */
     public function testDeleteApplication($payload, $id): void
     {
@@ -471,7 +472,7 @@ class ClientTest extends TestCase
             @$this->applicationClient->$method($application);
 
             self::fail('did not throw exception');
-        } catch (Exception $e) {
+        } catch (ClientException $e) {
             $response->getBody()->rewind();
             $data = json_decode($response->getBody()->getContents(), true);
             $class = substr((string)$code, 0, 1);
@@ -488,12 +489,12 @@ class ClientTest extends TestCase
                     self::assertEquals($code, $e->getCode());
                     break;
                 case '5':
-                    self::assertInstanceOf(Server::class, $e);
+                    self::assertInstanceOf(ServerException::class, $e);
                     self::assertEquals($msg, $e->getMessage());
                     self::assertEquals($code, $e->getCode());
                     break;
                 default:
-                    self::assertInstanceOf(Exception::class, $e);
+                    self::assertInstanceOf(ClientException::class, $e);
                     self::assertEquals('Unexpected HTTP Status Code', $e->getMessage());
                     break;
             }
@@ -637,7 +638,7 @@ class ClientTest extends TestCase
 
     /**
      * @return array[]
-     * @throws \Exception
+     * @throws Exception
      */
     public function createApplication(): array
     {

@@ -7,11 +7,11 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Call;
+namespace VonageTest\Call;
 
 use PHPUnit\Framework\TestCase;
 use Vonage\Call\Event;
-use Vonage\Test\Fixture\ResponseTrait;
+use VonageTest\Fixture\ResponseTrait;
 
 class EventTest extends TestCase
 {

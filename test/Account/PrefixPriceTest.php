@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Account;
+namespace VonageTest\Account;
 
 use Exception;
 use PHPUnit\Framework\TestCase;

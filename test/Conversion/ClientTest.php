@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Conversion;
+namespace VonageTest\Conversion;
 
 use Laminas\Diactoros\Response;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -15,11 +15,11 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
 use Vonage\Client\APIResource;
-use Vonage\Client\Exception\Exception;
-use Vonage\Client\Exception\Request;
-use Vonage\Client\Exception\Server;
-use Vonage\Conversion\Client;
-use Vonage\Test\Psr7AssertionTrait;
+use Vonage\Client\Exception\Exception as ClientException;
+use Vonage\Client\Exception\Request as RequestException;
+use Vonage\Client\Exception\Server as ServerException;
+use Vonage\Conversion\Client as ConversionClient;
+use VonageTest\Psr7AssertionTrait;
 
 class ClientTest extends TestCase
 {
@@ -38,7 +38,7 @@ class ClientTest extends TestCase
     protected $apiResource;
 
     /**
-     * @var Client
+     * @var ConversionClient
      */
     protected $accountClient;
 
@@ -55,15 +55,15 @@ class ClientTest extends TestCase
             ->setBaseUri('/conversions/')
             ->setClient($this->vonageClient);
 
-        $this->conversionClient = new Client($this->apiResource);
+        $this->conversionClient = new ConversionClient($this->apiResource);
         $this->conversionClient->setClient($this->vonageClient);
     }
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception
-     * @throws Request
-     * @throws Server
+     * @throws ClientException
+     * @throws RequestException
+     * @throws ServerException
      */
     public function testSmsWithTimestamp(): void
     {
@@ -83,9 +83,9 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception
-     * @throws Request
-     * @throws Server
+     * @throws ClientException
+     * @throws RequestException
+     * @throws ServerException
      */
     public function testSmsWithoutTimestamp(): void
     {
@@ -105,9 +105,9 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception
-     * @throws Request
-     * @throws Server
+     * @throws ClientException
+     * @throws RequestException
+     * @throws ServerException
      */
     public function testVoiceWithTimestamp(): void
     {
@@ -127,9 +127,9 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception
-     * @throws Request
-     * @throws Server
+     * @throws ClientException
+     * @throws RequestException
+     * @throws ServerException
      */
     public function testVoiceWithoutTimestamp(): void
     {

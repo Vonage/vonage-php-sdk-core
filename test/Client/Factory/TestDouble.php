@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Client\Factory;
+namespace VonageTest\Client\Factory;
 
 use Vonage\Client;
 

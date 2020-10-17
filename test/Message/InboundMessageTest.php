@@ -7,12 +7,12 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Message;
+namespace VonageTest\Message;
 
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\ServerRequest;
 use PHPUnit\Framework\TestCase;
-use Vonage\Client\Exception\Exception;
+use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Message\InboundMessage;
 use Vonage\Message\Message;
 
@@ -144,7 +144,7 @@ class InboundMessageTest extends TestCase
     }
 
     /**
-     * @throws Exception
+     * @throws ClientException
      */
     public function testCanCreateReply(): void
     {

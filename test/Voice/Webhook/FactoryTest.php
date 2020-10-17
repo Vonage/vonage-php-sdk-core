@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Voice\Webhook;
+namespace VonageTest\Voice\Webhook;
 
 use DateTime;
 use DateTimeImmutable;

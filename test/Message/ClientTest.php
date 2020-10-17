@@ -7,9 +7,10 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Message;
+namespace VonageTest\Message;
 
 use DateTime;
+use Exception;
 use InvalidArgumentException;
 use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
@@ -20,16 +21,16 @@ use Psr\Http\Message\RequestInterface;
 use RuntimeException;
 use stdClass;
 use Vonage\Client;
-use Vonage\Client\Exception;
-use Vonage\Client\Exception\Server;
+use Vonage\Client\Exception as ClientException;
+use Vonage\Client\Exception\Server as ServerException;
 use Vonage\Message\Client as MessageClient;
 use Vonage\Message\InboundMessage;
 use Vonage\Message\Message;
 use Vonage\Message\Query;
 use Vonage\Message\Shortcode\TwoFactor;
 use Vonage\Message\Text;
-use Vonage\Test\MessageAssertionTrait;
-use Vonage\Test\Psr7AssertionTrait;
+use VonageTest\MessageAssertionTrait;
+use VonageTest\Psr7AssertionTrait;
 
 class ClientTest extends TestCase
 {
@@ -60,9 +61,9 @@ class ClientTest extends TestCase
     }
 
     /**
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ServerException
      * @throws ClientExceptionInterface
      */
     public function testCanUseMessage(): void
@@ -87,13 +88,13 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ServerException
      */
     public function testThrowsRequestExceptionWhenInvalidAPIResponse(): void
     {
-        $this->expectException(Exception\Request::class);
+        $this->expectException(ClientException\Request::class);
         $this->expectExceptionMessage('unexpected response from API');
 
         $args = [
@@ -115,9 +116,9 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ServerException
      */
     public function testCanUseArguments(): void
     {
@@ -140,9 +141,9 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ServerException
      */
     public function testSentMessageHasResponse(): void
     {
@@ -157,8 +158,8 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Server
+     * @throws ClientException\Exception
+     * @throws ServerException
      */
     public function testThrowRequestException(): void
     {
@@ -170,7 +171,7 @@ class ClientTest extends TestCase
             $this->messageClient->send($message);
 
             self::fail('did not throw exception');
-        } catch (Exception\Request $e) {
+        } catch (ClientException\Request $e) {
             self::assertSame($message, $e->getEntity());
             self::assertEquals('2', $e->getCode());
             self::assertEquals('Missing from param', $e->getMessage());
@@ -179,8 +180,8 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
      */
     public function testThrowServerException(): void
     {
@@ -192,7 +193,7 @@ class ClientTest extends TestCase
             $this->messageClient->send($message);
 
             self::fail('did not throw exception');
-        } catch (Server $e) {
+        } catch (ServerException $e) {
             self::assertEquals('5', $e->getCode());
             self::assertEquals('Server Error', $e->getMessage());
         }
@@ -200,7 +201,7 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
+     * @throws ClientException\Exception
      */
     public function testThrowConcurrentRequestsException(): void
     {
@@ -216,7 +217,7 @@ class ClientTest extends TestCase
             $this->messageClient->search($message);
 
             self::fail('did not throw exception');
-        } catch (Exception\Request $e) {
+        } catch (ClientException\Request $e) {
             self::assertEquals('429', $e->getCode());
             self::assertEquals('too many concurrent requests', $e->getMessage());
         }
@@ -224,8 +225,8 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
      */
     public function testCanGetMessageWithMessageObject(): void
     {
@@ -250,8 +251,8 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
      */
     public function testCanGetInboundMessage(): void
     {
@@ -277,12 +278,12 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
      */
     public function testGetThrowsExceptionOnBadMessageType(): void
     {
-        $this->expectException(Exception\Request::class);
+        $this->expectException(ClientException\Request::class);
         $this->expectExceptionMessage('unexpected response from API');
 
         $message = new Message('0B00000053FFB40F');
@@ -298,8 +299,8 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
      */
     public function testGetReturnsEmptyArrayWithNoResults(): void
     {
@@ -319,8 +320,8 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
      */
     public function testCanGetMessageWithStringID(): void
     {
@@ -345,8 +346,8 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
      */
     public function testCanGetMessageWithArrayOfIDs(): void
     {
@@ -371,8 +372,8 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
      */
     public function testCanGetMessageWithQuery(): void
     {
@@ -398,12 +399,12 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
      */
     public function testGetThrowsExceptionWhenNot200ButHasErrorLabel(): void
     {
-        $this->expectException(Exception\Request::class);
+        $this->expectException(ClientException\Request::class);
         $this->expectExceptionMessage('authentication failed');
 
         $message = new Message('02000000D912945A');
@@ -420,12 +421,12 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
      */
     public function testGetThrowsExceptionWhenNot200AndHasNoCode(): void
     {
-        $this->expectException(Exception\Request::class);
+        $this->expectException(ClientException\Request::class);
         $this->expectExceptionMessage('error status from API');
 
         $message = new Message('02000000D912945A');
@@ -442,12 +443,12 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
      */
     public function testGetThrowsExceptionWhenInvalidResponseReturned(): void
     {
-        $this->expectException(Exception\Request::class);
+        $this->expectException(ClientException\Request::class);
         $this->expectExceptionMessage('unexpected response from API');
 
         $message = new Message('02000000D912945A');
@@ -464,8 +465,8 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
      */
     public function testGetThrowsInvalidArgumentExceptionWithBadQuery(): void
     {
@@ -489,9 +490,9 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws \Exception
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws Exception
      */
     public function testCanSearchByMessage(): void
     {
@@ -514,8 +515,8 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
      */
     public function testCanSearchBySingleOutboundId(): void
     {
@@ -535,8 +536,8 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
      */
     public function testCanSearchBySingleInboundId(): void
     {
@@ -556,12 +557,12 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
      */
     public function testSearchThrowsExceptionOnEmptySearchSet(): void
     {
-        $this->expectException(Exception\Request::class);
+        $this->expectException(ClientException\Request::class);
         $this->expectExceptionMessage('no message found for `02000000DA7C52E7`');
         $response = $this->getResponse('search-empty');
 
@@ -576,12 +577,12 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
      */
     public function testSearchThrowExceptionOnNon200(): void
     {
-        $this->expectException(Exception\Request::class);
+        $this->expectException(ClientException\Request::class);
         $this->expectExceptionMessage('authentication failed');
 
         $message = new Message('02000000D912945A');
@@ -598,12 +599,12 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
      */
     public function testSearchThrowExceptionOnInvalidType(): void
     {
-        $this->expectException(Exception\Request::class);
+        $this->expectException(ClientException\Request::class);
         $this->expectExceptionMessage('unexpected response from API');
 
         $message = new Message('02000000D912945A');
@@ -620,12 +621,12 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
      */
     public function testSearchThrowsGenericExceptionOnNon200(): void
     {
-        $this->expectException(Exception\Request::class);
+        $this->expectException(ClientException\Request::class);
         $this->expectExceptionMessage('error status from API');
 
         $message = new Message('02000000D912945A');
@@ -642,12 +643,12 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
      */
     public function testThrowsExceptionWhenSearchResultMismatchesQuery(): void
     {
-        $this->expectException(Exception\Exception::class);
+        $this->expectException(ClientException\Exception::class);
         $this->expectExceptionMessage('searched for message with type `Vonage\Message\Message` ' .
             'but message of type `Vonage\Message\InboundMessage`');
 
@@ -665,9 +666,9 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ServerException
      */
     public function testRateLimitRetries(): void
     {
@@ -696,10 +697,10 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Server
-     * @throws \Exception
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ServerException
+     * @throws Exception
      */
     public function testRateLimitRetriesWithDefault(): void
     {
@@ -738,8 +739,8 @@ class ClientTest extends TestCase
      * @param $expectedHttpCode
      * @param $expectedException
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
      */
     public function testCanSearchRejections(
         $date,
@@ -806,7 +807,7 @@ class ClientTest extends TestCase
             'search-rejections-error-provided-validation',
             'Validation error: You forgot to do something',
             400,
-            Exception\Request::class
+            ClientException\Request::class
         ];
 
         $r['error-code provided (server error)'] = [
@@ -815,7 +816,7 @@ class ClientTest extends TestCase
             'search-rejections-error-provided-server-error',
             'Gremlins! There are gremlins in the system!',
             500,
-            Exception\Request::class
+            ClientException\Request::class
         ];
 
         $r['error-code not provided'] = [
@@ -824,7 +825,7 @@ class ClientTest extends TestCase
             'empty',
             'error status from API',
             500,
-            Exception\Request::class
+            ClientException\Request::class
         ];
 
         $r['missing items key in response on 200'] = [
@@ -833,7 +834,7 @@ class ClientTest extends TestCase
             'empty',
             'unexpected response from API',
             200,
-            Exception\Exception::class
+            ClientException\Exception::class
         ];
 
         $r['invalid message type in response'] = [
@@ -842,7 +843,7 @@ class ClientTest extends TestCase
             'search-rejections-invalid-type',
             'unexpected response from API',
             200,
-            Exception\Request::class
+            ClientException\Request::class
         ];
 
         return $r;
@@ -850,8 +851,8 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
      */
     public function testShortcodeWithObject(): void
     {
@@ -885,8 +886,8 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
      */
     public function testShortcodeError(): void
     {
@@ -901,7 +902,7 @@ class ClientTest extends TestCase
             return $request instanceof Request && isset($args);
         }))->willReturn($this->getResponse('error-2fa'));
 
-        $this->expectException(Exception\Request::class);
+        $this->expectException(ClientException\Request::class);
         $this->expectExceptionMessage('Invalid Account for Campaign');
 
         $this->messageClient->sendShortcode($args);
@@ -909,8 +910,8 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
      */
     public function testShortcodeWithArray(): void
     {
@@ -949,9 +950,9 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ServerException
      */
     public function testCreateMessageThrowsExceptionOnBadData(): void
     {
@@ -964,9 +965,9 @@ class ClientTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ServerException
      */
     public function testCreateMessageThrowsExceptionOnMissingData(): void
     {

@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Voice\Filter;
+namespace VonageTest\Voice\Filter;
 
 use DateTimeImmutable;
 use DateTimeZone;

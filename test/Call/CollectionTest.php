@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Call;
+namespace VonageTest\Call;
 
 use Laminas\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
@@ -19,8 +19,8 @@ use Vonage\Call\Collection;
 use Vonage\Call\Filter;
 use Vonage\Call\Transfer;
 use Vonage\Client\APIResource;
-use Vonage\Client\Exception;
-use Vonage\Test\Psr7AssertionTrait;
+use Vonage\Client\Exception as ClientException;
+use VonageTest\Psr7AssertionTrait;
 
 class CollectionTest extends TestCase
 {
@@ -119,9 +119,9 @@ class CollectionTest extends TestCase
      * @dataProvider getCall
      * @param $payload
      * @param $id
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      * @throws ClientExceptionInterface
      */
     public function testGetIsNotLazy($payload, $id): void
@@ -163,9 +163,9 @@ class CollectionTest extends TestCase
      * @dataProvider postCallNcco
      * @param $payload
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      */
     public function testCreateCallNcco($payload): void
     {
@@ -202,7 +202,7 @@ class CollectionTest extends TestCase
             @$this->collection->$method($payload);
 
             self::fail('Expected to throw request exception');
-        } catch (Exception\Request $e) {
+        } catch (ClientException\Request $e) {
             self::assertEquals('Bad Request', $e->getMessage());
         }
     }
@@ -225,7 +225,7 @@ class CollectionTest extends TestCase
             @$this->collection->$method($payload);
 
             self::fail('Expected to throw request exception');
-        } catch (Exception\Request $e) {
+        } catch (ClientException\Request $e) {
             self::assertEquals('Unsupported Media Type', $e->getMessage());
         }
     }
@@ -247,7 +247,7 @@ class CollectionTest extends TestCase
             @$this->collection->$method($payload);
 
             self::fail('Expected to throw request exception');
-        } catch (Exception\Request $e) {
+        } catch (ClientException\Request $e) {
             self::assertEquals("Unexpected error", $e->getMessage());
         }
     }
@@ -258,9 +258,9 @@ class CollectionTest extends TestCase
      * @param $id
      * @param $payload
      * @throws ClientExceptionInterface
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      */
     public function testPutCall($expectedId, $id, $payload): void
     {

@@ -7,12 +7,13 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Message;
+namespace VonageTest\Message;
 
+use Exception;
 use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
-use Vonage\Client\Exception\Exception;
+use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Message\Message;
 use Vonage\Message\Text;
 
@@ -41,7 +42,7 @@ class MessageTest extends TestCase
     }
 
     /**
-     * @throws Exception
+     * @throws ClientException
      */
     public function testRequestSetsData(): void
     {
@@ -57,7 +58,7 @@ class MessageTest extends TestCase
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function testResponseSetsData(): void
     {
@@ -75,7 +76,7 @@ class MessageTest extends TestCase
     /**
      * For getting message data from API, can create a simple object with just an ID.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function testCanCreateWithId(): void
     {
@@ -87,7 +88,7 @@ class MessageTest extends TestCase
      *
      * @dataProvider messageEncodingProvider
      * @param $msg
-     * @throws Exception
+     * @throws ClientException
      */
     public function testDoesNotAutodetectByDefault($msg): void
     {
@@ -106,7 +107,7 @@ class MessageTest extends TestCase
      * @dataProvider messageEncodingProvider
      * @param $msg
      * @param $encoding
-     * @throws Exception
+     * @throws ClientException
      */
     public function testDoesAutodetectWhenEnabled($msg, $encoding): void
     {

@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Message\Callback;
+namespace VonageTest\Message\Callback;
 
 use DateTime;
 use PHPUnit\Framework\TestCase;

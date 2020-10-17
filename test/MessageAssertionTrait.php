@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test;
+namespace VonageTest;
 
 use InvalidArgumentException;
 use Vonage\Message\MessageInterface;

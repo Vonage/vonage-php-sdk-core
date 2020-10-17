@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test;
+namespace VonageTest;
 
 use GuzzleHttp\Client as HttpClient;
 use Http\Message\MessageFactory\DiactorosMessageFactory;

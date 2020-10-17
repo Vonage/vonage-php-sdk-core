@@ -7,18 +7,19 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Verify;
+namespace VonageTest\Verify;
 
 use DateTime;
+use Exception;
 use Laminas\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
-use Vonage\Client\Exception\Exception;
-use Vonage\Client\Exception\Request;
-use Vonage\Client\Exception\Server;
+use Vonage\Client\Exception\Exception as ClientException;
+use Vonage\Client\Exception\Request as RequestException;
+use Vonage\Client\Exception\Server as ServerException;
 use Vonage\Verify\Check;
-use Vonage\Verify\Client;
+use Vonage\Verify\Client as VerifyClient;
 use Vonage\Verify\Verification;
 
 class VerificationTest extends TestCase
@@ -64,7 +65,7 @@ class VerificationTest extends TestCase
     }
 
     /**
-     * @throws Exception
+     * @throws ClientException
      */
     public function testConstructDataAsParams(): void
     {
@@ -85,7 +86,7 @@ class VerificationTest extends TestCase
      * @param $setter
      * @param $param
      * @param null $normal
-     * @throws Exception
+     * @throws ClientException
      * @noinspection PhpUnusedParameterInspection
      */
     public function testCanConstructOptionalValues($value, $setter, $param, $normal = null): void
@@ -110,7 +111,7 @@ class VerificationTest extends TestCase
      * @param $setter
      * @param $param
      * @param null $normal
-     * @throws Exception
+     * @throws ClientException
      */
     public function testCanSetOptionalValues($value, $setter, $param, $normal = null): void
     {
@@ -156,7 +157,7 @@ class VerificationTest extends TestCase
     /**
      * Verification provides object access to normalized data (dates as DateTime)
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function testSearchParamsAsObject(): void
     {
@@ -201,7 +202,7 @@ class VerificationTest extends TestCase
      *
      * @dataProvider dataResponses
      * @param $type
-     * @throws \Exception
+     * @throws Exception
      */
     public function testResponseDataAsArray($type): void
     {
@@ -236,7 +237,7 @@ class VerificationTest extends TestCase
     public function testMethodsProxyClient($method, $proxy, $code = null, $ip = null): void
     {
         /** @var mixed $client */
-        $client = $this->prophesize(Client::class);
+        $client = $this->prophesize(VerifyClient::class);
 
         if (!is_null($ip)) {
             $prediction = $client->$proxy($this->existing, $code, $ip);
@@ -262,17 +263,17 @@ class VerificationTest extends TestCase
     }
 
     /**
-     * @throws Exception
-     * @throws Request
+     * @throws ClientException
+     * @throws RequestException
      * @throws ClientExceptionInterface
-     * @throws Server
+     * @throws ServerException
      */
     public function testCheckReturnsBoolForInvalidCode(): void
     {
         /** @var mixed $client */
-        $client = $this->prophesize(Client::class);
+        $client = $this->prophesize(VerifyClient::class);
         $client->check($this->existing, '1234', Argument::cetera())->willReturn($this->existing);
-        $client->check($this->existing, '4321', Argument::cetera())->willThrow(new Request('dummy', 16));
+        $client->check($this->existing, '4321', Argument::cetera())->willThrow(new RequestException('dummy', 16));
 
         @$this->existing->setClient($client->reveal());
 
@@ -284,16 +285,16 @@ class VerificationTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception
-     * @throws Request
-     * @throws Server
+     * @throws ClientException
+     * @throws RequestException
+     * @throws ServerException
      */
     public function testCheckReturnsBoolForTooManyAttempts(): void
     {
         /** @var mixed $client */
-        $client = $this->prophesize(Client::class);
+        $client = $this->prophesize(VerifyClient::class);
         $client->check($this->existing, '1234', Argument::cetera())->willReturn($this->existing);
-        $client->check($this->existing, '4321', Argument::cetera())->willThrow(new Request('dummy', 17));
+        $client->check($this->existing, '4321', Argument::cetera())->willThrow(new RequestException('dummy', 17));
 
         @$this->existing->setClient($client->reveal());
 
@@ -305,20 +306,20 @@ class VerificationTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception
-     * @throws Request
-     * @throws Server
+     * @throws ClientException
+     * @throws RequestException
+     * @throws ServerException
      */
     public function testExceptionForCheckFail(): void
     {
         /** @var mixed $client */
-        $client = $this->prophesize(Client::class);
+        $client = $this->prophesize(VerifyClient::class);
         $client->check($this->existing, '1234', Argument::cetera())->willReturn($this->existing);
-        $client->check($this->existing, '4321', Argument::cetera())->willThrow(new Request('dummy', 6));
+        $client->check($this->existing, '4321', Argument::cetera())->willThrow(new RequestException('dummy', 6));
 
         @$this->existing->setClient($client->reveal());
 
-        $this->expectException(Request::class);
+        $this->expectException(RequestException::class);
         @$this->existing->check('4321');
 
         self::markTestIncomplete('Remove deprecated tests');
@@ -327,7 +328,7 @@ class VerificationTest extends TestCase
     /**
      * @dataProvider getSerializeResponses
      * @param $response
-     * @throws \Exception
+     * @throws Exception
      */
     public function testSerialize($response): void
     {

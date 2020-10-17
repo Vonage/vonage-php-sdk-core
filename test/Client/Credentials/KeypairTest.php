@@ -6,7 +6,7 @@
  * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
 
-namespace Vonage\Test\Client\Credentials;
+namespace VonageTest\Client\Credentials;
 
 use PHPUnit\Framework\TestCase;
 use Vonage\Client\Credentials\Keypair;

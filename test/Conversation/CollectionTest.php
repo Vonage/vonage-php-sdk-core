@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Conversation;
+namespace VonageTest\Conversation;
 
 use Laminas\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
@@ -15,10 +15,10 @@ use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
 use Vonage\Client;
-use Vonage\Client\Exception;
+use Vonage\Client\Exception as ClientException;
 use Vonage\Conversations\Collection;
 use Vonage\Conversations\Conversation;
-use Vonage\Test\Psr7AssertionTrait;
+use VonageTest\Psr7AssertionTrait;
 
 class CollectionTest extends TestCase
 {
@@ -77,9 +77,9 @@ class CollectionTest extends TestCase
      * @dataProvider getConversation
      * @param $payload
      * @param $id
-     * @throws Exception\Exception
-     * @throws Exception\Request
-     * @throws Exception\Server
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
      * @throws ClientExceptionInterface
      */
     public function testGetIsNotLazy($payload, $id): void
@@ -134,7 +134,7 @@ class CollectionTest extends TestCase
             $this->collection->$method($payload);
 
             self::fail('Expected to throw request exception');
-        } catch (Exception\Request $e) {
+        } catch (ClientException\Request $e) {
             self::assertEquals('the token was rejected', $e->getMessage());
         }
     }
@@ -159,7 +159,7 @@ class CollectionTest extends TestCase
             $this->collection->$method($payload);
 
             self::fail('Expected to throw request exception');
-        } catch (Exception\Request $e) {
+        } catch (ClientException\Request $e) {
             self::assertEquals('Unsupported Media Type', $e->getMessage());
         }
     }
@@ -184,7 +184,7 @@ class CollectionTest extends TestCase
             $this->collection->$method($payload);
 
             self::fail('Expected to throw request exception');
-        } catch (Exception\Request $e) {
+        } catch (ClientException\Request $e) {
             self::assertEquals("Unexpected error", $e->getMessage());
         }
     }

@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Voice\Call;
+namespace VonageTest\Voice\Call;
 
 use PHPUnit\Framework\TestCase;
 use Vonage\Voice\Call\Call;

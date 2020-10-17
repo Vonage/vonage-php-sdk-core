@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Client\Credentials;
+namespace VonageTest\Client\Credentials;
 
 use PHPUnit\Framework\TestCase;
 use Vonage\Client\Credentials\Basic;

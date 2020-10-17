@@ -7,11 +7,11 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Account;
+namespace VonageTest\Account;
 
 use PHPUnit\Framework\TestCase;
 use Vonage\Account\Balance;
-use Vonage\Client\Exception\Exception;
+use Vonage\Client\Exception\Exception as ClientException;
 
 class BalanceTest extends TestCase
 {
@@ -64,7 +64,7 @@ class BalanceTest extends TestCase
 
     public function testCannotRemoveArrayKey(): void
     {
-        $this->expectException(Exception::class);
+        $this->expectException(ClientException::class);
         $this->expectExceptionMessage('Balance is read only');
 
         unset($this->balance['balance']);
@@ -72,7 +72,7 @@ class BalanceTest extends TestCase
 
     public function testCannotDirectlySetArrayKey(): void
     {
-        $this->expectException(Exception::class);
+        $this->expectException(ClientException::class);
         $this->expectExceptionMessage('Balance is read only');
 
         $this->balance['balance'] = '5.00';

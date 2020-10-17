@@ -7,10 +7,10 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Message;
+namespace VonageTest\Message;
 
 use PHPUnit\Framework\TestCase;
-use Vonage\Client\Exception\Exception;
+use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Message\Shortcode;
 use Vonage\Message\Shortcode\Alert;
 use Vonage\Message\Shortcode\Marketing;
@@ -34,7 +34,7 @@ class ShortcodeTest extends TestCase
      * @dataProvider typeProvider
      * @param $expected
      * @param $type
-     * @throws Exception
+     * @throws ClientException
      */
     public function testCreateMessageFromArray($expected, $type): void
     {

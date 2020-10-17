@@ -60,7 +60,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Vonage\\Test\\": "test/"
+      "VonageTest\\": "test/"
     }
   },
   "minimum-stability": "stable",

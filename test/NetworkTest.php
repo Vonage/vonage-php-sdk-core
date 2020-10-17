@@ -6,7 +6,7 @@
  * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
  */
 
-namespace Vonage\Test;
+namespace VonageTest;
 
 use PHPUnit\Framework\TestCase;
 use Vonage\Network;

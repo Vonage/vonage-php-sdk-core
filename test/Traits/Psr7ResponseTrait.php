@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Traits;
+namespace VonageTest\Traits;
 
 use Laminas\Diactoros\Response;
 

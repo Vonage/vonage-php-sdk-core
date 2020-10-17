@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Account;
+namespace VonageTest\Account;
 
 use PHPUnit\Framework\TestCase;
 use Vonage\Account\ClientFactory;

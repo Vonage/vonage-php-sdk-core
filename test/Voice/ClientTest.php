@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Voice;
+namespace VonageTest\Voice;
 
 use Laminas\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
@@ -16,8 +16,8 @@ use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
 use Vonage\Client;
 use Vonage\Client\APIResource;
-use Vonage\Client\Exception\Request;
-use Vonage\Test\Psr7AssertionTrait;
+use Vonage\Client\Exception\Request as RequestException;
+use VonageTest\Psr7AssertionTrait;
 use Vonage\Voice\CallAction;
 use Vonage\Voice\Client as VoiceClient;
 use Vonage\Voice\Endpoint\Phone;
@@ -162,7 +162,7 @@ class ClientTest extends TestCase
      */
     public function testCanHandleErrorWhileCreatingOutboundCall(): void
     {
-        $this->expectException(Request::class);
+        $this->expectException(RequestException::class);
         $this->expectExceptionMessage('Bad Request');
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
@@ -181,7 +181,7 @@ class ClientTest extends TestCase
      */
     public function testCreateOutboundCallErrorUnknownFormat(): void
     {
-        $this->expectException(Request::class);
+        $this->expectException(RequestException::class);
         $this->expectExceptionMessage("Unexpected error");
 
         $this->vonageClient->send(Argument::that(function () {
@@ -509,7 +509,7 @@ class ClientTest extends TestCase
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Exception
      * @throws Client\Exception\Server
-     * @throws Request
+     * @throws RequestException
      */
     public function testCanSearchCalls(): void
     {

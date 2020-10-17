@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\SMS\Webhook;
+namespace VonageTest\SMS\Webhook;
 
 use Exception;
 use InvalidArgumentException;

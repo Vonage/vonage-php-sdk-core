@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Vonage\Test\Call;
+namespace VonageTest\Call;
 
 use Laminas\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
@@ -21,11 +21,11 @@ use Vonage\Call\Stream;
 use Vonage\Call\Talk;
 use Vonage\Call\Transfer;
 use Vonage\Call\Webhook;
-use Vonage\Client\Exception\Exception;
-use Vonage\Client\Exception\Request;
-use Vonage\Client\Exception\Server;
+use Vonage\Client\Exception\Exception as ClientException;
+use Vonage\Client\Exception\Request as RequestException;
+use Vonage\Client\Exception\Server as ServerException;
 use Vonage\Conversations\Conversation;
-use Vonage\Test\Psr7AssertionTrait;
+use VonageTest\Psr7AssertionTrait;
 
 class CallTest extends TestCase
 {
@@ -80,9 +80,9 @@ class CallTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception
-     * @throws Request
-     * @throws Server
+     * @throws ClientException
+     * @throws RequestException
+     * @throws ServerException
      */
     public function testGetMakesRequest(): void
     {
@@ -109,9 +109,9 @@ class CallTest extends TestCase
      * @param $expectedHttpCode
      * @param $expectedResponse
      * @throws ClientExceptionInterface
-     * @throws Exception
-     * @throws Request
-     * @throws Server
+     * @throws ClientException
+     * @throws RequestException
+     * @throws ServerException
      * @dataProvider putCall
      */
     public function testPutMakesRequest($payload, $expectedHttpCode, $expectedResponse): void
@@ -158,9 +158,9 @@ class CallTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception
-     * @throws Request
-     * @throws Server
+     * @throws ClientException
+     * @throws RequestException
+     * @throws ServerException
      */
     public function testLazyLoad(): void
     {
@@ -256,9 +256,9 @@ class CallTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception
-     * @throws Request
-     * @throws Server
+     * @throws ClientException
+     * @throws RequestException
+     * @throws ServerException
      */
     public function testToIsSet(): void
     {
@@ -294,9 +294,9 @@ class CallTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception
-     * @throws Request
-     * @throws Server
+     * @throws ClientException
+     * @throws RequestException
+     * @throws ServerException
      */
     public function testFromIsSet(): void
     {
@@ -380,9 +380,9 @@ class CallTest extends TestCase
 
     /**
      * @throws ClientExceptionInterface
-     * @throws Exception
-     * @throws Request
-     * @throws Server
+     * @throws ClientException
+     * @throws RequestException
+     * @throws ServerException
      */
     public function testHydrate(): void
     {
@@ -398,9 +398,9 @@ class CallTest extends TestCase
      * @param Call $entity
      * @param Response $response
      * @throws ClientExceptionInterface
-     * @throws Exception
-     * @throws Request
-     * @throws Server
+     * @throws ClientException
+     * @throws RequestException
+     * @throws ServerException
      */
     public function assertEntityMatchesResponse(Call $entity, Response $response): void
     {
@@ -419,9 +419,9 @@ class CallTest extends TestCase
      * @param Call $entity
      * @param $data
      * @throws ClientExceptionInterface
-     * @throws Exception
-     * @throws Request
-     * @throws Server
+     * @throws ClientException
+     * @throws RequestException
+     * @throws ServerException
      */
     public function assertEntityMatchesData(Call $entity, $data): void
     {
