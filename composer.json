@@ -47,7 +47,7 @@
     "phpunit/phpunit": "^8.5",
     "roave/security-advisories": "dev-latest",
     "squizlabs/php_codesniffer": "^3.5",
-    "softcreatr/jsonpath": "^0.6.2"
+    "softcreatr/jsonpath": "^0.6.4"
   },
   "config": {
     "optimize-autoloader": true,

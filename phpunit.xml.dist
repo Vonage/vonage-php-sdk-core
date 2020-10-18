@@ -5,14 +5,13 @@
          colors="true"
 >
     <testsuites>
-        <testsuite name="default">
-            <directory>test</directory>
+        <testsuite name="Unit">
+            <directory>./tests</directory>
         </testsuite>
     </testsuites>
-
     <filter>
-        <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">src</directory>
+        <whitelist>
+            <directory suffix=".php">./src/</directory>
         </whitelist>
     </filter>
 </phpunit>
