@@ -1,3 +1,9 @@
+# 2.5.0
+
+### Changed
+
+- #260 - Swapped out `ocramius/package-versions` for `composer/package-versions-deprecated` to work with Composer 2
+
 # 2.4.1
 
 ### Changed
