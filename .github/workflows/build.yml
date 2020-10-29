@@ -8,15 +8,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php: [ '7.2', '7.3', '7.4' ]
+        php: [ '7.2', '7.3', '7.4', '8.0' ]
+    continue-on-error: ${{ matrix.php == '8.0' }}
+    name: PHP ${{ matrix.php-versions }} Test
 
     steps:
-      - name: Configure Git
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: |
-          git config --system core.autocrlf false
-          git config --ystem core.eol lf
-
       - name: Checkout
         uses: actions/checkout@v2
 
@@ -24,9 +20,13 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: json
-          tools: composer
-          coverage: xdebug
+          extensions: json, mbstring
+          coverage: pcov
+        env:
+          COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup problem matchers for PHPUnit
+        run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
       - name: Get Composer cache directory
         id: composercache
@@ -40,11 +40,10 @@ jobs:
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Install dependencies
-        run: composer install --no-interaction --prefer-dist --no-progress --no-suggest ${{ matrix.composer-options }}
+        run: composer update --prefer-dist --no-interaction
 
       - name: Analyze & test
-        run: |
-          vendor/bin/phpunit -v --configuration ./phpunit.xml.dist --coverage-clover=coverage.xml
+        run: composer test -- -v --coverage-clover=coverage.xml
 
       - name: Run codecov
         uses: codecov/codecov-action@v1
