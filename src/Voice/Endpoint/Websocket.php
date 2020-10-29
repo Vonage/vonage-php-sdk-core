@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace Vonage\Voice\Endpoint;
 
+use function array_key_exists;
+
 class Websocket implements EndpointInterface
 {
     public const TYPE_16000 = 'audio/116;rate=16000';
@@ -48,6 +50,7 @@ class Websocket implements EndpointInterface
     /**
      * @param string $uri
      * @param array $data
+     *
      * @return Websocket
      */
     public static function factory(string $uri, array $data = []): Websocket
@@ -109,6 +112,7 @@ class Websocket implements EndpointInterface
 
     /**
      * @param string $contentType
+     *
      * @return $this
      */
     public function setContentType(string $contentType): self
@@ -129,6 +133,7 @@ class Websocket implements EndpointInterface
     /**
      * @param string $key
      * @param string $value
+     *
      * @return $this
      */
     public function addHeader(string $key, string $value): self
@@ -140,6 +145,7 @@ class Websocket implements EndpointInterface
 
     /**
      * @param array $headers
+     *
      * @return $this
      */
     public function setHeaders(array $headers): self

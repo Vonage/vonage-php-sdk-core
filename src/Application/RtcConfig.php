@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace Vonage\Application;
 
+use function trigger_error;
+
 class RtcConfig
 {
     public const EVENT = 'event_url';

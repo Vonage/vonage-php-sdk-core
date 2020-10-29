@@ -18,8 +18,12 @@ use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 use Vonage\Entity\JsonSerializableInterface;
 use Vonage\Entity\JsonUnserializableInterface;
 
+use function get_class;
+use function trigger_error;
+
 /**
  * This class will no longer be accessible via array keys past v2
+ *
  * @todo Have the JSON unserialize/serialize keys match with $this->data keys
  */
 class Balance implements

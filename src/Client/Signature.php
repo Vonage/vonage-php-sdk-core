@@ -14,16 +14,30 @@ namespace Vonage\Client;
 use InvalidArgumentException;
 use Vonage\Client\Exception\Exception as ClientException;
 
+use function hash_hmac;
+use function http_build_query;
+use function is_array;
+use function is_string;
+use function ksort;
+use function md5;
+use function str_replace;
+use function strtolower;
+use function strtoupper;
+use function time;
+use function urldecode;
+
 class Signature
 {
     /**
      * Params to Sign
+     *
      * @var array
      */
     protected $params;
 
     /**
      * Params with Signature (and timestamp if not present)
+     *
      * @var array
      */
     protected $signed;
@@ -34,6 +48,7 @@ class Signature
      * @param array $params
      * @param $secret
      * @param $signatureMethod
+     *
      * @throws ClientException
      */
     public function __construct(array $params, $secret, $signatureMethod)
@@ -67,7 +82,9 @@ class Signature
      * @param $signatureMethod
      * @param $data
      * @param $secret
+     *
      * @return string
+     *
      * @throws ClientException
      */
     protected function sign($signatureMethod, $data, $secret): string
@@ -130,7 +147,9 @@ class Signature
      *
      * @param array| string $signature The incoming sig parameter to check
      *      (or all incoming params)
+     *
      * @return bool
+     *
      * @throws InvalidArgumentException
      */
     public function check($signature): bool

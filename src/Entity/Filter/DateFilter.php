@@ -25,6 +25,7 @@ class DateFilter implements FilterInterface
 
     /**
      * DateFilter constructor.
+     *
      * @param DateTime $start
      * @param DateTime $end
      */

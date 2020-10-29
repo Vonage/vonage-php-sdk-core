@@ -15,6 +15,9 @@ use Exception;
 use PHPUnit\Framework\TestCase;
 use Vonage\Voice\Call;
 
+use function file_get_contents;
+use function json_decode;
+
 class CallTest extends TestCase
 {
     /**

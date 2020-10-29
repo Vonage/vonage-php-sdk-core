@@ -13,6 +13,10 @@ namespace Vonage\SMS\Message;
 
 use InvalidArgumentException;
 
+use function array_merge;
+use function is_null;
+use function strlen;
+
 abstract class OutboundMessage implements Message
 {
     /**
@@ -52,12 +56,14 @@ abstract class OutboundMessage implements Message
 
     /**
      * TTL of the SMS delivery, in milliseconds
+     *
      * @var int
      */
     protected $ttl = 259200000;
 
     /**
      * Type of message, set by the child class
+     *
      * @var string
      */
     protected $type;
@@ -86,6 +92,7 @@ abstract class OutboundMessage implements Message
 
     /**
      * @param int $ttl
+     *
      * @return $this
      */
     public function setTtl(int $ttl): self
@@ -109,6 +116,7 @@ abstract class OutboundMessage implements Message
 
     /**
      * @param bool $requestDeliveryReceipt
+     *
      * @return $this
      */
     public function setRequestDeliveryReceipt(bool $requestDeliveryReceipt): self
@@ -128,6 +136,7 @@ abstract class OutboundMessage implements Message
 
     /**
      * @param string $deliveryReceiptCallback
+     *
      * @return $this
      */
     public function setDeliveryReceiptCallback(string $deliveryReceiptCallback): self
@@ -148,6 +157,7 @@ abstract class OutboundMessage implements Message
 
     /**
      * @param int $messageClass
+     *
      * @return $this
      */
     public function setMessageClass(int $messageClass): self
@@ -171,6 +181,7 @@ abstract class OutboundMessage implements Message
 
     /**
      * @param string $clientRef
+     *
      * @return $this
      */
     public function setClientRef(string $clientRef): self
@@ -190,6 +201,7 @@ abstract class OutboundMessage implements Message
      * and then filter through here for additional request options;
      *
      * @param array $data
+     *
      * @return array
      */
     protected function appendUniversalOptions(array $data): array
@@ -247,6 +259,7 @@ abstract class OutboundMessage implements Message
 
     /**
      * @param string $accountRef
+     *
      * @return $this
      */
     public function setAccountRef(string $accountRef): OutboundMessage

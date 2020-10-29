@@ -15,6 +15,7 @@ interface CollectionAwareInterface
 {
     /**
      * @param CollectionInterface $collection
+     *
      * @return mixed
      */
     public function setCollection(CollectionInterface $collection);

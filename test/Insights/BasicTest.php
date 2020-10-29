@@ -18,6 +18,7 @@ class BasicTest extends TestCase
 {
     /**
      * @dataProvider basicTestProvider
+     *
      * @param $basic
      * @param $inputData
      */
@@ -34,6 +35,7 @@ class BasicTest extends TestCase
 
     /**
      * @dataProvider basicTestProvider
+     *
      * @param $basic
      * @param $inputData
      */

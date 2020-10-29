@@ -22,6 +22,12 @@ use Vonage\Client\Exception as ClientException;
 use Vonage\Entity\CollectionInterface;
 use Vonage\Entity\CollectionTrait;
 
+use function is_callable;
+use function is_object;
+use function json_decode;
+use function json_encode;
+use function trigger_error;
+
 /**
  * @deprecated Please use Vonage\Voice\Client for this functionality
  */
@@ -101,6 +107,7 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
 
     /**
      * @return Call
+     *
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
@@ -189,6 +196,7 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
 
     /**
      * @return ClientException\Request|ClientException\Server
+     *
      * @throws ClientException\Exception
      */
     protected function getException(ResponseInterface $response)

@@ -38,12 +38,14 @@ class OutboundCall
 
     /**
      * Length of seconds before Vonage hangs up after going into `in_progress` status
+     *
      * @var int
      */
     protected $lengthTimer;
 
     /**
      * What to do when Vonage detects an answering machine.
+     *
      * @var ?string
      */
     protected $machineDetection;
@@ -54,6 +56,7 @@ class OutboundCall
 
     /**
      * Length of time Vonage will allow a phone number to ring before hanging up
+     *
      * @var int
      */
     protected $ringingTimer;
@@ -141,6 +144,7 @@ class OutboundCall
 
     /**
      * @param Webhook $webhook
+     *
      * @return $this
      */
     public function setAnswerWebhook(Webhook $webhook): self
@@ -152,6 +156,7 @@ class OutboundCall
 
     /**
      * @param Webhook $webhook
+     *
      * @return $this
      */
     public function setEventWebhook(Webhook $webhook): self
@@ -163,6 +168,7 @@ class OutboundCall
 
     /**
      * @param int $timer
+     *
      * @return $this
      */
     public function setLengthTimer(int $timer): self
@@ -174,6 +180,7 @@ class OutboundCall
 
     /**
      * @param string $action
+     *
      * @return $this
      */
     public function setMachineDetection(string $action): self
@@ -189,6 +196,7 @@ class OutboundCall
 
     /**
      * @param NCCO $ncco
+     *
      * @return $this
      */
     public function setNCCO(NCCO $ncco): self
@@ -200,6 +208,7 @@ class OutboundCall
 
     /**
      * @param int $timer
+     *
      * @return $this
      */
     public function setRingingTimer(int $timer): self

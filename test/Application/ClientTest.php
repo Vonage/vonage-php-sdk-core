@@ -32,6 +32,11 @@ use Vonage\Client\Exception\Server as ServerException;
 use Vonage\Entity\Filter\EmptyFilter;
 use VonageTest\Psr7AssertionTrait;
 
+use function fopen;
+use function is_null;
+use function json_decode;
+use function substr;
+
 class ClientTest extends TestCase
 {
     use Psr7AssertionTrait;
@@ -213,8 +218,10 @@ class ClientTest extends TestCase
 
     /**
      * @dataProvider getApplication
+     *
      * @param $payload
      * @param $id
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException
      * @throws Exception
@@ -291,6 +298,7 @@ class ClientTest extends TestCase
 
     /**
      * @dataProvider updateApplication
+     *
      * @param $payload
      * @param $method
      * @param $id
@@ -394,6 +402,7 @@ class ClientTest extends TestCase
 
     /**
      * @return array[]
+     *
      * @throws Exception
      */
     public function updateApplication(): array
@@ -430,8 +439,10 @@ class ClientTest extends TestCase
 
     /**
      * @dataProvider deleteApplication
+     *
      * @param $payload
      * @param $id
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException
      */
@@ -460,6 +471,7 @@ class ClientTest extends TestCase
 
     /**
      * @dataProvider exceptions
+     *
      * @param $method
      * @param $response
      * @param $code
@@ -524,6 +536,7 @@ class ClientTest extends TestCase
 
     /**
      * @dataProvider createApplication
+     *
      * @param $payload
      * @param $method
      */
@@ -640,6 +653,7 @@ class ClientTest extends TestCase
 
     /**
      * @return array[]
+     *
      * @throws Exception
      */
     public function createApplication(): array
@@ -740,6 +754,7 @@ class ClientTest extends TestCase
      *
      * @param string $type
      * @param int $status
+     *
      * @return Response
      */
     protected function getResponse(string $type = 'success', int $status = 200): Response

@@ -15,6 +15,8 @@ use ArrayAccess;
 use InvalidArgumentException;
 use RuntimeException;
 
+use function trigger_error;
+
 /**
  * @deprecated Will be removed in a future releases
  */

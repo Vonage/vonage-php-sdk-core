@@ -16,6 +16,8 @@ use Vonage\Client\Request\WrapResponseInterface;
 use Vonage\Client\Response\Error;
 use Vonage\Client\Response\ResponseInterface;
 
+use function implode;
+
 class Request extends AbstractRequest implements WrapResponseInterface
 {
     public const FEATURE_TYPE = 'type';
@@ -64,6 +66,7 @@ class Request extends AbstractRequest implements WrapResponseInterface
 
     /**
      * @param ResponseInterface $response
+     *
      * @return ResponseInterface
      */
     public function wrapResponse(ResponseInterface $response): ResponseInterface

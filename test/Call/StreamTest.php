@@ -21,6 +21,10 @@ use Vonage\Call\Stream;
 use Vonage\Client;
 use VonageTest\Psr7AssertionTrait;
 
+use function fopen;
+use function json_decode;
+use function json_encode;
+
 class StreamTest extends TestCase
 {
     use Psr7AssertionTrait;
@@ -221,6 +225,7 @@ class StreamTest extends TestCase
      *
      * @param string $type
      * @param int $status
+     *
      * @return Response
      */
     protected function getResponse(string $type = 'success', int $status = 200): Response

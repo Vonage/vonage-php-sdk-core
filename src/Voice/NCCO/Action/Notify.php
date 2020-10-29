@@ -14,6 +14,8 @@ namespace Vonage\Voice\NCCO\Action;
 use InvalidArgumentException;
 use Vonage\Voice\Webhook;
 
+use function array_key_exists;
+
 class Notify implements ActionInterface
 {
     /**
@@ -28,6 +30,7 @@ class Notify implements ActionInterface
 
     /**
      * Notify constructor.
+     *
      * @param array $payload
      * @param Webhook $eventWebhook
      */
@@ -40,6 +43,7 @@ class Notify implements ActionInterface
     /**
      * @param array $payload
      * @param array<array, mixed> $data
+     *
      * @return Notify
      */
     public static function factory(array $payload, array $data): Notify

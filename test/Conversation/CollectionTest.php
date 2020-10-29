@@ -22,6 +22,9 @@ use Vonage\Conversations\Collection;
 use Vonage\Conversations\Conversation;
 use VonageTest\Psr7AssertionTrait;
 
+use function fopen;
+use function json_encode;
+
 class CollectionTest extends TestCase
 {
     use Psr7AssertionTrait;
@@ -50,6 +53,7 @@ class CollectionTest extends TestCase
      * Getting an entity from the collection should not fetch it if we use the array interface.
      *
      * @dataProvider getConversation
+     *
      * @param $payload
      * @param $id
      */
@@ -77,8 +81,10 @@ class CollectionTest extends TestCase
      * Must return the same object if that's the input.
      *
      * @dataProvider getConversation
+     *
      * @param $payload
      * @param $id
+     *
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
@@ -100,6 +106,7 @@ class CollectionTest extends TestCase
 
     /**
      * @dataProvider postConversation
+     *
      * @param $payload
      * @param $method
      */
@@ -120,6 +127,7 @@ class CollectionTest extends TestCase
 
     /**
      * @dataProvider postConversation
+     *
      * @param $payload
      * @param $method
      */
@@ -143,6 +151,7 @@ class CollectionTest extends TestCase
 
     /**
      * @dataProvider postConversation
+     *
      * @param $payload
      * @param $method
      */
@@ -168,6 +177,7 @@ class CollectionTest extends TestCase
 
     /**
      * @dataProvider postConversation
+     *
      * @param $payload
      * @param $method
      */
@@ -233,6 +243,7 @@ class CollectionTest extends TestCase
      *
      * @param string $type
      * @param int $status
+     *
      * @return Response
      */
     protected function getResponse(string $type = 'success', int $status = 200): Response

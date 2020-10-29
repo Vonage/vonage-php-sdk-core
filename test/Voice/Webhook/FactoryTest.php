@@ -27,6 +27,10 @@ use Vonage\Voice\Webhook\Notification;
 use Vonage\Voice\Webhook\Record;
 use Vonage\Voice\Webhook\Transfer;
 
+use function file_get_contents;
+use function json_decode;
+use function parse_str;
+
 class FactoryTest extends TestCase
 {
     /**
@@ -275,6 +279,7 @@ class FactoryTest extends TestCase
 
     /**
      * @param string $requestName
+     *
      * @return ServerRequest
      */
     public function getRequest(string $requestName): ServerRequest

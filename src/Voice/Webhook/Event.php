@@ -14,6 +14,9 @@ namespace Vonage\Voice\Webhook;
 use DateTimeImmutable;
 use Exception;
 
+use function array_key_exists;
+use function is_null;
+
 class Event
 {
     public const STATUS_STARTED = 'started';
@@ -99,6 +102,7 @@ class Event
      * Event constructor.
      *
      * @param array $event
+     *
      * @throws Exception
      */
     public function __construct(array $event)

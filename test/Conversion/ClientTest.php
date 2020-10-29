@@ -16,6 +16,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
+use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Client\Exception\Request as RequestException;
@@ -23,12 +24,14 @@ use Vonage\Client\Exception\Server as ServerException;
 use Vonage\Conversion\Client as ConversionClient;
 use VonageTest\Psr7AssertionTrait;
 
+use function fopen;
+
 class ClientTest extends TestCase
 {
     use Psr7AssertionTrait;
 
     /**
-     * @var \Vonage\Client|MockObject
+     * @var Client|MockObject
      */
     protected $vonageClient;
 

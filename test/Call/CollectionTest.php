@@ -24,6 +24,9 @@ use Vonage\Client\APIResource;
 use Vonage\Client\Exception as ClientException;
 use VonageTest\Psr7AssertionTrait;
 
+use function fopen;
+use function json_encode;
+
 class CollectionTest extends TestCase
 {
     use Psr7AssertionTrait;
@@ -91,6 +94,7 @@ class CollectionTest extends TestCase
      * Getting an entity from the collection should not fetch it if we use the array interface.
      *
      * @dataProvider getCall
+     *
      * @param $payload
      * @param $id
      */
@@ -119,8 +123,10 @@ class CollectionTest extends TestCase
      * if that's the input.
      *
      * @dataProvider getCall
+     *
      * @param $payload
      * @param $id
+     *
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
@@ -144,6 +150,7 @@ class CollectionTest extends TestCase
 
     /**
      * @dataProvider postCall
+     *
      * @param $payload
      * @param $method
      */
@@ -163,7 +170,9 @@ class CollectionTest extends TestCase
 
     /**
      * @dataProvider postCallNcco
+     *
      * @param $payload
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -188,6 +197,7 @@ class CollectionTest extends TestCase
 
     /**
      * @dataProvider postCall
+     *
      * @param $payload
      * @param $method
      */
@@ -211,6 +221,7 @@ class CollectionTest extends TestCase
 
     /**
      * @dataProvider postCall
+     *
      * @param $payload
      * @param $method
      */
@@ -234,6 +245,7 @@ class CollectionTest extends TestCase
 
     /**
      * @dataProvider postCall
+     *
      * @param $payload
      * @param $method
      */
@@ -256,9 +268,11 @@ class CollectionTest extends TestCase
 
     /**
      * @dataProvider putCall
+     *
      * @param $expectedId
      * @param $id
      * @param $payload
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -410,6 +424,7 @@ class CollectionTest extends TestCase
      *
      * @param string $type
      * @param int $status
+     *
      * @return Response
      */
     protected function getResponse(string $type = 'success', int $status = 200): Response

@@ -30,6 +30,6 @@ class AutoDetect extends Message
         parent::__construct($to, $from, $additional);
 
         $this->enableEncodingDetection();
-        $this->requestData['text'] = (string)$text;
+        $this->requestData['text'] = $text;
     }
 }

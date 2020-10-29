@@ -55,6 +55,7 @@ class Record
      * Record constructor.
      *
      * @param array $event
+     *
      * @throws Exception
      */
     public function __construct(array $event)

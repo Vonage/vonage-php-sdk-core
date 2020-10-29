@@ -15,6 +15,9 @@ use PHPUnit\Framework\TestCase;
 use Vonage\Voice\NCCO\Action\Record;
 use Vonage\Voice\NCCO\NCCO;
 
+use function json_decode;
+use function json_encode;
+
 class NCCOTest extends TestCase
 {
     public function testCanCreateNCCOFromArray(): void

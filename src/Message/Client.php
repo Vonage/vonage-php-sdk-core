@@ -25,9 +25,27 @@ use Vonage\Client\Exception\ThrottleException;
 use Vonage\Entity\Filter\FilterInterface;
 use Vonage\Entity\Filter\KeyValueFilter;
 
+use function class_exists;
+use function count;
+use function get_class;
+use function is_array;
+use function is_null;
+use function is_string;
+use function json_decode;
+use function preg_match;
+use function sleep;
+use function sprintf;
+use function strpos;
+use function strtolower;
+use function substr;
+use function trigger_error;
+use function ucfirst;
+
 /**
  * Class Client
+ *
  * @deprecated Use \Vonage\SMS\Client instead
+ *
  * @method Text sendText(string $to, string $from, string $text, array $additional = []) Send a Test Message
  */
 class Client implements ClientAwareInterface
@@ -60,51 +78,53 @@ class Client implements ClientAwareInterface
                 ->setBaseUrl($this->getClient()->getRestUrl())
                 ->setIsHAL(false)
                 ->setErrorsOn200(true);
-            $api->setExceptionErrorHandler(function (ResponseInterface $response) {
-                //check for valid data, as well as an error response from the API
-                if ((int)$response->getStatusCode() === 429) {
-                    throw new ClientException\Request('too many concurrent requests', $response->getStatusCode());
-                }
-
-                $data = json_decode($response->getBody()->getContents(), true);
-
-                if (!isset($data['messages'])) {
-                    if (isset($data['error-code'], $data['error-code-label'])) {
-                        $e = new ClientException\Request($data['error-code-label'], (int)$data['error-code']);
-                    } else {
-                        $e = new ClientException\Request('unexpected response from API');
+            $api->setExceptionErrorHandler(
+                function (ResponseInterface $response) {
+                    //check for valid data, as well as an error response from the API
+                    if ((int)$response->getStatusCode() === 429) {
+                        throw new ClientException\Request('too many concurrent requests', $response->getStatusCode());
                     }
 
-                    $e->setEntity($data);
-                    throw $e;
-                }
+                    $data = json_decode($response->getBody()->getContents(), true);
 
-                //normalize errors (client vrs server)
-                foreach ($data['messages'] as $part) {
-                    switch ($part['status']) {
-                        case '0':
-                            break; //all okay
-                        case '1':
-                            $e = new ThrottleException($part['error-text']);
-                            $e->setTimeout(1);
-                            $e->setEntity($data);
+                    if (!isset($data['messages'])) {
+                        if (isset($data['error-code'], $data['error-code-label'])) {
+                            $e = new ClientException\Request($data['error-code-label'], (int)$data['error-code']);
+                        } else {
+                            $e = new ClientException\Request('unexpected response from API');
+                        }
 
-                            if (preg_match('#\[\s+(\d+)\s+]#', $part['error-text'], $match)) {
-                                $e->setTimeout((int)$match[1] + 1);
-                            }
+                        $e->setEntity($data);
+                        throw $e;
+                    }
 
-                            throw $e;
-                        case '5':
-                            $e = new ClientException\Server($part['error-text'], (int)$part['status']);
-                            $e->setEntity($data);
-                            throw $e;
-                        default:
-                            $e = new ClientException\Request($part['error-text'], (int)$part['status']);
-                            $e->setEntity($data);
-                            throw $e;
+                    //normalize errors (client vrs server)
+                    foreach ($data['messages'] as $part) {
+                        switch ($part['status']) {
+                            case '0':
+                                break; //all okay
+                            case '1':
+                                $e = new ThrottleException($part['error-text']);
+                                $e->setTimeout(1);
+                                $e->setEntity($data);
+
+                                if (preg_match('#\[\s+(\d+)\s+]#', $part['error-text'], $match)) {
+                                    $e->setTimeout((int)$match[1] + 1);
+                                }
+
+                                throw $e;
+                            case '5':
+                                $e = new ClientException\Server($part['error-text'], (int)$part['status']);
+                                $e->setEntity($data);
+                                throw $e;
+                            default:
+                                $e = new ClientException\Request($part['error-text'], (int)$part['status']);
+                                $e->setEntity($data);
+                                throw $e;
+                        }
                     }
                 }
-            });
+            );
 
             $this->api = $api;
         }
@@ -114,6 +134,7 @@ class Client implements ClientAwareInterface
 
     /**
      * @param Message|array $message
+     *
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
@@ -189,9 +210,11 @@ class Client implements ClientAwareInterface
 
     /**
      * @todo Fix all this error detection so it's standard
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
+     *
      * @deprecated Please use the Reports API instead
      */
     public function get($query): array
@@ -207,8 +230,10 @@ class Client implements ClientAwareInterface
         } elseif (is_array($query)) {
             $params = ['ids' => $query];
         } else {
-            throw new InvalidArgumentException('query must be an instance of Query, ' .
-                'MessageInterface, string ID, or array of IDs.');
+            throw new InvalidArgumentException(
+                'query must be an instance of Query, ' .
+                'MessageInterface, string ID, or array of IDs.'
+            );
         }
 
         $api = $this->getApiResource();
@@ -281,11 +306,15 @@ class Client implements ClientAwareInterface
 
     /**
      * @todo Fix all this error detection so it's standard
+     *
      * @param string|MessageInterface $idOrMessage
+     *
      * @return InboundMessage|Message|MessageInterface|null
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
+     *
      * @deprecated Please use the Reports API instead
      */
     public function search($idOrMessage)
@@ -358,11 +387,13 @@ class Client implements ClientAwareInterface
             }
 
             if (isset($message) && !($message instanceof $new)) {
-                throw new ClientException\Exception(sprintf(
-                    'searched for message with type `%s` but message of type `%s`',
-                    get_class($message),
-                    get_class($new)
-                ));
+                throw new ClientException\Exception(
+                    sprintf(
+                        'searched for message with type `%s` but message of type `%s`',
+                        get_class($message),
+                        get_class($new)
+                    )
+                );
             }
 
             if (!isset($message)) {
@@ -379,9 +410,11 @@ class Client implements ClientAwareInterface
 
     /**
      * @todo Fix all this error detection so it's standard
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
+     *
      * @deprecated Please use the Reports API instead
      */
     public function searchRejections(Query $query): array
@@ -485,6 +518,7 @@ class Client implements ClientAwareInterface
      * Convenience feature allowing messages to be sent without creating a message object first.
      *
      * @return array|Message|MessageInterface
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -494,22 +528,26 @@ class Client implements ClientAwareInterface
     public function __call(string $name, $arguments)
     {
         if (strpos($name, "send") !== 0) {
-            throw new RuntimeException(sprintf(
-                '`%s` is not a valid method on `%s`',
-                $name,
-                get_class($this)
-            ));
+            throw new RuntimeException(
+                sprintf(
+                    '`%s` is not a valid method on `%s`',
+                    $name,
+                    get_class($this)
+                )
+            );
         }
 
         $class = substr($name, 4);
         $class = 'Vonage\\Message\\' . ucfirst(strtolower($class));
 
         if (!class_exists($class)) {
-            throw new RuntimeException(sprintf(
-                '`%s` is not a valid method on `%s`',
-                $name,
-                get_class($this)
-            ));
+            throw new RuntimeException(
+                sprintf(
+                    '`%s` is not a valid method on `%s`',
+                    $name,
+                    get_class($this)
+                )
+            );
         }
 
         $reflection = new ReflectionClass($class);

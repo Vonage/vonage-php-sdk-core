@@ -22,6 +22,7 @@ class ShortcodeTest extends TestCase
 {
     /**
      * @dataProvider typeProvider
+     *
      * @param $klass
      * @param $expectedType
      */
@@ -34,8 +35,10 @@ class ShortcodeTest extends TestCase
 
     /**
      * @dataProvider typeProvider
+     *
      * @param $expected
      * @param $type
+     *
      * @throws ClientException
      */
     public function testCreateMessageFromArray($expected, $type): void

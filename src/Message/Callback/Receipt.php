@@ -15,6 +15,8 @@ use DateTime;
 use UnexpectedValueException;
 use Vonage\Client\Callback\Callback;
 
+use function array_merge;
+
 class Receipt extends Callback
 {
     protected $expected = [

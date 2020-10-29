@@ -14,6 +14,9 @@ namespace Vonage\Voice\Webhook;
 use DateTimeImmutable;
 use Exception;
 
+use function is_string;
+use function json_decode;
+
 class Notification
 {
     /**
@@ -35,6 +38,7 @@ class Notification
      * Notification constructor.
      *
      * @param array $data
+     *
      * @throws Exception
      */
     public function __construct(array $data)

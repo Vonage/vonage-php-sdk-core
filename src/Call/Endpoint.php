@@ -14,6 +14,9 @@ namespace Vonage\Call;
 use JsonSerializable;
 use RuntimeException;
 
+use function array_merge;
+use function trigger_error;
+
 /**
  * Class Endpoint
  * Represents a call destination / origin.

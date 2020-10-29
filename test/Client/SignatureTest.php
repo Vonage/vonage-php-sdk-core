@@ -30,8 +30,10 @@ class SignatureTest extends TestCase
 
     /**
      * @dataProvider hmacSignatureProvider
+     *
      * @param $algorithm
      * @param $expected
+     *
      * @throws ClientException
      */
     public function testHmacSignature($algorithm, $expected): void
@@ -71,10 +73,12 @@ class SignatureTest extends TestCase
 
     /**
      * @dataProvider signatures
+     *
      * @param $algo
      * @param $sig
      * @param $params
      * @param $secret
+     *
      * @throws ClientException
      */
     public function testSignature($algo, $sig, $params, $secret): void

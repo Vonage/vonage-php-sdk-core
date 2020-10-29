@@ -20,6 +20,14 @@ use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 use Vonage\Entity\JsonResponseTrait;
 use Vonage\Entity\Psr7Trait;
 
+use function count;
+use function get_class;
+use function is_null;
+use function is_string;
+use function json_decode;
+use function sprintf;
+use function trigger_error;
+
 class InboundMessage implements MessageInterface, ArrayAccess, ArrayHydrateInterface
 {
     use Psr7Trait;
@@ -38,6 +46,7 @@ class InboundMessage implements MessageInterface, ArrayAccess, ArrayHydrateInter
 
     /**
      * @param string|ServerRequestInterface $idOrRequest Message ID, or inbound HTTP request.
+     *
      * @todo Find a cleaner way to create this object
      */
     public function __construct($idOrRequest)
@@ -60,10 +69,12 @@ class InboundMessage implements MessageInterface, ArrayAccess, ArrayHydrateInter
             return;
         }
 
-        throw new RuntimeException(sprintf(
-            '`%s` must be constructed with a server request or a message id',
-            self::class
-        ));
+        throw new RuntimeException(
+            sprintf(
+                '`%s` must be constructed with a server request or a message id',
+                self::class
+            )
+        );
     }
 
     public static function createFromGlobals(): self
@@ -241,10 +252,12 @@ class InboundMessage implements MessageInterface, ArrayAccess, ArrayHydrateInter
      */
     protected function getReadOnlyException($offset): RuntimeException
     {
-        return new RuntimeException(sprintf(
-            'can not modify `%s` using array access',
-            $offset
-        ));
+        return new RuntimeException(
+            sprintf(
+                'can not modify `%s` using array access',
+                $offset
+            )
+        );
     }
 
     public function fromArray(array $data): void

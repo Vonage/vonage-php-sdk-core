@@ -16,6 +16,8 @@ use Vonage\Message\Shortcode\Alert;
 use Vonage\Message\Shortcode\Marketing;
 use Vonage\Message\Shortcode\TwoFactor;
 
+use function strtolower;
+
 abstract class Shortcode
 {
     /**
@@ -64,6 +66,7 @@ abstract class Shortcode
 
     /**
      * @return Alert|Marketing|TwoFactor|null
+     *
      * @throws ClientException
      */
     public static function createMessageFromArray(array $data)

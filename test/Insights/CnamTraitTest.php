@@ -17,6 +17,7 @@ class CnamTraitTest extends TestCase
 {
     /**
      * @dataProvider cnamProvider
+     *
      * @param $cnam
      * @param $inputData
      */
@@ -30,6 +31,7 @@ class CnamTraitTest extends TestCase
 
     /**
      * @dataProvider cnamProvider
+     *
      * @param $cnam
      * @param $inputData
      */

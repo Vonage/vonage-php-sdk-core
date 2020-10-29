@@ -22,6 +22,8 @@ use Vonage\Client\Exception as ClientException;
 use Vonage\Redact\Client as RedactClient;
 use VonageTest\Psr7AssertionTrait;
 
+use function fopen;
+
 class ClientTest extends TestCase
 {
     use Psr7AssertionTrait;
@@ -120,10 +122,12 @@ class ClientTest extends TestCase
 
     /**
      * @dataProvider exceptionsProvider
+     *
      * @param $response
      * @param $code
      * @param $expectedException
      * @param $expectedMessage
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      */
@@ -195,6 +199,7 @@ class ClientTest extends TestCase
      *
      * @param string $type
      * @param int $status
+     *
      * @return Response
      */
     protected function getResponse(string $type = 'success', int $status = 200): Response

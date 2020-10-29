@@ -13,6 +13,8 @@ namespace Vonage\Voice\Call;
 
 use Vonage\Client\Request\AbstractRequest;
 
+use function is_null;
+
 /**
  * @deprecated This objects are no longer viable and will be removed in a future version
  */
@@ -38,6 +40,7 @@ class Call extends AbstractRequest
     /**
      * @param $url
      * @param null $method
+     *
      * @return $this
      */
     public function setAnswer($url, $method = null): Call
@@ -56,6 +59,7 @@ class Call extends AbstractRequest
     /**
      * @param $url
      * @param null $method
+     *
      * @return $this
      */
     public function setError($url, $method = null): Call
@@ -73,6 +77,7 @@ class Call extends AbstractRequest
     /**
      * @param $url
      * @param null $method
+     *
      * @return $this
      */
     public function setStatus($url, $method = null): Call
@@ -90,6 +95,7 @@ class Call extends AbstractRequest
     /**
      * @param bool $hangup
      * @param null $timeout
+     *
      * @return $this
      */
     public function setMachineDetection($hangup = true, $timeout = null): Call

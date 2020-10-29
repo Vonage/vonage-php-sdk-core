@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace Vonage\Voice\Endpoint;
 
+use function array_key_exists;
+
 class Phone implements EndpointInterface
 {
     /**
@@ -48,6 +50,7 @@ class Phone implements EndpointInterface
     /**
      * @param string $number
      * @param array $data
+     *
      * @return Phone
      */
     public static function factory(string $number, array $data): Phone
@@ -92,6 +95,7 @@ class Phone implements EndpointInterface
 
     /**
      * @param string $dtmf
+     *
      * @return $this
      */
     public function setDtmfAnswer(string $dtmf): self
@@ -144,6 +148,7 @@ class Phone implements EndpointInterface
 
     /**
      * @param string $ringbackTone
+     *
      * @return $this
      */
     public function setRingbackTone(string $ringbackTone): self
@@ -163,6 +168,7 @@ class Phone implements EndpointInterface
 
     /**
      * @param string $url
+     *
      * @return $this
      */
     public function setUrl(string $url): self

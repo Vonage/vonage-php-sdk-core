@@ -17,6 +17,8 @@ use RuntimeException;
 use Vonage\Client\Response\Error;
 use Vonage\Client\Response\Response;
 
+use function count;
+
 class Collection extends Response implements Countable, Iterator
 {
     /**
@@ -104,6 +106,7 @@ class Collection extends Response implements Countable, Iterator
 
     /**
      * @link http://php.net/manual/en/iterator.rewind.php
+     *
      * @return void
      */
     public function rewind(): void

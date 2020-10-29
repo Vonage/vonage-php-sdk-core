@@ -18,6 +18,7 @@ class ClientFactory
 {
     /**
      * @param ContainerInterface $container
+     *
      * @return Client
      */
     public function __invoke(ContainerInterface $container): Client

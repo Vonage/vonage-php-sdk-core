@@ -14,6 +14,11 @@ namespace Vonage\Voice\NCCO\Action;
 use RuntimeException;
 use Vonage\Voice\Webhook;
 
+use function array_key_exists;
+use function filter_var;
+use function is_array;
+use function is_null;
+
 class Input implements ActionInterface
 {
     /**
@@ -78,6 +83,7 @@ class Input implements ActionInterface
 
     /**
      * @param array<array, mixed> $data
+     *
      * @return Input
      */
     public static function factory(array $data): Input
@@ -241,6 +247,7 @@ class Input implements ActionInterface
 
     /**
      * @param int $dtmfTimeout
+     *
      * @return $this
      */
     public function setDtmfTimeout(int $dtmfTimeout): self
@@ -261,6 +268,7 @@ class Input implements ActionInterface
 
     /**
      * @param int $dtmfMaxDigits
+     *
      * @return $this
      */
     public function setDtmfMaxDigits(int $dtmfMaxDigits): self
@@ -281,6 +289,7 @@ class Input implements ActionInterface
 
     /**
      * @param bool $dtmfSubmitOnHash
+     *
      * @return $this
      */
     public function setDtmfSubmitOnHash(bool $dtmfSubmitOnHash): self
@@ -301,6 +310,7 @@ class Input implements ActionInterface
 
     /**
      * @param string $speechUUID
+     *
      * @return $this
      */
     public function setSpeechUUID(string $speechUUID): self
@@ -321,6 +331,7 @@ class Input implements ActionInterface
 
     /**
      * @param int $speechEndOnSilence
+     *
      * @return $this
      */
     public function setSpeechEndOnSilence(int $speechEndOnSilence): self
@@ -341,6 +352,7 @@ class Input implements ActionInterface
 
     /**
      * @param string $speechLanguage
+     *
      * @return $this
      */
     public function setSpeechLanguage(string $speechLanguage): self
@@ -361,6 +373,7 @@ class Input implements ActionInterface
 
     /**
      * @param array<string> $speechContext Array of words to help with speech recognition
+     *
      * @return Input
      */
     public function setSpeechContext(array $speechContext): self
@@ -381,6 +394,7 @@ class Input implements ActionInterface
 
     /**
      * @param int $speechStartTimeout
+     *
      * @return $this
      */
     public function setSpeechStartTimeout(int $speechStartTimeout): self
@@ -417,6 +431,7 @@ class Input implements ActionInterface
 
     /**
      * @param Webhook $eventWebhook
+     *
      * @return $this
      */
     public function setEventWebhook(Webhook $eventWebhook): self
@@ -436,6 +451,7 @@ class Input implements ActionInterface
 
     /**
      * @param bool $enableSpeech
+     *
      * @return $this
      */
     public function setEnableSpeech(bool $enableSpeech): Input
@@ -455,6 +471,7 @@ class Input implements ActionInterface
 
     /**
      * @param bool $enableDtmf
+     *
      * @return $this
      */
     public function setEnableDtmf(bool $enableDtmf): Input

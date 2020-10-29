@@ -49,6 +49,7 @@ class ResponseTest extends TestCase
 
     /**
      * @dataProvider getOptionalProperties
+     *
      * @param $property
      */
     public function testCantGetOptionalDataBeforeCallback($property): void
@@ -61,6 +62,7 @@ class ResponseTest extends TestCase
 
     /**
      * @dataProvider getOptionalProperties
+     *
      * @param $property
      */
     public function testCantHasOptionalDataBeforeCallback($property): void
@@ -76,6 +78,7 @@ class ResponseTest extends TestCase
      * value is found (or return the last callback's data).
      *
      * @dataProvider getOptionalProperties
+     *
      * @param $property
      */
     public function testOptionalDataProxiesCallback($property): void

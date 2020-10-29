@@ -29,6 +29,11 @@ use Vonage\Client\Exception\Server as ServerException;
 use Vonage\Conversations\Conversation;
 use VonageTest\Psr7AssertionTrait;
 
+use function file_get_contents;
+use function fopen;
+use function json_decode;
+use function json_encode;
+
 class CallTest extends TestCase
 {
     use Psr7AssertionTrait;
@@ -110,6 +115,7 @@ class CallTest extends TestCase
      * @param $payload
      * @param $expectedHttpCode
      * @param $expectedResponse
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException
      * @throws RequestException
@@ -399,6 +405,7 @@ class CallTest extends TestCase
      *
      * @param Call $entity
      * @param Response $response
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException
      * @throws RequestException
@@ -420,6 +427,7 @@ class CallTest extends TestCase
      *
      * @param Call $entity
      * @param $data
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException
      * @throws RequestException
@@ -450,6 +458,7 @@ class CallTest extends TestCase
      *
      * @param string $type
      * @param int $status
+     *
      * @return Response
      */
     protected function getResponse(string $type = 'success', int $status = 200): Response

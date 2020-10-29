@@ -15,6 +15,8 @@ use DateTime;
 use PHPUnit\Framework\TestCase;
 use Vonage\Message\Callback\Receipt;
 
+use function array_merge;
+
 class ReceiptTest extends TestCase
 {
     protected $data = [

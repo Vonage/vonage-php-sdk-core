@@ -18,7 +18,9 @@ class CallFactory implements FactoryInterface
 {
     /**
      * @param array $data
+     *
      * @return Call
+     *
      * @throws Exception
      */
     public function create(array $data): Call

@@ -15,6 +15,9 @@ use BadMethodCallException;
 use InvalidArgumentException;
 use Vonage\Client\Response\Response as BaseResponse;
 
+use function array_merge;
+use function count;
+
 class Response extends BaseResponse
 {
     protected $callbacks = [];
@@ -110,7 +113,9 @@ class Response extends BaseResponse
     /**
      * @param $name
      * @param $args
+     *
      * @return mixed
+     *
      * @todo This looks somewhat illogical
      */
     public function __call($name, $args)
@@ -140,6 +145,7 @@ class Response extends BaseResponse
     /**
      * @param Response $response
      * @param Callback $callback
+     *
      * @return Response
      */
     public static function addCallback(Response $response, callable $callback): Response

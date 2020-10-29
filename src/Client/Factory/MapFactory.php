@@ -15,6 +15,9 @@ use Psr\Container\ContainerInterface;
 use RuntimeException;
 use Vonage\Client;
 
+use function is_callable;
+use function sprintf;
+
 class MapFactory implements FactoryInterface, ContainerInterface
 {
     /**
@@ -52,6 +55,7 @@ class MapFactory implements FactoryInterface, ContainerInterface
 
     /**
      * @param string $id
+     *
      * @return bool
      * @noinspection PhpMissingParamTypeInspection
      */
@@ -62,7 +66,9 @@ class MapFactory implements FactoryInterface, ContainerInterface
 
     /**
      * @param $api
+     *
      * @return bool
+     *
      * @deprecated Use has() instead
      */
     public function hasApi($api): bool
@@ -72,6 +78,7 @@ class MapFactory implements FactoryInterface, ContainerInterface
 
     /**
      * @param string $id
+     *
      * @return mixed
      * @noinspection PhpMissingParamTypeInspection
      */
@@ -97,7 +104,9 @@ class MapFactory implements FactoryInterface, ContainerInterface
 
     /**
      * @param $api
+     *
      * @return mixed
+     *
      * @deprecated Use get() instead
      */
     public function getApi($api)
@@ -107,15 +116,18 @@ class MapFactory implements FactoryInterface, ContainerInterface
 
     /**
      * @param $key
+     *
      * @return mixed
      */
     public function make($key)
     {
         if (!$this->has($key)) {
-            throw new RuntimeException(sprintf(
-                'no map defined for `%s`',
-                $key
-            ));
+            throw new RuntimeException(
+                sprintf(
+                    'no map defined for `%s`',
+                    $key
+                )
+            );
         }
 
         if (is_callable($this->map[$key])) {

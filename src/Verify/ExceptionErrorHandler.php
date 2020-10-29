@@ -16,6 +16,8 @@ use Psr\Http\Message\ResponseInterface;
 use Vonage\Client\Exception\Request;
 use Vonage\Client\Exception\Server;
 
+use function json_decode;
+
 /**
  * Error handler for API requests returned by the Verify API
  */
@@ -24,6 +26,7 @@ class ExceptionErrorHandler
     /**
      * @param ResponseInterface $response
      * @param RequestInterface $request
+     *
      * @throws Request
      * @throws Server
      */

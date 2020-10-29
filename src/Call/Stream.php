@@ -19,6 +19,12 @@ use Vonage\Client\ClientAwareTrait;
 use Vonage\Client\Exception as ClientException;
 use Vonage\Entity\JsonSerializableInterface;
 
+use function is_array;
+use function is_null;
+use function json_decode;
+use function json_encode;
+use function trigger_error;
+
 /**
  * Lightweight resource, only has put / delete.
  *
@@ -51,6 +57,7 @@ class Stream implements JsonSerializableInterface, ClientAwareInterface
 
     /**
      * @return $this|Event
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request

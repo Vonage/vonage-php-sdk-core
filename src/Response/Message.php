@@ -89,6 +89,7 @@ class Message
 
     /**
      * @param $param
+     *
      * @return mixed
      */
     protected function checkData($param)

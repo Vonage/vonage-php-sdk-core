@@ -13,6 +13,8 @@ namespace Vonage\Message;
 
 use Vonage\Client\Exception\Exception as ClientException;
 
+use function array_merge;
+
 /**
  * SMS Text Message
  */

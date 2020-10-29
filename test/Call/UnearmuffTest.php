@@ -15,6 +15,10 @@ use Helmich\JsonAssert\JsonAssertions;
 use PHPUnit\Framework\TestCase;
 use Vonage\Call\Unearmuff;
 
+use function file_get_contents;
+use function json_decode;
+use function json_encode;
+
 class UnearmuffTest extends TestCase
 {
     use JsonAssertions;

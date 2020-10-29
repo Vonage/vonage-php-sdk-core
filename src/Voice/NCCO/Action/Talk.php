@@ -11,6 +11,10 @@ declare(strict_types=1);
 
 namespace Vonage\Voice\NCCO\Action;
 
+use function array_key_exists;
+use function filter_var;
+use function is_null;
+
 class Talk implements ActionInterface
 {
     /**
@@ -51,6 +55,7 @@ class Talk implements ActionInterface
     /**
      * @param string $text
      * @param array{text: string, bargeIn?: bool, level?: float, loop?: int, voiceName?: string} $data
+     *
      * @return Talk
      */
     public static function factory(string $text, array $data): Talk
@@ -132,6 +137,7 @@ class Talk implements ActionInterface
 
     /**
      * @param bool $value
+     *
      * @return $this
      */
     public function setBargeIn(bool $value): self
@@ -142,6 +148,7 @@ class Talk implements ActionInterface
 
     /**
      * @param float $level
+     *
      * @return $this
      */
     public function setLevel(float $level): self
@@ -153,6 +160,7 @@ class Talk implements ActionInterface
 
     /**
      * @param int $times
+     *
      * @return $this
      */
     public function setLoop(int $times): self
@@ -164,6 +172,7 @@ class Talk implements ActionInterface
 
     /**
      * @param string $name
+     *
      * @return $this
      */
     public function setVoiceName(string $name): self

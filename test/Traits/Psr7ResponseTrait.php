@@ -13,6 +13,8 @@ namespace VonageTest\Traits;
 
 use Laminas\Diactoros\Response;
 
+use function fopen;
+
 trait Psr7ResponseTrait
 {
     /**
@@ -20,6 +22,7 @@ trait Psr7ResponseTrait
      * change between success / fail is body of the message.
      *
      * @param string $type
+     *
      * @return Response
      */
     protected function getResponse(string $type = 'success'): Response

@@ -29,6 +29,10 @@ use Vonage\Voice\NCCO\NCCO;
 use Vonage\Voice\OutboundCall;
 use Vonage\Voice\Webhook;
 
+use function fopen;
+use function json_decode;
+use function json_encode;
+
 class ClientTest extends TestCase
 {
     use Psr7AssertionTrait;
@@ -544,6 +548,7 @@ class ClientTest extends TestCase
      *
      * @param string $type
      * @param int $status
+     *
      * @return Response
      */
     protected function getResponse(string $type = 'success', int $status = 200): Response

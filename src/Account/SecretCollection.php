@@ -15,6 +15,9 @@ use ArrayAccess;
 use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\InvalidResponseException;
 
+use function get_class;
+use function trigger_error;
+
 class SecretCollection implements ArrayAccess
 {
     protected $data;
@@ -48,6 +51,7 @@ class SecretCollection implements ArrayAccess
 
     /**
      * @throws InvalidResponseException
+     *
      * @deprecated Instantiate the object directly
      */
     public static function fromApi($data): SecretCollection

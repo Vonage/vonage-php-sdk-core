@@ -17,6 +17,13 @@ use RuntimeException;
 use Vonage\Entity\Filter\EmptyFilter;
 use Vonage\Entity\Filter\FilterInterface;
 
+use function array_merge;
+use function count;
+use function http_build_query;
+use function is_null;
+use function json_decode;
+use function strpos;
+
 /**
  * Common code for iterating over a collection, and using the collection class to discover the API path.
  */
@@ -24,30 +31,35 @@ trait CollectionTrait
 {
     /**
      * Index of the current resource of the current page
+     *
      * @var int
      */
     protected $current;
 
     /**
      * Current page data.
+     *
      * @var array
      */
     protected $page;
 
     /**
      * Last API Response
+     *
      * @var ResponseInterface
      */
     protected $response;
 
     /**
      * User set page index.
+     *
      * @var int
      */
     protected $index;
 
     /**
      * User set page size.
+     *
      * @var int
      */
     protected $size;
@@ -70,6 +82,7 @@ trait CollectionTrait
     /**
      * @param $data
      * @param $id
+     *
      * @return mixed
      */
     abstract public function hydrateEntity($data, $id);
@@ -171,6 +184,7 @@ trait CollectionTrait
 
     /**
      * @param $index
+     *
      * @return $this
      */
     public function setPage($index): CollectionTrait
@@ -214,6 +228,7 @@ trait CollectionTrait
 
     /**
      * @param $size
+     *
      * @return $this
      */
     public function setSize($size): CollectionTrait
@@ -227,6 +242,7 @@ trait CollectionTrait
      * Filters reduce to query params and include paging settings.
      *
      * @param FilterInterface $filter
+     *
      * @return $this
      */
     public function setFilter(FilterInterface $filter): self

@@ -15,6 +15,14 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 
+use function array_merge;
+use function get_class;
+use function is_array;
+use function json_decode;
+use function method_exists;
+use function parse_str;
+use function trigger_error;
+
 /**
  * Class Psr7Trait
  *

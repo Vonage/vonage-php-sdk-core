@@ -15,6 +15,8 @@ use DateTimeImmutable;
 use Exception;
 use InvalidArgumentException;
 
+use function array_key_exists;
+
 class InboundSMS
 {
     public static $requiredFields = [
@@ -116,6 +118,7 @@ class InboundSMS
      * InboundSMS constructor.
      *
      * @param array $data
+     *
      * @throws Exception
      */
     public function __construct(array $data)

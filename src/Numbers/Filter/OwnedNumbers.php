@@ -14,6 +14,11 @@ namespace Vonage\Numbers\Filter;
 use InvalidArgumentException;
 use Vonage\Entity\Filter\FilterInterface;
 
+use function array_key_exists;
+use function filter_var;
+use function is_null;
+use function strlen;
+
 class OwnedNumbers implements FilterInterface
 {
     public const SEARCH_PATTERN_BEGIN = 0;
@@ -151,6 +156,7 @@ class OwnedNumbers implements FilterInterface
 
     /**
      * @param int $pageIndex
+     *
      * @return $this
      */
     public function setPageIndex(int $pageIndex): self
@@ -170,6 +176,7 @@ class OwnedNumbers implements FilterInterface
 
     /**
      * @param string $pattern
+     *
      * @return $this
      */
     public function setPattern(string $pattern): self
@@ -189,6 +196,7 @@ class OwnedNumbers implements FilterInterface
 
     /**
      * @param int $searchPattern
+     *
      * @return $this
      */
     public function setSearchPattern(int $searchPattern): self
@@ -208,6 +216,7 @@ class OwnedNumbers implements FilterInterface
 
     /**
      * @param int $pageSize
+     *
      * @return $this
      */
     public function setPageSize(int $pageSize): self
@@ -227,6 +236,7 @@ class OwnedNumbers implements FilterInterface
 
     /**
      * @param string $applicationId
+     *
      * @return $this
      */
     public function setApplicationId(string $applicationId): self
@@ -246,6 +256,7 @@ class OwnedNumbers implements FilterInterface
 
     /**
      * @param bool $hasApplication
+     *
      * @return $this
      */
     public function setHasApplication(bool $hasApplication): self

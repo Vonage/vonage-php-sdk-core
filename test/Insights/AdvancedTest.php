@@ -18,6 +18,7 @@ class AdvancedTest extends TestCase
 {
     /**
      * @dataProvider advancedTestProvider
+     *
      * @param $advanced
      * @param $inputData
      */
@@ -29,6 +30,7 @@ class AdvancedTest extends TestCase
 
     /**
      * @dataProvider advancedTestProvider
+     *
      * @param $advanced
      * @param $inputData
      */

@@ -13,6 +13,12 @@ namespace VonageTest;
 
 use Psr\Http\Message\RequestInterface;
 
+use function http_build_query;
+use function is_array;
+use function json_decode;
+use function json_encode;
+use function parse_str;
+
 trait Psr7AssertionTrait
 {
     /**

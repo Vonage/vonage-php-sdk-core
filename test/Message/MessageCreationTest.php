@@ -17,6 +17,10 @@ use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Message\Message;
 use Vonage\Message\Text;
 
+use function array_diff;
+use function array_keys;
+use function json_encode;
+
 class MessageCreationTest extends TestCase
 {
     protected $to = '14845551212';
@@ -71,9 +75,11 @@ class MessageCreationTest extends TestCase
      * Common optional params can be set
      *
      * @dataProvider optionalParams
+     *
      * @param $setter
      * @param $param
      * @param $values
+     *
      * @throws ClientException
      */
     public function testOptionalParams($setter, $param, $values): void
@@ -129,6 +135,7 @@ class MessageCreationTest extends TestCase
      * Throw an exception when we make a call on a method that cannot change after request
      *
      * @dataProvider responseMethodChangeList
+     *
      * @param $method
      * @param $argument
      */

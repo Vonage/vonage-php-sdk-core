@@ -27,6 +27,14 @@ use Vonage\Entity\JsonSerializableTrait;
 use Vonage\Entity\JsonUnserializableInterface;
 use Vonage\Entity\NoRequestResponseTrait;
 
+use function array_merge;
+use function call_user_func_array;
+use function is_null;
+use function json_decode;
+use function json_encode;
+use function trigger_error;
+use function ucfirst;
+
 /**
  * Class Call
  *
@@ -200,6 +208,7 @@ class Call implements EntityInterface, JsonSerializable, JsonUnserializableInter
 
     /**
      * @param Endpoint|string|null $endpoint
+     *
      * @return $this
      */
     public function setFrom($endpoint): self
@@ -341,6 +350,7 @@ class Call implements EntityInterface, JsonSerializable, JsonUnserializableInter
 
     /**
      * @param $name
+     *
      * @return mixed
      * @noinspection MagicMethodsValidityInspection
      */
@@ -359,6 +369,7 @@ class Call implements EntityInterface, JsonSerializable, JsonUnserializableInter
     /**
      * @param $name
      * @param $arguments
+     *
      * @return mixed
      */
     public function __call($name, $arguments)

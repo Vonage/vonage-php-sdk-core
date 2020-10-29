@@ -25,6 +25,10 @@ use Vonage\SMS\ExceptionErrorHandler;
 use Vonage\SMS\Message\SMS;
 use VonageTest\Psr7AssertionTrait;
 
+use function fopen;
+use function json_decode;
+use function str_repeat;
+
 class ClientTest extends TestCase
 {
     use Psr7AssertionTrait;
@@ -339,6 +343,7 @@ class ClientTest extends TestCase
      *
      * @param string $type
      * @param int $status
+     *
      * @return Response
      */
     protected function getResponse(string $type = 'success', int $status = 200): Response

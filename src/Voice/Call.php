@@ -17,6 +17,8 @@ use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 use Vonage\Voice\Endpoint\EndpointFactory;
 use Vonage\Voice\Endpoint\EndpointInterface;
 
+use function array_key_exists;
+
 class Call implements ArrayHydrateInterface
 {
     /**
@@ -83,6 +85,7 @@ class Call implements ArrayHydrateInterface
      * Call constructor.
      *
      * @param array $data
+     *
      * @throws Exception
      */
     public function __construct(array $data = [])
@@ -94,6 +97,7 @@ class Call implements ArrayHydrateInterface
 
     /**
      * @param array $data
+     *
      * @throws Exception
      */
     public function fromArray(array $data): void

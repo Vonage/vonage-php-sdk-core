@@ -19,6 +19,10 @@ use Vonage\Client\ClientAwareInterface;
 use Vonage\Client\ClientAwareTrait;
 use Vonage\Client\Exception as ClientException;
 
+use function http_build_query;
+use function is_null;
+use function json_decode;
+
 class Client implements ClientAwareInterface, APIClient
 {
     use ClientAwareTrait;
@@ -59,6 +63,7 @@ class Client implements ClientAwareInterface, APIClient
      * @param $message_id
      * @param $delivered
      * @param null $timestamp
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -73,6 +78,7 @@ class Client implements ClientAwareInterface, APIClient
      * @param $message_id
      * @param $delivered
      * @param null $timestamp
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -88,6 +94,7 @@ class Client implements ClientAwareInterface, APIClient
      * @param $message_id
      * @param $delivered
      * @param null $timestamp
+     *
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
@@ -116,6 +123,7 @@ class Client implements ClientAwareInterface, APIClient
 
     /**
      * @param ResponseInterface $response
+     *
      * @return ClientException\Exception|ClientException\Request|ClientException\Server
      */
     protected function getException(ResponseInterface $response)

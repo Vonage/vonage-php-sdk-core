@@ -13,6 +13,8 @@ namespace Vonage\Call;
 
 use JsonSerializable;
 
+use function trigger_error;
+
 class Hangup implements JsonSerializable
 {
     public function __construct()

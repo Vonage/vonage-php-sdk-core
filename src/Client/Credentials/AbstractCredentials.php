@@ -13,12 +13,16 @@ namespace Vonage\Client\Credentials;
 
 use RuntimeException;
 
+use function get_class;
+use function sprintf;
+
 abstract class AbstractCredentials implements CredentialsInterface
 {
     protected $credentials = [];
 
     /**
      * @param mixed $offset
+     *
      * @return bool
      */
     public function offsetExists($offset): bool
@@ -28,6 +32,7 @@ abstract class AbstractCredentials implements CredentialsInterface
 
     /**
      * @param mixed $offset
+     *
      * @return mixed
      */
     public function offsetGet($offset)
@@ -54,6 +59,7 @@ abstract class AbstractCredentials implements CredentialsInterface
 
     /**
      * @param $name
+     *
      * @return mixed
      * @noinspection MagicMethodsValidityInspection
      */
@@ -75,9 +81,11 @@ abstract class AbstractCredentials implements CredentialsInterface
      */
     protected function readOnlyException(): RuntimeException
     {
-        return new RuntimeException(sprintf(
-            '%s is read only, cannot modify using array access.',
-            get_class($this)
-        ));
+        return new RuntimeException(
+            sprintf(
+                '%s is read only, cannot modify using array access.',
+                get_class($this)
+            )
+        );
     }
 }

@@ -11,11 +11,19 @@ declare(strict_types=1);
 
 namespace Vonage\Message;
 
+use function array_diff;
+use function array_map;
+use function mb_convert_encoding;
+use function ord;
+use function preg_split;
+
 class EncodingDetector
 {
     /**
      * @see https://en.wikipedia.org/wiki/GSM_03.38#GSM_7-bit_default_alphabet_and_extension_table_of_3GPP_TS_23.038_/_GSM_03.38
+     *
      * @param $content
+     *
      * @return bool
      */
     public function requiresUnicodeEncoding($content): bool

@@ -17,6 +17,10 @@ use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Lcobucci\JWT\Token;
 use Vonage\Application\Application;
 
+use function base64_encode;
+use function mt_rand;
+use function time;
+
 /**
  * @property mixed application
  */
@@ -50,6 +54,7 @@ class Keypair extends AbstractCredentials
 
     /**
      * @param array $claims
+     *
      * @return Token
      */
     public function generateJwt(array $claims = []): Token

@@ -30,6 +30,7 @@ class App implements EndpointInterface
 
     /**
      * @param string $user
+     *
      * @return App
      */
     public static function factory(string $user): App

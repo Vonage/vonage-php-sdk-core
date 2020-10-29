@@ -16,6 +16,8 @@ use DateTimeZone;
 use Vonage\Conversations\Conversation;
 use Vonage\Entity\Filter\FilterInterface;
 
+use function trigger_error;
+
 /**
  * @deprecated Use Vonage\Voice\Filter\VoiceFilter
  */

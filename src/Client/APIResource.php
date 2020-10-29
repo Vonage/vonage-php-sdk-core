@@ -19,6 +19,11 @@ use Vonage\Entity\Filter\EmptyFilter;
 use Vonage\Entity\Filter\FilterInterface;
 use Vonage\Entity\IterableAPICollection;
 
+use function http_build_query;
+use function is_null;
+use function json_decode;
+use function json_encode;
+
 class APIResource implements ClientAwareInterface
 {
     use ClientAwareTrait;
@@ -55,6 +60,7 @@ class APIResource implements ClientAwareInterface
 
     /**
      * Error handler to use when reviewing API responses
+     *
      * @var callable
      */
     protected $exceptionErrorHandler;
@@ -78,7 +84,9 @@ class APIResource implements ClientAwareInterface
      * @param array $body
      * @param string $uri
      * @param array $headers
+     *
      * @return array|null
+     *
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
      */
@@ -121,7 +129,9 @@ class APIResource implements ClientAwareInterface
     /**
      * @param string $id
      * @param array $headers
+     *
      * @return array|null
+     *
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
      */
@@ -165,7 +175,9 @@ class APIResource implements ClientAwareInterface
      * @param $id
      * @param array $query
      * @param array $headers
+     *
      * @return mixed
+     *
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
      */
@@ -263,6 +275,7 @@ class APIResource implements ClientAwareInterface
      * Sets the error handler to use when reviewing API responses.
      *
      * @param callable $handler
+     *
      * @return $this
      */
     public function setExceptionErrorHandler(callable $handler): self
@@ -275,6 +288,7 @@ class APIResource implements ClientAwareInterface
     /**
      * @param ResponseInterface $response
      * @param RequestInterface $request
+     *
      * @return mixed
      */
     protected function getException(ResponseInterface $response, RequestInterface $request)
@@ -313,6 +327,7 @@ class APIResource implements ClientAwareInterface
     /**
      * @param FilterInterface|null $filter
      * @param string $uri
+     *
      * @return IterableAPICollection
      */
     public function search(FilterInterface $filter = null, string $uri = ''): IterableAPICollection
@@ -338,6 +353,7 @@ class APIResource implements ClientAwareInterface
 
     /**
      * @param string $url
+     *
      * @return $this
      */
     public function setBaseUrl(string $url): self
@@ -349,6 +365,7 @@ class APIResource implements ClientAwareInterface
 
     /**
      * @param string $uri
+     *
      * @return $this
      */
     public function setBaseUri(string $uri): self
@@ -360,6 +377,7 @@ class APIResource implements ClientAwareInterface
 
     /**
      * @param string $name
+     *
      * @return $this
      */
     public function setCollectionName(string $name): self
@@ -371,6 +389,7 @@ class APIResource implements ClientAwareInterface
 
     /**
      * @param IterableAPICollection $prototype
+     *
      * @return $this
      */
     public function setCollectionPrototype(IterableAPICollection $prototype): self
@@ -382,6 +401,7 @@ class APIResource implements ClientAwareInterface
 
     /**
      * @param bool $state
+     *
      * @return $this
      */
     public function setIsHAL(bool $state): self
@@ -393,6 +413,7 @@ class APIResource implements ClientAwareInterface
 
     /**
      * @param ResponseInterface $response
+     *
      * @return $this
      */
     public function setLastResponse(ResponseInterface $response): self
@@ -404,6 +425,7 @@ class APIResource implements ClientAwareInterface
 
     /**
      * @param RequestInterface $request
+     *
      * @return $this
      */
     public function setLastRequest(RequestInterface $request): self
@@ -419,7 +441,9 @@ class APIResource implements ClientAwareInterface
      * @param array $formData
      * @param string $uri
      * @param array $headers
+     *
      * @return string
+     *
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
      */
@@ -457,7 +481,9 @@ class APIResource implements ClientAwareInterface
      * @param string $id
      * @param array $body
      * @param array $headers
+     *
      * @return array|null
+     *
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
      */
@@ -501,6 +527,7 @@ class APIResource implements ClientAwareInterface
 
     /**
      * @param bool $value
+     *
      * @return $this
      */
     public function setErrorsOn200(bool $value): self

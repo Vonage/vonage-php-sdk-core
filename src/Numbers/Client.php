@@ -23,6 +23,15 @@ use Vonage\Entity\IterableAPICollection;
 use Vonage\Numbers\Filter\AvailableNumbers;
 use Vonage\Numbers\Filter\OwnedNumbers;
 
+use function array_key_exists;
+use function count;
+use function filter_var;
+use function get_class;
+use function is_array;
+use function is_null;
+use function sleep;
+use function trigger_error;
+
 class Client implements ClientAwareInterface, APIClient
 {
     /**
@@ -67,10 +76,13 @@ class Client implements ClientAwareInterface, APIClient
     /**
      * @param mixed $number Number to update
      * @param string|null $id MSISDN to look
+     *
      * @return Number
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
+     *
      * @todo Clean up the logic here, we are doing a lot of GET requests
      */
     public function update($number, ?string $id = null): Number
@@ -141,7 +153,9 @@ class Client implements ClientAwareInterface, APIClient
      * Returns a number
      *
      * @param null $number Number to fetch, deprecating passing a `Number` object
+     *
      * @return Number
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -178,11 +192,14 @@ class Client implements ClientAwareInterface, APIClient
 
     /**
      * @param null|string|Number $number
+     *
      * @return array []Number
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
+     *
      * @deprecated Use `searchOwned` instead
      */
     public function search($number = null): array
@@ -195,7 +212,9 @@ class Client implements ClientAwareInterface, APIClient
      *
      * @param string $country The two character country code in ISO 3166-1 alpha-2 format
      * @param array $options Additional options, see https://developer.nexmo.com/api/numbers#getAvailableNumbers
+     *
      * @return array
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -247,7 +266,9 @@ class Client implements ClientAwareInterface, APIClient
      *
      * @param null $number
      * @param array $options
+     *
      * @return array
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -306,7 +327,9 @@ class Client implements ClientAwareInterface, APIClient
      *
      * @param array $possibleParameters
      * @param array $data
+     *
      * @return array
+     *
      * @throws ClientException\Request
      */
     protected function parseParameters(array $possibleParameters, array $data = []): array
@@ -346,7 +369,9 @@ class Client implements ClientAwareInterface, APIClient
     /**
      * @param IterableAPICollection $response
      * @param null $number deprecated
+     *
      * @return array
+     *
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
@@ -374,6 +399,7 @@ class Client implements ClientAwareInterface, APIClient
     /**
      * @param $number
      * @param string|null $country
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      */
@@ -410,6 +436,7 @@ class Client implements ClientAwareInterface, APIClient
     /**
      * @param $number
      * @param string|null $country
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request

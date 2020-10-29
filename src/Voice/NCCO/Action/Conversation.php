@@ -13,6 +13,11 @@ namespace Vonage\Voice\NCCO\Action;
 
 use Vonage\Voice\Webhook;
 
+use function array_key_exists;
+use function filter_var;
+use function is_array;
+use function is_null;
+
 class Conversation implements ActionInterface
 {
     /**
@@ -83,6 +88,7 @@ class Conversation implements ActionInterface
 
     /**
      * @param string $musicOnHoldUrl
+     *
      * @return $this
      */
     public function setMusicOnHoldUrl(string $musicOnHoldUrl): self
@@ -102,6 +108,7 @@ class Conversation implements ActionInterface
 
     /**
      * @param bool $startOnEnter
+     *
      * @return $this
      */
     public function setStartOnEnter(bool $startOnEnter): self
@@ -121,6 +128,7 @@ class Conversation implements ActionInterface
 
     /**
      * @param bool $endOnExit
+     *
      * @return $this
      */
     public function setEndOnExit(bool $endOnExit): self
@@ -140,6 +148,7 @@ class Conversation implements ActionInterface
 
     /**
      * @param bool $record
+     *
      * @return $this
      */
     public function setRecord(bool $record): self
@@ -159,6 +168,7 @@ class Conversation implements ActionInterface
 
     /**
      * @param array<string> $canSpeak
+     *
      * @return Conversation
      */
     public function setCanSpeak(array $canSpeak): self
@@ -170,6 +180,7 @@ class Conversation implements ActionInterface
 
     /**
      * @param string $uuid
+     *
      * @return $this
      */
     public function addCanSpeak(string $uuid): self
@@ -189,6 +200,7 @@ class Conversation implements ActionInterface
 
     /**
      * @param array<string> $canHear
+     *
      * @return Conversation
      */
     public function setCanHear(array $canHear): self
@@ -200,6 +212,7 @@ class Conversation implements ActionInterface
 
     /**
      * @param string $uuid
+     *
      * @return $this
      */
     public function addCanHear(string $uuid): self
@@ -219,6 +232,7 @@ class Conversation implements ActionInterface
      *      canSpeak?: array,
      *      canHear?: array
      *  } $data
+     *
      * @return Conversation
      */
     public static function factory(string $name, array $data): Conversation
@@ -338,6 +352,7 @@ class Conversation implements ActionInterface
 
     /**
      * @param Webhook $eventWebhook
+     *
      * @return $this
      */
     public function setEventWebhook(Webhook $eventWebhook): Conversation

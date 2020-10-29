@@ -19,6 +19,10 @@ use PHPUnit\Framework\TestCase;
 use Vonage\SMS\Webhook\DeliveryReceipt;
 use Vonage\SMS\Webhook\Factory;
 
+use function file_get_contents;
+use function json_decode;
+use function parse_str;
+
 class DeliveryReceiptTest extends TestCase
 {
     public function testCanCreateFromGetServerRequest(): void
@@ -110,6 +114,7 @@ class DeliveryReceiptTest extends TestCase
 
     /**
      * @param string $requestName
+     *
      * @return mixed
      */
     protected function getQueryStringFromRequest(string $requestName)
@@ -125,6 +130,7 @@ class DeliveryReceiptTest extends TestCase
     /**
      * @param string $requestName
      * @param bool $json
+     *
      * @return mixed
      */
     protected function getBodyFromRequest(string $requestName, $json = true)

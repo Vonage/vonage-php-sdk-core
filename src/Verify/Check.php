@@ -47,6 +47,7 @@ class Check
 
     /**
      * @return DateTime
+     *
      * @throws Exception
      */
     public function getDate(): DateTime

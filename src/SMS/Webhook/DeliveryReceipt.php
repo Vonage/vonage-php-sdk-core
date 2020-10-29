@@ -15,6 +15,9 @@ use DateTimeImmutable;
 use Exception;
 use InvalidArgumentException;
 
+use function array_key_exists;
+use function filter_var;
+
 class DeliveryReceipt
 {
     /**
@@ -205,6 +208,7 @@ class DeliveryReceipt
 
     /**
      * @param array<string, string> $data
+     *
      * @throws Exception
      */
     public function __construct(array $data)

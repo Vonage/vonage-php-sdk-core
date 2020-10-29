@@ -40,6 +40,7 @@ class Transfer
      * Transfer constructor.
      *
      * @param array $event
+     *
      * @throws Exception
      */
     public function __construct(array $event)

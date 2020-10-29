@@ -19,6 +19,7 @@ class ApiErrorHandler
 {
     /**
      * @param string|int $statusCode
+     *
      * @throws RequestException
      * @throws ServerException
      * @throws ValidationException

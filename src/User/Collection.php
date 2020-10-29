@@ -26,6 +26,10 @@ use Vonage\Entity\JsonResponseTrait;
 use Vonage\Entity\JsonSerializableTrait;
 use Vonage\Entity\NoRequestResponseTrait;
 
+use function is_null;
+use function json_decode;
+use function json_encode;
+
 /**
  * @deprecated This will be removed in a future version, as this API is still considered Beta
  */
@@ -56,6 +60,7 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
     /**
      * @param $data
      * @param $idOrUser
+     *
      * @return mixed|User
      */
     public function hydrateEntity($data, $idOrUser)
@@ -72,6 +77,7 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
 
     /**
      * @param $users
+     *
      * @return array
      */
     public function hydrateAll($users): array
@@ -93,6 +99,7 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
 
     /**
      * @param mixed $filter
+     *
      * @return $this
      */
     public function __invoke($filter = null)
@@ -115,7 +122,9 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
 
     /**
      * @param $user
+     *
      * @return User
+     *
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
@@ -128,7 +137,9 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
 
     /**
      * @param $user
+     *
      * @return User
+     *
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
@@ -167,7 +178,9 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
 
     /**
      * @param $user
+     *
      * @return User
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -187,7 +200,9 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
 
     /**
      * @param ResponseInterface $response
+     *
      * @return ClientException\Request|ClientException\Server
+     *
      * @throws ClientException\Exception
      */
     protected function getException(ResponseInterface $response)
@@ -220,6 +235,7 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
 
     /**
      * @param mixed $offset
+     *
      * @return bool
      */
     public function offsetExists($offset): bool
@@ -229,6 +245,7 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
 
     /**
      * @param mixed $user
+     *
      * @return User
      */
     public function offsetGet($user): User

@@ -16,6 +16,8 @@ use Vonage\Account\Secret;
 use Vonage\Account\SecretCollection;
 use Vonage\InvalidResponseException;
 
+use function array_map;
+
 class SecretCollectionTest extends TestCase
 {
     /**

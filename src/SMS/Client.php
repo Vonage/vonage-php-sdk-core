@@ -18,6 +18,8 @@ use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Client\Exception\ThrottleException;
 use Vonage\SMS\Message\Message;
 
+use function sleep;
+
 class Client implements APIClient
 {
     /**
@@ -45,7 +47,9 @@ class Client implements APIClient
 
     /**
      * @param Message $message
+     *
      * @return Collection
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException
      */
@@ -53,9 +57,11 @@ class Client implements APIClient
     {
         try {
             $response = $this->api->create($message->toArray(), '/sms/json');
+
             return new Collection($response);
         } catch (ThrottleException $e) {
             sleep($e->getTimeout());
+
             return $this->send($message);
         }
     }
@@ -63,7 +69,9 @@ class Client implements APIClient
     /**
      * @param string $number
      * @param int $pin
+     *
      * @return SentSMS
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException
      */
@@ -80,7 +88,9 @@ class Client implements APIClient
     /**
      * @param string $number
      * @param array $templateReplacements
+     *
      * @return Collection
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException
      */

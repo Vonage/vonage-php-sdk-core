@@ -24,6 +24,9 @@ use Vonage\Entity\Hydrator\HydratorInterface;
 use Vonage\Entity\IterableAPICollection;
 use Vonage\Entity\IterableServiceShimTrait;
 
+use function is_null;
+use function trigger_error;
+
 class Client implements ClientAwareInterface, CollectionInterface, APIClient
 {
     use ClientAwareTrait;
@@ -151,6 +154,7 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
     /**
      * @throws ClientExceptionInterface
      * @throws ClientException
+     *
      * @deprecated Use `create()` instead
      */
     public function post($application): Application
@@ -167,6 +171,7 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
      * Saves an existing application
      *
      * @return Application
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException
      * @throws Exception
@@ -201,8 +206,10 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
 
     /**
      * @return Application
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException
+     *
      * @deprecated Use `update()` instead
      */
     public function put($application, ?string $id = null): Application
@@ -241,6 +248,7 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
 
     /**
      * @throws Exception
+     *
      * @deprecated Use Vonage\Application\Hydrator directly instead
      */
     protected function fromArray(array $array): Application

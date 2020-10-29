@@ -20,6 +20,8 @@ use Vonage\Client\Exception as ClientException;
 use Vonage\Entity\Filter\KeyValueFilter;
 use Vonage\Numbers\Number;
 
+use function is_null;
+
 /**
  * Class Client
  */
@@ -49,6 +51,7 @@ class Client implements ClientAwareInterface, APIClient
      * Shim to handle older instantiations of this class
      *
      * @return APIResource
+     *
      * @deprecated Will change in v3 to just return the required API object
      */
     public function getApiResource(): APIResource
@@ -64,7 +67,9 @@ class Client implements ClientAwareInterface, APIClient
 
     /**
      * @param $number
+     *
      * @return Basic
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -81,7 +86,9 @@ class Client implements ClientAwareInterface, APIClient
 
     /**
      * @param $number
+     *
      * @return StandardCnam
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -97,7 +104,9 @@ class Client implements ClientAwareInterface, APIClient
 
     /**
      * @param $number
+     *
      * @return AdvancedCnam
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -113,7 +122,9 @@ class Client implements ClientAwareInterface, APIClient
 
     /**
      * @param $number
+     *
      * @return Standard
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -129,7 +140,9 @@ class Client implements ClientAwareInterface, APIClient
 
     /**
      * @param $number
+     *
      * @return Advanced
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -146,6 +159,7 @@ class Client implements ClientAwareInterface, APIClient
     /**
      * @param $number
      * @param string $webhook
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -164,7 +178,9 @@ class Client implements ClientAwareInterface, APIClient
      * @param string $path
      * @param $number
      * @param array $additionalParams
+     *
      * @return array
+     *
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
@@ -197,6 +213,7 @@ class Client implements ClientAwareInterface, APIClient
      * error checking. We check for a status and message manually.
      *
      * @param array $body
+     *
      * @return ClientException\Request
      */
     protected function getNIException(array $body): ClientException\Request

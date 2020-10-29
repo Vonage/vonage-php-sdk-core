@@ -14,6 +14,9 @@ namespace Vonage\Verify;
 use InvalidArgumentException;
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 
+use function array_key_exists;
+use function strlen;
+
 class Request implements ArrayHydrateInterface
 {
     public const PIN_LENGTH_4 = 4;
@@ -96,6 +99,7 @@ class Request implements ArrayHydrateInterface
 
     /**
      * @param string $country
+     *
      * @return $this
      */
     public function setCountry(string $country): self
@@ -119,6 +123,7 @@ class Request implements ArrayHydrateInterface
 
     /**
      * @param string $senderId
+     *
      * @return $this
      */
     public function setSenderId(string $senderId): self
@@ -138,6 +143,7 @@ class Request implements ArrayHydrateInterface
 
     /**
      * @param int $codeLength
+     *
      * @return $this
      */
     public function setCodeLength(int $codeLength): self
@@ -161,6 +167,7 @@ class Request implements ArrayHydrateInterface
 
     /**
      * @param string $locale
+     *
      * @return $this
      */
     public function setLocale(string $locale): self
@@ -180,6 +187,7 @@ class Request implements ArrayHydrateInterface
 
     /**
      * @param int $pinExpiry
+     *
      * @return $this
      */
     public function setPinExpiry(int $pinExpiry): self
@@ -203,6 +211,7 @@ class Request implements ArrayHydrateInterface
 
     /**
      * @param int $nextEventWait
+     *
      * @return $this
      */
     public function setNextEventWait(int $nextEventWait): self
@@ -226,6 +235,7 @@ class Request implements ArrayHydrateInterface
 
     /**
      * @param int $workflowId
+     *
      * @return $this
      */
     public function setWorkflowId(int $workflowId): self

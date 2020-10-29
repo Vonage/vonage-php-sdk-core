@@ -26,6 +26,10 @@ use Vonage\Entity\JsonResponseTrait;
 use Vonage\Entity\JsonSerializableTrait;
 use Vonage\Entity\NoRequestResponseTrait;
 
+use function is_null;
+use function json_decode;
+use function json_encode;
+
 /**
  * @deprecated Conversations is not released for General Availability and will be removed in a future release
  */
@@ -56,6 +60,7 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
     /**
      * @param $data
      * @param $idOrConversation
+     *
      * @return mixed|Conversation
      */
     public function hydrateEntity($data, $idOrConversation)
@@ -72,6 +77,7 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
 
     /**
      * @param $conversations
+     *
      * @return array
      */
     public function hydrateAll($conversations): array
@@ -87,6 +93,7 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
 
     /**
      * @param mixed $filter
+     *
      * @return $this
      */
     public function __invoke($filter = null)
@@ -100,7 +107,9 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
 
     /**
      * @param $conversation
+     *
      * @return Conversation
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -113,7 +122,9 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
 
     /**
      * @param $conversation
+     *
      * @return Conversation
+     *
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
@@ -152,7 +163,9 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
 
     /**
      * @param $conversation
+     *
      * @return Conversation
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -172,7 +185,9 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
 
     /**
      * @param ResponseInterface $response
+     *
      * @return ClientException\Request|ClientException\Server
+     *
      * @throws ClientException\Exception
      */
     protected function getException(ResponseInterface $response)
@@ -197,6 +212,7 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
 
     /**
      * @param mixed $offset
+     *
      * @return bool
      */
     public function offsetExists($offset): bool
@@ -206,6 +222,7 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
 
     /**
      * @param mixed $conversation
+     *
      * @return Conversation
      */
     public function offsetGet($conversation): Conversation

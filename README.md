@@ -72,7 +72,7 @@ Examples
 
 To use [Vonage's SMS API][doc_sms] to send an SMS message, call the `$client->sms()->send()` method.
 
-**A message object** is is used to create the SMS messages. Each message type can be constructed with the 
+**A message object** is used to create the SMS messages. Each message type can be constructed with the 
 required parameters, and a fluent interface provides access to optional parameters.
 
 ```php
@@ -136,7 +136,7 @@ The SMS API supports the ability to sign messages by generating and adding a sig
 
 Both your application and Vonage need to agree on which algorithm is used. In the [dashboard](https://dashboard.nexmo.com), visit your account settings page and under "API Settings" you can select the algorithm to use. This is also the location where you will find your "Signature Secret" (it's different from the API secret).
 
-Create a client using these credentials and the algorithm to use, for example:
+Create a client using these credentials, and the algorithm to use, for example:
 
 ```php
 $client = new Vonage\Client(new Vonage\Client\Credentials\SignatureSecret(API_KEY, SIGNATURE_SECRET, 'sha256'));
@@ -148,7 +148,7 @@ Using this client, your SMS API messages will be sent as signed messages.
 
 _You may also like to read the [documentation about message signing](https://developer.nexmo.com/concepts/guides/signing-messages)._
 
-If you have message signing enabled for incoming messages, the SMS webhook will include the fields `sig`, `nonce` and `timestamp`. To verify the signature is from Vonage, you create a Signature object using the incoming data, your signature secret and the signature method. Then use the `check()` method with the actual signature that was received (usually `_GET['sig']`) to make sure that it is correct.
+If you have message signing enabled for incoming messages, the SMS webhook will include the fields `sig`, `nonce` and `timestamp`. To verify the signature is from Vonage, you create a Signature object using the incoming data, your signature secret and the signature method. Then use the `check()` method with the actual signature that was received (usually `_GET['sig']`) to make sure, that it is correct.
 
 ```php
 $signature = new \Vonage\Client\Signature($_GET, SIGNATURE_SECRET, 'sha256');
@@ -162,7 +162,7 @@ Using your signature secret and the other supplied parameters, the signature can
 ### Starting a Verification
 
 Vonage's [Verify API][doc_verify] makes it easy to prove that a user has provided their own phone number during signup,
-or implement second factor authentication during signin.
+or implement second factor authentication during sign in.
 
 You can start a verification process using code like this:
 
@@ -684,7 +684,7 @@ When things go wrong, you'll receive an `Exception`. The Vonage exception classe
 
 ### Composer installation fails due to Guzzle Adapter
 
-If you have a conflicting package installation that cannot co-exist with our recommended `guzzlehttp/guzzle` package, then you may install the package `vonage/client-core` along with any package that satisfies the `php-http/client-implementation` requirement.
+If you have a conflicting package installation that cannot co-exist with our recommended `guzzlehttp/guzzle` package, then you may install the package `vonage/client-core` along with any package satisfying the `php-http/client-implementation` requirement.
 
 See the [Packagist page for client-implementation](https://packagist.org/providers/php-http/client-implementation) for options.
 

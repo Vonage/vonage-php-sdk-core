@@ -15,6 +15,11 @@ use InvalidArgumentException;
 use Vonage\Entity\Filter\FilterInterface;
 use Vonage\Numbers\Number;
 
+use function array_key_exists;
+use function implode;
+use function is_array;
+use function strlen;
+
 class AvailableNumbers implements FilterInterface
 {
     public const SEARCH_PATTERN_BEGIN = 0;
@@ -156,6 +161,7 @@ class AvailableNumbers implements FilterInterface
 
     /**
      * @param string $features
+     *
      * @return $this
      */
     public function setFeatures(string $features): self
@@ -175,6 +181,7 @@ class AvailableNumbers implements FilterInterface
 
     /**
      * @param int $pageIndex
+     *
      * @return $this
      */
     public function setPageIndex(int $pageIndex): self
@@ -194,6 +201,7 @@ class AvailableNumbers implements FilterInterface
 
     /**
      * @param string $pattern
+     *
      * @return $this
      */
     public function setPattern(string $pattern): self
@@ -213,6 +221,7 @@ class AvailableNumbers implements FilterInterface
 
     /**
      * @param int $searchPattern
+     *
      * @return $this
      */
     public function setSearchPattern(int $searchPattern): self
@@ -232,6 +241,7 @@ class AvailableNumbers implements FilterInterface
 
     /**
      * @param string $type
+     *
      * @return $this
      */
     public function setType(string $type): self
@@ -260,6 +270,7 @@ class AvailableNumbers implements FilterInterface
 
     /**
      * @param int $pageSize
+     *
      * @return $this
      */
     public function setPageSize(int $pageSize): self

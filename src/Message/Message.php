@@ -23,6 +23,14 @@ use Vonage\Entity\JsonResponseTrait;
 use Vonage\Entity\Psr7Trait;
 use Vonage\Entity\RequestArrayTrait;
 
+use function array_merge;
+use function count;
+use function get_class;
+use function is_int;
+use function is_null;
+use function sprintf;
+use function trigger_error;
+
 /**
  * Abstract Message
  *
@@ -424,10 +432,12 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
      */
     protected function getReadOnlyException($offset): RuntimeException
     {
-        return new RuntimeException(sprintf(
-            'can not modify `%s` using array access',
-            $offset
-        ));
+        return new RuntimeException(
+            sprintf(
+                'can not modify `%s` using array access',
+                $offset
+            )
+        );
     }
 
     /**

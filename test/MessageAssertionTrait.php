@@ -14,6 +14,8 @@ namespace VonageTest;
 use InvalidArgumentException;
 use Vonage\Message\MessageInterface;
 
+use function count;
+
 trait MessageAssertionTrait
 {
     /**

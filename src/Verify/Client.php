@@ -22,6 +22,14 @@ use Vonage\Client\ClientAwareInterface;
 use Vonage\Client\ClientAwareTrait;
 use Vonage\Client\Exception as ClientException;
 
+use function get_class;
+use function is_array;
+use function is_null;
+use function is_string;
+use function serialize;
+use function trigger_error;
+use function unserialize;
+
 class Client implements ClientAwareInterface, APIClient
 {
     use ClientAwareTrait;
@@ -60,7 +68,9 @@ class Client implements ClientAwareInterface, APIClient
 
     /**
      * @param string|array|Verification|Request $verification
+     *
      * @return Verification
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -98,7 +108,9 @@ class Client implements ClientAwareInterface, APIClient
 
     /**
      * @param RequestPSD2 $request
+     *
      * @return array{request_id: string, status: string}
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -116,7 +128,9 @@ class Client implements ClientAwareInterface, APIClient
 
     /**
      * @param string|Verification $verification
+     *
      * @return mixed
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -147,7 +161,9 @@ class Client implements ClientAwareInterface, APIClient
 
     /**
      * @param $verification
+     *
      * @return Verification
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -168,7 +184,9 @@ class Client implements ClientAwareInterface, APIClient
 
     /**
      * @param $verification
+     *
      * @return Verification
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -191,7 +209,9 @@ class Client implements ClientAwareInterface, APIClient
      * @param string|array|Verification $verification
      * @param string $code
      * @param string|null $ip
+     *
      * @return Verification
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -233,7 +253,9 @@ class Client implements ClientAwareInterface, APIClient
 
     /**
      * @param Verification $verification
+     *
      * @return string
+     *
      * @deprecated Serialize the Verification object directly instead
      */
     public function serialize(Verification $verification): string
@@ -248,6 +270,7 @@ class Client implements ClientAwareInterface, APIClient
 
     /**
      * @param $verification
+     *
      * @return Verification
      */
     public function unserialize($verification): Verification
@@ -272,7 +295,9 @@ class Client implements ClientAwareInterface, APIClient
     /**
      * @param string|array|Verification $verification
      * @param string $cmd Next command to execute, must be `cancel` or `trigger_next_event`
+     *
      * @return Verification
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -311,7 +336,9 @@ class Client implements ClientAwareInterface, APIClient
     /**
      * @param $verification
      * @param $data
+     *
      * @return mixed
+     *
      * @throws ClientException\Request
      * @throws ClientException\Server
      */
@@ -382,6 +409,7 @@ class Client implements ClientAwareInterface, APIClient
      * Creates a verification object from a variety of sources
      *
      * @param $verification
+     *
      * @return Verification
      */
     protected function createVerification($verification): Verification
@@ -403,6 +431,7 @@ class Client implements ClientAwareInterface, APIClient
 
     /**
      * @param $array
+     *
      * @return Verification
      */
     protected function createVerificationFromArray($array): Verification

@@ -34,6 +34,9 @@ use Vonage\Message\Text;
 use VonageTest\MessageAssertionTrait;
 use VonageTest\Psr7AssertionTrait;
 
+use function fopen;
+use function json_decode;
+
 class ClientTest extends TestCase
 {
     use Psr7AssertionTrait;
@@ -138,7 +141,6 @@ class ClientTest extends TestCase
         }))->willReturn($this->getResponse());
 
         @$message = $this->messageClient->send($args);
-        self::assertInstanceOf(Message::class, $message);
     }
 
     /**
@@ -734,12 +736,14 @@ class ClientTest extends TestCase
 
     /**
      * @dataProvider searchRejectionsProvider
+     *
      * @param $date
      * @param $to
      * @param $responseFile
      * @param $expectedResponse
      * @param $expectedHttpCode
      * @param $expectedException
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -1032,6 +1036,7 @@ class ClientTest extends TestCase
      *
      * @param string $type
      * @param int $status
+     *
      * @return Response
      */
     protected function getResponse(string $type = 'success', int $status = 200): Response

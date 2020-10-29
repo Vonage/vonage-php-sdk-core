@@ -15,6 +15,8 @@ use PHPUnit\Framework\TestCase;
 use Vonage\Response;
 use Vonage\Response\Message;
 
+use function json_decode;
+
 class ResponseTest extends TestCase
 {
     /**

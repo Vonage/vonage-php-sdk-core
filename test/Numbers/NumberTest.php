@@ -16,6 +16,9 @@ use Vonage\Application\Application;
 use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Numbers\Number;
 
+use function file_get_contents;
+use function json_decode;
+
 class NumberTest extends TestCase
 {
     /**
@@ -113,8 +116,10 @@ class NumberTest extends TestCase
 
     /**
      * @dataProvider voiceDestinations
+     *
      * @param $type
      * @param $value
+     *
      * @throws ClientException
      */
     public function testVoiceDestination($type, $value): void

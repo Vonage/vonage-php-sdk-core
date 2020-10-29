@@ -24,6 +24,7 @@ class NCCO implements ArrayHydrateInterface, JsonSerializable
 
     /**
      * @param ActionInterface $action
+     *
      * @return $this
      */
     public function addAction(ActionInterface $action): self

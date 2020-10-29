@@ -16,11 +16,15 @@ use Psr\Http\Message\ResponseInterface;
 use Vonage\Client\Exception as ClientException;
 use Vonage\Client\Exception\ThrottleException;
 
+use function json_decode;
+use function preg_match;
+
 class ExceptionErrorHandler
 {
     /**
      * @param ResponseInterface $response
      * @param RequestInterface $request
+     *
      * @throws ClientException\Request
      * @throws ClientException\Server
      * @throws ThrottleException

@@ -15,6 +15,9 @@ use Exception;
 use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
 
+use function json_decode;
+use function sprintf;
+
 /**
  * @deprecated This data will be better exposed at the model level
  */
@@ -24,16 +27,19 @@ trait JsonResponseTrait
 
     /**
      * @return array|mixed
+     *
      * @throws Exception
      */
     public function getResponseData()
     {
         if (!($this instanceof EntityInterface)) {
-            throw new RuntimeException(sprintf(
-                '%s can only be used if the class implements %s',
-                __TRAIT__,
-                EntityInterface::class
-            ));
+            throw new RuntimeException(
+                sprintf(
+                    '%s can only be used if the class implements %s',
+                    __TRAIT__,
+                    EntityInterface::class
+                )
+            );
         }
 
         if (($response = @$this->getResponse()) && ($response instanceof ResponseInterface)) {

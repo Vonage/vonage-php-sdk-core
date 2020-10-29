@@ -15,6 +15,10 @@ use Helmich\JsonAssert\JsonAssertions;
 use PHPUnit\Framework\TestCase;
 use Vonage\Call\Mute;
 
+use function file_get_contents;
+use function json_decode;
+use function json_encode;
+
 class MuteTest extends TestCase
 {
     use JsonAssertions;

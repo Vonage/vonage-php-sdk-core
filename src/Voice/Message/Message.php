@@ -13,6 +13,8 @@ namespace Vonage\Voice\Message;
 
 use Vonage\Client\Request\AbstractRequest;
 
+use function is_null;
+
 /**
  * @deprecated This objects are no longer viable and will be removed in a future version
  */
@@ -36,6 +38,7 @@ class Message extends AbstractRequest
 
     /**
      * @param $lang
+     *
      * @return $this
      */
     public function setLanguage($lang): self
@@ -47,6 +50,7 @@ class Message extends AbstractRequest
 
     /**
      * @param $voice
+     *
      * @return $this
      */
     public function setVoice($voice): self
@@ -58,6 +62,7 @@ class Message extends AbstractRequest
 
     /**
      * @param $count
+     *
      * @return $this
      */
     public function setRepeat($count): self
@@ -70,6 +75,7 @@ class Message extends AbstractRequest
     /**
      * @param $url
      * @param null $method
+     *
      * @return $this
      */
     public function setCallback($url, $method = null): self
@@ -88,6 +94,7 @@ class Message extends AbstractRequest
     /**
      * @param bool $hangup
      * @param null $timeout
+     *
      * @return $this
      */
     public function setMachineDetection($hangup = true, $timeout = null): self

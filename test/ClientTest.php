@@ -26,6 +26,15 @@ use Vonage\Client\Factory\FactoryInterface;
 use Vonage\Client\Signature;
 use Vonage\Verify\Verification;
 
+use function file_get_contents;
+use function http_build_query;
+use function implode;
+use function json_decode;
+use function json_encode;
+use function parse_str;
+use function serialize;
+use function set_include_path;
+
 class ClientTest extends TestCase
 {
     use Psr7AssertionTrait;
@@ -74,6 +83,7 @@ class ClientTest extends TestCase
 
     /**
      * @dataProvider validateAppNameThrowsProvider
+     *
      * @param $name
      * @param $version
      * @param $field
@@ -512,9 +522,11 @@ class ClientTest extends TestCase
 
     /**
      * @dataProvider genericGetProvider
+     *
      * @param $url
      * @param $params
      * @param $expected
+     *
      * @throws Client\Exception\Exception
      * @throws ClientExceptionInterface
      */
@@ -565,8 +577,10 @@ class ClientTest extends TestCase
 
     /**
      * @dataProvider genericPostOrPutProvider
+     *
      * @param $url
      * @param $params
+     *
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Exception
      */
@@ -590,8 +604,10 @@ class ClientTest extends TestCase
 
     /**
      * @dataProvider genericPostOrPutProvider
+     *
      * @param $url
      * @param $params
+     *
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Exception
      */
@@ -627,8 +643,10 @@ class ClientTest extends TestCase
 
     /**
      * @dataProvider genericDeleteProvider
+     *
      * @param $url
      * @param $params
+     *
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Exception
      */
@@ -673,6 +691,7 @@ class ClientTest extends TestCase
      * @param string $type
      * @param string[] $params
      * @param string $url
+     *
      * @return Request
      */
     protected function getRequest(
@@ -706,6 +725,7 @@ class ClientTest extends TestCase
     /**
      * @param $array
      * @param $secret
+     *
      * @throws Client\Exception\Exception
      */
     public static function assertValidSignature($array, $secret): void

@@ -17,6 +17,9 @@ use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 use Vonage\Entity\JsonUnserializableInterface;
 
+use function get_class;
+use function trigger_error;
+
 class Basic implements JsonSerializable, JsonUnserializableInterface, ArrayAccess, ArrayHydrateInterface
 {
     protected $data = [];
@@ -80,7 +83,7 @@ class Basic implements JsonSerializable, JsonUnserializableInterface, ArrayAcces
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function getCountryPrefix(): int
     {
@@ -97,6 +100,7 @@ class Basic implements JsonSerializable, JsonUnserializableInterface, ArrayAcces
 
     /**
      * @param array $json
+     *
      * @return void|null
      */
     public function jsonUnserialize(array $json): void
@@ -111,6 +115,7 @@ class Basic implements JsonSerializable, JsonUnserializableInterface, ArrayAcces
 
     /**
      * @param mixed $offset
+     *
      * @return bool
      */
     public function offsetExists($offset): bool
@@ -125,6 +130,7 @@ class Basic implements JsonSerializable, JsonUnserializableInterface, ArrayAcces
 
     /**
      * @param mixed $offset
+     *
      * @return mixed
      */
     public function offsetGet($offset)
@@ -140,6 +146,7 @@ class Basic implements JsonSerializable, JsonUnserializableInterface, ArrayAcces
     /**
      * @param mixed $offset
      * @param mixed $value
+     *
      * @throws ClientException
      */
     public function offsetSet($offset, $value): void
@@ -149,6 +156,7 @@ class Basic implements JsonSerializable, JsonUnserializableInterface, ArrayAcces
 
     /**
      * @param mixed $offset
+     *
      * @throws ClientException
      */
     public function offsetUnset($offset): void

@@ -19,6 +19,7 @@ class FilterTest extends TestCase
 {
     /**
      * @dataProvider ranges
+     *
      * @param $start
      * @param $end
      * @param $expected

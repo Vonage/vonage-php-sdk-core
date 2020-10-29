@@ -12,6 +12,11 @@ namespace VonageTest\Client\Credentials;
 use PHPUnit\Framework\TestCase;
 use Vonage\Client\Credentials\Keypair;
 
+use function base64_decode;
+use function explode;
+use function file_get_contents;
+use function json_decode;
+
 class KeypairTest extends TestCase
 {
     protected $key;
@@ -89,6 +94,7 @@ class KeypairTest extends TestCase
 
     /**
      * @param $jwt
+     *
      * @return array
      */
     protected function decodeJWT($jwt): array

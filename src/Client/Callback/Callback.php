@@ -14,6 +14,12 @@ namespace Vonage\Client\Callback;
 use InvalidArgumentException;
 use RuntimeException;
 
+use function array_diff;
+use function array_keys;
+use function array_merge;
+use function implode;
+use function strtolower;
+
 class Callback implements CallbackInterface
 {
     public const ENV_ALL = 'all';
@@ -50,6 +56,7 @@ class Callback implements CallbackInterface
 
     /**
      * @param string $source
+     *
      * @return Callback|callable
      */
     public static function fromEnv($source = self::ENV_ALL)

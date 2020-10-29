@@ -11,6 +11,9 @@ declare(strict_types=1);
 
 namespace Vonage\Client\Credentials;
 
+use function array_combine;
+use function func_get_args;
+
 /**
  * @property string token
  * @property string token_secret

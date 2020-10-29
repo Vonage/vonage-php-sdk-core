@@ -15,6 +15,8 @@ use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Vonage\Response\Message;
 
+use function json_decode;
+
 class MessageTest extends TestCase
 {
     protected $message;

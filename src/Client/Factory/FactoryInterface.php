@@ -21,12 +21,14 @@ interface FactoryInterface
 {
     /**
      * @param $api
+     *
      * @return bool
      */
     public function hasApi($api): bool;
 
     /**
      * @param $api
+     *
      * @return mixed
      */
     public function getApi($api);

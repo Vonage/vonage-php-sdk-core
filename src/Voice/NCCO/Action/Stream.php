@@ -11,6 +11,10 @@ declare(strict_types=1);
 
 namespace Vonage\Voice\NCCO\Action;
 
+use function array_key_exists;
+use function filter_var;
+use function is_null;
+
 class Stream implements ActionInterface
 {
     /**
@@ -46,6 +50,7 @@ class Stream implements ActionInterface
     /**
      * @param string $streamUrl
      * @param array{streamUrl: string, bargeIn?: bool, level?: float, loop?: int, voiceName?: string} $data
+     *
      * @return Stream
      */
     public static function factory(string $streamUrl, array $data): Stream
@@ -115,6 +120,7 @@ class Stream implements ActionInterface
 
     /**
      * @param bool $value
+     *
      * @return $this
      */
     public function setBargeIn(bool $value): self
@@ -126,6 +132,7 @@ class Stream implements ActionInterface
 
     /**
      * @param float $level
+     *
      * @return $this
      */
     public function setLevel(float $level): self
@@ -137,6 +144,7 @@ class Stream implements ActionInterface
 
     /**
      * @param int $times
+     *
      * @return $this
      */
     public function setLoop(int $times): self

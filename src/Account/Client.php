@@ -22,6 +22,11 @@ use Vonage\Client\Exception\Validation as ClientValidationException;
 use Vonage\Entity\Filter\KeyValueFilter;
 use Vonage\InvalidResponseException;
 
+use function array_key_exists;
+use function count;
+use function is_null;
+use function json_decode;
+
 /**
  * @todo Unify the exception handling to avoid duplicated code and logic (ie: getPrefixPricing())
  */
@@ -161,6 +166,7 @@ class Client implements ClientAwareInterface, APIClient
      * @throws ClientException\Exception
      * @throws ClientException\Server
      * @throws ClientExceptionInterface
+     *
      * @todo This should return an empty result instead of throwing an Exception on no results
      */
     protected function makePricingRequest($country, $pricingType): array
@@ -183,6 +189,7 @@ class Client implements ClientAwareInterface, APIClient
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Server
+     *
      * @todo This needs further investigated to see if '' can even be returned from this endpoint
      */
     public function getBalance(): Balance

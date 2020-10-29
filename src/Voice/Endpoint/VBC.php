@@ -30,6 +30,7 @@ class VBC implements EndpointInterface
 
     /**
      * @param string $extension
+     *
      * @return VBC
      */
     public static function factory(string $extension): VBC

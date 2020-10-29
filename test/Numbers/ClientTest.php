@@ -24,6 +24,9 @@ use Vonage\Numbers\Filter\AvailableNumbers;
 use Vonage\Numbers\Number;
 use VonageTest\Psr7AssertionTrait;
 
+use function fopen;
+use function is_null;
+
 class ClientTest extends TestCase
 {
     use Psr7AssertionTrait;
@@ -54,10 +57,12 @@ class ClientTest extends TestCase
 
     /**
      * @dataProvider updateNumber
+     *
      * @param $payload
      * @param $id
      * @param $expectedId
      * @param $lookup
+     *
      * @throws ClientException\Exception
      * @throws RequestException
      * @throws ClientExceptionInterface
@@ -157,8 +162,10 @@ class ClientTest extends TestCase
 
     /**
      * @dataProvider numbers
+     *
      * @param $payload
      * @param $id
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Server
@@ -461,12 +468,14 @@ class ClientTest extends TestCase
 
     /**
      * @dataProvider purchaseNumberErrorProvider
+     *
      * @param $number
      * @param $country
      * @param $responseFile
      * @param $expectedHttpCode
      * @param $expectedException
      * @param $expectedExceptionMessage
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      */
@@ -668,6 +677,7 @@ class ClientTest extends TestCase
      *
      * @param string $type
      * @param int $status
+     *
      * @return Response
      */
     protected function getResponse(string $type = 'success', int $status = 200): Response

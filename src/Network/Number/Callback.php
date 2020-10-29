@@ -14,6 +14,8 @@ namespace Vonage\Network\Number;
 use BadMethodCallException;
 use Vonage\Client\Callback\Callback as BaseCallback;
 
+use function substr;
+
 /**
  * @method null|string getType()
  * @method bool hasType()
@@ -84,6 +86,7 @@ class Callback extends BaseCallback
     /**
      * @param $name
      * @param $args
+     *
      * @return mixed
      */
     public function __call($name, $args)

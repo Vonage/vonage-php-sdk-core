@@ -18,6 +18,10 @@ use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 use Vonage\Entity\JsonSerializableInterface;
 use Vonage\Entity\JsonUnserializableInterface;
 
+use function get_class;
+use function is_null;
+use function trigger_error;
+
 class Config implements
     JsonSerializable,
     JsonSerializableInterface,

@@ -15,6 +15,8 @@ use UnexpectedValueException;
 use Vonage\Client\Response\Response;
 use Vonage\Message\Callback\Receipt;
 
+use function array_merge;
+
 class Message extends Response
 {
     /**

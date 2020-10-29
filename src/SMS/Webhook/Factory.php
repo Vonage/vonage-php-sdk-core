@@ -15,11 +15,18 @@ use Exception;
 use InvalidArgumentException;
 use Vonage\Webhook\Factory as WebhookFactory;
 
+use function array_intersect;
+use function array_key_exists;
+use function array_keys;
+use function count;
+
 class Factory extends WebhookFactory
 {
     /**
      * @param array $data
+     *
      * @return mixed|DeliveryReceipt|InboundSMS
+     *
      * @throws Exception
      */
     public static function createFromArray(array $data)

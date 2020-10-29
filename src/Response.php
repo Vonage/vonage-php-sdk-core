@@ -15,6 +15,8 @@ use Countable;
 use Iterator;
 use Vonage\Response\Message;
 
+use function json_decode;
+
 /**
  * Wrapper for Vonage API Response, provides access to the count and status of
  * the messages.
@@ -49,6 +51,7 @@ class Response implements Countable, Iterator
     /**
      * (PHP 5 &gt;= 5.1.0)<br/>
      * Count elements of an object
+     *
      * @link http://php.net/manual/en/countable.count.php
      * </p>
      * <p>
@@ -62,6 +65,7 @@ class Response implements Countable, Iterator
     /**
      * (PHP 5 &gt;= 5.0.0)<br/>
      * Return the current element
+     *
      * @link http://php.net/manual/en/iterator.current.php
      */
     public function current(): Message
@@ -76,6 +80,7 @@ class Response implements Countable, Iterator
     /**
      * (PHP 5 &gt;= 5.0.0)<br/>
      * Move forward to next element
+     *
      * @link http://php.net/manual/en/iterator.next.php
      */
     public function next(): void
@@ -86,6 +91,7 @@ class Response implements Countable, Iterator
     /**
      * (PHP 5 &gt;= 5.0.0)<br/>
      * Return the key of the current element
+     *
      * @link http://php.net/manual/en/iterator.key.php
      */
     public function key(): int
@@ -96,6 +102,7 @@ class Response implements Countable, Iterator
     /**
      * (PHP 5 &gt;= 5.0.0)<br/>
      * Checks if current position is valid
+     *
      * @link http://php.net/manual/en/iterator.valid.php
      * Returns true on success or false on failure.
      */
@@ -107,6 +114,7 @@ class Response implements Countable, Iterator
     /**
      * (PHP 5 &gt;= 5.0.0)<br/>
      * Rewind the Iterator to the first element
+     *
      * @link http://php.net/manual/en/iterator.rewind.php
      */
     public function rewind(): void

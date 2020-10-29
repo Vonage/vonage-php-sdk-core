@@ -13,6 +13,9 @@ namespace Vonage\Call;
 
 use JsonSerializable;
 
+use function is_array;
+use function trigger_error;
+
 /**
  * @deprecated Please use Vonage\Voice\Webhook instead
  */

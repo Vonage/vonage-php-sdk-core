@@ -15,6 +15,10 @@ use Helmich\JsonAssert\JsonAssertions;
 use PHPUnit\Framework\TestCase;
 use Vonage\Call\Hangup;
 
+use function file_get_contents;
+use function json_decode;
+use function json_encode;
+
 class HangupTest extends TestCase
 {
     use JsonAssertions;

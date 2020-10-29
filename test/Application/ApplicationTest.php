@@ -20,6 +20,8 @@ use Vonage\Application\RtcConfig;
 use Vonage\Application\VoiceConfig;
 use Vonage\Client\Exception\Exception as ClientException;
 
+use function fopen;
+
 class ApplicationTest extends TestCase
 {
     /**
@@ -172,6 +174,7 @@ class ApplicationTest extends TestCase
      * Get the API response we'd expect for a call to the API.
      *
      * @param string $type
+     *
      * @return Response
      */
     protected function getResponse(string $type = 'success'): Response

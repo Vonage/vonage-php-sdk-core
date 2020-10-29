@@ -18,6 +18,14 @@ use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Message\InboundMessage;
 use Vonage\Message\Message;
 
+use function array_key_exists;
+use function count;
+use function file_get_contents;
+use function fopen;
+use function json_decode;
+use function parse_str;
+use function strtoupper;
+
 class InboundMessageTest extends TestCase
 {
     public function testConstructionWithId(): void
@@ -76,6 +84,7 @@ class InboundMessageTest extends TestCase
      * Can access expected params via getters.
      *
      * @dataProvider getRequests
+     *
      * @param $request
      */
     public function testRequestObjectAccess($request): void
@@ -93,6 +102,7 @@ class InboundMessageTest extends TestCase
      * Can access raw params via array access.
      *
      * @dataProvider getRequests
+     *
      * @param $request
      */
     public function testRequestArrayAccess($request): void
@@ -110,6 +120,7 @@ class InboundMessageTest extends TestCase
      * Can access expected params when populated from an API request.
      *
      * @dataProvider getResponses
+     *
      * @param $response
      */
     public function testResponseObjectAccess($response): void
@@ -129,6 +140,7 @@ class InboundMessageTest extends TestCase
      * Can access raw params when populated from an API request.
      *
      * @dataProvider getResponses
+     *
      * @param $response
      */
     public function testResponseArrayAccess($response): void
@@ -208,6 +220,7 @@ class InboundMessageTest extends TestCase
      * @param string $method
      * @param string $type
      * @param array $headers
+     *
      * @return ServerRequest
      */
     protected function getServerRequest(
@@ -242,6 +255,7 @@ class InboundMessageTest extends TestCase
      * Get the API response we'd expect for a call to the API.
      *
      * @param string $type
+     *
      * @return Response
      */
     protected function getResponse(string $type = 'success'): Response

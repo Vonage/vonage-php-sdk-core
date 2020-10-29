@@ -16,6 +16,8 @@ use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Client\Exception\Request;
 use Vonage\Client\Exception\Server;
 
+use function is_null;
+
 /**
  * Convenience methods for iterable collections acting as services
  * This shim only exists to help with the transition away from old-style
@@ -34,7 +36,9 @@ trait IterableServiceShimTrait
     /**
      * @param $data
      * @param $id
+     *
      * @return mixed
+     *
      * @deprecated Use the hydrator directly
      */
     public function hydrateEntity($data, $id)
@@ -57,10 +61,12 @@ trait IterableServiceShimTrait
      * Counts the current search query
      *
      * @return int
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException
      * @throws Request
      * @throws Server
+     *
      * @deprecated This will be removed in a future release, and will be part of a search response
      */
     public function count(): int
@@ -76,10 +82,12 @@ trait IterableServiceShimTrait
      * Returns the current object in the search
      *
      * @return mixed
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException
      * @throws Request
      * @throws Server
+     *
      * @deprecated This will be removed in a future release, and will be part of a search response
      */
     public function current()
@@ -93,6 +101,7 @@ trait IterableServiceShimTrait
 
     /**
      * Returns the next object in the search
+     *
      * @deprecated This will be removed in a future release, and will be part of a search response
      */
     public function next(): void
@@ -108,6 +117,7 @@ trait IterableServiceShimTrait
      * Returns the key of the current object in the search
      *
      * @return int|string
+     *
      * @deprecated This will be removed in a future release, and will be part of a search response
      */
     public function key()
@@ -123,10 +133,12 @@ trait IterableServiceShimTrait
      * Returns if the current iterable is valid
      *
      * @return bool
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException
      * @throws Request
      * @throws Server
+     *
      * @deprecated This will be removed in a future release, and will be part of a search response
      */
     public function valid(): bool
@@ -145,6 +157,7 @@ trait IterableServiceShimTrait
      * @throws ClientException
      * @throws Request
      * @throws Server
+     *
      * @deprecated This will be removed in a future release, and will be part of a search response
      */
     public function rewind(): void
@@ -160,6 +173,7 @@ trait IterableServiceShimTrait
      * Sets the filter for a query
      *
      * @param $filter
+     *
      * @return $this
      */
     public function setFilter($filter): self
@@ -201,6 +215,7 @@ trait IterableServiceShimTrait
      * Sets the page that the collection should be on
      *
      * @param $index
+     *
      * @return $this
      */
     public function setPage($index): self
@@ -232,6 +247,7 @@ trait IterableServiceShimTrait
      * Sets the response number of embedded entities
      *
      * @param int $size
+     *
      * @return $this
      */
     public function setSize(int $size): self

@@ -13,6 +13,7 @@ namespace Vonage\Entity;
 
 /**
  * Identifies the Entity as using JsonSerializable to prepare request data.
+ *
  * @deprecated Please use a more appropriate hydrator, like ArrayHydrator
  */
 interface JsonUnserializableInterface
@@ -21,6 +22,7 @@ interface JsonUnserializableInterface
      * Update the object state with the json data (as an array)
      *
      * @param array $json
+     *
      * @deprecated Implement ArrayHydrator instead as it is more semantically correct
      */
     public function jsonUnserialize(array $json): void;

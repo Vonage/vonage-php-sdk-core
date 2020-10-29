@@ -28,6 +28,8 @@ use Vonage\Insights\Standard;
 use Vonage\Insights\StandardCnam;
 use VonageTest\Psr7AssertionTrait;
 
+use function fopen;
+
 class ClientTest extends TestCase
 {
     use Psr7AssertionTrait;
@@ -192,6 +194,7 @@ class ClientTest extends TestCase
      *
      * @param string $type
      * @param int $status
+     *
      * @return Response
      */
     protected function getResponse(string $type = 'success', int $status = 200): Response

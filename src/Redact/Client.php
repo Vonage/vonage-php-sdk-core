@@ -19,6 +19,8 @@ use Vonage\Client\ClientAwareInterface;
 use Vonage\Client\ClientAwareTrait;
 use Vonage\Client\Exception\Exception as ClientException;
 
+use function is_null;
+
 class Client implements ClientAwareInterface, APIClient
 {
     /**
@@ -33,6 +35,7 @@ class Client implements ClientAwareInterface, APIClient
 
     /**
      * @param APIResource|null $api
+     *
      * @todo Stop having this use its own formatting for exceptions
      */
     public function __construct(APIResource $api = null)
@@ -71,6 +74,7 @@ class Client implements ClientAwareInterface, APIClient
      * @param string $id
      * @param string $product
      * @param array $options
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException
      */

@@ -13,6 +13,8 @@ namespace Vonage\Call;
 
 use JsonSerializable;
 
+use function trigger_error;
+
 /**
  * @deprecated Please use Vonage\Voice\Client::unmuteCall() instead
  */

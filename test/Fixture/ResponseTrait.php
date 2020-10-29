@@ -13,6 +13,11 @@ namespace VonageTest\Fixture;
 
 use Laminas\Diactoros\Response;
 
+use function fopen;
+use function implode;
+use function is_array;
+use function json_decode;
+
 /**
  * Creates mock response objects.
  * TODO: use example responses from API spec
@@ -22,6 +27,7 @@ trait ResponseTrait
     /**
      * @param string|array $type
      * @param int $status
+     *
      * @return Response
      */
     protected function getResponse($type = 'success', int $status = 200): Response
@@ -35,6 +41,7 @@ trait ResponseTrait
 
     /**
      * @param $type
+     *
      * @return string
      */
     protected function getResponseBody($type): string
@@ -46,6 +53,7 @@ trait ResponseTrait
 
     /**
      * @param $type
+     *
      * @return mixed
      */
     protected function getResponseData($type)

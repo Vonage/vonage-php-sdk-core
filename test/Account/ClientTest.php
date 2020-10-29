@@ -27,6 +27,8 @@ use Vonage\InvalidResponseException;
 use Vonage\Network;
 use VonageTest\Psr7AssertionTrait;
 
+use function fopen;
+
 class ClientTest extends TestCase
 {
     use Psr7AssertionTrait;
@@ -171,6 +173,7 @@ class ClientTest extends TestCase
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ServerException
+     *
      * @author Chris Tankersley <chris.tankersley@vonage.com>
      *
      */
@@ -215,6 +218,7 @@ class ClientTest extends TestCase
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ServerException
+     *
      * @author Chris Tankersley <chris.tankersley@vonage.com>
      *
      */
@@ -673,6 +677,7 @@ class ClientTest extends TestCase
      *
      * @param string $type
      * @param int $status
+     *
      * @return Response
      */
     protected function getResponse(string $type = 'success', int $status = 200): Response
@@ -683,6 +688,7 @@ class ClientTest extends TestCase
     /**
      * @param string $type
      * @param int $status
+     *
      * @return Response
      */
     protected function getGenericResponse(string $type = 'success', int $status = 200): Response

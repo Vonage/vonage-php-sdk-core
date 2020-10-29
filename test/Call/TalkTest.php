@@ -23,6 +23,10 @@ use Vonage\Client\Exception\Request as RequestException;
 use Vonage\Client\Exception\Server as ServerException;
 use VonageTest\Psr7AssertionTrait;
 
+use function fopen;
+use function json_decode;
+use function json_encode;
+
 class TalkTest extends TestCase
 {
     use Psr7AssertionTrait;
@@ -231,6 +235,7 @@ class TalkTest extends TestCase
      *
      * @param string $type
      * @param int $status
+     *
      * @return Response
      */
     protected function getResponse(string $type = 'success', int $status = 200): Response

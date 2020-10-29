@@ -85,6 +85,7 @@ class CallTest extends TestCase
 
     /**
      * @dataProvider getCallbacks
+     *
      * @param string $method
      * @param string $param
      * @param string $param_method

@@ -13,6 +13,8 @@ namespace Vonage\Message;
 
 use Vonage\Client\Exception\Exception as ClientException;
 
+use function array_merge;
+
 /**
  * SMS Text Message
  */
@@ -22,6 +24,7 @@ class Vcal extends Message
 
     /**
      * Message Body
+     *
      * @var string
      */
     protected $vcal;

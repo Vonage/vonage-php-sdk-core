@@ -19,6 +19,7 @@ class PrefixPriceTest extends TestCase
 {
     /**
      * @dataProvider prefixPriceProvider
+     *
      * @param $prefixPrice
      */
     public function testFromArray($prefixPrice): void
@@ -30,6 +31,7 @@ class PrefixPriceTest extends TestCase
 
     /**
      * @dataProvider prefixPriceProvider
+     *
      * @param $prefixPrice
      */
     public function testGetters($prefixPrice): void
@@ -42,6 +44,7 @@ class PrefixPriceTest extends TestCase
 
     /**
      * @dataProvider prefixPriceProvider
+     *
      * @param $prefixPrice
      */
     public function testArrayAccess($prefixPrice): void
@@ -54,6 +57,7 @@ class PrefixPriceTest extends TestCase
 
     /**
      * @dataProvider prefixPriceProvider
+     *
      * @param $prefixPrice
      */
     public function testUsesCustomPriceForKnownNetwork($prefixPrice): void

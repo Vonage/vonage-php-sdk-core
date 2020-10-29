@@ -24,6 +24,11 @@ use Vonage\Verify\Request;
 use Vonage\Verify\RequestPSD2;
 use Vonage\Verify\Verification;
 
+use function array_unshift;
+use function call_user_func_array;
+use function fopen;
+use function serialize;
+
 class ClientTest extends TestCase
 {
     use Psr7AssertionTrait;
@@ -54,6 +59,7 @@ class ClientTest extends TestCase
 
     /**
      * @dataProvider getApiMethods
+     *
      * @param $method
      * @param $response
      * @param $construct
@@ -142,6 +148,7 @@ class ClientTest extends TestCase
      * @throws Client\Exception\Exception
      * @throws Client\Exception\Request
      * @throws ServerException
+     *
      * @deprecated
      */
     public function testCanStartVerificationWithVerificationObject(): void
@@ -290,6 +297,7 @@ class ClientTest extends TestCase
 
     /**
      * @param $response
+     *
      * @return Response
      */
     protected function setupClientForStart($response): Response
@@ -398,6 +406,7 @@ class ClientTest extends TestCase
 
     /**
      * @param $response
+     *
      * @return Response
      */
     protected function setupClientForSearch($response): Response
@@ -568,6 +577,7 @@ class ClientTest extends TestCase
 
     /**
      * @dataProvider getControlCommands
+     *
      * @param $method
      * @param $cmd
      */
@@ -597,6 +607,7 @@ class ClientTest extends TestCase
     /**
      * @param $response
      * @param $cmd
+     *
      * @return Response
      */
     protected function setupClientForControl($response, $cmd): Response
@@ -706,6 +717,7 @@ class ClientTest extends TestCase
      * @param $response
      * @param $code
      * @param string|null $ip
+     *
      * @return Response
      */
     protected function setupClientForCheck($response, $code, ?string $ip = null): Response
@@ -733,6 +745,7 @@ class ClientTest extends TestCase
      * change between success / fail is body of the message.
      *
      * @param string $type
+     *
      * @return Response
      */
     protected function getResponse(string $type = 'success'): Response

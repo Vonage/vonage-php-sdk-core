@@ -29,6 +29,7 @@ interface CollectionInterface extends Countable, Iterator
     /**
      * @param $data
      * @param $idOrEntity
+     *
      * @return mixed
      */
     public function hydrateEntity($data, $idOrEntity);

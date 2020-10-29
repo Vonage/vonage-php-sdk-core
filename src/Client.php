@@ -50,6 +50,25 @@ use Vonage\Verify\ClientFactory as VerifyClientFactory;
 use Vonage\Verify\Verification;
 use Vonage\Voice\ClientFactory as VoiceClientFactory;
 
+use function array_key_exists;
+use function array_merge;
+use function base64_encode;
+use function call_user_func_array;
+use function class_exists;
+use function get_class;
+use function http_build_query;
+use function implode;
+use function is_null;
+use function is_string;
+use function json_decode;
+use function json_encode;
+use function method_exists;
+use function parse_str;
+use function set_error_handler;
+use function str_replace;
+use function strpos;
+use function unserialize;
+
 /**
  * Vonage API Client, allows access to the API from PHP.
  *
@@ -75,12 +94,14 @@ class Client
 
     /**
      * API Credentials
+     *
      * @var CredentialsInterface
      */
     protected $credentials;
 
     /**
      * Http Client
+     *
      * @var HttpClient
      */
     protected $client;
@@ -151,27 +172,32 @@ class Client
             $this->apiUrl = $options['base_api_url'];
         }
 
-        $this->setFactory(new MapFactory([
-            // Legacy Namespaces
-            'message' => MessageClient::class,
-            'calls' => Collection::class,
-            'conversation' => ConversationsCollection::class,
-            'user' => UserCollection::class,
+        $this->setFactory(
+            new MapFactory(
+                [
+                    // Legacy Namespaces
+                    'message' => MessageClient::class,
+                    'calls' => Collection::class,
+                    'conversation' => ConversationsCollection::class,
+                    'user' => UserCollection::class,
 
-            // Registered Services by name
-            'account' => ClientFactory::class,
-            'applications' => ApplicationClientFactory::class,
-            'conversion' => ConversionClientFactory::class,
-            'insights' => InsightsClientFactory::class,
-            'numbers' => NumbersClientFactory::class,
-            'redact' => RedactClientFactory::class,
-            'sms' => SMSClientFactory::class,
-            'verify' => VerifyClientFactory::class,
-            'voice' => VoiceClientFactory::class,
+                    // Registered Services by name
+                    'account' => ClientFactory::class,
+                    'applications' => ApplicationClientFactory::class,
+                    'conversion' => ConversionClientFactory::class,
+                    'insights' => InsightsClientFactory::class,
+                    'numbers' => NumbersClientFactory::class,
+                    'redact' => RedactClientFactory::class,
+                    'sms' => SMSClientFactory::class,
+                    'verify' => VerifyClientFactory::class,
+                    'voice' => VoiceClientFactory::class,
 
-            // Additional utility classes
-            APIResource::class => APIResource::class,
-        ], $this));
+                    // Additional utility classes
+                    APIResource::class => APIResource::class,
+                ],
+                $this
+            )
+        );
 
         // Disable throwing E_USER_DEPRECATED notices by default, the user can turn it on during development
         if (array_key_exists('show_deprecations', $this->options) && !$this->options['show_deprecations']) {
@@ -526,6 +552,7 @@ class Client
 
     /**
      * @param string|Verification $entity
+     *
      * @deprecated
      */
     public function unserialize($entity): Verification

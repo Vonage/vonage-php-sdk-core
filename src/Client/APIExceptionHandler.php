@@ -14,10 +14,15 @@ namespace Vonage\Client;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
+use function is_string;
+use function json_decode;
+use function sprintf;
+
 class APIExceptionHandler
 {
     /**
      * Format to use for the rfc7807 formatted errors
+     *
      * @var string
      */
     protected $rfc7807Format = "%s: %s. See %s for more information";
@@ -33,7 +38,9 @@ class APIExceptionHandler
     /**
      * @param ResponseInterface $response
      * @param RequestInterface $request
+     *
      * @return Exception\Request|Exception\Server
+     *
      * @throws Exception\Exception
      */
     public function __invoke(ResponseInterface $response, RequestInterface $request)

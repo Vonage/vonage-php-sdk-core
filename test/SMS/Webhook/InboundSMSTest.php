@@ -20,6 +20,10 @@ use RuntimeException;
 use Vonage\SMS\Webhook\Factory;
 use Vonage\SMS\Webhook\InboundSMS;
 
+use function file_get_contents;
+use function json_decode;
+use function parse_str;
+
 class InboundSMSTest extends TestCase
 {
     public function testCanCreateFromFormPostServerRequest(): void
@@ -159,6 +163,7 @@ class InboundSMSTest extends TestCase
 
     /**
      * @param string $requestName
+     *
      * @return mixed
      */
     protected function getQueryStringFromRequest(string $requestName)
@@ -173,6 +178,7 @@ class InboundSMSTest extends TestCase
 
     /**
      * @param string $requestName
+     *
      * @return mixed
      */
     protected function getBodyFromRequest(string $requestName)

@@ -24,6 +24,8 @@ use Vonage\Entity\JsonSerializableTrait;
 use Vonage\Entity\JsonUnserializableInterface;
 use Vonage\Entity\NoRequestResponseTrait;
 
+use function json_decode;
+
 /**
  * @deprecated This will be removed in a future version, as this API is still considered Beta
  */
@@ -48,6 +50,7 @@ class User implements EntityInterface, JsonSerializable, JsonUnserializableInter
 
     /**
      * @param $name
+     *
      * @return $this
      */
     public function setName($name): self
@@ -76,6 +79,7 @@ class User implements EntityInterface, JsonSerializable, JsonUnserializableInter
 
     /**
      * @return $this
+     *
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
@@ -102,6 +106,7 @@ class User implements EntityInterface, JsonSerializable, JsonUnserializableInter
 
     /**
      * @return mixed
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -133,6 +138,7 @@ class User implements EntityInterface, JsonSerializable, JsonUnserializableInter
 
     /**
      * @param array $json
+     *
      * @return void|null
      */
     public function jsonUnserialize(array $json): void
@@ -152,7 +158,9 @@ class User implements EntityInterface, JsonSerializable, JsonUnserializableInter
 
     /**
      * @param ResponseInterface $response
+     *
      * @return ClientException\Request|ClientException\Server
+     *
      * @throws ClientException\Exception
      */
     protected function getException(ResponseInterface $response)

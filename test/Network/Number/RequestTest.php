@@ -14,6 +14,8 @@ namespace VonageTest\Network\Number;
 use PHPUnit\Framework\TestCase;
 use Vonage\Network\Number\Request;
 
+use function explode;
+
 class RequestTest extends TestCase
 {
     public function testNullValuesNotPresent(): void

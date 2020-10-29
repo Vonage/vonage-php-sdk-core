@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace Vonage\Client\Request;
 
+use function array_filter;
+
 abstract class AbstractRequest implements RequestInterface
 {
     protected $params = [];

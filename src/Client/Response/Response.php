@@ -13,16 +13,22 @@ namespace Vonage\Client\Response;
 
 use RuntimeException;
 
+use function array_diff;
+use function array_keys;
+use function implode;
+
 class Response extends AbstractResponse
 {
     /**
      * Allow specific responses to easily define required parameters.
+     *
      * @var array
      */
     protected $expected = [];
 
     /**
      * Response constructor.
+     *
      * @param array $data
      */
     public function __construct(array $data)

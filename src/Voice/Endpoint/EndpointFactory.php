@@ -18,6 +18,7 @@ class EndpointFactory implements FactoryInterface
 {
     /**
      * @param array $data
+     *
      * @return EndpointInterface|null
      */
     public function create(array $data): ?EndpointInterface

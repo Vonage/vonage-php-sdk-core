@@ -13,6 +13,9 @@ namespace Vonage\Client\Credentials;
 
 use RuntimeException;
 
+use function func_get_args;
+use function is_array;
+
 class Container extends AbstractCredentials
 {
     protected $types = [
@@ -54,6 +57,7 @@ class Container extends AbstractCredentials
 
     /**
      * @param CredentialsInterface $credential
+     *
      * @return string|null
      */
     protected function getType(CredentialsInterface $credential): ?string
@@ -69,6 +73,7 @@ class Container extends AbstractCredentials
 
     /**
      * @param $type
+     *
      * @return mixed
      */
     public function get($type)
@@ -82,6 +87,7 @@ class Container extends AbstractCredentials
 
     /**
      * @param $type
+     *
      * @return bool
      */
     public function has($type): bool
@@ -91,6 +97,7 @@ class Container extends AbstractCredentials
 
     /**
      * @param $claims
+     *
      * @return mixed
      */
     public function generateJwt($claims)

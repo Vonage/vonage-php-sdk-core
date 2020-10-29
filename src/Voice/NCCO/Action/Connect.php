@@ -73,6 +73,7 @@ class Connect implements ActionInterface
 
     /**
      * @param EndpointInterface $endpoint
+     *
      * @return Connect
      */
     public static function factory(EndpointInterface $endpoint): Connect
@@ -148,6 +149,7 @@ class Connect implements ActionInterface
 
     /**
      * @param string $from
+     *
      * @return $this
      */
     public function setFrom(string $from): self
@@ -167,6 +169,7 @@ class Connect implements ActionInterface
 
     /**
      * @param string $eventType
+     *
      * @return $this
      */
     public function setEventType(string $eventType): self
@@ -190,6 +193,7 @@ class Connect implements ActionInterface
 
     /**
      * @param int $timeout
+     *
      * @return $this
      */
     public function setTimeout(int $timeout): self
@@ -209,6 +213,7 @@ class Connect implements ActionInterface
 
     /**
      * @param int $limit
+     *
      * @return $this
      */
     public function setLimit(int $limit): self
@@ -228,6 +233,7 @@ class Connect implements ActionInterface
 
     /**
      * @param string $machineDetection
+     *
      * @return $this
      */
     public function setMachineDetection(string $machineDetection): self
@@ -254,6 +260,7 @@ class Connect implements ActionInterface
 
     /**
      * @param Webhook $eventWebhook
+     *
      * @return $this
      */
     public function setEventWebhook(Webhook $eventWebhook): self
@@ -273,6 +280,7 @@ class Connect implements ActionInterface
 
     /**
      * @param string $ringbackTone
+     *
      * @return $this
      */
     public function setRingbackTone(string $ringbackTone): self

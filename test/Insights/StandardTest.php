@@ -18,6 +18,7 @@ class StandardTest extends TestCase
 {
     /**
      * @dataProvider standardTestProvider
+     *
      * @param $standard
      * @param $inputData
      */
@@ -34,6 +35,7 @@ class StandardTest extends TestCase
 
     /**
      * @dataProvider standardTestProvider
+     *
      * @param $standard
      * @param $inputData
      */

@@ -38,6 +38,7 @@ class SIP implements EndpointInterface
     /**
      * @param string $uri
      * @param array $headers
+     *
      * @return SIP
      */
     public static function factory(string $uri, array $headers = []): SIP
@@ -89,6 +90,7 @@ class SIP implements EndpointInterface
     /**
      * @param string $key
      * @param string $value
+     *
      * @return $this
      */
     public function addHeader(string $key, string $value): self
@@ -100,6 +102,7 @@ class SIP implements EndpointInterface
 
     /**
      * @param array $headers
+     *
      * @return $this
      */
     public function setHeaders(array $headers): self

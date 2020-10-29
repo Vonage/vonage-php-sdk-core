@@ -21,6 +21,12 @@ use Vonage\Client\ClientAwareTrait;
 use Vonage\Client\Exception as ClientException;
 use Vonage\Entity\JsonSerializableInterface;
 
+use function in_array;
+use function is_null;
+use function json_decode;
+use function json_encode;
+use function trigger_error;
+
 /**
  * Lightweight resource, only has put / delete.
  *
@@ -62,6 +68,7 @@ class Talk implements JsonSerializableInterface, ClientAwareInterface, ArrayAcce
 
     /**
      * @return $this|Event
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -164,6 +171,7 @@ class Talk implements JsonSerializableInterface, ClientAwareInterface, ArrayAcce
 
     /**
      * @return ClientException\Request|ClientException\Server
+     *
      * @throws ClientException\Exception
      */
     protected function getException(ResponseInterface $response)

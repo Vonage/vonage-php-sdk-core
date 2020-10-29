@@ -14,6 +14,8 @@ namespace VonageTest\Network\Number;
 use PHPUnit\Framework\TestCase;
 use Vonage\Network\Number\Callback;
 
+use function array_merge;
+
 class CallbackTest extends TestCase
 {
     protected $data = [
@@ -44,6 +46,7 @@ class CallbackTest extends TestCase
 
     /**
      * @dataProvider optionalData
+     *
      * @param $key
      * @param $value
      * @param $method

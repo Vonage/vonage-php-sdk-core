@@ -22,6 +22,16 @@ use Vonage\Entity\JsonSerializableTrait;
 use Vonage\Entity\JsonUnserializableInterface;
 use Vonage\Entity\NoRequestResponseTrait;
 
+use function get_class;
+use function in_array;
+use function is_null;
+use function json_decode;
+use function json_last_error;
+use function preg_match;
+use function stripos;
+use function strpos;
+use function trigger_error;
+
 class Number implements EntityInterface, JsonSerializableInterface, JsonUnserializableInterface, ArrayHydrateInterface
 {
     use JsonSerializableTrait;
@@ -111,6 +121,7 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
 
     /**
      * @param $feature
+     *
      * @return bool
      */
     public function hasFeature($feature): bool
@@ -133,6 +144,7 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
     /**
      * @param $type
      * @param $url
+     *
      * @return self
      */
     public function setWebhook($type, $url): self
@@ -147,6 +159,7 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
 
     /**
      * @param $type
+     *
      * @return mixed
      */
     public function getWebhook($type)
@@ -156,6 +169,7 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
 
     /**
      * @param $type
+     *
      * @return bool
      */
     public function hasWebhook($type): bool
@@ -166,6 +180,7 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
     /**
      * @param $endpoint
      * @param null $type
+     *
      * @return self
      */
     public function setVoiceDestination($endpoint, $type = null): self
@@ -186,6 +201,7 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
 
     /**
      * @param $endpoint
+     *
      * @return string
      */
     protected function autoType($endpoint): string
@@ -227,6 +243,7 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
 
     /**
      * @param $name
+     *
      * @return mixed
      */
     protected function fromData($name)
@@ -309,6 +326,7 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
 
     /**
      * @param string $appId
+     *
      * @return $this
      */
     public function setAppId(string $appId): self

@@ -24,6 +24,12 @@ use Vonage\Verify\Check;
 use Vonage\Verify\Client as VerifyClient;
 use Vonage\Verify\Verification;
 
+use function fopen;
+use function get_class;
+use function is_null;
+use function serialize;
+use function unserialize;
+
 class VerificationTest extends TestCase
 {
     /**
@@ -84,10 +90,12 @@ class VerificationTest extends TestCase
 
     /**
      * @dataProvider optionalValues
+     *
      * @param $value
      * @param $setter
      * @param $param
      * @param null $normal
+     *
      * @throws ClientException
      * @noinspection PhpUnusedParameterInspection
      */
@@ -109,10 +117,12 @@ class VerificationTest extends TestCase
 
     /**
      * @dataProvider optionalValues
+     *
      * @param $value
      * @param $setter
      * @param $param
      * @param null $normal
+     *
      * @throws ClientException
      */
     public function testCanSetOptionalValues($value, $setter, $param, $normal = null): void
@@ -203,7 +213,9 @@ class VerificationTest extends TestCase
      * Verification provides simple access to raw data when available.
      *
      * @dataProvider dataResponses
+     *
      * @param $type
+     *
      * @throws Exception
      */
     public function testResponseDataAsArray($type): void
@@ -231,6 +243,7 @@ class VerificationTest extends TestCase
 
     /**
      * @dataProvider getClientProxyMethods
+     *
      * @param $method
      * @param $proxy
      * @param null $code
@@ -329,7 +342,9 @@ class VerificationTest extends TestCase
 
     /**
      * @dataProvider getSerializeResponses
+     *
      * @param $response
+     *
      * @throws Exception
      */
     public function testSerialize($response): void
@@ -362,6 +377,7 @@ class VerificationTest extends TestCase
 
     /**
      * @dataProvider getClientProxyMethods
+     *
      * @param $method
      * @param $proxy
      * @param null $code
@@ -400,6 +416,7 @@ class VerificationTest extends TestCase
      * change between success / fail is body of the message.
      *
      * @param string $type
+     *
      * @return Response
      */
     protected function getResponse(string $type = 'success'): Response

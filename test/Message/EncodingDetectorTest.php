@@ -18,6 +18,7 @@ class EncodingDetectorTest extends TestCase
 {
     /**
      * @dataProvider unicodeProvider
+     *
      * @param $content
      * @param $expected
      */

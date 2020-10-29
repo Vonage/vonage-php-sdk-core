@@ -26,6 +26,8 @@ use Vonage\Entity\NoRequestResponseTrait;
 use Vonage\User\Collection as UserCollection;
 use Vonage\User\User;
 
+use function json_decode;
+
 /**
  * @deprecated Conversations is not released for General Availability and will be removed in a future release
  */
@@ -50,6 +52,7 @@ class Conversation implements EntityInterface, JsonSerializable, JsonUnserializa
 
     /**
      * @param $name
+     *
      * @return $this
      */
     public function setName($name): Conversation
@@ -61,6 +64,7 @@ class Conversation implements EntityInterface, JsonSerializable, JsonUnserializa
 
     /**
      * @param $name
+     *
      * @return $this
      */
     public function setDisplayName($name): Conversation
@@ -89,6 +93,7 @@ class Conversation implements EntityInterface, JsonSerializable, JsonUnserializa
 
     /**
      * @return $this
+     *
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
@@ -124,6 +129,7 @@ class Conversation implements EntityInterface, JsonSerializable, JsonUnserializa
 
     /**
      * @param array $json
+     *
      * @return void|null
      */
     public function jsonUnserialize(array $json): void
@@ -133,6 +139,7 @@ class Conversation implements EntityInterface, JsonSerializable, JsonUnserializa
 
     /**
      * @return array
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -157,7 +164,9 @@ class Conversation implements EntityInterface, JsonSerializable, JsonUnserializa
 
     /**
      * @param User $user
+     *
      * @return User
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -170,7 +179,9 @@ class Conversation implements EntityInterface, JsonSerializable, JsonUnserializa
 
     /**
      * @param User $user
+     *
      * @return User
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -183,6 +194,7 @@ class Conversation implements EntityInterface, JsonSerializable, JsonUnserializa
 
     /**
      * @param User $user
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -204,7 +216,9 @@ class Conversation implements EntityInterface, JsonSerializable, JsonUnserializa
      * @param User $user
      * @param $action
      * @param string $channel
+     *
      * @return User
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -236,7 +250,9 @@ class Conversation implements EntityInterface, JsonSerializable, JsonUnserializa
 
     /**
      * @param ResponseInterface $response
+     *
      * @return ClientException\Request|ClientException\Server
+     *
      * @throws ClientException\Exception
      */
     protected function getException(ResponseInterface $response)

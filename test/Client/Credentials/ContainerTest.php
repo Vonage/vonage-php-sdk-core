@@ -38,6 +38,7 @@ class ContainerTest extends TestCase
 
     /**
      * @dataProvider credentials
+     *
      * @param $credential
      * @param $type
      */
@@ -59,6 +60,7 @@ class ContainerTest extends TestCase
 
     /**
      * @dataProvider credentials
+     *
      * @param $credential
      */
     public function testOnlyOneType($credential): void

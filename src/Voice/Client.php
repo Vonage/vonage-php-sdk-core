@@ -24,6 +24,8 @@ use Vonage\Voice\NCCO\Action\Talk;
 use Vonage\Voice\NCCO\NCCO;
 use Vonage\Voice\Webhook\Event;
 
+use function is_null;
+
 class Client implements APIClient
 {
     /**
@@ -51,7 +53,9 @@ class Client implements APIClient
 
     /**
      * @param OutboundCall $call
+     *
      * @return Event {uuid: string, conversation_uuid: string, status: string, direction: string}
+     *
      * @throws ClientExceptionInterface
      * @throws \Vonage\Client\Exception\Exception
      * @throws Exception
@@ -100,6 +104,7 @@ class Client implements APIClient
 
     /**
      * @param string $callId
+     *
      * @throws ClientExceptionInterface
      * @throws \Vonage\Client\Exception\Exception
      */
@@ -110,7 +115,9 @@ class Client implements APIClient
 
     /**
      * @param string $callId
+     *
      * @return Call
+     *
      * @throws ClientExceptionInterface
      * @throws \Vonage\Client\Exception\Exception
      * @throws Exception
@@ -122,6 +129,7 @@ class Client implements APIClient
 
     /**
      * @param string $callId
+     *
      * @throws ClientExceptionInterface
      * @throws \Vonage\Client\Exception\Exception
      */
@@ -133,6 +141,7 @@ class Client implements APIClient
     /**
      * @param string $callId
      * @param string $action
+     *
      * @throws ClientExceptionInterface
      * @throws \Vonage\Client\Exception\Exception
      */
@@ -145,6 +154,7 @@ class Client implements APIClient
 
     /**
      * @param string $callId
+     *
      * @throws ClientExceptionInterface
      * @throws \Vonage\Client\Exception\Exception
      */
@@ -156,7 +166,9 @@ class Client implements APIClient
     /**
      * @param string $callId
      * @param string $digits
+     *
      * @return array{uuid: string, message: string}
+     *
      * @throws ClientExceptionInterface
      * @throws \Vonage\Client\Exception\Exception
      */
@@ -170,7 +182,9 @@ class Client implements APIClient
     /**
      * @param string $callId
      * @param Talk $action
+     *
      * @return array{uuid: string, message: string}
+     *
      * @throws ClientExceptionInterface
      * @throws \Vonage\Client\Exception\Exception
      */
@@ -184,6 +198,7 @@ class Client implements APIClient
 
     /**
      * @param FilterInterface|null $filter
+     *
      * @return IterableAPICollection
      */
     public function search(FilterInterface $filter = null): IterableAPICollection
@@ -202,7 +217,9 @@ class Client implements APIClient
 
     /**
      * @param string $callId
+     *
      * @return array{uuid: string, message: string}
+     *
      * @throws ClientExceptionInterface
      * @throws \Vonage\Client\Exception\Exception
      */
@@ -213,7 +230,9 @@ class Client implements APIClient
 
     /**
      * @param string $callId
+     *
      * @return array{uuid: string, message: string}
+     *
      * @throws ClientExceptionInterface
      * @throws \Vonage\Client\Exception\Exception
      */
@@ -227,7 +246,9 @@ class Client implements APIClient
      * @param string $url
      * @param int $loop
      * @param float $volumeLevel
+     *
      * @return array{uuid: string, message: string}
+     *
      * @throws ClientExceptionInterface
      * @throws \Vonage\Client\Exception\Exception
      */
@@ -243,6 +264,7 @@ class Client implements APIClient
     /**
      * @param string $callId
      * @param NCCO $ncco
+     *
      * @throws ClientExceptionInterface
      * @throws \Vonage\Client\Exception\Exception
      */
@@ -260,6 +282,7 @@ class Client implements APIClient
     /**
      * @param string $callId
      * @param string $url
+     *
      * @throws ClientExceptionInterface
      * @throws \Vonage\Client\Exception\Exception
      */
@@ -276,6 +299,7 @@ class Client implements APIClient
 
     /**
      * @param string $callId
+     *
      * @throws ClientExceptionInterface
      * @throws \Vonage\Client\Exception\Exception
      */
@@ -286,6 +310,7 @@ class Client implements APIClient
 
     /**
      * @param string $callId
+     *
      * @throws ClientExceptionInterface
      * @throws \Vonage\Client\Exception\Exception
      */

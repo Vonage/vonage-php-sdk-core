@@ -14,6 +14,10 @@ namespace Vonage\Voice\NCCO\Action;
 use InvalidArgumentException;
 use Vonage\Voice\Webhook;
 
+use function array_key_exists;
+use function filter_var;
+use function preg_match;
+
 class Record implements ActionInterface
 {
     public const FORMAT_MP3 = "mp3";
@@ -63,6 +67,7 @@ class Record implements ActionInterface
 
     /**
      * @param array $data
+     *
      * @return static
      */
     public static function factory(array $data): self
@@ -168,6 +173,7 @@ class Record implements ActionInterface
 
     /**
      * @param string $format
+     *
      * @return $this
      */
     public function setFormat(string $format): self
@@ -187,6 +193,7 @@ class Record implements ActionInterface
 
     /**
      * @param string $split
+     *
      * @return $this
      */
     public function setSplit(string $split): self
@@ -210,6 +217,7 @@ class Record implements ActionInterface
 
     /**
      * @param string $endOnKey
+     *
      * @return $this
      */
     public function setEndOnKey(string $endOnKey): self
@@ -235,6 +243,7 @@ class Record implements ActionInterface
 
     /**
      * @param Webhook $eventWebhook
+     *
      * @return $this
      */
     public function setEventWebhook(Webhook $eventWebhook): self
@@ -254,6 +263,7 @@ class Record implements ActionInterface
 
     /**
      * @param int $endOnSilence
+     *
      * @return $this
      */
     public function setEndOnSilence(int $endOnSilence): self
@@ -277,6 +287,7 @@ class Record implements ActionInterface
 
     /**
      * @param int $timeOut
+     *
      * @return $this
      */
     public function setTimeout(int $timeOut): self
@@ -300,6 +311,7 @@ class Record implements ActionInterface
 
     /**
      * @param bool $beepStart
+     *
      * @return $this
      */
     public function setBeepStart(bool $beepStart): self
@@ -319,6 +331,7 @@ class Record implements ActionInterface
 
     /**
      * @param int $channels
+     *
      * @return $this
      */
     public function setChannels(int $channels): self

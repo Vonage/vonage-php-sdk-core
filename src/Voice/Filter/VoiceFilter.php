@@ -108,6 +108,7 @@ class VoiceFilter implements FilterInterface
 
     /**
      * @param string $status
+     *
      * @return $this
      */
     public function setStatus(string $status): self
@@ -127,6 +128,7 @@ class VoiceFilter implements FilterInterface
 
     /**
      * @param DateTimeImmutable $dateStart
+     *
      * @return $this
      */
     public function setDateStart(DateTimeImmutable $dateStart): self
@@ -147,6 +149,7 @@ class VoiceFilter implements FilterInterface
 
     /**
      * @param DateTimeImmutable $dateEnd
+     *
      * @return $this
      */
     public function setDateEnd(DateTimeImmutable $dateEnd): self
@@ -167,6 +170,7 @@ class VoiceFilter implements FilterInterface
 
     /**
      * @param int $pageSize
+     *
      * @return $this
      */
     public function setPageSize(int $pageSize): self
@@ -186,6 +190,7 @@ class VoiceFilter implements FilterInterface
 
     /**
      * @param int $recordIndex
+     *
      * @return $this
      */
     public function setRecordIndex(int $recordIndex): self
@@ -205,6 +210,7 @@ class VoiceFilter implements FilterInterface
 
     /**
      * @param string $order
+     *
      * @return $this
      */
     public function setOrder(string $order): self
@@ -228,6 +234,7 @@ class VoiceFilter implements FilterInterface
 
     /**
      * @param string $conversationUUID
+     *
      * @return $this
      */
     public function setConversationUUID(string $conversationUUID): self

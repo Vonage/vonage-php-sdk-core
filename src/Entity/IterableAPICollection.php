@@ -25,6 +25,16 @@ use Vonage\Client\Exception as ClientException;
 use Vonage\Entity\Filter\EmptyFilter;
 use Vonage\Entity\Filter\FilterInterface;
 
+use function array_key_exists;
+use function array_merge;
+use function count;
+use function filter_var;
+use function http_build_query;
+use function is_null;
+use function json_decode;
+use function md5;
+use function strpos;
+
 /**
  * Common code for iterating over a collection, and using the collection class to discover the API path.
  */
@@ -39,6 +49,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
 
     /**
      * Determines if the collection will automatically go to the next page
+     *
      * @var bool
      */
     protected $autoAdvance = true;
@@ -50,37 +61,44 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
 
     /**
      * Holds a cache of various pages we have already polled
+     *
      * @var array<string, string>
      */
     protected $cache = [];
 
     /**
      * Index of the current resource of the current page
+     *
      * @var int
      */
     protected $current;
 
     /**
      * Count the items in the response instead of returning the count parameter
+     *
      * @deprected This exists for legacy reasons, will be removed in v3
+     *
      * @var bool
      */
     protected $naiveCount = false;
 
     /**
      * Current page data.
+     *
      * @var array
      */
     protected $page;
 
     /**
      * Last API Response
+     *
      * @var ResponseInterface
      */
     protected $response;
 
     /**
      * User set page index.
+     *
      * @var int
      */
     protected $index = 1;
@@ -92,6 +110,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
 
     /**
      * User set pgge sixe.
+     *
      * @var int
      */
     protected $size;
@@ -115,6 +134,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
 
     /**
      * @param $hydrator
+     *
      * @return $this
      */
     public function setHydrator($hydrator): self
@@ -126,6 +146,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
     /**
      * @param $data
      * @param null $id deprecated
+     *
      * @return mixed
      */
     public function hydrateEntity($data, $id = null)
@@ -165,6 +186,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
      * Return the current item, expects concrete collection to handle creating the object.
      *
      * @return mixed
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -204,6 +226,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
      * Handle pagination automatically (unless configured not to).
      *
      * @return bool
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -282,6 +305,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
 
     /**
      * @param APIResource $api
+     *
      * @return $this
      */
     public function setApiResource(APIResource $api): self
@@ -302,7 +326,8 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
     /**
      * Count of total items
      *
-     * @return integer
+     * @return int
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -336,6 +361,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
 
     /**
      * @param string $url
+     *
      * @return $this
      */
     public function setBaseUrl(string $url): self
@@ -347,6 +373,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
 
     /**
      * @param $index
+     *
      * @return $this
      */
     public function setPage($index): self
@@ -378,6 +405,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
 
     /**
      * @return array|null
+     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -422,6 +450,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
 
     /**
      * @param $size
+     *
      * @return $this
      */
     public function setSize($size): self
@@ -435,6 +464,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
      * Filters reduce to query params and include paging settings.
      *
      * @param FilterInterface $filter
+     *
      * @return $this
      */
     public function setFilter(FilterInterface $filter): self
@@ -459,6 +489,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
      * Fetch a page using the current filter if no query is provided.
      *
      * @param $absoluteUri
+     *
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
@@ -517,7 +548,9 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
 
     /**
      * @param ResponseInterface $response
+     *
      * @return ClientException\Request|ClientException\Server
+     *
      * @throws ClientException\Exception
      */
     protected function getException(ResponseInterface $response)
@@ -555,6 +588,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
 
     /**
      * @param bool $autoAdvance
+     *
      * @return $this
      */
     public function setAutoAdvance(bool $autoAdvance): self
@@ -574,6 +608,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
 
     /**
      * @param bool $naiveCount
+     *
      * @return $this
      */
     public function setNaiveCount(bool $naiveCount): self

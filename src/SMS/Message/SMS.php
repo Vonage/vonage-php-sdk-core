@@ -13,6 +13,8 @@ namespace Vonage\SMS\Message;
 
 use Vonage\SMS\EncodingDetector;
 
+use function function_exists;
+
 class SMS extends OutboundMessage
 {
     /**

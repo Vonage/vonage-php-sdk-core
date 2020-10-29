@@ -15,10 +15,15 @@ use Laminas\Diactoros\ServerRequestFactory;
 use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
 
+use function is_null;
+use function json_decode;
+use function parse_str;
+
 abstract class Factory
 {
     /**
      * @param array $data
+     *
      * @return mixed
      */
     abstract public static function createFromArray(array $data);
@@ -46,6 +51,7 @@ abstract class Factory
 
     /**
      * @param ServerRequestInterface $request
+     *
      * @return mixed
      */
     public static function createFromRequest(ServerRequestInterface $request)

@@ -19,6 +19,10 @@ use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Message\Message;
 use Vonage\Message\Text;
 
+use function fopen;
+use function http_build_query;
+use function json_encode;
+
 class MessageTest extends TestCase
 {
     protected $to = '14845551212';
@@ -89,7 +93,9 @@ class MessageTest extends TestCase
      * When creating a message, it should not auto-detect encoding by default
      *
      * @dataProvider messageEncodingProvider
+     *
      * @param $msg
+     *
      * @throws ClientException
      */
     public function testDoesNotAutodetectByDefault($msg): void
@@ -107,8 +113,10 @@ class MessageTest extends TestCase
      * When creating a message, it should not auto-detect encoding by default
      *
      * @dataProvider messageEncodingProvider
+     *
      * @param $msg
      * @param $encoding
+     *
      * @throws ClientException
      */
     public function testDoesAutodetectWhenEnabled($msg, $encoding): void
@@ -140,6 +148,7 @@ class MessageTest extends TestCase
      * change between success / fail is body of the message.
      *
      * @param string $type
+     *
      * @return Response
      */
     protected function getResponse(string $type = 'success'): Response
