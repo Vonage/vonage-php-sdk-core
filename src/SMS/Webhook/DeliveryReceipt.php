@@ -231,81 +231,51 @@ class DeliveryReceipt
         $this->apiKey = $data['api-key'];
     }
 
-    /**
-     * @return int
-     */
     public function getErrCode(): int
     {
         return $this->errCode;
     }
 
-    /**
-     * @return DateTimeImmutable
-     */
     public function getMessageTimestamp(): DateTimeImmutable
     {
         return $this->messageTimestamp;
     }
 
-    /**
-     * @return string
-     */
     public function getMessageId(): string
     {
         return $this->messageId;
     }
 
-    /**
-     * @return string
-     */
     public function getMsisdn(): string
     {
         return $this->msisdn;
     }
 
-    /**
-     * @return string
-     */
     public function getNetworkCode(): string
     {
         return $this->networkCode;
     }
 
-    /**
-     * @return string
-     */
     public function getPrice(): string
     {
         return $this->price;
     }
 
-    /**
-     * @return string
-     */
     public function getScts(): string
     {
         return $this->scts;
     }
 
-    /**
-     * @return string
-     */
     public function getStatus(): string
     {
         return $this->status;
     }
 
-    /**
-     * @return string
-     */
     public function getTo(): string
     {
         return $this->to;
     }
 
-    /**
-     * @return string
-     */
     public function getApiKey(): string
     {
         return $this->apiKey;

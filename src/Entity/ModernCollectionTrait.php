@@ -22,8 +22,6 @@ trait ModernCollectionTrait
 
     /**
      * Count of total items
-     *
-     * @return int
      */
     public function count(): int
     {

@@ -23,12 +23,6 @@ class DateFilter implements FilterInterface
     protected $start;
     protected $end;
 
-    /**
-     * DateFilter constructor.
-     *
-     * @param DateTime $start
-     * @param DateTime $end
-     */
     public function __construct(DateTime $start, DateTime $end)
     {
         if ($start < $end) {

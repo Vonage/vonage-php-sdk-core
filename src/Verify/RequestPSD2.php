@@ -75,14 +75,6 @@ class RequestPSD2 implements ArrayHydrateInterface
      */
     protected $workflowId;
 
-    /**
-     * RequestPSD2 constructor.
-     *
-     * @param string $number
-     * @param string $payee
-     * @param string $amount
-     * @param int|null $workflowId
-     */
     public function __construct(string $number, string $payee, string $amount, int $workflowId = null)
     {
         $this->number = $number;
@@ -94,17 +86,12 @@ class RequestPSD2 implements ArrayHydrateInterface
         }
     }
 
-    /**
-     * @return string|null
-     */
     public function getCountry(): ?string
     {
         return $this->country;
     }
 
     /**
-     * @param string $country
-     *
      * @return $this
      */
     public function setCountry(string $country): self
@@ -118,17 +105,12 @@ class RequestPSD2 implements ArrayHydrateInterface
         return $this;
     }
 
-    /**
-     * @return int|null
-     */
     public function getCodeLength(): ?int
     {
         return $this->codeLength;
     }
 
     /**
-     * @param int $codeLength
-     *
      * @return $this
      */
     public function setCodeLength(int $codeLength): self
@@ -142,17 +124,12 @@ class RequestPSD2 implements ArrayHydrateInterface
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getLocale(): ?string
     {
         return $this->locale;
     }
 
     /**
-     * @param string $locale
-     *
      * @return $this
      */
     public function setLocale(string $locale): self
@@ -162,17 +139,12 @@ class RequestPSD2 implements ArrayHydrateInterface
         return $this;
     }
 
-    /**
-     * @return int|null
-     */
     public function getPinExpiry(): ?int
     {
         return $this->pinExpiry;
     }
 
     /**
-     * @param int $pinExpiry
-     *
      * @return $this
      */
     public function setPinExpiry(int $pinExpiry): self
@@ -186,17 +158,12 @@ class RequestPSD2 implements ArrayHydrateInterface
         return $this;
     }
 
-    /**
-     * @return int|null
-     */
     public function getNextEventWait(): ?int
     {
         return $this->nextEventWait;
     }
 
     /**
-     * @param int $nextEventWait
-     *
      * @return $this
      */
     public function setNextEventWait(int $nextEventWait): self
@@ -210,17 +177,12 @@ class RequestPSD2 implements ArrayHydrateInterface
         return $this;
     }
 
-    /**
-     * @return int|null
-     */
     public function getWorkflowId(): ?int
     {
         return $this->workflowId;
     }
 
     /**
-     * @param int $workflowId
-     *
      * @return $this
      */
     public function setWorkflowId(int $workflowId): self
@@ -234,33 +196,21 @@ class RequestPSD2 implements ArrayHydrateInterface
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getNumber(): string
     {
         return $this->number;
     }
 
-    /**
-     * @return string
-     */
     public function getPayee(): string
     {
         return $this->payee;
     }
 
-    /**
-     * @return string
-     */
     public function getAmount(): string
     {
         return $this->amount;
     }
 
-    /**
-     * @param array $data
-     */
     public function fromArray(array $data): void
     {
         if (array_key_exists('code_length', $data)) {

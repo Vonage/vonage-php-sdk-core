@@ -67,12 +67,12 @@ class Talk implements JsonSerializableInterface, ClientAwareInterface, ArrayAcce
     }
 
     /**
-     * @return $this|Event
-     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
+     *
+     * @return $this|Event
      */
     public function __invoke(?self $entity = null)
     {
@@ -107,6 +107,8 @@ class Talk implements JsonSerializableInterface, ClientAwareInterface, ArrayAcce
     }
 
     /**
+     * @param null|mixed $talk
+     *
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
@@ -170,9 +172,9 @@ class Talk implements JsonSerializableInterface, ClientAwareInterface, ArrayAcce
     }
 
     /**
-     * @return ClientException\Request|ClientException\Server
-     *
      * @throws ClientException\Exception
+     *
+     * @return ClientException\Request|ClientException\Server
      */
     protected function getException(ResponseInterface $response)
     {

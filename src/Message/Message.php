@@ -178,6 +178,8 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
     }
 
     /**
+     * @param null|mixed $index
+     *
      * @throws Exception
      */
     public function getMessageId($index = null): ?string
@@ -186,6 +188,8 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
     }
 
     /**
+     * @param null|mixed $index
+     *
      * @throws Exception
      */
     public function getStatus($index = null)
@@ -194,6 +198,8 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
     }
 
     /**
+     * @param null|mixed $index
+     *
      * @throws Exception
      */
     public function getFinalStatus($index = null)
@@ -202,6 +208,8 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
     }
 
     /**
+     * @param null|mixed $index
+     *
      * @throws Exception
      */
     public function getTo($index = null)
@@ -218,6 +226,8 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
     }
 
     /**
+     * @param null|mixed $index
+     *
      * @throws Exception
      */
     public function getRemainingBalance($index = null)
@@ -226,6 +236,8 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
     }
 
     /**
+     * @param null|mixed $index
+     *
      * @throws Exception
      */
     public function getPrice($index = null)
@@ -242,6 +254,8 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
     }
 
     /**
+     * @param null|mixed $index
+     *
      * @throws Exception
      */
     public function getNetwork($index = null)
@@ -299,6 +313,8 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
     }
 
     /**
+     * @param null|mixed $index
+     *
      * @throws Exception
      */
     protected function getMessageData($name, $index = null)
@@ -427,9 +443,6 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
         throw $this->getReadOnlyException($offset);
     }
 
-    /**
-     * @return RuntimeException
-     */
     protected function getReadOnlyException($offset): RuntimeException
     {
         return new RuntimeException(

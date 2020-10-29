@@ -34,8 +34,6 @@ class Client implements ClientAwareInterface, APIClient
     protected $api;
 
     /**
-     * @param APIResource|null $api
-     *
      * @todo Stop having this use its own formatting for exceptions
      */
     public function __construct(APIResource $api = null)
@@ -71,10 +69,6 @@ class Client implements ClientAwareInterface, APIClient
     }
 
     /**
-     * @param string $id
-     * @param string $product
-     * @param array $options
-     *
      * @throws ClientExceptionInterface
      * @throws ClientException
      */

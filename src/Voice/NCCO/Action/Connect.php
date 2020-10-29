@@ -61,21 +61,11 @@ class Connect implements ActionInterface
      */
     protected $ringbackTone;
 
-    /**
-     * Connect constructor.
-     *
-     * @param EndpointInterface $endpoint
-     */
     public function __construct(EndpointInterface $endpoint)
     {
         $this->endpoint = $endpoint;
     }
 
-    /**
-     * @param EndpointInterface $endpoint
-     *
-     * @return Connect
-     */
     public static function factory(EndpointInterface $endpoint): Connect
     {
         return new Connect($endpoint);
@@ -89,9 +79,6 @@ class Connect implements ActionInterface
         return $this->toNCCOArray();
     }
 
-    /**
-     * @return array
-     */
     public function toNCCOArray(): array
     {
         $data = [
@@ -139,17 +126,12 @@ class Connect implements ActionInterface
         return $data;
     }
 
-    /**
-     * @return string|null
-     */
     public function getFrom(): ?string
     {
         return $this->from;
     }
 
     /**
-     * @param string $from
-     *
      * @return $this
      */
     public function setFrom(string $from): self
@@ -159,17 +141,12 @@ class Connect implements ActionInterface
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getEventType(): ?string
     {
         return $this->eventType;
     }
 
     /**
-     * @param string $eventType
-     *
      * @return $this
      */
     public function setEventType(string $eventType): self
@@ -183,17 +160,12 @@ class Connect implements ActionInterface
         return $this;
     }
 
-    /**
-     * @return int|null
-     */
     public function getTimeout(): ?int
     {
         return $this->timeout;
     }
 
     /**
-     * @param int $timeout
-     *
      * @return $this
      */
     public function setTimeout(int $timeout): self
@@ -203,17 +175,12 @@ class Connect implements ActionInterface
         return $this;
     }
 
-    /**
-     * @return int|null
-     */
     public function getLimit(): ?int
     {
         return $this->limit;
     }
 
     /**
-     * @param int $limit
-     *
      * @return $this
      */
     public function setLimit(int $limit): self
@@ -223,17 +190,12 @@ class Connect implements ActionInterface
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getMachineDetection(): ?string
     {
         return $this->machineDetection;
     }
 
     /**
-     * @param string $machineDetection
-     *
      * @return $this
      */
     public function setMachineDetection(string $machineDetection): self
@@ -250,17 +212,12 @@ class Connect implements ActionInterface
         return $this;
     }
 
-    /**
-     * @return Webhook|null
-     */
     public function getEventWebhook(): ?Webhook
     {
         return $this->eventWebhook;
     }
 
     /**
-     * @param Webhook $eventWebhook
-     *
      * @return $this
      */
     public function setEventWebhook(Webhook $eventWebhook): self
@@ -270,17 +227,12 @@ class Connect implements ActionInterface
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getRingbackTone(): ?string
     {
         return $this->ringbackTone;
     }
 
     /**
-     * @param string $ringbackTone
-     *
      * @return $this
      */
     public function setRingbackTone(string $ringbackTone): self

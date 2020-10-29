@@ -68,21 +68,12 @@ abstract class OutboundMessage implements Message
      */
     protected $type;
 
-    /**
-     * OutboundMessage constructor.
-     *
-     * @param string $to
-     * @param string $from
-     */
     public function __construct(string $to, string $from)
     {
         $this->to = $to;
         $this->from = $from;
     }
 
-    /**
-     * @return array
-     */
     abstract public function toArray(): array;
 
     public function getTtl(): int
@@ -91,8 +82,6 @@ abstract class OutboundMessage implements Message
     }
 
     /**
-     * @param int $ttl
-     *
      * @return $this
      */
     public function setTtl(int $ttl): self
@@ -106,17 +95,12 @@ abstract class OutboundMessage implements Message
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function getRequestDeliveryReceipt(): bool
     {
         return $this->requestDeliveryReceipt;
     }
 
     /**
-     * @param bool $requestDeliveryReceipt
-     *
      * @return $this
      */
     public function setRequestDeliveryReceipt(bool $requestDeliveryReceipt): self
@@ -126,17 +110,12 @@ abstract class OutboundMessage implements Message
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getDeliveryReceiptCallback(): ?string
     {
         return $this->deliveryReceiptCallback;
     }
 
     /**
-     * @param string $deliveryReceiptCallback
-     *
      * @return $this
      */
     public function setDeliveryReceiptCallback(string $deliveryReceiptCallback): self
@@ -147,17 +126,12 @@ abstract class OutboundMessage implements Message
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getMessageClass(): int
     {
         return $this->messageClass;
     }
 
     /**
-     * @param int $messageClass
-     *
      * @return $this
      */
     public function setMessageClass(int $messageClass): self
@@ -171,17 +145,12 @@ abstract class OutboundMessage implements Message
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getClientRef(): string
     {
         return $this->clientRef;
     }
 
     /**
-     * @param string $clientRef
-     *
      * @return $this
      */
     public function setClientRef(string $clientRef): self
@@ -199,10 +168,6 @@ abstract class OutboundMessage implements Message
      * This adds any additional options to an individual SMS request
      * This allows the child classes to set their special request options,
      * and then filter through here for additional request options;
-     *
-     * @param array $data
-     *
-     * @return array
      */
     protected function appendUniversalOptions(array $data): array
     {
@@ -233,33 +198,22 @@ abstract class OutboundMessage implements Message
         return $data;
     }
 
-    /**
-     * @return string
-     */
     public function getFrom(): string
     {
         return $this->from;
     }
 
-    /**
-     * @return string
-     */
     public function getTo(): string
     {
         return $this->to;
     }
 
-    /**
-     * @return string|null
-     */
     public function getAccountRef(): ?string
     {
         return $this->accountRef;
     }
 
     /**
-     * @param string $accountRef
-     *
      * @return $this
      */
     public function setAccountRef(string $accountRef): OutboundMessage
@@ -269,9 +223,6 @@ abstract class OutboundMessage implements Message
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getType(): string
     {
         return $this->type;

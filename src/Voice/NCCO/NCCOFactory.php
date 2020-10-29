@@ -26,8 +26,6 @@ class NCCOFactory
 {
     /**
      * @param $data
-     *
-     * @return ActionInterface
      */
     public function build($data): ActionInterface
     {

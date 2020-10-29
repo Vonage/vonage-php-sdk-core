@@ -27,27 +27,17 @@ class Check
      */
     protected $data;
 
-    /**
-     * Check constructor.
-     *
-     * @param array $data
-     */
     public function __construct(array $data)
     {
         $this->data = $data;
     }
 
-    /**
-     * @return mixed
-     */
     public function getCode()
     {
         return $this->data['code'];
     }
 
     /**
-     * @return DateTime
-     *
      * @throws Exception
      */
     public function getDate(): DateTime
@@ -55,17 +45,11 @@ class Check
         return new DateTime($this->data['date_received']);
     }
 
-    /**
-     * @return mixed
-     */
     public function getStatus()
     {
         return $this->data['status'];
     }
 
-    /**
-     * @return mixed
-     */
     public function getIpAddress()
     {
         return $this->data['ip_address'];

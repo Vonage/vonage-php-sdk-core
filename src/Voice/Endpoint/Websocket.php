@@ -33,13 +33,6 @@ class Websocket implements EndpointInterface
      */
     protected $id;
 
-    /**
-     * Websocket constructor.
-     *
-     * @param string $uri
-     * @param string $rate
-     * @param array $headers
-     */
     public function __construct(string $uri, string $rate = self::TYPE_8000, array $headers = [])
     {
         $this->id = $uri;
@@ -47,12 +40,6 @@ class Websocket implements EndpointInterface
         $this->setHeaders($headers);
     }
 
-    /**
-     * @param string $uri
-     * @param array $data
-     *
-     * @return Websocket
-     */
     public static function factory(string $uri, array $data = []): Websocket
     {
         $endpoint = new Websocket($uri);
@@ -94,25 +81,17 @@ class Websocket implements EndpointInterface
         return $data;
     }
 
-    /**
-     * @return string
-     */
     public function getId(): string
     {
         return $this->id;
     }
 
-    /**
-     * @return string
-     */
     public function getContentType(): string
     {
         return $this->contentType;
     }
 
     /**
-     * @param string $contentType
-     *
      * @return $this
      */
     public function setContentType(string $contentType): self
@@ -122,18 +101,12 @@ class Websocket implements EndpointInterface
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function getHeaders(): array
     {
         return $this->headers;
     }
 
     /**
-     * @param string $key
-     * @param string $value
-     *
      * @return $this
      */
     public function addHeader(string $key, string $value): self
@@ -144,8 +117,6 @@ class Websocket implements EndpointInterface
     }
 
     /**
-     * @param array $headers
-     *
      * @return $this
      */
     public function setHeaders(array $headers): self

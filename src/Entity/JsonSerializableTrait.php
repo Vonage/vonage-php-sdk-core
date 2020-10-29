@@ -29,8 +29,6 @@ trait JsonSerializableTrait
      *
      * @param bool $sent
      *
-     * @return mixed
-     *
      * @throws ClientException
      */
     public function getRequestData($sent = true)

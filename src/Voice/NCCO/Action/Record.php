@@ -66,8 +66,6 @@ class Record implements ActionInterface
     protected $eventWebhook;
 
     /**
-     * @param array $data
-     *
      * @return static
      */
     public static function factory(array $data): self
@@ -163,17 +161,12 @@ class Record implements ActionInterface
         return $data;
     }
 
-    /**
-     * @return string
-     */
     public function getFormat(): string
     {
         return $this->format;
     }
 
     /**
-     * @param string $format
-     *
      * @return $this
      */
     public function setFormat(string $format): self
@@ -183,17 +176,12 @@ class Record implements ActionInterface
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getSplit(): ?string
     {
         return $this->split;
     }
 
     /**
-     * @param string $split
-     *
      * @return $this
      */
     public function setSplit(string $split): self
@@ -207,17 +195,12 @@ class Record implements ActionInterface
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getEndOnKey(): ?string
     {
         return $this->endOnKey;
     }
 
     /**
-     * @param string $endOnKey
-     *
      * @return $this
      */
     public function setEndOnKey(string $endOnKey): self
@@ -233,17 +216,12 @@ class Record implements ActionInterface
         return $this;
     }
 
-    /**
-     * @return Webhook|null
-     */
     public function getEventWebhook(): ?Webhook
     {
         return $this->eventWebhook;
     }
 
     /**
-     * @param Webhook $eventWebhook
-     *
      * @return $this
      */
     public function setEventWebhook(Webhook $eventWebhook): self
@@ -253,17 +231,12 @@ class Record implements ActionInterface
         return $this;
     }
 
-    /**
-     * @return int|null
-     */
     public function getEndOnSilence(): ?int
     {
         return $this->endOnSilence;
     }
 
     /**
-     * @param int $endOnSilence
-     *
      * @return $this
      */
     public function setEndOnSilence(int $endOnSilence): self
@@ -277,17 +250,12 @@ class Record implements ActionInterface
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getTimeout(): int
     {
         return $this->timeOut;
     }
 
     /**
-     * @param int $timeOut
-     *
      * @return $this
      */
     public function setTimeout(int $timeOut): self
@@ -301,17 +269,12 @@ class Record implements ActionInterface
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function getBeepStart(): bool
     {
         return $this->beepStart;
     }
 
     /**
-     * @param bool $beepStart
-     *
      * @return $this
      */
     public function setBeepStart(bool $beepStart): self
@@ -321,17 +284,12 @@ class Record implements ActionInterface
         return $this;
     }
 
-    /**
-     * @return int|null
-     */
     public function getChannels(): ?int
     {
         return $this->channels;
     }
 
     /**
-     * @param int $channels
-     *
      * @return $this
      */
     public function setChannels(int $channels): self

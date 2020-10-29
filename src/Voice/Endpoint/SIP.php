@@ -23,24 +23,12 @@ class SIP implements EndpointInterface
      */
     protected $id;
 
-    /**
-     * SIP constructor.
-     *
-     * @param string $uri
-     * @param array $headers
-     */
     public function __construct(string $uri, array $headers = [])
     {
         $this->id = $uri;
         $this->setHeaders($headers);
     }
 
-    /**
-     * @param string $uri
-     * @param array $headers
-     *
-     * @return SIP
-     */
     public static function factory(string $uri, array $headers = []): SIP
     {
         return new SIP($uri, $headers);
@@ -71,26 +59,17 @@ class SIP implements EndpointInterface
         return $data;
     }
 
-    /**
-     * @return string
-     */
     public function getId(): string
     {
         return $this->id;
     }
 
-    /**
-     * @return array
-     */
     public function getHeaders(): array
     {
         return $this->headers;
     }
 
     /**
-     * @param string $key
-     * @param string $value
-     *
      * @return $this
      */
     public function addHeader(string $key, string $value): self
@@ -101,8 +80,6 @@ class SIP implements EndpointInterface
     }
 
     /**
-     * @param array $headers
-     *
      * @return $this
      */
     public function setHeaders(array $headers): self

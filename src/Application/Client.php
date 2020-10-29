@@ -170,8 +170,6 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
     /**
      * Saves an existing application
      *
-     * @return Application
-     *
      * @throws ClientExceptionInterface
      * @throws ClientException
      * @throws Exception
@@ -205,8 +203,6 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
     }
 
     /**
-     * @return Application
-     *
      * @throws ClientExceptionInterface
      * @throws ClientException
      *

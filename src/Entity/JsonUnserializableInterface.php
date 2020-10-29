@@ -21,8 +21,6 @@ interface JsonUnserializableInterface
     /**
      * Update the object state with the json data (as an array)
      *
-     * @param array $json
-     *
      * @deprecated Implement ArrayHydrator instead as it is more semantically correct
      */
     public function jsonUnserialize(array $json): void;

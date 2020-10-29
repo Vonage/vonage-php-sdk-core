@@ -23,9 +23,6 @@ trait HasEntityTrait
         $this->entity = $entity;
     }
 
-    /**
-     * @return mixed
-     */
     public function getEntity()
     {
         return $this->entity;

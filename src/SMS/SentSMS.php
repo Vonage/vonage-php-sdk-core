@@ -53,11 +53,6 @@ class SentSMS
      */
     protected $to;
 
-    /**
-     * SentSMS constructor.
-     *
-     * @param array $data
-     */
     public function __construct(array $data)
     {
         $this->accountRef = $data['account-ref'] ?? null;
@@ -70,65 +65,41 @@ class SentSMS
         $this->network = $data['network'];
     }
 
-    /**
-     * @return string|null
-     */
     public function getAccountRef(): ?string
     {
         return $this->accountRef;
     }
 
-    /**
-     * @return string|null
-     */
     public function getClientRef(): ?string
     {
         return $this->clientRef;
     }
 
-    /**
-     * @return string
-     */
     public function getMessageId(): string
     {
         return $this->messageId;
     }
 
-    /**
-     * @return string
-     */
     public function getMessagePrice(): string
     {
         return $this->messagePrice;
     }
 
-    /**
-     * @return string
-     */
     public function getNetwork(): string
     {
         return $this->network;
     }
 
-    /**
-     * @return string
-     */
     public function getRemainingBalance(): string
     {
         return $this->remainingBalance;
     }
 
-    /**
-     * @return int
-     */
     public function getStatus(): int
     {
         return $this->status;
     }
 
-    /**
-     * @return string
-     */
     public function getTo(): string
     {
         return $this->to;

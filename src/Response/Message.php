@@ -15,69 +15,46 @@ use RuntimeException;
 
 class Message
 {
+    /**
+     * @var array
+     */
     protected $data;
 
-    /**
-     * Message constructor.
-     *
-     * @param $data
-     */
-    public function __construct($data)
+    public function __construct(array $data)
     {
         $this->data = $data;
     }
 
-    /**
-     * @return mixed
-     */
     public function getStatus()
     {
         return $this->checkData('status');
     }
 
-    /**
-     * @return mixed
-     */
     public function getId()
     {
         return $this->checkData('message-id');
     }
 
-    /**
-     * @return mixed
-     */
     public function getTo()
     {
         return $this->checkData('to');
     }
 
-    /**
-     * @return mixed
-     */
     public function getBalance()
     {
         return $this->checkData('remaining-balance');
     }
 
-    /**
-     * @return mixed
-     */
     public function getPrice()
     {
         return $this->checkData('message-price');
     }
 
-    /**
-     * @return mixed
-     */
     public function getNetwork()
     {
         return $this->checkData('network');
     }
 
-    /**
-     * @return string
-     */
     public function getErrorMessage(): string
     {
         if (!isset($this->data['error-text'])) {
@@ -89,8 +66,6 @@ class Message
 
     /**
      * @param $param
-     *
-     * @return mixed
      */
     protected function checkData($param)
     {
@@ -101,10 +76,7 @@ class Message
         return $this->data[$param];
     }
 
-    /**
-     * @return mixed
-     */
-    public function toArray()
+    public function toArray(): array
     {
         return $this->data;
     }

@@ -51,33 +51,21 @@ class Callback extends BaseCallback
         'RoamingNetwork' => 'roaming_network_code',
     ];
 
-    /**
-     * @return mixed
-     */
     public function getId()
     {
         return $this->data['request_id'];
     }
 
-    /**
-     * @return mixed
-     */
     public function getCallbackTotal()
     {
         return $this->data['callback_total_parts'];
     }
 
-    /**
-     * @return mixed
-     */
     public function getCallbackIndex()
     {
         return $this->data['callback_part'];
     }
 
-    /**
-     * @return mixed
-     */
     public function getNumber()
     {
         return $this->data['number'];
@@ -86,8 +74,6 @@ class Callback extends BaseCallback
     /**
      * @param $name
      * @param $args
-     *
-     * @return mixed
      */
     public function __call($name, $args)
     {

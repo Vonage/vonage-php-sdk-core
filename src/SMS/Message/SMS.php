@@ -27,13 +27,6 @@ class SMS extends OutboundMessage
      */
     protected $type = 'text';
 
-    /**
-     * SMS constructor.
-     *
-     * @param string $to
-     * @param string $from
-     * @param string $message
-     */
     public function __construct(string $to, string $from, string $message)
     {
         parent::__construct($to, $from);
@@ -56,9 +49,6 @@ class SMS extends OutboundMessage
         return $data;
     }
 
-    /**
-     * @return string
-     */
     public function getMessage(): string
     {
         return $this->message;

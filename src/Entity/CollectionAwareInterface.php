@@ -13,15 +13,8 @@ namespace Vonage\Entity;
 
 interface CollectionAwareInterface
 {
-    /**
-     * @param CollectionInterface $collection
-     *
-     * @return mixed
-     */
+
     public function setCollection(CollectionInterface $collection);
 
-    /**
-     * @return CollectionInterface
-     */
     public function getCollection(): CollectionInterface;
 }

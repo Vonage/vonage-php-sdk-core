@@ -37,10 +37,6 @@ class Transfer
     protected $timestamp;
 
     /**
-     * Transfer constructor.
-     *
-     * @param array $event
-     *
      * @throws Exception
      */
     public function __construct(array $event)
@@ -51,33 +47,21 @@ class Transfer
         $this->timestamp = new DateTimeImmutable($event['timestamp']);
     }
 
-    /**
-     * @return string
-     */
     public function getConversationUuidFrom(): string
     {
         return $this->conversationUuidFrom;
     }
 
-    /**
-     * @return string
-     */
     public function getConversationUuidTo(): string
     {
         return $this->conversationUuidTo;
     }
 
-    /**
-     * @return string
-     */
     public function getUuid(): string
     {
         return $this->uuid;
     }
 
-    /**
-     * @return DateTimeImmutable
-     */
     public function getTimestamp(): DateTimeImmutable
     {
         return $this->timestamp;

@@ -34,16 +34,10 @@ class Request extends AbstractRequest implements WrapResponseInterface
     protected $params;
 
     /**
-     * Request constructor.
-     *
      * @param $number
      * @param $callback
-     * @param array $features
-     * @param null $timeout
-     * @param null $method
-     * @param null $ref
      */
-    public function __construct($number, $callback, $features = [], $timeout = null, $method = null, $ref = null)
+    public function __construct($number, $callback, array $features = [], $timeout = null, $method = null, $ref = null)
     {
         $this->params['number'] = $number;
         $this->params['callback'] = $callback;
@@ -56,19 +50,11 @@ class Request extends AbstractRequest implements WrapResponseInterface
         }
     }
 
-    /**
-     * @return string
-     */
     public function getURI(): string
     {
         return '/ni/json';
     }
 
-    /**
-     * @param ResponseInterface $response
-     *
-     * @return ResponseInterface
-     */
     public function wrapResponse(ResponseInterface $response): ResponseInterface
     {
         if ($response->isError()) {

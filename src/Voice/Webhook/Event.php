@@ -99,10 +99,6 @@ class Event
     protected $uuid;
 
     /**
-     * Event constructor.
-     *
-     * @param array $event
-     *
      * @throws Exception
      */
     public function __construct(array $event)
@@ -128,105 +124,66 @@ class Event
         }
     }
 
-    /**
-     * @return string
-     */
     public function getConversationUuid(): string
     {
         return $this->conversationUuid;
     }
 
-    /**
-     * @return string
-     */
     public function getDirection(): string
     {
         return $this->direction;
     }
 
-    /**
-     * @return string
-     */
     public function getFrom(): string
     {
         return $this->from;
     }
 
-    /**
-     * @return string
-     */
     public function getStatus(): string
     {
         return $this->status;
     }
 
-    /**
-     * @return DateTimeImmutable
-     */
     public function getTimestamp(): DateTimeImmutable
     {
         return $this->timestamp;
     }
 
-    /**
-     * @return string
-     */
     public function getTo(): string
     {
         return $this->to;
     }
 
-    /**
-     * @return string
-     */
     public function getUuid(): string
     {
         return $this->uuid;
     }
 
-    /**
-     * @return string|null
-     */
     public function getNetwork(): ?string
     {
         return $this->network;
     }
 
-    /**
-     * @return string|null
-     */
     public function getRate(): ?string
     {
         return $this->rate;
     }
 
-    /**
-     * @return DateTimeImmutable|null
-     */
     public function getStartTime(): ?DateTimeImmutable
     {
         return $this->startTime;
     }
 
-    /**
-     * @return DateTimeImmutable|null
-     */
     public function getEndTime(): ?DateTimeImmutable
     {
         return $this->endTime;
     }
 
-    /**
-     * @return string|null
-     */
     public function getDuration(): ?string
     {
         return $this->duration;
     }
 
-    /**
-     * @return string|null
-     */
     public function getPrice(): ?string
     {
         return $this->price;

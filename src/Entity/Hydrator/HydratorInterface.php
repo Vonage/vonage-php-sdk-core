@@ -15,15 +15,12 @@ interface HydratorInterface
 {
     /**
      * Hydrate an object that the hydrator creates
-     *
-     * @param array $data
      */
     public function hydrate(array $data);
 
     /**
      * Hydrate an existing object created outside of the hydrator
      *
-     * @param array $data
      * @param $object
      */
     public function hydrateObject(array $data, $object);

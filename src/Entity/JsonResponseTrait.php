@@ -26,9 +26,9 @@ trait JsonResponseTrait
     protected $responseJson;
 
     /**
-     * @return array|mixed
-     *
      * @throws Exception
+     *
+     * @return array|mixed
      */
     public function getResponseData()
     {

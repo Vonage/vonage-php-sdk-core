@@ -66,85 +66,53 @@ class OutboundCall
      */
     protected $to;
 
-    /**
-     * OutboundCall constructor.
-     *
-     * @param EndpointInterface $to
-     * @param Phone $from
-     */
     public function __construct(EndpointInterface $to, Phone $from)
     {
         $this->to = $to;
         $this->from = $from;
     }
 
-    /**
-     * @return Webhook|null
-     */
     public function getAnswerWebhook(): ?Webhook
     {
         return $this->answerWebhook;
     }
 
-    /**
-     * @return Webhook|null
-     */
     public function getEventWebhook(): ?Webhook
     {
         return $this->eventWebhook;
     }
 
-    /**
-     * @return Phone
-     */
     public function getFrom(): Phone
     {
         return $this->from;
     }
 
-    /**
-     * @return int|null
-     */
     public function getLengthTimer(): ?int
     {
         return $this->lengthTimer;
     }
 
-    /**
-     * @return string|null
-     */
     public function getMachineDetection(): ?string
     {
         return $this->machineDetection;
     }
 
-    /**
-     * @return NCCO|null
-     */
     public function getNCCO(): ?NCCO
     {
         return $this->ncco;
     }
 
-    /**
-     * @return int|null
-     */
     public function getRingingTimer(): ?int
     {
         return $this->ringingTimer;
     }
 
-    /**
-     * @return EndpointInterface
-     */
     public function getTo(): EndpointInterface
     {
         return $this->to;
     }
 
     /**
-     * @param Webhook $webhook
-     *
      * @return $this
      */
     public function setAnswerWebhook(Webhook $webhook): self
@@ -155,8 +123,6 @@ class OutboundCall
     }
 
     /**
-     * @param Webhook $webhook
-     *
      * @return $this
      */
     public function setEventWebhook(Webhook $webhook): self
@@ -167,8 +133,6 @@ class OutboundCall
     }
 
     /**
-     * @param int $timer
-     *
      * @return $this
      */
     public function setLengthTimer(int $timer): self
@@ -179,8 +143,6 @@ class OutboundCall
     }
 
     /**
-     * @param string $action
-     *
      * @return $this
      */
     public function setMachineDetection(string $action): self
@@ -195,8 +157,6 @@ class OutboundCall
     }
 
     /**
-     * @param NCCO $ncco
-     *
      * @return $this
      */
     public function setNCCO(NCCO $ncco): self
@@ -207,8 +167,6 @@ class OutboundCall
     }
 
     /**
-     * @param int $timer
-     *
      * @return $this
      */
     public function setRingingTimer(int $timer): self

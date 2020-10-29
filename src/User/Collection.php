@@ -41,17 +41,11 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
     use NoRequestResponseTrait;
     use JsonResponseTrait;
 
-    /**
-     * @return string
-     */
     public static function getCollectionName(): string
     {
         return 'users';
     }
 
-    /**
-     * @return string
-     */
     public static function getCollectionPath(): string
     {
         return '/beta/' . self::getCollectionName();
@@ -77,8 +71,6 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
 
     /**
      * @param $users
-     *
-     * @return array
      */
     public function hydrateAll($users): array
     {
@@ -98,8 +90,6 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
     }
 
     /**
-     * @param mixed $filter
-     *
      * @return $this
      */
     public function __invoke($filter = null)
@@ -111,9 +101,6 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function fetch(): array
     {
         $this->fetchPage(self::getCollectionPath());
@@ -122,8 +109,6 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
 
     /**
      * @param $user
-     *
-     * @return User
      *
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -137,8 +122,6 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
 
     /**
      * @param $user
-     *
-     * @return User
      *
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -179,8 +162,6 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
     /**
      * @param $user
      *
-     * @return User
-     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -199,11 +180,9 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
     }
 
     /**
-     * @param ResponseInterface $response
+     * @throws ClientException\Exception
      *
      * @return ClientException\Request|ClientException\Server
-     *
-     * @throws ClientException\Exception
      */
     protected function getException(ResponseInterface $response)
     {
@@ -233,21 +212,11 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
         return $e;
     }
 
-    /**
-     * @param mixed $offset
-     *
-     * @return bool
-     */
     public function offsetExists($offset): bool
     {
         return true;
     }
 
-    /**
-     * @param mixed $user
-     *
-     * @return User
-     */
     public function offsetGet($user): User
     {
         if (!($user instanceof User)) {
@@ -258,18 +227,11 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
         return $user;
     }
 
-    /**
-     * @param mixed $offset
-     * @param mixed $value
-     */
     public function offsetSet($offset, $value): void
     {
         throw new RuntimeException('can not set collection properties');
     }
 
-    /**
-     * @param mixed $offset
-     */
     public function offsetUnset($offset): void
     {
         throw new RuntimeException('can not unset collection properties');

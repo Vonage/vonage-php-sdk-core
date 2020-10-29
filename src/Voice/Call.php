@@ -82,10 +82,6 @@ class Call implements ArrayHydrateInterface
     protected $uuid;
 
     /**
-     * Call constructor.
-     *
-     * @param array $data
-     *
      * @throws Exception
      */
     public function __construct(array $data = [])
@@ -96,8 +92,6 @@ class Call implements ArrayHydrateInterface
     }
 
     /**
-     * @param array $data
-     *
      * @throws Exception
      */
     public function fromArray(array $data): void
@@ -124,17 +118,11 @@ class Call implements ArrayHydrateInterface
         $this->network = $data['network'] ?? null;
     }
 
-    /**
-     * @return string
-     */
     public function getUuid(): string
     {
         return $this->uuid;
     }
 
-    /**
-     * @return array
-     */
     public function toArray(): array
     {
         $data = [
@@ -164,81 +152,51 @@ class Call implements ArrayHydrateInterface
         return $data;
     }
 
-    /**
-     * @return EndpointInterface
-     */
     public function getTo(): EndpointInterface
     {
         return $this->to;
     }
 
-    /**
-     * @return string
-     */
     public function getRate(): string
     {
         return $this->rate;
     }
 
-    /**
-     * @return EndpointInterface
-     */
     public function getFrom(): EndpointInterface
     {
         return $this->from;
     }
 
-    /**
-     * @return string
-     */
     public function getStatus(): string
     {
         return $this->status;
     }
 
-    /**
-     * @return string
-     */
     public function getDirection(): string
     {
         return $this->direction;
     }
 
-    /**
-     * @return string
-     */
     public function getPrice(): string
     {
         return $this->price;
     }
 
-    /**
-     * @return string
-     */
     public function getDuration(): string
     {
         return $this->duration;
     }
 
-    /**
-     * @return DateTime
-     */
     public function getStartTime(): DateTime
     {
         return $this->startTime;
     }
 
-    /**
-     * @return DateTime
-     */
     public function getEndTime(): DateTime
     {
         return $this->endTime;
     }
 
-    /**
-     * @return string
-     */
     public function getNetwork(): string
     {
         return $this->network;

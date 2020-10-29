@@ -23,13 +23,6 @@ class Vcal extends OutboundMessage
      */
     protected $type = 'vcal';
 
-    /**
-     * Vcal constructor.
-     *
-     * @param string $to
-     * @param string $from
-     * @param string $event
-     */
     public function __construct(string $to, string $from, string $event)
     {
         parent::__construct($to, $from);
@@ -48,9 +41,6 @@ class Vcal extends OutboundMessage
         return $data;
     }
 
-    /**
-     * @return string
-     */
     public function getEvent(): string
     {
         return $this->event;

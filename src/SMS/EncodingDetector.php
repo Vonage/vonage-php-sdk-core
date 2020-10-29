@@ -23,8 +23,6 @@ class EncodingDetector
      * @see https://en.wikipedia.org/wiki/GSM_03.38#GSM_7-bit_default_alphabet_and_extension_table_of_3GPP_TS_23.038_/_GSM_03.38
      *
      * @param $content
-     *
-     * @return bool
      */
     public function requiresUnicodeEncoding($content): bool
     {
@@ -56,9 +54,6 @@ class EncodingDetector
         return !empty($nonGsmCodePoints);
     }
 
-    /**
-     * @return callable
-     */
     private function convertIntoUnicode(): callable
     {
         return static function ($char) {

@@ -23,8 +23,6 @@ class NCCO implements ArrayHydrateInterface, JsonSerializable
     protected $actions = [];
 
     /**
-     * @param ActionInterface $action
-     *
      * @return $this
      */
     public function addAction(ActionInterface $action): self
@@ -33,9 +31,6 @@ class NCCO implements ArrayHydrateInterface, JsonSerializable
         return $this;
     }
 
-    /**
-     * @param array $data
-     */
     public function fromArray(array $data): void
     {
         $factory = new NCCOFactory();

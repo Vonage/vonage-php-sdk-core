@@ -309,11 +309,11 @@ class Client implements ClientAwareInterface
      *
      * @param string|MessageInterface $idOrMessage
      *
-     * @return InboundMessage|Message|MessageInterface|null
-     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
+     *
+     * @return InboundMessage|Message|MessageInterface|null
      *
      * @deprecated Please use the Reports API instead
      */
@@ -517,13 +517,13 @@ class Client implements ClientAwareInterface
     /**
      * Convenience feature allowing messages to be sent without creating a message object first.
      *
-     * @return array|Message|MessageInterface
-     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
      * @throws ReflectionException
+     *
+     * @return array|Message|MessageInterface
      */
     public function __call(string $name, $arguments)
     {

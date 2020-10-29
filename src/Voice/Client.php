@@ -33,33 +33,23 @@ class Client implements APIClient
      */
     protected $api;
 
-    /**
-     * Client constructor.
-     *
-     * @param APIResource $api
-     */
     public function __construct(APIResource $api)
     {
         $this->api = $api;
     }
 
-    /**
-     * @return APIResource
-     */
     public function getAPIResource(): APIResource
     {
         return $this->api;
     }
 
     /**
-     * @param OutboundCall $call
-     *
-     * @return Event {uuid: string, conversation_uuid: string, status: string, direction: string}
-     *
      * @throws ClientExceptionInterface
      * @throws \Vonage\Client\Exception\Exception
      * @throws Exception
      * @throws Exception
+     *
+     * @return Event {uuid: string, conversation_uuid: string, status: string, direction: string}
      */
     public function createOutboundCall(OutboundCall $call): Event
     {
@@ -103,8 +93,6 @@ class Client implements APIClient
     }
 
     /**
-     * @param string $callId
-     *
      * @throws ClientExceptionInterface
      * @throws \Vonage\Client\Exception\Exception
      */
@@ -114,10 +102,6 @@ class Client implements APIClient
     }
 
     /**
-     * @param string $callId
-     *
-     * @return Call
-     *
      * @throws ClientExceptionInterface
      * @throws \Vonage\Client\Exception\Exception
      * @throws Exception
@@ -128,8 +112,6 @@ class Client implements APIClient
     }
 
     /**
-     * @param string $callId
-     *
      * @throws ClientExceptionInterface
      * @throws \Vonage\Client\Exception\Exception
      */
@@ -139,9 +121,6 @@ class Client implements APIClient
     }
 
     /**
-     * @param string $callId
-     * @param string $action
-     *
      * @throws ClientExceptionInterface
      * @throws \Vonage\Client\Exception\Exception
      */
@@ -153,8 +132,6 @@ class Client implements APIClient
     }
 
     /**
-     * @param string $callId
-     *
      * @throws ClientExceptionInterface
      * @throws \Vonage\Client\Exception\Exception
      */
@@ -164,13 +141,10 @@ class Client implements APIClient
     }
 
     /**
-     * @param string $callId
-     * @param string $digits
-     *
-     * @return array{uuid: string, message: string}
-     *
      * @throws ClientExceptionInterface
      * @throws \Vonage\Client\Exception\Exception
+     *
+     * @return array{uuid: string, message: string}
      */
     public function playDTMF(string $callId, string $digits): array
     {
@@ -180,13 +154,10 @@ class Client implements APIClient
     }
 
     /**
-     * @param string $callId
-     * @param Talk $action
-     *
-     * @return array{uuid: string, message: string}
-     *
      * @throws ClientExceptionInterface
      * @throws \Vonage\Client\Exception\Exception
+     *
+     * @return array{uuid: string, message: string}
      */
     public function playTTS(string $callId, Talk $action): array
     {
@@ -196,11 +167,6 @@ class Client implements APIClient
         return $this->api->update($callId . '/talk', $payload);
     }
 
-    /**
-     * @param FilterInterface|null $filter
-     *
-     * @return IterableAPICollection
-     */
     public function search(FilterInterface $filter = null): IterableAPICollection
     {
         $response = $this->api->search($filter);
@@ -216,12 +182,10 @@ class Client implements APIClient
     }
 
     /**
-     * @param string $callId
-     *
-     * @return array{uuid: string, message: string}
-     *
      * @throws ClientExceptionInterface
      * @throws \Vonage\Client\Exception\Exception
+     *
+     * @return array{uuid: string, message: string}
      */
     public function stopStreamAudio(string $callId): array
     {
@@ -229,12 +193,10 @@ class Client implements APIClient
     }
 
     /**
-     * @param string $callId
-     *
-     * @return array{uuid: string, message: string}
-     *
      * @throws ClientExceptionInterface
      * @throws \Vonage\Client\Exception\Exception
+     *
+     * @return array{uuid: string, message: string}
      */
     public function stopTTS(string $callId): array
     {
@@ -242,15 +204,10 @@ class Client implements APIClient
     }
 
     /**
-     * @param string $callId
-     * @param string $url
-     * @param int $loop
-     * @param float $volumeLevel
-     *
-     * @return array{uuid: string, message: string}
-     *
      * @throws ClientExceptionInterface
      * @throws \Vonage\Client\Exception\Exception
+     *
+     * @return array{uuid: string, message: string}
      */
     public function streamAudio(string $callId, string $url, int $loop = 1, float $volumeLevel = 0.0): array
     {
@@ -262,9 +219,6 @@ class Client implements APIClient
     }
 
     /**
-     * @param string $callId
-     * @param NCCO $ncco
-     *
      * @throws ClientExceptionInterface
      * @throws \Vonage\Client\Exception\Exception
      */
@@ -280,9 +234,6 @@ class Client implements APIClient
     }
 
     /**
-     * @param string $callId
-     * @param string $url
-     *
      * @throws ClientExceptionInterface
      * @throws \Vonage\Client\Exception\Exception
      */
@@ -298,8 +249,6 @@ class Client implements APIClient
     }
 
     /**
-     * @param string $callId
-     *
      * @throws ClientExceptionInterface
      * @throws \Vonage\Client\Exception\Exception
      */
@@ -309,8 +258,6 @@ class Client implements APIClient
     }
 
     /**
-     * @param string $callId
-     *
      * @throws ClientExceptionInterface
      * @throws \Vonage\Client\Exception\Exception
      */

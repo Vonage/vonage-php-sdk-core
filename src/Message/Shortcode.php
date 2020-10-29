@@ -65,9 +65,9 @@ abstract class Shortcode
     }
 
     /**
-     * @return Alert|Marketing|TwoFactor|null
-     *
      * @throws ClientException
+     *
+     * @return Alert|Marketing|TwoFactor|null
      */
     public static function createMessageFromArray(array $data)
     {

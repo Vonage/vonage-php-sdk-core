@@ -145,9 +145,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
 
     /**
      * @param $data
-     * @param null $id deprecated
-     *
-     * @return mixed
+     * @param $id deprecated
      */
     public function hydrateEntity($data, $id = null)
     {
@@ -158,9 +156,6 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
         return $data;
     }
 
-    /**
-     * @return array
-     */
     public function getResourceRoot(): array
     {
         // Handles issues where an API returns empty for no results, as opposed
@@ -184,8 +179,6 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
 
     /**
      * Return the current item, expects concrete collection to handle creating the object.
-     *
-     * @return mixed
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
@@ -224,8 +217,6 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
 
     /**
      * Handle pagination automatically (unless configured not to).
-     *
-     * @return bool
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
@@ -304,8 +295,6 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
     }
 
     /**
-     * @param APIResource $api
-     *
      * @return $this
      */
     public function setApiResource(APIResource $api): self
@@ -315,9 +304,6 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
         return $this;
     }
 
-    /**
-     * @return APIResource
-     */
     public function getApiResource(): APIResource
     {
         return $this->api;
@@ -325,8 +311,6 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
 
     /**
      * Count of total items
-     *
-     * @return int
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
@@ -360,8 +344,6 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
     }
 
     /**
-     * @param string $url
-     *
      * @return $this
      */
     public function setBaseUrl(string $url): self
@@ -404,8 +386,6 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
     }
 
     /**
-     * @return array|null
-     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -420,9 +400,6 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
         return $this->page;
     }
 
-    /**
-     * @param array $data
-     */
     public function setPageData(array $data): void
     {
         $this->page = $data;
@@ -463,8 +440,6 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
     /**
      * Filters reduce to query params and include paging settings.
      *
-     * @param FilterInterface $filter
-     *
      * @return $this
      */
     public function setFilter(FilterInterface $filter): self
@@ -473,9 +448,6 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
         return $this;
     }
 
-    /**
-     * @return FilterInterface
-     */
     public function getFilter(): FilterInterface
     {
         if (!isset($this->filter)) {
@@ -547,11 +519,9 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
     }
 
     /**
-     * @param ResponseInterface $response
+     * @throws ClientException\Exception
      *
      * @return ClientException\Request|ClientException\Server
-     *
-     * @throws ClientException\Exception
      */
     protected function getException(ResponseInterface $response)
     {
@@ -578,17 +548,12 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
         return $e;
     }
 
-    /**
-     * @return bool
-     */
     public function getAutoAdvance(): bool
     {
         return $this->autoAdvance;
     }
 
     /**
-     * @param bool $autoAdvance
-     *
      * @return $this
      */
     public function setAutoAdvance(bool $autoAdvance): self
@@ -598,17 +563,12 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function getNaiveCount(): bool
     {
         return $this->naiveCount;
     }
 
     /**
-     * @param bool $naiveCount
-     *
      * @return $this
      */
     public function setNaiveCount(bool $naiveCount): self

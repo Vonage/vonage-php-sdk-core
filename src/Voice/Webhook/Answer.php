@@ -33,11 +33,6 @@ class Answer
      */
     protected $uuid;
 
-    /**
-     * Answer constructor.
-     *
-     * @param array $event
-     */
     public function __construct(array $event)
     {
         $this->from = $event['from'];
@@ -46,33 +41,21 @@ class Answer
         $this->conversationUuid = $event['conversation_uuid'];
     }
 
-    /**
-     * @return string
-     */
     public function getConversationUuid(): string
     {
         return $this->conversationUuid;
     }
 
-    /**
-     * @return string
-     */
     public function getFrom(): string
     {
         return $this->from;
     }
 
-    /**
-     * @return string
-     */
     public function getTo(): string
     {
         return $this->to;
     }
 
-    /**
-     * @return string
-     */
     public function getUuid(): string
     {
         return $this->uuid;

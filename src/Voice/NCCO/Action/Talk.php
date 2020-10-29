@@ -42,21 +42,13 @@ class Talk implements ActionInterface
      */
     protected $voiceName;
 
-    /**
-     * Talk constructor.
-     *
-     * @param string|null $text
-     */
     public function __construct(string $text = null)
     {
         $this->text = $text;
     }
 
     /**
-     * @param string $text
      * @param array{text: string, bargeIn?: bool, level?: float, loop?: int, voiceName?: string} $data
-     *
-     * @return Talk
      */
     public static function factory(string $text, array $data): Talk
     {
@@ -87,41 +79,26 @@ class Talk implements ActionInterface
         return $talk;
     }
 
-    /**
-     * @return bool|null
-     */
     public function getBargeIn(): ?bool
     {
         return $this->bargeIn;
     }
 
-    /**
-     * @return float|null
-     */
     public function getLevel(): ?float
     {
         return $this->level;
     }
 
-    /**
-     * @return int|null
-     */
     public function getLoop(): ?int
     {
         return $this->loop;
     }
 
-    /**
-     * @return string
-     */
     public function getText(): string
     {
         return $this->text;
     }
 
-    /**
-     * @return string|null
-     */
     public function getVoiceName(): ?string
     {
         return $this->voiceName;
@@ -136,8 +113,6 @@ class Talk implements ActionInterface
     }
 
     /**
-     * @param bool $value
-     *
      * @return $this
      */
     public function setBargeIn(bool $value): self
@@ -147,8 +122,6 @@ class Talk implements ActionInterface
     }
 
     /**
-     * @param float $level
-     *
      * @return $this
      */
     public function setLevel(float $level): self
@@ -159,8 +132,6 @@ class Talk implements ActionInterface
     }
 
     /**
-     * @param int $times
-     *
      * @return $this
      */
     public function setLoop(int $times): self
@@ -171,8 +142,6 @@ class Talk implements ActionInterface
     }
 
     /**
-     * @param string $name
-     *
      * @return $this
      */
     public function setVoiceName(string $name): self

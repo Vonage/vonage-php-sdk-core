@@ -52,10 +52,6 @@ class Record
     protected $timestamp;
 
     /**
-     * Record constructor.
-     *
-     * @param array $event
-     *
      * @throws Exception
      */
     public function __construct(array $event)
@@ -69,57 +65,36 @@ class Record
         $this->size = (int)$event['size'];
     }
 
-    /**
-     * @return DateTimeImmutable
-     */
     public function getStartTime(): DateTimeImmutable
     {
         return $this->startTime;
     }
 
-    /**
-     * @return string
-     */
     public function getRecordingUrl(): string
     {
         return $this->recordingUrl;
     }
 
-    /**
-     * @return int
-     */
     public function getSize(): int
     {
         return $this->size;
     }
 
-    /**
-     * @return string
-     */
     public function getRecordingUuid(): string
     {
         return $this->recordingUuid;
     }
 
-    /**
-     * @return DateTimeImmutable
-     */
     public function getEndTime(): DateTimeImmutable
     {
         return $this->endTime;
     }
 
-    /**
-     * @return string
-     */
     public function getConversationUuid(): string
     {
         return $this->conversationUuid;
     }
 
-    /**
-     * @return DateTimeImmutable
-     */
     public function getTimestamp(): DateTimeImmutable
     {
         return $this->timestamp;

@@ -106,8 +106,6 @@ class Collection extends Response implements Countable, Iterator
 
     /**
      * @link http://php.net/manual/en/iterator.rewind.php
-     *
-     * @return void
      */
     public function rewind(): void
     {

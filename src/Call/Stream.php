@@ -56,12 +56,12 @@ class Stream implements JsonSerializableInterface, ClientAwareInterface
     }
 
     /**
-     * @return $this|Event
-     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
+     *
+     * @return $this|Event
      */
     public function __invoke(?Stream $stream = null)
     {
@@ -95,6 +95,8 @@ class Stream implements JsonSerializableInterface, ClientAwareInterface
     }
 
     /**
+     * @param null|mixed $stream
+     *
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server

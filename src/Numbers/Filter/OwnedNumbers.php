@@ -60,11 +60,6 @@ class OwnedNumbers implements FilterInterface
      */
     protected $pageSize = 10;
 
-    /**
-     * OwnedNumbers constructor.
-     *
-     * @param array $filter
-     */
     public function __construct(array $filter = [])
     {
         if (array_key_exists('country', $filter)) {
@@ -126,17 +121,11 @@ class OwnedNumbers implements FilterInterface
         return $data;
     }
 
-    /**
-     * @return string|null
-     */
     public function getCountry(): ?string
     {
         return $this->country;
     }
 
-    /**
-     * @param string $country
-     */
     protected function setCountry(string $country): void
     {
         if (strlen($country) !== 2) {
@@ -146,17 +135,12 @@ class OwnedNumbers implements FilterInterface
         $this->country = $country;
     }
 
-    /**
-     * @return int
-     */
     public function getPageIndex(): int
     {
         return $this->pageIndex;
     }
 
     /**
-     * @param int $pageIndex
-     *
      * @return $this
      */
     public function setPageIndex(int $pageIndex): self
@@ -166,17 +150,12 @@ class OwnedNumbers implements FilterInterface
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getPattern(): ?string
     {
         return $this->pattern;
     }
 
     /**
-     * @param string $pattern
-     *
      * @return $this
      */
     public function setPattern(string $pattern): self
@@ -186,17 +165,12 @@ class OwnedNumbers implements FilterInterface
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getSearchPattern(): int
     {
         return $this->searchPattern;
     }
 
     /**
-     * @param int $searchPattern
-     *
      * @return $this
      */
     public function setSearchPattern(int $searchPattern): self
@@ -206,17 +180,12 @@ class OwnedNumbers implements FilterInterface
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getPageSize(): int
     {
         return $this->pageSize;
     }
 
     /**
-     * @param int $pageSize
-     *
      * @return $this
      */
     public function setPageSize(int $pageSize): self
@@ -226,17 +195,12 @@ class OwnedNumbers implements FilterInterface
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getApplicationId(): ?string
     {
         return $this->applicationId;
     }
 
     /**
-     * @param string $applicationId
-     *
      * @return $this
      */
     public function setApplicationId(string $applicationId): self
@@ -246,17 +210,12 @@ class OwnedNumbers implements FilterInterface
         return $this;
     }
 
-    /**
-     * @return bool|null
-     */
     public function getHasApplication(): ?bool
     {
         return $this->hasApplication;
     }
 
     /**
-     * @param bool $hasApplication
-     *
      * @return $this
      */
     public function setHasApplication(bool $hasApplication): self

@@ -37,11 +37,6 @@ class Client implements ClientAwareInterface, APIClient
      */
     protected $api;
 
-    /**
-     * Insights Client constructor.
-     *
-     * @param APIResource|null $api
-     */
     public function __construct(APIResource $api = null)
     {
         $this->api = $api;
@@ -49,8 +44,6 @@ class Client implements ClientAwareInterface, APIClient
 
     /**
      * Shim to handle older instantiations of this class
-     *
-     * @return APIResource
      *
      * @deprecated Will change in v3 to just return the required API object
      */
@@ -67,8 +60,6 @@ class Client implements ClientAwareInterface, APIClient
 
     /**
      * @param $number
-     *
-     * @return Basic
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
@@ -87,8 +78,6 @@ class Client implements ClientAwareInterface, APIClient
     /**
      * @param $number
      *
-     * @return StandardCnam
-     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -104,8 +93,6 @@ class Client implements ClientAwareInterface, APIClient
 
     /**
      * @param $number
-     *
-     * @return AdvancedCnam
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
@@ -123,8 +110,6 @@ class Client implements ClientAwareInterface, APIClient
     /**
      * @param $number
      *
-     * @return Standard
-     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -141,8 +126,6 @@ class Client implements ClientAwareInterface, APIClient
     /**
      * @param $number
      *
-     * @return Advanced
-     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -158,7 +141,6 @@ class Client implements ClientAwareInterface, APIClient
 
     /**
      * @param $number
-     * @param string $webhook
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
@@ -175,11 +157,7 @@ class Client implements ClientAwareInterface, APIClient
     /**
      * Common code for generating a request
      *
-     * @param string $path
      * @param $number
-     * @param array $additionalParams
-     *
-     * @return array
      *
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -211,10 +189,6 @@ class Client implements ClientAwareInterface, APIClient
      * Parses response body for an error and throws it
      * This API returns a 200 on an error, so does not get caught by the normal
      * error checking. We check for a status and message manually.
-     *
-     * @param array $body
-     *
-     * @return ClientException\Request
      */
     protected function getNIException(array $body): ClientException\Request
     {

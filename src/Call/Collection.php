@@ -106,8 +106,6 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
     }
 
     /**
-     * @return Call
-     *
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
@@ -195,9 +193,9 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
     }
 
     /**
-     * @return ClientException\Request|ClientException\Server
-     *
      * @throws ClientException\Exception
+     *
+     * @return ClientException\Request|ClientException\Server
      */
     protected function getException(ResponseInterface $response)
     {

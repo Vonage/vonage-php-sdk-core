@@ -20,17 +20,11 @@ trait CollectionAwareTrait
      */
     protected $collection;
 
-    /**
-     * @param CollectionInterface $collection
-     */
     public function setCollection(CollectionInterface $collection): void
     {
         $this->collection = $collection;
     }
 
-    /**
-     * @return CollectionInterface
-     */
     public function getCollection(): CollectionInterface
     {
         if (!isset($this->collection)) {

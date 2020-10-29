@@ -69,28 +69,18 @@ trait CollectionTrait
      */
     protected $filter;
 
-    /**
-     * @return string
-     */
     abstract public function getCollectionName(): string;
 
-    /**
-     * @return string
-     */
     abstract public function getCollectionPath(): string;
 
     /**
      * @param $data
      * @param $id
-     *
-     * @return mixed
      */
     abstract public function hydrateEntity($data, $id);
 
     /**
      * Return the current item, expects concrete collection to handle creating the object.
-     *
-     * @return mixed
      */
     public function current()
     {
@@ -120,8 +110,6 @@ trait CollectionTrait
 
     /**
      * Handle pagination automatically (unless configured not to).
-     *
-     * @return bool
      */
     public function valid(): bool
     {
@@ -170,8 +158,6 @@ trait CollectionTrait
 
     /**
      * Count of total items
-     *
-     * @return int|null
      */
     public function count(): ?int
     {
@@ -240,8 +226,6 @@ trait CollectionTrait
 
     /**
      * Filters reduce to query params and include paging settings.
-     *
-     * @param FilterInterface $filter
      *
      * @return $this
      */

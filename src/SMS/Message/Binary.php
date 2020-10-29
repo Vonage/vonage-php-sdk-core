@@ -33,15 +33,6 @@ class Binary extends OutboundMessage
      */
     protected $udh;
 
-    /**
-     * Binary constructor.
-     *
-     * @param string $to
-     * @param string $from
-     * @param string $body
-     * @param string $udh
-     * @param int|null $protocolId
-     */
     public function __construct(string $to, string $from, string $body, string $udh, int $protocolId = null)
     {
         parent::__construct($to, $from);
@@ -70,25 +61,16 @@ class Binary extends OutboundMessage
         return $data;
     }
 
-    /**
-     * @return string
-     */
     public function getBody(): string
     {
         return $this->body;
     }
 
-    /**
-     * @return string
-     */
     public function getUdh(): string
     {
         return $this->udh;
     }
 
-    /**
-     * @return int|null
-     */
     public function getProtocolId(): ?int
     {
         return $this->protocolId;

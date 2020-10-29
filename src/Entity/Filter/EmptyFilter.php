@@ -13,9 +13,7 @@ namespace Vonage\Entity\Filter;
 
 class EmptyFilter implements FilterInterface
 {
-    /**
-     * @return array
-     */
+
     public function getQuery(): array
     {
         return [];

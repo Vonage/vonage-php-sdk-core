@@ -28,9 +28,6 @@ class Filter implements FilterInterface
      */
     protected $query = [];
 
-    /**
-     * Filter constructor.
-     */
     public function __construct()
     {
         trigger_error(

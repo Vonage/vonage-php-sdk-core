@@ -18,11 +18,6 @@ class ArrayHydrator implements HydratorInterface
      */
     protected $prototype;
 
-    /**
-     * @param array $data
-     *
-     * @return ArrayHydrateInterface
-     */
     public function hydrate(array $data): ArrayHydrateInterface
     {
         $object = clone $this->prototype;
@@ -32,10 +27,7 @@ class ArrayHydrator implements HydratorInterface
     }
 
     /**
-     * @param array $data
      * @param $object
-     *
-     * @return mixed
      */
     public function hydrateObject(array $data, $object)
     {
@@ -44,9 +36,6 @@ class ArrayHydrator implements HydratorInterface
         return $object;
     }
 
-    /**
-     * @param ArrayHydrateInterface $prototype
-     */
     public function setPrototype(ArrayHydrateInterface $prototype): void
     {
         $this->prototype = $prototype;

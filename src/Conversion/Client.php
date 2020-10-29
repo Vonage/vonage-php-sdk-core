@@ -32,19 +32,11 @@ class Client implements ClientAwareInterface, APIClient
      */
     protected $api;
 
-    /**
-     * Conversion Client constructor.
-     *
-     * @param APIResource|null $api
-     */
     public function __construct(APIResource $api = null)
     {
         $this->api = $api;
     }
 
-    /**
-     * @return APIResource
-     */
     public function getAPIResource(): APIResource
     {
         if (is_null($this->api)) {
@@ -62,7 +54,7 @@ class Client implements ClientAwareInterface, APIClient
     /**
      * @param $message_id
      * @param $delivered
-     * @param null $timestamp
+     * @param $timestamp
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
@@ -77,7 +69,7 @@ class Client implements ClientAwareInterface, APIClient
     /**
      * @param $message_id
      * @param $delivered
-     * @param null $timestamp
+     * @param $timestamp
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
@@ -93,7 +85,7 @@ class Client implements ClientAwareInterface, APIClient
      * @param $type
      * @param $message_id
      * @param $delivered
-     * @param null $timestamp
+     * @param $timestamp
      *
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -122,8 +114,6 @@ class Client implements ClientAwareInterface, APIClient
     }
 
     /**
-     * @param ResponseInterface $response
-     *
      * @return ClientException\Exception|ClientException\Request|ClientException\Server
      */
     protected function getException(ResponseInterface $response)

@@ -37,7 +37,6 @@ class Application implements EntityInterface, JsonSerializable, JsonUnserializab
      */
     protected $voiceConfig;
 
-
     /**
      * @var MessagesConfig
      */

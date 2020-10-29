@@ -32,49 +32,31 @@ class Callback extends BaseCallback
         'network-code',
     ];
 
-    /**
-     * @return mixed
-     */
     public function getId()
     {
         return $this->data['call-id'];
     }
 
-    /**
-     * @return mixed
-     */
     public function getTo()
     {
         return $this->data['to'];
     }
 
-    /**
-     * @return mixed
-     */
     public function getStatus()
     {
         return $this->data['status'];
     }
 
-    /**
-     * @return mixed
-     */
     public function getPrice()
     {
         return $this->data['call-price'];
     }
 
-    /**
-     * @return mixed
-     */
     public function getRate()
     {
         return $this->data['call-rate'];
     }
 
-    /**
-     * @return mixed
-     */
     public function getDuration()
     {
         return $this->data['call-duration'];
@@ -112,9 +94,6 @@ class Callback extends BaseCallback
         return DateTime::createFromFormat(self::TIME_FORMAT, $this->data['call-end']);
     }
 
-    /**
-     * @return mixed
-     */
     public function getNetwork()
     {
         return $this->data['network-code'];

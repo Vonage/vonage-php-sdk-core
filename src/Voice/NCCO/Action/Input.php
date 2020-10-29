@@ -83,8 +83,6 @@ class Input implements ActionInterface
 
     /**
      * @param array<array, mixed> $data
-     *
-     * @return Input
      */
     public static function factory(array $data): Input
     {
@@ -237,17 +235,12 @@ class Input implements ActionInterface
         return $data;
     }
 
-    /**
-     * @return int|null
-     */
     public function getDtmfTimeout(): ?int
     {
         return $this->dtmfTimeout;
     }
 
     /**
-     * @param int $dtmfTimeout
-     *
      * @return $this
      */
     public function setDtmfTimeout(int $dtmfTimeout): self
@@ -258,17 +251,12 @@ class Input implements ActionInterface
         return $this;
     }
 
-    /**
-     * @return int|null
-     */
     public function getDtmfMaxDigits(): ?int
     {
         return $this->dtmfMaxDigits;
     }
 
     /**
-     * @param int $dtmfMaxDigits
-     *
      * @return $this
      */
     public function setDtmfMaxDigits(int $dtmfMaxDigits): self
@@ -279,17 +267,12 @@ class Input implements ActionInterface
         return $this;
     }
 
-    /**
-     * @return bool|null
-     */
     public function getDtmfSubmitOnHash(): ?bool
     {
         return $this->dtmfSubmitOnHash;
     }
 
     /**
-     * @param bool $dtmfSubmitOnHash
-     *
      * @return $this
      */
     public function setDtmfSubmitOnHash(bool $dtmfSubmitOnHash): self
@@ -300,17 +283,12 @@ class Input implements ActionInterface
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getSpeechUUID(): ?string
     {
         return $this->speechUUID;
     }
 
     /**
-     * @param string $speechUUID
-     *
      * @return $this
      */
     public function setSpeechUUID(string $speechUUID): self
@@ -321,17 +299,12 @@ class Input implements ActionInterface
         return $this;
     }
 
-    /**
-     * @return int|null
-     */
     public function getSpeechEndOnSilence(): ?int
     {
         return $this->speechEndOnSilence;
     }
 
     /**
-     * @param int $speechEndOnSilence
-     *
      * @return $this
      */
     public function setSpeechEndOnSilence(int $speechEndOnSilence): self
@@ -342,17 +315,12 @@ class Input implements ActionInterface
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getSpeechLanguage(): ?string
     {
         return $this->speechLanguage;
     }
 
     /**
-     * @param string $speechLanguage
-     *
      * @return $this
      */
     public function setSpeechLanguage(string $speechLanguage): self
@@ -384,17 +352,12 @@ class Input implements ActionInterface
         return $this;
     }
 
-    /**
-     * @return int|null
-     */
     public function getSpeechStartTimeout(): ?int
     {
         return $this->speechStartTimeout;
     }
 
     /**
-     * @param int $speechStartTimeout
-     *
      * @return $this
      */
     public function setSpeechStartTimeout(int $speechStartTimeout): self
@@ -405,9 +368,6 @@ class Input implements ActionInterface
         return $this;
     }
 
-    /**
-     * @return int|null
-     */
     public function getSpeechMaxDuration(): ?int
     {
         return $this->speechMaxDuration;
@@ -421,17 +381,12 @@ class Input implements ActionInterface
         return $this;
     }
 
-    /**
-     * @return Webhook|null
-     */
     public function getEventWebhook(): ?Webhook
     {
         return $this->eventWebhook;
     }
 
     /**
-     * @param Webhook $eventWebhook
-     *
      * @return $this
      */
     public function setEventWebhook(Webhook $eventWebhook): self
@@ -441,17 +396,12 @@ class Input implements ActionInterface
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function getEnableSpeech(): bool
     {
         return $this->enableSpeech;
     }
 
     /**
-     * @param bool $enableSpeech
-     *
      * @return $this
      */
     public function setEnableSpeech(bool $enableSpeech): Input
@@ -461,17 +411,12 @@ class Input implements ActionInterface
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function getEnableDtmf(): bool
     {
         return $this->enableDtmf;
     }
 
     /**
-     * @param bool $enableDtmf
-     *
      * @return $this
      */
     public function setEnableDtmf(bool $enableDtmf): Input

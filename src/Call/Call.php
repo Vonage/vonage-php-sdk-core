@@ -351,7 +351,6 @@ class Call implements EntityInterface, JsonSerializable, JsonUnserializableInter
     /**
      * @param $name
      *
-     * @return mixed
      * @noinspection MagicMethodsValidityInspection
      */
     public function __get(string $name)
@@ -369,8 +368,6 @@ class Call implements EntityInterface, JsonSerializable, JsonUnserializableInter
     /**
      * @param $name
      * @param $arguments
-     *
-     * @return mixed
      */
     public function __call($name, $arguments)
     {

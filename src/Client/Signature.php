@@ -79,8 +79,6 @@ class Signature
      * @param $data
      * @param $secret
      *
-     * @return string
-     *
      * @throws ClientException
      */
     protected function sign($signatureMethod, $data, $secret): string

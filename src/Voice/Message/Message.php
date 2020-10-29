@@ -23,11 +23,9 @@ class Message extends AbstractRequest
     protected $params;
 
     /**
-     * Message constructor.
-     *
      * @param $text
      * @param $to
-     * @param null $from
+     * @param $from
      */
     public function __construct($text, $to, $from = null)
     {
@@ -74,7 +72,7 @@ class Message extends AbstractRequest
 
     /**
      * @param $url
-     * @param null $method
+     * @param $method
      *
      * @return $this
      */
@@ -93,7 +91,7 @@ class Message extends AbstractRequest
 
     /**
      * @param bool $hangup
-     * @param null $timeout
+     * @param $timeout
      *
      * @return $this
      */
@@ -110,9 +108,6 @@ class Message extends AbstractRequest
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getURI(): string
     {
         return '/tts/json';

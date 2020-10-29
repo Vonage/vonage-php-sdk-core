@@ -23,11 +23,9 @@ use function count;
 class Factory extends WebhookFactory
 {
     /**
-     * @param array $data
+     * @throws Exception
      *
      * @return mixed|Answer|Error|Event|Input|Notification|Record|Transfer
-     *
-     * @throws Exception
      */
     public static function createFromArray(array $data)
     {

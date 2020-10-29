@@ -35,24 +35,12 @@ class Phone implements EndpointInterface
      */
     protected $url;
 
-    /**
-     * Phone constructor.
-     *
-     * @param string $number
-     * @param string|null $dtmfAnswer
-     */
     public function __construct(string $number, string $dtmfAnswer = null)
     {
         $this->id = $number;
         $this->dtmfAnswer = $dtmfAnswer;
     }
 
-    /**
-     * @param string $number
-     * @param array $data
-     *
-     * @return Phone
-     */
     public static function factory(string $number, array $data): Phone
     {
         $endpoint = new Phone($number);
@@ -77,9 +65,6 @@ class Phone implements EndpointInterface
         return $endpoint;
     }
 
-    /**
-     * @return string|null
-     */
     public function getDtmfAnswer(): ?string
     {
         return $this->dtmfAnswer;
@@ -94,8 +79,6 @@ class Phone implements EndpointInterface
     }
 
     /**
-     * @param string $dtmf
-     *
      * @return $this
      */
     public function setDtmfAnswer(string $dtmf): self
@@ -130,25 +113,17 @@ class Phone implements EndpointInterface
         return $data;
     }
 
-    /**
-     * @return string
-     */
     public function getId(): string
     {
         return $this->id;
     }
 
-    /**
-     * @return string|null
-     */
     public function getRingbackTone(): ?string
     {
         return $this->ringbackTone;
     }
 
     /**
-     * @param string $ringbackTone
-     *
      * @return $this
      */
     public function setRingbackTone(string $ringbackTone): self
@@ -158,17 +133,12 @@ class Phone implements EndpointInterface
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getUrl(): ?string
     {
         return $this->url;
     }
 
     /**
-     * @param string $url
-     *
      * @return $this
      */
     public function setUrl(string $url): self

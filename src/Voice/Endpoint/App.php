@@ -18,21 +18,11 @@ class App implements EndpointInterface
      */
     protected $id;
 
-    /**
-     * App constructor.
-     *
-     * @param string $user
-     */
     public function __construct(string $user)
     {
         $this->id = $user;
     }
 
-    /**
-     * @param string $user
-     *
-     * @return App
-     */
     public static function factory(string $user): App
     {
         return new App($user);
@@ -57,9 +47,6 @@ class App implements EndpointInterface
         ];
     }
 
-    /**
-     * @return string
-     */
     public function getId(): string
     {
         return $this->id;

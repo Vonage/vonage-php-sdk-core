@@ -115,10 +115,6 @@ class InboundSMS
     protected $udh;
 
     /**
-     * InboundSMS constructor.
-     *
-     * @param array $data
-     *
      * @throws Exception
      */
     public function __construct(array $data)
@@ -157,65 +153,41 @@ class InboundSMS
         }
     }
 
-    /**
-     * @return string|null
-     */
     public function getApiKey(): ?string
     {
         return $this->apiKey;
     }
 
-    /**
-     * @return bool
-     */
     public function getConcat(): bool
     {
         return $this->concat;
     }
 
-    /**
-     * @return int|null
-     */
     public function getConcatPart(): ?int
     {
         return $this->concatPart;
     }
 
-    /**
-     * @return string|null
-     */
     public function getConcatRef(): ?string
     {
         return $this->concatRef;
     }
 
-    /**
-     * @return int|null
-     */
     public function getConcatTotal(): ?int
     {
         return $this->concatTotal;
     }
 
-    /**
-     * @return string|null
-     */
     public function getData(): ?string
     {
         return $this->data;
     }
 
-    /**
-     * @return string
-     */
     public function getKeyword(): string
     {
         return $this->keyword;
     }
 
-    /**
-     * @return string
-     */
     public function getMessageId(): string
     {
         return $this->messageId;
@@ -223,41 +195,27 @@ class InboundSMS
 
     /**
      * Time the message was accepted and delivery receipt was generated
-     *
-     * @return DateTimeImmutable
      */
     public function getMessageTimestamp(): DateTimeImmutable
     {
         return $this->messageTimestamp;
     }
 
-    /**
-     * @return string
-     */
     public function getMsisdn(): string
     {
         return $this->msisdn;
     }
 
-    /**
-     * @return string
-     */
     public function getFrom(): string
     {
         return $this->msisdn;
     }
 
-    /**
-     * @return string
-     */
     public function getNonce(): string
     {
         return $this->nonce;
     }
 
-    /**
-     * @return string
-     */
     public function getText(): string
     {
         return $this->text;
@@ -267,41 +225,27 @@ class InboundSMS
      * Return the timestamp used for signature verification
      * If you are looking for the time of message creation, please use
      * `getMessageTimestamp()`
-     *
-     * @return int|null
      */
     public function getTimestamp(): ?int
     {
         return $this->timestamp;
     }
 
-    /**
-     * @return string
-     */
     public function getTo(): string
     {
         return $this->to;
     }
 
-    /**
-     * @return string
-     */
     public function getType(): string
     {
         return $this->type;
     }
 
-    /**
-     * @return string|null
-     */
     public function getUdh(): ?string
     {
         return $this->udh;
     }
 
-    /**
-     * @return string
-     */
     public function getSignature(): string
     {
         return $this->signature;

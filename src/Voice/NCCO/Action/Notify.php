@@ -28,12 +28,6 @@ class Notify implements ActionInterface
      */
     protected $eventWebhook;
 
-    /**
-     * Notify constructor.
-     *
-     * @param array $payload
-     * @param Webhook $eventWebhook
-     */
     public function __construct(array $payload, Webhook $eventWebhook)
     {
         $this->payload = $payload;
@@ -41,10 +35,7 @@ class Notify implements ActionInterface
     }
 
     /**
-     * @param array $payload
      * @param array<array, mixed> $data
-     *
-     * @return Notify
      */
     public static function factory(array $payload, array $data): Notify
     {
@@ -84,9 +75,6 @@ class Notify implements ActionInterface
         ];
     }
 
-    /**
-     * @return Webhook|null
-     */
     public function getEventWebhook(): ?Webhook
     {
         return $this->eventWebhook;

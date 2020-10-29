@@ -27,29 +27,17 @@ class Client implements APIClient
      */
     protected $api;
 
-    /**
-     * Client constructor.
-     *
-     * @param APIResource $api
-     */
     public function __construct(APIResource $api)
     {
         $this->api = $api;
     }
 
-    /**
-     * @return APIResource
-     */
     public function getAPIResource(): APIResource
     {
         return $this->api;
     }
 
     /**
-     * @param Message $message
-     *
-     * @return Collection
-     *
      * @throws ClientExceptionInterface
      * @throws ClientException
      */
@@ -67,11 +55,6 @@ class Client implements APIClient
     }
 
     /**
-     * @param string $number
-     * @param int $pin
-     *
-     * @return SentSMS
-     *
      * @throws ClientExceptionInterface
      * @throws ClientException
      */
@@ -86,11 +69,6 @@ class Client implements APIClient
     }
 
     /**
-     * @param string $number
-     * @param array $templateReplacements
-     *
-     * @return Collection
-     *
      * @throws ClientExceptionInterface
      * @throws ClientException
      */

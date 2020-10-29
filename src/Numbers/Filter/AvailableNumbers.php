@@ -61,11 +61,6 @@ class AvailableNumbers implements FilterInterface
      */
     protected $type;
 
-    /**
-     * AvailableNumbers constructor.
-     *
-     * @param array $filter
-     */
     public function __construct(array $filter = [])
     {
         if (array_key_exists('country', $filter)) {
@@ -131,17 +126,11 @@ class AvailableNumbers implements FilterInterface
         return $data;
     }
 
-    /**
-     * @return string|null
-     */
     public function getCountry(): ?string
     {
         return $this->country;
     }
 
-    /**
-     * @param string $country
-     */
     protected function setCountry(string $country): void
     {
         if (strlen($country) !== 2) {
@@ -151,17 +140,12 @@ class AvailableNumbers implements FilterInterface
         $this->country = $country;
     }
 
-    /**
-     * @return string|null
-     */
     public function getFeatures(): ?string
     {
         return $this->features;
     }
 
     /**
-     * @param string $features
-     *
      * @return $this
      */
     public function setFeatures(string $features): self
@@ -171,17 +155,12 @@ class AvailableNumbers implements FilterInterface
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getPageIndex(): int
     {
         return $this->pageIndex;
     }
 
     /**
-     * @param int $pageIndex
-     *
      * @return $this
      */
     public function setPageIndex(int $pageIndex): self
@@ -191,17 +170,12 @@ class AvailableNumbers implements FilterInterface
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getPattern(): ?string
     {
         return $this->pattern;
     }
 
     /**
-     * @param string $pattern
-     *
      * @return $this
      */
     public function setPattern(string $pattern): self
@@ -211,17 +185,12 @@ class AvailableNumbers implements FilterInterface
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getSearchPattern(): int
     {
         return $this->searchPattern;
     }
 
     /**
-     * @param int $searchPattern
-     *
      * @return $this
      */
     public function setSearchPattern(int $searchPattern): self
@@ -231,17 +200,12 @@ class AvailableNumbers implements FilterInterface
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getType(): ?string
     {
         return $this->type;
     }
 
     /**
-     * @param string $type
-     *
      * @return $this
      */
     public function setType(string $type): self
@@ -260,17 +224,12 @@ class AvailableNumbers implements FilterInterface
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getPageSize(): int
     {
         return $this->pageSize;
     }
 
     /**
-     * @param int $pageSize
-     *
      * @return $this
      */
     public function setPageSize(int $pageSize): self

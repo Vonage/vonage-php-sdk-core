@@ -247,8 +247,6 @@ class InboundMessage implements MessageInterface, ArrayAccess, ArrayHydrateInter
 
     /**
      * All properties are read only.
-     *
-     * @return RuntimeException
      */
     protected function getReadOnlyException($offset): RuntimeException
     {

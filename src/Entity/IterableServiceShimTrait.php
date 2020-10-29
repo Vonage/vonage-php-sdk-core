@@ -37,8 +37,6 @@ trait IterableServiceShimTrait
      * @param $data
      * @param $id
      *
-     * @return mixed
-     *
      * @deprecated Use the hydrator directly
      */
     public function hydrateEntity($data, $id)
@@ -49,7 +47,7 @@ trait IterableServiceShimTrait
     /**
      * Generates a collection object to help keep API compatibility
      *
-     * @param null $filter
+     * @param $filter
      */
     protected function generateCollection($filter = null): void
     {
@@ -59,8 +57,6 @@ trait IterableServiceShimTrait
 
     /**
      * Counts the current search query
-     *
-     * @return int
      *
      * @throws ClientExceptionInterface
      * @throws ClientException
@@ -80,8 +76,6 @@ trait IterableServiceShimTrait
 
     /**
      * Returns the current object in the search
-     *
-     * @return mixed
      *
      * @throws ClientExceptionInterface
      * @throws ClientException
@@ -131,8 +125,6 @@ trait IterableServiceShimTrait
 
     /**
      * Returns if the current iterable is valid
-     *
-     * @return bool
      *
      * @throws ClientExceptionInterface
      * @throws ClientException
@@ -185,8 +177,6 @@ trait IterableServiceShimTrait
 
     /**
      * Returns the current filter being used
-     *
-     * @return Filter\FilterInterface
      */
     public function getFilter(): Filter\FilterInterface
     {
@@ -245,8 +235,6 @@ trait IterableServiceShimTrait
 
     /**
      * Sets the response number of embedded entities
-     *
-     * @param int $size
      *
      * @return $this
      */

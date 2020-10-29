@@ -40,11 +40,6 @@ class Conversation implements EntityInterface, JsonSerializable, JsonUnserializa
 
     protected $data = [];
 
-    /**
-     * Conversation constructor.
-     *
-     * @param null $id
-     */
     public function __construct($id = null)
     {
         $this->data['id'] = $id;
@@ -74,30 +69,23 @@ class Conversation implements EntityInterface, JsonSerializable, JsonUnserializa
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
     public function getId()
     {
         return $this->data['uuid'] ?? $this->data['id'];
     }
 
-    /**
-     * @return string
-     */
     public function __toString(): string
     {
         return (string)$this->getId();
     }
 
-
     /**
-     * @return $this
-     *
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
      * @throws ClientExceptionInterface
+     *
+     * @return $this
      */
     public function get(): Conversation
     {
@@ -118,7 +106,6 @@ class Conversation implements EntityInterface, JsonSerializable, JsonUnserializa
         return $this;
     }
 
-
     /**
      * @return array|mixed
      */
@@ -128,8 +115,6 @@ class Conversation implements EntityInterface, JsonSerializable, JsonUnserializa
     }
 
     /**
-     * @param array $json
-     *
      * @return void|null
      */
     public function jsonUnserialize(array $json): void
@@ -138,8 +123,6 @@ class Conversation implements EntityInterface, JsonSerializable, JsonUnserializa
     }
 
     /**
-     * @return array
-     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -163,10 +146,6 @@ class Conversation implements EntityInterface, JsonSerializable, JsonUnserializa
     }
 
     /**
-     * @param User $user
-     *
-     * @return User
-     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -178,10 +157,6 @@ class Conversation implements EntityInterface, JsonSerializable, JsonUnserializa
     }
 
     /**
-     * @param User $user
-     *
-     * @return User
-     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -193,8 +168,6 @@ class Conversation implements EntityInterface, JsonSerializable, JsonUnserializa
     }
 
     /**
-     * @param User $user
-     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -213,11 +186,8 @@ class Conversation implements EntityInterface, JsonSerializable, JsonUnserializa
     }
 
     /**
-     * @param User $user
      * @param $action
      * @param string $channel
-     *
-     * @return User
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
@@ -249,11 +219,9 @@ class Conversation implements EntityInterface, JsonSerializable, JsonUnserializa
     }
 
     /**
-     * @param ResponseInterface $response
+     * @throws ClientException\Exception
      *
      * @return ClientException\Request|ClientException\Server
-     *
-     * @throws ClientException\Exception
      */
     protected function getException(ResponseInterface $response)
     {

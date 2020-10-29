@@ -57,63 +57,42 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
     public const ENDPOINT_VXML = 'vxml';
     public const ENDPOINT_APP = 'app';
 
+    /**
+     * @var array
+     */
     protected $data = [];
 
-    /**
-     * Number constructor.
-     *
-     * @param null $number
-     * @param null $country
-     */
     public function __construct($number = null, $country = null)
     {
         $this->data['msisdn'] = $number;
         $this->data['country'] = $country;
     }
 
-    /**
-     * @return mixed
-     */
     public function getId()
     {
         return $this->fromData('msisdn');
     }
 
-    /**
-     * @return mixed
-     */
     public function getMsisdn()
     {
         return $this->getId();
     }
 
-    /**
-     * @return mixed
-     */
     public function getNumber()
     {
         return $this->getId();
     }
 
-    /**
-     * @return mixed
-     */
     public function getCountry()
     {
         return $this->fromData('country');
     }
 
-    /**
-     * @return mixed
-     */
     public function getType()
     {
         return $this->fromData('type');
     }
 
-    /**
-     * @return mixed
-     */
     public function getCost()
     {
         return $this->fromData('cost');
@@ -121,8 +100,6 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
 
     /**
      * @param $feature
-     *
-     * @return bool
      */
     public function hasFeature($feature): bool
     {
@@ -133,9 +110,6 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
         return in_array($feature, $this->data['features'], true);
     }
 
-    /**
-     * @return mixed
-     */
     public function getFeatures()
     {
         return $this->fromData('features');
@@ -144,8 +118,6 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
     /**
      * @param $type
      * @param $url
-     *
-     * @return self
      */
     public function setWebhook($type, $url): self
     {
@@ -159,8 +131,6 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
 
     /**
      * @param $type
-     *
-     * @return mixed
      */
     public function getWebhook($type)
     {
@@ -169,8 +139,6 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
 
     /**
      * @param $type
-     *
-     * @return bool
      */
     public function hasWebhook($type): bool
     {
@@ -179,9 +147,7 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
 
     /**
      * @param $endpoint
-     * @param null $type
-     *
-     * @return self
+     * @param $type
      */
     public function setVoiceDestination($endpoint, $type = null): self
     {
@@ -201,8 +167,6 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
 
     /**
      * @param $endpoint
-     *
-     * @return string
      */
     protected function autoType($endpoint): string
     {
@@ -225,9 +189,6 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
         return self::ENDPOINT_TEL;
     }
 
-    /**
-     * @return mixed
-     */
     public function getVoiceDestination()
     {
         return $this->fromData('voiceCallbackValue');
@@ -243,8 +204,6 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
 
     /**
      * @param $name
-     *
-     * @return mixed
      */
     protected function fromData($name)
     {
@@ -274,9 +233,6 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
         $this->fromArray($json);
     }
 
-    /**
-     * @param array $data
-     */
     public function fromArray(array $data): void
     {
         $this->data = $data;
@@ -290,9 +246,6 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
         return $this->toArray();
     }
 
-    /**
-     * @return array
-     */
     public function toArray(): array
     {
         $json = $this->data;
@@ -325,8 +278,6 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
     }
 
     /**
-     * @param string $appId
-     *
      * @return $this
      */
     public function setAppId(string $appId): self
@@ -340,9 +291,6 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getAppId(): ?string
     {
         // These should never be different, but might not both be set

@@ -35,10 +35,6 @@ class Notification
     protected $timestamp;
 
     /**
-     * Notification constructor.
-     *
-     * @param array $data
-     *
      * @throws Exception
      */
     public function __construct(array $data)
@@ -52,25 +48,16 @@ class Notification
         $this->timestamp = new DateTimeImmutable($data['timestamp']);
     }
 
-    /**
-     * @return array
-     */
     public function getPayload(): array
     {
         return $this->payload;
     }
 
-    /**
-     * @return string
-     */
     public function getConversationUuid(): string
     {
         return $this->conversationUuid;
     }
 
-    /**
-     * @return DateTimeImmutable
-     */
     public function getTimestamp(): DateTimeImmutable
     {
         return $this->timestamp;

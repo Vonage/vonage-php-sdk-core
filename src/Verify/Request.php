@@ -75,13 +75,6 @@ class Request implements ArrayHydrateInterface
      */
     protected $workflowId = 1;
 
-    /**
-     * Request constructor.
-     *
-     * @param string $number
-     * @param string $brand
-     * @param int $workflowId
-     */
     public function __construct(string $number, string $brand, int $workflowId = 1)
     {
         $this->number = $number;
@@ -89,17 +82,12 @@ class Request implements ArrayHydrateInterface
         $this->setWorkflowId($workflowId);
     }
 
-    /**
-     * @return string|null
-     */
     public function getCountry(): ?string
     {
         return $this->country;
     }
 
     /**
-     * @param string $country
-     *
      * @return $this
      */
     public function setCountry(string $country): self
@@ -113,17 +101,12 @@ class Request implements ArrayHydrateInterface
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getSenderId(): string
     {
         return $this->senderId;
     }
 
     /**
-     * @param string $senderId
-     *
      * @return $this
      */
     public function setSenderId(string $senderId): self
@@ -133,17 +116,12 @@ class Request implements ArrayHydrateInterface
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getCodeLength(): int
     {
         return $this->codeLength;
     }
 
     /**
-     * @param int $codeLength
-     *
      * @return $this
      */
     public function setCodeLength(int $codeLength): self
@@ -157,17 +135,12 @@ class Request implements ArrayHydrateInterface
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getLocale(): ?string
     {
         return $this->locale;
     }
 
     /**
-     * @param string $locale
-     *
      * @return $this
      */
     public function setLocale(string $locale): self
@@ -177,17 +150,12 @@ class Request implements ArrayHydrateInterface
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getPinExpiry(): int
     {
         return $this->pinExpiry;
     }
 
     /**
-     * @param int $pinExpiry
-     *
      * @return $this
      */
     public function setPinExpiry(int $pinExpiry): self
@@ -201,17 +169,12 @@ class Request implements ArrayHydrateInterface
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getNextEventWait(): int
     {
         return $this->nextEventWait;
     }
 
     /**
-     * @param int $nextEventWait
-     *
      * @return $this
      */
     public function setNextEventWait(int $nextEventWait): self
@@ -225,17 +188,12 @@ class Request implements ArrayHydrateInterface
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getWorkflowId(): int
     {
         return $this->workflowId;
     }
 
     /**
-     * @param int $workflowId
-     *
      * @return $this
      */
     public function setWorkflowId(int $workflowId): self
@@ -249,25 +207,16 @@ class Request implements ArrayHydrateInterface
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getNumber(): string
     {
         return $this->number;
     }
 
-    /**
-     * @return string
-     */
     public function getBrand(): string
     {
         return $this->brand;
     }
 
-    /**
-     * @param array $data
-     */
     public function fromArray(array $data): void
     {
         if (array_key_exists('sender_id', $data)) {
@@ -299,9 +248,6 @@ class Request implements ArrayHydrateInterface
         }
     }
 
-    /**
-     * @return array
-     */
     public function toArray(): array
     {
         $data = [

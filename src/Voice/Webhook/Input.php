@@ -55,10 +55,6 @@ class Input
     protected $timestamp;
 
     /**
-     * Input constructor.
-     *
-     * @param array $data
-     *
      * @throws Exception
      */
     public function __construct(array $data)
@@ -83,57 +79,36 @@ class Input
         $this->timestamp = new DateTimeImmutable($data['timestamp']);
     }
 
-    /**
-     * @return array
-     */
     public function getSpeech(): array
     {
         return $this->speech;
     }
 
-    /**
-     * @return array
-     */
     public function getDtmf(): array
     {
         return $this->dtmf;
     }
 
-    /**
-     * @return string
-     */
     public function getFrom(): string
     {
         return $this->from;
     }
 
-    /**
-     * @return string
-     */
     public function getTo(): string
     {
         return $this->to;
     }
 
-    /**
-     * @return string
-     */
     public function getUuid(): string
     {
         return $this->uuid;
     }
 
-    /**
-     * @return string
-     */
     public function getConversationUuid(): string
     {
         return $this->conversationUuid;
     }
 
-    /**
-     * @return DateTimeImmutable
-     */
     public function getTimestamp(): DateTimeImmutable
     {
         return $this->timestamp;

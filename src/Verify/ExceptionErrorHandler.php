@@ -24,9 +24,6 @@ use function json_decode;
 class ExceptionErrorHandler
 {
     /**
-     * @param ResponseInterface $response
-     * @param RequestInterface $request
-     *
      * @throws Request
      * @throws Server
      */

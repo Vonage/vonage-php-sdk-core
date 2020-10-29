@@ -22,13 +22,7 @@ class Response extends BaseResponse
 {
     protected $callbacks = [];
 
-    /**
-     * Response constructor.
-     *
-     * @param array $data
-     * @param array $callbacks
-     */
-    public function __construct(array $data, $callbacks = [])
+    public function __construct(array $data, array $callbacks = [])
     {
         //add expected keys
         $this->expected = array_merge($this->expected, [
@@ -54,57 +48,36 @@ class Response extends BaseResponse
         $this->callbacks = $callbacks;
     }
 
-    /**
-     * @return mixed
-     */
     public function getCallbackTotal()
     {
         return $this->data['callback_total_parts'];
     }
 
-    /**
-     * @return bool
-     */
     public function isComplete(): bool
     {
         return count($this->callbacks) === $this->getCallbackTotal();
     }
 
-    /**
-     * @return mixed
-     */
     public function getPrice()
     {
         return $this->data['request_price'];
     }
 
-    /**
-     * @return mixed
-     */
     public function getBalance()
     {
         return $this->data['remaining_balance'];
     }
 
-    /**
-     * @return mixed
-     */
     public function getNumber()
     {
         return $this->data['number'];
     }
 
-    /**
-     * @return mixed
-     */
     public function getId()
     {
         return $this->data['request_id'];
     }
 
-    /**
-     * @return mixed
-     */
     public function getStatus()
     {
         return $this->data['status'];
@@ -113,8 +86,6 @@ class Response extends BaseResponse
     /**
      * @param $name
      * @param $args
-     *
-     * @return mixed
      *
      * @todo This looks somewhat illogical
      */
@@ -134,19 +105,13 @@ class Response extends BaseResponse
         return $last;
     }
 
-    /**
-     * @return array
-     */
     public function getCallbacks(): array
     {
         return $this->callbacks;
     }
 
     /**
-     * @param Response $response
      * @param Callback $callback
-     *
-     * @return Response
      */
     public static function addCallback(Response $response, callable $callback): Response
     {

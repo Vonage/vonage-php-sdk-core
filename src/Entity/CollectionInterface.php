@@ -16,21 +16,14 @@ use Iterator;
 
 interface CollectionInterface extends Countable, Iterator
 {
-    /**
-     * @return string
-     */
+
     public static function getCollectionName(): string;
 
-    /**
-     * @return string
-     */
     public static function getCollectionPath(): string;
 
     /**
      * @param $data
      * @param $idOrEntity
-     *
-     * @return mixed
      */
     public function hydrateEntity($data, $idOrEntity);
 }

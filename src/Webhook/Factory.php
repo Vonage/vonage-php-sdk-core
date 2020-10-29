@@ -21,11 +21,7 @@ use function parse_str;
 
 abstract class Factory
 {
-    /**
-     * @param array $data
-     *
-     * @return mixed
-     */
+
     abstract public static function createFromArray(array $data);
 
     public static function createFromJson(string $json)
@@ -39,9 +35,6 @@ abstract class Factory
         return static::createFromArray($data);
     }
 
-    /**
-     * @return mixed
-     */
     public static function createFromGlobals()
     {
         $request = ServerRequestFactory::fromGlobals();
@@ -49,11 +42,6 @@ abstract class Factory
         return static::createFromRequest($request);
     }
 
-    /**
-     * @param ServerRequestInterface $request
-     *
-     * @return mixed
-     */
     public static function createFromRequest(ServerRequestInterface $request)
     {
         $params = [];

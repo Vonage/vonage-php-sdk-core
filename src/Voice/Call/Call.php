@@ -21,11 +21,9 @@ use function is_null;
 class Call extends AbstractRequest
 {
     /**
-     * Call constructor.
-     *
      * @param $url
      * @param $to
-     * @param null $from
+     * @param $from
      */
     public function __construct($url, $to, $from = null)
     {
@@ -39,7 +37,7 @@ class Call extends AbstractRequest
 
     /**
      * @param $url
-     * @param null $method
+     * @param $method
      *
      * @return $this
      */
@@ -58,7 +56,7 @@ class Call extends AbstractRequest
 
     /**
      * @param $url
-     * @param null $method
+     * @param $method
      *
      * @return $this
      */
@@ -76,7 +74,7 @@ class Call extends AbstractRequest
 
     /**
      * @param $url
-     * @param null $method
+     * @param $method
      *
      * @return $this
      */
@@ -94,7 +92,7 @@ class Call extends AbstractRequest
 
     /**
      * @param bool $hangup
-     * @param null $timeout
+     * @param $timeout
      *
      * @return $this
      */
@@ -110,9 +108,6 @@ class Call extends AbstractRequest
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getURI(): string
     {
         return '/call/json';

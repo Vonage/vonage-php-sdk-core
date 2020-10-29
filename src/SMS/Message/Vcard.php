@@ -23,13 +23,6 @@ class Vcard extends OutboundMessage
      */
     protected $type = 'vcard';
 
-    /**
-     * Vcard constructor.
-     *
-     * @param string $to
-     * @param string $from
-     * @param string $card
-     */
     public function __construct(string $to, string $from, string $card)
     {
         parent::__construct($to, $from);
@@ -48,9 +41,6 @@ class Vcard extends OutboundMessage
         return $data;
     }
 
-    /**
-     * @return string
-     */
     public function getCard(): string
     {
         return $this->card;

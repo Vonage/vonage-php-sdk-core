@@ -60,35 +60,22 @@ class Conversation implements ActionInterface
      */
     protected $eventWebhook;
 
-    /**
-     * Conversation constructor.
-     *
-     * @param string $name
-     */
     public function __construct(string $name)
     {
         $this->name = $name;
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @return string|null
-     */
     public function getMusicOnHoldUrl(): ?string
     {
         return $this->musicOnHoldUrl;
     }
 
     /**
-     * @param string $musicOnHoldUrl
-     *
      * @return $this
      */
     public function setMusicOnHoldUrl(string $musicOnHoldUrl): self
@@ -98,17 +85,12 @@ class Conversation implements ActionInterface
         return $this;
     }
 
-    /**
-     * @return bool|null
-     */
     public function getStartOnEnter(): ?bool
     {
         return $this->startOnEnter;
     }
 
     /**
-     * @param bool $startOnEnter
-     *
      * @return $this
      */
     public function setStartOnEnter(bool $startOnEnter): self
@@ -118,17 +100,12 @@ class Conversation implements ActionInterface
         return $this;
     }
 
-    /**
-     * @return bool|null
-     */
     public function getEndOnExit(): ?bool
     {
         return $this->endOnExit;
     }
 
     /**
-     * @param bool $endOnExit
-     *
      * @return $this
      */
     public function setEndOnExit(bool $endOnExit): self
@@ -138,17 +115,12 @@ class Conversation implements ActionInterface
         return $this;
     }
 
-    /**
-     * @return bool|null
-     */
     public function getRecord(): ?bool
     {
         return $this->record;
     }
 
     /**
-     * @param bool $record
-     *
      * @return $this
      */
     public function setRecord(bool $record): self
@@ -179,8 +151,6 @@ class Conversation implements ActionInterface
     }
 
     /**
-     * @param string $uuid
-     *
      * @return $this
      */
     public function addCanSpeak(string $uuid): self
@@ -211,8 +181,6 @@ class Conversation implements ActionInterface
     }
 
     /**
-     * @param string $uuid
-     *
      * @return $this
      */
     public function addCanHear(string $uuid): self
@@ -223,7 +191,6 @@ class Conversation implements ActionInterface
     }
 
     /**
-     * @param string $name
      * @param array{
      *      musicOnHoldUrl?: string,
      *      startOnEnter?: bool,
@@ -232,8 +199,6 @@ class Conversation implements ActionInterface
      *      canSpeak?: array,
      *      canHear?: array
      *  } $data
-     *
-     * @return Conversation
      */
     public static function factory(string $name, array $data): Conversation
     {
@@ -342,17 +307,12 @@ class Conversation implements ActionInterface
         return $data;
     }
 
-    /**
-     * @return Webhook|null
-     */
     public function getEventWebhook(): ?Webhook
     {
         return $this->eventWebhook;
     }
 
     /**
-     * @param Webhook $eventWebhook
-     *
      * @return $this
      */
     public function setEventWebhook(Webhook $eventWebhook): Conversation

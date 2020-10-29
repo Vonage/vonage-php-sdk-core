@@ -18,21 +18,11 @@ class VBC implements EndpointInterface
      */
     protected $id;
 
-    /**
-     * VBC constructor.
-     *
-     * @param string $extension
-     */
     public function __construct(string $extension)
     {
         $this->id = $extension;
     }
 
-    /**
-     * @param string $extension
-     *
-     * @return VBC
-     */
     public static function factory(string $extension): VBC
     {
         return new VBC($extension);
@@ -57,9 +47,6 @@ class VBC implements EndpointInterface
         ];
     }
 
-    /**
-     * @return string
-     */
     public function getId(): string
     {
         return $this->id;

@@ -38,11 +38,6 @@ class User implements EntityInterface, JsonSerializable, JsonUnserializableInter
 
     protected $data = [];
 
-    /**
-     * User constructor.
-     *
-     * @param null $id
-     */
     public function __construct($id = null)
     {
         $this->data['id'] = $id;
@@ -60,30 +55,23 @@ class User implements EntityInterface, JsonSerializable, JsonUnserializableInter
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
     public function getId()
     {
         return $this->data['id'];
     }
 
-    /**
-     * @return string
-     */
     public function __toString(): string
     {
         return (string)$this->getId();
     }
 
-
     /**
-     * @return $this
-     *
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
      * @throws ClientExceptionInterface
+     *
+     * @return $this
      */
     public function get(): self
     {
@@ -105,8 +93,6 @@ class User implements EntityInterface, JsonSerializable, JsonUnserializableInter
     }
 
     /**
-     * @return mixed
-     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -137,8 +123,6 @@ class User implements EntityInterface, JsonSerializable, JsonUnserializableInter
     }
 
     /**
-     * @param array $json
-     *
      * @return void|null
      */
     public function jsonUnserialize(array $json): void
@@ -146,9 +130,6 @@ class User implements EntityInterface, JsonSerializable, JsonUnserializableInter
         $this->data = $json;
     }
 
-    /**
-     * @return array
-     */
     public function getRequestDataForConversation(): array
     {
         return [
@@ -157,11 +138,9 @@ class User implements EntityInterface, JsonSerializable, JsonUnserializableInter
     }
 
     /**
-     * @param ResponseInterface $response
+     * @throws ClientException\Exception
      *
      * @return ClientException\Request|ClientException\Server
-     *
-     * @throws ClientException\Exception
      */
     protected function getException(ResponseInterface $response)
     {

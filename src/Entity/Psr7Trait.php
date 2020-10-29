@@ -40,9 +40,6 @@ trait Psr7Trait
      */
     protected $response;
 
-    /**
-     * @param ResponseInterface $response
-     */
     public function setResponse(ResponseInterface $response): void
     {
         trigger_error(
@@ -58,9 +55,6 @@ trait Psr7Trait
         }
     }
 
-    /**
-     * @param RequestInterface $request
-     */
     public function setRequest(RequestInterface $request): void
     {
         trigger_error(
@@ -93,9 +87,6 @@ trait Psr7Trait
         }
     }
 
-    /**
-     * @return RequestInterface|null
-     */
     public function getRequest(): ?RequestInterface
     {
         trigger_error(
@@ -107,9 +98,6 @@ trait Psr7Trait
         return $this->request;
     }
 
-    /**
-     * @return ResponseInterface|null
-     */
     public function getResponse(): ?ResponseInterface
     {
         trigger_error(

@@ -26,27 +26,16 @@ class Collection implements Countable, Iterator
      */
     protected $current = 0;
 
-    /**
-     * Collection constructor.
-     *
-     * @param array $apiResponse
-     */
     public function __construct(array $apiResponse)
     {
         $this->data = $apiResponse;
     }
 
-    /**
-     * @return int
-     */
     public function count(): int
     {
         return (int)$this->data['message-count'];
     }
 
-    /**
-     * @return SentSMS
-     */
     public function current(): SentSMS
     {
         return new SentSMS($this->data['messages'][$this->current]);
@@ -70,9 +59,6 @@ class Collection implements Countable, Iterator
         $this->current = 0;
     }
 
-    /**
-     * @return bool
-     */
     public function valid(): bool
     {
         return isset($this->data['messages'][$this->current]);

@@ -27,18 +27,15 @@ class APIExceptionHandler
      */
     protected $rfc7807Format = "%s: %s. See %s for more information";
 
-    /**
-     * @param string $format
-     */
     public function setRfc7807Format(string $format): void
     {
         $this->rfc7807Format = $format;
     }
 
     /**
-     * @return Exception\Request|Exception\Server
-     *
      * @throws Exception\Exception
+     *
+     * @return Exception\Request|Exception\Server
      */
     public function __invoke(ResponseInterface $response, RequestInterface $request)
     {

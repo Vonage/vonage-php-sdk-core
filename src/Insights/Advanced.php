@@ -13,17 +13,12 @@ namespace Vonage\Insights;
 
 class Advanced extends Standard
 {
-    /**
-     * @return mixed
-     */
+
     public function getValidNumber()
     {
         return $this->data['valid_number'];
     }
 
-    /**
-     * @return mixed
-     */
     public function getReachable()
     {
         return $this->data['reachable'];

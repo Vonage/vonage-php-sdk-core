@@ -29,9 +29,6 @@ class KeyValueFilter implements FilterInterface
         $this->query = $query;
     }
 
-    /**
-     * @return array
-     */
     public function getQuery(): array
     {
         return $this->query;

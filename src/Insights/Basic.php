@@ -25,8 +25,6 @@ class Basic implements JsonSerializable, JsonUnserializableInterface, ArrayAcces
     protected $data = [];
 
     /**
-     * Basic constructor.
-     *
      * @param $number
      */
     public function __construct($number)
@@ -34,57 +32,36 @@ class Basic implements JsonSerializable, JsonUnserializableInterface, ArrayAcces
         $this->data['national_format_number'] = $number;
     }
 
-    /**
-     * @return string
-     */
     public function getRequestId(): string
     {
         return $this->data['request_id'];
     }
 
-    /**
-     * @return string
-     */
     public function getNationalFormatNumber(): string
     {
         return $this->data['national_format_number'];
     }
 
-    /**
-     * @return string
-     */
     public function getInternationalFormatNumber(): string
     {
         return $this->data['international_format_number'];
     }
 
-    /**
-     * @return string
-     */
     public function getCountryCode(): string
     {
         return $this->data['country_code'];
     }
 
-    /**
-     * @return string
-     */
     public function getCountryCodeISO3(): string
     {
         return $this->data['country_code_iso3'];
     }
 
-    /**
-     * @return string
-     */
     public function getCountryName(): string
     {
         return $this->data['country_name'];
     }
 
-    /**
-     * @return int
-     */
     public function getCountryPrefix(): int
     {
         return $this->data['country_prefix'];
@@ -99,8 +76,6 @@ class Basic implements JsonSerializable, JsonUnserializableInterface, ArrayAcces
     }
 
     /**
-     * @param array $json
-     *
      * @return void|null
      */
     public function jsonUnserialize(array $json): void
@@ -113,11 +88,6 @@ class Basic implements JsonSerializable, JsonUnserializableInterface, ArrayAcces
         $this->fromArray($json);
     }
 
-    /**
-     * @param mixed $offset
-     *
-     * @return bool
-     */
     public function offsetExists($offset): bool
     {
         trigger_error(
@@ -128,11 +98,6 @@ class Basic implements JsonSerializable, JsonUnserializableInterface, ArrayAcces
         return isset($this->data[$offset]);
     }
 
-    /**
-     * @param mixed $offset
-     *
-     * @return mixed
-     */
     public function offsetGet($offset)
     {
         trigger_error(
@@ -144,9 +109,6 @@ class Basic implements JsonSerializable, JsonUnserializableInterface, ArrayAcces
     }
 
     /**
-     * @param mixed $offset
-     * @param mixed $value
-     *
      * @throws ClientException
      */
     public function offsetSet($offset, $value): void
@@ -155,8 +117,6 @@ class Basic implements JsonSerializable, JsonUnserializableInterface, ArrayAcces
     }
 
     /**
-     * @param mixed $offset
-     *
      * @throws ClientException
      */
     public function offsetUnset($offset): void
@@ -164,17 +124,11 @@ class Basic implements JsonSerializable, JsonUnserializableInterface, ArrayAcces
         throw new ClientException('Number insights results are read only');
     }
 
-    /**
-     * @param array $data
-     */
     public function fromArray(array $data): void
     {
         $this->data = $data;
     }
 
-    /**
-     * @return array
-     */
     public function toArray(): array
     {
         return $this->data;

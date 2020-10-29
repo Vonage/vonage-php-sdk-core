@@ -44,11 +44,6 @@ class Client implements ClientAwareInterface, APIClient
      */
     protected $api;
 
-    /**
-     * Client constructor.
-     *
-     * @param APIResource|null $api
-     */
     public function __construct(APIResource $api = null)
     {
         $this->api = $api;
@@ -57,8 +52,6 @@ class Client implements ClientAwareInterface, APIClient
     /**
      * Shim to handle older instantiations of this class
      * Will change in v3 to just return the required API object
-     *
-     * @return APIResource
      */
     public function getApiResource(): APIResource
     {
@@ -76,8 +69,6 @@ class Client implements ClientAwareInterface, APIClient
     /**
      * @param mixed $number Number to update
      * @param string|null $id MSISDN to look
-     *
-     * @return Number
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
@@ -152,9 +143,7 @@ class Client implements ClientAwareInterface, APIClient
     /**
      * Returns a number
      *
-     * @param null $number Number to fetch, deprecating passing a `Number` object
-     *
-     * @return Number
+     * @param $number Number to fetch, deprecating passing a `Number` object
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
@@ -193,12 +182,12 @@ class Client implements ClientAwareInterface, APIClient
     /**
      * @param null|string|Number $number
      *
-     * @return array []Number
-     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
+     *
+     * @return array []Number
      *
      * @deprecated Use `searchOwned` instead
      */
@@ -212,8 +201,6 @@ class Client implements ClientAwareInterface, APIClient
      *
      * @param string $country The two character country code in ISO 3166-1 alpha-2 format
      * @param array $options Additional options, see https://developer.nexmo.com/api/numbers#getAvailableNumbers
-     *
-     * @return array
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
@@ -264,10 +251,7 @@ class Client implements ClientAwareInterface, APIClient
     /**
      * Returns a set of numbers for the specified country
      *
-     * @param null $number
-     * @param array $options
-     *
-     * @return array
+     * @param $number
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
@@ -325,11 +309,6 @@ class Client implements ClientAwareInterface, APIClient
     /**
      * Checks and converts parameters into appropriate values for the API
      *
-     * @param array $possibleParameters
-     * @param array $data
-     *
-     * @return array
-     *
      * @throws ClientException\Request
      */
     protected function parseParameters(array $possibleParameters, array $data = []): array
@@ -367,10 +346,7 @@ class Client implements ClientAwareInterface, APIClient
     }
 
     /**
-     * @param IterableAPICollection $response
-     * @param null $number deprecated
-     *
-     * @return array
+     * @param $number deprecated
      *
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -398,7 +374,6 @@ class Client implements ClientAwareInterface, APIClient
 
     /**
      * @param $number
-     * @param string|null $country
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
@@ -435,7 +410,6 @@ class Client implements ClientAwareInterface, APIClient
 
     /**
      * @param $number
-     * @param string|null $country
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception

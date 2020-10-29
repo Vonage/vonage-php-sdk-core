@@ -32,10 +32,6 @@ class Error
     protected $timestamp;
 
     /**
-     * Error constructor.
-     *
-     * @param array $event
-     *
      * @throws Exception
      */
     public function __construct(array $event)
@@ -45,25 +41,16 @@ class Error
         $this->timestamp = new DateTimeImmutable($event['timestamp']);
     }
 
-    /**
-     * @return string
-     */
     public function getConversationUuid(): string
     {
         return $this->conversationUuid;
     }
 
-    /**
-     * @return string
-     */
     public function getReason(): string
     {
         return $this->reason;
     }
 
-    /**
-     * @return DateTimeImmutable
-     */
     public function getTimestamp(): DateTimeImmutable
     {
         return $this->timestamp;

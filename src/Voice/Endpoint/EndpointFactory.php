@@ -16,11 +16,7 @@ use Vonage\Entity\Factory\FactoryInterface;
 
 class EndpointFactory implements FactoryInterface
 {
-    /**
-     * @param array $data
-     *
-     * @return EndpointInterface|null
-     */
+
     public function create(array $data): ?EndpointInterface
     {
         switch ($data['type']) {

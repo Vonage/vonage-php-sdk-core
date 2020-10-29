@@ -37,21 +37,13 @@ class Stream implements ActionInterface
      */
     protected $streamUrl;
 
-    /**
-     * Stream constructor.
-     *
-     * @param string $streamUrl
-     */
     public function __construct(string $streamUrl)
     {
         $this->streamUrl = $streamUrl;
     }
 
     /**
-     * @param string $streamUrl
      * @param array{streamUrl: string, bargeIn?: bool, level?: float, loop?: int, voiceName?: string} $data
-     *
-     * @return Stream
      */
     public static function factory(string $streamUrl, array $data): Stream
     {
@@ -78,33 +70,21 @@ class Stream implements ActionInterface
         return $stream;
     }
 
-    /**
-     * @return bool|null
-     */
     public function getBargeIn(): ?bool
     {
         return $this->bargeIn;
     }
 
-    /**
-     * @return float|null
-     */
     public function getLevel(): ?float
     {
         return $this->level;
     }
 
-    /**
-     * @return int|null
-     */
     public function getLoop(): ?int
     {
         return $this->loop;
     }
 
-    /**
-     * @return string
-     */
     public function getStreamUrl(): string
     {
         return $this->streamUrl;
@@ -119,8 +99,6 @@ class Stream implements ActionInterface
     }
 
     /**
-     * @param bool $value
-     *
      * @return $this
      */
     public function setBargeIn(bool $value): self
@@ -131,8 +109,6 @@ class Stream implements ActionInterface
     }
 
     /**
-     * @param float $level
-     *
      * @return $this
      */
     public function setLevel(float $level): self
@@ -143,8 +119,6 @@ class Stream implements ActionInterface
     }
 
     /**
-     * @param int $times
-     *
      * @return $this
      */
     public function setLoop(int $times): self
