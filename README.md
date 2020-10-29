@@ -290,9 +290,9 @@ $outboundCall = new \Vonage\Voice\OutboundCall(
 
 $ncco = new NCCO();
 $record = new \Vonage\Voice\NCCO\Action\Record;
-$ncco->addAction($record->factory( array(
-  'eventUrl' => 'https://webhook.url',
-)));
+$ncco->addAction($record->factory([
+    'eventUrl' => 'https://webhook.url'
+]);
 $outboundCall->setNCCO($ncco);
 
 $response = $client->voice()->createOutboundCall($outboundCall);
@@ -329,7 +329,7 @@ $outboundCall = new \Vonage\Voice\OutboundCall(
 );
 
 $ncco = new NCCO();
-$ncco->addAction(new \Vonage\Voice\NCCO\Action\Talk( 'This is a text to speech call from Nexmo' ));
+$ncco->addAction(new \Vonage\Voice\NCCO\Action\Talk('This is a text to speech call from Vonage'));
 $outboundCall->setNCCO($ncco);
 
 $response = $client->voice()->createOutboundCall($outboundCall);
@@ -343,7 +343,7 @@ $outboundCall = new \Vonage\Voice\OutboundCall(
 );
 
 $ncco = new NCCO();
-$ncco->addAction(new \Vonage\Voice\NCCO\Action\Stream( 'https://my-mp3.url' ));
+$ncco->addAction(new \Vonage\Voice\NCCO\Action\Stream('https://my-mp3.url'));
 $outboundCall->setNCCO($ncco);
 
 $response = $client->voice()->createOutboundCall($outboundCall);
@@ -362,20 +362,20 @@ $outboundCall = new \Vonage\Voice\OutboundCall(
 $ncco = new NCCO();
 
 $talk = new \Vonage\Voice\NCCO\Action\Talk;    
-$ncco->addAction($talk->factory( 'Please record your name.' , array(
+$ncco->addAction($talk->factory('Please record your name.',[
   'bargeIn' => true,
-)));
+]));
 
 $input = new \Vonage\Voice\NCCO\Action\Input;
-$ncco->addAction($input->factory( array(
+$ncco->addAction($input->factory([
   'eventUrl' => 'https://webhook.url',
-  'type' => array(
+  'type' => [
     'speech',
-  ),
-  'speech' => array(
+  ],
+  'speech' => [
     'endOnSilence' => true,
-  ),
-)));
+  ],
+]));
 
 $outboundCall->setNCCO($ncco);
 
@@ -393,10 +393,10 @@ $outboundCall = new \Vonage\Voice\OutboundCall(
 );
 
 $ncco = new NCCO();    
-$ncco->addAction(new \Vonage\Voice\NCCO\Action\Talk( 'We are just testing the notify function, you do not need to do anything.' ));
-$ncco->addAction(new \Vonage\Voice\NCCO\Action\Notify( array(
+$ncco->addAction(new \Vonage\Voice\NCCO\Action\Talk('We are just testing the notify function, you do not need to do anything.'));
+$ncco->addAction(new \Vonage\Voice\NCCO\Action\Notify([
   'foo' => 'bar',
-) , new Vonage\Voice\Webhook( 'https://webhook.url' )));
+], new Vonage\Voice\Webhook('https://webhook.url')));
 $outboundCall->setNCCO($ncco);
 
 $response = $client->voice()->createOutboundCall($outboundCall);
