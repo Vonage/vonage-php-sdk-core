@@ -1,10 +1,12 @@
 <?php
+
 /**
  * Vonage Client Library for PHP
  *
  * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
  * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
+
 declare(strict_types=1);
 
 namespace VonageTest\Voice;
@@ -145,7 +147,7 @@ class ClientTest extends TestCase
 
         $outboundCall = (new OutboundCall(new Phone('15555555555'), new Phone('16666666666')))
             ->setEventWebhook(new Webhook('http://domain.test/event'))
-            ->setNCCO((new NCCO)->addAction(new Talk('Thank you for trying Vonage')))
+            ->setNCCO((new NCCO())->addAction(new Talk('Thank you for trying Vonage')))
             ->setLengthTimer(7200)
             ->setRingingTimer(60);
         $callData = $this->voiceClient->createOutboundCall($outboundCall);
@@ -360,7 +362,7 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('empty', 204));
 
-        $ncco = (new NCCO)
+        $ncco = (new NCCO())
             ->addAction(new Talk('Thank you for trying Vonage'));
 
         $this->voiceClient->transferCallWithNCCO($id, $ncco);

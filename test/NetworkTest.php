@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Vonage Client Library for PHP
  *

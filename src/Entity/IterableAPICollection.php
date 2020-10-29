@@ -1,10 +1,12 @@
 <?php
+
 /**
  * Vonage Client Library for PHP
  *
  * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
  * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
+
 declare(strict_types=1);
 
 namespace Vonage\Entity;
@@ -215,7 +217,8 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
         }
 
         //all hal collections have an `_embedded` object, we expect there to be a property matching the collection name
-        if ($this->getApiResource()->isHAL() &&
+        if (
+            $this->getApiResource()->isHAL() &&
             !isset($this->page['_embedded'][$this->getApiResource()->getCollectionName()])
         ) {
             return false;

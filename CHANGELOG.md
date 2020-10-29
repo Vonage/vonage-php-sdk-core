@@ -17,6 +17,7 @@
 * #257 Re-ordered imports where necessary
 * #257 Updated tests to get rid of deprecation messages
 * #257 Fixed namespace declarations in tests
+* #257 Updated code style to PSR-12
 * #257 Updated phpunit.xml.dist
 * #257 Added Roave Security Advisories as dev-requirement to prevent usage of packages with known security vulnerabilities
 * #257 Replaced estahn/phpunit-json-assertions with martin-helmich/phpunit-json-assert due do compatibility issues with PHPUnit
