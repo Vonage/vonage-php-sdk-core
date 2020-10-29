@@ -718,14 +718,3 @@ class ClientTest extends TestCase
         self::assertTrue($signature->check($array));
     }
 }
-
-class FixedVersionClient extends Client
-{
-    /**
-     * @return string
-     */
-    public function getVersion(): string
-    {
-        return '1.2.3';
-    }
-}

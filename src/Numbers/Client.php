@@ -381,7 +381,9 @@ class Client implements ClientAwareInterface, APIClient
         // to make a purchase request
         if (!$number instanceof Number) {
             if (!$country) {
-                throw new ClientException\Exception("You must supply a country in addition to a number to purchase a number");
+                throw new ClientException\Exception(
+                    "You must supply a country in addition to a number to purchase a number"
+                );
             }
 
             trigger_error(

@@ -321,7 +321,12 @@ class Client implements ClientAwareInterface, APIClient
             $rawResponse = json_decode(@$e->getResponse()->getBody()->getContents(), true);
 
             if (array_key_exists('invalid_parameters', $rawResponse)) {
-                throw new ClientValidationException($e->getMessage(), $e->getCode(), null, $rawResponse['invalid_parameters']);
+                throw new ClientValidationException(
+                    $e->getMessage(),
+                    $e->getCode(),
+                    null,
+                    $rawResponse['invalid_parameters']
+                );
             }
 
             throw $e;

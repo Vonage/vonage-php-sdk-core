@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Vonage Client Library for PHP
  *
@@ -10,12 +11,9 @@ declare(strict_types=1);
 namespace VonageTest\Insights;
 
 use PHPUnit\Framework\TestCase;
-use Vonage\Insights\CnamTrait;
-use Vonage\Insights\Standard;
 
 class CnamTraitTest extends TestCase
 {
-
     /**
      * @dataProvider cnamProvider
      * @param $cnam
@@ -62,9 +60,4 @@ class CnamTraitTest extends TestCase
 
         return $r;
     }
-}
-
-class Cnam extends Standard
-{
-    use CnamTrait;
 }
