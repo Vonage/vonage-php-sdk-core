@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace VonageTest\Verify;
 
+use InvalidArgumentException;
 use Laminas\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
@@ -18,11 +19,11 @@ use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
 use Vonage\Client;
 use Vonage\Client\Exception\Server as ServerException;
-use VonageTest\Psr7AssertionTrait;
 use Vonage\Verify\Client as VerifyClient;
 use Vonage\Verify\Request;
 use Vonage\Verify\RequestPSD2;
 use Vonage\Verify\Verification;
+use VonageTest\Psr7AssertionTrait;
 
 use function array_unshift;
 use function call_user_func_array;
@@ -177,6 +178,17 @@ class ClientTest extends TestCase
         self::assertSame($success, @$verification->getResponse());
     }
 
+    public function testInvalidCodeLength(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            sprintf('Pin length must be either %d or %d digits', Request::PIN_LENGTH_4, Request::PIN_LENGTH_6)
+        );
+
+        (new Request('14845551212', 'Test Invalid Code Length'))
+            ->setCodeLength(123);
+    }
+
     /**
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Exception
@@ -185,14 +197,18 @@ class ClientTest extends TestCase
      */
     public function testCanStartPSD2Verification(): void
     {
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            self::assertRequestJsonBodyContains('number', '14845551212', $request);
-            self::assertRequestJsonBodyContains('payee', 'Test Verify', $request);
-            self::assertRequestJsonBodyContains('amount', '5.25', $request);
-            self::assertRequestMatchesUrl('https://api.nexmo.com/verify/psd2/json', $request);
+        $this->vonageClient->send(
+            Argument::that(
+                function (RequestInterface $request) {
+                    self::assertRequestJsonBodyContains('number', '14845551212', $request);
+                    self::assertRequestJsonBodyContains('payee', 'Test Verify', $request);
+                    self::assertRequestJsonBodyContains('amount', '5.25', $request);
+                    self::assertRequestMatchesUrl('https://api.nexmo.com/verify/psd2/json', $request);
 
-            return true;
-        }))->willReturn($this->getResponse('start'))
+                    return true;
+                }
+            )
+        )->willReturn($this->getResponse('start'))
             ->shouldBeCalledTimes(1);
 
         $request = new RequestPSD2('14845551212', 'Test Verify', '5.25');
@@ -210,15 +226,19 @@ class ClientTest extends TestCase
      */
     public function testCanStartPSD2VerificationWithWorkflowID(): void
     {
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            self::assertRequestJsonBodyContains('number', '14845551212', $request);
-            self::assertRequestJsonBodyContains('payee', 'Test Verify', $request);
-            self::assertRequestJsonBodyContains('amount', '5.25', $request);
-            self::assertRequestJsonBodyContains('workflow_id', 5, $request);
-            self::assertRequestMatchesUrl('https://api.nexmo.com/verify/psd2/json', $request);
+        $this->vonageClient->send(
+            Argument::that(
+                function (RequestInterface $request) {
+                    self::assertRequestJsonBodyContains('number', '14845551212', $request);
+                    self::assertRequestJsonBodyContains('payee', 'Test Verify', $request);
+                    self::assertRequestJsonBodyContains('amount', '5.25', $request);
+                    self::assertRequestJsonBodyContains('workflow_id', 5, $request);
+                    self::assertRequestMatchesUrl('https://api.nexmo.com/verify/psd2/json', $request);
 
-            return true;
-        }))->willReturn($this->getResponse('start'))
+                    return true;
+                }
+            )
+        )->willReturn($this->getResponse('start'))
             ->shouldBeCalledTimes(1);
 
         $request = new RequestPSD2('14845551212', 'Test Verify', '5.25', 5);
@@ -238,10 +258,12 @@ class ClientTest extends TestCase
     {
         $response = $this->setupClientForStart('start');
 
-        @$verification = $this->client->start([
-            'number' => '14845551212',
-            'brand' => 'Test Verify'
-        ]);
+        @$verification = $this->client->start(
+            [
+                'number' => '14845551212',
+                'brand' => 'Test Verify'
+            ]
+        );
 
         self::assertSame($response, @$verification->getResponse());
     }
@@ -256,10 +278,12 @@ class ClientTest extends TestCase
         $response = $this->setupClientForStart('start-error');
 
         try {
-            @$this->client->start([
-                'number' => '14845551212',
-                'brand' => 'Test Verify'
-            ]);
+            @$this->client->start(
+                [
+                    'number' => '14845551212',
+                    'brand' => 'Test Verify'
+                ]
+            );
 
             self::fail('did not throw exception');
         } catch (Client\Exception\Request $e) {
@@ -282,10 +306,12 @@ class ClientTest extends TestCase
         $response = $this->setupClientForStart('server-error');
 
         try {
-            @$this->client->start([
-                'number' => '14845551212',
-                'brand' => 'Test Verify'
-            ]);
+            @$this->client->start(
+                [
+                    'number' => '14845551212',
+                    'brand' => 'Test Verify'
+                ]
+            );
 
             self::fail('did not throw exception');
         } catch (ServerException $e) {
@@ -303,13 +329,17 @@ class ClientTest extends TestCase
     protected function setupClientForStart($response): Response
     {
         $response = $this->getResponse($response);
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            self::assertRequestJsonBodyContains('number', '14845551212', $request);
-            self::assertRequestJsonBodyContains('brand', 'Test Verify', $request);
-            self::assertRequestMatchesUrl('https://api.nexmo.com/verify/json', $request);
+        $this->vonageClient->send(
+            Argument::that(
+                function (RequestInterface $request) {
+                    self::assertRequestJsonBodyContains('number', '14845551212', $request);
+                    self::assertRequestJsonBodyContains('brand', 'Test Verify', $request);
+                    self::assertRequestMatchesUrl('https://api.nexmo.com/verify/json', $request);
 
-            return true;
-        }))->willReturn($response)
+                    return true;
+                }
+            )
+        )->willReturn($response)
             ->shouldBeCalledTimes(1);
 
         return $response;
@@ -412,12 +442,16 @@ class ClientTest extends TestCase
     protected function setupClientForSearch($response): Response
     {
         $response = $this->getResponse($response);
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            self::assertRequestJsonBodyContains('request_id', '44a5279b27dd4a638d614d265ad57a77', $request);
-            self::assertRequestMatchesUrl('https://api.nexmo.com/verify/search/json', $request);
+        $this->vonageClient->send(
+            Argument::that(
+                function (RequestInterface $request) {
+                    self::assertRequestJsonBodyContains('request_id', '44a5279b27dd4a638d614d265ad57a77', $request);
+                    self::assertRequestMatchesUrl('https://api.nexmo.com/verify/search/json', $request);
 
-            return true;
-        }))->willReturn($response)
+                    return true;
+                }
+            )
+        )->willReturn($response)
             ->shouldBeCalledTimes(1);
 
         return $response;
@@ -613,13 +647,17 @@ class ClientTest extends TestCase
     protected function setupClientForControl($response, $cmd): Response
     {
         $response = $this->getResponse($response);
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($cmd) {
-            self::assertRequestJsonBodyContains('request_id', '44a5279b27dd4a638d614d265ad57a77', $request);
-            self::assertRequestJsonBodyContains('cmd', $cmd, $request);
-            self::assertRequestMatchesUrl('https://api.nexmo.com/verify/control/json', $request);
+        $this->vonageClient->send(
+            Argument::that(
+                function (RequestInterface $request) use ($cmd) {
+                    self::assertRequestJsonBodyContains('request_id', '44a5279b27dd4a638d614d265ad57a77', $request);
+                    self::assertRequestJsonBodyContains('cmd', $cmd, $request);
+                    self::assertRequestMatchesUrl('https://api.nexmo.com/verify/control/json', $request);
 
-            return true;
-        }))->willReturn($response)
+                    return true;
+                }
+            )
+        )->willReturn($response)
             ->shouldBeCalledTimes(1);
 
         return $response;
@@ -724,17 +762,21 @@ class ClientTest extends TestCase
     {
         $response = $this->getResponse($response);
 
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($code, $ip) {
-            self::assertRequestJsonBodyContains('request_id', '44a5279b27dd4a638d614d265ad57a77', $request);
-            self::assertRequestJsonBodyContains('code', $code, $request);
+        $this->vonageClient->send(
+            Argument::that(
+                function (RequestInterface $request) use ($code, $ip) {
+                    self::assertRequestJsonBodyContains('request_id', '44a5279b27dd4a638d614d265ad57a77', $request);
+                    self::assertRequestJsonBodyContains('code', $code, $request);
 
-            if ($ip) {
-                self::assertRequestJsonBodyContains('ip_address', $ip, $request);
-            }
+                    if ($ip) {
+                        self::assertRequestJsonBodyContains('ip_address', $ip, $request);
+                    }
 
-            self::assertRequestMatchesUrl('https://api.nexmo.com/verify/check/json', $request);
-            return true;
-        }))->willReturn($response)
+                    self::assertRequestMatchesUrl('https://api.nexmo.com/verify/check/json', $request);
+                    return true;
+                }
+            )
+        )->willReturn($response)
             ->shouldBeCalledTimes(1);
 
         return $response;

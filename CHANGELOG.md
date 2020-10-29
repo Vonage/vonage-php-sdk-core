@@ -28,6 +28,7 @@
 ### Fixed
 
 * #257 Fixed namespaces (Zend => Laminas, Nexmo => Vonage)
+* #257 Fixed condition in Verify\Request::setCodeLength
 * #257 Fixed typos and some wording in README.md
 
 # 2.4.1
