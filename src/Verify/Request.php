@@ -102,7 +102,7 @@ class Request implements ArrayHydrateInterface
 
     public function setCodeLength(int $codeLength) : self
     {
-        if ($codeLength !== 4 || $codeLength !== 6) {
+        if ($codeLength !== 4 && $codeLength !== 6) {
             throw new \InvalidArgumentException('Pin length must be either 4 or 6 digits');
         }
 
