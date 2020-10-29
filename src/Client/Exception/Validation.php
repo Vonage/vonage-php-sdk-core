@@ -20,24 +20,13 @@ class Validation extends Request
      */
     private $errors;
 
-    /**
-     * Validation constructor.
-     *
-     * @param string $message
-     * @param int $code
-     * @param Throwable|null $previous
-     * @param array $errors
-     */
-    public function __construct($message = '', $code = 0, Throwable $previous = null, array $errors = [])
+    public function __construct(string $message = '', int $code = 0, Throwable $previous = null, array $errors = [])
     {
         $this->errors = $errors;
 
         parent::__construct($message, $code, $previous);
     }
 
-    /**
-     * @return array
-     */
     public function getValidationErrors(): array
     {
         return $this->errors;

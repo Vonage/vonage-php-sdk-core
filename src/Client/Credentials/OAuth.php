@@ -24,11 +24,6 @@ class OAuth extends AbstractCredentials
 {
     /**
      * Create a credential set with OAuth credentials.
-     *
-     * @param $consumerToken
-     * @param $consumerSecret
-     * @param $token
-     * @param $secret
      */
     public function __construct($consumerToken, $consumerSecret, $token, $secret)
     {

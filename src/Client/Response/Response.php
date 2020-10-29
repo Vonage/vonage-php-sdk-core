@@ -26,11 +26,6 @@ class Response extends AbstractResponse
      */
     protected $expected = [];
 
-    /**
-     * Response constructor.
-     *
-     * @param array $data
-     */
     public function __construct(array $data)
     {
         $keys = array_keys($data);

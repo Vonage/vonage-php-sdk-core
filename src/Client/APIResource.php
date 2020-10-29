@@ -81,12 +81,6 @@ class APIResource implements ClientAwareInterface
     protected $lastResponse;
 
     /**
-     * @param array $body
-     * @param string $uri
-     * @param array $headers
-     *
-     * @return array|null
-     *
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
      */
@@ -127,11 +121,6 @@ class APIResource implements ClientAwareInterface
     }
 
     /**
-     * @param string $id
-     * @param array $headers
-     *
-     * @return array|null
-     *
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
      */
@@ -172,12 +161,6 @@ class APIResource implements ClientAwareInterface
     }
 
     /**
-     * @param $id
-     * @param array $query
-     * @param array $headers
-     *
-     * @return mixed
-     *
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
      */
@@ -219,9 +202,6 @@ class APIResource implements ClientAwareInterface
         return json_decode($response->getBody()->getContents(), true);
     }
 
-    /**
-     * @return string|null
-     */
     public function getBaseUrl(): ?string
     {
         if (!$this->baseUrl && $this->client) {
@@ -231,25 +211,16 @@ class APIResource implements ClientAwareInterface
         return $this->baseUrl;
     }
 
-    /**
-     * @return string|null
-     */
     public function getBaseUri(): ?string
     {
         return $this->baseUri;
     }
 
-    /**
-     * @return string
-     */
     public function getCollectionName(): string
     {
         return $this->collectionName;
     }
 
-    /**
-     * @return IterableAPICollection
-     */
     public function getCollectionPrototype(): IterableAPICollection
     {
         if (is_null($this->collectionPrototype)) {
@@ -259,9 +230,6 @@ class APIResource implements ClientAwareInterface
         return clone $this->collectionPrototype;
     }
 
-    /**
-     * @return callable
-     */
     public function getExceptionErrorHandler(): callable
     {
         if (is_null($this->exceptionErrorHandler)) {
@@ -273,10 +241,6 @@ class APIResource implements ClientAwareInterface
 
     /**
      * Sets the error handler to use when reviewing API responses.
-     *
-     * @param callable $handler
-     *
-     * @return $this
      */
     public function setExceptionErrorHandler(callable $handler): self
     {
@@ -285,20 +249,11 @@ class APIResource implements ClientAwareInterface
         return $this;
     }
 
-    /**
-     * @param ResponseInterface $response
-     * @param RequestInterface $request
-     *
-     * @return mixed
-     */
     protected function getException(ResponseInterface $response, RequestInterface $request)
     {
         return $this->getExceptionErrorHandler()($response, $request);
     }
 
-    /**
-     * @return RequestInterface|null
-     */
     public function getLastRequest(): ?RequestInterface
     {
         $this->lastRequest->getBody()->rewind();
@@ -306,9 +261,6 @@ class APIResource implements ClientAwareInterface
         return $this->lastRequest;
     }
 
-    /**
-     * @return ResponseInterface|null
-     */
     public function getLastResponse(): ?ResponseInterface
     {
         $this->lastResponse->getBody()->rewind();
@@ -316,21 +268,12 @@ class APIResource implements ClientAwareInterface
         return $this->lastResponse;
     }
 
-    /**
-     * @return bool
-     */
     public function isHAL(): bool
     {
         return $this->isHAL;
     }
 
-    /**
-     * @param FilterInterface|null $filter
-     * @param string $uri
-     *
-     * @return IterableAPICollection
-     */
-    public function search(FilterInterface $filter = null, string $uri = ''): IterableAPICollection
+    public function search(?FilterInterface $filter = null, string $uri = ''): IterableAPICollection
     {
         if (is_null($filter)) {
             $filter = new EmptyFilter();
@@ -351,11 +294,6 @@ class APIResource implements ClientAwareInterface
         return $collection;
     }
 
-    /**
-     * @param string $url
-     *
-     * @return $this
-     */
     public function setBaseUrl(string $url): self
     {
         $this->baseUrl = $url;
@@ -363,11 +301,6 @@ class APIResource implements ClientAwareInterface
         return $this;
     }
 
-    /**
-     * @param string $uri
-     *
-     * @return $this
-     */
     public function setBaseUri(string $uri): self
     {
         $this->baseUri = $uri;
@@ -375,11 +308,6 @@ class APIResource implements ClientAwareInterface
         return $this;
     }
 
-    /**
-     * @param string $name
-     *
-     * @return $this
-     */
     public function setCollectionName(string $name): self
     {
         $this->collectionName = $name;
@@ -387,11 +315,6 @@ class APIResource implements ClientAwareInterface
         return $this;
     }
 
-    /**
-     * @param IterableAPICollection $prototype
-     *
-     * @return $this
-     */
     public function setCollectionPrototype(IterableAPICollection $prototype): self
     {
         $this->collectionPrototype = $prototype;
@@ -399,11 +322,6 @@ class APIResource implements ClientAwareInterface
         return $this;
     }
 
-    /**
-     * @param bool $state
-     *
-     * @return $this
-     */
     public function setIsHAL(bool $state): self
     {
         $this->isHAL = $state;
@@ -411,11 +329,6 @@ class APIResource implements ClientAwareInterface
         return $this;
     }
 
-    /**
-     * @param ResponseInterface $response
-     *
-     * @return $this
-     */
     public function setLastResponse(ResponseInterface $response): self
     {
         $this->lastResponse = $response;
@@ -423,11 +336,6 @@ class APIResource implements ClientAwareInterface
         return $this;
     }
 
-    /**
-     * @param RequestInterface $request
-     *
-     * @return $this
-     */
     public function setLastRequest(RequestInterface $request): self
     {
         $this->lastRequest = $request;
@@ -437,12 +345,6 @@ class APIResource implements ClientAwareInterface
 
     /**
      * Allows form URL-encoded POST requests.
-     *
-     * @param array $formData
-     * @param string $uri
-     * @param array $headers
-     *
-     * @return string
      *
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
@@ -478,12 +380,6 @@ class APIResource implements ClientAwareInterface
     }
 
     /**
-     * @param string $id
-     * @param array $body
-     * @param array $headers
-     *
-     * @return array|null
-     *
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
      */
@@ -517,22 +413,15 @@ class APIResource implements ClientAwareInterface
         return json_decode($response->getBody()->getContents(), true);
     }
 
-    /**
-     * @return bool
-     */
     public function errorsOn200(): bool
     {
         return $this->errorsOn200;
     }
 
-    /**
-     * @param bool $value
-     *
-     * @return $this
-     */
     public function setErrorsOn200(bool $value): self
     {
         $this->errorsOn200 = $value;
+
         return $this;
     }
 }

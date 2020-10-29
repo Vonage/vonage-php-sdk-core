@@ -15,12 +15,8 @@ class SignatureSecret extends AbstractCredentials
 {
     /**
      * Create a credential set with an API key and signature secret.
-     *
-     * @param $key
-     * @param $signature_secret
-     * @param string $method
      */
-    public function __construct($key, $signature_secret, $method = 'md5hash')
+    public function __construct($key, $signature_secret, string $method = 'md5hash')
     {
         $this->credentials['api_key'] = $key;
         $this->credentials['signature_secret'] = $signature_secret;

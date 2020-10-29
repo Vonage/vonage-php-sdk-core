@@ -18,17 +18,11 @@ class ThrottleException extends Server
      */
     protected $timeout;
 
-    /**
-     * @param int $seconds
-     */
     public function setTimeout(int $seconds): void
     {
         $this->timeout = $seconds;
     }
 
-    /**
-     * @return int
-     */
     public function getTimeout(): int
     {
         return $this->timeout;

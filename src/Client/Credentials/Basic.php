@@ -28,7 +28,7 @@ class Basic extends AbstractCredentials
      */
     public function __construct($key, $secret)
     {
-        $this->credentials['api_key'] = $key;
-        $this->credentials['api_secret'] = $secret;
+        $this->credentials['api_key'] = (string)$key;
+        $this->credentials['api_secret'] = (string)$secret;
     }
 }

@@ -26,16 +26,16 @@ use function time;
  */
 class Keypair extends AbstractCredentials
 {
+    /**
+     * @var Key
+     */
     protected $key;
 
+    /**
+     * @var Sha256
+     */
     protected $signer;
 
-    /**
-     * Keypair constructor.
-     *
-     * @param $privateKey
-     * @param null $application
-     */
     public function __construct($privateKey, $application = null)
     {
         $this->credentials['key'] = $privateKey;
@@ -52,11 +52,6 @@ class Keypair extends AbstractCredentials
         $this->signer = new Sha256();
     }
 
-    /**
-     * @param array $claims
-     *
-     * @return Token
-     */
     public function generateJwt(array $claims = []): Token
     {
         $exp = time() + 60;
@@ -82,26 +77,26 @@ class Keypair extends AbstractCredentials
         }
 
         $builder = new Builder();
-        $builder->setIssuedAt($iat)
-            ->setExpiration($exp)
-            ->setId($jti);
+        $builder->issuedAt($iat)
+            ->expiresAt($exp)
+            ->identifiedBy($jti);
 
         if (isset($claims['nbf'])) {
-            $builder->setNotBefore($claims['nbf']);
+            $builder->canOnlyBeUsedAfter($claims['nbf']);
 
             unset($claims['nbf']);
         }
 
         if (isset($this->credentials['application'])) {
-            $builder->set('application_id', $this->credentials['application']);
+            $builder->withClaim('application_id', $this->credentials['application']);
         }
 
         if (!empty($claims)) {
             foreach ($claims as $claim => $value) {
-                $builder->set($claim, $value);
+                $builder->withClaim($claim, $value);
             }
         }
 
-        return $builder->sign($this->signer, $this->key)->getToken();
+        return $builder->getToken($this->signer, $this->key);
     }
 }

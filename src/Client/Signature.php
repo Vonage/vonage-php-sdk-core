@@ -45,10 +45,6 @@ class Signature
     /**
      * Create a signature from a set of parameters.
      *
-     * @param array $params
-     * @param $secret
-     * @param $signatureMethod
-     *
      * @throws ClientException
      */
     public function __construct(array $params, $secret, $signatureMethod)
@@ -110,8 +106,6 @@ class Signature
 
     /**
      * Get the original parameters.
-     *
-     * @return array
      */
     public function getParams(): array
     {
@@ -120,8 +114,6 @@ class Signature
 
     /**
      * Get the signature for the parameters.
-     *
-     * @return string
      */
     public function getSignature(): string
     {
@@ -130,8 +122,6 @@ class Signature
 
     /**
      * Get a full set of parameters including the signature and timestamp.
-     *
-     * @return array
      */
     public function getSignedParams(): array
     {
@@ -145,10 +135,7 @@ class Signature
      * signature parameter and calculate the correct one. Then call this
      * method and supply the signature that came in with the request.
      *
-     * @param array| string $signature The incoming sig parameter to check
-     *      (or all incoming params)
-     *
-     * @return bool
+     * @param array|string $signature The incoming sig parameter to check (or all incoming params)
      *
      * @throws InvalidArgumentException
      */
@@ -167,10 +154,8 @@ class Signature
 
     /**
      * Allow easy comparison.
-     *
-     * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getSignature();
     }

@@ -19,17 +19,7 @@ namespace Vonage\Client\Factory;
  */
 interface FactoryInterface
 {
-    /**
-     * @param $api
-     *
-     * @return bool
-     */
-    public function hasApi($api): bool;
+    public function hasApi(string $api): bool;
 
-    /**
-     * @param $api
-     *
-     * @return mixed
-     */
-    public function getApi($api);
+    public function getApi(string $api);
 }

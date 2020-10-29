@@ -41,12 +41,6 @@ class MapFactory implements FactoryInterface, ContainerInterface
      */
     protected $client;
 
-    /**
-     * MapFactory constructor.
-     *
-     * @param $map
-     * @param Client $client
-     */
     public function __construct($map, Client $client)
     {
         $this->map = $map;
@@ -56,7 +50,6 @@ class MapFactory implements FactoryInterface, ContainerInterface
     /**
      * @param string $id
      *
-     * @return bool
      * @noinspection PhpMissingParamTypeInspection
      */
     public function has($id): bool
@@ -65,13 +58,9 @@ class MapFactory implements FactoryInterface, ContainerInterface
     }
 
     /**
-     * @param $api
-     *
-     * @return bool
-     *
      * @deprecated Use has() instead
      */
-    public function hasApi($api): bool
+    public function hasApi(string $api): bool
     {
         return $this->has($api);
     }
@@ -79,7 +68,6 @@ class MapFactory implements FactoryInterface, ContainerInterface
     /**
      * @param string $id
      *
-     * @return mixed
      * @noinspection PhpMissingParamTypeInspection
      */
     public function get($id)
@@ -94,31 +82,19 @@ class MapFactory implements FactoryInterface, ContainerInterface
         return $instance;
     }
 
-    /**
-     * @return Client
-     */
     public function getClient(): Client
     {
         return $this->client;
     }
 
     /**
-     * @param $api
-     *
-     * @return mixed
-     *
      * @deprecated Use get() instead
      */
-    public function getApi($api)
+    public function getApi(string $api)
     {
         return $this->get($api);
     }
 
-    /**
-     * @param $key
-     *
-     * @return mixed
-     */
     public function make($key)
     {
         if (!$this->has($key)) {
@@ -147,10 +123,6 @@ class MapFactory implements FactoryInterface, ContainerInterface
         return $instance;
     }
 
-    /**
-     * @param $key
-     * @param $value
-     */
     public function set($key, $value): void
     {
         $this->map[$key] = $value;

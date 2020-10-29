@@ -13,9 +13,9 @@ namespace Vonage\Client\Response;
 
 interface ResponseInterface
 {
-    public function getData();
+    public function getData(): array;
 
-    public function isError();
+    public function isError(): bool;
 
-    public function isSuccess();
+    public function isSuccess(): bool;
 }

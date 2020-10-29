@@ -15,10 +15,5 @@ use Vonage\Client\Response\ResponseInterface;
 
 interface WrapResponseInterface
 {
-    /**
-     * @param ResponseInterface $response
-     *
-     * @return ResponseInterface
-     */
     public function wrapResponse(ResponseInterface $response): ResponseInterface;
 }

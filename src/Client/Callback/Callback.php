@@ -26,14 +26,16 @@ class Callback implements CallbackInterface
     public const ENV_POST = 'post';
     public const ENV_GET = 'get';
 
+    /**
+     * @var array
+     */
     protected $expected = [];
-    protected $data;
 
     /**
-     * Callback constructor.
-     *
-     * @param array $data
+     * @var array
      */
+    protected $data;
+
     public function __construct(array $data)
     {
         $keys = array_keys($data);
@@ -46,20 +48,15 @@ class Callback implements CallbackInterface
         $this->data = $data;
     }
 
-    /**
-     * @return array
-     */
     public function getData(): array
     {
         return $this->data;
     }
 
     /**
-     * @param string $source
-     *
      * @return Callback|callable
      */
-    public static function fromEnv($source = self::ENV_ALL)
+    public static function fromEnv(string $source = self::ENV_ALL)
     {
         switch (strtolower($source)) {
             case 'post':

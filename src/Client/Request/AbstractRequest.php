@@ -15,11 +15,11 @@ use function array_filter;
 
 abstract class AbstractRequest implements RequestInterface
 {
+    /**
+     * @var array
+     */
     protected $params = [];
 
-    /**
-     * @return array
-     */
     public function getParams(): array
     {
         return array_filter($this->params, 'is_scalar');

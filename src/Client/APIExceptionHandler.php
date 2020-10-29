@@ -36,9 +36,6 @@ class APIExceptionHandler
     }
 
     /**
-     * @param ResponseInterface $response
-     * @param RequestInterface $request
-     *
      * @return Exception\Request|Exception\Server
      *
      * @throws Exception\Exception

@@ -18,49 +18,32 @@ use function sprintf;
 
 abstract class AbstractCredentials implements CredentialsInterface
 {
+    /**
+     * @var array
+     */
     protected $credentials = [];
 
-    /**
-     * @param mixed $offset
-     *
-     * @return bool
-     */
     public function offsetExists($offset): bool
     {
         return isset($this->credentials[$offset]);
     }
 
-    /**
-     * @param mixed $offset
-     *
-     * @return mixed
-     */
     public function offsetGet($offset)
     {
         return $this->credentials[$offset];
     }
 
-    /**
-     * @param mixed $offset
-     * @param mixed $value
-     */
     public function offsetSet($offset, $value): void
     {
         throw $this->readOnlyException();
     }
 
-    /**
-     * @param mixed $offset
-     */
     public function offsetUnset($offset): void
     {
         throw $this->readOnlyException();
     }
 
     /**
-     * @param $name
-     *
-     * @return mixed
      * @noinspection MagicMethodsValidityInspection
      */
     public function __get($name)
@@ -68,17 +51,11 @@ abstract class AbstractCredentials implements CredentialsInterface
         return $this->credentials[$name];
     }
 
-    /**
-     * @return array
-     */
     public function asArray(): array
     {
         return $this->credentials;
     }
 
-    /**
-     * @return RuntimeException
-     */
     protected function readOnlyException(): RuntimeException
     {
         return new RuntimeException(

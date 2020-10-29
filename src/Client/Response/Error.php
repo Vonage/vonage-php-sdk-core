@@ -13,12 +13,7 @@ namespace Vonage\Client\Response;
 
 class Error extends Response
 {
-    /**
-     * Error constructor.
-     *
-     * @param $data
-     */
-    public function __construct($data)
+    public function __construct(array $data)
     {
         //normalize the data
         if (isset($data['error_text'])) {
@@ -30,35 +25,23 @@ class Error extends Response
         parent::__construct($data);
     }
 
-    /**
-     * @return bool
-     */
     public function isError(): bool
     {
         return true;
     }
 
-    /**
-     * @return bool
-     */
     public function isSuccess(): bool
     {
         return false;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getCode()
+    public function getCode(): int
     {
-        return $this->data['status'];
+        return (int)$this->data['status'];
     }
 
-    /**
-     * @return mixed
-     */
-    public function getMessage()
+    public function getMessage(): string
     {
-        return $this->data['error-text'];
+        return (string)$this->data['error-text'];
     }
 }
