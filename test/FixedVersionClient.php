@@ -15,9 +15,6 @@ use Vonage\Client;
 
 class FixedVersionClient extends Client
 {
-    /**
-     * @return string
-     */
     public function getVersion(): string
     {
         return '1.2.3';

@@ -161,11 +161,6 @@ class InboundSMSTest extends TestCase
         new InboundSMS($request);
     }
 
-    /**
-     * @param string $requestName
-     *
-     * @return mixed
-     */
     protected function getQueryStringFromRequest(string $requestName)
     {
         $text = file_get_contents(__DIR__ . '/../requests/' . $requestName . '.txt');
@@ -176,11 +171,6 @@ class InboundSMSTest extends TestCase
         return $query;
     }
 
-    /**
-     * @param string $requestName
-     *
-     * @return mixed
-     */
     protected function getBodyFromRequest(string $requestName)
     {
         $text = file_get_contents(__DIR__ . '/../requests/' . $requestName . '.txt');

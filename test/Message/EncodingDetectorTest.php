@@ -28,9 +28,6 @@ class EncodingDetectorTest extends TestCase
         self::assertEquals($expected, $d->requiresUnicodeEncoding($content));
     }
 
-    /**
-     * @return array
-     */
     public function unicodeProvider(): array
     {
         $r = [];

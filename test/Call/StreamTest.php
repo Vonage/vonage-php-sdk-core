@@ -43,9 +43,6 @@ class StreamTest extends TestCase
 
     protected $class;
 
-    /**
-     * @var mixed
-     */
     protected $vonageClient;
 
     public function setUp(): void
@@ -222,11 +219,6 @@ class StreamTest extends TestCase
 
     /**
      * Get the API response we'd expect for a call to the API.
-     *
-     * @param string $type
-     * @param int $status
-     *
-     * @return Response
      */
     protected function getResponse(string $type = 'success', int $status = 200): Response
     {

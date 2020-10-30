@@ -38,8 +38,6 @@ class InboundMessageTest extends TestCase
      * Inbound messages can be created from a PSR-7 server request.
      *
      * @dataProvider getRequests
-     *
-     * @param ServerRequest $request
      */
     public function testCanCreateWithServerRequest(ServerRequest $request): void
     {
@@ -220,8 +218,6 @@ class InboundMessageTest extends TestCase
      * @param string $method
      * @param string $type
      * @param array $headers
-     *
-     * @return ServerRequest
      */
     protected function getServerRequest(
         $url = 'https://ohyt2ctr9l0z.runscope.net/sms_post',
@@ -253,10 +249,6 @@ class InboundMessageTest extends TestCase
 
     /**
      * Get the API response we'd expect for a call to the API.
-     *
-     * @param string $type
-     *
-     * @return Response
      */
     protected function getResponse(string $type = 'success'): Response
     {

@@ -22,7 +22,6 @@ use function fopen;
 /**
  * Test that split messages allow access to all the underlying messages. The response from sending a message is the
  * only time a message may contain multiple 'parts'. When fetched from the API, each message is separate.
- *
  */
 class FetchedMessageTest extends TestCase
 {
@@ -87,10 +86,6 @@ class FetchedMessageTest extends TestCase
     /**
      * Get the API response we'd expect for a call to the API. Message API currently returns 200 all the time, so only
      * change between success / fail is body of the message.
-     *
-     * @param string $type
-     *
-     * @return Response
      */
     protected function getResponse(string $type = 'success'): Response
     {

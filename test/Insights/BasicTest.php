@@ -50,9 +50,6 @@ class BasicTest extends TestCase
         self::assertEquals($inputData['country_prefix'], $basic->getCountryPrefix());
     }
 
-    /**
-     * @return array
-     */
     public function basicTestProvider(): array
     {
         $r = [];

@@ -94,8 +94,6 @@ class KeypairTest extends TestCase
 
     /**
      * @param $jwt
-     *
-     * @return array
      */
     protected function decodeJWT($jwt): array
     {

@@ -41,9 +41,6 @@ class ClientTest extends TestCase
 {
     use Psr7AssertionTrait;
 
-    /**
-     * @var mixed
-     */
     protected $vonageClient;
 
     /**
@@ -285,9 +282,6 @@ class ClientTest extends TestCase
         self::markTestIncomplete('Remove error suppression when object passing has been removed');
     }
 
-    /**
-     * @return array
-     */
     public function getApplication(): array
     {
         return [
@@ -401,9 +395,9 @@ class ClientTest extends TestCase
     }
 
     /**
-     * @return array[]
-     *
      * @throws Exception
+     *
+     * @return array[]
      */
     public function updateApplication(): array
     {
@@ -458,9 +452,6 @@ class ClientTest extends TestCase
         self::assertTrue(@$this->applicationClient->delete($payload));
     }
 
-    /**
-     * @return array
-     */
     public function deleteApplication(): array
     {
         return [
@@ -652,9 +643,9 @@ class ClientTest extends TestCase
     }
 
     /**
-     * @return array[]
-     *
      * @throws Exception
+     *
+     * @return array[]
      */
     public function createApplication(): array
     {
@@ -751,11 +742,6 @@ class ClientTest extends TestCase
 
     /**
      * Get the API response we'd expect for a call to the API.
-     *
-     * @param string $type
-     * @param int $status
-     *
-     * @return Response
      */
     protected function getResponse(string $type = 'success', int $status = 200): Response
     {

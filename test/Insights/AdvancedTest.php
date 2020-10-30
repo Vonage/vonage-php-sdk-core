@@ -40,9 +40,6 @@ class AdvancedTest extends TestCase
         self::assertEquals($inputData['reachable'], $advanced->getReachable());
     }
 
-    /**
-     * @return array
-     */
     public function advancedTestProvider(): array
     {
         $r = [];

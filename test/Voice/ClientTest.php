@@ -42,9 +42,6 @@ class ClientTest extends TestCase
      */
     protected $api;
 
-    /**
-     * @var mixed
-     */
     protected $vonageClient;
 
     /**
@@ -437,7 +434,6 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('stream-stopped'));
 
-
         $response = $this->voiceClient->stopStreamAudio($id);
 
         self::assertEquals($id, $response['uuid']);
@@ -545,11 +541,6 @@ class ClientTest extends TestCase
 
     /**
      * Get the API response we'd expect for a call to the API.
-     *
-     * @param string $type
-     * @param int $status
-     *
-     * @return Response
      */
     protected function getResponse(string $type = 'success', int $status = 200): Response
     {

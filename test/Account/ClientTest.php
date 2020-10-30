@@ -33,9 +33,6 @@ class ClientTest extends TestCase
 {
     use Psr7AssertionTrait;
 
-    /**
-     * @var mixed
-     */
     protected $vonageClient;
 
     /**
@@ -175,7 +172,6 @@ class ClientTest extends TestCase
      * @throws ServerException
      *
      * @author Chris Tankersley <chris.tankersley@vonage.com>
-     *
      */
     public function testGetBalanceWithNoResults(): void
     {
@@ -220,7 +216,6 @@ class ClientTest extends TestCase
      * @throws ServerException
      *
      * @author Chris Tankersley <chris.tankersley@vonage.com>
-     *
      */
     public function testGetConfigBlankResponse(): void
     {
@@ -674,23 +669,12 @@ class ClientTest extends TestCase
 
     /**
      * Get the API response we'd expect for a call to the API.
-     *
-     * @param string $type
-     * @param int $status
-     *
-     * @return Response
      */
     protected function getResponse(string $type = 'success', int $status = 200): Response
     {
         return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'rb'), $status);
     }
 
-    /**
-     * @param string $type
-     * @param int $status
-     *
-     * @return Response
-     */
     protected function getGenericResponse(string $type = 'success', int $status = 200): Response
     {
         return new Response(fopen(__DIR__ . '/../responses/general/' . $type . '.json', 'rb'), $status);

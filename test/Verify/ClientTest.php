@@ -39,9 +39,6 @@ class ClientTest extends TestCase
      */
     protected $client;
 
-    /**
-     * @var mixed
-     */
     protected $vonageClient;
 
     /**
@@ -360,8 +357,6 @@ class ClientTest extends TestCase
 
     /**
      * @param $response
-     *
-     * @return Response
      */
     protected function setupClientForStart($response): Response
     {
@@ -473,8 +468,6 @@ class ClientTest extends TestCase
 
     /**
      * @param $response
-     *
-     * @return Response
      */
     protected function setupClientForSearch($response): Response
     {
@@ -678,8 +671,6 @@ class ClientTest extends TestCase
     /**
      * @param $response
      * @param $cmd
-     *
-     * @return Response
      */
     protected function setupClientForControl($response, $cmd): Response
     {
@@ -791,9 +782,6 @@ class ClientTest extends TestCase
     /**
      * @param $response
      * @param $code
-     * @param string|null $ip
-     *
-     * @return Response
      */
     protected function setupClientForCheck($response, $code, ?string $ip = null): Response
     {
@@ -822,10 +810,6 @@ class ClientTest extends TestCase
     /**
      * Get the API response we'd expect for a call to the API. Verify API currently returns 200 all the time, so only
      * change between success / fail is body of the message.
-     *
-     * @param string $type
-     *
-     * @return Response
      */
     protected function getResponse(string $type = 'success'): Response
     {

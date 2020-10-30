@@ -24,9 +24,6 @@ class ClientFactoryTest extends TestCase
      */
     protected $mapFactory;
 
-    /**
-     * @var mixed
-     */
     protected $vonageClient;
 
     public function setUp(): void

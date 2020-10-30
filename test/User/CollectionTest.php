@@ -29,9 +29,6 @@ class CollectionTest extends TestCase
 {
     use Psr7AssertionTrait;
 
-    /**
-     * @var mixed
-     */
     protected $vonageClient;
 
     /**
@@ -214,8 +211,6 @@ class CollectionTest extends TestCase
 
     /**
      * Getting a user can use an object or an ID.
-     *
-     * @return array
      */
     public function getUser(): array
     {
@@ -227,8 +222,6 @@ class CollectionTest extends TestCase
 
     /**
      * Creating a user can take a Call object or a simple array.
-     *
-     * @return array
      */
     public function postUser(): array
     {
@@ -249,11 +242,6 @@ class CollectionTest extends TestCase
 
     /**
      * Get the API response we'd expect for a call to the API.
-     *
-     * @param string $type
-     * @param int $status
-     *
-     * @return Response
      */
     protected function getResponse(string $type = 'success', int $status = 200): Response
     {

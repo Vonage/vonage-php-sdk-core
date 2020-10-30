@@ -42,9 +42,6 @@ class ClientTest extends TestCase
     use Psr7AssertionTrait;
     use MessageAssertionTrait;
 
-    /**
-     * @var mixed
-     */
     protected $vonageClient;
 
     /**
@@ -767,8 +764,7 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($apiResponse);
 
-
-        // If we're expecting this to throw an exception, listen for it in advance
+    // If we're expecting this to throw an exception, listen for it in advance
         if ($expectedException !== null) {
             $this->expectException($expectedException);
             $this->expectExceptionMessage($expectedResponse);
@@ -780,9 +776,6 @@ class ClientTest extends TestCase
         self::assertListOfMessagesEqual($expectedResponse, $rejectionsResponse);
     }
 
-    /**
-     * @return array
-     */
     public function searchRejectionsProvider(): array
     {
         $r = [];
@@ -1033,11 +1026,6 @@ class ClientTest extends TestCase
     /**
      * Get the API response we'd expect for a call to the API. Message API currently returns 200 all the time, so only
      * change between success / fail is body of the message.
-     *
-     * @param string $type
-     * @param int $status
-     *
-     * @return Response
      */
     protected function getResponse(string $type = 'success', int $status = 200): Response
     {

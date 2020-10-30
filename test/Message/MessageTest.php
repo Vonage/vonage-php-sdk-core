@@ -131,9 +131,6 @@ class MessageTest extends TestCase
         self::assertEquals($d['type'], $encoding);
     }
 
-    /**
-     * @return array
-     */
     public function messageEncodingProvider(): array
     {
         return [
@@ -146,10 +143,6 @@ class MessageTest extends TestCase
     /**
      * Get the API response we'd expect for a call to the API. Message API currently returns 200 all the time, so only
      * change between success / fail is body of the message.
-     *
-     * @param string $type
-     *
-     * @return Response
      */
     protected function getResponse(string $type = 'success'): Response
     {

@@ -36,9 +36,6 @@ class CollectionTest extends TestCase
      */
     protected $api;
 
-    /**
-     * @var mixed
-     */
     protected $vonageClient;
 
     /**
@@ -299,8 +296,6 @@ class CollectionTest extends TestCase
 
     /**
      * Getting a call can use an object or an ID.
-     *
-     * @return array
      */
     public function getCall(): array
     {
@@ -312,8 +307,6 @@ class CollectionTest extends TestCase
 
     /**
      * Creating a call with an NCCO can take a Call object or a simple array.
-     *
-     * @return array
      */
     public function postCallNcco(): array
     {
@@ -336,7 +329,6 @@ class CollectionTest extends TestCase
             ]
         ];
 
-
         $call = @new Call();
         @$call->setTo('14843331234')
             ->setFrom('14843335555')
@@ -355,8 +347,6 @@ class CollectionTest extends TestCase
 
     /**
      * Creating a call can take a Call object or a simple array.
-     *
-     * @return array
      */
     public function postCall(): array
     {
@@ -377,7 +367,6 @@ class CollectionTest extends TestCase
             'event_method' => 'POST'
         ];
 
-
         $call = @new Call();
         @$call->setTo('14843331234')
             ->setFrom('14843335555')
@@ -394,8 +383,6 @@ class CollectionTest extends TestCase
 
     /**
      * Can update the call with an object or a raw array.
-     *
-     * @return array
      */
     public function putCall(): array
     {
@@ -421,11 +408,6 @@ class CollectionTest extends TestCase
 
     /**
      * Get the API response we'd expect for a call to the API.
-     *
-     * @param string $type
-     * @param int $status
-     *
-     * @return Response
      */
     protected function getResponse(string $type = 'success', int $status = 200): Response
     {

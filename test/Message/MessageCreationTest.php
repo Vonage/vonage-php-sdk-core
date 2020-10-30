@@ -116,8 +116,6 @@ class MessageCreationTest extends TestCase
 
     /**
      * Returns a series of methods/args to test on a Message object
-     *
-     * @return array
      */
     public static function responseMethodChangeList(): array
     {

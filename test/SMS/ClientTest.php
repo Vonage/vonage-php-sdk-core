@@ -38,9 +38,6 @@ class ClientTest extends TestCase
      */
     protected $api;
 
-    /**
-     * @var mixed
-     */
     protected $vonageClient;
 
     /**
@@ -340,11 +337,6 @@ class ClientTest extends TestCase
     /**
      * Get the API response we'd expect for a call to the API. Message API currently returns 200 all the time, so only
      * change between success / fail is body of the message.
-     *
-     * @param string $type
-     * @param int $status
-     *
-     * @return Response
      */
     protected function getResponse(string $type = 'success', int $status = 200): Response
     {

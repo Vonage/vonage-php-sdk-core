@@ -36,9 +36,6 @@ class ClientTest extends TestCase
      */
     protected $apiClient;
 
-    /**
-     * @var mixed
-     */
     protected $vonageClient;
 
     /**
@@ -97,7 +94,6 @@ class ClientTest extends TestCase
 
             self::assertRequestFormBodyContains('country', 'US', $request);
             self::assertRequestFormBodyContains('msisdn', $expectedId, $request);
-
 
             self::assertRequestFormBodyContains('moHttpUrl', 'https://example.com/new_message', $request);
             self::assertRequestFormBodyContains('voiceCallbackType', 'vxml', $request);
@@ -192,9 +188,6 @@ class ClientTest extends TestCase
         self::assertSame($id, $number->getId());
     }
 
-    /**
-     * @return array
-     */
     public function numbers(): array
     {
         return [
@@ -501,9 +494,6 @@ class ClientTest extends TestCase
         @$this->numberClient->purchase($num);
     }
 
-    /**
-     * @return array
-     */
     public function purchaseNumberErrorProvider(): array
     {
         $r = [];
@@ -574,8 +564,7 @@ class ClientTest extends TestCase
             return $request->getUri()->getPath() === '/account/numbers';
         }))->willReturn($this->getResponse('single'));
 
-
-        // Then we get a POST request to cancel
+    // Then we get a POST request to cancel
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             if ($request->getUri()->getPath() === '/number/cancel') {
                 self::assertEquals('rest.nexmo.com', $request->getUri()->getHost());
@@ -602,8 +591,7 @@ class ClientTest extends TestCase
             return $request->getUri()->getPath() === '/account/numbers';
         }))->willReturn($this->getResponse('single'));
 
-
-        // Then we get a POST request to cancel
+    // Then we get a POST request to cancel
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             if ($request->getUri()->getPath() === '/number/cancel') {
                 self::assertEquals('rest.nexmo.com', $request->getUri()->getHost());
@@ -674,11 +662,6 @@ class ClientTest extends TestCase
 
     /**
      * Get the API response we'd expect for a call to the API.
-     *
-     * @param string $type
-     * @param int $status
-     *
-     * @return Response
      */
     protected function getResponse(string $type = 'success', int $status = 200): Response
     {

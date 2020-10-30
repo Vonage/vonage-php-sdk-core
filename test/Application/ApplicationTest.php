@@ -172,10 +172,6 @@ class ApplicationTest extends TestCase
 
     /**
      * Get the API response we'd expect for a call to the API.
-     *
-     * @param string $type
-     *
-     * @return Response
      */
     protected function getResponse(string $type = 'success'): Response
     {

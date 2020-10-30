@@ -65,9 +65,6 @@ class PrefixPriceTest extends TestCase
         self::assertEquals("0.123", $prefixPrice->getPriceForNetwork('21039'));
     }
 
-    /**
-     * @return array
-     */
     public function prefixPriceProvider(): array
     {
         $r = [];

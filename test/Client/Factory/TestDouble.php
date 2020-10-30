@@ -20,9 +20,6 @@ class TestDouble implements Client\ClientAwareInterface
      */
     public $client;
 
-    /**
-     * @param Client $client
-     */
     public function setClient(Client $client): void
     {
         $this->client = $client;

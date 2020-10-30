@@ -112,11 +112,6 @@ class DeliveryReceiptTest extends TestCase
         new DeliveryReceipt($request);
     }
 
-    /**
-     * @param string $requestName
-     *
-     * @return mixed
-     */
     protected function getQueryStringFromRequest(string $requestName)
     {
         $text = file_get_contents(__DIR__ . '/../requests/' . $requestName . '.txt');
@@ -128,10 +123,7 @@ class DeliveryReceiptTest extends TestCase
     }
 
     /**
-     * @param string $requestName
      * @param bool $json
-     *
-     * @return mixed
      */
     protected function getBodyFromRequest(string $requestName, $json = true)
     {

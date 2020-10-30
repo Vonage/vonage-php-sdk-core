@@ -26,9 +26,6 @@ trait ResponseTrait
 {
     /**
      * @param string|array $type
-     * @param int $status
-     *
-     * @return Response
      */
     protected function getResponse($type = 'success', int $status = 200): Response
     {
@@ -41,8 +38,6 @@ trait ResponseTrait
 
     /**
      * @param $type
-     *
-     * @return string
      */
     protected function getResponseBody($type): string
     {
@@ -53,8 +48,6 @@ trait ResponseTrait
 
     /**
      * @param $type
-     *
-     * @return mixed
      */
     protected function getResponseData($type)
     {

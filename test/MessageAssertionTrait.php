@@ -18,10 +18,7 @@ use function count;
 
 trait MessageAssertionTrait
 {
-    /**
-     * @param array $expected
-     * @param array $actual
-     */
+
     public static function assertListOfMessagesEqual(array $expected, array $actual): void
     {
         $expectedCount = count($expected);
@@ -41,10 +38,6 @@ trait MessageAssertionTrait
         }
     }
 
-    /**
-     * @param MessageInterface $expected
-     * @param MessageInterface $actual
-     */
     public static function assertMessagesEqual(MessageInterface $expected, MessageInterface $actual): void
     {
         self::assertEquals($expected->getResponseData(), $actual->getResponseData());

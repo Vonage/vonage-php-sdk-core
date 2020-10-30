@@ -677,8 +677,6 @@ class ClientTest extends TestCase
     /**
      * Allow tests to check that the API client is correctly forming the HTTP request before sending it to the HTTP
      * client.
-     *
-     * @return HttpMock
      */
     protected function getMockHttp(): HttpMock
     {
@@ -691,8 +689,6 @@ class ClientTest extends TestCase
      * @param string $type
      * @param string[] $params
      * @param string $url
-     *
-     * @return Request
      */
     protected function getRequest(
         $type = 'query',

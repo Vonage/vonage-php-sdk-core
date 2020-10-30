@@ -154,8 +154,6 @@ class ClientTest extends TestCase
 
     /**
      * Get the API response we'd expect for a call to the API.
-     *
-     * @return Response
      */
     protected function getResponse(): Response
     {

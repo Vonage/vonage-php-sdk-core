@@ -23,16 +23,12 @@ trait Psr7AssertionTrait
 {
     /**
      * @param $expected
-     * @param RequestInterface $request
      */
     public static function assertRequestMethod($expected, RequestInterface $request): void
     {
         self::assertEquals($expected, $request->getMethod());
     }
 
-    /**
-     * @param RequestInterface $request
-     */
     public static function assertRequestBodyIsEmpty(RequestInterface $request): void
     {
         $request->getBody()->rewind();
@@ -44,7 +40,6 @@ trait Psr7AssertionTrait
 
     /**
      * @param $expected
-     * @param RequestInterface $request
      */
     public static function assertRequestBodyIsJson($expected, RequestInterface $request): void
     {
@@ -59,7 +54,6 @@ trait Psr7AssertionTrait
      * @param $host
      * @param $path
      * @param $method
-     * @param RequestInterface $request
      */
     public static function assertRequestUrl($host, $path, $method, RequestInterface $request): void
     {
@@ -70,7 +64,6 @@ trait Psr7AssertionTrait
 
     /**
      * @param $key
-     * @param RequestInterface $request
      */
     public static function assertRequestQueryNotContains($key, RequestInterface $request): void
     {
@@ -84,7 +77,6 @@ trait Psr7AssertionTrait
     /**
      * @param $key
      * @param $value
-     * @param RequestInterface $request
      */
     public static function assertRequestQueryContains($key, $value, RequestInterface $request): void
     {
@@ -105,7 +97,6 @@ trait Psr7AssertionTrait
 
     /**
      * @param $key
-     * @param RequestInterface $request
      */
     public static function assertRequestQueryHas($key, RequestInterface $request): void
     {
@@ -118,7 +109,6 @@ trait Psr7AssertionTrait
     /**
      * @param $key
      * @param $value
-     * @param RequestInterface $request
      */
     public static function assertRequestFormBodyContains($key, $value, RequestInterface $request): void
     {
@@ -140,7 +130,6 @@ trait Psr7AssertionTrait
     /**
      * @param $key
      * @param $value
-     * @param RequestInterface $request
      */
     public static function assertRequestJsonBodyContains($key, $value, RequestInterface $request): void
     {
@@ -159,7 +148,6 @@ trait Psr7AssertionTrait
 
     /**
      * @param $url
-     * @param RequestInterface $request
      */
     public static function assertRequestMatchesUrl($url, RequestInterface $request): void
     {
@@ -168,7 +156,6 @@ trait Psr7AssertionTrait
 
     /**
      * @param $url
-     * @param RequestInterface $request
      */
     public static function assertRequestMatchesUrlWithQueryString($url, RequestInterface $request): void
     {

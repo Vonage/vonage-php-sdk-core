@@ -414,10 +414,6 @@ class VerificationTest extends TestCase
     /**
      * Get the API response we'd expect for a call to the API. Verify API currently returns 200 all the time, so only
      * change between success / fail is body of the message.
-     *
-     * @param string $type
-     *
-     * @return Response
      */
     protected function getResponse(string $type = 'success'): Response
     {

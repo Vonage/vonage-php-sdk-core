@@ -43,9 +43,6 @@ class CnamTraitTest extends TestCase
         self::assertEquals($inputData['caller_type'], $cnam->getCallerType());
     }
 
-    /**
-     * @return array
-     */
     public function cnamProvider(): array
     {
         $r = [];

@@ -277,11 +277,6 @@ class FactoryTest extends TestCase
         Factory::createFromArray(['foo' => 'bar']);
     }
 
-    /**
-     * @param string $requestName
-     *
-     * @return ServerRequest
-     */
     public function getRequest(string $requestName): ServerRequest
     {
         $text = file_get_contents(__DIR__ . '/../requests/' . $requestName . '.txt');

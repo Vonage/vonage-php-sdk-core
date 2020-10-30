@@ -52,9 +52,6 @@ class SignatureTest extends TestCase
         self::assertEquals($expected, $signature->getSignature());
     }
 
-    /**
-     * @return array
-     */
     public function hmacSignatureProvider(): array
     {
         $data = [];

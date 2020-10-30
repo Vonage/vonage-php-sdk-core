@@ -52,9 +52,6 @@ class CallTest extends TestCase
 
     protected $id;
 
-    /**
-     * @var mixed
-     */
     protected $vonageClient;
 
     public function setUp(): void
@@ -144,8 +141,6 @@ class CallTest extends TestCase
 
     /**
      * Can update the call with an object or a raw array.
-     *
-     * @return array
      */
     public function putCall(): array
     {
@@ -403,9 +398,6 @@ class CallTest extends TestCase
     /**
      * Use a Response object as the data source.
      *
-     * @param Call $entity
-     * @param Response $response
-     *
      * @throws ClientExceptionInterface
      * @throws ClientException
      * @throws RequestException
@@ -425,7 +417,6 @@ class CallTest extends TestCase
      * test; however, it's also needed to test that API calls - $entity->get(), $entity->post() - actually set the
      * response data without coupling to the internal methods.
      *
-     * @param Call $entity
      * @param $data
      *
      * @throws ClientExceptionInterface
@@ -455,11 +446,6 @@ class CallTest extends TestCase
 
     /**
      * Get the API response we'd expect for a call to the API.
-     *
-     * @param string $type
-     * @param int $status
-     *
-     * @return Response
      */
     protected function getResponse(string $type = 'success', int $status = 200): Response
     {

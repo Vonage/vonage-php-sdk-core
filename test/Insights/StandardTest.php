@@ -50,9 +50,6 @@ class StandardTest extends TestCase
         self::assertEquals($inputData['roaming'], $standard->getRoaming());
     }
 
-    /**
-     * @return array
-     */
     public function standardTestProvider(): array
     {
         $r = [];
