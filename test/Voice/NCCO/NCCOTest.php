@@ -26,10 +26,11 @@ class NCCOTest extends TestCase
             [
                 'action' => 'talk',
                 'bargeIn' => 'false',
-                'level' => 0,
-                'loop' => 1,
+                'level' => '0',
+                'loop' => '1',
                 'text' => 'Thank you for trying Vonage',
-                'voiceName' => 'kimberly'
+                'language' => 'en-US',
+                'style' => '0',
             ],
             [
                 'action' => 'record',
