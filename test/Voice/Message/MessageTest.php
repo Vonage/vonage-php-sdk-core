@@ -45,12 +45,12 @@ class MessageTest extends TestCase
     {
         $params = $this->message->getParams();
 
-        self::assertArrayHasKey('text', $params);
-        self::assertArrayHasKey('to', $params);
-        self::assertArrayHasKey('from', $params);
-        self::assertEquals($this->text, $params['text']);
-        self::assertEquals($this->to, $params['to']);
-        self::assertEquals($this->from, $params['from']);
+        $this->assertArrayHasKey('text', $params);
+        $this->assertArrayHasKey('to', $params);
+        $this->assertArrayHasKey('from', $params);
+        $this->assertEquals($this->text, $params['text']);
+        $this->assertEquals($this->to, $params['to']);
+        $this->assertEquals($this->from, $params['from']);
     }
 
     public function testFromIsOptional(): void
@@ -58,7 +58,7 @@ class MessageTest extends TestCase
         $message = new Message($this->text, $this->to);
         $params = $message->getParams();
 
-        self::assertArrayNotHasKey('from', $params);
+        $this->assertArrayNotHasKey('from', $params);
     }
 
     public function testCallback(): void
@@ -66,24 +66,24 @@ class MessageTest extends TestCase
         $this->message->setCallback('http://example.com');
         $params = $this->message->getParams();
 
-        self::assertArrayHasKey('callback', $params);
-        self::assertEquals('http://example.com', $params['callback']);
-        self::assertArrayNotHasKey('callback_method', $params);
+        $this->assertArrayHasKey('callback', $params);
+        $this->assertEquals('http://example.com', $params['callback']);
+        $this->assertArrayNotHasKey('callback_method', $params);
 
         $this->message->setCallback('http://example.com', 'POST');
         $params = $this->message->getParams();
 
-        self::assertArrayHasKey('callback', $params);
-        self::assertEquals('http://example.com', $params['callback']);
-        self::assertArrayHasKey('callback_method', $params);
-        self::assertEquals('POST', $params['callback_method']);
+        $this->assertArrayHasKey('callback', $params);
+        $this->assertEquals('http://example.com', $params['callback']);
+        $this->assertArrayHasKey('callback_method', $params);
+        $this->assertEquals('POST', $params['callback_method']);
 
         $this->message->setCallback('http://example.com');
         $params = $this->message->getParams();
 
-        self::assertArrayHasKey('callback', $params);
-        self::assertEquals('http://example.com', $params['callback']);
-        self::assertArrayNotHasKey('callback_method', $params);
+        $this->assertArrayHasKey('callback', $params);
+        $this->assertEquals('http://example.com', $params['callback']);
+        $this->assertArrayNotHasKey('callback_method', $params);
     }
 
     public function testMachine(): void
@@ -91,24 +91,24 @@ class MessageTest extends TestCase
         $this->message->setMachineDetection();
         $params = $this->message->getParams();
 
-        self::assertArrayHasKey('machine_detection', $params);
-        self::assertArrayNotHasKey('machine_timeout', $params);
-        self::assertEquals('hangup', $params['machine_detection']);
+        $this->assertArrayHasKey('machine_detection', $params);
+        $this->assertArrayNotHasKey('machine_timeout', $params);
+        $this->assertEquals('hangup', $params['machine_detection']);
 
         $this->message->setMachineDetection(true, 100);
         $params = $this->message->getParams();
 
-        self::assertArrayHasKey('machine_detection', $params);
-        self::assertArrayHasKey('machine_timeout', $params);
-        self::assertEquals('hangup', $params['machine_detection']);
-        self::assertEquals(100, $params['machine_timeout']);
+        $this->assertArrayHasKey('machine_detection', $params);
+        $this->assertArrayHasKey('machine_timeout', $params);
+        $this->assertEquals('hangup', $params['machine_detection']);
+        $this->assertEquals(100, $params['machine_timeout']);
 
         $this->message->setMachineDetection(false);
         $params = $this->message->getParams();
 
-        self::assertArrayHasKey('machine_detection', $params);
-        self::assertArrayNotHasKey('machine_timeout', $params);
-        self::assertEquals('true', $params['machine_detection']);
+        $this->assertArrayHasKey('machine_detection', $params);
+        $this->assertArrayNotHasKey('machine_timeout', $params);
+        $this->assertEquals('true', $params['machine_detection']);
     }
 
     /**
@@ -122,15 +122,15 @@ class MessageTest extends TestCase
     {
         //check no default value
         $params = $this->message->getParams();
-        self::assertArrayNotHasKey($param, $params);
+        $this->assertArrayNotHasKey($param, $params);
 
         //test values
         foreach ($values as $value => $expected) {
             $this->message->$setter($value);
             $params = $this->message->getParams();
 
-            self::assertArrayHasKey($param, $params);
-            self::assertEquals($expected, $params[$param]);
+            $this->assertArrayHasKey($param, $params);
+            $this->assertEquals($expected, $params[$param]);
         }
     }
 

@@ -75,11 +75,11 @@ class ClientTest extends TestCase
         ];
 
         $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
-            self::assertRequestJsonBodyContains('to', $args['to'], $request);
-            self::assertRequestJsonBodyContains('from', $args['from'], $request);
-            self::assertRequestJsonBodyContains('text', $args['text'], $request);
-            self::assertRequestJsonBodyContains('account-ref', $args['account-ref'], $request);
-            self::assertRequestJsonBodyContains('client-ref', $args['client-ref'], $request);
+            $this->assertRequestJsonBodyContains('to', $args['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $args['from'], $request);
+            $this->assertRequestJsonBodyContains('text', $args['text'], $request);
+            $this->assertRequestJsonBodyContains('account-ref', $args['account-ref'], $request);
+            $this->assertRequestJsonBodyContains('client-ref', $args['client-ref'], $request);
 
             return true;
         }))->willReturn($this->getResponse('send-success'));
@@ -90,14 +90,14 @@ class ClientTest extends TestCase
         $response = $this->smsClient->send($message);
         $sentData = $response->current();
 
-        self::assertCount(1, $response);
-        self::assertSame($args['to'], $sentData->getTo());
-        self::assertSame('0A0000000123ABCD1', $sentData->getMessageId());
-        self::assertSame("0.03330000", $sentData->getMessagePrice());
-        self::assertSame("12345", $sentData->getNetwork());
-        self::assertSame("3.14159265", $sentData->getRemainingBalance());
-        self::assertSame("customer1234", $sentData->getAccountRef());
-        self::assertSame("my-personal-reference", $sentData->getClientRef());
+        $this->assertCount(1, $response);
+        $this->assertSame($args['to'], $sentData->getTo());
+        $this->assertSame('0A0000000123ABCD1', $sentData->getMessageId());
+        $this->assertSame("0.03330000", $sentData->getMessagePrice());
+        $this->assertSame("12345", $sentData->getNetwork());
+        $this->assertSame("3.14159265", $sentData->getRemainingBalance());
+        $this->assertSame("customer1234", $sentData->getAccountRef());
+        $this->assertSame("my-personal-reference", $sentData->getClientRef());
     }
 
     /**
@@ -164,9 +164,9 @@ class ClientTest extends TestCase
         ];
 
         $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
-            self::assertRequestJsonBodyContains('to', $args['to'], $request);
-            self::assertRequestJsonBodyContains('from', $args['from'], $request);
-            self::assertRequestJsonBodyContains('text', $args['text'], $request);
+            $this->assertRequestJsonBodyContains('to', $args['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $args['from'], $request);
+            $this->assertRequestJsonBodyContains('text', $args['text'], $request);
 
             return true;
         }))->willReturn($rate, $rate2, $success);
@@ -174,13 +174,13 @@ class ClientTest extends TestCase
         $response = $this->smsClient->send(new SMS($args['to'], $args['from'], $args['text']));
         $sentData = $response->current();
 
-        self::assertCount(1, $response);
-        self::assertSame($args['to'], $sentData->getTo());
-        self::assertSame('0A0000000123ABCD1', $sentData->getMessageId());
-        self::assertSame("0.03330000", $sentData->getMessagePrice());
-        self::assertSame("12345", $sentData->getNetwork());
-        self::assertSame("3.14159265", $sentData->getRemainingBalance());
-        self::assertSame(0, $sentData->getStatus());
+        $this->assertCount(1, $response);
+        $this->assertSame($args['to'], $sentData->getTo());
+        $this->assertSame('0A0000000123ABCD1', $sentData->getMessageId());
+        $this->assertSame("0.03330000", $sentData->getMessagePrice());
+        $this->assertSame("12345", $sentData->getNetwork());
+        $this->assertSame("3.14159265", $sentData->getRemainingBalance());
+        $this->assertSame(0, $sentData->getStatus());
     }
 
     /**
@@ -200,9 +200,9 @@ class ClientTest extends TestCase
         ];
 
         $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
-            self::assertRequestJsonBodyContains('to', $args['to'], $request);
-            self::assertRequestJsonBodyContains('from', $args['from'], $request);
-            self::assertRequestJsonBodyContains('text', $args['text'], $request);
+            $this->assertRequestJsonBodyContains('to', $args['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $args['from'], $request);
+            $this->assertRequestJsonBodyContains('text', $args['text'], $request);
 
             return true;
         }))->willReturn($rate, $rate2, $success);
@@ -210,13 +210,13 @@ class ClientTest extends TestCase
         $response = $this->smsClient->send(new SMS($args['to'], $args['from'], $args['text']));
         $sentData = $response->current();
 
-        self::assertCount(1, $response);
-        self::assertSame($args['to'], $sentData->getTo());
-        self::assertSame('0A0000000123ABCD1', $sentData->getMessageId());
-        self::assertSame("0.03330000", $sentData->getMessagePrice());
-        self::assertSame("12345", $sentData->getNetwork());
-        self::assertSame("3.14159265", $sentData->getRemainingBalance());
-        self::assertSame(0, $sentData->getStatus());
+        $this->assertCount(1, $response);
+        $this->assertSame($args['to'], $sentData->getTo());
+        $this->assertSame('0A0000000123ABCD1', $sentData->getMessageId());
+        $this->assertSame("0.03330000", $sentData->getMessagePrice());
+        $this->assertSame("12345", $sentData->getNetwork());
+        $this->assertSame("3.14159265", $sentData->getRemainingBalance());
+        $this->assertSame(0, $sentData->getStatus());
     }
 
     /**
@@ -232,9 +232,9 @@ class ClientTest extends TestCase
         ];
 
         $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
-            self::assertRequestJsonBodyContains('to', $args['to'], $request);
-            self::assertRequestJsonBodyContains('from', $args['from'], $request);
-            self::assertRequestJsonBodyContains('text', $args['text'], $request);
+            $this->assertRequestJsonBodyContains('to', $args['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $args['from'], $request);
+            $this->assertRequestJsonBodyContains('text', $args['text'], $request);
 
             return true;
         }))->willReturn($this->getResponse('multi'));
@@ -242,15 +242,15 @@ class ClientTest extends TestCase
         $response = $this->smsClient->send((new SMS($args['to'], $args['from'], $args['text'])));
         $rawData = json_decode($this->getResponse('multi')->getBody()->getContents(), true);
 
-        self::assertCount((int)$rawData['message-count'], $response);
+        $this->assertCount((int)$rawData['message-count'], $response);
 
         foreach ($response as $key => $sentData) {
-            self::assertSame($rawData['messages'][$key]['to'], $sentData->getTo());
-            self::assertSame($rawData['messages'][$key]['message-id'], $sentData->getMessageId());
-            self::assertSame($rawData['messages'][$key]['message-price'], $sentData->getMessagePrice());
-            self::assertSame($rawData['messages'][$key]['network'], $sentData->getNetwork());
-            self::assertSame($rawData['messages'][$key]['remaining-balance'], $sentData->getRemainingBalance());
-            self::assertSame((int)$rawData['messages'][$key]['status'], $sentData->getStatus());
+            $this->assertSame($rawData['messages'][$key]['to'], $sentData->getTo());
+            $this->assertSame($rawData['messages'][$key]['message-id'], $sentData->getMessageId());
+            $this->assertSame($rawData['messages'][$key]['message-price'], $sentData->getMessagePrice());
+            $this->assertSame($rawData['messages'][$key]['network'], $sentData->getNetwork());
+            $this->assertSame($rawData['messages'][$key]['remaining-balance'], $sentData->getRemainingBalance());
+            $this->assertSame((int)$rawData['messages'][$key]['status'], $sentData->getStatus());
         }
     }
 
@@ -261,20 +261,20 @@ class ClientTest extends TestCase
     public function testCanSend2FAMessage(): void
     {
         $this->vonageClient->send(Argument::that(function (Request $request) {
-            self::assertRequestJsonBodyContains('to', '447700900000', $request);
-            self::assertRequestJsonBodyContains('pin', 1245, $request);
+            $this->assertRequestJsonBodyContains('to', '447700900000', $request);
+            $this->assertRequestJsonBodyContains('pin', 1245, $request);
 
             return true;
         }))->willReturn($this->getResponse('send-success'));
 
         $sentData = $this->smsClient->sendTwoFactor('447700900000', 1245);
 
-        self::assertSame('447700900000', $sentData->getTo());
-        self::assertSame('0A0000000123ABCD1', $sentData->getMessageId());
-        self::assertSame("0.03330000", $sentData->getMessagePrice());
-        self::assertSame("12345", $sentData->getNetwork());
-        self::assertSame("3.14159265", $sentData->getRemainingBalance());
-        self::assertSame(0, $sentData->getStatus());
+        $this->assertSame('447700900000', $sentData->getTo());
+        $this->assertSame('0A0000000123ABCD1', $sentData->getMessageId());
+        $this->assertSame("0.03330000", $sentData->getMessagePrice());
+        $this->assertSame("12345", $sentData->getNetwork());
+        $this->assertSame("3.14159265", $sentData->getRemainingBalance());
+        $this->assertSame(0, $sentData->getStatus());
     }
 
     /**
@@ -300,8 +300,8 @@ class ClientTest extends TestCase
     public function testCanSendAlert(): void
     {
         $this->vonageClient->send(Argument::that(function (Request $request) {
-            self::assertRequestJsonBodyContains('to', '447700900000', $request);
-            self::assertRequestJsonBodyContains('key', 'value', $request);
+            $this->assertRequestJsonBodyContains('to', '447700900000', $request);
+            $this->assertRequestJsonBodyContains('key', 'value', $request);
 
             return true;
         }))->willReturn($this->getResponse('send-success'));
@@ -309,13 +309,13 @@ class ClientTest extends TestCase
         $response = $this->smsClient->sendAlert('447700900000', ['key' => 'value']);
         $sentData = $response->current();
 
-        self::assertCount(1, $response);
-        self::assertSame('447700900000', $sentData->getTo());
-        self::assertSame('0A0000000123ABCD1', $sentData->getMessageId());
-        self::assertSame("0.03330000", $sentData->getMessagePrice());
-        self::assertSame("12345", $sentData->getNetwork());
-        self::assertSame("3.14159265", $sentData->getRemainingBalance());
-        self::assertSame(0, $sentData->getStatus());
+        $this->assertCount(1, $response);
+        $this->assertSame('447700900000', $sentData->getTo());
+        $this->assertSame('0A0000000123ABCD1', $sentData->getMessageId());
+        $this->assertSame("0.03330000", $sentData->getMessagePrice());
+        $this->assertSame("12345", $sentData->getNetwork());
+        $this->assertSame("3.14159265", $sentData->getRemainingBalance());
+        $this->assertSame(0, $sentData->getStatus());
     }
 
     /**

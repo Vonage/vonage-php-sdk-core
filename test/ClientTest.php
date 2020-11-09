@@ -101,7 +101,7 @@ class ClientTest extends TestCase
 
             self::fail('invalid app details provided, but no exception was thrown');
         } catch (InvalidArgumentException $e) {
-            self::assertEquals(
+            $this->assertEquals(
                 'app.' . $field . ' cannot contain the ' . $invalidCharacter . ' character',
                 $e->getMessage()
             );
@@ -135,8 +135,8 @@ class ClientTest extends TestCase
         $client->send($request);
         $request = $this->http->getRequests()[0];
 
-        self::assertRequestQueryContains('api_key', $this->api_key, $request);
-        self::assertRequestQueryContains('api_secret', $this->api_secret, $request);
+        $this->assertRequestQueryContains('api_key', $this->api_key, $request);
+        $this->assertRequestQueryContains('api_secret', $this->api_secret, $request);
     }
 
     /**
@@ -150,9 +150,9 @@ class ClientTest extends TestCase
         $client->send($request);
         $request = $this->http->getRequests()[0];
 
-        self::assertEmpty($request->getUri()->getQuery());
-        self::assertRequestFormBodyContains('api_key', $this->api_key, $request);
-        self::assertRequestFormBodyContains('api_secret', $this->api_secret, $request);
+        $this->assertEmpty($request->getUri()->getQuery());
+        $this->assertRequestFormBodyContains('api_key', $this->api_key, $request);
+        $this->assertRequestFormBodyContains('api_secret', $this->api_secret, $request);
     }
 
     /**
@@ -166,9 +166,9 @@ class ClientTest extends TestCase
         $client->send($request);
         $request = $this->http->getRequests()[0];
 
-        self::assertEmpty($request->getUri()->getQuery());
-        self::assertRequestJsonBodyContains('api_key', $this->api_key, $request);
-        self::assertRequestJsonBodyContains('api_secret', $this->api_secret, $request);
+        $this->assertEmpty($request->getUri()->getQuery());
+        $this->assertRequestJsonBodyContains('api_key', $this->api_key, $request);
+        $this->assertRequestJsonBodyContains('api_secret', $this->api_secret, $request);
     }
 
     /**
@@ -182,11 +182,11 @@ class ClientTest extends TestCase
         $client->send($request);
         $request = $this->http->getRequests()[0];
 
-        self::assertEmpty($request->getUri()->getQuery());
+        $this->assertEmpty($request->getUri()->getQuery());
 
         $auth = $request->getHeaderLine('Authorization');
 
-        self::assertStringStartsWith('Bearer ', $auth);
+        $this->assertStringStartsWith('Bearer ', $auth);
         self::markTestIncomplete('Has correct format, but not tested as output of JWT generation');
     }
 
@@ -201,11 +201,11 @@ class ClientTest extends TestCase
         $client->send($request);
         $request = $this->http->getRequests()[0];
 
-        self::assertEmpty($request->getUri()->getQuery());
+        $this->assertEmpty($request->getUri()->getQuery());
 
         $auth = $request->getHeaderLine('Authorization');
 
-        self::assertStringStartsWith('Bearer ', $auth);
+        $this->assertStringStartsWith('Bearer ', $auth);
         self::markTestIncomplete('Has correct format, but not tested as output of JWT generation');
     }
 
@@ -220,9 +220,9 @@ class ClientTest extends TestCase
         $client->send($request);
         $request = $this->http->getRequests()[0];
 
-        self::assertEmpty($request->getUri()->getQuery());
-        self::assertRequestJsonBodyContains('api_key', $this->api_key, $request);
-        self::assertRequestJsonBodyContains('api_secret', $this->api_secret, $request);
+        $this->assertEmpty($request->getUri()->getQuery());
+        $this->assertRequestJsonBodyContains('api_key', $this->api_key, $request);
+        $this->assertRequestJsonBodyContains('api_secret', $this->api_secret, $request);
     }
 
     public function testOAuthCredentials(): void
@@ -242,11 +242,11 @@ class ClientTest extends TestCase
         $client->send($request);
         $request = $this->http->getRequests()[0];
 
-        self::assertEmpty($request->getUri()->getQuery());
+        $this->assertEmpty($request->getUri()->getQuery());
 
         $auth = $request->getHeaderLine('Authorization');
 
-        self::assertStringStartsWith('Bearer ', $auth);
+        $this->assertStringStartsWith('Bearer ', $auth);
         self::markTestIncomplete('Has correct format, but not tested as output of JWT generation');
     }
 
@@ -267,13 +267,13 @@ class ClientTest extends TestCase
         $client->send(new Request('https://rest.nexmo.com/just/path', 'POST'));
         $request = $this->http->getRequests()[0];
 
-        self::assertSame('proxy.example.com', $request->getUri()->getHost());
-        self::assertSame('/just/path', $request->getUri()->getPath());
+        $this->assertSame('proxy.example.com', $request->getUri()->getHost());
+        $this->assertSame('/just/path', $request->getUri()->getPath());
 
         $request = $this->http->getRequests()[1];
 
-        self::assertSame('example.com', $request->getUri()->getHost());
-        self::assertSame('/rest/just/path', $request->getUri()->getPath());
+        $this->assertSame('example.com', $request->getUri()->getHost());
+        $this->assertSame('/rest/just/path', $request->getUri()->getPath());
     }
 
     public function testSpecificHttpClient(): void
@@ -282,12 +282,12 @@ class ClientTest extends TestCase
         $replace = new HttpClient();
         $client = new Client(new Basic('key', 'secret'), [], $construct);
 
-        self::assertSame($construct, $client->getHttpClient());
+        $this->assertSame($construct, $client->getHttpClient());
 
         $client->setHttpClient($replace);
 
-        self::assertSame($replace, $client->getHttpClient());
-        self::assertNotSame($construct, $client->getHttpClient());
+        $this->assertSame($replace, $client->getHttpClient());
+        $this->assertNotSame($construct, $client->getHttpClient());
     }
 
     /**
@@ -302,8 +302,8 @@ class ClientTest extends TestCase
         parse_str($signed->getUri()->getQuery(), $query);
 
         //request should now have signature
-        self::assertValidSignature($query, $this->signature_secret);
-        self::assertRequestQueryContains('api_key', $this->api_key, $signed);
+        $this->assertValidSignature($query, $this->signature_secret);
+        $this->assertRequestQueryContains('api_key', $this->api_key, $signed);
     }
 
     /**
@@ -319,11 +319,11 @@ class ClientTest extends TestCase
         parse_str($signed->getBody()->getContents(), $data);
 
         //request should now have signature
-        self::assertRequestFormBodyContains('api_key', $this->api_key, $request);
-        self::assertValidSignature($data, $this->signature_secret);
+        $this->assertRequestFormBodyContains('api_key', $this->api_key, $request);
+        $this->assertValidSignature($data, $this->signature_secret);
 
         //signing should not change query string
-        self::assertEmpty($signed->getUri()->getQuery());
+        $this->assertEmpty($signed->getUri()->getQuery());
     }
 
     /**
@@ -336,14 +336,14 @@ class ClientTest extends TestCase
         $signed->getBody()->rewind();
         $data = json_decode($signed->getBody()->getContents(), true);
 
-        self::assertNotNull($data);
+        $this->assertNotNull($data);
 
         //request should now have signature
-        self::assertRequestJsonBodyContains('api_key', $this->api_key, $request);
-        self::assertValidSignature($data, $this->signature_secret);
+        $this->assertRequestJsonBodyContains('api_key', $this->api_key, $request);
+        $this->assertValidSignature($data, $this->signature_secret);
 
         //signing should not change query string
-        self::assertEmpty($signed->getUri()->getQuery());
+        $this->assertEmpty($signed->getUri()->getQuery());
     }
 
     /**
@@ -357,7 +357,7 @@ class ClientTest extends TestCase
         $client->send($request);
         $request = $this->http->getRequests()[0];
 
-        self::assertEmpty($request->getUri()->getQuery());
+        $this->assertEmpty($request->getUri()->getQuery());
     }
 
     /**
@@ -375,7 +375,7 @@ class ClientTest extends TestCase
 
         parse_str($request->getUri()->getQuery(), $query);
 
-        self::assertValidSignature($query, $this->signature_secret);
+        $this->assertValidSignature($query, $this->signature_secret);
     }
 
     public function testMultipleClients(): void
@@ -383,7 +383,7 @@ class ClientTest extends TestCase
         $client1 = new Client(new Basic('key', 'secret'));
         $client2 = new Client(new Basic('key2', 'secret2'));
 
-        self::assertNotSame($client1, $client2);
+        $this->assertNotSame($client1, $client2);
     }
 
     /**
@@ -402,10 +402,10 @@ class ClientTest extends TestCase
         //api client should simply pass back the http response
         $test = $client->send($request);
 
-        self::assertSame($response, $test);
+        $this->assertSame($response, $test);
 
         //api client should not change the boy of the request
-        self::assertSame($request->getBody()->getContents(), $this->http->getRequests()[0]->getBody()->getContents());
+        $this->assertSame($request->getBody()->getContents(), $this->http->getRequests()[0]->getBody()->getContents());
     }
 
     /**
@@ -423,7 +423,7 @@ class ClientTest extends TestCase
         $client = new Client(new Basic('key', 'secret'));
         $client->setFactory($factory->reveal());
 
-        self::assertSame($api, $client->sms());
+        $this->assertSame($api, $client->sms());
     }
 
     /**
@@ -456,7 +456,7 @@ class ClientTest extends TestCase
             $php
         ]);
 
-        self::assertEquals($expected, $agent);
+        $this->assertEquals($expected, $agent);
     }
 
     /**
@@ -496,7 +496,7 @@ class ClientTest extends TestCase
             'TestApp/9.4.5'
         ]);
 
-        self::assertEquals($expected, $agent);
+        $this->assertEquals($expected, $agent);
     }
 
     public function testSerializationProxiesVerify(): void
@@ -516,8 +516,8 @@ class ClientTest extends TestCase
         $verify->serialize($verification)->willReturn('string data')->shouldBeCalled();
         $verify->unserialize($verification)->willReturn($verification)->shouldBeCalled();
 
-        self::assertEquals('string data', $client->serialize($verification));
-        self::assertEquals($verification, $client->unserialize(serialize($verification)));
+        $this->assertEquals('string data', $client->serialize($verification));
+        $this->assertEquals($verification, $client->unserialize(serialize($verification)));
     }
 
     /**
@@ -536,9 +536,9 @@ class ClientTest extends TestCase
         $client->get($url, $params);
         $request = $this->http->getRequests()[0];
 
-        self::assertRequestMethod("GET", $request);
+        $this->assertRequestMethod("GET", $request);
         // We can't use assertRequestQueryContains here as $params may be a multi-level array
-        self::assertRequestMatchesUrlWithQueryString($expected, $request);
+        $this->assertRequestMatchesUrlWithQueryString($expected, $request);
     }
 
     public function genericGetProvider(): array
@@ -597,9 +597,9 @@ class ClientTest extends TestCase
 
         $request = $this->http->getRequests()[0];
 
-        self::assertRequestMethod("POST", $request);
-        self::assertRequestMatchesUrl($url, $request);
-        self::assertRequestBodyIsJson($expectedBody, $request);
+        $this->assertRequestMethod("POST", $request);
+        $this->assertRequestMatchesUrl($url, $request);
+        $this->assertRequestBodyIsJson($expectedBody, $request);
     }
 
     /**
@@ -624,9 +624,9 @@ class ClientTest extends TestCase
 
         $request = $this->http->getRequests()[0];
 
-        self::assertRequestMethod("PUT", $request);
-        self::assertRequestMatchesUrl($url, $request);
-        self::assertRequestBodyIsJson($expectedBody, $request);
+        $this->assertRequestMethod("PUT", $request);
+        $this->assertRequestMatchesUrl($url, $request);
+        $this->assertRequestBodyIsJson($expectedBody, $request);
     }
 
     public function genericPostOrPutProvider(): array
@@ -660,8 +660,8 @@ class ClientTest extends TestCase
         $client->delete($url, $params);
         $request = $this->http->getRequests()[0];
 
-        self::assertRequestMethod("DELETE", $request);
-        self::assertRequestBodyIsEmpty($request);
+        $this->assertRequestMethod("DELETE", $request);
+        $this->assertRequestBodyIsEmpty($request);
     }
 
     public function genericDeleteProvider(): array

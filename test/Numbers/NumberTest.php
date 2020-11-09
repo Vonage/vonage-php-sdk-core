@@ -35,16 +35,16 @@ class NumberTest extends TestCase
     {
         $number = new Number('14843331212');
 
-        self::assertEquals('14843331212', $number->getId());
-        self::assertEquals('14843331212', $number->getMsisdn());
-        self::assertEquals('14843331212', $number->getNumber());
+        $this->assertEquals('14843331212', $number->getId());
+        $this->assertEquals('14843331212', $number->getMsisdn());
+        $this->assertEquals('14843331212', $number->getNumber());
     }
 
     public function testConstructWithIdAndCountry(): void
     {
         $number = new Number('14843331212', 'US');
 
-        self::assertEquals('US', $number->getCountry());
+        $this->assertEquals('US', $number->getCountry());
     }
 
     public function testHydrate(): void
@@ -52,18 +52,18 @@ class NumberTest extends TestCase
         $data = json_decode(file_get_contents(__DIR__ . '/responses/single.json'), true);
         $this->number->fromArray($data['numbers'][0]);
 
-        self::assertEquals('US', $this->number->getCountry());
-        self::assertEquals('1415550100', $this->number->getNumber());
-        self::assertEquals(Number::TYPE_MOBILE, $this->number->getType());
-        self::assertEquals('http://example.com/message', $this->number->getWebhook(Number::WEBHOOK_MESSAGE));
-        self::assertEquals('http://example.com/status', $this->number->getWebhook(Number::WEBHOOK_VOICE_STATUS));
-        self::assertEquals('http://example.com/voice', $this->number->getVoiceDestination());
-        self::assertEquals(Number::ENDPOINT_VXML, $this->number->getVoiceType());
-        self::assertTrue($this->number->hasFeature(Number::FEATURE_VOICE));
-        self::assertTrue($this->number->hasFeature(Number::FEATURE_SMS));
-        self::assertContains(Number::FEATURE_VOICE, $this->number->getFeatures());
-        self::assertContains(Number::FEATURE_SMS, $this->number->getFeatures());
-        self::assertCount(2, $this->number->getFeatures());
+        $this->assertEquals('US', $this->number->getCountry());
+        $this->assertEquals('1415550100', $this->number->getNumber());
+        $this->assertEquals(Number::TYPE_MOBILE, $this->number->getType());
+        $this->assertEquals('http://example.com/message', $this->number->getWebhook(Number::WEBHOOK_MESSAGE));
+        $this->assertEquals('http://example.com/status', $this->number->getWebhook(Number::WEBHOOK_VOICE_STATUS));
+        $this->assertEquals('http://example.com/voice', $this->number->getVoiceDestination());
+        $this->assertEquals(Number::ENDPOINT_VXML, $this->number->getVoiceType());
+        $this->assertTrue($this->number->hasFeature(Number::FEATURE_VOICE));
+        $this->assertTrue($this->number->hasFeature(Number::FEATURE_SMS));
+        $this->assertContains(Number::FEATURE_VOICE, $this->number->getFeatures());
+        $this->assertContains(Number::FEATURE_SMS, $this->number->getFeatures());
+        $this->assertCount(2, $this->number->getFeatures());
     }
 
     public function testAvailableNumbers(): void
@@ -71,15 +71,15 @@ class NumberTest extends TestCase
         $data = json_decode(file_get_contents(__DIR__ . '/responses/available-numbers.json'), true);
         $this->number->fromArray($data['numbers'][0]);
 
-        self::assertEquals('US', $this->number->getCountry());
-        self::assertEquals('14155550100', $this->number->getNumber());
-        self::assertEquals(Number::TYPE_MOBILE, $this->number->getType());
-        self::assertEquals('0.67', $this->number->getCost());
-        self::assertTrue($this->number->hasFeature(Number::FEATURE_VOICE));
-        self::assertTrue($this->number->hasFeature(Number::FEATURE_SMS));
-        self::assertContains(Number::FEATURE_VOICE, $this->number->getFeatures());
-        self::assertContains(Number::FEATURE_SMS, $this->number->getFeatures());
-        self::assertCount(2, $this->number->getFeatures());
+        $this->assertEquals('US', $this->number->getCountry());
+        $this->assertEquals('14155550100', $this->number->getNumber());
+        $this->assertEquals(Number::TYPE_MOBILE, $this->number->getType());
+        $this->assertEquals('0.67', $this->number->getCost());
+        $this->assertTrue($this->number->hasFeature(Number::FEATURE_VOICE));
+        $this->assertTrue($this->number->hasFeature(Number::FEATURE_SMS));
+        $this->assertContains(Number::FEATURE_VOICE, $this->number->getFeatures());
+        $this->assertContains(Number::FEATURE_SMS, $this->number->getFeatures());
+        $this->assertCount(2, $this->number->getFeatures());
     }
 
     /**
@@ -92,15 +92,15 @@ class NumberTest extends TestCase
         $this->number->setVoiceDestination($id);
         $app = $this->number->getVoiceDestination();
 
-        self::assertInstanceOf(Application::class, $app);
-        self::assertEquals($id, $app->getId());
-        self::assertArrayHas('app_id', $id, $this->number->getRequestData());
+        $this->assertInstanceOf(Application::class, $app);
+        $this->assertEquals($id, $app->getId());
+        $this->assertArrayHas('app_id', $id, $this->number->getRequestData());
 
         $app = new Application($id);
         $this->number->setVoiceDestination($app);
 
-        self::assertSame($app, $this->number->getVoiceDestination());
-        self::assertArrayHas('app_id', $id, $this->number->getRequestData());
+        $this->assertSame($app, $this->number->getVoiceDestination());
+        $this->assertArrayHas('app_id', $id, $this->number->getRequestData());
     }
 
     /**
@@ -110,8 +110,8 @@ class NumberTest extends TestCase
     {
         $this->number->setVoiceDestination('not-valid', NUMBER::ENDPOINT_SIP);
 
-        self::assertSame(Number::ENDPOINT_SIP, $this->number->getVoiceType());
-        self::assertArrayHas('voiceCallbackType', Number::ENDPOINT_SIP, $this->number->getRequestData());
+        $this->assertSame(Number::ENDPOINT_SIP, $this->number->getVoiceType());
+        $this->assertArrayHas('voiceCallbackType', Number::ENDPOINT_SIP, $this->number->getRequestData());
     }
 
     /**
@@ -124,11 +124,11 @@ class NumberTest extends TestCase
      */
     public function testVoiceDestination($type, $value): void
     {
-        self::assertSame($this->number, $this->number->setVoiceDestination($value));
-        self::assertEquals($value, $this->number->getVoiceDestination());
-        self::assertEquals($type, $this->number->getVoiceType());
-        self::assertArrayHas('voiceCallbackType', $type, $this->number->getRequestData());
-        self::assertArrayHas('voiceCallbackValue', $value, $this->number->getRequestData());
+        $this->assertSame($this->number, $this->number->setVoiceDestination($value));
+        $this->assertEquals($value, $this->number->getVoiceDestination());
+        $this->assertEquals($type, $this->number->getVoiceType());
+        $this->assertArrayHas('voiceCallbackType', $type, $this->number->getRequestData());
+        $this->assertArrayHas('voiceCallbackValue', $value, $this->number->getRequestData());
     }
 
     /**
@@ -152,7 +152,7 @@ class NumberTest extends TestCase
         $number = new Number();
         $number->fromArray($numberData);
 
-        self::assertEquals($numberData['type'], $number->getType());
+        $this->assertEquals($numberData['type'], $number->getType());
     }
 
     /**
@@ -160,9 +160,9 @@ class NumberTest extends TestCase
      */
     public function testStatusWebhook(): void
     {
-        self::assertSame($this->number, $this->number->setWebhook(Number::WEBHOOK_VOICE_STATUS, 'http://example.com'));
-        self::assertEquals('http://example.com', $this->number->getWebhook(Number::WEBHOOK_VOICE_STATUS));
-        self::assertArrayHas('voiceStatusCallbackUrl', 'http://example.com', $this->number->getRequestData());
+        $this->assertSame($this->number, $this->number->setWebhook(Number::WEBHOOK_VOICE_STATUS, 'http://example.com'));
+        $this->assertEquals('http://example.com', $this->number->getWebhook(Number::WEBHOOK_VOICE_STATUS));
+        $this->assertArrayHas('voiceStatusCallbackUrl', 'http://example.com', $this->number->getRequestData());
     }
 
     /**
@@ -170,9 +170,9 @@ class NumberTest extends TestCase
      */
     public function testMessageWebhook(): void
     {
-        self::assertSame($this->number, $this->number->setWebhook(Number::WEBHOOK_MESSAGE, 'http://example.com'));
-        self::assertEquals('http://example.com', $this->number->getWebhook(Number::WEBHOOK_MESSAGE));
-        self::assertArrayHas('moHttpUrl', 'http://example.com', $this->number->getRequestData());
+        $this->assertSame($this->number, $this->number->setWebhook(Number::WEBHOOK_MESSAGE, 'http://example.com'));
+        $this->assertEquals('http://example.com', $this->number->getWebhook(Number::WEBHOOK_MESSAGE));
+        $this->assertArrayHas('moHttpUrl', 'http://example.com', $this->number->getRequestData());
     }
 
     public static function assertArrayHas($key, $value, $array): void

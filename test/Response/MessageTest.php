@@ -34,13 +34,13 @@ class MessageTest extends TestCase
 
         $this->message = new Message(json_decode($json, true)); //response already has decoded
 
-        self::assertEquals(0, $this->message->getStatus());
-        self::assertEquals('00000123', $this->message->getId());
-        self::assertEquals('44123456789', $this->message->getTo());
-        self::assertEquals('1.10', $this->message->getBalance());
-        self::assertEquals('0.05', $this->message->getPrice());
-        self::assertEquals('23410', $this->message->getNetwork());
-        self::assertEmpty($this->message->getErrorMessage());
+        $this->assertEquals(0, $this->message->getStatus());
+        $this->assertEquals('00000123', $this->message->getId());
+        $this->assertEquals('44123456789', $this->message->getTo());
+        $this->assertEquals('1.10', $this->message->getBalance());
+        $this->assertEquals('0.05', $this->message->getPrice());
+        $this->assertEquals('23410', $this->message->getNetwork());
+        $this->assertEmpty($this->message->getErrorMessage());
     }
 
     public function testFail(): void
@@ -52,8 +52,8 @@ class MessageTest extends TestCase
 
         $this->message = new Message(json_decode($json, true)); //response already has decoded
 
-        self::assertEquals(2, $this->message->getStatus());
-        self::assertEquals('Missing from param', $this->message->getErrorMessage());
+        $this->assertEquals(2, $this->message->getStatus());
+        $this->assertEquals('Missing from param', $this->message->getErrorMessage());
 
         foreach (['getId', 'getTo', 'getBalance', 'getPrice', 'getNetwork'] as $getter) {
             try {

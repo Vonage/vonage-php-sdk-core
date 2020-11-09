@@ -29,18 +29,18 @@ class CallTest extends TestCase
         $call = new Call($data);
         $callData = $call->toArray();
 
-        self::assertEquals($data['uuid'], $callData['uuid']);
-        self::assertEquals($data['status'], $callData['status']);
-        self::assertEquals($data['direction'], $callData['direction']);
-        self::assertEquals($data['rate'], $callData['rate']);
-        self::assertEquals($data['price'], $callData['price']);
-        self::assertEquals($data['duration'], $callData['duration']);
-        self::assertEquals($data['start_time'], $callData['start_time']);
-        self::assertEquals($data['end_time'], $callData['end_time']);
-        self::assertEquals($data['network'], $callData['network']);
-        self::assertEquals($data['to'][0]['type'], $callData['to'][0]['type']);
-        self::assertEquals($data['to'][0]['number'], $callData['to'][0]['number']);
-        self::assertEquals($data['from'][0]['type'], $callData['from'][0]['type']);
-        self::assertEquals($data['from'][0]['number'], $callData['from'][0]['number']);
+        $this->assertEquals($data['uuid'], $callData['uuid']);
+        $this->assertEquals($data['status'], $callData['status']);
+        $this->assertEquals($data['direction'], $callData['direction']);
+        $this->assertEquals($data['rate'], $callData['rate']);
+        $this->assertEquals($data['price'], $callData['price']);
+        $this->assertEquals($data['duration'], $callData['duration']);
+        $this->assertEquals($data['start_time'], $callData['start_time']);
+        $this->assertEquals($data['end_time'], $callData['end_time']);
+        $this->assertEquals($data['network'], $callData['network']);
+        $this->assertEquals($data['to'][0]['type'], $callData['to'][0]['type']);
+        $this->assertEquals($data['to'][0]['number'], $callData['to'][0]['number']);
+        $this->assertEquals($data['from'][0]['type'], $callData['from'][0]['type']);
+        $this->assertEquals($data['from'][0]['number'], $callData['from'][0]['number']);
     }
 }

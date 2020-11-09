@@ -32,24 +32,24 @@ class KeypairTest extends TestCase
         $credentials = new Keypair($this->key, $this->application);
 
         $array = $credentials->asArray();
-        self::assertEquals($this->key, $array['key']);
-        self::assertEquals($this->application, $array['application']);
+        $this->assertEquals($this->key, $array['key']);
+        $this->assertEquals($this->application, $array['application']);
     }
 
     public function testArrayAccess(): void
     {
         $credentials = new Keypair($this->key, $this->application);
 
-        self::assertEquals($this->key, $credentials['key']);
-        self::assertEquals($this->application, $credentials['application']);
+        $this->assertEquals($this->key, $credentials['key']);
+        $this->assertEquals($this->application, $credentials['application']);
     }
 
     public function testProperties(): void
     {
         $credentials = new Keypair($this->key, $this->application);
 
-        self::assertEquals($this->key, $credentials->__get('key'));
-        self::assertEquals($this->application, $credentials->application);
+        $this->assertEquals($this->key, $credentials->__get('key'));
+        $this->assertEquals($this->application, $credentials->application);
     }
 
     public function testDefaultJWT(): void
@@ -61,13 +61,13 @@ class KeypairTest extends TestCase
 
         [$header, $payload] = $this->decodeJWT($jwt);
 
-        self::assertArrayHasKey('typ', $header);
-        self::assertArrayHasKey('alg', $header);
-        self::assertEquals('JWT', $header['typ']);
-        self::assertEquals('RS256', $header['alg']);
-        self::assertArrayHasKey('application_id', $payload);
-        self::assertArrayHasKey('jti', $payload);
-        self::assertEquals($this->application, $payload['application_id']);
+        $this->assertArrayHasKey('typ', $header);
+        $this->assertArrayHasKey('alg', $header);
+        $this->assertEquals('JWT', $header['typ']);
+        $this->assertEquals('RS256', $header['alg']);
+        $this->assertArrayHasKey('application_id', $payload);
+        $this->assertArrayHasKey('jti', $payload);
+        $this->assertEquals($this->application, $payload['application_id']);
     }
 
     public function testAdditionalClaims(): void
@@ -86,10 +86,10 @@ class KeypairTest extends TestCase
         $jwt = $credentials->generateJwt($claims);
         [, $payload] = $this->decodeJWT($jwt);
 
-        self::assertArrayHasKey('arbitrary', $payload);
-        self::assertEquals($claims['arbitrary'], $payload['arbitrary']);
-        self::assertArrayHasKey('nbf', $payload);
-        self::assertEquals(900, $payload['nbf']);
+        $this->assertArrayHasKey('arbitrary', $payload);
+        $this->assertEquals($claims['arbitrary'], $payload['arbitrary']);
+        $this->assertArrayHasKey('nbf', $payload);
+        $this->assertEquals(900, $payload['nbf']);
     }
 
     /**
@@ -99,7 +99,7 @@ class KeypairTest extends TestCase
     {
         $parts = explode('.', $jwt);
 
-        self::assertCount(3, $parts);
+        $this->assertCount(3, $parts);
 
         $header = json_decode(base64_decode($parts[0]), true);
         $payload = json_decode(base64_decode($parts[1]), true);

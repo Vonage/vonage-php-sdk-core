@@ -31,16 +31,16 @@ class DeliveryReceiptTest extends TestCase
         $request = $this->getServerRequest('dlr-get');
         $dlr = Factory::createFromRequest($request);
 
-        self::assertSame($expected['msisdn'], $dlr->getMsisdn());
-        self::assertSame((int)$expected['err-code'], $dlr->getErrCode());
-        self::assertSame($expected['messageId'], $dlr->getMessageId());
-        self::assertSame($expected['network-code'], $dlr->getNetworkCode());
-        self::assertSame($expected['price'], $dlr->getPrice());
-        self::assertSame($expected['scts'], $dlr->getScts());
-        self::assertSame($expected['status'], $dlr->getStatus());
-        self::assertSame($expected['to'], $dlr->getTo());
-        self::assertSame($expected['api-key'], $dlr->getApiKey());
-        self::assertSame($expected['message-timestamp'], $dlr->getMessageTimestamp()->format('Y-m-d H:i:s'));
+        $this->assertSame($expected['msisdn'], $dlr->getMsisdn());
+        $this->assertSame((int)$expected['err-code'], $dlr->getErrCode());
+        $this->assertSame($expected['messageId'], $dlr->getMessageId());
+        $this->assertSame($expected['network-code'], $dlr->getNetworkCode());
+        $this->assertSame($expected['price'], $dlr->getPrice());
+        $this->assertSame($expected['scts'], $dlr->getScts());
+        $this->assertSame($expected['status'], $dlr->getStatus());
+        $this->assertSame($expected['to'], $dlr->getTo());
+        $this->assertSame($expected['api-key'], $dlr->getApiKey());
+        $this->assertSame($expected['message-timestamp'], $dlr->getMessageTimestamp()->format('Y-m-d H:i:s'));
     }
 
     public function testCanCreateFromJSONPostServerRequest(): void
@@ -49,16 +49,16 @@ class DeliveryReceiptTest extends TestCase
         $request = $this->getServerRequest('dlr-post-json');
         $dlr = Factory::createFromRequest($request);
 
-        self::assertSame($expected['msisdn'], $dlr->getMsisdn());
-        self::assertSame((int)$expected['err-code'], $dlr->getErrCode());
-        self::assertSame($expected['messageId'], $dlr->getMessageId());
-        self::assertSame($expected['network-code'], $dlr->getNetworkCode());
-        self::assertSame($expected['price'], $dlr->getPrice());
-        self::assertSame($expected['scts'], $dlr->getScts());
-        self::assertSame($expected['status'], $dlr->getStatus());
-        self::assertSame($expected['to'], $dlr->getTo());
-        self::assertSame($expected['api-key'], $dlr->getApiKey());
-        self::assertSame($expected['message-timestamp'], $dlr->getMessageTimestamp()->format('Y-m-d H:i:s'));
+        $this->assertSame($expected['msisdn'], $dlr->getMsisdn());
+        $this->assertSame((int)$expected['err-code'], $dlr->getErrCode());
+        $this->assertSame($expected['messageId'], $dlr->getMessageId());
+        $this->assertSame($expected['network-code'], $dlr->getNetworkCode());
+        $this->assertSame($expected['price'], $dlr->getPrice());
+        $this->assertSame($expected['scts'], $dlr->getScts());
+        $this->assertSame($expected['status'], $dlr->getStatus());
+        $this->assertSame($expected['to'], $dlr->getTo());
+        $this->assertSame($expected['api-key'], $dlr->getApiKey());
+        $this->assertSame($expected['message-timestamp'], $dlr->getMessageTimestamp()->format('Y-m-d H:i:s'));
     }
 
     public function testCanCreateFromFormPostServerRequest(): void
@@ -67,16 +67,16 @@ class DeliveryReceiptTest extends TestCase
         $request = $this->getServerRequest('dlr-post');
         $dlr = Factory::createFromRequest($request);
 
-        self::assertSame($expected['msisdn'], $dlr->getMsisdn());
-        self::assertSame((int)$expected['err-code'], $dlr->getErrCode());
-        self::assertSame($expected['messageId'], $dlr->getMessageId());
-        self::assertSame($expected['network-code'], $dlr->getNetworkCode());
-        self::assertSame($expected['price'], $dlr->getPrice());
-        self::assertSame($expected['scts'], $dlr->getScts());
-        self::assertSame($expected['status'], $dlr->getStatus());
-        self::assertSame($expected['to'], $dlr->getTo());
-        self::assertSame($expected['api-key'], $dlr->getApiKey());
-        self::assertSame($expected['message-timestamp'], $dlr->getMessageTimestamp()->format('Y-m-d H:i:s'));
+        $this->assertSame($expected['msisdn'], $dlr->getMsisdn());
+        $this->assertSame((int)$expected['err-code'], $dlr->getErrCode());
+        $this->assertSame($expected['messageId'], $dlr->getMessageId());
+        $this->assertSame($expected['network-code'], $dlr->getNetworkCode());
+        $this->assertSame($expected['price'], $dlr->getPrice());
+        $this->assertSame($expected['scts'], $dlr->getScts());
+        $this->assertSame($expected['status'], $dlr->getStatus());
+        $this->assertSame($expected['to'], $dlr->getTo());
+        $this->assertSame($expected['api-key'], $dlr->getApiKey());
+        $this->assertSame($expected['message-timestamp'], $dlr->getMessageTimestamp()->format('Y-m-d H:i:s'));
     }
 
     /**
@@ -87,16 +87,16 @@ class DeliveryReceiptTest extends TestCase
         $expected = $this->getQueryStringFromRequest('dlr-get');
         $dlr = new DeliveryReceipt($expected);
 
-        self::assertSame($expected['msisdn'], $dlr->getMsisdn());
-        self::assertSame((int)$expected['err-code'], $dlr->getErrCode());
-        self::assertSame($expected['messageId'], $dlr->getMessageId());
-        self::assertSame($expected['network-code'], $dlr->getNetworkCode());
-        self::assertSame($expected['price'], $dlr->getPrice());
-        self::assertSame($expected['scts'], $dlr->getScts());
-        self::assertSame($expected['status'], $dlr->getStatus());
-        self::assertSame($expected['to'], $dlr->getTo());
-        self::assertSame($expected['api-key'], $dlr->getApiKey());
-        self::assertSame($expected['message-timestamp'], $dlr->getMessageTimestamp()->format('Y-m-d H:i:s'));
+        $this->assertSame($expected['msisdn'], $dlr->getMsisdn());
+        $this->assertSame((int)$expected['err-code'], $dlr->getErrCode());
+        $this->assertSame($expected['messageId'], $dlr->getMessageId());
+        $this->assertSame($expected['network-code'], $dlr->getNetworkCode());
+        $this->assertSame($expected['price'], $dlr->getPrice());
+        $this->assertSame($expected['scts'], $dlr->getScts());
+        $this->assertSame($expected['status'], $dlr->getStatus());
+        $this->assertSame($expected['to'], $dlr->getTo());
+        $this->assertSame($expected['api-key'], $dlr->getApiKey());
+        $this->assertSame($expected['message-timestamp'], $dlr->getMessageTimestamp()->format('Y-m-d H:i:s'));
     }
 
     /**

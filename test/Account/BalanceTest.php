@@ -29,22 +29,22 @@ class BalanceTest extends TestCase
 
     public function testObjectAccess(): void
     {
-        self::assertEquals("12.99", $this->balance->getBalance());
-        self::assertEquals(false, $this->balance->getAutoReload());
+        $this->assertEquals("12.99", $this->balance->getBalance());
+        $this->assertEquals(false, $this->balance->getAutoReload());
     }
 
     public function testArrayAccess(): void
     {
-        self::assertEquals("12.99", @$this->balance['balance']);
-        self::assertEquals(false, @$this->balance['auto_reload']);
+        $this->assertEquals("12.99", @$this->balance['balance']);
+        $this->assertEquals(false, @$this->balance['auto_reload']);
     }
 
     public function testJsonSerialize(): void
     {
         $data = $this->balance->jsonSerialize();
 
-        self::assertSame('12.99', $data['balance']);
-        self::assertFalse($data['auto_reload']);
+        $this->assertSame('12.99', $data['balance']);
+        $this->assertFalse($data['auto_reload']);
     }
 
     public function testJsonUnserialize(): void
@@ -54,14 +54,14 @@ class BalanceTest extends TestCase
         $balance = new Balance('1.99', true);
         $balance->fromArray($data);
 
-        self::assertSame($data['value'], @$balance['balance']);
-        self::assertSame($data['autoReload'], @$balance['auto_reload']);
+        $this->assertSame($data['value'], @$balance['balance']);
+        $this->assertSame($data['autoReload'], @$balance['auto_reload']);
     }
 
     public function testActsLikeArray(): void
     {
-        self::assertSame('12.99', @$this->balance['balance']);
-        self::assertTrue(@isset($this->balance['balance']));
+        $this->assertSame('12.99', @$this->balance['balance']);
+        $this->assertTrue(@isset($this->balance['balance']));
     }
 
     public function testCannotRemoveArrayKey(): void
@@ -83,6 +83,6 @@ class BalanceTest extends TestCase
     public function testMakeSureDataIsPubliclyVisible(): void
     {
         $data = $this->balance->toArray();
-        self::assertSame('12.99', $data['balance']);
+        $this->assertSame('12.99', $data['balance']);
     }
 }

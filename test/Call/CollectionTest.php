@@ -65,8 +65,8 @@ class CollectionTest extends TestCase
         $filter = @new Filter();
         $return = @$collection($filter);
 
-        self::assertSame($collection, $return);
-        self::assertSame($collection->getFilter(), $filter);
+        $this->assertSame($collection, $return);
+        $this->assertSame($collection->getFilter(), $filter);
     }
 
     /**
@@ -103,12 +103,12 @@ class CollectionTest extends TestCase
         $collection = $this->collection;
         $call = @$collection[$payload];
 
-        self::assertInstanceOf(Call::class, $call);
+        $this->assertInstanceOf(Call::class, $call);
         $this->vonageClient->send(Argument::any())->shouldNotHaveBeenCalled();
-        self::assertEquals($id, $call->getId());
+        $this->assertEquals($id, $call->getId());
 
         if ($payload instanceof Call) {
-            self::assertSame($payload, $call);
+            $this->assertSame($payload, $call);
         }
 
         @$call->get();
@@ -133,15 +133,15 @@ class CollectionTest extends TestCase
     {
         //this generally proxies the call resource, but we're testing the correct request, not the proxy
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id) {
-            self::assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'GET', $request);
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'GET', $request);
             return true;
         }))->willReturn($this->getResponse('call'))->shouldBeCalled();
 
         $call = @$this->collection->get($payload);
 
-        self::assertInstanceOf(Call::class, $call);
+        $this->assertInstanceOf(Call::class, $call);
         if ($payload instanceof Call) {
-            self::assertSame($payload, $call);
+            $this->assertSame($payload, $call);
         }
     }
 
@@ -154,15 +154,15 @@ class CollectionTest extends TestCase
     public function testCreatePostCall($payload, $method): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
-            self::assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
-            self::assertRequestBodyIsJson(json_encode($payload), $request);
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
+            $this->assertRequestBodyIsJson(json_encode($payload), $request);
             return true;
         }))->willReturn($this->getResponse('created', 201));
 
         $call = @$this->collection->$method($payload);
 
-        self::assertInstanceOf(Call::class, $call);
-        self::assertEquals('e46fd8bd-504d-4044-9600-26dd18b41111', $call->getId());
+        $this->assertInstanceOf(Call::class, $call);
+        $this->assertEquals('e46fd8bd-504d-4044-9600-26dd18b41111', $call->getId());
     }
 
     /**
@@ -180,16 +180,16 @@ class CollectionTest extends TestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
             $ncco = [['action' => 'talk', 'text' => 'Hello World']];
 
-            self::assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
-            self::assertRequestBodyIsJson(json_encode($payload), $request);
-            self::assertRequestJsonBodyContains('ncco', $ncco, $request);
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
+            $this->assertRequestBodyIsJson(json_encode($payload), $request);
+            $this->assertRequestJsonBodyContains('ncco', $ncco, $request);
             return true;
         }))->willReturn($this->getResponse('created', 201));
 
         $call = @$this->collection->create($payload);
 
-        self::assertInstanceOf(Call::class, $call);
-        self::assertEquals('e46fd8bd-504d-4044-9600-26dd18b41111', $call->getId());
+        $this->assertInstanceOf(Call::class, $call);
+        $this->assertEquals('e46fd8bd-504d-4044-9600-26dd18b41111', $call->getId());
     }
 
     /**
@@ -201,8 +201,8 @@ class CollectionTest extends TestCase
     public function testCreatePostCallErrorFromVApi($payload, $method): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
-            self::assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
-            self::assertRequestBodyIsJson(json_encode($payload), $request);
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
+            $this->assertRequestBodyIsJson(json_encode($payload), $request);
 
             return true;
         }))->willReturn($this->getResponse('error_vapi', 400));
@@ -212,7 +212,7 @@ class CollectionTest extends TestCase
 
             self::fail('Expected to throw request exception');
         } catch (ClientException\Request $e) {
-            self::assertEquals('Bad Request', $e->getMessage());
+            $this->assertEquals('Bad Request', $e->getMessage());
         }
     }
 
@@ -225,8 +225,8 @@ class CollectionTest extends TestCase
     public function testCreatePostCallErrorFromProxy($payload, $method): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
-            self::assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
-            self::assertRequestBodyIsJson(json_encode($payload), $request);
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
+            $this->assertRequestBodyIsJson(json_encode($payload), $request);
 
             return true;
         }))->willReturn($this->getResponse('error_proxy', 400));
@@ -236,7 +236,7 @@ class CollectionTest extends TestCase
 
             self::fail('Expected to throw request exception');
         } catch (ClientException\Request $e) {
-            self::assertEquals('Unsupported Media Type', $e->getMessage());
+            $this->assertEquals('Unsupported Media Type', $e->getMessage());
         }
     }
 
@@ -249,8 +249,8 @@ class CollectionTest extends TestCase
     public function testCreatePostCallErrorUnknownFormat($payload, $method): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
-            self::assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
-            self::assertRequestBodyIsJson(json_encode($payload), $request);
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
+            $this->assertRequestBodyIsJson(json_encode($payload), $request);
             return true;
         }))->willReturn($this->getResponse('error_unknown_format', 400));
 
@@ -259,7 +259,7 @@ class CollectionTest extends TestCase
 
             self::fail('Expected to throw request exception');
         } catch (ClientException\Request $e) {
-            self::assertEquals("Unexpected error", $e->getMessage());
+            $this->assertEquals("Unexpected error", $e->getMessage());
         }
     }
 
@@ -279,18 +279,18 @@ class CollectionTest extends TestCase
     {
         //this generally proxies the call resource, but we're testing the correct request, not the proxy
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($expectedId, $payload) {
-            self::assertRequestUrl('api.nexmo.com', '/v1/calls/' . $expectedId, 'PUT', $request);
-            self::assertRequestBodyIsJson(json_encode($payload), $request);
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $expectedId, 'PUT', $request);
+            $this->assertRequestBodyIsJson(json_encode($payload), $request);
             return true;
         }))->willReturn($this->getResponse('updated'))->shouldBeCalled();
 
         $call = @$this->collection->put($payload, $id);
-        self::assertInstanceOf(Call::class, $call);
+        $this->assertInstanceOf(Call::class, $call);
 
         if ($id instanceof Call) {
-            self::assertSame($id, $call);
+            $this->assertSame($id, $call);
         } else {
-            self::assertEquals($id, $call->getId());
+            $this->assertEquals($id, $call->getId());
         }
     }
 

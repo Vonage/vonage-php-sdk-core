@@ -59,13 +59,13 @@ class CollectionTest extends TestCase
         $this->vonageClient->send(Argument::any())->willReturn($this->getResponse('conversation'));
 
         $conversation = $this->collection[$payload];
-        self::assertInstanceOf(Conversation::class, $conversation);
+        $this->assertInstanceOf(Conversation::class, $conversation);
 
         $this->vonageClient->send(Argument::any())->shouldNotHaveBeenCalled();
-        self::assertEquals($id, $conversation->getId());
+        $this->assertEquals($id, $conversation->getId());
 
         if ($payload instanceof Conversation) {
-            self::assertSame($payload, $conversation);
+            $this->assertSame($payload, $conversation);
         }
 
         // Once we call get() the rest of the data should be populated
@@ -90,14 +90,14 @@ class CollectionTest extends TestCase
     public function testGetIsNotLazy($payload, $id): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id) {
-            self::assertRequestUrl('api.nexmo.com', '/beta/conversations/' . $id, 'GET', $request);
+            $this->assertRequestUrl('api.nexmo.com', '/beta/conversations/' . $id, 'GET', $request);
             return true;
         }))->willReturn($this->getResponse('conversation'))->shouldBeCalled();
 
         $conversation = $this->collection->get($payload);
 
         if ($payload instanceof Conversation) {
-            self::assertSame($payload, $conversation);
+            $this->assertSame($payload, $conversation);
         }
     }
 
@@ -110,16 +110,16 @@ class CollectionTest extends TestCase
     public function testCreatePostConversation($payload, $method): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
-            self::assertRequestUrl('api.nexmo.com', '/beta/conversations', 'POST', $request);
-            self::assertRequestBodyIsJson(json_encode($payload), $request);
+            $this->assertRequestUrl('api.nexmo.com', '/beta/conversations', 'POST', $request);
+            $this->assertRequestBodyIsJson(json_encode($payload), $request);
 
             return true;
         }))->willReturn($this->getResponse('conversation', 200));
 
         $conversation = $this->collection->$method($payload);
 
-        self::assertInstanceOf(Conversation::class, $conversation);
-        self::assertEquals('CON-aaaaaaaa-bbbb-cccc-dddd-0123456789ab', $conversation->getId());
+        $this->assertInstanceOf(Conversation::class, $conversation);
+        $this->assertEquals('CON-aaaaaaaa-bbbb-cccc-dddd-0123456789ab', $conversation->getId());
     }
 
     /**
@@ -131,8 +131,8 @@ class CollectionTest extends TestCase
     public function testCreatePostConversationErrorFromVApi($payload, $method): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
-            self::assertRequestUrl('api.nexmo.com', '/beta/conversations', 'POST', $request);
-            self::assertRequestBodyIsJson(json_encode($payload), $request);
+            $this->assertRequestUrl('api.nexmo.com', '/beta/conversations', 'POST', $request);
+            $this->assertRequestBodyIsJson(json_encode($payload), $request);
 
             return true;
         }))->willReturn($this->getResponse('error_stitch', 400));
@@ -142,7 +142,7 @@ class CollectionTest extends TestCase
 
             self::fail('Expected to throw request exception');
         } catch (ClientException\Request $e) {
-            self::assertEquals('the token was rejected', $e->getMessage());
+            $this->assertEquals('the token was rejected', $e->getMessage());
         }
     }
 
@@ -157,8 +157,8 @@ class CollectionTest extends TestCase
         self::markTestSkipped();
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
-            self::assertRequestUrl('api.nexmo.com', '/v1/conversation', 'POST', $request);
-            self::assertRequestBodyIsJson(json_encode($payload), $request);
+            $this->assertRequestUrl('api.nexmo.com', '/v1/conversation', 'POST', $request);
+            $this->assertRequestBodyIsJson(json_encode($payload), $request);
 
             return true;
         }))->willReturn($this->getResponse('error_proxy', 400));
@@ -168,7 +168,7 @@ class CollectionTest extends TestCase
 
             self::fail('Expected to throw request exception');
         } catch (ClientException\Request $e) {
-            self::assertEquals('Unsupported Media Type', $e->getMessage());
+            $this->assertEquals('Unsupported Media Type', $e->getMessage());
         }
     }
 
@@ -183,8 +183,8 @@ class CollectionTest extends TestCase
         self::markTestSkipped();
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
-            self::assertRequestUrl('api.nexmo.com', '/v1/conversation', 'POST', $request);
-            self::assertRequestBodyIsJson(json_encode($payload), $request);
+            $this->assertRequestUrl('api.nexmo.com', '/v1/conversation', 'POST', $request);
+            $this->assertRequestBodyIsJson(json_encode($payload), $request);
 
             return true;
         }))->willReturn($this->getResponse('error_unknown_format', 400));
@@ -194,7 +194,7 @@ class CollectionTest extends TestCase
 
             self::fail('Expected to throw request exception');
         } catch (ClientException\Request $e) {
-            self::assertEquals("Unexpected error", $e->getMessage());
+            $this->assertEquals("Unexpected error", $e->getMessage());
         }
     }
 

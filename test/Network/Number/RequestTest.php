@@ -23,9 +23,9 @@ class RequestTest extends TestCase
         $request = new Request('14443332121', 'http://example.com');
         $params = $request->getParams();
 
-        self::assertCount(2, $params);
-        self::assertArrayHasKey('number', $params);
-        self::assertArrayHasKey('callback', $params);
+        $this->assertCount(2, $params);
+        $this->assertArrayHasKey('number', $params);
+        $this->assertArrayHasKey('callback', $params);
     }
 
     public function testNumberMatchesParams(): void
@@ -33,8 +33,8 @@ class RequestTest extends TestCase
         $request = new Request('14443332121', 'http://example.com');
         $params = $request->getParams();
 
-        self::assertArrayHasKey('number', $params);
-        self::assertEquals('14443332121', $params['number']);
+        $this->assertArrayHasKey('number', $params);
+        $this->assertEquals('14443332121', $params['number']);
     }
 
     public function testCallbackMatchesParams(): void
@@ -42,8 +42,8 @@ class RequestTest extends TestCase
         $request = new Request('14443332121', 'http://example.com');
         $params = $request->getParams();
 
-        self::assertArrayHasKey('callback', $params);
-        self::assertEquals('http://example.com', $params['callback']);
+        $this->assertArrayHasKey('callback', $params);
+        $this->assertEquals('http://example.com', $params['callback']);
     }
 
     public function testFeaturesMatchesParams(): void
@@ -55,14 +55,14 @@ class RequestTest extends TestCase
         );
         $params = $request->getParams();
 
-        self::assertArrayHasKey('features', $params);
-        self::assertIsString($params['features']);
+        $this->assertArrayHasKey('features', $params);
+        $this->assertIsString($params['features']);
 
         $array = explode(',', $params['features']);
 
-        self::assertCount(2, $array);
-        self::assertContains(Request::FEATURE_CARRIER, $array);
-        self::assertContains(Request::FEATURE_PORTED, $array);
+        $this->assertCount(2, $array);
+        $this->assertContains(Request::FEATURE_CARRIER, $array);
+        $this->assertContains(Request::FEATURE_PORTED, $array);
     }
 
     public function testCallbackTimeoutMatchesParams(): void
@@ -75,8 +75,8 @@ class RequestTest extends TestCase
         );
         $params = $request->getParams();
 
-        self::assertArrayHasKey('callback_timeout', $params);
-        self::assertEquals(100, $params['callback_timeout']);
+        $this->assertArrayHasKey('callback_timeout', $params);
+        $this->assertEquals(100, $params['callback_timeout']);
     }
 
     public function testCallbackMethodMatchesParams(): void
@@ -90,8 +90,8 @@ class RequestTest extends TestCase
         );
         $params = $request->getParams();
 
-        self::assertArrayHasKey('callback_method', $params);
-        self::assertEquals('POST', $params['callback_method']);
+        $this->assertArrayHasKey('callback_method', $params);
+        $this->assertEquals('POST', $params['callback_method']);
     }
 
     public function testRefMatchesParams(): void
@@ -106,7 +106,7 @@ class RequestTest extends TestCase
         );
         $params = $request->getParams();
 
-        self::assertArrayHasKey('client_ref', $params);
-        self::assertEquals('ref', $params['client_ref']);
+        $this->assertArrayHasKey('client_ref', $params);
+        $this->assertEquals('ref', $params['client_ref']);
     }
 }

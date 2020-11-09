@@ -29,10 +29,10 @@ class TransferTest extends TestCase
         $schema = file_get_contents(__DIR__ . '/schema/transfer.json');
         $json = json_decode(json_encode(@new Transfer($urls)), true);
 
-        self::assertJsonDocumentMatchesSchema($json, json_decode(json_encode($schema), true));
-        self::assertJsonValueEquals($json, '$.action', 'transfer');
-        self::assertJsonValueEquals($json, '$.destination.type', 'ncco');
-        self::assertJsonValueEquals($json, '$.destination.url', $urls);
+        $this->assertJsonDocumentMatchesSchema($json, json_decode(json_encode($schema), true));
+        $this->assertJsonValueEquals($json, '$.action', 'transfer');
+        $this->assertJsonValueEquals($json, '$.destination.type', 'ncco');
+        $this->assertJsonValueEquals($json, '$.destination.url', $urls);
     }
 
     public function testStructureWithString(): void
@@ -41,9 +41,9 @@ class TransferTest extends TestCase
         $schema = file_get_contents(__DIR__ . '/schema/transfer.json');
         $json = json_decode(json_encode(@new Transfer($urls)), true);
 
-        self::assertJsonDocumentMatchesSchema($json, json_decode(json_encode($schema), true));
-        self::assertJsonValueEquals($json, '$.action', 'transfer');
-        self::assertJsonValueEquals($json, '$.destination.type', 'ncco');
-        self::assertJsonValueEquals($json, '$.destination.url', [$urls]);
+        $this->assertJsonDocumentMatchesSchema($json, json_decode(json_encode($schema), true));
+        $this->assertJsonValueEquals($json, '$.action', 'transfer');
+        $this->assertJsonValueEquals($json, '$.destination.type', 'ncco');
+        $this->assertJsonValueEquals($json, '$.destination.url', [$urls]);
     }
 }

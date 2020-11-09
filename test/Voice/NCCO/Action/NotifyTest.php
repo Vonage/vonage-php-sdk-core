@@ -23,8 +23,8 @@ class NotifyTest extends TestCase
         $webhook = new Webhook('https://test.domain/events');
         $action = (new Notify(['foo' => 'bar'], $webhook))->setEventWebhook($webhook);
 
-        self::assertSame(['foo' => 'bar'], $action->getPayload());
-        self::assertSame($webhook, $action->getEventWebhook());
+        $this->assertSame(['foo' => 'bar'], $action->getPayload());
+        $this->assertSame($webhook, $action->getEventWebhook());
     }
 
     public function testCanGenerateFromFactory(): void
@@ -37,9 +37,9 @@ class NotifyTest extends TestCase
 
         $action = Notify::factory(['foo' => 'bar'], $data);
 
-        self::assertSame(['foo' => 'bar'], $action->getPayload());
-        self::assertSame('https://test.domain/events', $action->getEventWebhook()->getUrl());
-        self::assertSame('POST', $action->getEventWebhook()->getMethod());
+        $this->assertSame(['foo' => 'bar'], $action->getPayload());
+        $this->assertSame('https://test.domain/events', $action->getEventWebhook()->getUrl());
+        $this->assertSame('POST', $action->getEventWebhook()->getMethod());
     }
 
     public function testGeneratesCorrectNCCOArray(): void
@@ -51,10 +51,10 @@ class NotifyTest extends TestCase
 
         $ncco = $action->toNCCOArray();
 
-        self::assertSame('notify', $ncco['action']);
-        self::assertSame(['foo' => 'bar'], $ncco['payload']);
-        self::assertSame(['https://test.domain/events'], $ncco['eventUrl']);
-        self::assertSame('POST', $ncco['eventMethod']);
+        $this->assertSame('notify', $ncco['action']);
+        $this->assertSame(['foo' => 'bar'], $ncco['payload']);
+        $this->assertSame(['https://test.domain/events'], $ncco['eventUrl']);
+        $this->assertSame('POST', $ncco['eventMethod']);
     }
 
     public function testJSONSerializesToCorrectStructure(): void
@@ -62,10 +62,10 @@ class NotifyTest extends TestCase
         $webhook = new Webhook('https://test.domain/events');
         $ncco = (new Notify(['foo' => 'bar'], $webhook))->setEventWebhook($webhook)->jsonSerialize();
 
-        self::assertSame('notify', $ncco['action']);
-        self::assertSame(['foo' => 'bar'], $ncco['payload']);
-        self::assertSame(['https://test.domain/events'], $ncco['eventUrl']);
-        self::assertSame('POST', $ncco['eventMethod']);
+        $this->assertSame('notify', $ncco['action']);
+        $this->assertSame(['foo' => 'bar'], $ncco['payload']);
+        $this->assertSame(['https://test.domain/events'], $ncco['eventUrl']);
+        $this->assertSame('POST', $ncco['eventMethod']);
     }
 
     public function testCanAddToPayload(): void
@@ -73,7 +73,7 @@ class NotifyTest extends TestCase
         $webhook = new Webhook('https://test.domain/events');
         $action = (new Notify(['foo' => 'bar'], $webhook))->addToPayload('baz', 'biff');
 
-        self::assertSame(['foo' => 'bar', 'baz' => 'biff'], $action->getPayload());
+        $this->assertSame(['foo' => 'bar', 'baz' => 'biff'], $action->getPayload());
     }
 
     public function testThrowsExceptionWhenMissingEventURL(): void

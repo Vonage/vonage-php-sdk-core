@@ -39,12 +39,12 @@ class ResponseTest extends TestCase
 
     public function testMethodsMatchData(): void
     {
-        self::assertEquals($this->data['request_id'], $this->response->getId());
-        self::assertEquals($this->data['number'], $this->response->getNumber());
-        self::assertEquals($this->data['request_price'], $this->response->getPrice());
-        self::assertEquals($this->data['remaining_balance'], $this->response->getBalance());
-        self::assertEquals($this->data['callback_total_parts'], $this->response->getCallbackTotal());
-        self::assertEquals($this->data['status'], $this->response->getStatus());
+        $this->assertEquals($this->data['request_id'], $this->response->getId());
+        $this->assertEquals($this->data['number'], $this->response->getNumber());
+        $this->assertEquals($this->data['request_price'], $this->response->getPrice());
+        $this->assertEquals($this->data['remaining_balance'], $this->response->getBalance());
+        $this->assertEquals($this->data['callback_total_parts'], $this->response->getCallbackTotal());
+        $this->assertEquals($this->data['status'], $this->response->getStatus());
     }
 
     /**
@@ -122,8 +122,8 @@ class ResponseTest extends TestCase
 
         $response = new Response($this->data, [$callback, $callback]);
 
-        self::assertTrue($response->$has());
-        self::assertEquals('data', $response->$get());
+        $this->assertTrue($response->$has());
+        $this->assertEquals('data', $response->$get());
     }
 
     public function getOptionalProperties(): array

@@ -26,10 +26,10 @@ class WAPPushTest extends TestCase
             300000
         ))->toArray();
 
-        self::assertSame('447700900000', $data['to']);
-        self::assertSame('16105551212', $data['from']);
-        self::assertSame('Check In Now!', $data['title']);
-        self::assertSame('https://test.domain/check-in', $data['url']);
-        self::assertSame(300000, $data['validity']);
+        $this->assertSame('447700900000', $data['to']);
+        $this->assertSame('16105551212', $data['from']);
+        $this->assertSame('Check In Now!', $data['title']);
+        $this->assertSame('https://test.domain/check-in', $data['url']);
+        $this->assertSame(300000, $data['validity']);
     }
 }

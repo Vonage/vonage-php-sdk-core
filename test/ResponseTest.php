@@ -50,17 +50,17 @@ class ResponseTest extends TestCase
 
     public function testMessageCount(): void
     {
-        self::assertEquals($this->array['message-count'], $this->response->count());
-        self::assertCount($this->response->count(), $this->response);
-        self::assertCount($this->response->count(), $this->response->getMessages());
+        $this->assertEquals($this->array['message-count'], $this->response->count());
+        $this->assertCount($this->response->count(), $this->response);
+        $this->assertCount($this->response->count(), $this->response->getMessages());
 
         $count = 0;
 
         foreach ($this->response as $message) {
-            self::assertInstanceOf(Message::class, $message);
+            $this->assertInstanceOf(Message::class, $message);
             $count++;
         }
 
-        self::assertEquals($this->response->count(), $count);
+        $this->assertEquals($this->response->count(), $count);
     }
 }

@@ -26,7 +26,7 @@ class APIResourceTest extends TestCase
         $resource = new APIResource();
         $resource->setClient($mockClient->reveal());
 
-        self::assertSame('https://test.domain', $resource->getBaseUrl());
+        $this->assertSame('https://test.domain', $resource->getBaseUrl());
     }
 
     public function testOverridingBaseUrlManuallyWorks(): void
@@ -34,12 +34,12 @@ class APIResourceTest extends TestCase
         $resource = new APIResource();
         $resource->setBaseUrl('https://test.domain');
 
-        self::assertSame('https://test.domain', $resource->getBaseUrl());
+        $this->assertSame('https://test.domain', $resource->getBaseUrl());
     }
 
     public function testNotOverridingBaseURLReturnsBlank(): void
     {
         $resource = new APIResource();
-        self::assertSame('', $resource->getBaseUrl());
+        $this->assertSame('', $resource->getBaseUrl());
     }
 }

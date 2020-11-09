@@ -123,12 +123,12 @@ class ClientTest extends TestCase
         $string = serialize($verification);
         $object = @$this->client->unserialize($string);
 
-        self::assertInstanceOf(Verification::class, $object);
+        $this->assertInstanceOf(Verification::class, $object);
 
         $search = $this->setupClientForSearch('search');
         @$object->sync();
 
-        self::assertSame($search, @$object->getResponse());
+        $this->assertSame($search, @$object->getResponse());
     }
 
     public function testSerializeMatchesEntity(): void
@@ -138,7 +138,7 @@ class ClientTest extends TestCase
 
         $string = serialize($verification);
 
-        self::assertSame($string, @$this->client->serialize($verification));
+        $this->assertSame($string, @$this->client->serialize($verification));
     }
 
     /**
@@ -156,7 +156,7 @@ class ClientTest extends TestCase
         $verification = @new Verification('14845551212', 'Test Verify');
         @$this->client->start($verification);
 
-        self::assertSame($success, @$verification->getResponse());
+        $this->assertSame($success, @$verification->getResponse());
     }
 
     /**
@@ -172,7 +172,7 @@ class ClientTest extends TestCase
         $verification = new Request('14845551212', 'Test Verify');
         $verification = @$this->client->start($verification);
 
-        self::assertSame($success, @$verification->getResponse());
+        $this->assertSame($success, @$verification->getResponse());
     }
 
     public function invalidDataDataProvider(): array
@@ -234,10 +234,10 @@ class ClientTest extends TestCase
         $this->vonageClient->send(
             Argument::that(
                 function (RequestInterface $request) {
-                    self::assertRequestJsonBodyContains('number', '14845551212', $request);
-                    self::assertRequestJsonBodyContains('payee', 'Test Verify', $request);
-                    self::assertRequestJsonBodyContains('amount', '5.25', $request);
-                    self::assertRequestMatchesUrl('https://api.nexmo.com/verify/psd2/json', $request);
+                    $this->assertRequestJsonBodyContains('number', '14845551212', $request);
+                    $this->assertRequestJsonBodyContains('payee', 'Test Verify', $request);
+                    $this->assertRequestJsonBodyContains('amount', '5.25', $request);
+                    $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/psd2/json', $request);
 
                     return true;
                 }
@@ -248,8 +248,8 @@ class ClientTest extends TestCase
         $request = new RequestPSD2('14845551212', 'Test Verify', '5.25');
         $response = @$this->client->requestPSD2($request);
 
-        self::assertSame('0', $response['status']);
-        self::assertSame('44a5279b27dd4a638d614d265ad57a77', $response['request_id']);
+        $this->assertSame('0', $response['status']);
+        $this->assertSame('44a5279b27dd4a638d614d265ad57a77', $response['request_id']);
     }
 
     /**
@@ -263,11 +263,11 @@ class ClientTest extends TestCase
         $this->vonageClient->send(
             Argument::that(
                 function (RequestInterface $request) {
-                    self::assertRequestJsonBodyContains('number', '14845551212', $request);
-                    self::assertRequestJsonBodyContains('payee', 'Test Verify', $request);
-                    self::assertRequestJsonBodyContains('amount', '5.25', $request);
-                    self::assertRequestJsonBodyContains('workflow_id', 5, $request);
-                    self::assertRequestMatchesUrl('https://api.nexmo.com/verify/psd2/json', $request);
+                    $this->assertRequestJsonBodyContains('number', '14845551212', $request);
+                    $this->assertRequestJsonBodyContains('payee', 'Test Verify', $request);
+                    $this->assertRequestJsonBodyContains('amount', '5.25', $request);
+                    $this->assertRequestJsonBodyContains('workflow_id', 5, $request);
+                    $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/psd2/json', $request);
 
                     return true;
                 }
@@ -278,8 +278,8 @@ class ClientTest extends TestCase
         $request = new RequestPSD2('14845551212', 'Test Verify', '5.25', 5);
         $response = @$this->client->requestPSD2($request);
 
-        self::assertSame('0', $response['status']);
-        self::assertSame('44a5279b27dd4a638d614d265ad57a77', $response['request_id']);
+        $this->assertSame('0', $response['status']);
+        $this->assertSame('44a5279b27dd4a638d614d265ad57a77', $response['request_id']);
     }
 
     /**
@@ -299,7 +299,7 @@ class ClientTest extends TestCase
             ]
         );
 
-        self::assertSame($response, @$verification->getResponse());
+        $this->assertSame($response, @$verification->getResponse());
     }
 
     /**
@@ -321,12 +321,12 @@ class ClientTest extends TestCase
 
             self::fail('did not throw exception');
         } catch (Client\Exception\Request $e) {
-            self::assertEquals('2', $e->getCode());
-            self::assertEquals(
+            $this->assertEquals('2', $e->getCode());
+            $this->assertEquals(
                 'Your request is incomplete and missing the mandatory parameter: brand',
                 $e->getMessage()
             );
-            self::assertSame($response, @$e->getEntity()->getResponse());
+            $this->assertSame($response, @$e->getEntity()->getResponse());
         }
     }
 
@@ -349,9 +349,9 @@ class ClientTest extends TestCase
 
             self::fail('did not throw exception');
         } catch (ServerException $e) {
-            self::assertEquals('5', $e->getCode());
-            self::assertEquals('Server Error', $e->getMessage());
-            self::assertSame($response, @$e->getEntity()->getResponse());
+            $this->assertEquals('5', $e->getCode());
+            $this->assertEquals('Server Error', $e->getMessage());
+            $this->assertSame($response, @$e->getEntity()->getResponse());
         }
     }
 
@@ -364,9 +364,9 @@ class ClientTest extends TestCase
         $this->vonageClient->send(
             Argument::that(
                 function (RequestInterface $request) {
-                    self::assertRequestJsonBodyContains('number', '14845551212', $request);
-                    self::assertRequestJsonBodyContains('brand', 'Test Verify', $request);
-                    self::assertRequestMatchesUrl('https://api.nexmo.com/verify/json', $request);
+                    $this->assertRequestJsonBodyContains('number', '14845551212', $request);
+                    $this->assertRequestJsonBodyContains('brand', 'Test Verify', $request);
+                    $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/json', $request);
 
                     return true;
                 }
@@ -390,7 +390,7 @@ class ClientTest extends TestCase
         $verification = new Verification('44a5279b27dd4a638d614d265ad57a77');
         @$this->client->search($verification);
 
-        self::assertSame($response, @$verification->getResponse());
+        $this->assertSame($response, @$verification->getResponse());
     }
 
     /**
@@ -405,7 +405,7 @@ class ClientTest extends TestCase
 
         $verification = @$this->client->search('44a5279b27dd4a638d614d265ad57a77');
 
-        self::assertSame($response, @$verification->getResponse());
+        $this->assertSame($response, @$verification->getResponse());
     }
 
     /**
@@ -422,9 +422,9 @@ class ClientTest extends TestCase
 
             self::fail('did not throw exception');
         } catch (Client\Exception\Request $e) {
-            self::assertEquals('101', $e->getCode());
-            self::assertEquals('No response found', $e->getMessage());
-            self::assertSame($response, @$e->getEntity()->getResponse());
+            $this->assertEquals('101', $e->getCode());
+            $this->assertEquals('No response found', $e->getMessage());
+            $this->assertSame($response, @$e->getEntity()->getResponse());
         }
     }
 
@@ -442,9 +442,9 @@ class ClientTest extends TestCase
 
             self::fail('did not throw exception');
         } catch (ServerException $e) {
-            self::assertEquals('5', $e->getCode());
-            self::assertEquals('Server Error', $e->getMessage());
-            self::assertSame($response, @$e->getEntity()->getResponse());
+            $this->assertEquals('5', $e->getCode());
+            $this->assertEquals('Server Error', $e->getMessage());
+            $this->assertSame($response, @$e->getEntity()->getResponse());
         }
     }
 
@@ -463,7 +463,7 @@ class ClientTest extends TestCase
         $response = $this->setupClientForSearch('search');
         @$this->client->search($verification);
 
-        self::assertSame($response, @$verification->getResponse());
+        $this->assertSame($response, @$verification->getResponse());
     }
 
     /**
@@ -475,8 +475,8 @@ class ClientTest extends TestCase
         $this->vonageClient->send(
             Argument::that(
                 function (RequestInterface $request) {
-                    self::assertRequestJsonBodyContains('request_id', '44a5279b27dd4a638d614d265ad57a77', $request);
-                    self::assertRequestMatchesUrl('https://api.nexmo.com/verify/search/json', $request);
+                    $this->assertRequestJsonBodyContains('request_id', '44a5279b27dd4a638d614d265ad57a77', $request);
+                    $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/search/json', $request);
 
                     return true;
                 }
@@ -500,8 +500,8 @@ class ClientTest extends TestCase
         $verification = new Verification('44a5279b27dd4a638d614d265ad57a77');
         $result = @$this->client->cancel($verification);
 
-        self::assertSame($verification, $result);
-        self::assertSame($response, @$verification->getResponse());
+        $this->assertSame($verification, $result);
+        $this->assertSame($response, @$verification->getResponse());
     }
 
     /**
@@ -516,7 +516,7 @@ class ClientTest extends TestCase
 
         $verification = @$this->client->cancel('44a5279b27dd4a638d614d265ad57a77');
 
-        self::assertSame($response, @$verification->getResponse());
+        $this->assertSame($response, @$verification->getResponse());
     }
 
     /**
@@ -533,13 +533,13 @@ class ClientTest extends TestCase
 
             self::fail('did not throw exception');
         } catch (Client\Exception\Request $e) {
-            self::assertEquals('19', $e->getCode());
-            self::assertEquals(
+            $this->assertEquals('19', $e->getCode());
+            $this->assertEquals(
                 "Verification request  ['c1878c7451f94c1992d52797df57658e'] can't " .
                 "be cancelled now. Too many attempts to re-deliver have already been made.",
                 $e->getMessage()
             );
-            self::assertSame($response, @$e->getEntity()->getResponse());
+            $this->assertSame($response, @$e->getEntity()->getResponse());
         }
     }
 
@@ -557,9 +557,9 @@ class ClientTest extends TestCase
 
             self::fail('did not throw exception');
         } catch (ServerException $e) {
-            self::assertEquals('5', $e->getCode());
-            self::assertEquals('Server Error', $e->getMessage());
-            self::assertSame($response, @$e->getEntity()->getResponse());
+            $this->assertEquals('5', $e->getCode());
+            $this->assertEquals('Server Error', $e->getMessage());
+            $this->assertSame($response, @$e->getEntity()->getResponse());
         }
     }
 
@@ -575,7 +575,7 @@ class ClientTest extends TestCase
 
         $verification = @$this->client->trigger('44a5279b27dd4a638d614d265ad57a77');
 
-        self::assertSame($response, @$verification->getResponse());
+        $this->assertSame($response, @$verification->getResponse());
     }
 
     /**
@@ -591,8 +591,8 @@ class ClientTest extends TestCase
         $verification = new Verification('44a5279b27dd4a638d614d265ad57a77');
         $result = @$this->client->trigger($verification);
 
-        self::assertSame($verification, $result);
-        self::assertSame($response, @$verification->getResponse());
+        $this->assertSame($verification, $result);
+        $this->assertSame($response, @$verification->getResponse());
     }
 
     /**
@@ -609,13 +609,13 @@ class ClientTest extends TestCase
 
             self::fail('did not throw exception');
         } catch (Client\Exception\Request $e) {
-            self::assertEquals('6', $e->getCode());
-            self::assertEquals(
+            $this->assertEquals('6', $e->getCode());
+            $this->assertEquals(
                 "The requestId '44a5279b27dd4a638d614d265ad57a77' does " .
                 "not exist or its no longer active.",
                 $e->getMessage()
             );
-            self::assertSame($response, @$e->getEntity()->getResponse());
+            $this->assertSame($response, @$e->getEntity()->getResponse());
         }
     }
 
@@ -633,9 +633,9 @@ class ClientTest extends TestCase
 
             self::fail('did not throw exception');
         } catch (ServerException $e) {
-            self::assertEquals('5', $e->getCode());
-            self::assertEquals('Server Error', $e->getMessage());
-            self::assertSame($response, @$e->getEntity()->getResponse());
+            $this->assertEquals('5', $e->getCode());
+            $this->assertEquals('Server Error', $e->getMessage());
+            $this->assertSame($response, @$e->getEntity()->getResponse());
         }
     }
 
@@ -654,7 +654,7 @@ class ClientTest extends TestCase
         $this->setupClientForControl($method, $cmd);
         @$this->client->$method($verification);
 
-        self::assertSame($response, @$verification->getResponse());
+        $this->assertSame($response, @$verification->getResponse());
     }
 
     /**
@@ -678,9 +678,9 @@ class ClientTest extends TestCase
         $this->vonageClient->send(
             Argument::that(
                 function (RequestInterface $request) use ($cmd) {
-                    self::assertRequestJsonBodyContains('request_id', '44a5279b27dd4a638d614d265ad57a77', $request);
-                    self::assertRequestJsonBodyContains('cmd', $cmd, $request);
-                    self::assertRequestMatchesUrl('https://api.nexmo.com/verify/control/json', $request);
+                    $this->assertRequestJsonBodyContains('request_id', '44a5279b27dd4a638d614d265ad57a77', $request);
+                    $this->assertRequestJsonBodyContains('cmd', $cmd, $request);
+                    $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/control/json', $request);
 
                     return true;
                 }
@@ -704,7 +704,7 @@ class ClientTest extends TestCase
 
         @$this->client->check($verification, '1234');
 
-        self::assertSame($response, @$verification->getResponse());
+        $this->assertSame($response, @$verification->getResponse());
     }
 
     /**
@@ -718,7 +718,7 @@ class ClientTest extends TestCase
         $response = $this->setupClientForCheck('check', '1234');
         $verification = @$this->client->check('44a5279b27dd4a638d614d265ad57a77', '1234');
 
-        self::assertSame($response, @$verification->getResponse());
+        $this->assertSame($response, @$verification->getResponse());
     }
 
     /**
@@ -735,9 +735,9 @@ class ClientTest extends TestCase
 
             self::fail('did not throw exception');
         } catch (Client\Exception\Request $e) {
-            self::assertEquals('16', $e->getCode());
-            self::assertEquals('The code provided does not match the expected value', $e->getMessage());
-            self::assertSame($response, @$e->getEntity()->getResponse());
+            $this->assertEquals('16', $e->getCode());
+            $this->assertEquals('The code provided does not match the expected value', $e->getMessage());
+            $this->assertSame($response, @$e->getEntity()->getResponse());
         }
     }
 
@@ -755,9 +755,9 @@ class ClientTest extends TestCase
 
             self::fail('did not throw exception');
         } catch (ServerException $e) {
-            self::assertEquals('5', $e->getCode());
-            self::assertEquals('Server Error', $e->getMessage());
-            self::assertSame($response, @$e->getEntity()->getResponse());
+            $this->assertEquals('5', $e->getCode());
+            $this->assertEquals('Server Error', $e->getMessage());
+            $this->assertSame($response, @$e->getEntity()->getResponse());
         }
     }
 
@@ -776,7 +776,7 @@ class ClientTest extends TestCase
         $this->setupClientForCheck('check', '1234');
 
         @$this->client->check($verification, '1234');
-        self::assertSame($old, @$verification->getResponse());
+        $this->assertSame($old, @$verification->getResponse());
     }
 
     /**
@@ -790,14 +790,14 @@ class ClientTest extends TestCase
         $this->vonageClient->send(
             Argument::that(
                 function (RequestInterface $request) use ($code, $ip) {
-                    self::assertRequestJsonBodyContains('request_id', '44a5279b27dd4a638d614d265ad57a77', $request);
-                    self::assertRequestJsonBodyContains('code', $code, $request);
+                    $this->assertRequestJsonBodyContains('request_id', '44a5279b27dd4a638d614d265ad57a77', $request);
+                    $this->assertRequestJsonBodyContains('code', $code, $request);
 
                     if ($ip) {
-                        self::assertRequestJsonBodyContains('ip_address', $ip, $request);
+                        $this->assertRequestJsonBodyContains('ip_address', $ip, $request);
                     }
 
-                    self::assertRequestMatchesUrl('https://api.nexmo.com/verify/check/json', $request);
+                    $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/check/json', $request);
                     return true;
                 }
             )

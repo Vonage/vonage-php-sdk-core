@@ -23,6 +23,6 @@ class AutoDetectTest extends TestCase
     {
         $message = new AutoDetect('to', 'from', 'Example Message');
 
-        self::assertTrue($message->isEncodingDetectionEnabled());
+        $this->assertTrue($message->isEncodingDetectionEnabled());
     }
 }

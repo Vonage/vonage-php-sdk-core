@@ -30,8 +30,8 @@ class SipTest extends TestCase
     {
         $endpoint = new SIP($this->uri);
 
-        self::assertSame($this->uri, $endpoint->getId());
-        self::assertEmpty($endpoint->getHeaders());
+        $this->assertSame($this->uri, $endpoint->getId());
+        $this->assertEmpty($endpoint->getHeaders());
     }
 
     public function testFactoryCreatesAppEndpoint(): void
@@ -43,13 +43,13 @@ class SipTest extends TestCase
 
         $endpoint = SIP::factory($this->uri, $headers);
 
-        self::assertSame($this->uri, $endpoint->getId());
-        self::assertSame($headers, $endpoint->getHeaders());
+        $this->assertSame($this->uri, $endpoint->getId());
+        $this->assertSame($headers, $endpoint->getHeaders());
     }
 
     public function testToArrayHasCorrectStructure(): void
     {
-        self::assertSame([
+        $this->assertSame([
             'type' => $this->type,
             'uri' => $this->uri
         ], (new SIP($this->uri))->toArray());
@@ -68,12 +68,12 @@ class SipTest extends TestCase
             'headers' => $headers
         ];
 
-        self::assertSame($expected, ((new SIP($this->uri))->setHeaders($headers))->toArray());
+        $this->assertSame($expected, ((new SIP($this->uri))->setHeaders($headers))->toArray());
     }
 
     public function testSerializesToJSONCorrectly(): void
     {
-        self::assertSame([
+        $this->assertSame([
             'type' => $this->type,
             'uri' => $this->uri
         ], (new SIP($this->uri))->jsonSerialize());
@@ -81,6 +81,6 @@ class SipTest extends TestCase
 
     public function testHeaderCanBeIndividuallyAdded(): void
     {
-        self::assertSame(['key' => 'value'], (new SIP($this->uri))->addHeader('key', 'value')->getHeaders());
+        $this->assertSame(['key' => 'value'], (new SIP($this->uri))->addHeader('key', 'value')->getHeaders());
     }
 }

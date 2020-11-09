@@ -65,7 +65,7 @@ class StreamTest extends TestCase
 
     public function testHasId(): void
     {
-        self::assertSame($this->id, $this->entity->getId());
+        $this->assertSame($this->id, $this->entity->getId());
     }
 
     public function testSetUrl(): void
@@ -74,7 +74,7 @@ class StreamTest extends TestCase
         $this->entity->setUrl($url);
         $data = $this->entity->jsonSerialize();
 
-        self::assertSame([$url], $data['stream_url']);
+        $this->assertSame([$url], $data['stream_url']);
     }
 
     public function testSetUrlArray(): void
@@ -83,7 +83,7 @@ class StreamTest extends TestCase
         $this->entity->setUrl($url);
         $data = $this->entity->jsonSerialize();
 
-        self::assertSame($url, $data['stream_url']);
+        $this->assertSame($url, $data['stream_url']);
     }
 
     public function testSetLoop(): void
@@ -92,7 +92,7 @@ class StreamTest extends TestCase
         $this->entity->setLoop($loop);
         $data = $this->entity->jsonSerialize();
 
-        self::assertSame($loop, $data['loop']);
+        $this->assertSame($loop, $data['loop']);
     }
 
     /**
@@ -110,23 +110,23 @@ class StreamTest extends TestCase
         $stream = $this->entity;
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($callId, $stream) {
-            self::assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/stream', 'PUT', $request);
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/stream', 'PUT', $request);
             $expected = json_decode(json_encode($stream), true);
 
             $request->getBody()->rewind();
             $body = json_decode($request->getBody()->getContents(), true);
             $request->getBody()->rewind();
 
-            self::assertEquals($expected, $body);
+            $this->assertEquals($expected, $body);
 
             return true;
         }))->willReturn($this->getResponse('stream', 200));
 
         $event = @$this->entity->put();
 
-        self::assertInstanceOf(Event::class, $event);
-        self::assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
-        self::assertSame('Stream started', $event['message']);
+        $this->assertInstanceOf(Event::class, $event);
+        $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
+        $this->assertSame('Stream started', $event['message']);
     }
 
     /**
@@ -144,23 +144,23 @@ class StreamTest extends TestCase
         $callId = $this->id;
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($callId, $stream) {
-            self::assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/stream', 'PUT', $request);
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/stream', 'PUT', $request);
             $expected = json_decode(json_encode($stream), true);
 
             $request->getBody()->rewind();
             $body = json_decode($request->getBody()->getContents(), true);
             $request->getBody()->rewind();
 
-            self::assertEquals($expected, $body);
+            $this->assertEquals($expected, $body);
 
             return true;
         }))->willReturn($this->getResponse('stream', 200));
 
         $event = @$this->entity->put($stream);
 
-        self::assertInstanceOf(Event::class, $event);
-        self::assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
-        self::assertSame('Stream started', $event['message']);
+        $this->assertInstanceOf(Event::class, $event);
+        $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
+        $this->assertSame('Stream started', $event['message']);
     }
 
     /**
@@ -176,7 +176,7 @@ class StreamTest extends TestCase
         $this->vonageClient->send(Argument::any())->willReturn($this->getResponse('stream', 200));
         $test = $object();
 
-        self::assertSame($this->entity, $test);
+        $this->assertSame($this->entity, $test);
 
         $this->vonageClient->send(Argument::any())->shouldNotHaveBeenCalled();
 
@@ -185,9 +185,9 @@ class StreamTest extends TestCase
 
         $event = @$object($stream);
 
-        self::assertInstanceOf(Event::class, $event);
-        self::assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
-        self::assertSame('Stream started', $event['message']);
+        $this->assertInstanceOf(Event::class, $event);
+        $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
+        $this->assertSame('Stream started', $event['message']);
 
         $this->vonageClient->send(Argument::any())->shouldHaveBeenCalled();
     }
@@ -206,15 +206,15 @@ class StreamTest extends TestCase
         $callId = $this->id;
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($callId) {
-            self::assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/stream', 'DELETE', $request);
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/stream', 'DELETE', $request);
             return true;
         }))->willReturn($this->getResponse('stream-delete', 200));
 
         $event = @$this->entity->delete();
 
-        self::assertInstanceOf(Event::class, $event);
-        self::assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
-        self::assertSame('Stream stopped', $event['message']);
+        $this->assertInstanceOf(Event::class, $event);
+        $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
+        $this->assertSame('Stream stopped', $event['message']);
     }
 
     /**

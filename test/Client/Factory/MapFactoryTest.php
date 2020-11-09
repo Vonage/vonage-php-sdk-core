@@ -40,7 +40,7 @@ class MapFactoryTest extends TestCase
     public function testClientInjection(): void
     {
         $api = $this->factory->getApi('test');
-        self::assertSame($this->client, $api->client);
+        $this->assertSame($this->client, $api->client);
     }
 
     public function testCache(): void
@@ -48,16 +48,16 @@ class MapFactoryTest extends TestCase
         $api = $this->factory->getApi('test');
         $cache = $this->factory->getApi('test');
 
-        self::assertSame($api, $cache);
+        $this->assertSame($api, $cache);
     }
 
     public function testClassMap(): void
     {
-        self::assertTrue($this->factory->hasApi('test'));
-        self::assertFalse($this->factory->hasApi('not'));
+        $this->assertTrue($this->factory->hasApi('test'));
+        $this->assertFalse($this->factory->hasApi('not'));
 
         $api = $this->factory->getApi('test');
-        self::assertInstanceOf(TestDouble::class, $api);
+        $this->assertInstanceOf(TestDouble::class, $api);
 
         $this->expectException(RuntimeException::class);
         $this->factory->getApi('not');
@@ -68,9 +68,9 @@ class MapFactoryTest extends TestCase
         $first = $this->factory->make('test');
         $second = $this->factory->make('test');
 
-        self::assertNotSame($first, $second);
-        self::assertInstanceOf(TestDouble::class, $first);
-        self::assertInstanceOf(TestDouble::class, $second);
+        $this->assertNotSame($first, $second);
+        $this->assertInstanceOf(TestDouble::class, $first);
+        $this->assertInstanceOf(TestDouble::class, $second);
     }
 
     public function testMakeDoesNotUseCache(): void
@@ -79,8 +79,8 @@ class MapFactoryTest extends TestCase
         $new = $this->factory->make('test');
         $secondCached = $this->factory->get('test');
 
-        self::assertNotSame($cached, $new);
-        self::assertNotSame($secondCached, $new);
-        self::assertSame($cached, $secondCached);
+        $this->assertNotSame($cached, $new);
+        $this->assertNotSame($secondCached, $new);
+        $this->assertSame($cached, $secondCached);
     }
 }

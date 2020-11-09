@@ -45,10 +45,10 @@ class PhoneTest extends TestCase
     {
         $endpoint = new Phone($this->number);
 
-        self::assertSame($this->number, $endpoint->getId());
-        self::assertNull($endpoint->getDtmfAnswer());
-        self::assertNull($endpoint->getRingbackTone());
-        self::assertNull($endpoint->getUrl());
+        $this->assertSame($this->number, $endpoint->getId());
+        $this->assertNull($endpoint->getDtmfAnswer());
+        $this->assertNull($endpoint->getRingbackTone());
+        $this->assertNull($endpoint->getUrl());
     }
 
     public function testFactoryCreatesPhoneEndpoint(): void
@@ -61,9 +61,9 @@ class PhoneTest extends TestCase
             ]
         ]);
 
-        self::assertSame($this->number, $endpoint->getId());
-        self::assertSame($this->url, $endpoint->getUrl());
-        self::assertSame($this->ringbackTone, $endpoint->getRingbackTone());
+        $this->assertSame($this->number, $endpoint->getId());
+        $this->assertSame($this->url, $endpoint->getUrl());
+        $this->assertSame($this->ringbackTone, $endpoint->getRingbackTone());
     }
 
     public function testFactoryHandlesLegacyRingbackArgument(): void
@@ -76,9 +76,9 @@ class PhoneTest extends TestCase
             ]
         ]);
 
-        self::assertSame($this->number, $endpoint->getId());
-        self::assertSame($this->url, $endpoint->getUrl());
-        self::assertSame($this->ringbackTone, $endpoint->getRingbackTone());
+        $this->assertSame($this->number, $endpoint->getId());
+        $this->assertSame($this->url, $endpoint->getUrl());
+        $this->assertSame($this->ringbackTone, $endpoint->getRingbackTone());
     }
 
     public function testToArrayHasCorrectStructure(): void
@@ -88,7 +88,7 @@ class PhoneTest extends TestCase
             'number' => $this->number
         ];
 
-        self::assertSame($expected, (new Phone($this->number))->toArray());
+        $this->assertSame($expected, (new Phone($this->number))->toArray());
     }
 
     public function testRingbackNotReturnedIfURLNotSet(): void
@@ -98,7 +98,7 @@ class PhoneTest extends TestCase
             'number' => $this->number
         ];
 
-        self::assertSame(
+        $this->assertSame(
             $expected,
             (new Phone($this->number))->setRingbackTone($this->ringbackTone)->toArray()
         );
@@ -115,7 +115,7 @@ class PhoneTest extends TestCase
             ]
         ];
 
-        self::assertSame(
+        $this->assertSame(
             $expected,
             (new Phone($this->number))
                 ->setRingbackTone($this->ringbackTone)
@@ -134,6 +134,6 @@ class PhoneTest extends TestCase
         $endpoint = new Phone($this->number);
         $endpoint->setDtmfAnswer($this->dtmfAnswer);
 
-        self::assertSame($expected, $endpoint->jsonSerialize());
+        $this->assertSame($expected, $endpoint->jsonSerialize());
     }
 }

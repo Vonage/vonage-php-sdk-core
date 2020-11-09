@@ -28,7 +28,7 @@ class HangupTest extends TestCase
         $schema = file_get_contents(__DIR__ . '/schema/hangup.json');
         $json = json_decode(json_encode(@new Hangup()), true);
 
-        self::assertJsonDocumentMatchesSchema($json, json_decode(json_encode($schema), true));
-        self::assertJsonValueEquals($json, '$.action', 'hangup');
+        $this->assertJsonDocumentMatchesSchema($json, json_decode(json_encode($schema), true));
+        $this->assertJsonValueEquals($json, '$.action', 'hangup');
     }
 }

@@ -29,8 +29,8 @@ class VcalTest extends TestCase
             $event
         ))->toArray();
 
-        self::assertSame('447700900000', $data['to']);
-        self::assertSame('16105551212', $data['from']);
-        self::assertSame($event, $data['vcal']);
+        $this->assertSame('447700900000', $data['to']);
+        $this->assertSame('16105551212', $data['from']);
+        $this->assertSame($event, $data['vcal']);
     }
 }

@@ -66,7 +66,7 @@ class TalkTest extends TestCase
 
     public function testHasId(): void
     {
-        self::assertSame($this->id, $this->entity->getId());
+        $this->assertSame($this->id, $this->entity->getId());
     }
 
     /**
@@ -81,7 +81,7 @@ class TalkTest extends TestCase
         $this->entity->$setter($value);
         $data = $this->entity->jsonSerialize();
 
-        self::assertEquals($expected, $data[$param]);
+        $this->assertEquals($expected, $data[$param]);
     }
 
     /**
@@ -94,7 +94,7 @@ class TalkTest extends TestCase
         $this->entity[$param] = $value;
         $data = $this->entity->jsonSerialize();
 
-        self::assertEquals($value, $data[$param]);
+        $this->assertEquals($value, $data[$param]);
     }
 
     public function setterParameters(): array
@@ -121,22 +121,22 @@ class TalkTest extends TestCase
         $entity = $this->entity;
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($callId, $entity) {
-            self::assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/talk', 'PUT', $request);
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/talk', 'PUT', $request);
             $expected = json_decode(json_encode($entity), true);
 
             $request->getBody()->rewind();
             $body = json_decode($request->getBody()->getContents(), true);
             $request->getBody()->rewind();
 
-            self::assertEquals($expected, $body);
+            $this->assertEquals($expected, $body);
             return true;
         }))->willReturn($this->getResponse('talk', 200));
 
         $event = @$this->entity->put();
 
-        self::assertInstanceOf(Event::class, $event);
-        self::assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
-        self::assertSame('Talk started', $event['message']);
+        $this->assertInstanceOf(Event::class, $event);
+        $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
+        $this->assertSame('Talk started', $event['message']);
     }
 
     /**
@@ -155,22 +155,22 @@ class TalkTest extends TestCase
         $callId = $this->id;
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($callId, $entity) {
-            self::assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/talk', 'PUT', $request);
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/talk', 'PUT', $request);
             $expected = json_decode(json_encode($entity), true);
 
             $request->getBody()->rewind();
             $body = json_decode($request->getBody()->getContents(), true);
             $request->getBody()->rewind();
 
-            self::assertEquals($expected, $body);
+            $this->assertEquals($expected, $body);
             return true;
         }))->willReturn($this->getResponse('talk', 200));
 
         $event = @$this->entity->put($entity);
 
-        self::assertInstanceOf(Event::class, $event);
-        self::assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
-        self::assertSame('Talk started', $event['message']);
+        $this->assertInstanceOf(Event::class, $event);
+        $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
+        $this->assertSame('Talk started', $event['message']);
     }
 
     /**
@@ -185,7 +185,7 @@ class TalkTest extends TestCase
 
         $this->vonageClient->send(Argument::any())->willReturn($this->getResponse('talk', 200));
         $test = $object();
-        self::assertSame($this->entity, $test);
+        $this->assertSame($this->entity, $test);
 
         $this->vonageClient->send(Argument::any())->shouldNotHaveBeenCalled();
 
@@ -195,9 +195,9 @@ class TalkTest extends TestCase
 
         $event = @$object($entity);
 
-        self::assertInstanceOf(Event::class, $event);
-        self::assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
-        self::assertSame('Talk started', $event['message']);
+        $this->assertInstanceOf(Event::class, $event);
+        $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
+        $this->assertSame('Talk started', $event['message']);
 
         $this->vonageClient->send(Argument::any())->shouldHaveBeenCalled();
     }
@@ -213,15 +213,15 @@ class TalkTest extends TestCase
         $callId = $this->id;
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($callId) {
-            self::assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/talk', 'DELETE', $request);
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/talk', 'DELETE', $request);
             return true;
         }))->willReturn($this->getResponse('talk-delete', 200));
 
         $event = @$this->entity->delete();
 
-        self::assertInstanceOf(Event::class, $event);
-        self::assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
-        self::assertSame('Talk stopped', $event['message']);
+        $this->assertInstanceOf(Event::class, $event);
+        $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
+        $this->assertSame('Talk stopped', $event['message']);
     }
 
     /**

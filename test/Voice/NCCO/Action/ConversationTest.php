@@ -19,7 +19,7 @@ class ConversationTest extends TestCase
 {
     public function testSimpleSetup(): void
     {
-        self::assertSame([
+        $this->assertSame([
             'action' => 'conversation',
             'name' => 'my-conversation'
         ], (new Conversation('my-conversation'))->toNCCOArray());
@@ -31,18 +31,18 @@ class ConversationTest extends TestCase
         $action->setMusicOnHoldUrl('https://test.domain/hold.mp3');
         $data = $action->toNCCOArray();
 
-        self::assertSame(['https://test.domain/hold.mp3'], $data['musicOnHoldUrl']);
+        $this->assertSame(['https://test.domain/hold.mp3'], $data['musicOnHoldUrl']);
 
         Conversation::factory('my-conversation', ['musicOnHoldUrl' => 'https://test.domain/hold.mp3']);
 
-        self::assertSame(['https://test.domain/hold.mp3'], $data['musicOnHoldUrl']);
+        $this->assertSame(['https://test.domain/hold.mp3'], $data['musicOnHoldUrl']);
     }
 
     public function testCanAddIndividualSpeakers(): void
     {
         $uuid = '6a4d6af0-55a6-4667-be90-8614e4c8e83c';
 
-        self::assertSame([$uuid], (new Conversation('my-conversation'))
+        $this->assertSame([$uuid], (new Conversation('my-conversation'))
             ->addCanSpeak($uuid)
             ->toNCCOArray()['canSpeak']);
     }
@@ -51,14 +51,14 @@ class ConversationTest extends TestCase
     {
         $uuid = '6a4d6af0-55a6-4667-be90-8614e4c8e83c';
 
-        self::assertSame([$uuid], (new Conversation('my-conversation'))
+        $this->assertSame([$uuid], (new Conversation('my-conversation'))
             ->addCanHear($uuid)
             ->toNCCOArray()['canHear']);
     }
 
     public function testJsonSerializesToCorrectStructure(): void
     {
-        self::assertSame([
+        $this->assertSame([
             'action' => 'conversation',
             'name' => 'my-conversation',
             'startOnEnter' => 'true',
@@ -78,8 +78,8 @@ class ConversationTest extends TestCase
             ->setEventWebhook(new Webhook('https://test.domain/events'))
             ->toNCCOArray();
 
-        self::assertSame(['https://test.domain/events'], $data['eventUrl']);
-        self::assertSame('POST', $data['eventMethod']);
+        $this->assertSame(['https://test.domain/events'], $data['eventUrl']);
+        $this->assertSame('POST', $data['eventMethod']);
     }
 
     public function testWebhookSetInFactory(): void
@@ -93,9 +93,9 @@ class ConversationTest extends TestCase
 
         $action = Conversation::factory($expected['name'], $expected);
 
-        self::assertInstanceOf(Webhook::class, $action->getEventWebhook());
-        self::assertSame($expected['eventUrl'][0], $action->getEventWebhook()->getUrl());
-        self::assertSame($expected['eventMethod'], $action->getEventWebhook()->getMethod());
+        $this->assertInstanceOf(Webhook::class, $action->getEventWebhook());
+        $this->assertSame($expected['eventUrl'][0], $action->getEventWebhook()->getUrl());
+        $this->assertSame($expected['eventMethod'], $action->getEventWebhook()->getMethod());
     }
 
     public function testWebhookSetInFactoryWithoutMethod(): void
@@ -108,9 +108,9 @@ class ConversationTest extends TestCase
 
         $action = Conversation::factory($expected['name'], $expected);
 
-        self::assertInstanceOf(Webhook::class, $action->getEventWebhook());
-        self::assertSame($expected['eventUrl'][0], $action->getEventWebhook()->getUrl());
-        self::assertSame('POST', $action->getEventWebhook()->getMethod());
+        $this->assertInstanceOf(Webhook::class, $action->getEventWebhook());
+        $this->assertSame($expected['eventUrl'][0], $action->getEventWebhook()->getUrl());
+        $this->assertSame('POST', $action->getEventWebhook()->getMethod());
     }
 
     public function testWebhookSetInFactoryWithStringEventUrl(): void
@@ -123,8 +123,8 @@ class ConversationTest extends TestCase
 
         $action = Conversation::factory($expected['name'], $expected);
 
-        self::assertInstanceOf(Webhook::class, $action->getEventWebhook());
-        self::assertSame($expected['eventUrl'], $action->getEventWebhook()->getUrl());
-        self::assertSame('POST', $action->getEventWebhook()->getMethod());
+        $this->assertInstanceOf(Webhook::class, $action->getEventWebhook());
+        $this->assertSame($expected['eventUrl'], $action->getEventWebhook()->getUrl());
+        $this->assertSame('POST', $action->getEventWebhook()->getMethod());
     }
 }

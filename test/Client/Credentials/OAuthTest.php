@@ -26,29 +26,29 @@ class OAuthTest extends TestCase
         $credentials = new OAuth($this->appToken, $this->appSecret, $this->clientToken, $this->clientSecret);
         $array = $credentials->asArray();
 
-        self::assertEquals($this->clientToken, $array['token']);
-        self::assertEquals($this->clientSecret, $array['token_secret']);
-        self::assertEquals($this->appToken, $array['consumer_key']);
-        self::assertEquals($this->appSecret, $array['consumer_secret']);
+        $this->assertEquals($this->clientToken, $array['token']);
+        $this->assertEquals($this->clientSecret, $array['token_secret']);
+        $this->assertEquals($this->appToken, $array['consumer_key']);
+        $this->assertEquals($this->appSecret, $array['consumer_secret']);
     }
 
     public function testArrayAccess(): void
     {
         $credentials = new OAuth($this->appToken, $this->appSecret, $this->clientToken, $this->clientSecret);
 
-        self::assertEquals($this->clientToken, $credentials['token']);
-        self::assertEquals($this->clientSecret, $credentials['token_secret']);
-        self::assertEquals($this->appToken, $credentials['consumer_key']);
-        self::assertEquals($this->appSecret, $credentials['consumer_secret']);
+        $this->assertEquals($this->clientToken, $credentials['token']);
+        $this->assertEquals($this->clientSecret, $credentials['token_secret']);
+        $this->assertEquals($this->appToken, $credentials['consumer_key']);
+        $this->assertEquals($this->appSecret, $credentials['consumer_secret']);
     }
 
     public function testProperties(): void
     {
         $credentials = new OAuth($this->appToken, $this->appSecret, $this->clientToken, $this->clientSecret);
 
-        self::assertEquals($this->clientToken, $credentials->token);
-        self::assertEquals($this->clientSecret, $credentials->token_secret);
-        self::assertEquals($this->appToken, $credentials->consumer_key);
-        self::assertEquals($this->appSecret, $credentials->consumer_secret);
+        $this->assertEquals($this->clientToken, $credentials->token);
+        $this->assertEquals($this->clientSecret, $credentials->token_secret);
+        $this->assertEquals($this->appToken, $credentials->consumer_key);
+        $this->assertEquals($this->appSecret, $credentials->consumer_secret);
     }
 }

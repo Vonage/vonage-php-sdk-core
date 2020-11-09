@@ -41,9 +41,9 @@ class ClientFactoryTest extends TestCase
         $factory = new ClientFactory();
         $client = $factory($this->mapFactory);
 
-        self::assertSame('/accounts', $client->getSecretsAPI()->getBaseUri());
-        self::assertSame('https://api.nexmo.com', $client->getSecretsAPI()->getBaseUrl());
-        self::assertSame('/account', $client->getAccountAPI()->getBaseUri());
-        self::assertSame('https://rest.nexmo.com', $client->getAccountAPI()->getBaseUrl());
+        $this->assertSame('/accounts', $client->getSecretsAPI()->getBaseUri());
+        $this->assertSame('https://api.nexmo.com', $client->getSecretsAPI()->getBaseUrl());
+        $this->assertSame('/account', $client->getAccountAPI()->getBaseUri());
+        $this->assertSame('https://rest.nexmo.com', $client->getAccountAPI()->getBaseUrl());
     }
 }

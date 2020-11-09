@@ -46,14 +46,14 @@ class ContainerTest extends TestCase
     {
         $container = new Container($credential);
 
-        self::assertSame($credential, $container->get($type));
-        self::assertSame($credential, $container[$type]);
+        $this->assertSame($credential, $container->get($type));
+        $this->assertSame($credential, $container[$type]);
 
         foreach ($this->types as $class) {
             if ($type === $class) {
-                self::assertTrue($container->has($class));
+                $this->assertTrue($container->has($class));
             } else {
-                self::assertFalse($container->has($class));
+                $this->assertFalse($container->has($class));
             }
         }
     }
@@ -75,7 +75,7 @@ class ContainerTest extends TestCase
         $container = new Container($this->basic, $this->secret, $this->keypair);
 
         foreach ($this->types as $class) {
-            self::assertTrue($container->has($class));
+            $this->assertTrue($container->has($class));
         }
     }
 

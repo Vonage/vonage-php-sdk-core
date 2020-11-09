@@ -38,10 +38,10 @@ class CallbackTest extends TestCase
 
     public function testMethodsMatchData(): void
     {
-        self::assertEquals($this->data['request_id'], $this->callback->getId());
-        self::assertEquals($this->data['callback_total_parts'], $this->callback->getCallbackTotal());
-        self::assertEquals($this->data['callback_part'], $this->callback->getCallbackIndex());
-        self::assertEquals($this->data['number'], $this->callback->getNumber());
+        $this->assertEquals($this->data['request_id'], $this->callback->getId());
+        $this->assertEquals($this->data['callback_total_parts'], $this->callback->getCallbackTotal());
+        $this->assertEquals($this->data['callback_part'], $this->callback->getCallbackIndex());
+        $this->assertEquals($this->data['number'], $this->callback->getNumber());
     }
 
     /**
@@ -57,13 +57,13 @@ class CallbackTest extends TestCase
         $has = 'has' . $method;
         $get = 'get' . $method;
 
-        self::assertFalse($this->callback->$has());
-        self::assertNull($this->callback->$get());
+        $this->assertFalse($this->callback->$has());
+        $this->assertNull($this->callback->$get());
 
         $callback = new Callback(array_merge($this->data, [$key => $value]));
 
-        self::assertTrue($callback->$has());
-        self::assertEquals($expected, $callback->$get());
+        $this->assertTrue($callback->$has());
+        $this->assertEquals($expected, $callback->$get());
     }
 
     public function optionalData(): array

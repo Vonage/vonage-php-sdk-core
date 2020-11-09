@@ -24,23 +24,23 @@ class BasicTest extends TestCase
         $credentials = new Basic($this->key, $this->secret);
         $array = $credentials->asArray();
 
-        self::assertEquals($this->key, $array['api_key']);
-        self::assertEquals($this->secret, $array['api_secret']);
+        $this->assertEquals($this->key, $array['api_key']);
+        $this->assertEquals($this->secret, $array['api_secret']);
     }
 
     public function testArrayAccess(): void
     {
         $credentials = new Basic($this->key, $this->secret);
 
-        self::assertEquals($this->key, $credentials['api_key']);
-        self::assertEquals($this->secret, $credentials['api_secret']);
+        $this->assertEquals($this->key, $credentials['api_key']);
+        $this->assertEquals($this->secret, $credentials['api_secret']);
     }
 
     public function testProperties(): void
     {
         $credentials = new Basic($this->key, $this->secret);
 
-        self::assertEquals($this->key, $credentials->api_key);
-        self::assertEquals($this->secret, $credentials->api_secret);
+        $this->assertEquals($this->key, $credentials->api_key);
+        $this->assertEquals($this->secret, $credentials->api_secret);
     }
 }

@@ -33,14 +33,14 @@ class FilterTest extends TestCase
         $this->filter->setConversation('test');
         $query = $this->filter->getQuery();
 
-        self::assertArrayHasKey('conversation_uuid', $query);
-        self::assertEquals('test', $query['conversation_uuid']);
+        $this->assertArrayHasKey('conversation_uuid', $query);
+        $this->assertEquals('test', $query['conversation_uuid']);
 
         $this->filter->setConversation(new Conversation('test'));
         $query = $this->filter->getQuery();
 
-        self::assertArrayHasKey('conversation_uuid', $query);
-        self::assertEquals('test', $query['conversation_uuid']);
+        $this->assertArrayHasKey('conversation_uuid', $query);
+        $this->assertEquals('test', $query['conversation_uuid']);
     }
 
     public function testStatus(): void
@@ -48,8 +48,8 @@ class FilterTest extends TestCase
         $this->filter->setStatus('test');
         $query = $this->filter->getQuery();
 
-        self::assertArrayHasKey('status', $query);
-        self::assertEquals('test', $query['status']);
+        $this->assertArrayHasKey('status', $query);
+        $this->assertEquals('test', $query['status']);
     }
 
     public function testStart(): void
@@ -58,8 +58,8 @@ class FilterTest extends TestCase
         $this->filter->setStart($date);
         $query = $this->filter->getQuery();
 
-        self::assertArrayHasKey('date_start', $query);
-        self::assertEquals('2018-03-31T11:33:42Z', $query['date_start']);
+        $this->assertArrayHasKey('date_start', $query);
+        $this->assertEquals('2018-03-31T11:33:42Z', $query['date_start']);
     }
 
     public function testStartOtherTimezone(): void
@@ -68,8 +68,8 @@ class FilterTest extends TestCase
         $this->filter->setStart($date);
         $query = $this->filter->getQuery();
 
-        self::assertArrayHasKey('date_start', $query);
-        self::assertEquals('2018-03-31T14:33:42Z', $query['date_start']);
+        $this->assertArrayHasKey('date_start', $query);
+        $this->assertEquals('2018-03-31T14:33:42Z', $query['date_start']);
     }
 
     public function testEnd(): void
@@ -78,8 +78,8 @@ class FilterTest extends TestCase
         $this->filter->setEnd($date);
         $query = $this->filter->getQuery();
 
-        self::assertArrayHasKey('date_end', $query);
-        self::assertEquals('2018-03-31T11:33:42Z', $query['date_end']);
+        $this->assertArrayHasKey('date_end', $query);
+        $this->assertEquals('2018-03-31T11:33:42Z', $query['date_end']);
     }
 
     public function testEndOtherTimezone(): void
@@ -88,8 +88,8 @@ class FilterTest extends TestCase
         $this->filter->setEnd($date);
         $query = $this->filter->getQuery();
 
-        self::assertArrayHasKey('date_end', $query);
-        self::assertEquals('2018-03-31T08:33:42Z', $query['date_end']);
+        $this->assertArrayHasKey('date_end', $query);
+        $this->assertEquals('2018-03-31T08:33:42Z', $query['date_end']);
     }
 
     public function testSize(): void
@@ -97,8 +97,8 @@ class FilterTest extends TestCase
         $this->filter->setSize(1);
         $query = $this->filter->getQuery();
 
-        self::assertArrayHasKey('page_size', $query);
-        self::assertEquals(1, $query['page_size']);
+        $this->assertArrayHasKey('page_size', $query);
+        $this->assertEquals(1, $query['page_size']);
     }
 
     public function testIndex(): void
@@ -106,8 +106,8 @@ class FilterTest extends TestCase
         $this->filter->setIndex(1);
         $query = $this->filter->getQuery();
 
-        self::assertArrayHasKey('record_index', $query);
-        self::assertEquals(1, $query['record_index']);
+        $this->assertArrayHasKey('record_index', $query);
+        $this->assertEquals(1, $query['record_index']);
     }
 
     public function testOrder(): void
@@ -115,8 +115,8 @@ class FilterTest extends TestCase
         $this->filter->setOrder('asc');
         $query = $this->filter->getQuery();
 
-        self::assertArrayHasKey('order', $query);
-        self::assertEquals('asc', $query['order']);
+        $this->assertArrayHasKey('order', $query);
+        $this->assertEquals('asc', $query['order']);
     }
 
     public function testAsc(): void
@@ -124,8 +124,8 @@ class FilterTest extends TestCase
         $this->filter->sortAscending();
         $query = $this->filter->getQuery();
 
-        self::assertArrayHasKey('order', $query);
-        self::assertEquals('asc', $query['order']);
+        $this->assertArrayHasKey('order', $query);
+        $this->assertEquals('asc', $query['order']);
     }
 
     public function testDesc(): void
@@ -133,7 +133,7 @@ class FilterTest extends TestCase
         $this->filter->sortDescending();
         $query = $this->filter->getQuery();
 
-        self::assertArrayHasKey('order', $query);
-        self::assertEquals('desc', $query['order']);
+        $this->assertArrayHasKey('order', $query);
+        $this->assertEquals('desc', $query['order']);
     }
 }

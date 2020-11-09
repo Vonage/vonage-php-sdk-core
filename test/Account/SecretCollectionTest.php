@@ -62,12 +62,12 @@ class SecretCollectionTest extends TestCase
     {
         $secrets = $this->collection->getSecrets();
 
-        self::assertInstanceOf(Secret::class, $secrets[0]);
+        $this->assertInstanceOf(Secret::class, $secrets[0]);
     }
 
     public function testGetLinks(): void
     {
-        self::assertArrayHasKey('self', $this->collection->getLinks());
+        $this->assertArrayHasKey('self', $this->collection->getLinks());
     }
 
     /**
@@ -75,13 +75,13 @@ class SecretCollectionTest extends TestCase
      */
     public function testObjectAccess(): void
     {
-        self::assertEquals($this->links, $this->collection->getLinks());
+        $this->assertEquals($this->links, $this->collection->getLinks());
 
         $secrets = array_map(static function ($v) {
             return new Secret($v);
         }, $this->secrets);
 
-        self::assertEquals($secrets, $this->collection->getSecrets());
+        $this->assertEquals($secrets, $this->collection->getSecrets());
     }
 
     /**
@@ -89,12 +89,12 @@ class SecretCollectionTest extends TestCase
      */
     public function testArrayAccess(): void
     {
-        self::assertEquals($this->links, @$this->collection['_links']);
+        $this->assertEquals($this->links, @$this->collection['_links']);
 
         $secrets = array_map(static function ($v) {
             return new Secret($v);
         }, $this->secrets);
 
-        self::assertEquals($secrets, @$this->collection['secrets']);
+        $this->assertEquals($secrets, @$this->collection['secrets']);
     }
 }

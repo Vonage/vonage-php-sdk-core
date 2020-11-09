@@ -57,9 +57,9 @@ class ClientTest extends TestCase
     public function testUrlAndMethod(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            self::assertEquals('/v1/redact/transaction', $request->getUri()->getPath());
-            self::assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            self::assertEquals('POST', $request->getMethod());
+            $this->assertEquals('/v1/redact/transaction', $request->getUri()->getPath());
+            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('POST', $request->getMethod());
 
             return true;
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('success', 204));
@@ -74,8 +74,8 @@ class ClientTest extends TestCase
     public function testNoOptions(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            self::assertRequestJsonBodyContains('id', 'ABC123', $request);
-            self::assertRequestJsonBodyContains('product', 'sms', $request);
+            $this->assertRequestJsonBodyContains('id', 'ABC123', $request);
+            $this->assertRequestJsonBodyContains('product', 'sms', $request);
 
             return true;
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('success', 204));
@@ -90,9 +90,9 @@ class ClientTest extends TestCase
     public function testWithOptions(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            self::assertRequestJsonBodyContains('id', 'ABC123', $request);
-            self::assertRequestJsonBodyContains('product', 'sms', $request);
-            self::assertRequestJsonBodyContains('type', 'inbound', $request);
+            $this->assertRequestJsonBodyContains('id', 'ABC123', $request);
+            $this->assertRequestJsonBodyContains('product', 'sms', $request);
+            $this->assertRequestJsonBodyContains('type', 'inbound', $request);
 
             return true;
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('success', 204));
@@ -107,9 +107,9 @@ class ClientTest extends TestCase
     public function testOptionsDoNotOverwriteParams(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            self::assertRequestJsonBodyContains('id', 'ABC123', $request);
-            self::assertRequestJsonBodyContains('product', 'sms', $request);
-            self::assertRequestJsonBodyContains('type', 'inbound', $request);
+            $this->assertRequestJsonBodyContains('id', 'ABC123', $request);
+            $this->assertRequestJsonBodyContains('product', 'sms', $request);
+            $this->assertRequestJsonBodyContains('type', 'inbound', $request);
 
             return true;
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('success', 204));

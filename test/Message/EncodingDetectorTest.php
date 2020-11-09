@@ -25,7 +25,7 @@ class EncodingDetectorTest extends TestCase
     public function testDetectsUnicode($content, $expected): void
     {
         $d = new EncodingDetector();
-        self::assertEquals($expected, $d->requiresUnicodeEncoding($content));
+        $this->assertEquals($expected, $d->requiresUnicodeEncoding($content));
     }
 
     public function unicodeProvider(): array

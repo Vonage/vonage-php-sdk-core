@@ -31,7 +31,7 @@ class ApiErrorHandlerTest extends TestCase
         /** @noinspection UnnecessaryAssertionInspection */
         /** @noinspection PhpVoidFunctionResultUsedInspection */
         /** @noinspection PhpUnhandledExceptionInspection */
-        self::assertNull(ApiErrorHandler::check(['success' => true], 200));
+        $this->assertNull(ApiErrorHandler::check(['success' => true], 200));
     }
 
     /**
@@ -92,14 +92,14 @@ class ApiErrorHandlerTest extends TestCase
                 ]
             ], 400);
         } catch (ValidationException $e) {
-            self::assertInstanceOf(ValidationException::class, $e);
-            self::assertEquals(
+            $this->assertInstanceOf(ValidationException::class, $e);
+            $this->assertEquals(
                 'Bad Request: The request failed due to validation errors. ' .
                 'See http://example.com/error for more information',
                 $e->getMessage()
             );
 
-            self::assertEquals([
+            $this->assertEquals([
                 [
                     "name" => "primary_colour",
                     "reason" => "Must be one of: blue, red, yellow"

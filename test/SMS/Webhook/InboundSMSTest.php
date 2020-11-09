@@ -32,17 +32,17 @@ class InboundSMSTest extends TestCase
         $request = $this->getServerRequest('inbound');
         $inboundSMS = Factory::createFromRequest($request);
 
-        self::assertSame($expected['msisdn'], $inboundSMS->getMsisdn());
-        self::assertSame($expected['msisdn'], $inboundSMS->getFrom());
-        self::assertSame($expected['to'], $inboundSMS->getTo());
-        self::assertSame($expected['messageId'], $inboundSMS->getMessageId());
-        self::assertSame($expected['text'], $inboundSMS->getText());
-        self::assertSame($expected['type'], $inboundSMS->getType());
-        self::assertSame($expected['keyword'], $inboundSMS->getKeyword());
-        self::assertSame($expected['message-timestamp'], $inboundSMS->getMessageTimestamp()->format('Y-m-d H:i:s'));
-        self::assertSame((int)$expected['timestamp'], $inboundSMS->getTimestamp());
-        self::assertSame($expected['nonce'], $inboundSMS->getNonce());
-        self::assertSame($expected['sig'], $inboundSMS->getSignature());
+        $this->assertSame($expected['msisdn'], $inboundSMS->getMsisdn());
+        $this->assertSame($expected['msisdn'], $inboundSMS->getFrom());
+        $this->assertSame($expected['to'], $inboundSMS->getTo());
+        $this->assertSame($expected['messageId'], $inboundSMS->getMessageId());
+        $this->assertSame($expected['text'], $inboundSMS->getText());
+        $this->assertSame($expected['type'], $inboundSMS->getType());
+        $this->assertSame($expected['keyword'], $inboundSMS->getKeyword());
+        $this->assertSame($expected['message-timestamp'], $inboundSMS->getMessageTimestamp()->format('Y-m-d H:i:s'));
+        $this->assertSame((int)$expected['timestamp'], $inboundSMS->getTimestamp());
+        $this->assertSame($expected['nonce'], $inboundSMS->getNonce());
+        $this->assertSame($expected['sig'], $inboundSMS->getSignature());
     }
 
     public function testCanCreateIncomingBinaryMessage(): void
@@ -51,15 +51,15 @@ class InboundSMSTest extends TestCase
         $request = $this->getServerRequest('inbound-binary');
         $inboundSMS = Factory::createFromRequest($request);
 
-        self::assertSame($expected['msisdn'], $inboundSMS->getMsisdn());
-        self::assertSame($expected['msisdn'], $inboundSMS->getFrom());
-        self::assertSame($expected['to'], $inboundSMS->getTo());
-        self::assertSame($expected['messageId'], $inboundSMS->getMessageId());
-        self::assertSame($expected['text'], $inboundSMS->getText());
-        self::assertSame($expected['type'], $inboundSMS->getType());
-        self::assertSame($expected['keyword'], $inboundSMS->getKeyword());
-        self::assertSame($expected['data'], $inboundSMS->getData());
-        self::assertSame($expected['udh'], $inboundSMS->getUdh());
+        $this->assertSame($expected['msisdn'], $inboundSMS->getMsisdn());
+        $this->assertSame($expected['msisdn'], $inboundSMS->getFrom());
+        $this->assertSame($expected['to'], $inboundSMS->getTo());
+        $this->assertSame($expected['messageId'], $inboundSMS->getMessageId());
+        $this->assertSame($expected['text'], $inboundSMS->getText());
+        $this->assertSame($expected['type'], $inboundSMS->getType());
+        $this->assertSame($expected['keyword'], $inboundSMS->getKeyword());
+        $this->assertSame($expected['data'], $inboundSMS->getData());
+        $this->assertSame($expected['udh'], $inboundSMS->getUdh());
     }
 
     public function testCanCreateFromConcatMessageFormPostServerRequest(): void
@@ -68,18 +68,18 @@ class InboundSMSTest extends TestCase
         $request = $this->getServerRequest('inbound-long');
         $inboundSMS = Factory::createFromRequest($request);
 
-        self::assertSame($expected['msisdn'], $inboundSMS->getMsisdn());
-        self::assertSame($expected['msisdn'], $inboundSMS->getFrom());
-        self::assertSame($expected['to'], $inboundSMS->getTo());
-        self::assertSame($expected['messageId'], $inboundSMS->getMessageId());
-        self::assertSame($expected['text'], $inboundSMS->getText());
-        self::assertSame($expected['type'], $inboundSMS->getType());
-        self::assertSame($expected['keyword'], $inboundSMS->getKeyword());
-        self::assertSame($expected['message-timestamp'], $inboundSMS->getMessageTimestamp()->format('Y-m-d H:i:s'));
-        self::assertSame((bool)$expected['concat'], $inboundSMS->getConcat());
-        self::assertSame((int)$expected['concat-part'], $inboundSMS->getConcatPart());
-        self::assertSame($expected['concat-ref'], $inboundSMS->getConcatRef());
-        self::assertSame((int)$expected['concat-total'], $inboundSMS->getConcatTotal());
+        $this->assertSame($expected['msisdn'], $inboundSMS->getMsisdn());
+        $this->assertSame($expected['msisdn'], $inboundSMS->getFrom());
+        $this->assertSame($expected['to'], $inboundSMS->getTo());
+        $this->assertSame($expected['messageId'], $inboundSMS->getMessageId());
+        $this->assertSame($expected['text'], $inboundSMS->getText());
+        $this->assertSame($expected['type'], $inboundSMS->getType());
+        $this->assertSame($expected['keyword'], $inboundSMS->getKeyword());
+        $this->assertSame($expected['message-timestamp'], $inboundSMS->getMessageTimestamp()->format('Y-m-d H:i:s'));
+        $this->assertSame((bool)$expected['concat'], $inboundSMS->getConcat());
+        $this->assertSame((int)$expected['concat-part'], $inboundSMS->getConcatPart());
+        $this->assertSame($expected['concat-ref'], $inboundSMS->getConcatRef());
+        $this->assertSame((int)$expected['concat-total'], $inboundSMS->getConcatTotal());
     }
 
     public function testThrowRuntimeExceptionWhenInvalidRequestDetected(): void
@@ -97,16 +97,16 @@ class InboundSMSTest extends TestCase
         $request = $this->getServerRequest('json');
         $inboundSMS = Factory::createFromRequest($request);
 
-        self::assertSame($expected['msisdn'], $inboundSMS->getMsisdn());
-        self::assertSame($expected['to'], $inboundSMS->getTo());
-        self::assertSame($expected['messageId'], $inboundSMS->getMessageId());
-        self::assertSame($expected['text'], $inboundSMS->getText());
-        self::assertSame($expected['type'], $inboundSMS->getType());
-        self::assertSame($expected['keyword'], $inboundSMS->getKeyword());
-        self::assertSame($expected['message-timestamp'], $inboundSMS->getMessageTimestamp()->format('Y-m-d H:i:s'));
-        self::assertSame((int)$expected['timestamp'], $inboundSMS->getTimestamp());
-        self::assertSame($expected['nonce'], $inboundSMS->getNonce());
-        self::assertSame($expected['sig'], $inboundSMS->getSignature());
+        $this->assertSame($expected['msisdn'], $inboundSMS->getMsisdn());
+        $this->assertSame($expected['to'], $inboundSMS->getTo());
+        $this->assertSame($expected['messageId'], $inboundSMS->getMessageId());
+        $this->assertSame($expected['text'], $inboundSMS->getText());
+        $this->assertSame($expected['type'], $inboundSMS->getType());
+        $this->assertSame($expected['keyword'], $inboundSMS->getKeyword());
+        $this->assertSame($expected['message-timestamp'], $inboundSMS->getMessageTimestamp()->format('Y-m-d H:i:s'));
+        $this->assertSame((int)$expected['timestamp'], $inboundSMS->getTimestamp());
+        $this->assertSame($expected['nonce'], $inboundSMS->getNonce());
+        $this->assertSame($expected['sig'], $inboundSMS->getSignature());
     }
 
     /**
@@ -117,17 +117,17 @@ class InboundSMSTest extends TestCase
         $expected = $this->getQueryStringFromRequest('inbound');
         $inboundSMS = new InboundSMS($expected);
 
-        self::assertSame($expected['msisdn'], $inboundSMS->getMsisdn());
-        self::assertSame($expected['msisdn'], $inboundSMS->getFrom());
-        self::assertSame($expected['to'], $inboundSMS->getTo());
-        self::assertSame($expected['messageId'], $inboundSMS->getMessageId());
-        self::assertSame($expected['text'], $inboundSMS->getText());
-        self::assertSame($expected['type'], $inboundSMS->getType());
-        self::assertSame($expected['keyword'], $inboundSMS->getKeyword());
-        self::assertSame($expected['message-timestamp'], $inboundSMS->getMessageTimestamp()->format('Y-m-d H:i:s'));
-        self::assertSame((int)$expected['timestamp'], $inboundSMS->getTimestamp());
-        self::assertSame($expected['nonce'], $inboundSMS->getNonce());
-        self::assertSame($expected['sig'], $inboundSMS->getSignature());
+        $this->assertSame($expected['msisdn'], $inboundSMS->getMsisdn());
+        $this->assertSame($expected['msisdn'], $inboundSMS->getFrom());
+        $this->assertSame($expected['to'], $inboundSMS->getTo());
+        $this->assertSame($expected['messageId'], $inboundSMS->getMessageId());
+        $this->assertSame($expected['text'], $inboundSMS->getText());
+        $this->assertSame($expected['type'], $inboundSMS->getType());
+        $this->assertSame($expected['keyword'], $inboundSMS->getKeyword());
+        $this->assertSame($expected['message-timestamp'], $inboundSMS->getMessageTimestamp()->format('Y-m-d H:i:s'));
+        $this->assertSame((int)$expected['timestamp'], $inboundSMS->getTimestamp());
+        $this->assertSame($expected['nonce'], $inboundSMS->getNonce());
+        $this->assertSame($expected['sig'], $inboundSMS->getSignature());
     }
 
     public function testCanCreateFromGetWithBodyServerRequest(): void
@@ -136,16 +136,16 @@ class InboundSMSTest extends TestCase
         $request = $this->getServerRequest('inbound');
         $inboundSMS = Factory::createFromRequest($request);
 
-        self::assertSame($expected['msisdn'], $inboundSMS->getMsisdn());
-        self::assertSame($expected['to'], $inboundSMS->getTo());
-        self::assertSame($expected['messageId'], $inboundSMS->getMessageId());
-        self::assertSame($expected['text'], $inboundSMS->getText());
-        self::assertSame($expected['type'], $inboundSMS->getType());
-        self::assertSame($expected['keyword'], $inboundSMS->getKeyword());
-        self::assertSame($expected['message-timestamp'], $inboundSMS->getMessageTimestamp()->format('Y-m-d H:i:s'));
-        self::assertSame((int)$expected['timestamp'], $inboundSMS->getTimestamp());
-        self::assertSame($expected['nonce'], $inboundSMS->getNonce());
-        self::assertSame($expected['sig'], $inboundSMS->getSignature());
+        $this->assertSame($expected['msisdn'], $inboundSMS->getMsisdn());
+        $this->assertSame($expected['to'], $inboundSMS->getTo());
+        $this->assertSame($expected['messageId'], $inboundSMS->getMessageId());
+        $this->assertSame($expected['text'], $inboundSMS->getText());
+        $this->assertSame($expected['type'], $inboundSMS->getType());
+        $this->assertSame($expected['keyword'], $inboundSMS->getKeyword());
+        $this->assertSame($expected['message-timestamp'], $inboundSMS->getMessageTimestamp()->format('Y-m-d H:i:s'));
+        $this->assertSame((int)$expected['timestamp'], $inboundSMS->getTimestamp());
+        $this->assertSame($expected['nonce'], $inboundSMS->getNonce());
+        $this->assertSame($expected['sig'], $inboundSMS->getSignature());
     }
 
     /**

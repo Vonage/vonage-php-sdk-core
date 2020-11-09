@@ -24,7 +24,7 @@ class EndpointFactoryTest extends TestCase
 {
     public function testCanCreateAppEndpoint(): void
     {
-        self::assertInstanceOf(App::class, (new EndpointFactory())->create([
+        $this->assertInstanceOf(App::class, (new EndpointFactory())->create([
             'type' => 'app',
             'user' => 'username',
         ]));
@@ -43,8 +43,8 @@ class EndpointFactoryTest extends TestCase
         $factory = new EndpointFactory();
         $endpoint = $factory->create($data);
 
-        self::assertInstanceOf(Phone::class, $endpoint);
-        self::assertSame($data, $endpoint->toArray());
+        $this->assertInstanceOf(Phone::class, $endpoint);
+        $this->assertSame($data, $endpoint->toArray());
     }
 
     public function testCanCreateSIPEndpoint(): void
@@ -55,8 +55,8 @@ class EndpointFactoryTest extends TestCase
         ];
         $endpoint = (new EndpointFactory())->create($data);
 
-        self::assertInstanceOf(SIP::class, $endpoint);
-        self::assertSame($data['uri'], $endpoint->getId());
+        $this->assertInstanceOf(SIP::class, $endpoint);
+        $this->assertSame($data['uri'], $endpoint->getId());
     }
 
     public function testCanCreateVBCEndpoint(): void
@@ -67,8 +67,8 @@ class EndpointFactoryTest extends TestCase
         ];
         $endpoint = (new EndpointFactory())->create($data);
 
-        self::assertInstanceOf(VBC::class, $endpoint);
-        self::assertSame($data, $endpoint->toArray());
+        $this->assertInstanceOf(VBC::class, $endpoint);
+        $this->assertSame($data, $endpoint->toArray());
     }
 
     public function testCanCreateWebsocketEndpoint(): void
@@ -81,8 +81,8 @@ class EndpointFactoryTest extends TestCase
         ];
         $endpoint = (new EndpointFactory())->create($data);
 
-        self::assertInstanceOf(Websocket::class, $endpoint);
-        self::assertSame($data, $endpoint->toArray());
+        $this->assertInstanceOf(Websocket::class, $endpoint);
+        $this->assertSame($data, $endpoint->toArray());
     }
 
     public function testThrowsExceptionOnUnknownEndpoint(): void

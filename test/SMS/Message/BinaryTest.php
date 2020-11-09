@@ -25,10 +25,10 @@ class BinaryTest extends TestCase
             '0605040B8423F0'
         ))->toArray();
 
-        self::assertSame('447700900000', $data['to']);
-        self::assertSame('16105551212', $data['from']);
-        self::assertSame('EA0601AE02056A0045C60C037761702E6F7A656B692E6875000801034F7A656B69000101', $data['body']);
-        self::assertSame('0605040B8423F0', $data['udh']);
+        $this->assertSame('447700900000', $data['to']);
+        $this->assertSame('16105551212', $data['from']);
+        $this->assertSame('EA0601AE02056A0045C60C037761702E6F7A656B692E6875000801034F7A656B69000101', $data['body']);
+        $this->assertSame('0605040B8423F0', $data['udh']);
     }
 
     public function testCanCreateBinaryMessageWithProtocolID(): void
@@ -41,10 +41,10 @@ class BinaryTest extends TestCase
             45
         ))->toArray();
 
-        self::assertSame('447700900000', $data['to']);
-        self::assertSame('16105551212', $data['from']);
-        self::assertSame('EA0601AE02056A0045C60C037761702E6F7A656B692E6875000801034F7A656B69000101', $data['body']);
-        self::assertSame('0605040B8423F0', $data['udh']);
-        self::assertSame(45, $data['protocol-id']);
+        $this->assertSame('447700900000', $data['to']);
+        $this->assertSame('16105551212', $data['from']);
+        $this->assertSame('EA0601AE02056A0045C60C037761702E6F7A656B692E6875000801034F7A656B69000101', $data['body']);
+        $this->assertSame('0605040B8423F0', $data['udh']);
+        $this->assertSame(45, $data['protocol-id']);
     }
 }

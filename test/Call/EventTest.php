@@ -41,13 +41,13 @@ class EventTest extends TestCase
 
     public function testGetId(): void
     {
-        self::assertSame('5dd627ff-caff-46a8-99ed-891e5ffebc55', $this->entity->getId());
-        self::assertSame('5dd627ff-caff-46a8-99ed-891e5ffebc55', $this->entity['uuid']);
+        $this->assertSame('5dd627ff-caff-46a8-99ed-891e5ffebc55', $this->entity->getId());
+        $this->assertSame('5dd627ff-caff-46a8-99ed-891e5ffebc55', $this->entity['uuid']);
     }
 
     public function testGetMessage(): void
     {
-        self::assertSame('Stream stopped', $this->entity->getMessage());
-        self::assertSame('Stream stopped', $this->entity['message']);
+        $this->assertSame('Stream stopped', $this->entity->getMessage());
+        $this->assertSame('Stream stopped', $this->entity['message']);
     }
 }

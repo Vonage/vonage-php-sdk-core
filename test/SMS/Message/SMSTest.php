@@ -19,7 +19,7 @@ class SMSTest extends TestCase
 {
     public function testSwitchesToUnicodeAutomatically(): void
     {
-        self::assertSame(
+        $this->assertSame(
             'unicode',
             (new SMS('447700900000', '16105551212', 'こんにちは世界'))
                 ->getType()
@@ -31,13 +31,13 @@ class SMSTest extends TestCase
         $sms = (new SMS('447700900000', '16105551212', 'Test Message'))
             ->setDeliveryReceiptCallback('https://test.domain/webhooks/dlr');
 
-        self::assertSame('https://test.domain/webhooks/dlr', $sms->getDeliveryReceiptCallback());
-        self::assertTrue($sms->getRequestDeliveryReceipt());
+        $this->assertSame('https://test.domain/webhooks/dlr', $sms->getDeliveryReceiptCallback());
+        $this->assertTrue($sms->getRequestDeliveryReceipt());
 
         $data = $sms->toArray();
 
-        self::assertSame('https://test.domain/webhooks/dlr', $data['callback']);
-        self::assertSame(1, $data['status-report-req']);
+        $this->assertSame('https://test.domain/webhooks/dlr', $data['callback']);
+        $this->assertSame(1, $data['status-report-req']);
     }
 
     public function testMessageClassCanBeSet(): void
@@ -45,11 +45,11 @@ class SMSTest extends TestCase
         $sms = (new SMS('447700900000', '16105551212', 'Test Message'))
             ->setMessageClass(0);
 
-        self::assertSame(0, $sms->getMessageClass());
+        $this->assertSame(0, $sms->getMessageClass());
 
         $data = $sms->toArray();
 
-        self::assertSame(0, $data['message-class']);
+        $this->assertSame(0, $data['message-class']);
     }
 
     public function testInvalidMessageClassCannotBeSet(): void
@@ -66,11 +66,11 @@ class SMSTest extends TestCase
         $sms = (new SMS('447700900000', '16105551212', 'Test Message'))
             ->setTtl(40000);
 
-        self::assertSame(40000, $sms->getTtl());
+        $this->assertSame(40000, $sms->getTtl());
 
         $data = $sms->toArray();
 
-        self::assertSame(40000, $data['ttl']);
+        $this->assertSame(40000, $data['ttl']);
     }
 
     public function testCannotSetInvalidTTL(): void

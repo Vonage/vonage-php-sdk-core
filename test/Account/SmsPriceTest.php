@@ -23,10 +23,10 @@ class SmsPriceTest extends TestCase
      */
     public function testFromArray($smsPrice): void
     {
-        self::assertEquals("US", $smsPrice->getCountryCode());
-        self::assertEquals("United States", $smsPrice->getCountryName());
-        self::assertEquals("1", $smsPrice->getDialingPrefix());
-        self::assertEquals("0.00512", $smsPrice->getDefaultPrice());
+        $this->assertEquals("US", $smsPrice->getCountryCode());
+        $this->assertEquals("United States", $smsPrice->getCountryName());
+        $this->assertEquals("1", $smsPrice->getDialingPrefix());
+        $this->assertEquals("0.00512", $smsPrice->getDefaultPrice());
     }
 
     /**
@@ -36,11 +36,11 @@ class SmsPriceTest extends TestCase
      */
     public function testGetters($smsPrice): void
     {
-        self::assertEquals("US", $smsPrice->getCountryCode());
-        self::assertEquals("United States", $smsPrice->getCountryName());
-        self::assertEquals("United States", $smsPrice->getCountryDisplayName());
-        self::assertEquals("1", $smsPrice->getDialingPrefix());
-        self::assertEquals("0.00512", $smsPrice->getDefaultPrice());
+        $this->assertEquals("US", $smsPrice->getCountryCode());
+        $this->assertEquals("United States", $smsPrice->getCountryName());
+        $this->assertEquals("United States", $smsPrice->getCountryDisplayName());
+        $this->assertEquals("1", $smsPrice->getDialingPrefix());
+        $this->assertEquals("0.00512", $smsPrice->getDefaultPrice());
     }
 
     /**
@@ -50,11 +50,11 @@ class SmsPriceTest extends TestCase
      */
     public function testArrayAccess($smsPrice): void
     {
-        self::assertEquals("US", @$smsPrice['country_code']);
-        self::assertEquals("United States", @$smsPrice['country_name']);
-        self::assertEquals("United States", @$smsPrice['country_display_name']);
-        self::assertEquals("1", @$smsPrice['dialing_prefix']);
-        self::assertEquals("0.00512", @$smsPrice['default_price']);
+        $this->assertEquals("US", @$smsPrice['country_code']);
+        $this->assertEquals("United States", @$smsPrice['country_name']);
+        $this->assertEquals("United States", @$smsPrice['country_display_name']);
+        $this->assertEquals("1", @$smsPrice['dialing_prefix']);
+        $this->assertEquals("0.00512", @$smsPrice['default_price']);
     }
 
     /**
@@ -64,7 +64,7 @@ class SmsPriceTest extends TestCase
      */
     public function testUsesCustomPriceForKnownNetwork($smsPrice): void
     {
-        self::assertEquals("0.123", $smsPrice->getPriceForNetwork('21039'));
+        $this->assertEquals("0.123", $smsPrice->getPriceForNetwork('21039'));
     }
 
     /**
@@ -74,7 +74,7 @@ class SmsPriceTest extends TestCase
      */
     public function testUsesDefaultPriceForUnknownNetwork($smsPrice): void
     {
-        self::assertEquals("0.00512", $smsPrice->getPriceForNetwork('007'));
+        $this->assertEquals("0.00512", $smsPrice->getPriceForNetwork('007'));
     }
 
     public function smsPriceProvider(): array

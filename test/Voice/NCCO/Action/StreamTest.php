@@ -18,7 +18,7 @@ class StreamTest extends TestCase
 {
     public function testSimpleSetup(): void
     {
-        self::assertSame([
+        $this->assertSame([
             'action' => 'stream',
             'streamUrl' => ['https://test.domain/music.mp3']
         ], (new Stream('https://test.domain/music.mp3'))->toNCCOArray());
@@ -26,7 +26,7 @@ class StreamTest extends TestCase
 
     public function testJsonSerializeLooksCorrect(): void
     {
-        self::assertSame([
+        $this->assertSame([
             'action' => 'stream',
             'streamUrl' => ['https://test.domain/music.mp3'],
             'bargeIn' => 'false',

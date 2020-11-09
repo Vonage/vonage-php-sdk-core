@@ -77,15 +77,15 @@ class ClientTest extends TestCase
         ];
 
         $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
-            self::assertRequestJsonBodyContains('to', $args['to'], $request);
-            self::assertRequestJsonBodyContains('from', $args['from'], $request);
-            self::assertRequestJsonBodyContains('text', $args['text'], $request);
+            $this->assertRequestJsonBodyContains('to', $args['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $args['from'], $request);
+            $this->assertRequestJsonBodyContains('text', $args['text'], $request);
             return true;
         }))->willReturn($this->getResponse());
 
         $message = @$this->messageClient->send(new Text($args['to'], $args['from'], $args['text']));
 
-        self::assertInstanceOf(Text::class, $message);
+        $this->assertInstanceOf(Text::class, $message);
     }
 
     /**
@@ -106,9 +106,9 @@ class ClientTest extends TestCase
         ];
 
         $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
-            self::assertRequestJsonBodyContains('to', $args['to'], $request);
-            self::assertRequestJsonBodyContains('from', $args['from'], $request);
-            self::assertRequestJsonBodyContains('text', $args['text'], $request);
+            $this->assertRequestJsonBodyContains('to', $args['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $args['from'], $request);
+            $this->assertRequestJsonBodyContains('text', $args['text'], $request);
 
             return true;
         }))->willReturn($this->getResponse('empty'));
@@ -131,9 +131,9 @@ class ClientTest extends TestCase
         ];
 
         $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
-            self::assertRequestJsonBodyContains('to', $args['to'], $request);
-            self::assertRequestJsonBodyContains('from', $args['from'], $request);
-            self::assertRequestJsonBodyContains('text', $args['text'], $request);
+            $this->assertRequestJsonBodyContains('to', $args['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $args['from'], $request);
+            $this->assertRequestJsonBodyContains('text', $args['text'], $request);
             return true;
         }))->willReturn($this->getResponse());
 
@@ -152,7 +152,7 @@ class ClientTest extends TestCase
         @$this->vonageClient->send(Argument::type(RequestInterface::class))->willReturn($response);
         $message = $this->messageClient->send(new Text('14845551212', '16105551212', 'Not Pats?'));
 
-        self::assertSame($response, @$message->getResponse());
+        $this->assertSame($response, @$message->getResponse());
 
         $this->vonageClient->send(@$message->getRequest())->shouldHaveBeenCalled();
     }
@@ -173,9 +173,9 @@ class ClientTest extends TestCase
 
             self::fail('did not throw exception');
         } catch (ClientException\Request $e) {
-            self::assertSame($message, $e->getEntity());
-            self::assertEquals('2', $e->getCode());
-            self::assertEquals('Missing from param', $e->getMessage());
+            $this->assertSame($message, $e->getEntity());
+            $this->assertEquals('2', $e->getCode());
+            $this->assertEquals('Missing from param', $e->getMessage());
         }
     }
 
@@ -195,8 +195,8 @@ class ClientTest extends TestCase
 
             self::fail('did not throw exception');
         } catch (ServerException $e) {
-            self::assertEquals('5', $e->getCode());
-            self::assertEquals('Server Error', $e->getMessage());
+            $this->assertEquals('5', $e->getCode());
+            $this->assertEquals('Server Error', $e->getMessage());
         }
     }
 
@@ -211,7 +211,7 @@ class ClientTest extends TestCase
             $response = $this->getResponse('empty', 429);
 
             $this->vonageClient->send(Argument::that(function (Request $request) {
-                self::assertRequestQueryContains('id', '02000000D912945A', $request);
+                $this->assertRequestQueryContains('id', '02000000D912945A', $request);
                 return true;
             }))->willReturn($response);
 
@@ -219,8 +219,8 @@ class ClientTest extends TestCase
 
             self::fail('did not throw exception');
         } catch (ClientException\Request $e) {
-            self::assertEquals('429', $e->getCode());
-            self::assertEquals('too many concurrent requests', $e->getMessage());
+            $this->assertEquals('429', $e->getCode());
+            $this->assertEquals('too many concurrent requests', $e->getMessage());
         }
     }
 
@@ -238,7 +238,7 @@ class ClientTest extends TestCase
         $response = $this->getResponse('get-outbound');
 
         $this->vonageClient->send(Argument::that(function (Request $request) {
-            self::assertRequestQueryContains('ids', ['02000000D912945A'], $request);
+            $this->assertRequestQueryContains('ids', ['02000000D912945A'], $request);
 
             return true;
         }))->willReturn($response);
@@ -246,8 +246,8 @@ class ClientTest extends TestCase
         $messages = $this->messageClient->get($message);
         $body = json_decode($response->getBody(), true);
 
-        self::assertCount($body['count'], $messages);
-        self::assertSame($body['items'][0]['message-id'], $messages[0]->getMessageId());
+        $this->assertCount($body['count'], $messages);
+        $this->assertSame($body['items'][0]['message-id'], $messages[0]->getMessageId());
     }
 
     /**
@@ -264,7 +264,7 @@ class ClientTest extends TestCase
         $response = $this->getResponse('get-inbound');
 
         $this->vonageClient->send(Argument::that(function (Request $request) {
-            self::assertRequestQueryContains('ids', ['0B00000053FFB40F'], $request);
+            $this->assertRequestQueryContains('ids', ['0B00000053FFB40F'], $request);
 
             return true;
         }))->willReturn($response);
@@ -272,9 +272,9 @@ class ClientTest extends TestCase
         $messages = $this->messageClient->get($message);
         $body = json_decode($response->getBody(), true);
 
-        self::assertCount($body['count'], $messages);
-        self::assertSame($body['items'][0]['message-id'], $messages[0]->getMessageId());
-        self::assertInstanceOf(InboundMessage::class, $messages[0]);
+        $this->assertCount($body['count'], $messages);
+        $this->assertSame($body['items'][0]['message-id'], $messages[0]->getMessageId());
+        $this->assertInstanceOf(InboundMessage::class, $messages[0]);
     }
 
     /**
@@ -291,7 +291,7 @@ class ClientTest extends TestCase
         $response = $this->getResponse('get-invalid-type');
 
         $this->vonageClient->send(Argument::that(function (Request $request) {
-            self::assertRequestQueryContains('ids', ['0B00000053FFB40F'], $request);
+            $this->assertRequestQueryContains('ids', ['0B00000053FFB40F'], $request);
             return true;
         }))->willReturn($response);
 
@@ -309,14 +309,14 @@ class ClientTest extends TestCase
         $response = $this->getResponse('get-no-results');
 
         $this->vonageClient->send(Argument::that(function (Request $request) {
-            self::assertRequestQueryContains('ids', ['02000000D912945A'], $request);
+            $this->assertRequestQueryContains('ids', ['02000000D912945A'], $request);
 
             return true;
         }))->willReturn($response);
 
         $messages = $this->messageClient->get($message);
 
-        self::assertCount(0, $messages);
+        $this->assertCount(0, $messages);
     }
 
     /**
@@ -333,7 +333,7 @@ class ClientTest extends TestCase
         $response = $this->getResponse('get-outbound');
 
         $this->vonageClient->send(Argument::that(function (Request $request) {
-            self::assertRequestQueryContains('ids', ['02000000D912945A'], $request);
+            $this->assertRequestQueryContains('ids', ['02000000D912945A'], $request);
 
             return true;
         }))->willReturn($response);
@@ -341,8 +341,8 @@ class ClientTest extends TestCase
         $messages = $this->messageClient->get($messageID);
         $body = json_decode($response->getBody(), true);
 
-        self::assertCount($body['count'], $messages);
-        self::assertSame($body['items'][0]['message-id'], $messages[0]->getMessageId());
+        $this->assertCount($body['count'], $messages);
+        $this->assertSame($body['items'][0]['message-id'], $messages[0]->getMessageId());
     }
 
     /**
@@ -359,7 +359,7 @@ class ClientTest extends TestCase
         $response = $this->getResponse('get-outbound');
 
         $this->vonageClient->send(Argument::that(function (Request $request) {
-            self::assertRequestQueryContains('ids', ['02000000D912945A'], $request);
+            $this->assertRequestQueryContains('ids', ['02000000D912945A'], $request);
 
             return true;
         }))->willReturn($response);
@@ -367,8 +367,8 @@ class ClientTest extends TestCase
         $messages = $this->messageClient->get($messageIDs);
         $body = json_decode($response->getBody(), true);
 
-        self::assertCount($body['count'], $messages);
-        self::assertSame($body['items'][0]['message-id'], $messages[0]->getMessageId());
+        $this->assertCount($body['count'], $messages);
+        $this->assertSame($body['items'][0]['message-id'], $messages[0]->getMessageId());
     }
 
     /**
@@ -385,8 +385,8 @@ class ClientTest extends TestCase
         $response = $this->getResponse('get-outbound');
 
         $this->vonageClient->send(Argument::that(function (Request $request) {
-            self::assertRequestQueryContains('date', '2016-05-19', $request);
-            self::assertRequestQueryContains('to', '14845551212', $request);
+            $this->assertRequestQueryContains('date', '2016-05-19', $request);
+            $this->assertRequestQueryContains('to', '14845551212', $request);
 
             return true;
         }))->willReturn($response);
@@ -394,8 +394,8 @@ class ClientTest extends TestCase
         $messages = $this->messageClient->get($query);
         $body = json_decode($response->getBody(), true);
 
-        self::assertCount($body['count'], $messages);
-        self::assertSame($body['items'][0]['message-id'], $messages[0]->getMessageId());
+        $this->assertCount($body['count'], $messages);
+        $this->assertSame($body['items'][0]['message-id'], $messages[0]->getMessageId());
     }
 
     /**
@@ -412,7 +412,7 @@ class ClientTest extends TestCase
         $response = $this->getResponse('auth-failure', 401);
 
         $this->vonageClient->send(Argument::that(function (Request $request) {
-            self::assertRequestQueryContains('ids', ['02000000D912945A'], $request);
+            $this->assertRequestQueryContains('ids', ['02000000D912945A'], $request);
 
             return true;
         }))->willReturn($response);
@@ -434,7 +434,7 @@ class ClientTest extends TestCase
         $response = $this->getResponse('empty', 500);
 
         $this->vonageClient->send(Argument::that(function (Request $request) {
-            self::assertRequestQueryContains('ids', ['02000000D912945A'], $request);
+            $this->assertRequestQueryContains('ids', ['02000000D912945A'], $request);
 
             return true;
         }))->willReturn($response);
@@ -456,7 +456,7 @@ class ClientTest extends TestCase
         $response = $this->getResponse('empty');
 
         $this->vonageClient->send(Argument::that(function (Request $request) {
-            self::assertRequestQueryContains('ids', ['02000000D912945A'], $request);
+            $this->assertRequestQueryContains('ids', ['02000000D912945A'], $request);
 
             return true;
         }))->willReturn($response);
@@ -481,7 +481,7 @@ class ClientTest extends TestCase
         $response = $this->getResponse('empty');
 
         $this->vonageClient->send(Argument::that(function (Request $request) {
-            self::assertRequestQueryContains('ids', ['02000000D912945A'], $request);
+            $this->assertRequestQueryContains('ids', ['02000000D912945A'], $request);
 
             return true;
         }))->willReturn($response);
@@ -501,7 +501,7 @@ class ClientTest extends TestCase
         $response = $this->getResponse('search-outbound');
 
         $this->vonageClient->send(Argument::that(function (Request $request) {
-            self::assertRequestQueryContains('id', '02000000D912945A', $request);
+            $this->assertRequestQueryContains('id', '02000000D912945A', $request);
 
             return true;
         }))->willReturn($response);
@@ -511,7 +511,7 @@ class ClientTest extends TestCase
         $response->getBody()->rewind();
         $successData = json_decode($response->getBody()->getContents(), true);
 
-        self::assertEquals($successData['message-id'], $searchedMessage->getMessageId());
+        $this->assertEquals($successData['message-id'], $searchedMessage->getMessageId());
     }
 
     /**
@@ -524,15 +524,15 @@ class ClientTest extends TestCase
         $response = $this->getResponse('search-outbound');
 
         $this->vonageClient->send(Argument::that(function (Request $request) {
-            self::assertRequestQueryContains('id', '02000000D912945A', $request);
+            $this->assertRequestQueryContains('id', '02000000D912945A', $request);
 
             return true;
         }))->willReturn($response);
 
         $message = $this->messageClient->search('02000000D912945A');
 
-        self::assertInstanceOf(Message::class, $message);
-        self::assertSame($response, @$message->getResponse());
+        $this->assertInstanceOf(Message::class, $message);
+        $this->assertSame($response, @$message->getResponse());
     }
 
     /**
@@ -545,15 +545,15 @@ class ClientTest extends TestCase
         $response = $this->getResponse('search-inbound');
 
         $this->vonageClient->send(Argument::that(function (Request $request) {
-            self::assertRequestQueryContains('id', '02000000DA7C52E7', $request);
+            $this->assertRequestQueryContains('id', '02000000DA7C52E7', $request);
 
             return true;
         }))->willReturn($response);
 
         $message = $this->messageClient->search('02000000DA7C52E7');
 
-        self::assertInstanceOf(InboundMessage::class, $message);
-        self::assertSame($response, @$message->getResponse());
+        $this->assertInstanceOf(InboundMessage::class, $message);
+        $this->assertSame($response, @$message->getResponse());
     }
 
     /**
@@ -568,7 +568,7 @@ class ClientTest extends TestCase
         $response = $this->getResponse('search-empty');
 
         $this->vonageClient->send(Argument::that(function (Request $request) {
-            self::assertRequestQueryContains('id', '02000000DA7C52E7', $request);
+            $this->assertRequestQueryContains('id', '02000000DA7C52E7', $request);
 
             return true;
         }))->willReturn($response);
@@ -590,7 +590,7 @@ class ClientTest extends TestCase
         $response = $this->getResponse('auth-failure', 401);
 
         $this->vonageClient->send(Argument::that(function (Request $request) {
-            self::assertRequestQueryContains('id', '02000000D912945A', $request);
+            $this->assertRequestQueryContains('id', '02000000D912945A', $request);
 
             return true;
         }))->willReturn($response);
@@ -612,7 +612,7 @@ class ClientTest extends TestCase
         $response = $this->getResponse('search-invalid-type');
 
         $this->vonageClient->send(Argument::that(function (Request $request) {
-            self::assertRequestQueryContains('id', '02000000D912945A', $request);
+            $this->assertRequestQueryContains('id', '02000000D912945A', $request);
 
             return true;
         }))->willReturn($response);
@@ -634,7 +634,7 @@ class ClientTest extends TestCase
         $response = $this->getResponse('empty', 500);
 
         $this->vonageClient->send(Argument::that(function (Request $request) {
-            self::assertRequestQueryContains('id', '02000000D912945A', $request);
+            $this->assertRequestQueryContains('id', '02000000D912945A', $request);
 
             return true;
         }))->willReturn($response);
@@ -657,7 +657,7 @@ class ClientTest extends TestCase
         $response = $this->getResponse('search-inbound');
 
         $this->vonageClient->send(Argument::that(function (Request $request) {
-            self::assertRequestQueryContains('id', '02000000D912945A', $request);
+            $this->assertRequestQueryContains('id', '02000000D912945A', $request);
 
             return true;
         }))->willReturn($response);
@@ -684,16 +684,16 @@ class ClientTest extends TestCase
         ];
 
         $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
-            self::assertRequestJsonBodyContains('to', $args['to'], $request);
-            self::assertRequestJsonBodyContains('from', $args['from'], $request);
-            self::assertRequestJsonBodyContains('text', $args['text'], $request);
+            $this->assertRequestJsonBodyContains('to', $args['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $args['from'], $request);
+            $this->assertRequestJsonBodyContains('text', $args['text'], $request);
 
             return true;
         }))->willReturn($rate, $rate2, $success);
 
         $message = $this->messageClient->send(new Text($args['to'], $args['from'], $args['text']));
 
-        self::assertEquals($success, @$message->getResponse());
+        $this->assertEquals($success, @$message->getResponse());
     }
 
     /**
@@ -716,9 +716,9 @@ class ClientTest extends TestCase
         ];
 
         $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
-            self::assertRequestJsonBodyContains('to', $args['to'], $request);
-            self::assertRequestJsonBodyContains('from', $args['from'], $request);
-            self::assertRequestJsonBodyContains('text', $args['text'], $request);
+            $this->assertRequestJsonBodyContains('to', $args['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $args['from'], $request);
+            $this->assertRequestJsonBodyContains('text', $args['text'], $request);
 
             return true;
         }))->willReturn($rate, $rate2, $success);
@@ -728,7 +728,7 @@ class ClientTest extends TestCase
         $success->getBody()->rewind();
         $successData = json_decode($success->getBody()->getContents(), true);
 
-        self::assertEquals($successData['messages'][0]['message-id'], $message->getMessageId());
+        $this->assertEquals($successData['messages'][0]['message-id'], $message->getMessageId());
     }
 
     /**
@@ -758,8 +758,8 @@ class ClientTest extends TestCase
         $apiResponse = $this->getResponse($responseFile, $expectedHttpCode);
 
         $this->vonageClient->send(Argument::that(function (Request $request) use ($to, $date) {
-            self::assertRequestQueryContains('to', $to, $request);
-            self::assertRequestQueryContains('date', $date->format('Y-m-d'), $request);
+            $this->assertRequestQueryContains('to', $to, $request);
+            $this->assertRequestQueryContains('date', $date->format('Y-m-d'), $request);
 
             return true;
         }))->willReturn($apiResponse);
@@ -773,7 +773,7 @@ class ClientTest extends TestCase
         // Make the request and assert that our responses match
         $rejectionsResponse = $this->messageClient->searchRejections($query);
 
-        self::assertListOfMessagesEqual($expectedResponse, $rejectionsResponse);
+        $this->assertListOfMessagesEqual($expectedResponse, $rejectionsResponse);
     }
 
     public function searchRejectionsProvider(): array
@@ -858,16 +858,16 @@ class ClientTest extends TestCase
         $message = new TwoFactor('14155550100', ['link' => 'https://example.com'], ['status-report-req' => 1]);
 
         $this->vonageClient->send(Argument::that(function (Request $request) {
-            self::assertRequestJsonBodyContains('to', '14155550100', $request);
-            self::assertRequestJsonBodyContains('link', 'https://example.com', $request);
-            self::assertRequestJsonBodyContains('status-report-req', 1, $request);
+            $this->assertRequestJsonBodyContains('to', '14155550100', $request);
+            $this->assertRequestJsonBodyContains('link', 'https://example.com', $request);
+            $this->assertRequestJsonBodyContains('status-report-req', 1, $request);
 
             return true;
         }))->willReturn($this->getResponse('success-2fa'));
 
         $response = $this->messageClient->sendShortcode($message);
 
-        self::assertEquals([
+        $this->assertEquals([
             'message-count' => '1',
             'messages' => [
                 [
@@ -922,16 +922,16 @@ class ClientTest extends TestCase
         ];
 
         $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
-            self::assertRequestJsonBodyContains('to', $args['to'], $request);
-            self::assertRequestJsonBodyContains('link', $args['custom']['link'], $request);
-            self::assertRequestJsonBodyContains('status-report-req', $args['options']['status-report-req'], $request);
+            $this->assertRequestJsonBodyContains('to', $args['to'], $request);
+            $this->assertRequestJsonBodyContains('link', $args['custom']['link'], $request);
+            $this->assertRequestJsonBodyContains('status-report-req', $args['options']['status-report-req'], $request);
 
             return true;
         }))->willReturn($this->getResponse('success-2fa'));
 
         $response = $this->messageClient->sendShortcode($args);
 
-        self::assertEquals([
+        $this->assertEquals([
             'message-count' => '1',
             'messages' => [
                 [
@@ -985,15 +985,15 @@ class ClientTest extends TestCase
         ];
 
         $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
-            self::assertRequestJsonBodyContains('to', $args['to'], $request);
-            self::assertRequestJsonBodyContains('from', $args['from'], $request);
-            self::assertRequestJsonBodyContains('text', $args['text'], $request);
+            $this->assertRequestJsonBodyContains('to', $args['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $args['from'], $request);
+            $this->assertRequestJsonBodyContains('text', $args['text'], $request);
 
             return true;
         }))->willReturn($this->getResponse());
 
         $message = $this->messageClient->sendText($args['to'], $args['from'], $args['text']);
-        self::assertInstanceOf(Text::class, $message);
+        $this->assertInstanceOf(Text::class, $message);
     }
 
     public function testCreateMessageThrowsExceptionOnNonSendMethod(): void

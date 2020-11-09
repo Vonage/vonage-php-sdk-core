@@ -75,11 +75,11 @@ class ClientTest extends TestCase
     public function testAdvancedAsync(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            self::assertEquals('/ni/advanced/async/json', $request->getUri()->getPath());
-            self::assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            self::assertEquals('GET', $request->getMethod());
-            self::assertRequestQueryContains("number", "14155550100", $request);
-            self::assertRequestQueryContains("callback", "example.com/hook", $request);
+            $this->assertEquals('/ni/advanced/async/json', $request->getUri()->getPath());
+            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('GET', $request->getMethod());
+            $this->assertRequestQueryContains("number", "14155550100", $request);
+            $this->assertRequestQueryContains("callback", "example.com/hook", $request);
 
             return true;
         }))->willReturn($this->getResponse('advancedAsync'));
@@ -156,34 +156,34 @@ class ClientTest extends TestCase
     protected function checkInsightsRequest($methodToCall, $expectedPath, $expectedClass): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($expectedPath) {
-            self::assertEquals($expectedPath, $request->getUri()->getPath());
-            self::assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            self::assertEquals('GET', $request->getMethod());
+            $this->assertEquals($expectedPath, $request->getUri()->getPath());
+            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('GET', $request->getMethod());
 
-            self::assertRequestQueryContains("number", "14155550100", $request);
+            $this->assertRequestQueryContains("number", "14155550100", $request);
             return true;
         }))->willReturn($this->getResponse($methodToCall));
 
         $insightsStandard = @$this->insightsClient->$methodToCall('14155550100');
-        self::assertInstanceOf($expectedClass, $insightsStandard);
-        self::assertEquals('(415) 555-0100', $insightsStandard->getNationalFormatNumber());
+        $this->assertInstanceOf($expectedClass, $insightsStandard);
+        $this->assertEquals('(415) 555-0100', $insightsStandard->getNationalFormatNumber());
     }
 
     protected function checkInsightsRequestCnam($methodToCall, $expectedPath, $expectedClass): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($expectedPath) {
-            self::assertEquals($expectedPath, $request->getUri()->getPath());
-            self::assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            self::assertEquals('GET', $request->getMethod());
+            $this->assertEquals($expectedPath, $request->getUri()->getPath());
+            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('GET', $request->getMethod());
 
-            self::assertRequestQueryContains("number", "14155550100", $request);
-            self::assertRequestQueryContains("cnam", "true", $request);
+            $this->assertRequestQueryContains("number", "14155550100", $request);
+            $this->assertRequestQueryContains("cnam", "true", $request);
             return true;
         }))->willReturn($this->getResponse($methodToCall));
 
         $insightsStandard = @$this->insightsClient->$methodToCall('14155550100');
-        self::assertInstanceOf($expectedClass, $insightsStandard);
-        self::assertEquals('(415) 555-0100', $insightsStandard->getNationalFormatNumber());
+        $this->assertInstanceOf($expectedClass, $insightsStandard);
+        $this->assertEquals('(415) 555-0100', $insightsStandard->getNationalFormatNumber());
     }
 
     /**

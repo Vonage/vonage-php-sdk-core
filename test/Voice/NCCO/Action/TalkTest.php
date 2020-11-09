@@ -18,7 +18,7 @@ class TalkTest extends TestCase
 {
     public function testSimpleSetup(): void
     {
-        self::assertSame([
+        $this->assertSame([
             'action' => 'talk',
             'text' => 'Hello',
         ], (new Talk('Hello'))->jsonSerialize());
@@ -26,7 +26,7 @@ class TalkTest extends TestCase
 
     public function testJsonSerializeLooksCorrect(): void
     {
-        self::assertSame([
+        $this->assertSame([
             'action' => 'talk',
             'text' => 'Hello',
             'bargeIn' => 'false',

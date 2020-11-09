@@ -24,9 +24,9 @@ class PrefixPriceTest extends TestCase
      */
     public function testFromArray($prefixPrice): void
     {
-        self::assertEquals("ZW", $prefixPrice->getCountryCode());
-        self::assertEquals("Zimbabwe", $prefixPrice->getCountryName());
-        self::assertEquals("263", $prefixPrice->getDialingPrefix());
+        $this->assertEquals("ZW", $prefixPrice->getCountryCode());
+        $this->assertEquals("Zimbabwe", $prefixPrice->getCountryName());
+        $this->assertEquals("263", $prefixPrice->getDialingPrefix());
     }
 
     /**
@@ -36,10 +36,10 @@ class PrefixPriceTest extends TestCase
      */
     public function testGetters($prefixPrice): void
     {
-        self::assertEquals("ZW", $prefixPrice->getCountryCode());
-        self::assertEquals("Zimbabwe", $prefixPrice->getCountryName());
-        self::assertEquals("Zimbabwe", $prefixPrice->getCountryDisplayName());
-        self::assertEquals("263", $prefixPrice->getDialingPrefix());
+        $this->assertEquals("ZW", $prefixPrice->getCountryCode());
+        $this->assertEquals("Zimbabwe", $prefixPrice->getCountryName());
+        $this->assertEquals("Zimbabwe", $prefixPrice->getCountryDisplayName());
+        $this->assertEquals("263", $prefixPrice->getDialingPrefix());
     }
 
     /**
@@ -49,10 +49,10 @@ class PrefixPriceTest extends TestCase
      */
     public function testArrayAccess($prefixPrice): void
     {
-        self::assertEquals("ZW", @$prefixPrice['country_code']);
-        self::assertEquals("Zimbabwe", @$prefixPrice['country_name']);
-        self::assertEquals("Zimbabwe", @$prefixPrice['country_display_name']);
-        self::assertEquals("263", @$prefixPrice['dialing_prefix']);
+        $this->assertEquals("ZW", @$prefixPrice['country_code']);
+        $this->assertEquals("Zimbabwe", @$prefixPrice['country_name']);
+        $this->assertEquals("Zimbabwe", @$prefixPrice['country_display_name']);
+        $this->assertEquals("263", @$prefixPrice['dialing_prefix']);
     }
 
     /**
@@ -62,7 +62,7 @@ class PrefixPriceTest extends TestCase
      */
     public function testUsesCustomPriceForKnownNetwork($prefixPrice): void
     {
-        self::assertEquals("0.123", $prefixPrice->getPriceForNetwork('21039'));
+        $this->assertEquals("0.123", $prefixPrice->getPriceForNetwork('21039'));
     }
 
     public function prefixPriceProvider(): array

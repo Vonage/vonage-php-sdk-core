@@ -18,17 +18,17 @@ class VBCTest extends TestCase
 {
     public function testSetsExtensionAtCreation(): void
     {
-        self::assertSame('123', (new VBC('123'))->getId());
+        $this->assertSame('123', (new VBC('123'))->getId());
     }
 
     public function testFactoryCreatesVBCEndpoint(): void
     {
-        self::assertSame('123', (VBC::factory('123'))->getId());
+        $this->assertSame('123', (VBC::factory('123'))->getId());
     }
 
     public function testToArrayHasCorrectStructure(): void
     {
-        self::assertSame([
+        $this->assertSame([
             'type' => 'vbc',
             'extension' => '123',
         ], (new VBC('123'))->toArray());
@@ -36,7 +36,7 @@ class VBCTest extends TestCase
 
     public function testSerializesToJSONCorrectly(): void
     {
-        self::assertSame([
+        $this->assertSame([
             'type' => 'vbc',
             'extension' => '123',
         ], (new VBC('123'))->jsonSerialize());

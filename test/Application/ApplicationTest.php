@@ -38,7 +38,7 @@ class ApplicationTest extends TestCase
     {
         $app = new Application('1a20a124-1775-412b-b623-e6985f4aace0');
 
-        self::assertEquals('1a20a124-1775-412b-b623-e6985f4aace0', $app->getId());
+        $this->assertEquals('1a20a124-1775-412b-b623-e6985f4aace0', $app->getId());
     }
 
     /**
@@ -46,7 +46,7 @@ class ApplicationTest extends TestCase
      */
     public function testNameIsSet(): void
     {
-        self::assertEquals('test', @$this->app->getRequestData()['name']);
+        $this->assertEquals('test', @$this->app->getRequestData()['name']);
     }
 
     /**
@@ -60,24 +60,24 @@ class ApplicationTest extends TestCase
         $params = @$this->app->getRequestData();
         $capabilities = $params['capabilities'];
 
-        self::assertArrayHasKey('event_url', $capabilities['voice']['webhooks']);
-        self::assertArrayHasKey('answer_url', $capabilities['voice']['webhooks']);
-        self::assertEquals('http://example.com/event', $capabilities['voice']['webhooks']['event_url']['address']);
-        self::assertEquals('http://example.com/answer', $capabilities['voice']['webhooks']['answer_url']['address']);
+        $this->assertArrayHasKey('event_url', $capabilities['voice']['webhooks']);
+        $this->assertArrayHasKey('answer_url', $capabilities['voice']['webhooks']);
+        $this->assertEquals('http://example.com/event', $capabilities['voice']['webhooks']['event_url']['address']);
+        $this->assertEquals('http://example.com/answer', $capabilities['voice']['webhooks']['answer_url']['address']);
     }
 
     public function testResponseSetsProperties(): void
     {
         @$this->app->setResponse($this->getResponse());
 
-        self::assertEquals('My Application', $this->app->getName());
-        self::assertEquals(
+        $this->assertEquals('My Application', $this->app->getName());
+        $this->assertEquals(
             "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSLcjxu33G\nd/vynKnlw9SENi" .
             "+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xsO\nOUNhPx2LhuLmgwWSRS4L5W851" .
             "Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n",
             $this->app->getPublicKey()
         );
-        self::assertEquals('private_key', $this->app->getPrivateKey());
+        $this->assertEquals('private_key', $this->app->getPrivateKey());
     }
 
     /**
@@ -89,13 +89,13 @@ class ApplicationTest extends TestCase
 
         $webhook = $this->app->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER);
         $method = $this->app->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER)->getMethod();
-        self::assertEquals('https://example.com/webhooks/answer', $webhook);
-        self::assertEquals('GET', $method);
+        $this->assertEquals('https://example.com/webhooks/answer', $webhook);
+        $this->assertEquals('GET', $method);
 
         $webhook = $this->app->getVoiceConfig()->getWebhook(VoiceConfig::EVENT);
         $method = $this->app->getVoiceConfig()->getWebhook(VoiceConfig::EVENT)->getMethod();
-        self::assertEquals('https://example.com/webhooks/event', $webhook);
-        self::assertEquals('POST', $method);
+        $this->assertEquals('https://example.com/webhooks/event', $webhook);
+        $this->assertEquals('POST', $method);
     }
 
     /**
@@ -107,13 +107,13 @@ class ApplicationTest extends TestCase
 
         $webhook = $this->app->getMessagesConfig()->getWebhook(MessagesConfig::INBOUND);
         $method = $this->app->getMessagesConfig()->getWebhook(MessagesConfig::INBOUND)->getMethod();
-        self::assertEquals('https://example.com/webhooks/inbound', $webhook);
-        self::assertEquals('POST', $method);
+        $this->assertEquals('https://example.com/webhooks/inbound', $webhook);
+        $this->assertEquals('POST', $method);
 
         $webhook = $this->app->getMessagesConfig()->getWebhook(MessagesConfig::STATUS);
         $method = $this->app->getMessagesConfig()->getWebhook(MessagesConfig::STATUS)->getMethod();
-        self::assertEquals('https://example.com/webhooks/status', $webhook);
-        self::assertEquals('POST', $method);
+        $this->assertEquals('https://example.com/webhooks/status', $webhook);
+        $this->assertEquals('POST', $method);
     }
 
     /**
@@ -125,14 +125,14 @@ class ApplicationTest extends TestCase
 
         $webhook = $this->app->getRtcConfig()->getWebhook(RtcConfig::EVENT);
         $method = $this->app->getRtcConfig()->getWebhook(RtcConfig::EVENT)->getMethod();
-        self::assertEquals('https://example.com/webhooks/event', $webhook);
-        self::assertEquals('POST', $method);
+        $this->assertEquals('https://example.com/webhooks/event', $webhook);
+        $this->assertEquals('POST', $method);
     }
 
     public function testResponseSetsVbcConfigs(): void
     {
         @$this->app->setResponse($this->getResponse());
-        self::assertEquals(true, $this->app->getVbcConfig()->isEnabled());
+        $this->assertEquals(true, $this->app->getVbcConfig()->isEnabled());
     }
 
     /**
@@ -141,17 +141,17 @@ class ApplicationTest extends TestCase
     public function testCanGetDirtyValues(): void
     {
         @$this->app->setResponse($this->getResponse());
-        self::assertEquals('My Application', $this->app->getName());
+        $this->assertEquals('My Application', $this->app->getName());
 
         $this->app->setName('new');
-        self::assertEquals('new', $this->app->getName());
+        $this->assertEquals('new', $this->app->getName());
 
         $webhook = $this->app->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER);
-        self::assertEquals('https://example.com/webhooks/answer', $webhook);
+        $this->assertEquals('https://example.com/webhooks/answer', $webhook);
 
         @$this->app->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'http://example.com');
         $webhook = $this->app->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER);
-        self::assertEquals('http://example.com', (string)$webhook);
+        $this->assertEquals('http://example.com', (string)$webhook);
     }
 
     /**
@@ -167,7 +167,7 @@ class ApplicationTest extends TestCase
         $otherapp->setVoiceConfig($this->app->getVoiceConfig());
 
         $webhook = $otherapp->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER);
-        self::assertEquals('https://example.com/webhooks/answer', $webhook);
+        $this->assertEquals('https://example.com/webhooks/answer', $webhook);
     }
 
     /**

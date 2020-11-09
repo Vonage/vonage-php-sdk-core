@@ -46,37 +46,37 @@ class ReceiptTest extends TestCase
     {
         $date = $this->receipt->getTimestamp();
 
-        self::assertEquals(new DateTime('12/30/2014 12:25'), $date);
+        $this->assertEquals(new DateTime('12/30/2014 12:25'), $date);
     }
 
     public function testSentTimestamp(): void
     {
         $date = $this->receipt->getSent();
 
-        self::assertEquals(new DateTime('7/23/2014 03:41:03'), $date);
+        $this->assertEquals(new DateTime('7/23/2014 03:41:03'), $date);
     }
 
     public function testSimpleValues(): void
     {
-        self::assertEquals($this->data['err-code'], $this->receipt->getErrorCode());
-        self::assertEquals($this->data['messageId'], $this->receipt->getId());
-        self::assertEquals($this->data['network-code'], $this->receipt->getNetwork());
-        self::assertEquals($this->data['price'], $this->receipt->getPrice());
-        self::assertEquals($this->data['status'], $this->receipt->getStatus());
-        self::assertEquals($this->data['msisdn'], $this->receipt->getReceiptFrom());
-        self::assertEquals($this->data['msisdn'], $this->receipt->getTo());
-        self::assertEquals($this->data['to'], $this->receipt->getReceiptTo());
-        self::assertEquals($this->data['to'], $this->receipt->getFrom());
+        $this->assertEquals($this->data['err-code'], $this->receipt->getErrorCode());
+        $this->assertEquals($this->data['messageId'], $this->receipt->getId());
+        $this->assertEquals($this->data['network-code'], $this->receipt->getNetwork());
+        $this->assertEquals($this->data['price'], $this->receipt->getPrice());
+        $this->assertEquals($this->data['status'], $this->receipt->getStatus());
+        $this->assertEquals($this->data['msisdn'], $this->receipt->getReceiptFrom());
+        $this->assertEquals($this->data['msisdn'], $this->receipt->getTo());
+        $this->assertEquals($this->data['to'], $this->receipt->getReceiptTo());
+        $this->assertEquals($this->data['to'], $this->receipt->getFrom());
     }
 
     public function testClientRefDefault(): void
     {
-        self::assertNull($this->receipt->getClientRef());
+        $this->assertNull($this->receipt->getClientRef());
     }
 
     public function testClientRef(): void
     {
         $receipt = new Receipt(array_merge(['client-ref' => 'test'], $this->data));
-        self::assertEquals('test', $receipt->getClientRef());
+        $this->assertEquals('test', $receipt->getClientRef());
     }
 }

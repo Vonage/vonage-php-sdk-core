@@ -54,8 +54,8 @@ class MessageCreationTest extends TestCase
     {
         $params = @$this->message->getRequestData();
 
-        self::assertEquals($this->to, $params['to']);
-        self::assertEquals($this->from, $params['from']);
+        $this->assertEquals($this->to, $params['to']);
+        $this->assertEquals($this->from, $params['from']);
     }
 
     /**
@@ -68,7 +68,7 @@ class MessageCreationTest extends TestCase
         $params = array_keys(@$this->message->getRequestData());
         $diff = array_diff($params, $this->set); // should be no difference
 
-        self::assertEmpty($diff, 'message params contain unset values (could change default behaviour)');
+        $this->assertEmpty($diff, 'message params contain unset values (could change default behaviour)');
     }
 
     /**
@@ -87,15 +87,15 @@ class MessageCreationTest extends TestCase
         //check no default value
         $params = @$this->message->getRequestData();
 
-        self::assertArrayNotHasKey($param, $params);
+        $this->assertArrayNotHasKey($param, $params);
 
         //test values
         foreach ($values as $value => $expected) {
             $this->message->$setter($value);
             $params = @$this->message->getRequestData();
 
-            self::assertArrayHasKey($param, $params);
-            self::assertEquals($expected, $params[$param]);
+            $this->assertArrayHasKey($param, $params);
+            $this->assertEquals($expected, $params[$param]);
         }
     }
 

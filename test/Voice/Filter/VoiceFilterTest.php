@@ -29,7 +29,7 @@ class VoiceFilterTest extends TestCase
         $filter->setDateStart(new DateTimeImmutable('2020-01-01', new DateTimeZone('Z')));
         $query = $filter->getQuery();
 
-        self::assertSame('2020-01-01T00:00:00Z', $query['date_start']);
+        $this->assertSame('2020-01-01T00:00:00Z', $query['date_start']);
     }
 
     /**
@@ -41,7 +41,7 @@ class VoiceFilterTest extends TestCase
             ->setDateEnd(new DateTimeImmutable('2020-01-01', new DateTimeZone('Z')))
             ->getQuery();
 
-        self::assertSame('2020-01-01T00:00:00Z', $query['date_end']);
+        $this->assertSame('2020-01-01T00:00:00Z', $query['date_end']);
     }
 
     public function testQueryHasConversationUUID(): void
@@ -50,7 +50,7 @@ class VoiceFilterTest extends TestCase
             ->setConversationUUID('CON-c39bc0bb-7ebc-405f-801b-f6b9a0d92860')
             ->getQuery();
 
-        self::assertSame('CON-c39bc0bb-7ebc-405f-801b-f6b9a0d92860', $query['conversation_uuid']);
+        $this->assertSame('CON-c39bc0bb-7ebc-405f-801b-f6b9a0d92860', $query['conversation_uuid']);
     }
 
     public function testCanSetRecordIndex(): void
@@ -59,7 +59,7 @@ class VoiceFilterTest extends TestCase
             ->setRecordIndex(100)
             ->getQuery();
 
-        self::assertSame(100, $query['record_index']);
+        $this->assertSame(100, $query['record_index']);
     }
 
     public function testCanSetPageSize(): void
@@ -68,7 +68,7 @@ class VoiceFilterTest extends TestCase
             ->setPageSize(100)
             ->getQuery();
 
-        self::assertSame(100, $query['page_size']);
+        $this->assertSame(100, $query['page_size']);
     }
 
     public function testCanSetOrder(): void
@@ -77,7 +77,7 @@ class VoiceFilterTest extends TestCase
             ->setOrder(VoiceFilter::ORDER_ASC)
             ->getQuery();
 
-        self::assertSame(VoiceFilter::ORDER_ASC, $query['order']);
+        $this->assertSame(VoiceFilter::ORDER_ASC, $query['order']);
     }
 
     public function testFilterThrowExceptionOnBadOrder(): void

@@ -31,7 +31,7 @@ class InboundMessageTest extends TestCase
     public function testConstructionWithId(): void
     {
         $message = new InboundMessage('test1234');
-        self::assertSame('test1234', $message->getMessageId());
+        $this->assertSame('test1234', $message->getMessageId());
     }
 
     /**
@@ -58,10 +58,10 @@ class InboundMessageTest extends TestCase
             }
         }
 
-        self::assertCount(count($originalData), $requestData);
+        $this->assertCount(count($originalData), $requestData);
 
         foreach ($originalData as $key => $value) {
-            self::assertSame($value, $requestData[$key]);
+            $this->assertSame($value, $requestData[$key]);
         }
     }
 
@@ -70,12 +70,12 @@ class InboundMessageTest extends TestCase
         $request = $this->getServerRequest();
         $message = @new InboundMessage($request);
 
-        self::assertTrue($message->isValid());
+        $this->assertTrue($message->isValid());
 
         $request = $this->getServerRequest('http://example.com', 'GET', 'invalid');
         $message = @new InboundMessage($request);
 
-        self::assertFalse($message->isValid());
+        $this->assertFalse($message->isValid());
     }
 
     /**
@@ -89,11 +89,11 @@ class InboundMessageTest extends TestCase
     {
         $message = @new InboundMessage($request);
 
-        self::assertEquals('14845552121', $message->getFrom());
-        self::assertEquals('16105553939', $message->getTo());
-        self::assertEquals('02000000DA7C52E7', $message->getMessageId());
-        self::assertEquals('Test this.', $message->getBody());
-        self::assertEquals('text', $message->getType());
+        $this->assertEquals('14845552121', $message->getFrom());
+        $this->assertEquals('16105553939', $message->getTo());
+        $this->assertEquals('02000000DA7C52E7', $message->getMessageId());
+        $this->assertEquals('Test this.', $message->getBody());
+        $this->assertEquals('text', $message->getType());
     }
 
     /**
@@ -107,11 +107,11 @@ class InboundMessageTest extends TestCase
     {
         $message = @new InboundMessage($request);
 
-        self::assertEquals('14845552121', @$message['msisdn']);
-        self::assertEquals('16105553939', @$message['to']);
-        self::assertEquals('02000000DA7C52E7', @$message['messageId']);
-        self::assertEquals('Test this.', @$message['text']);
-        self::assertEquals('text', @$message['type']);
+        $this->assertEquals('14845552121', @$message['msisdn']);
+        $this->assertEquals('16105553939', @$message['to']);
+        $this->assertEquals('02000000DA7C52E7', @$message['messageId']);
+        $this->assertEquals('Test this.', @$message['text']);
+        $this->assertEquals('text', @$message['type']);
     }
 
     /**
@@ -126,12 +126,12 @@ class InboundMessageTest extends TestCase
         $message = new InboundMessage('02000000DA7C52E7');
         @$message->setResponse($response);
 
-        self::assertEquals('14845552121', $message->getFrom());
-        self::assertEquals('16105553939', $message->getTo());
-        self::assertEquals('02000000DA7C52E7', $message->getMessageId());
-        self::assertEquals('Test this.', $message->getBody());
-        self::assertEquals('6cff3913', $message->getAccountId());
-        self::assertEquals('US-VIRTUAL-BANDWIDTH', $message->getNetwork());
+        $this->assertEquals('14845552121', $message->getFrom());
+        $this->assertEquals('16105553939', $message->getTo());
+        $this->assertEquals('02000000DA7C52E7', $message->getMessageId());
+        $this->assertEquals('Test this.', $message->getBody());
+        $this->assertEquals('6cff3913', $message->getAccountId());
+        $this->assertEquals('US-VIRTUAL-BANDWIDTH', $message->getNetwork());
     }
 
     /**
@@ -146,13 +146,13 @@ class InboundMessageTest extends TestCase
         $message = new InboundMessage('02000000DA7C52E7');
         @$message->setResponse($response);
 
-        self::assertEquals('14845552121', @$message['from']);
-        self::assertEquals('16105553939', @$message['to']);
-        self::assertEquals('02000000DA7C52E7', @$message['message-id']);
-        self::assertEquals('Test this.', @$message['body']);
-        self::assertEquals('MO', @$message['type']);
-        self::assertEquals('6cff3913', @$message['account-id']);
-        self::assertEquals('US-VIRTUAL-BANDWIDTH', @$message['network']);
+        $this->assertEquals('14845552121', @$message['from']);
+        $this->assertEquals('16105553939', @$message['to']);
+        $this->assertEquals('02000000DA7C52E7', @$message['message-id']);
+        $this->assertEquals('Test this.', @$message['body']);
+        $this->assertEquals('MO', @$message['type']);
+        $this->assertEquals('6cff3913', @$message['account-id']);
+        $this->assertEquals('US-VIRTUAL-BANDWIDTH', @$message['network']);
     }
 
     /**
@@ -163,13 +163,13 @@ class InboundMessageTest extends TestCase
         $message = @new InboundMessage($this->getServerRequest());
         $reply = $message->createReply('this is a reply');
 
-        self::assertInstanceOf(Message::class, $reply);
+        $this->assertInstanceOf(Message::class, $reply);
 
         $params = $reply->getRequestData(false);
 
-        self::assertEquals('14845552121', $params['to']);
-        self::assertEquals('16105553939', $params['from']);
-        self::assertEquals('this is a reply', $params['text']);
+        $this->assertEquals('14845552121', $params['to']);
+        $this->assertEquals('16105553939', $params['from']);
+        $this->assertEquals('this is a reply', $params['text']);
     }
 
     /**

@@ -28,9 +28,9 @@ class FilterTest extends TestCase
     {
         $filter = new Filter($start, $end);
 
-        self::assertIsArray($filter->getQuery());
-        self::assertArrayHasKey('date', $filter->getQuery());
-        self::assertEquals($expected, $filter->getQuery()['date']);
+        $this->assertIsArray($filter->getQuery());
+        $this->assertArrayHasKey('date', $filter->getQuery());
+        $this->assertEquals($expected, $filter->getQuery()['date']);
     }
 
     /**

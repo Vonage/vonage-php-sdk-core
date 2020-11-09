@@ -24,8 +24,8 @@ class AdvancedTest extends TestCase
      */
     public function testArrayAccess($advanced, $inputData): void
     {
-        self::assertEquals($inputData['valid_number'], @$advanced['valid_number']);
-        self::assertEquals($inputData['reachable'], @$advanced['reachable']);
+        $this->assertEquals($inputData['valid_number'], @$advanced['valid_number']);
+        $this->assertEquals($inputData['reachable'], @$advanced['reachable']);
     }
 
     /**
@@ -36,8 +36,8 @@ class AdvancedTest extends TestCase
      */
     public function testObjectAccess($advanced, $inputData): void
     {
-        self::assertEquals($inputData['valid_number'], $advanced->getValidNumber());
-        self::assertEquals($inputData['reachable'], $advanced->getReachable());
+        $this->assertEquals($inputData['valid_number'], $advanced->getValidNumber());
+        $this->assertEquals($inputData['reachable'], $advanced->getReachable());
     }
 
     public function advancedTestProvider(): array

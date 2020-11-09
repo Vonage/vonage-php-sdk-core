@@ -42,16 +42,16 @@ class FactoryTest extends TestCase
         $expected = json_decode($this->getRequest('event-post-started')->getBody()->getContents(), true);
         $event = Factory::createFromRequest($request);
 
-        self::assertInstanceOf(Event::class, $event);
-        self::assertSame($expected['status'], $event->getStatus());
-        self::assertSame($expected['from'], $event->getFrom());
-        self::assertSame($expected['to'], $event->getTo());
-        self::assertSame($expected['uuid'], $event->getUuid());
-        self::assertSame($expected['conversation_uuid'], $event->getConversationUuid());
-        self::assertSame($expected['direction'], $event->getDirection());
-        self::assertEquals(new DateTime($expected['timestamp']), $event->getTimestamp());
-        self::assertNull($event->getDuration());
-        self::assertNull($event->getPrice());
+        $this->assertInstanceOf(Event::class, $event);
+        $this->assertSame($expected['status'], $event->getStatus());
+        $this->assertSame($expected['from'], $event->getFrom());
+        $this->assertSame($expected['to'], $event->getTo());
+        $this->assertSame($expected['uuid'], $event->getUuid());
+        $this->assertSame($expected['conversation_uuid'], $event->getConversationUuid());
+        $this->assertSame($expected['direction'], $event->getDirection());
+        $this->assertEquals(new DateTime($expected['timestamp']), $event->getTimestamp());
+        $this->assertNull($event->getDuration());
+        $this->assertNull($event->getPrice());
     }
 
     /**
@@ -63,16 +63,16 @@ class FactoryTest extends TestCase
         $expected = json_decode($this->getRequest('event-post-ringing')->getBody()->getContents(), true);
         $event = Factory::createFromRequest($request);
 
-        self::assertInstanceOf(Event::class, $event);
-        self::assertSame($expected['status'], $event->getStatus());
-        self::assertSame($expected['from'], $event->getFrom());
-        self::assertSame($expected['to'], $event->getTo());
-        self::assertSame($expected['uuid'], $event->getUuid());
-        self::assertSame($expected['conversation_uuid'], $event->getConversationUuid());
-        self::assertSame($expected['direction'], $event->getDirection());
-        self::assertEquals(new DateTime($expected['timestamp']), $event->getTimestamp());
-        self::assertNull($event->getDuration());
-        self::assertNull($event->getPrice());
+        $this->assertInstanceOf(Event::class, $event);
+        $this->assertSame($expected['status'], $event->getStatus());
+        $this->assertSame($expected['from'], $event->getFrom());
+        $this->assertSame($expected['to'], $event->getTo());
+        $this->assertSame($expected['uuid'], $event->getUuid());
+        $this->assertSame($expected['conversation_uuid'], $event->getConversationUuid());
+        $this->assertSame($expected['direction'], $event->getDirection());
+        $this->assertEquals(new DateTime($expected['timestamp']), $event->getTimestamp());
+        $this->assertNull($event->getDuration());
+        $this->assertNull($event->getPrice());
     }
 
     /**
@@ -84,16 +84,16 @@ class FactoryTest extends TestCase
         $expected = json_decode($this->getRequest('event-post-answered')->getBody()->getContents(), true);
         $event = Factory::createFromRequest($request);
 
-        self::assertInstanceOf(Event::class, $event);
-        self::assertSame($expected['status'], $event->getStatus());
-        self::assertSame($expected['from'], $event->getFrom());
-        self::assertSame($expected['to'], $event->getTo());
-        self::assertSame($expected['uuid'], $event->getUuid());
-        self::assertSame($expected['conversation_uuid'], $event->getConversationUuid());
-        self::assertSame($expected['direction'], $event->getDirection());
-        self::assertEquals(new DateTime($expected['timestamp']), $event->getTimestamp());
-        self::assertNull($event->getStartTime());
-        self::assertNull($event->getRate());
+        $this->assertInstanceOf(Event::class, $event);
+        $this->assertSame($expected['status'], $event->getStatus());
+        $this->assertSame($expected['from'], $event->getFrom());
+        $this->assertSame($expected['to'], $event->getTo());
+        $this->assertSame($expected['uuid'], $event->getUuid());
+        $this->assertSame($expected['conversation_uuid'], $event->getConversationUuid());
+        $this->assertSame($expected['direction'], $event->getDirection());
+        $this->assertEquals(new DateTime($expected['timestamp']), $event->getTimestamp());
+        $this->assertNull($event->getStartTime());
+        $this->assertNull($event->getRate());
     }
 
     /**
@@ -105,20 +105,20 @@ class FactoryTest extends TestCase
         $expected = json_decode($this->getRequest('event-post-completed')->getBody()->getContents(), true);
         $event = Factory::createFromRequest($request);
 
-        self::assertInstanceOf(Event::class, $event);
-        self::assertSame($expected['status'], $event->getStatus());
-        self::assertSame($expected['from'], $event->getFrom());
-        self::assertSame($expected['to'], $event->getTo());
-        self::assertSame($expected['uuid'], $event->getUuid());
-        self::assertSame($expected['conversation_uuid'], $event->getConversationUuid());
-        self::assertSame($expected['direction'], $event->getDirection());
-        self::assertEquals(new DateTime($expected['timestamp']), $event->getTimestamp());
-        self::assertSame($expected['network'], $event->getNetwork());
-        self::assertSame($expected['duration'], $event->getDuration());
-        self::assertEquals(new DateTime($expected['start_time']), $event->getStartTime());
-        self::assertEquals(new DateTime($expected['end_time']), $event->getEndTime());
-        self::assertSame($expected['rate'], $event->getRate());
-        self::assertSame($expected['price'], $event->getPrice());
+        $this->assertInstanceOf(Event::class, $event);
+        $this->assertSame($expected['status'], $event->getStatus());
+        $this->assertSame($expected['from'], $event->getFrom());
+        $this->assertSame($expected['to'], $event->getTo());
+        $this->assertSame($expected['uuid'], $event->getUuid());
+        $this->assertSame($expected['conversation_uuid'], $event->getConversationUuid());
+        $this->assertSame($expected['direction'], $event->getDirection());
+        $this->assertEquals(new DateTime($expected['timestamp']), $event->getTimestamp());
+        $this->assertSame($expected['network'], $event->getNetwork());
+        $this->assertSame($expected['duration'], $event->getDuration());
+        $this->assertEquals(new DateTime($expected['start_time']), $event->getStartTime());
+        $this->assertEquals(new DateTime($expected['end_time']), $event->getEndTime());
+        $this->assertSame($expected['rate'], $event->getRate());
+        $this->assertSame($expected['price'], $event->getPrice());
     }
 
     /**
@@ -130,11 +130,11 @@ class FactoryTest extends TestCase
         $expected = json_decode($this->getRequest('event-post-transfer')->getBody()->getContents(), true);
         $event = Factory::createFromRequest($request);
 
-        self::assertInstanceOf(Transfer::class, $event);
-        self::assertSame($expected['conversation_uuid_from'], $event->getConversationUuidFrom());
-        self::assertSame($expected['conversation_uuid_to'], $event->getConversationUuidTo());
-        self::assertSame($expected['uuid'], $event->getUuid());
-        self::assertEquals(new DateTimeImmutable($expected['timestamp']), $event->getTimestamp());
+        $this->assertInstanceOf(Transfer::class, $event);
+        $this->assertSame($expected['conversation_uuid_from'], $event->getConversationUuidFrom());
+        $this->assertSame($expected['conversation_uuid_to'], $event->getConversationUuidTo());
+        $this->assertSame($expected['uuid'], $event->getUuid());
+        $this->assertEquals(new DateTimeImmutable($expected['timestamp']), $event->getTimestamp());
     }
 
     public function testCanGenerateAnAnswerWebhook(): void
@@ -145,11 +145,11 @@ class FactoryTest extends TestCase
         /** @var Answer $answer */
         $answer = Factory::createFromRequest($request);
 
-        self::assertInstanceOf(Answer::class, $answer);
-        self::assertSame($expected['conversation_uuid'], $answer->getConversationUuid());
-        self::assertSame($expected['uuid'], $answer->getUuid());
-        self::assertSame($expected['to'], $answer->getTo());
-        self::assertSame($expected['from'], $answer->getFrom());
+        $this->assertInstanceOf(Answer::class, $answer);
+        $this->assertSame($expected['conversation_uuid'], $answer->getConversationUuid());
+        $this->assertSame($expected['uuid'], $answer->getUuid());
+        $this->assertSame($expected['to'], $answer->getTo());
+        $this->assertSame($expected['from'], $answer->getFrom());
     }
 
     /**
@@ -163,14 +163,14 @@ class FactoryTest extends TestCase
         /** @var Record $record */
         $record = Factory::createFromRequest($request);
 
-        self::assertInstanceOf(Record::class, $record);
-        self::assertSame($expected['conversation_uuid'], $record->getConversationUuid());
-        self::assertEquals(new DateTimeImmutable($expected['end_time']), $record->getEndTime());
-        self::assertSame($expected['recording_url'], $record->getRecordingUrl());
-        self::assertSame($expected['recording_uuid'], $record->getRecordingUuid());
-        self::assertSame((int)$expected['size'], $record->getSize());
-        self::assertEquals(new DateTimeImmutable($expected['start_time']), $record->getStartTime());
-        self::assertEquals(new DateTimeImmutable($expected['timestamp']), $record->getTimestamp());
+        $this->assertInstanceOf(Record::class, $record);
+        $this->assertSame($expected['conversation_uuid'], $record->getConversationUuid());
+        $this->assertEquals(new DateTimeImmutable($expected['end_time']), $record->getEndTime());
+        $this->assertSame($expected['recording_url'], $record->getRecordingUrl());
+        $this->assertSame($expected['recording_uuid'], $record->getRecordingUuid());
+        $this->assertSame((int)$expected['size'], $record->getSize());
+        $this->assertEquals(new DateTimeImmutable($expected['start_time']), $record->getStartTime());
+        $this->assertEquals(new DateTimeImmutable($expected['timestamp']), $record->getTimestamp());
     }
 
     /**
@@ -184,10 +184,10 @@ class FactoryTest extends TestCase
         /** @var Error $error */
         $error = Factory::createFromRequest($request);
 
-        self::assertInstanceOf(Error::class, $error);
-        self::assertSame($expected['conversation_uuid'], $error->getConversationUuid());
-        self::assertSame($expected['reason'], $error->getReason());
-        self::assertEquals(new DateTimeImmutable($expected['timestamp']), $error->getTimestamp());
+        $this->assertInstanceOf(Error::class, $error);
+        $this->assertSame($expected['conversation_uuid'], $error->getConversationUuid());
+        $this->assertSame($expected['reason'], $error->getReason());
+        $this->assertEquals(new DateTimeImmutable($expected['timestamp']), $error->getTimestamp());
     }
 
     /**
@@ -201,10 +201,10 @@ class FactoryTest extends TestCase
         /** @var Notification $notification */
         $notification = Factory::createFromRequest($request);
 
-        self::assertInstanceOf(Notification::class, $notification);
-        self::assertSame($expected['conversation_uuid'], $notification->getConversationUuid());
-        self::assertSame(json_decode($expected['payload'], true), $notification->getPayload());
-        self::assertEquals(new DateTimeImmutable($expected['timestamp']), $notification->getTimestamp());
+        $this->assertInstanceOf(Notification::class, $notification);
+        $this->assertSame($expected['conversation_uuid'], $notification->getConversationUuid());
+        $this->assertSame(json_decode($expected['payload'], true), $notification->getPayload());
+        $this->assertEquals(new DateTimeImmutable($expected['timestamp']), $notification->getTimestamp());
     }
 
     /**
@@ -218,10 +218,10 @@ class FactoryTest extends TestCase
         /** @var Notification $notification */
         $notification = Factory::createFromRequest($request);
 
-        self::assertInstanceOf(Notification::class, $notification);
-        self::assertSame($expected['conversation_uuid'], $notification->getConversationUuid());
-        self::assertSame($expected['payload'], $notification->getPayload());
-        self::assertEquals(new DateTimeImmutable($expected['timestamp']), $notification->getTimestamp());
+        $this->assertInstanceOf(Notification::class, $notification);
+        $this->assertSame($expected['conversation_uuid'], $notification->getConversationUuid());
+        $this->assertSame($expected['payload'], $notification->getPayload());
+        $this->assertEquals(new DateTimeImmutable($expected['timestamp']), $notification->getTimestamp());
     }
 
     /**
@@ -235,14 +235,14 @@ class FactoryTest extends TestCase
         /** @var Input $input */
         $input = Factory::createFromRequest($request);
 
-        self::assertInstanceOf(Input::class, $input);
-        self::assertSame(json_decode($expected['speech'], true), $input->getSpeech());
-        self::assertSame(json_decode($expected['dtmf'], true), $input->getDtmf());
-        self::assertSame($expected['from'], $input->getFrom());
-        self::assertSame($expected['to'], $input->getTo());
-        self::assertSame($expected['uuid'], $input->getUuid());
-        self::assertSame($expected['conversation_uuid'], $input->getConversationUuid());
-        self::assertEquals(new DateTimeImmutable($expected['timestamp']), $input->getTimestamp());
+        $this->assertInstanceOf(Input::class, $input);
+        $this->assertSame(json_decode($expected['speech'], true), $input->getSpeech());
+        $this->assertSame(json_decode($expected['dtmf'], true), $input->getDtmf());
+        $this->assertSame($expected['from'], $input->getFrom());
+        $this->assertSame($expected['to'], $input->getTo());
+        $this->assertSame($expected['uuid'], $input->getUuid());
+        $this->assertSame($expected['conversation_uuid'], $input->getConversationUuid());
+        $this->assertEquals(new DateTimeImmutable($expected['timestamp']), $input->getTimestamp());
     }
 
     /**
@@ -256,14 +256,14 @@ class FactoryTest extends TestCase
         /** @var Input $input */
         $input = Factory::createFromRequest($request);
 
-        self::assertInstanceOf(Input::class, $input);
-        self::assertSame($expected['speech'], $input->getSpeech());
-        self::assertSame($expected['dtmf'], $input->getDtmf());
-        self::assertSame($expected['from'], $input->getFrom());
-        self::assertSame($expected['to'], $input->getTo());
-        self::assertSame($expected['uuid'], $input->getUuid());
-        self::assertSame($expected['conversation_uuid'], $input->getConversationUuid());
-        self::assertEquals(new DateTimeImmutable($expected['timestamp']), $input->getTimestamp());
+        $this->assertInstanceOf(Input::class, $input);
+        $this->assertSame($expected['speech'], $input->getSpeech());
+        $this->assertSame($expected['dtmf'], $input->getDtmf());
+        $this->assertSame($expected['from'], $input->getFrom());
+        $this->assertSame($expected['to'], $input->getTo());
+        $this->assertSame($expected['uuid'], $input->getUuid());
+        $this->assertSame($expected['conversation_uuid'], $input->getConversationUuid());
+        $this->assertEquals(new DateTimeImmutable($expected['timestamp']), $input->getTimestamp());
     }
 
     /**

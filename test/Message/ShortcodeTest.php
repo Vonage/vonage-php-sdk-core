@@ -30,7 +30,7 @@ class ShortcodeTest extends TestCase
     {
         $m = new $klass('14155550100');
 
-        self::assertEquals($expectedType, $m->getType());
+        $this->assertEquals($expectedType, $m->getType());
     }
 
     /**
@@ -44,7 +44,7 @@ class ShortcodeTest extends TestCase
     public function testCreateMessageFromArray($expected, $type): void
     {
         $message = Shortcode::createMessageFromArray(['type' => $type, 'to' => '14155550100']);
-        self::assertInstanceOf($expected, $message);
+        $this->assertInstanceOf($expected, $message);
     }
 
     /**
@@ -64,7 +64,7 @@ class ShortcodeTest extends TestCase
         $m = new TwoFactor("14155550100", ['link' => 'https://example.com'], ['status-report-req' => 1]);
         $actual = $m->getRequestData();
 
-        self::assertEquals([
+        $this->assertEquals([
             'to' => '14155550100',
             'link' => 'https://example.com',
             'status-report-req' => 1

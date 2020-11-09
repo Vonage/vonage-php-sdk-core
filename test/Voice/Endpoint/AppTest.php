@@ -18,17 +18,17 @@ class AppTest extends TestCase
 {
     public function testSetsUsernameAtCreation(): void
     {
-        self::assertSame("username", (new App("username"))->getId());
+        $this->assertSame("username", (new App("username"))->getId());
     }
 
     public function testFactoryCreatesAppEndpoint(): void
     {
-        self::assertSame("username", App::factory('username')->getId());
+        $this->assertSame("username", App::factory('username')->getId());
     }
 
     public function testToArrayHasCorrectStructure(): void
     {
-        self::assertSame([
+        $this->assertSame([
             'type' => 'app',
             'user' => 'username',
         ], (new App("username"))->toArray());
@@ -36,7 +36,7 @@ class AppTest extends TestCase
 
     public function testSerializesToJSONCorrectly(): void
     {
-        self::assertSame([
+        $this->assertSame([
             'type' => 'app',
             'user' => 'username',
         ], (new App("username"))->jsonSerialize());

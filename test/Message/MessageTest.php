@@ -56,11 +56,11 @@ class MessageTest extends TestCase
         $request = new Request('http://example.com?' . http_build_query($data));
         @$this->message->setRequest($request);
 
-        self::assertSame($request, @$this->message->getRequest());
+        $this->assertSame($request, @$this->message->getRequest());
 
         $requestData = @$this->message->getRequestData();
 
-        self::assertEquals($data, $requestData);
+        $this->assertEquals($data, $requestData);
     }
 
     /**
@@ -75,8 +75,8 @@ class MessageTest extends TestCase
 
         @$this->message->setResponse($response);
 
-        self::assertSame($response, @$this->message->getResponse());
-        self::assertEquals($data, @$this->message->getResponseData());
+        $this->assertSame($response, @$this->message->getResponse());
+        $this->assertEquals($data, @$this->message->getResponseData());
     }
 
     /**
@@ -86,7 +86,7 @@ class MessageTest extends TestCase
      */
     public function testCanCreateWithId(): void
     {
-        self::assertEquals('00000123', (new Message('00000123'))->getMessageId());
+        $this->assertEquals('00000123', (new Message('00000123'))->getMessageId());
     }
 
     /**
@@ -102,11 +102,11 @@ class MessageTest extends TestCase
     {
         $message = new Text('to', 'from', $msg);
 
-        self::assertFalse($message->isEncodingDetectionEnabled());
+        $this->assertFalse($message->isEncodingDetectionEnabled());
 
         $d = $message->getRequestData(false);
 
-        self::assertEquals('text', $d['type']);
+        $this->assertEquals('text', $d['type']);
     }
 
     /**
@@ -124,11 +124,11 @@ class MessageTest extends TestCase
         $message = new Text('to', 'from', $msg);
         $message->enableEncodingDetection();
 
-        self::assertTrue($message->isEncodingDetectionEnabled());
+        $this->assertTrue($message->isEncodingDetectionEnabled());
 
         $d = $message->getRequestData(false);
 
-        self::assertEquals($d['type'], $encoding);
+        $this->assertEquals($d['type'], $encoding);
     }
 
     public function messageEncodingProvider(): array

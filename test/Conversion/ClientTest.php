@@ -73,12 +73,12 @@ class ClientTest extends TestCase
     public function testSmsWithTimestamp(): void
     {
         $this->vonageClient->method('send')->willReturnCallback(function (RequestInterface $request) {
-            self::assertEquals('/conversions/sms', $request->getUri()->getPath());
-            self::assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            self::assertEquals('POST', $request->getMethod());
-            self::assertRequestQueryContains('message-id', 'ABC123', $request);
-            self::assertRequestQueryContains('delivered', '1', $request);
-            self::assertRequestQueryContains('timestamp', '123456', $request);
+            $this->assertEquals('/conversions/sms', $request->getUri()->getPath());
+            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('POST', $request->getMethod());
+            $this->assertRequestQueryContains('message-id', 'ABC123', $request);
+            $this->assertRequestQueryContains('delivered', '1', $request);
+            $this->assertRequestQueryContains('timestamp', '123456', $request);
 
             return $this->getResponse();
         });
@@ -95,12 +95,12 @@ class ClientTest extends TestCase
     public function testSmsWithoutTimestamp(): void
     {
         $this->vonageClient->method('send')->willReturnCallback(function (RequestInterface $request) {
-            self::assertEquals('/conversions/sms', $request->getUri()->getPath());
-            self::assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            self::assertEquals('POST', $request->getMethod());
-            self::assertRequestQueryContains('message-id', 'ABC123', $request);
-            self::assertRequestQueryContains('delivered', '1', $request);
-            self::assertRequestQueryNotContains('timestamp', $request);
+            $this->assertEquals('/conversions/sms', $request->getUri()->getPath());
+            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('POST', $request->getMethod());
+            $this->assertRequestQueryContains('message-id', 'ABC123', $request);
+            $this->assertRequestQueryContains('delivered', '1', $request);
+            $this->assertRequestQueryNotContains('timestamp', $request);
 
             return $this->getResponse();
         });
@@ -117,12 +117,12 @@ class ClientTest extends TestCase
     public function testVoiceWithTimestamp(): void
     {
         $this->vonageClient->method('send')->willReturnCallback(function (RequestInterface $request) {
-            self::assertEquals('/conversions/voice', $request->getUri()->getPath());
-            self::assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            self::assertEquals('POST', $request->getMethod());
-            self::assertRequestQueryContains('message-id', 'ABC123', $request);
-            self::assertRequestQueryContains('delivered', '1', $request);
-            self::assertRequestQueryContains('timestamp', '123456', $request);
+            $this->assertEquals('/conversions/voice', $request->getUri()->getPath());
+            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('POST', $request->getMethod());
+            $this->assertRequestQueryContains('message-id', 'ABC123', $request);
+            $this->assertRequestQueryContains('delivered', '1', $request);
+            $this->assertRequestQueryContains('timestamp', '123456', $request);
 
             return $this->getResponse();
         });
@@ -139,12 +139,12 @@ class ClientTest extends TestCase
     public function testVoiceWithoutTimestamp(): void
     {
         $this->vonageClient->method('send')->willReturnCallback(function (RequestInterface $request) {
-            self::assertEquals('/conversions/voice', $request->getUri()->getPath());
-            self::assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            self::assertEquals('POST', $request->getMethod());
-            self::assertRequestQueryContains('message-id', 'ABC123', $request);
-            self::assertRequestQueryContains('delivered', '1', $request);
-            self::assertRequestQueryNotContains('timestamp', $request);
+            $this->assertEquals('/conversions/voice', $request->getUri()->getPath());
+            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('POST', $request->getMethod());
+            $this->assertRequestQueryContains('message-id', 'ABC123', $request);
+            $this->assertRequestQueryContains('delivered', '1', $request);
+            $this->assertRequestQueryNotContains('timestamp', $request);
 
             return $this->getResponse();
         });

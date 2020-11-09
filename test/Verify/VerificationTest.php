@@ -63,13 +63,13 @@ class VerificationTest extends TestCase
 
     public function testExistingAndNew(): void
     {
-        self::assertTrue(@$this->verification->isDirty());
-        self::assertFalse(@$this->existing->isDirty());
+        $this->assertTrue(@$this->verification->isDirty());
+        $this->assertFalse(@$this->existing->isDirty());
     }
 
     public function testConstructDataAsObject(): void
     {
-        self::assertEquals($this->number, @$this->verification->getNumber());
+        $this->assertEquals($this->number, @$this->verification->getNumber());
     }
 
     /**
@@ -78,14 +78,14 @@ class VerificationTest extends TestCase
     public function testConstructDataAsParams(): void
     {
         $params = $this->verification->getRequestData(false);
-        self::assertEquals($this->number, @$params['number']);
-        self::assertEquals($this->brand, @$params['brand']);
+        $this->assertEquals($this->number, @$params['number']);
+        $this->assertEquals($this->brand, @$params['brand']);
     }
 
     public function testConstructDataAsArray(): void
     {
-        self::assertEquals($this->number, @$this->verification['number']);
-        self::assertEquals($this->brand, @$this->verification['brand']);
+        $this->assertEquals($this->number, @$this->verification['number']);
+        $this->assertEquals($this->brand, @$this->verification['brand']);
     }
 
     /**
@@ -111,8 +111,8 @@ class VerificationTest extends TestCase
 
         $params = $verification->getRequestData(false);
 
-        self::assertEquals($normal, $params[$param]);
-        self::assertEquals($normal, @$verification[$param]);
+        $this->assertEquals($normal, $params[$param]);
+        $this->assertEquals($normal, @$verification[$param]);
     }
 
     /**
@@ -134,8 +134,8 @@ class VerificationTest extends TestCase
         $this->verification->$setter($value);
         $params = @$this->verification->getRequestData(false);
 
-        self::assertEquals($normal, $params[$param]);
-        self::assertEquals($normal, @$this->verification[$param]);
+        $this->assertEquals($normal, $params[$param]);
+        $this->assertEquals($normal, @$this->verification[$param]);
     }
 
     /**
@@ -159,11 +159,11 @@ class VerificationTest extends TestCase
      */
     public function testRequestId(): void
     {
-        self::assertEquals('44a5279b27dd4a638d614d265ad57a77', @$this->existing->getRequestId());
+        $this->assertEquals('44a5279b27dd4a638d614d265ad57a77', @$this->existing->getRequestId());
 
         @$this->verification->setResponse($this->getResponse('search'));
 
-        self::assertEquals('44a5279b27dd4a638d614d265ad57a77', @$this->verification->getRequestId());
+        $this->assertEquals('44a5279b27dd4a638d614d265ad57a77', @$this->verification->getRequestId());
     }
 
     /**
@@ -175,38 +175,38 @@ class VerificationTest extends TestCase
     {
         @$this->existing->setResponse($this->getResponse('search'));
 
-        self::assertEquals('6cff3913', @$this->existing->getAccountId());
-        self::assertEquals('14845551212', @$this->existing->getNumber());
-        self::assertEquals('verify', @$this->existing->getSenderId());
-        self::assertEquals(new DateTime("2016-05-15 03:55:05"), @$this->existing->getSubmitted());
-        self::assertEquals(null, @$this->existing->getFinalized());
-        self::assertEquals(new DateTime("2016-05-15 03:55:05"), @$this->existing->getFirstEvent());
-        self::assertEquals(new DateTime("2016-05-15 03:57:12"), @$this->existing->getLastEvent());
-        self::assertEquals('0.10000000', @$this->existing->getPrice());
-        self::assertEquals('EUR', @$this->existing->getCurrency());
-        self::assertEquals(Verification::FAILED, @$this->existing->getStatus());
+        $this->assertEquals('6cff3913', @$this->existing->getAccountId());
+        $this->assertEquals('14845551212', @$this->existing->getNumber());
+        $this->assertEquals('verify', @$this->existing->getSenderId());
+        $this->assertEquals(new DateTime("2016-05-15 03:55:05"), @$this->existing->getSubmitted());
+        $this->assertEquals(null, @$this->existing->getFinalized());
+        $this->assertEquals(new DateTime("2016-05-15 03:55:05"), @$this->existing->getFirstEvent());
+        $this->assertEquals(new DateTime("2016-05-15 03:57:12"), @$this->existing->getLastEvent());
+        $this->assertEquals('0.10000000', @$this->existing->getPrice());
+        $this->assertEquals('EUR', @$this->existing->getCurrency());
+        $this->assertEquals(Verification::FAILED, @$this->existing->getStatus());
 
         @$checks = $this->existing->getChecks();
 
-        self::assertIsArray($checks);
-        self::assertCount(3, $checks);
+        $this->assertIsArray($checks);
+        $this->assertCount(3, $checks);
 
         foreach ($checks as $index => $check) {
-            self::assertInstanceOf(Check::class, $check);
+            $this->assertInstanceOf(Check::class, $check);
         }
 
-        self::assertEquals('123456', $checks[0]->getCode());
-        self::assertEquals('1234', $checks[1]->getCode());
-        self::assertEquals('1234', $checks[2]->getCode());
-        self::assertEquals(new DateTime('2016-05-15 03:58:11'), $checks[0]->getDate());
-        self::assertEquals(new DateTime('2016-05-15 03:55:50'), $checks[1]->getDate());
-        self::assertEquals(new DateTime('2016-05-15 03:59:18'), $checks[2]->getDate());
-        self::assertEquals(Check::INVALID, $checks[0]->getStatus());
-        self::assertEquals(Check::INVALID, $checks[1]->getStatus());
-        self::assertEquals(Check::INVALID, $checks[2]->getStatus());
-        self::assertEquals(null, $checks[0]->getIpAddress());
-        self::assertEquals(null, $checks[1]->getIpAddress());
-        self::assertEquals('8.8.4.4', $checks[2]->getIpAddress());
+        $this->assertEquals('123456', $checks[0]->getCode());
+        $this->assertEquals('1234', $checks[1]->getCode());
+        $this->assertEquals('1234', $checks[2]->getCode());
+        $this->assertEquals(new DateTime('2016-05-15 03:58:11'), $checks[0]->getDate());
+        $this->assertEquals(new DateTime('2016-05-15 03:55:50'), $checks[1]->getDate());
+        $this->assertEquals(new DateTime('2016-05-15 03:59:18'), $checks[2]->getDate());
+        $this->assertEquals(Check::INVALID, $checks[0]->getStatus());
+        $this->assertEquals(Check::INVALID, $checks[1]->getStatus());
+        $this->assertEquals(Check::INVALID, $checks[2]->getStatus());
+        $this->assertEquals(null, $checks[0]->getIpAddress());
+        $this->assertEquals(null, $checks[1]->getIpAddress());
+        $this->assertEquals('8.8.4.4', $checks[2]->getIpAddress());
     }
 
     /**
@@ -224,7 +224,7 @@ class VerificationTest extends TestCase
         $json = $this->existing->getResponseData();
 
         foreach ($json as $key => $value) {
-            self::assertEquals($value, @$this->existing[$key], "Could not access `$key` as a property.");
+            $this->assertEquals($value, @$this->existing[$key], "Could not access `$key` as a property.");
         }
 
         self::markTestIncomplete('Remove deprecated tests');
@@ -292,8 +292,8 @@ class VerificationTest extends TestCase
 
         @$this->existing->setClient($client->reveal());
 
-        @self::assertFalse($this->existing->check('4321'));
-        @self::assertTrue($this->existing->check('1234'));
+        @$this->assertFalse($this->existing->check('4321'));
+        @$this->assertTrue($this->existing->check('1234'));
 
         self::markTestIncomplete('Remove deprecated tests');
     }
@@ -313,8 +313,8 @@ class VerificationTest extends TestCase
 
         @$this->existing->setClient($client->reveal());
 
-        @self::assertFalse($this->existing->check('4321'));
-        @self::assertTrue($this->existing->check('1234'));
+        @$this->assertFalse($this->existing->check('4321'));
+        @$this->assertTrue($this->existing->check('1234'));
 
         self::markTestIncomplete('Remove deprecated tests');
     }
@@ -356,10 +356,10 @@ class VerificationTest extends TestCase
         $serialized = serialize($this->existing);
         $unserialized = unserialize($serialized, [Verification::class]);
 
-        self::assertInstanceOf(get_class($this->existing), $unserialized);
-        self::assertEquals(@$this->existing->getAccountId(), @$unserialized->getAccountId());
-        self::assertEquals(@$this->existing->getStatus(), @$unserialized->getStatus());
-        self::assertEquals(@$this->existing->getResponseData(), @$unserialized->getResponseData());
+        $this->assertInstanceOf(get_class($this->existing), $unserialized);
+        $this->assertEquals(@$this->existing->getAccountId(), @$unserialized->getAccountId());
+        $this->assertEquals(@$this->existing->getStatus(), @$unserialized->getStatus());
+        $this->assertEquals(@$this->existing->getResponseData(), @$unserialized->getResponseData());
 
         self::markTestIncomplete('Remove deprecated tests');
     }

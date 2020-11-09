@@ -28,12 +28,12 @@ class InputTest extends TestCase
             ->setSpeechMaxDuration(10)
             ->toNCCOArray();
 
-        self::assertSame(['aaaaaaaa-bbbb-cccc-dddd-0123456789ab'], $ncco['speech']->uuid);
-        self::assertSame(5, $ncco['speech']->endOnSilence);
-        self::assertSame('en-US', $ncco['speech']->language);
-        self::assertSame(['foo', 'bar'], $ncco['speech']->context);
-        self::assertSame(2, $ncco['speech']->startTimeout);
-        self::assertSame(10, $ncco['speech']->maxDuration);
+        $this->assertSame(['aaaaaaaa-bbbb-cccc-dddd-0123456789ab'], $ncco['speech']->uuid);
+        $this->assertSame(5, $ncco['speech']->endOnSilence);
+        $this->assertSame('en-US', $ncco['speech']->language);
+        $this->assertSame(['foo', 'bar'], $ncco['speech']->context);
+        $this->assertSame(2, $ncco['speech']->startTimeout);
+        $this->assertSame(10, $ncco['speech']->maxDuration);
     }
 
     public function testSpeechSettingsAreSetInFactory(): void
@@ -50,12 +50,12 @@ class InputTest extends TestCase
             ]
         ]);
 
-        self::assertSame('aaaaaaaa-bbbb-cccc-dddd-0123456789ab', $action->getSpeechUUID());
-        self::assertSame(5, $action->getSpeechEndOnSilence());
-        self::assertSame('en-US', $action->getSpeechLanguage());
-        self::assertSame(['foo', 'bar'], $action->getSpeechContext());
-        self::assertSame(2, $action->getSpeechStartTimeout());
-        self::assertSame(10, $action->getSpeechMaxDuration());
+        $this->assertSame('aaaaaaaa-bbbb-cccc-dddd-0123456789ab', $action->getSpeechUUID());
+        $this->assertSame(5, $action->getSpeechEndOnSilence());
+        $this->assertSame('en-US', $action->getSpeechLanguage());
+        $this->assertSame(['foo', 'bar'], $action->getSpeechContext());
+        $this->assertSame(2, $action->getSpeechStartTimeout());
+        $this->assertSame(10, $action->getSpeechMaxDuration());
     }
 
     public function testDTMFSettingsGenerateCorrectNCCO(): void
@@ -66,9 +66,9 @@ class InputTest extends TestCase
             ->setDtmfTimeout(5)
             ->toNCCOArray();
 
-        self::assertSame(2, $ncco['dtmf']->maxDigits);
-        self::assertSame('true', $ncco['dtmf']->submitOnHash);
-        self::assertSame(5, $ncco['dtmf']->timeOut);
+        $this->assertSame(2, $ncco['dtmf']->maxDigits);
+        $this->assertSame('true', $ncco['dtmf']->submitOnHash);
+        $this->assertSame(5, $ncco['dtmf']->timeOut);
     }
 
     public function testDTMFSettingsAreSetInFactory(): void
@@ -82,9 +82,9 @@ class InputTest extends TestCase
             ]
         ]);
 
-        self::assertSame(5, $action->getDtmfMaxDigits());
-        self::assertSame(2, $action->getDtmfTimeout());
-        self::assertFalse($action->getDtmfSubmitOnHash());
+        $this->assertSame(5, $action->getDtmfMaxDigits());
+        $this->assertSame(2, $action->getDtmfTimeout());
+        $this->assertFalse($action->getDtmfSubmitOnHash());
     }
 
     public function testEventURLCanBeSetInFactory(): void
@@ -99,10 +99,10 @@ class InputTest extends TestCase
         $action = Input::factory($data);
         $ncco = $action->toNCCOArray();
 
-        self::assertSame($data['eventUrl'], $ncco['eventUrl']);
-        self::assertSame($data['eventMethod'], $ncco['eventMethod']);
-        self::assertSame($data['eventUrl'][0], $action->getEventWebhook()->getUrl());
-        self::assertSame($data['eventMethod'], $action->getEventWebhook()->getMethod());
+        $this->assertSame($data['eventUrl'], $ncco['eventUrl']);
+        $this->assertSame($data['eventMethod'], $ncco['eventMethod']);
+        $this->assertSame($data['eventUrl'][0], $action->getEventWebhook()->getUrl());
+        $this->assertSame($data['eventMethod'], $action->getEventWebhook()->getMethod());
     }
 
     public function testEventMethodDefaultsToPostWhenNotSupplied(): void
@@ -116,15 +116,15 @@ class InputTest extends TestCase
         $action = Input::factory($data);
         $ncco = $action->toNCCOArray();
 
-        self::assertSame($data['eventUrl'], $ncco['eventUrl']);
-        self::assertSame('POST', $ncco['eventMethod']);
-        self::assertSame($data['eventUrl'][0], $action->getEventWebhook()->getUrl());
-        self::assertSame('POST', $action->getEventWebhook()->getMethod());
+        $this->assertSame($data['eventUrl'], $ncco['eventUrl']);
+        $this->assertSame('POST', $ncco['eventMethod']);
+        $this->assertSame($data['eventUrl'][0], $action->getEventWebhook()->getUrl());
+        $this->assertSame('POST', $action->getEventWebhook()->getMethod());
     }
 
     public function testJSONSerializationLooksCorrect(): void
     {
-        self::assertEquals([
+        $this->assertEquals([
             'action' => 'input',
             'dtmf' => (object)[]
         ], (new Input())->setEnableDtmf(true)->jsonSerialize());

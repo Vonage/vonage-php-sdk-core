@@ -91,7 +91,7 @@ class NCCOTest extends TestCase
 
         $json = json_decode(json_encode($ncco), true);
 
-        self::assertCount(7, $json);
-        self::assertEquals($data[0], $json[0]);
+        $this->assertCount(7, $json);
+        $this->assertEquals($data[0], $json[0]);
     }
 }

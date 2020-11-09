@@ -18,16 +18,16 @@ class NetworkTest extends TestCase
     {
         $network = new Network('12345', 'Demo Network');
 
-        self::assertEquals('12345', $network['network_code']);
-        self::assertEquals('Demo Network', $network['network_name']);
+        $this->assertEquals('12345', $network['network_code']);
+        $this->assertEquals('Demo Network', $network['network_name']);
     }
 
     public function testNetworkGetters(): void
     {
         $network = new Network('12345', 'Demo Network');
 
-        self::assertEquals('12345', $network->getCode());
-        self::assertEquals('Demo Network', $network->getName());
+        $this->assertEquals('12345', $network->getCode());
+        $this->assertEquals('Demo Network', $network->getName());
     }
 
     public function testNetworkFromArray(): void
@@ -44,11 +44,11 @@ class NetworkTest extends TestCase
             'mnc' => '740',
         ]);
 
-        self::assertEquals('12345', $network->getCode());
-        self::assertEquals('Demo Network', $network->getName());
-        self::assertEquals('0.0331', $network->getOutboundSmsPrice());
-        self::assertEquals('0.0123', $network->getOutboundVoicePrice());
-        self::assertEquals('EUR', $network->getCurrency());
+        $this->assertEquals('12345', $network->getCode());
+        $this->assertEquals('Demo Network', $network->getName());
+        $this->assertEquals('0.0331', $network->getOutboundSmsPrice());
+        $this->assertEquals('0.0123', $network->getOutboundVoicePrice());
+        $this->assertEquals('EUR', $network->getCurrency());
     }
 
     public function testSmsPriceFallback(): void
@@ -56,7 +56,7 @@ class NetworkTest extends TestCase
         $network = new Network('12345', 'Demo Network');
         $network->fromArray(['price' => '0.0331']);
 
-        self::assertEquals('0.0331', $network->getOutboundSmsPrice());
+        $this->assertEquals('0.0331', $network->getOutboundSmsPrice());
     }
 
     public function testVoicePriceFallback(): void
@@ -64,6 +64,6 @@ class NetworkTest extends TestCase
         $network = new Network('12345', 'Demo Network');
         $network->fromArray(['price' => '0.0331']);
 
-        self::assertEquals('0.0331', $network->getOutboundSmsPrice());
+        $this->assertEquals('0.0331', $network->getOutboundSmsPrice());
     }
 }

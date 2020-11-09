@@ -28,7 +28,7 @@ class UnearmuffTest extends TestCase
         $schema = file_get_contents(__DIR__ . '/schema/unearmuff.json');
         $json = json_decode(json_encode(@new Unearmuff()), true);
 
-        self::assertJsonDocumentMatchesSchema($json, json_decode(json_encode($schema), true));
-        self::assertJsonValueEquals($json, '$.action', 'unearmuff');
+        $this->assertJsonDocumentMatchesSchema($json, json_decode(json_encode($schema), true));
+        $this->assertJsonValueEquals($json, '$.action', 'unearmuff');
     }
 }

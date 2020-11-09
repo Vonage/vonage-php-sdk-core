@@ -28,7 +28,7 @@ class UnmuteTest extends TestCase
         $schema = file_get_contents(__DIR__ . '/schema/unmute.json');
         $json = json_decode(json_encode(@new Unmute()), true);
 
-        self::assertJsonDocumentMatchesSchema($json, json_decode(json_encode($schema), true));
-        self::assertJsonValueEquals($json, '$.action', 'unmute');
+        $this->assertJsonDocumentMatchesSchema($json, json_decode(json_encode($schema), true));
+        $this->assertJsonValueEquals($json, '$.action', 'unmute');
     }
 }

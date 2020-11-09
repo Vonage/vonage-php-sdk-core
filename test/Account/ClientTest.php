@@ -318,7 +318,7 @@ class ClientTest extends TestCase
 
         $smsPrice = $this->accountClient->getSmsPrice('US');
 
-        self::assertInstanceOf(Network::class, @$smsPrice['networks']['311310']);
+        $this->assertInstanceOf(Network::class, @$smsPrice['networks']['311310']);
     }
 
     /**
@@ -363,7 +363,7 @@ class ClientTest extends TestCase
 
         $voicePrice = $this->accountClient->getVoicePrice('US');
 
-        self::assertInstanceOf(Network::class, @$voicePrice['networks']['311310']);
+        $this->assertInstanceOf(Network::class, @$voicePrice['networks']['311310']);
     }
 
     public function testGetPrefixPricing(): void
@@ -388,8 +388,8 @@ class ClientTest extends TestCase
         }))->shouldBeCalledTimes(2)->willReturn($first, $noResults);
 
         $prefixPrice = $this->accountClient->getPrefixPricing('263');
-        self::assertInstanceOf(PrefixPrice::class, @$prefixPrice[0]);
-        self::assertInstanceOf(Network::class, @$prefixPrice[0]['networks']['64804']);
+        $this->assertInstanceOf(PrefixPrice::class, @$prefixPrice[0]);
+        $this->assertInstanceOf(Network::class, @$prefixPrice[0]['networks']['64804']);
     }
 
     public function testGetPrefixPricingNoResults(): void
@@ -404,7 +404,7 @@ class ClientTest extends TestCase
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('prefix-pricing-no-results'));
 
         $prefixPrice = $this->accountClient->getPrefixPricing('263');
-        self::assertEmpty($prefixPrice);
+        $this->assertEmpty($prefixPrice);
     }
 
     public function testGetPrefixPricingGenerates4xxError(): void
@@ -608,13 +608,13 @@ class ClientTest extends TestCase
                 ->willReturn($this->getResponse('secret-management/create-validation', 400));
             $this->accountClient->createSecret('abcd1234', 'example-4PI-secret');
         } catch (ValidationException $e) {
-            self::assertEquals(
+            $this->assertEquals(
                 'Bad Request: The request failed due to validation errors. ' .
                 'See https://developer.nexmo.com/api-errors/account/secret-management#validation ' .
                 'for more information',
                 $e->getMessage()
             );
-            self::assertEquals(
+            $this->assertEquals(
                 [
                     [
                         'name' => 'secret',

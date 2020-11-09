@@ -60,7 +60,7 @@ class MultiMessageTest extends TestCase
             @$this->message->setResponse($response);
         }
 
-        self::assertCount($size, $this->message);
+        $this->assertCount($size, $this->message);
     }
 
     /**
@@ -79,24 +79,24 @@ class MultiMessageTest extends TestCase
     {
         @$this->message->setResponse($this->getResponse('multi'));
 
-        self::assertEquals('0', @$this->message['status']);
-        self::assertEquals('00000126', @$this->message['message-id']);
-        self::assertEquals('44123456789', @$this->message['to']);
-        self::assertEquals('1.00', @$this->message['remaining-balance']);
-        self::assertEquals('0.05', @$this->message['message-price']);
-        self::assertEquals('23410', @$this->message['network']);
+        $this->assertEquals('0', @$this->message['status']);
+        $this->assertEquals('00000126', @$this->message['message-id']);
+        $this->assertEquals('44123456789', @$this->message['to']);
+        $this->assertEquals('1.00', @$this->message['remaining-balance']);
+        $this->assertEquals('0.05', @$this->message['message-price']);
+        $this->assertEquals('23410', @$this->message['network']);
     }
 
     public function testCanAccessAnyMessageAsArray(): void
     {
         @$this->message->setResponse($this->getResponse('multi'));
 
-        self::assertEquals('00000124', @$this->message[0]['message-id']);
-        self::assertEquals('00000125', @$this->message[1]['message-id']);
-        self::assertEquals('00000126', @$this->message[2]['message-id']);
-        self::assertEquals('1.10', @$this->message[0]['remaining-balance']);
-        self::assertEquals('1.05', @$this->message[1]['remaining-balance']);
-        self::assertEquals('1.00', @$this->message[2]['remaining-balance']);
+        $this->assertEquals('00000124', @$this->message[0]['message-id']);
+        $this->assertEquals('00000125', @$this->message[1]['message-id']);
+        $this->assertEquals('00000126', @$this->message[2]['message-id']);
+        $this->assertEquals('1.10', @$this->message[0]['remaining-balance']);
+        $this->assertEquals('1.05', @$this->message[1]['remaining-balance']);
+        $this->assertEquals('1.00', @$this->message[2]['remaining-balance']);
     }
 
     /**
@@ -106,12 +106,12 @@ class MultiMessageTest extends TestCase
     {
         @$this->message->setResponse($this->getResponse('multi'));
 
-        self::assertEquals('0', $this->message->getStatus());
-        self::assertEquals('00000126', $this->message->getMessageId());
-        self::assertEquals('44123456789', $this->message->getTo());
-        self::assertEquals('1.00', $this->message->getRemainingBalance());
-        self::assertEquals('0.05', $this->message->getPrice());
-        self::assertEquals('23410', $this->message->getNetwork());
+        $this->assertEquals('0', $this->message->getStatus());
+        $this->assertEquals('00000126', $this->message->getMessageId());
+        $this->assertEquals('44123456789', $this->message->getTo());
+        $this->assertEquals('1.00', $this->message->getRemainingBalance());
+        $this->assertEquals('0.05', $this->message->getPrice());
+        $this->assertEquals('23410', $this->message->getNetwork());
     }
 
     /**
@@ -121,12 +121,12 @@ class MultiMessageTest extends TestCase
     {
         @$this->message->setResponse($this->getResponse('multi'));
 
-        self::assertEquals('00000124', $this->message->getMessageId(0));
-        self::assertEquals('00000125', $this->message->getMessageId(1));
-        self::assertEquals('00000126', $this->message->getMessageId(2));
-        self::assertEquals('1.10', $this->message->getRemainingBalance(0));
-        self::assertEquals('1.05', $this->message->getRemainingBalance(1));
-        self::assertEquals('1.00', $this->message->getRemainingBalance(2));
+        $this->assertEquals('00000124', $this->message->getMessageId(0));
+        $this->assertEquals('00000125', $this->message->getMessageId(1));
+        $this->assertEquals('00000126', $this->message->getMessageId(2));
+        $this->assertEquals('1.10', $this->message->getRemainingBalance(0));
+        $this->assertEquals('1.05', $this->message->getRemainingBalance(1));
+        $this->assertEquals('1.00', $this->message->getRemainingBalance(2));
     }
 
     public function testCanIterateOverMessageParts(): void
@@ -140,23 +140,23 @@ class MultiMessageTest extends TestCase
         $iterated = false;
         foreach ($this->message as $index => $part) {
             $iterated = true;
-            self::assertEquals('0', $part['status']);
-            self::assertEquals('44123456789', $part['to']);
-            self::assertEquals('23410', $part['network']);
-            self::assertEquals('0.05', $part['message-price']);
+            $this->assertEquals('0', $part['status']);
+            $this->assertEquals('44123456789', $part['to']);
+            $this->assertEquals('23410', $part['network']);
+            $this->assertEquals('0.05', $part['message-price']);
 
             switch ($index) {
                 case 0:
-                    self::assertEquals('00000124', $part['message-id']);
-                    self::assertEquals('1.10', $part['remaining-balance']);
+                    $this->assertEquals('00000124', $part['message-id']);
+                    $this->assertEquals('1.10', $part['remaining-balance']);
                     break;
                 case 1:
-                    self::assertEquals('00000125', $part['message-id']);
-                    self::assertEquals('1.05', $part['remaining-balance']);
+                    $this->assertEquals('00000125', $part['message-id']);
+                    $this->assertEquals('1.05', $part['remaining-balance']);
                     break;
                 case 2:
-                    self::assertEquals('00000126', $part['message-id']);
-                    self::assertEquals('1.00', $part['remaining-balance']);
+                    $this->assertEquals('00000126', $part['message-id']);
+                    $this->assertEquals('1.00', $part['remaining-balance']);
                     break;
             }
         }

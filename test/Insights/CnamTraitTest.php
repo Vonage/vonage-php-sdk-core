@@ -23,10 +23,10 @@ class CnamTraitTest extends TestCase
      */
     public function testArrayAccess($cnam, $inputData): void
     {
-        self::assertEquals($inputData['first_name'], @$cnam['first_name']);
-        self::assertEquals($inputData['last_name'], @$cnam['last_name']);
-        self::assertEquals($inputData['caller_name'], @$cnam['caller_name']);
-        self::assertEquals($inputData['caller_type'], @$cnam['caller_type']);
+        $this->assertEquals($inputData['first_name'], @$cnam['first_name']);
+        $this->assertEquals($inputData['last_name'], @$cnam['last_name']);
+        $this->assertEquals($inputData['caller_name'], @$cnam['caller_name']);
+        $this->assertEquals($inputData['caller_type'], @$cnam['caller_type']);
     }
 
     /**
@@ -37,10 +37,10 @@ class CnamTraitTest extends TestCase
      */
     public function testObjectAccess($cnam, $inputData): void
     {
-        self::assertEquals($inputData['first_name'], $cnam->getFirstName());
-        self::assertEquals($inputData['last_name'], $cnam->getLastName());
-        self::assertEquals($inputData['caller_name'], $cnam->getCallerName());
-        self::assertEquals($inputData['caller_type'], $cnam->getCallerType());
+        $this->assertEquals($inputData['first_name'], $cnam->getFirstName());
+        $this->assertEquals($inputData['last_name'], $cnam->getLastName());
+        $this->assertEquals($inputData['caller_name'], $cnam->getCallerName());
+        $this->assertEquals($inputData['caller_type'], $cnam->getCallerType());
     }
 
     public function cnamProvider(): array

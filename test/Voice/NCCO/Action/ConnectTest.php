@@ -32,7 +32,7 @@ class ConnectTest extends TestCase
 
     public function testSimpleSetup(): void
     {
-        self::assertSame([
+        $this->assertSame([
             'action' => 'connect',
             'endpoint' => [
                 [
@@ -55,13 +55,13 @@ class ConnectTest extends TestCase
             ->setTimeout(10)
             ->setEventWebhook($webhook);
 
-        self::assertSame('15553216547', $action->getFrom());
-        self::assertSame(Connect::MACHINE_CONTINUE, $action->getMachineDetection());
-        self::assertSame(Connect::EVENT_TYPE_SYNCHRONOUS, $action->getEventType());
-        self::assertSame(6000, $action->getLimit());
-        self::assertSame('https://test.domain/ringback.mp3', $action->getRingbackTone());
-        self::assertSame(10, $action->getTimeout());
-        self::assertSame($webhook, $action->getEventWebhook());
+        $this->assertSame('15553216547', $action->getFrom());
+        $this->assertSame(Connect::MACHINE_CONTINUE, $action->getMachineDetection());
+        $this->assertSame(Connect::EVENT_TYPE_SYNCHRONOUS, $action->getEventType());
+        $this->assertSame(6000, $action->getLimit());
+        $this->assertSame('https://test.domain/ringback.mp3', $action->getRingbackTone());
+        $this->assertSame(10, $action->getTimeout());
+        $this->assertSame($webhook, $action->getEventWebhook());
     }
 
     public function testGeneratesCorrectNCCOArray(): void
@@ -77,14 +77,14 @@ class ConnectTest extends TestCase
             ->setEventWebhook($webhook)
             ->toNCCOArray();
 
-        self::assertSame('15553216547', $ncco['from']);
-        self::assertSame(Connect::MACHINE_CONTINUE, $ncco['machineDetection']);
-        self::assertSame(Connect::EVENT_TYPE_SYNCHRONOUS, $ncco['eventType']);
-        self::assertSame(6000, $ncco['limit']);
-        self::assertSame('https://test.domain/ringback.mp3', $ncco['ringbackTone']);
-        self::assertSame(10, $ncco['timeout']);
-        self::assertSame(['https://test.domain/events'], $ncco['eventUrl']);
-        self::assertSame('POST', $ncco['eventMethod']);
+        $this->assertSame('15553216547', $ncco['from']);
+        $this->assertSame(Connect::MACHINE_CONTINUE, $ncco['machineDetection']);
+        $this->assertSame(Connect::EVENT_TYPE_SYNCHRONOUS, $ncco['eventType']);
+        $this->assertSame(6000, $ncco['limit']);
+        $this->assertSame('https://test.domain/ringback.mp3', $ncco['ringbackTone']);
+        $this->assertSame(10, $ncco['timeout']);
+        $this->assertSame(['https://test.domain/events'], $ncco['eventUrl']);
+        $this->assertSame('POST', $ncco['eventMethod']);
     }
 
     public function testJSONSerializesToCorrectStructure(): void
@@ -100,14 +100,14 @@ class ConnectTest extends TestCase
             ->setEventWebhook($webhook)
             ->jsonSerialize();
 
-        self::assertSame('15553216547', $ncco['from']);
-        self::assertSame(Connect::MACHINE_CONTINUE, $ncco['machineDetection']);
-        self::assertSame(Connect::EVENT_TYPE_SYNCHRONOUS, $ncco['eventType']);
-        self::assertSame(6000, $ncco['limit']);
-        self::assertSame('https://test.domain/ringback.mp3', $ncco['ringbackTone']);
-        self::assertSame(10, $ncco['timeout']);
-        self::assertSame(['https://test.domain/events'], $ncco['eventUrl']);
-        self::assertSame('POST', $ncco['eventMethod']);
+        $this->assertSame('15553216547', $ncco['from']);
+        $this->assertSame(Connect::MACHINE_CONTINUE, $ncco['machineDetection']);
+        $this->assertSame(Connect::EVENT_TYPE_SYNCHRONOUS, $ncco['eventType']);
+        $this->assertSame(6000, $ncco['limit']);
+        $this->assertSame('https://test.domain/ringback.mp3', $ncco['ringbackTone']);
+        $this->assertSame(10, $ncco['timeout']);
+        $this->assertSame(['https://test.domain/events'], $ncco['eventUrl']);
+        $this->assertSame('POST', $ncco['eventMethod']);
     }
 
     public function testInvalidMachineDetectionThrowsException(): void

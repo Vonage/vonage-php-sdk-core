@@ -60,12 +60,12 @@ class CollectionTest extends TestCase
 
         $user = $this->collection[$payload];
 
-        self::assertInstanceOf(User::class, $user);
+        $this->assertInstanceOf(User::class, $user);
         $this->vonageClient->send(Argument::any())->shouldNotHaveBeenCalled();
-        self::assertEquals($id, $user->getId());
+        $this->assertEquals($id, $user->getId());
 
         if ($payload instanceof User) {
-            self::assertSame($payload, $user);
+            $this->assertSame($payload, $user);
         }
 
         // Once we call get() the rest of the data should be populated
@@ -90,31 +90,31 @@ class CollectionTest extends TestCase
     public function testGetIsNotLazy($payload, $id): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id) {
-            self::assertRequestUrl('api.nexmo.com', '/beta/users/' . $id, 'GET', $request);
+            $this->assertRequestUrl('api.nexmo.com', '/beta/users/' . $id, 'GET', $request);
             return true;
         }))->willReturn($this->getResponse('user'))->shouldBeCalled();
 
         $user = $this->collection->get($payload);
 
         if ($payload instanceof User) {
-            self::assertSame($payload, $user);
+            $this->assertSame($payload, $user);
         }
     }
 
     public function testCanFetchAllUsers(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            self::assertRequestUrl('api.nexmo.com', '/beta/users', 'GET', $request);
+            $this->assertRequestUrl('api.nexmo.com', '/beta/users', 'GET', $request);
 
             return true;
         }))->willReturn($this->getResponse('multiple_users'))->shouldBeCalled();
 
         $users = $this->collection->fetch();
 
-        self::assertCount(3, $users);
-        self::assertInstanceOf(User::class, $users[0]);
-        self::assertInstanceOf(User::class, $users[1]);
-        self::assertInstanceOf(User::class, $users[2]);
+        $this->assertCount(3, $users);
+        $this->assertInstanceOf(User::class, $users[0]);
+        $this->assertInstanceOf(User::class, $users[1]);
+        $this->assertInstanceOf(User::class, $users[2]);
     }
 
     /**
@@ -126,16 +126,16 @@ class CollectionTest extends TestCase
     public function testCreatePostConversation($payload, $method): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
-            self::assertRequestUrl('api.nexmo.com', '/beta/users', 'POST', $request);
-            self::assertRequestBodyIsJson(json_encode($payload), $request);
+            $this->assertRequestUrl('api.nexmo.com', '/beta/users', 'POST', $request);
+            $this->assertRequestBodyIsJson(json_encode($payload), $request);
 
             return true;
         }))->willReturn($this->getResponse('user', 200));
 
         $user = $this->collection->$method($payload);
 
-        self::assertInstanceOf(User::class, $user);
-        self::assertEquals('USR-aaaaaaaa-bbbb-cccc-dddd-0123456789ab', $user->getId());
+        $this->assertInstanceOf(User::class, $user);
+        $this->assertEquals('USR-aaaaaaaa-bbbb-cccc-dddd-0123456789ab', $user->getId());
     }
 
     /**
@@ -147,8 +147,8 @@ class CollectionTest extends TestCase
     public function testCreatePostUserErrorFromStitch($payload, $method): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
-            self::assertRequestUrl('api.nexmo.com', '/beta/users', 'POST', $request);
-            self::assertRequestBodyIsJson(json_encode($payload), $request);
+            $this->assertRequestUrl('api.nexmo.com', '/beta/users', 'POST', $request);
+            $this->assertRequestBodyIsJson(json_encode($payload), $request);
 
             return true;
         }))->willReturn($this->getResponse('error_stitch', 400));
@@ -158,7 +158,7 @@ class CollectionTest extends TestCase
 
             self::fail('Expected to throw request exception');
         } catch (ClientException\Request $e) {
-            self::assertEquals('the token was rejected', $e->getMessage());
+            $this->assertEquals('the token was rejected', $e->getMessage());
         }
     }
 
@@ -171,8 +171,8 @@ class CollectionTest extends TestCase
     public function testCreatePostUserErrorFromProxy($payload, $method): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
-            self::assertRequestUrl('api.nexmo.com', '/beta/users', 'POST', $request);
-            self::assertRequestBodyIsJson(json_encode($payload), $request);
+            $this->assertRequestUrl('api.nexmo.com', '/beta/users', 'POST', $request);
+            $this->assertRequestBodyIsJson(json_encode($payload), $request);
 
             return true;
         }))->willReturn($this->getResponse('error_proxy', 400));
@@ -182,7 +182,7 @@ class CollectionTest extends TestCase
 
             self::fail('Expected to throw request exception');
         } catch (ClientException\Request $e) {
-            self::assertEquals('Unsupported Media Type', $e->getMessage());
+            $this->assertEquals('Unsupported Media Type', $e->getMessage());
         }
     }
 
@@ -195,8 +195,8 @@ class CollectionTest extends TestCase
     public function testCreatePostCallErrorUnknownFormat($payload, $method): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
-            self::assertRequestUrl('api.nexmo.com', '/beta/users', 'POST', $request);
-            self::assertRequestBodyIsJson(json_encode($payload), $request);
+            $this->assertRequestUrl('api.nexmo.com', '/beta/users', 'POST', $request);
+            $this->assertRequestBodyIsJson(json_encode($payload), $request);
             return true;
         }))->willReturn($this->getResponse('error_unknown_format', 400));
 
@@ -205,7 +205,7 @@ class CollectionTest extends TestCase
 
             self::fail('Expected to throw request exception');
         } catch (ClientException\Request $e) {
-            self::assertEquals("Unexpected error", $e->getMessage());
+            $this->assertEquals("Unexpected error", $e->getMessage());
         }
     }
 

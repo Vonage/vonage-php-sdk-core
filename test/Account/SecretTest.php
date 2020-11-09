@@ -54,13 +54,13 @@ class SecretTest extends TestCase
 
     public function testObjectAccess(): void
     {
-        self::assertEquals('ad6dc56f-07b5-46e1-a527-85530e625800', $this->secret->getId());
-        self::assertEquals('2017-03-02T16:34:49Z', $this->secret->getCreatedAt());
+        $this->assertEquals('ad6dc56f-07b5-46e1-a527-85530e625800', $this->secret->getId());
+        $this->assertEquals('2017-03-02T16:34:49Z', $this->secret->getCreatedAt());
     }
 
     public function testArrayAccess(): void
     {
-        self::assertEquals('ad6dc56f-07b5-46e1-a527-85530e625800', @$this->secret['id']);
-        self::assertEquals('2017-03-02T16:34:49Z', @$this->secret['created_at']);
+        $this->assertEquals('ad6dc56f-07b5-46e1-a527-85530e625800', @$this->secret['id']);
+        $this->assertEquals('2017-03-02T16:34:49Z', @$this->secret['created_at']);
     }
 }

@@ -90,8 +90,8 @@ class ClientTest extends TestCase
         ];
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
-            self::assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
-            self::assertRequestBodyIsJson(json_encode($payload), $request);
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
+            $this->assertRequestBodyIsJson(json_encode($payload), $request);
 
             return true;
         }))->willReturn($this->getResponse('create-outbound-call-success', 201));
@@ -104,10 +104,10 @@ class ClientTest extends TestCase
             ->setMachineDetection(OutboundCall::MACHINE_HANGUP);
         $callData = $this->voiceClient->createOutboundCall($outboundCall);
 
-        self::assertEquals('e46fd8bd-504d-4044-9600-26dd18b41111', $callData->getUuid());
-        self::assertEquals('started', $callData->getStatus());
-        self::assertEquals('outbound', $callData->getDirection());
-        self::assertEquals('2541d01c-253e-48be-a8e0-da4bbe4c3722', $callData->getConversationUuid());
+        $this->assertEquals('e46fd8bd-504d-4044-9600-26dd18b41111', $callData->getUuid());
+        $this->assertEquals('started', $callData->getStatus());
+        $this->assertEquals('outbound', $callData->getDirection());
+        $this->assertEquals('2541d01c-253e-48be-a8e0-da4bbe4c3722', $callData->getConversationUuid());
     }
 
     /**
@@ -140,8 +140,8 @@ class ClientTest extends TestCase
         ];
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
-            self::assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
-            self::assertRequestBodyIsJson(json_encode($payload), $request);
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
+            $this->assertRequestBodyIsJson(json_encode($payload), $request);
 
             return true;
         }))->willReturn($this->getResponse('create-outbound-call-success', 201));
@@ -153,10 +153,10 @@ class ClientTest extends TestCase
             ->setRingingTimer(60);
         $callData = $this->voiceClient->createOutboundCall($outboundCall);
 
-        self::assertEquals('e46fd8bd-504d-4044-9600-26dd18b41111', $callData->getUuid());
-        self::assertEquals('started', $callData->getStatus());
-        self::assertEquals('outbound', $callData->getDirection());
-        self::assertEquals('2541d01c-253e-48be-a8e0-da4bbe4c3722', $callData->getConversationUuid());
+        $this->assertEquals('e46fd8bd-504d-4044-9600-26dd18b41111', $callData->getUuid());
+        $this->assertEquals('started', $callData->getStatus());
+        $this->assertEquals('outbound', $callData->getDirection());
+        $this->assertEquals('2541d01c-253e-48be-a8e0-da4bbe4c3722', $callData->getConversationUuid());
     }
 
     /**
@@ -169,7 +169,7 @@ class ClientTest extends TestCase
         $this->expectExceptionMessage('Bad Request');
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            self::assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
 
             return true;
         }))->willReturn($this->getResponse('error_vapi', 400));
@@ -203,23 +203,23 @@ class ClientTest extends TestCase
     {
         $id = '63f61863-4a51-4f6b-86e1-46edebcf9356';
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id) {
-            self::assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'GET', $request);
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'GET', $request);
             return true;
         }))->willReturn($this->getResponse('call', 200));
 
         $call = $this->voiceClient->get($id);
 
-        self::assertEquals($id, $call->getUuid());
-        self::assertEquals('447700900000', $call->getTo()->getId());
-        self::assertEquals('447700900001', $call->getFrom()->getId());
-        self::assertEquals('started', $call->getStatus());
-        self::assertEquals('outbound', $call->getDirection());
-        self::assertEquals('0.39', $call->getRate());
-        self::assertEquals('23.40', $call->getPrice());
-        self::assertEquals('60', $call->getDuration());
-        self::assertEquals('2020-01-01 12:00:00', $call->getStartTime()->format('Y-m-d H:i:s'));
-        self::assertEquals('2020-01-01 12:00:00', $call->getEndTime()->format('Y-m-d H:i:s'));
-        self::assertEquals('65512', $call->getNetwork());
+        $this->assertEquals($id, $call->getUuid());
+        $this->assertEquals('447700900000', $call->getTo()->getId());
+        $this->assertEquals('447700900001', $call->getFrom()->getId());
+        $this->assertEquals('started', $call->getStatus());
+        $this->assertEquals('outbound', $call->getDirection());
+        $this->assertEquals('0.39', $call->getRate());
+        $this->assertEquals('23.40', $call->getPrice());
+        $this->assertEquals('60', $call->getDuration());
+        $this->assertEquals('2020-01-01 12:00:00', $call->getStartTime()->format('Y-m-d H:i:s'));
+        $this->assertEquals('2020-01-01 12:00:00', $call->getEndTime()->format('Y-m-d H:i:s'));
+        $this->assertEquals('65512', $call->getNetwork());
     }
 
     /**
@@ -232,8 +232,8 @@ class ClientTest extends TestCase
         $payload = ['action' => 'earmuff'];
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
-            self::assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'PUT', $request);
-            self::assertRequestBodyIsJson(json_encode($payload), $request);
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'PUT', $request);
+            $this->assertRequestBodyIsJson(json_encode($payload), $request);
 
             return true;
         }))->willReturn($this->getResponse('empty', 204));
@@ -251,8 +251,8 @@ class ClientTest extends TestCase
         $payload = ['action' => 'earmuff'];
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
-            self::assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'PUT', $request);
-            self::assertRequestBodyIsJson(json_encode($payload), $request);
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'PUT', $request);
+            $this->assertRequestBodyIsJson(json_encode($payload), $request);
 
             return true;
         }))->willReturn($this->getResponse('empty', 204));
@@ -270,8 +270,8 @@ class ClientTest extends TestCase
         $payload = ['action' => 'unearmuff'];
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
-            self::assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'PUT', $request);
-            self::assertRequestBodyIsJson(json_encode($payload), $request);
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'PUT', $request);
+            $this->assertRequestBodyIsJson(json_encode($payload), $request);
 
             return true;
         }))->willReturn($this->getResponse('empty', 204));
@@ -289,8 +289,8 @@ class ClientTest extends TestCase
         $payload = ['action' => 'mute'];
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
-            self::assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'PUT', $request);
-            self::assertRequestBodyIsJson(json_encode($payload), $request);
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'PUT', $request);
+            $this->assertRequestBodyIsJson(json_encode($payload), $request);
 
             return true;
         }))->willReturn($this->getResponse('empty', 204));
@@ -308,8 +308,8 @@ class ClientTest extends TestCase
         $payload = ['action' => 'unmute'];
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
-            self::assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'PUT', $request);
-            self::assertRequestBodyIsJson(json_encode($payload), $request);
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'PUT', $request);
+            $this->assertRequestBodyIsJson(json_encode($payload), $request);
 
             return true;
         }))->willReturn($this->getResponse('empty', 204));
@@ -327,8 +327,8 @@ class ClientTest extends TestCase
         $payload = ['action' => 'hangup'];
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
-            self::assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'PUT', $request);
-            self::assertRequestBodyIsJson(json_encode($payload), $request);
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'PUT', $request);
+            $this->assertRequestBodyIsJson(json_encode($payload), $request);
 
             return true;
         }))->willReturn($this->getResponse('empty', 204));
@@ -357,8 +357,8 @@ class ClientTest extends TestCase
         ];
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
-            self::assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'PUT', $request);
-            self::assertRequestBodyIsJson(json_encode($payload), $request);
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'PUT', $request);
+            $this->assertRequestBodyIsJson(json_encode($payload), $request);
 
             return true;
         }))->willReturn($this->getResponse('empty', 204));
@@ -385,8 +385,8 @@ class ClientTest extends TestCase
         ];
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
-            self::assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'PUT', $request);
-            self::assertRequestBodyIsJson(json_encode($payload), $request);
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'PUT', $request);
+            $this->assertRequestBodyIsJson(json_encode($payload), $request);
 
             return true;
         }))->willReturn($this->getResponse('empty', 204));
@@ -409,16 +409,16 @@ class ClientTest extends TestCase
         ];
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
-            self::assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id . '/stream', 'PUT', $request);
-            self::assertRequestBodyIsJson(json_encode($payload), $request);
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id . '/stream', 'PUT', $request);
+            $this->assertRequestBodyIsJson(json_encode($payload), $request);
 
             return true;
         }))->willReturn($this->getResponse('stream'));
 
         $response = $this->voiceClient->streamAudio($id, $url);
 
-        self::assertEquals($id, $response['uuid']);
-        self::assertEquals('Stream started', $response['message']);
+        $this->assertEquals($id, $response['uuid']);
+        $this->assertEquals('Stream started', $response['message']);
     }
 
     /**
@@ -430,14 +430,14 @@ class ClientTest extends TestCase
         $id = '63f61863-4a51-4f6b-86e1-46edebcf9356';
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id) {
-            self::assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id . '/stream', 'DELETE', $request);
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id . '/stream', 'DELETE', $request);
             return true;
         }))->willReturn($this->getResponse('stream-stopped'));
 
         $response = $this->voiceClient->stopStreamAudio($id);
 
-        self::assertEquals($id, $response['uuid']);
-        self::assertEquals('Stream stopped', $response['message']);
+        $this->assertEquals($id, $response['uuid']);
+        $this->assertEquals('Stream stopped', $response['message']);
     }
 
     /**
@@ -452,8 +452,8 @@ class ClientTest extends TestCase
         ];
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
-            self::assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id . '/talk', 'PUT', $request);
-            self::assertRequestBodyIsJson(json_encode($payload), $request);
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id . '/talk', 'PUT', $request);
+            $this->assertRequestBodyIsJson(json_encode($payload), $request);
 
             return true;
         }))->willReturn($this->getResponse('talk'));
@@ -461,8 +461,8 @@ class ClientTest extends TestCase
         $action = new Talk('This is sample text');
         $response = $this->voiceClient->playTTS($id, $action);
 
-        self::assertEquals($id, $response['uuid']);
-        self::assertEquals('Talk started', $response['message']);
+        $this->assertEquals($id, $response['uuid']);
+        $this->assertEquals('Talk started', $response['message']);
     }
 
     /**
@@ -474,15 +474,15 @@ class ClientTest extends TestCase
         $id = '63f61863-4a51-4f6b-86e1-46edebcf9356';
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id) {
-            self::assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id . '/talk', 'DELETE', $request);
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id . '/talk', 'DELETE', $request);
 
             return true;
         }))->willReturn($this->getResponse('talk-stopped'));
 
         $response = $this->voiceClient->stopTTS($id);
 
-        self::assertEquals($id, $response['uuid']);
-        self::assertEquals('Talk stopped', $response['message']);
+        $this->assertEquals($id, $response['uuid']);
+        $this->assertEquals('Talk stopped', $response['message']);
     }
 
     /**
@@ -495,16 +495,16 @@ class ClientTest extends TestCase
         $payload = ['digits' => '1492'];
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
-            self::assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id . '/dtmf', 'PUT', $request);
-            self::assertRequestBodyIsJson(json_encode($payload), $request);
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id . '/dtmf', 'PUT', $request);
+            $this->assertRequestBodyIsJson(json_encode($payload), $request);
 
             return true;
         }))->willReturn($this->getResponse('dtmf'));
 
         $response = $this->voiceClient->playDTMF($id, $payload['digits']);
 
-        self::assertEquals($id, $response['uuid']);
-        self::assertEquals('DTMF sent', $response['message']);
+        $this->assertEquals($id, $response['uuid']);
+        $this->assertEquals('DTMF sent', $response['message']);
     }
 
     /**
@@ -519,11 +519,11 @@ class ClientTest extends TestCase
         $data = json_decode($response->getBody()->getContents(), true);
         $response->getBody()->rewind();
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            self::assertRequestUrl('api.nexmo.com', '/v1/calls', 'GET', $request);
-            self::assertRequestQueryContains('page_size', '10', $request);
-            self::assertRequestQueryContains('record_index', '0', $request);
-            self::assertRequestQueryContains('order', 'asc', $request);
-            self::assertRequestQueryContains('status', VoiceFilter::STATUS_STARTED, $request);
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'GET', $request);
+            $this->assertRequestQueryContains('page_size', '10', $request);
+            $this->assertRequestQueryContains('record_index', '0', $request);
+            $this->assertRequestQueryContains('order', 'asc', $request);
+            $this->assertRequestQueryContains('status', VoiceFilter::STATUS_STARTED, $request);
 
             return true;
         }))->willReturn($response);
@@ -532,11 +532,11 @@ class ClientTest extends TestCase
         $filter->setStatus(VoiceFilter::STATUS_STARTED);
         $response = $this->voiceClient->search($filter);
 
-        self::assertCount(1, $response);
+        $this->assertCount(1, $response);
 
         $call = $response->current();
 
-        self::assertEquals($data['_embedded']['calls'][0]['uuid'], $call->getUuid());
+        $this->assertEquals($data['_embedded']['calls'][0]['uuid'], $call->getUuid());
     }
 
     /**

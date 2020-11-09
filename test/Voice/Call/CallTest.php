@@ -45,17 +45,17 @@ class CallTest extends TestCase
     {
         $params = $this->call->getParams();
 
-        self::assertArrayHasKey('to', $params);
-        self::assertArrayHasKey('from', $params);
-        self::assertArrayHasKey('answer_url', $params);
-        self::assertEquals($this->to, $params['to']);
-        self::assertEquals($this->from, $params['from']);
-        self::assertEquals($this->url, $params['answer_url']);
+        $this->assertArrayHasKey('to', $params);
+        $this->assertArrayHasKey('from', $params);
+        $this->assertArrayHasKey('answer_url', $params);
+        $this->assertEquals($this->to, $params['to']);
+        $this->assertEquals($this->from, $params['from']);
+        $this->assertEquals($this->url, $params['answer_url']);
     }
 
     public function testFromOptional(): void
     {
-        self::assertArrayNotHasKey('from', (new Call($this->url, $this->to))->getParams());
+        $this->assertArrayNotHasKey('from', (new Call($this->url, $this->to))->getParams());
     }
 
     public function testMachine(): void
@@ -63,24 +63,24 @@ class CallTest extends TestCase
         $this->call->setMachineDetection();
         $params = $this->call->getParams();
 
-        self::assertArrayHasKey('machine_detection', $params);
-        self::assertArrayNotHasKey('machine_timeout', $params);
-        self::assertEquals('hangup', $params['machine_detection']);
+        $this->assertArrayHasKey('machine_detection', $params);
+        $this->assertArrayNotHasKey('machine_timeout', $params);
+        $this->assertEquals('hangup', $params['machine_detection']);
 
         $this->call->setMachineDetection(true, 100);
         $params = $this->call->getParams();
 
-        self::assertArrayHasKey('machine_detection', $params);
-        self::assertArrayHasKey('machine_timeout', $params);
-        self::assertEquals('hangup', $params['machine_detection']);
-        self::assertEquals(100, $params['machine_timeout']);
+        $this->assertArrayHasKey('machine_detection', $params);
+        $this->assertArrayHasKey('machine_timeout', $params);
+        $this->assertEquals('hangup', $params['machine_detection']);
+        $this->assertEquals(100, $params['machine_timeout']);
 
         $this->call->setMachineDetection(false);
         $params = $this->call->getParams();
 
-        self::assertArrayHasKey('machine_detection', $params);
-        self::assertArrayNotHasKey('machine_timeout', $params);
-        self::assertEquals('true', $params['machine_detection']);
+        $this->assertArrayHasKey('machine_detection', $params);
+        $this->assertArrayNotHasKey('machine_timeout', $params);
+        $this->assertEquals('true', $params['machine_detection']);
     }
 
     /**
@@ -91,24 +91,24 @@ class CallTest extends TestCase
         $this->call->$method('http://example.com');
         $params = $this->call->getParams();
 
-        self::assertArrayHasKey($param, $params);
-        self::assertEquals('http://example.com', $params[$param]);
-        self::assertArrayNotHasKey($param_method, $params);
+        $this->assertArrayHasKey($param, $params);
+        $this->assertEquals('http://example.com', $params[$param]);
+        $this->assertArrayNotHasKey($param_method, $params);
 
         $this->call->$method('http://example.com', 'POST');
         $params = $this->call->getParams();
 
-        self::assertArrayHasKey($param, $params);
-        self::assertEquals('http://example.com', $params[$param]);
-        self::assertArrayHasKey($param_method, $params);
-        self::assertEquals('POST', $params[$param_method]);
+        $this->assertArrayHasKey($param, $params);
+        $this->assertEquals('http://example.com', $params[$param]);
+        $this->assertArrayHasKey($param_method, $params);
+        $this->assertEquals('POST', $params[$param_method]);
 
         $this->call->$method('http://example.com');
         $params = $this->call->getParams();
 
-        self::assertArrayHasKey($param, $params);
-        self::assertEquals('http://example.com', $params[$param]);
-        self::assertArrayNotHasKey($param_method, $params);
+        $this->assertArrayHasKey($param, $params);
+        $this->assertEquals('http://example.com', $params[$param]);
+        $this->assertArrayNotHasKey($param_method, $params);
     }
 
     /**

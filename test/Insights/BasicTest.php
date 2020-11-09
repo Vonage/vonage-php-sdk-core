@@ -24,13 +24,13 @@ class BasicTest extends TestCase
      */
     public function testArrayAccess($basic, $inputData): void
     {
-        self::assertEquals($inputData['request_id'], @$basic['request_id']);
-        self::assertEquals($inputData['international_format_number'], @$basic['international_format_number']);
-        self::assertEquals($inputData['national_format_number'], @$basic['national_format_number']);
-        self::assertEquals($inputData['country_code'], @$basic['country_code']);
-        self::assertEquals($inputData['country_code_iso3'], @$basic['country_code_iso3']);
-        self::assertEquals($inputData['country_name'], @$basic['country_name']);
-        self::assertEquals($inputData['country_prefix'], @$basic['country_prefix']);
+        $this->assertEquals($inputData['request_id'], @$basic['request_id']);
+        $this->assertEquals($inputData['international_format_number'], @$basic['international_format_number']);
+        $this->assertEquals($inputData['national_format_number'], @$basic['national_format_number']);
+        $this->assertEquals($inputData['country_code'], @$basic['country_code']);
+        $this->assertEquals($inputData['country_code_iso3'], @$basic['country_code_iso3']);
+        $this->assertEquals($inputData['country_name'], @$basic['country_name']);
+        $this->assertEquals($inputData['country_prefix'], @$basic['country_prefix']);
     }
 
     /**
@@ -41,13 +41,13 @@ class BasicTest extends TestCase
      */
     public function testObjectAccess($basic, $inputData): void
     {
-        self::assertEquals($inputData['request_id'], $basic->getRequestId());
-        self::assertEquals($inputData['international_format_number'], $basic->getInternationalFormatNumber());
-        self::assertEquals($inputData['national_format_number'], $basic->getNationalFormatNumber());
-        self::assertEquals($inputData['country_code'], $basic->getCountryCode());
-        self::assertEquals($inputData['country_code_iso3'], $basic->getCountryCodeISO3());
-        self::assertEquals($inputData['country_name'], $basic->getCountryName());
-        self::assertEquals($inputData['country_prefix'], $basic->getCountryPrefix());
+        $this->assertEquals($inputData['request_id'], $basic->getRequestId());
+        $this->assertEquals($inputData['international_format_number'], $basic->getInternationalFormatNumber());
+        $this->assertEquals($inputData['national_format_number'], $basic->getNationalFormatNumber());
+        $this->assertEquals($inputData['country_code'], $basic->getCountryCode());
+        $this->assertEquals($inputData['country_code_iso3'], $basic->getCountryCodeISO3());
+        $this->assertEquals($inputData['country_name'], $basic->getCountryName());
+        $this->assertEquals($inputData['country_prefix'], $basic->getCountryPrefix());
     }
 
     public function basicTestProvider(): array

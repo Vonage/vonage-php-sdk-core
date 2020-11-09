@@ -24,13 +24,13 @@ class RecordTest extends TestCase
             'eventMethod' => 'GET'
         ]);
 
-        self::assertSame('GET', $action->getEventWebhook()->getMethod());
-        self::assertSame('GET', $action->toNCCOArray()['eventMethod']);
+        $this->assertSame('GET', $action->getEventWebhook()->getMethod());
+        $this->assertSame('GET', $action->toNCCOArray()['eventMethod']);
     }
 
     public function testJsonSerializeLooksCorrect(): void
     {
-        self::assertSame([
+        $this->assertSame([
             'action' => 'record',
             'format' => 'mp3',
             'timeOut' => '7200',
@@ -42,18 +42,18 @@ class RecordTest extends TestCase
     {
         $action = new Record();
 
-        self::assertNull($action->getSplit());
-        self::assertNull($action->getChannels());
+        $this->assertNull($action->getSplit());
+        $this->assertNull($action->getChannels());
 
         $action->setChannels(2);
 
-        self::assertSame(Record::SPLIT, $action->getSplit());
-        self::assertSame(2, $action->getChannels());
+        $this->assertSame(Record::SPLIT, $action->getSplit());
+        $this->assertSame(2, $action->getChannels());
 
         $action->setChannels(1);
 
-        self::assertNull($action->getSplit());
-        self::assertNull($action->getChannels());
+        $this->assertNull($action->getSplit());
+        $this->assertNull($action->getChannels());
     }
 
     public function testCannotSetTooManyChannels(): void

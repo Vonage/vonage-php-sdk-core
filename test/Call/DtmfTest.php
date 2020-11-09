@@ -64,7 +64,7 @@ class DtmfTest extends TestCase
 
     public function testHasId(): void
     {
-        self::assertSame($this->id, $this->entity->getId());
+        $this->assertSame($this->id, $this->entity->getId());
     }
 
     /**
@@ -79,7 +79,7 @@ class DtmfTest extends TestCase
         $this->entity->$setter($value);
         $data = $this->entity->jsonSerialize();
 
-        self::assertEquals($expected, $data[$param]);
+        $this->assertEquals($expected, $data[$param]);
     }
 
     /**
@@ -92,7 +92,7 @@ class DtmfTest extends TestCase
         $this->entity[$param] = $value;
         $data = $this->entity->jsonSerialize();
 
-        self::assertEquals($value, $data[$param]);
+        $this->assertEquals($value, $data[$param]);
     }
 
     /**
@@ -119,22 +119,22 @@ class DtmfTest extends TestCase
         $entity = $this->entity;
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($callId, $entity) {
-            self::assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/dtmf', 'PUT', $request);
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/dtmf', 'PUT', $request);
             $expected = json_decode(json_encode($entity), true);
 
             $request->getBody()->rewind();
             $body = json_decode($request->getBody()->getContents(), true);
             $request->getBody()->rewind();
 
-            self::assertEquals($expected, $body);
+            $this->assertEquals($expected, $body);
             return true;
         }))->willReturn($this->getResponse('dtmf', 200));
 
         $event = @$this->entity->put();
 
-        self::assertInstanceOf(Event::class, $event);
-        self::assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
-        self::assertSame('DTMF sent', $event['message']);
+        $this->assertInstanceOf(Event::class, $event);
+        $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
+        $this->assertSame('DTMF sent', $event['message']);
     }
 
     /**
@@ -153,22 +153,22 @@ class DtmfTest extends TestCase
         $callId = $this->id;
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($callId, $entity) {
-            self::assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/dtmf', 'PUT', $request);
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/dtmf', 'PUT', $request);
             $expected = json_decode(json_encode($entity), true);
 
             $request->getBody()->rewind();
             $body = json_decode($request->getBody()->getContents(), true);
             $request->getBody()->rewind();
 
-            self::assertEquals($expected, $body);
+            $this->assertEquals($expected, $body);
             return true;
         }))->willReturn($this->getResponse('dtmf', 200));
 
         $event = @$this->entity->put($entity);
 
-        self::assertInstanceOf(Event::class, $event);
-        self::assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
-        self::assertSame('DTMF sent', $event['message']);
+        $this->assertInstanceOf(Event::class, $event);
+        $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
+        $this->assertSame('DTMF sent', $event['message']);
     }
 
     /**
@@ -183,7 +183,7 @@ class DtmfTest extends TestCase
 
         $this->vonageClient->send(Argument::any())->willReturn($this->getResponse('dtmf', 200));
         $test = $object();
-        self::assertSame($this->entity, $test);
+        $this->assertSame($this->entity, $test);
 
         $this->vonageClient->send(Argument::any())->shouldNotHaveBeenCalled();
 
@@ -193,9 +193,9 @@ class DtmfTest extends TestCase
 
         $event = @$object($entity);
 
-        self::assertInstanceOf(Event::class, $event);
-        self::assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
-        self::assertSame('DTMF sent', $event['message']);
+        $this->assertInstanceOf(Event::class, $event);
+        $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
+        $this->assertSame('DTMF sent', $event['message']);
 
         $this->vonageClient->send(Argument::any())->shouldHaveBeenCalled();
     }

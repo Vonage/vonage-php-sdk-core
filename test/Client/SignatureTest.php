@@ -49,7 +49,7 @@ class SignatureTest extends TestCase
         $secret = '71efab63122f1d179f51c46bac838fb5';
         $signature = new Signature($data, $secret, $algorithm);
 
-        self::assertEquals($expected, $signature->getSignature());
+        $this->assertEquals($expected, $signature->getSignature());
     }
 
     public function hmacSignatureProvider(): array
@@ -84,21 +84,21 @@ class SignatureTest extends TestCase
         $signature = new Signature($params, $secret, $algo);
 
         //the parameters should ne be changed
-        self::assertEquals($params, $signature->getParams());
+        $this->assertEquals($params, $signature->getParams());
 
         //the signature should be generated correctly
-        self::assertEquals($sig, $signature->getSignature());
+        $this->assertEquals($sig, $signature->getSignature());
 
         //the signed params should include a sig and timestamp
-        self::assertArrayHasKey('timestamp', $signature->getSignedParams());
-        self::assertArrayHasKey('sig', $signature->getSignedParams());
+        $this->assertArrayHasKey('timestamp', $signature->getSignedParams());
+        $this->assertArrayHasKey('sig', $signature->getSignedParams());
 
-        self::assertSame($sig, (string)$signature);
+        $this->assertSame($sig, (string)$signature);
 
         //signature can validate a string signature, or a set of params that includes a signature
-        self::assertTrue($signature->check($sig));
+        $this->assertTrue($signature->check($sig));
         if (isset($params['sig'])) {
-            self::assertTrue($signature->check($params));
+            $this->assertTrue($signature->check($params));
         }
     }
 

@@ -23,20 +23,20 @@ class WebsocketTest extends TestCase
 
     public function testSetsURLAtCreation(): void
     {
-        self::assertSame($this->uri, (new Websocket($this->uri))->getId());
+        $this->assertSame($this->uri, (new Websocket($this->uri))->getId());
     }
 
     public function testCanAddHeader(): void
     {
         $endpoint = (new Websocket($this->uri))->addHeader('key', 'value');
 
-        self::assertSame($this->uri, $endpoint->getId());
-        self::assertSame(['key' => 'value'], $endpoint->getHeaders());
+        $this->assertSame($this->uri, $endpoint->getId());
+        $this->assertSame(['key' => 'value'], $endpoint->getHeaders());
     }
 
     public function testFactoryCreatesWebsocketEndpoint(): void
     {
-        self::assertSame($this->uri, (Websocket::factory($this->uri))->getId());
+        $this->assertSame($this->uri, (Websocket::factory($this->uri))->getId());
     }
 
     public function testFactoryCreatesAdditionalOptions(): void
@@ -46,14 +46,14 @@ class WebsocketTest extends TestCase
             'content-type' => Websocket::TYPE_16000
         ]);
 
-        self::assertSame($this->uri, $endpoint->getId());
-        self::assertSame(['key' => 'value'], $endpoint->getHeaders());
-        self::assertSame(Websocket::TYPE_16000, $endpoint->getContentType());
+        $this->assertSame($this->uri, $endpoint->getId());
+        $this->assertSame(['key' => 'value'], $endpoint->getHeaders());
+        $this->assertSame(Websocket::TYPE_16000, $endpoint->getContentType());
     }
 
     public function testToArrayHasCorrectStructure(): void
     {
-        self::assertSame([
+        $this->assertSame([
             'type' => 'websocket',
             'uri' => $this->uri,
             'content-type' => Websocket::TYPE_8000
@@ -64,7 +64,7 @@ class WebsocketTest extends TestCase
     {
         $headers = ['key' => 'value'];
 
-        self::assertSame([
+        $this->assertSame([
             'type' => 'websocket',
             'uri' => $this->uri,
             'content-type' => Websocket::TYPE_8000,
@@ -74,7 +74,7 @@ class WebsocketTest extends TestCase
 
     public function testSerializesToJSONCorrectly(): void
     {
-        self::assertSame([
+        $this->assertSame([
             'type' => 'websocket',
             'uri' => $this->uri,
             'content-type' => Websocket::TYPE_8000
