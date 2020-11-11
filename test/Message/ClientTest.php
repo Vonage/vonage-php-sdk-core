@@ -231,9 +231,6 @@ class ClientTest extends TestCase
      */
     public function testCanGetMessageWithMessageObject(): void
     {
-        // @todo Try to find the cause for the malfunction
-        self::markTestSkipped('Not working for some reason');
-
         $message = new Message('02000000D912945A');
         $response = $this->getResponse('get-outbound');
 
@@ -244,7 +241,10 @@ class ClientTest extends TestCase
         }))->willReturn($response);
 
         $messages = $this->messageClient->get($message);
-        $body = json_decode($response->getBody(), true);
+
+        // The response was already read, so have to rewind
+        $response->getBody()->rewind();
+        $body = json_decode($response->getBody()->getContents(), true);
 
         $this->assertCount($body['count'], $messages);
         $this->assertSame($body['items'][0]['message-id'], $messages[0]->getMessageId());
@@ -257,9 +257,6 @@ class ClientTest extends TestCase
      */
     public function testCanGetInboundMessage(): void
     {
-        // @todo Try to find the cause for the malfunction
-        self::markTestSkipped('Not working for some reason');
-
         $message = new Message('0B00000053FFB40F');
         $response = $this->getResponse('get-inbound');
 
@@ -270,7 +267,10 @@ class ClientTest extends TestCase
         }))->willReturn($response);
 
         $messages = $this->messageClient->get($message);
-        $body = json_decode($response->getBody(), true);
+
+        // The response was already read, so need to rewind
+        $response->getBody()->rewind();
+        $body = json_decode($response->getBody()->getContents(), true);
 
         $this->assertCount($body['count'], $messages);
         $this->assertSame($body['items'][0]['message-id'], $messages[0]->getMessageId());
@@ -326,9 +326,6 @@ class ClientTest extends TestCase
      */
     public function testCanGetMessageWithStringID(): void
     {
-        // @todo Try to find the cause for the malfunction
-        self::markTestSkipped('Not working for some reason');
-
         $messageID = '02000000D912945A';
         $response = $this->getResponse('get-outbound');
 
@@ -339,7 +336,10 @@ class ClientTest extends TestCase
         }))->willReturn($response);
 
         $messages = $this->messageClient->get($messageID);
-        $body = json_decode($response->getBody(), true);
+
+        // The response was already read, so need to rewind
+        $response->getBody()->rewind();
+        $body = json_decode($response->getBody()->getContents(), true);
 
         $this->assertCount($body['count'], $messages);
         $this->assertSame($body['items'][0]['message-id'], $messages[0]->getMessageId());
@@ -352,9 +352,6 @@ class ClientTest extends TestCase
      */
     public function testCanGetMessageWithArrayOfIDs(): void
     {
-        // @todo Try to find the cause for the malfunction
-        self::markTestSkipped('Not working for some reason');
-
         $messageIDs = ['02000000D912945A'];
         $response = $this->getResponse('get-outbound');
 
@@ -365,7 +362,10 @@ class ClientTest extends TestCase
         }))->willReturn($response);
 
         $messages = $this->messageClient->get($messageIDs);
-        $body = json_decode($response->getBody(), true);
+
+        // The response was already read, so need to rewind
+        $response->getBody()->rewind();
+        $body = json_decode($response->getBody()->getContents(), true);
 
         $this->assertCount($body['count'], $messages);
         $this->assertSame($body['items'][0]['message-id'], $messages[0]->getMessageId());
@@ -378,9 +378,6 @@ class ClientTest extends TestCase
      */
     public function testCanGetMessageWithQuery(): void
     {
-        // @todo Try to find the cause for the malfunction
-        self::markTestSkipped('Not working for some reason');
-
         $query = new Query(new DateTime('2016-05-19'), '14845551212');
         $response = $this->getResponse('get-outbound');
 
@@ -392,7 +389,10 @@ class ClientTest extends TestCase
         }))->willReturn($response);
 
         $messages = $this->messageClient->get($query);
-        $body = json_decode($response->getBody(), true);
+
+        // The response was already read, so need to rewind
+        $response->getBody()->rewind();
+        $body = json_decode($response->getBody()->getContents(), true);
 
         $this->assertCount($body['count'], $messages);
         $this->assertSame($body['items'][0]['message-id'], $messages[0]->getMessageId());
