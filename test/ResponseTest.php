@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace VonageTest;
 
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Vonage\Response;
 use Vonage\Response\Message;
@@ -62,5 +63,13 @@ class ResponseTest extends TestCase
         }
 
         $this->assertEquals($this->response->count(), $count);
+    }
+
+    public function testThrowExceptionWhenNonStringPassed()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('expected response data to be a string');
+
+        new Response(4);
     }
 }

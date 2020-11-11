@@ -13,6 +13,7 @@ namespace Vonage;
 
 use Countable;
 use Iterator;
+use InvalidArgumentException;
 use Vonage\Response\Message;
 
 use function json_decode;
@@ -38,8 +39,16 @@ class Response implements Countable, Iterator
      */
     protected $position = 0;
 
-    public function __construct(string $data)
+    /**
+     * @todo Remove manual test, and throw JSON error instead in next major release
+     * @var string $data
+     */
+    public function __construct($data)
     {
+        if (!is_string($data)) {
+            throw new InvalidArgumentException('expected response data to be a string');
+        }
+
         $this->data = json_decode($data, true);
     }
 
