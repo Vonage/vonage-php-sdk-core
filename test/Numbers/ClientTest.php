@@ -425,8 +425,8 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('post'));
 
-        //$number = new Number('1415550100', 'US');
-        @$this->numberClient->purchase('1415550100', 'US');
+        $number = new Number('1415550100', 'US');
+        $this->numberClient->purchase($number);
 
         // There's nothing to assert here as we don't do anything with the response.
         // If there's no exception thrown, everything is fine!
