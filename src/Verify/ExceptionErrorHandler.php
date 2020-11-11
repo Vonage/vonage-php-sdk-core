@@ -24,8 +24,8 @@ use function json_decode;
 class ExceptionErrorHandler
 {
     /**
+     * @todo This should throw a Server exception instead of Request, fix next major release
      * @throws Request
-     * @throws Server
      */
     public function __invoke(ResponseInterface $response, RequestInterface $request)
     {
@@ -53,7 +53,7 @@ class ExceptionErrorHandler
                 break;
             case '5':
             default:
-                $e = new Server($data['error_text'], (int)$data['status']);
+                $e = new Request($data['error_text'], (int)$data['status']);
                 $e->setEntity($data);
                 throw $e;
         }
