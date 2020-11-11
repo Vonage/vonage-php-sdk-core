@@ -134,7 +134,7 @@ class ClientTest extends TestCase
         $this->expectExceptionMessage($expectedMessage);
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            return $request instanceof RequestInterface;
+            return true;
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse($response, $code));
 
         $this->redact->transaction('ABC123', 'sms');

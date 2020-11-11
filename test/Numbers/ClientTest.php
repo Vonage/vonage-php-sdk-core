@@ -591,7 +591,7 @@ class ClientTest extends TestCase
             return $request->getUri()->getPath() === '/account/numbers';
         }))->willReturn($this->getResponse('single'));
 
-    // Then we get a POST request to cancel
+        // Then we get a POST request to cancel
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             if ($request->getUri()->getPath() === '/number/cancel') {
                 $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
