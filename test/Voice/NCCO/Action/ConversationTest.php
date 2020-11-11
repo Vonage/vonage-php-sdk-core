@@ -33,9 +33,10 @@ class ConversationTest extends TestCase
 
         $this->assertSame(['https://test.domain/hold.mp3'], $data['musicOnHoldUrl']);
 
-        Conversation::factory('my-conversation', ['musicOnHoldUrl' => 'https://test.domain/hold.mp3']);
+        $secondAction = Conversation::factory('my-conversation', ['musicOnHoldUrl' => 'https://test.domain/hold2.mp3']);
+        $newData = $secondAction->toNCCOArray();
 
-        $this->assertSame(['https://test.domain/hold.mp3'], $data['musicOnHoldUrl']);
+        $this->assertSame(['https://test.domain/hold2.mp3'], $newData['musicOnHoldUrl']);
     }
 
     public function testCanAddIndividualSpeakers(): void
