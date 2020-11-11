@@ -18,8 +18,8 @@ class NetworkTest extends TestCase
     {
         $network = new Network('12345', 'Demo Network');
 
-        $this->assertEquals('12345', $network['network_code']);
-        $this->assertEquals('Demo Network', $network['network_name']);
+        $this->assertEquals('12345', @$network['network_code']);
+        $this->assertEquals('Demo Network', @$network['network_name']);
     }
 
     public function testNetworkGetters(): void
