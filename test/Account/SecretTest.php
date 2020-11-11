@@ -27,7 +27,7 @@ class SecretTest extends TestCase
      */
     public function setUp(): void
     {
-        $this->secret = new Secret([
+        $this->secret = @Secret::fromApi([
             'id' => 'ad6dc56f-07b5-46e1-a527-85530e625800',
             'created_at' => '2017-03-02T16:34:49Z',
             '_links' => [

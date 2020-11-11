@@ -78,7 +78,7 @@ class SecretCollectionTest extends TestCase
         $this->assertEquals($this->links, $this->collection->getLinks());
 
         $secrets = array_map(static function ($v) {
-            return new Secret($v);
+            return @Secret::fromApi($v);
         }, $this->secrets);
 
         $this->assertEquals($secrets, $this->collection->getSecrets());
@@ -92,7 +92,7 @@ class SecretCollectionTest extends TestCase
         $this->assertEquals($this->links, @$this->collection['_links']);
 
         $secrets = array_map(static function ($v) {
-            return new Secret($v);
+            return @Secret::fromApi($v);
         }, $this->secrets);
 
         $this->assertEquals($secrets, @$this->collection['secrets']);
