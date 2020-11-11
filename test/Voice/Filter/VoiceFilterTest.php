@@ -87,4 +87,22 @@ class VoiceFilterTest extends TestCase
 
         (new VoiceFilter())->setOrder('foo');
     }
+
+    public function testStartDateTimezoneIsSwitchedToUTC()
+    {
+        $filter = new VoiceFilter();
+        $filter->setDateStart(new DateTimeImmutable('2020-01-01', new DateTimeZone('America/New_York')));
+
+        $startDate = $filter->getDateStart();
+        $this->assertSame('Z', $startDate->getTimezone()->getName());
+    }
+
+    public function testEndDateTimezoneIsSwitchedToUTC()
+    {
+        $filter = new VoiceFilter();
+        $filter->setDateEnd(new DateTimeImmutable('2020-01-01', new DateTimeZone('America/New_York')));
+
+        $startDate = $filter->getDateEnd();
+        $this->assertSame('Z', $startDate->getTimezone()->getName());
+    }
 }

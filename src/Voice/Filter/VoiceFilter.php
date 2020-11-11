@@ -120,7 +120,7 @@ class VoiceFilter implements FilterInterface
      */
     public function setDateStart(DateTimeImmutable $dateStart): self
     {
-        $dateStart->setTimezone(new DateTimeZone('Z'));
+        $dateStart = $dateStart->setTimezone(new DateTimeZone('Z'));
         $this->dateStart = $dateStart;
 
         return $this;
@@ -136,7 +136,7 @@ class VoiceFilter implements FilterInterface
      */
     public function setDateEnd(DateTimeImmutable $dateEnd): self
     {
-        $dateEnd->setTimezone(new DateTimeZone('Z'));
+        $dateEnd = $dateEnd->setTimezone(new DateTimeZone('Z'));
         $this->dateEnd = $dateEnd;
 
         return $this;
