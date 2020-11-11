@@ -113,7 +113,7 @@ class ClientTest extends TestCase
         $this->expectException(RequestException::class);
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            return $request instanceof RequestInterface;
+            return true;
         }))->willReturn($this->getResponse('error'));
 
         $this->insightsClient->basic('14155550100');
@@ -130,7 +130,7 @@ class ClientTest extends TestCase
         $this->expectException(RequestException::class);
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            return $request instanceof RequestInterface;
+            return true;
         }))->willReturn($this->getResponse('error', 401));
 
         $this->insightsClient->basic('14155550100');
@@ -147,7 +147,7 @@ class ClientTest extends TestCase
         $this->expectException(ServerException::class);
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            return $request instanceof RequestInterface;
+            return true;
         }))->willReturn($this->getResponse('error', 502));
 
         $this->insightsClient->basic('14155550100');
