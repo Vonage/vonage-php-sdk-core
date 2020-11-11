@@ -897,8 +897,8 @@ class ClientTest extends TestCase
             'type' => '2fa'
         ];
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
-            return $request instanceof Request && isset($args);
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            return true;
         }))->willReturn($this->getResponse('error-2fa'));
 
         $this->expectException(ClientException\Request::class);
