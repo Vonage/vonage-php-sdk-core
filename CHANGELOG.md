@@ -1,9 +1,4 @@
-# 2.5.0
-
-### Changed
-
-- #260 - Swapped out `ocramius/package-versions` for `composer/package-versions-deprecated` to work with Composer 2
-# 2.4.2
+# 2.6.0
 
 ### Changed
 
@@ -30,6 +25,12 @@
 * #257 Fixed namespaces (Zend => Laminas, Nexmo => Vonage)
 * #257 Fixed condition in Verify\Request::setCodeLength
 * #257 Fixed typos and some wording in README.md
+
+# 2.5.0
+
+### Changed
+
+- #260 - Swapped out `ocramius/package-versions` for `composer/package-versions-deprecated` to work with Composer 2
 
 # 2.4.1
 
