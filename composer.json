@@ -3,33 +3,17 @@
   "type": "library",
   "description": "PHP Client for using Vonage's API.",
   "homepage": "https://developer.nexmo.com",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "license": "Apache-2.0",
   "authors": [
-    {
-      "name": "Tim Lytle",
-      "email": "tim@nexmo.com",
-      "homepage": "http://twitter.com/tjlytle",
-      "role": "Developer"
-    },
-    {
-      "name": "Michael Heap",
-      "email": "michael.heap@vonage.com",
-      "role": "Developer"
-    },
-    {
-      "name": "Lorna Mitchell",
-      "email": "lorna.mitchell@vonage.com",
-      "role": "Developer"
-    },
     {
       "name": "Chris Tankersley",
       "email": "chris.tankersley@vonage.com",
       "role": "Developer"
     },
     {
-      "name": "Sascha Greuel",
-      "email": "hello@1-2.dev",
+      "name": "Lorna Mitchell",
+      "email": "lorna.mitchell@vonage.com",
       "role": "Developer"
     }
   ],
