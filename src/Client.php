@@ -345,10 +345,17 @@ class Client
                 $body->write(http_build_query($params, '', '&'));
                 break;
             default:
-                $query = [];
-                parse_str($request->getUri()->getQuery(), $query);
-                $query = array_merge($query, $credentials->asArray());
-                $request = $request->withUri($request->getUri()->withQuery(http_build_query($query)));
+                if (static::requiresBasicAuth($request)) {
+                    $c = $credentials->asArray();
+                    $cx = base64_encode($c['api_key'] . ':' . $c['api_secret']);
+
+                    $request = $request->withHeader('Authorization', 'Basic ' . $cx);
+                } else {
+                    $query = [];
+                    parse_str($request->getUri()->getQuery(), $query);
+                    $query = array_merge($query, $credentials->asArray());
+                    $request = $request->withUri($request->getUri()->withQuery(http_build_query($query)));
+                }
                 break;
         }
 
