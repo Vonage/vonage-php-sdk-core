@@ -1,39 +1,50 @@
 <?php
+
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
+
+declare(strict_types=1);
 
 namespace Vonage\Entity;
 
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use RuntimeException;
+
 /**
- * Class Psr7Trait
+ * Class NoRequestResponseTrait
  *
  * Allow an entity to contain last request / response objects.
- * 
+ *
  * @deprecated This information will no longer be available at the model level but the API client level
  */
 trait NoRequestResponseTrait
 {
-    public function setResponse(\Psr\Http\Message\ResponseInterface $response)
+    /**
+     * @param ResponseInterface $response deprecated
+     */
+    public function setResponse(ResponseInterface $response): void
     {
-        throw new \RuntimeException(__CLASS__ . ' does not support request / response');
+        throw new RuntimeException(__CLASS__ . ' does not support request / response');
     }
 
-    public function setRequest(\Psr\Http\Message\RequestInterface $request)
+    /**
+     * @param RequestInterface $request deprecated
+     */
+    public function setRequest(RequestInterface $request): void
     {
-        throw new \RuntimeException(__CLASS__ . ' does not support request / response');
+        throw new RuntimeException(__CLASS__ . ' does not support request / response');
     }
 
-    public function getRequest()
+    public function getRequest(): void
     {
-        return null;
     }
 
-    public function getResponse()
+    public function getResponse(): void
     {
-        return null;
     }
 }

@@ -1,39 +1,43 @@
 <?php
+
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
+
+declare(strict_types=1);
 
 namespace VonageTest\Message;
 
-use Vonage\Message\Message;
-use Zend\Diactoros\Response;
-use Zend\Diactoros\ServerRequest;
+use DateTime;
+use Exception;
+use Laminas\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
+use Vonage\Message\Message;
+
+use function fopen;
 
 /**
  * Test that split messages allow access to all the underlying messages. The response from sending a message is the
  * only time a message may contain multiple 'parts'. When fetched from the API, each message is separate.
- *
  */
 class FetchedMessageTest extends TestCase
 {
-    protected $to   = '14845551212';
+    protected $to = '14845551212';
     protected $from = '16105551212';
     protected $text = 'this is test text';
-
-    protected $set = array('to', 'from', 'text');
+    protected $set = ['to', 'from', 'text'];
 
     /**
-     * @var \Vonage\Message\Message
+     * @var Message
      */
     protected $message;
 
     public function setUp(): void
     {
-        $this->message = new \Vonage\Message\Message('02000000D912945A');
+        $this->message = new Message('02000000D912945A');
     }
 
     public function tearDown(): void
@@ -41,9 +45,10 @@ class FetchedMessageTest extends TestCase
         $this->message = null;
     }
 
-    public function testCanAccessLastMessageAsArray()
+    public function testCanAccessLastMessageAsArray(): void
     {
         @$this->message->setResponse($this->getResponse('search-outbound'));
+
         $this->assertEquals('ACCEPTD', @$this->message['status']);
         $this->assertEquals('02000000D912945A', @$this->message['message-id']);
         $this->assertEquals('14845551212', @$this->message['to']);
@@ -56,13 +61,17 @@ class FetchedMessageTest extends TestCase
         $this->assertEquals('MT', @$this->message['type']);
     }
 
-    public function testCanAccessLastMessageAsObject()
+    /**
+     * @throws Exception
+     */
+    public function testCanAccessLastMessageAsObject(): void
     {
-        $date = new \DateTime();
+        $date = new DateTime();
         $date->setDate(2016, 5, 19);
         $date->setTime(17, 44, 06);
 
         @$this->message->setResponse($this->getResponse('search-outbound'));
+
         $this->assertEquals('ACCEPTD', $this->message->getDeliveryStatus());
         $this->assertEquals('02000000D912945A', $this->message->getMessageId());
         $this->assertEquals('14845551212', $this->message->getTo());
@@ -77,12 +86,9 @@ class FetchedMessageTest extends TestCase
     /**
      * Get the API response we'd expect for a call to the API. Message API currently returns 200 all the time, so only
      * change between success / fail is body of the message.
-     *
-     * @param string $type
-     * @return Response
      */
-    protected function getResponse($type = 'success')
+    protected function getResponse(string $type = 'success'): Response
     {
-        return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'r'));
+        return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'rb'));
     }
 }

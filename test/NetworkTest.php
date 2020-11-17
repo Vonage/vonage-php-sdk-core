@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Vonage Client Library for PHP
  *
@@ -8,26 +9,28 @@
 
 namespace VonageTest;
 
-use Vonage\Network;
 use PHPUnit\Framework\TestCase;
+use Vonage\Network;
 
 class NetworkTest extends TestCase
 {
-    public function testNetworkArrayAccess()
+    public function testNetworkArrayAccess(): void
     {
         $network = new Network('12345', 'Demo Network');
-        $this->assertEquals(@$network['network_code'], '12345');
-        $this->assertEquals(@$network['network_name'], 'Demo Network');
+
+        $this->assertEquals('12345', @$network['network_code']);
+        $this->assertEquals('Demo Network', @$network['network_name']);
     }
 
-    public function testNetworkGetters()
+    public function testNetworkGetters(): void
     {
         $network = new Network('12345', 'Demo Network');
-        $this->assertEquals($network->getCode(), '12345');
-        $this->assertEquals($network->getName(), 'Demo Network');
+
+        $this->assertEquals('12345', $network->getCode());
+        $this->assertEquals('Demo Network', $network->getName());
     }
 
-    public function testNetworkFromArray()
+    public function testNetworkFromArray(): void
     {
         $network = new Network('12345', 'Demo Network');
         $network->fromArray([
@@ -41,30 +44,26 @@ class NetworkTest extends TestCase
             'mnc' => '740',
         ]);
 
-        $this->assertEquals($network->getCode(), '12345');
-        $this->assertEquals($network->getName(), 'Demo Network');
-        $this->assertEquals($network->getOutboundSmsPrice(), '0.0331');
-        $this->assertEquals($network->getOutboundVoicePrice(), '0.0123');
-        $this->assertEquals($network->getCurrency(), 'EUR');
+        $this->assertEquals('12345', $network->getCode());
+        $this->assertEquals('Demo Network', $network->getName());
+        $this->assertEquals('0.0331', $network->getOutboundSmsPrice());
+        $this->assertEquals('0.0123', $network->getOutboundVoicePrice());
+        $this->assertEquals('EUR', $network->getCurrency());
     }
 
-    public function testSmsPriceFallback()
+    public function testSmsPriceFallback(): void
     {
         $network = new Network('12345', 'Demo Network');
-        $network->fromArray([
-            'price' => '0.0331',
-        ]);
+        $network->fromArray(['price' => '0.0331']);
 
-        $this->assertEquals($network->getOutboundSmsPrice(), '0.0331');
+        $this->assertEquals('0.0331', $network->getOutboundSmsPrice());
     }
 
-    public function testVoicePriceFallback()
+    public function testVoicePriceFallback(): void
     {
         $network = new Network('12345', 'Demo Network');
-        $network->fromArray([
-            'price' => '0.0331',
-        ]);
+        $network->fromArray(['price' => '0.0331']);
 
-        $this->assertEquals($network->getOutboundSmsPrice(), '0.0331');
+        $this->assertEquals('0.0331', $network->getOutboundSmsPrice());
     }
 }

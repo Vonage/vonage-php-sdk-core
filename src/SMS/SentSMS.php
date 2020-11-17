@@ -1,4 +1,12 @@
 <?php
+
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
+ */
+
 declare(strict_types=1);
 
 namespace Vonage\SMS;
@@ -51,48 +59,48 @@ class SentSMS
         $this->clientRef = $data['client-ref'] ?? null;
         $this->to = $data['to'];
         $this->messageId = $data['message-id'];
-        $this->status = (int) $data['status'];
+        $this->status = (int)$data['status'];
         $this->remainingBalance = $data['remaining-balance'];
         $this->messagePrice = $data['message-price'];
         $this->network = $data['network'];
     }
 
-    public function getAccountRef() : ?string
+    public function getAccountRef(): ?string
     {
         return $this->accountRef;
     }
 
-    public function getClientRef() : ?string
+    public function getClientRef(): ?string
     {
         return $this->clientRef;
     }
 
-    public function getMessageId() : string
+    public function getMessageId(): string
     {
         return $this->messageId;
     }
 
-    public function getMessagePrice() : string
+    public function getMessagePrice(): string
     {
         return $this->messagePrice;
     }
 
-    public function getNetwork() : string
+    public function getNetwork(): string
     {
         return $this->network;
     }
 
-    public function getRemainingBalance() : string
+    public function getRemainingBalance(): string
     {
         return $this->remainingBalance;
     }
 
-    public function getStatus() : int
+    public function getStatus(): int
     {
         return $this->status;
     }
 
-    public function getTo() : string
+    public function getTo(): string
     {
         return $this->to;
     }

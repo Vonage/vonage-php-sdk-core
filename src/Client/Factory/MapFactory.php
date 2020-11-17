@@ -1,15 +1,22 @@
 <?php
+
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
+
+declare(strict_types=1);
 
 namespace Vonage\Client\Factory;
 
-use Vonage\Client;
 use Psr\Container\ContainerInterface;
+use RuntimeException;
+use Vonage\Client;
+
+use function is_callable;
+use function sprintf;
 
 class MapFactory implements FactoryInterface, ContainerInterface
 {
@@ -40,32 +47,42 @@ class MapFactory implements FactoryInterface, ContainerInterface
         $this->client = $client;
     }
 
-    public function has($key)
+    /**
+     * @param string $id
+     *
+     * @noinspection PhpMissingParamTypeInspection
+     */
+    public function has($id): bool
     {
-        return isset($this->map[$key]);
+        return isset($this->map[$id]);
     }
 
     /**
      * @deprecated Use has() instead
      */
-    public function hasApi($api)
+    public function hasApi(string $api): bool
     {
         return $this->has($api);
     }
 
-    public function get($key)
+    /**
+     * @param string $id
+     *
+     * @noinspection PhpMissingParamTypeInspection
+     */
+    public function get($id)
     {
-        if (isset($this->cache[$key])) {
-            return $this->cache[$key];
+        if (isset($this->cache[$id])) {
+            return $this->cache[$id];
         }
 
-        $instance = $this->make($key);
-        $this->cache[$key] = $instance;
+        $instance = $this->make($id);
+        $this->cache[$id] = $instance;
 
         return $instance;
     }
 
-    public function getClient()
+    public function getClient(): Client
     {
         return $this->client;
     }
@@ -73,7 +90,7 @@ class MapFactory implements FactoryInterface, ContainerInterface
     /**
      * @deprecated Use get() instead
      */
-    public function getApi($api)
+    public function getApi(string $api)
     {
         return $this->get($api);
     }
@@ -81,10 +98,12 @@ class MapFactory implements FactoryInterface, ContainerInterface
     public function make($key)
     {
         if (!$this->has($key)) {
-            throw new \RuntimeException(sprintf(
-                'no map defined for `%s`',
-                $key
-            ));
+            throw new RuntimeException(
+                sprintf(
+                    'no map defined for `%s`',
+                    $key
+                )
+            );
         }
 
         if (is_callable($this->map[$key])) {
@@ -104,7 +123,7 @@ class MapFactory implements FactoryInterface, ContainerInterface
         return $instance;
     }
 
-    public function set($key, $value)
+    public function set($key, $value): void
     {
         $this->map[$key] = $value;
     }

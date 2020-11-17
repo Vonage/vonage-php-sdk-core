@@ -1,46 +1,61 @@
 <?php
+
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
+ */
+
 declare(strict_types=1);
 
 namespace VonageTest\Voice\Endpoint;
 
-use Vonage\Voice\Endpoint\SIP;
-use PDO;
 use PHPUnit\Framework\TestCase;
+use Vonage\Voice\Endpoint\SIP;
 
 class SipTest extends TestCase
 {
-    public function testDefaultEndpointIsCreatedProperly()
+    /**
+     * @var string
+     */
+    protected $uri = 'sip:rebekka@sip.example.com';
+
+    /**
+     * @var string
+     */
+    protected $type = 'sip';
+
+    public function testDefaultEndpointIsCreatedProperly(): void
     {
-        $endpoint = new SIP('sip:rebekka@sip.example.com');
-        $this->assertSame('sip:rebekka@sip.example.com', $endpoint->getId());
+        $endpoint = new SIP($this->uri);
+
+        $this->assertSame($this->uri, $endpoint->getId());
         $this->assertEmpty($endpoint->getHeaders());
     }
 
-    public function testFactoryCreatesAppEndpoint()
+    public function testFactoryCreatesAppEndpoint(): void
     {
         $headers = [
             'location' => 'New York City',
             'occupation' => 'Developer'
         ];
 
-        $endpoint = SIP::factory('sip:rebekka@sip.example.com', $headers);
+        $endpoint = SIP::factory($this->uri, $headers);
 
-        $this->assertSame('sip:rebekka@sip.example.com', $endpoint->getId());
+        $this->assertSame($this->uri, $endpoint->getId());
         $this->assertSame($headers, $endpoint->getHeaders());
     }
 
-    public function testToArrayHasCorrectStructure()
+    public function testToArrayHasCorrectStructure(): void
     {
-        $expected = [
-            'type' => 'sip',
-            'uri' => 'sip:rebekka@sip.example.com',
-        ];
-        
-        $endpoint = new SIP("sip:rebekka@sip.example.com");
-        $this->assertSame($expected, $endpoint->toArray());
+        $this->assertSame([
+            'type' => $this->type,
+            'uri' => $this->uri
+        ], (new SIP($this->uri))->toArray());
     }
 
-    public function testHeadersAreReturnedAsArray()
+    public function testHeadersAreReturnedAsArray(): void
     {
         $headers = [
             'location' => 'New York City',
@@ -48,32 +63,24 @@ class SipTest extends TestCase
         ];
 
         $expected = [
-            'type' => 'sip',
-            'uri' => 'sip:rebekka@sip.example.com',
+            'type' => $this->type,
+            'uri' => $this->uri,
             'headers' => $headers
         ];
-        
-        $endpoint = new SIP('sip:rebekka@sip.example.com');
-        $endpoint->setHeaders($headers);
-        $this->assertSame($expected, $endpoint->toArray());
+
+        $this->assertSame($expected, ((new SIP($this->uri))->setHeaders($headers))->toArray());
     }
 
-    public function testSerializesToJSONCorrectly()
+    public function testSerializesToJSONCorrectly(): void
     {
-        $expected = [
-            'type' => 'sip',
-            'uri' => 'sip:rebekka@sip.example.com',
-        ];
-        
-        $endpoint = new SIP('sip:rebekka@sip.example.com');
-        $this->assertSame($expected, $endpoint->jsonSerialize());
+        $this->assertSame([
+            'type' => $this->type,
+            'uri' => $this->uri
+        ], (new SIP($this->uri))->jsonSerialize());
     }
 
-    public function testHeaderCanBeIndividuallyAdded()
+    public function testHeaderCanBeIndividuallyAdded(): void
     {
-        $endpoint = new SIP('sip:rebekka@sip.example.com');
-        $endpoint->addHeader('key', 'value');
-
-        $this->assertSame(['key' => 'value'], $endpoint->getHeaders());
+        $this->assertSame(['key' => 'value'], (new SIP($this->uri))->addHeader('key', 'value')->getHeaders());
     }
 }

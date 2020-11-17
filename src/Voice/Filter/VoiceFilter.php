@@ -1,27 +1,37 @@
 <?php
+
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
+ */
+
 declare(strict_types=1);
 
 namespace Vonage\Voice\Filter;
 
+use DateTimeImmutable;
 use DateTimeZone;
+use InvalidArgumentException;
 use Vonage\Entity\Filter\FilterInterface;
 
 class VoiceFilter implements FilterInterface
 {
-    const STATUS_STARTED = 'started';
-    const STATUS_RINGING = 'ringing';
-    const STATUS_ANSWERED = 'answered';
-    const STATUS_MACHINE = 'machine';
-    const STATUS_COMPLETED = 'completed';
-    const STATUS_BUSY = 'busy';
-    const STATUS_CANCELLED = 'cancelled';
-    const STATUS_FAILED = 'failed';
-    const STATUS_REJECTED = 'rejected';
-    const STATUS_TIMEOUT = 'timeout';
-    const STATUS_UNANSWERED = 'unanswered';
+    public const STATUS_STARTED = 'started';
+    public const STATUS_RINGING = 'ringing';
+    public const STATUS_ANSWERED = 'answered';
+    public const STATUS_MACHINE = 'machine';
+    public const STATUS_COMPLETED = 'completed';
+    public const STATUS_BUSY = 'busy';
+    public const STATUS_CANCELLED = 'cancelled';
+    public const STATUS_FAILED = 'failed';
+    public const STATUS_REJECTED = 'rejected';
+    public const STATUS_TIMEOUT = 'timeout';
+    public const STATUS_UNANSWERED = 'unanswered';
 
-    const ORDER_ASC = 'asc';
-    const ORDER_DESC = 'desc';
+    public const ORDER_ASC = 'asc';
+    public const ORDER_DESC = 'desc';
 
     /**
      * @var string
@@ -29,12 +39,12 @@ class VoiceFilter implements FilterInterface
     protected $status;
 
     /**
-     * @var \DateTimeImmutable
+     * @var DateTimeImmutable
      */
     protected $dateStart;
 
     /**
-     * @var \DateTimeImmutable
+     * @var DateTimeImmutable
      */
     protected $dateEnd;
 
@@ -58,7 +68,7 @@ class VoiceFilter implements FilterInterface
      */
     protected $conversationUUID;
 
-    public function getQuery() : array
+    public function getQuery(): array
     {
         $data = [
             'page_size' => $this->getPageSize(),
@@ -85,86 +95,114 @@ class VoiceFilter implements FilterInterface
         return $data;
     }
 
-    public function getStatus() : ?string
+    public function getStatus(): ?string
     {
         return $this->status;
     }
 
-    public function setStatus(string $status) : self
+    /**
+     * @return $this
+     */
+    public function setStatus(string $status): self
     {
         $this->status = $status;
+
         return $this;
     }
 
-    public function getDateStart() : ?\DateTimeImmutable
+    public function getDateStart(): ?DateTimeImmutable
     {
         return $this->dateStart;
     }
 
-    public function setDateStart(\DateTimeImmutable $dateStart) : self
+    /**
+     * @return $this
+     */
+    public function setDateStart(DateTimeImmutable $dateStart): self
     {
         $dateStart = $dateStart->setTimezone(new DateTimeZone('Z'));
         $this->dateStart = $dateStart;
+
         return $this;
     }
 
-    public function getDateEnd() : ?\DateTimeImmutable
+    public function getDateEnd(): ?DateTimeImmutable
     {
         return $this->dateEnd;
     }
 
-    public function setDateEnd(\DateTimeImmutable $dateEnd) : self
+    /**
+     * @return $this
+     */
+    public function setDateEnd(DateTimeImmutable $dateEnd): self
     {
         $dateEnd = $dateEnd->setTimezone(new DateTimeZone('Z'));
         $this->dateEnd = $dateEnd;
+
         return $this;
     }
 
-    public function getPageSize() : int
+    public function getPageSize(): int
     {
         return $this->pageSize;
     }
 
-    public function setPageSize(int $pageSize) : self
+    /**
+     * @return $this
+     */
+    public function setPageSize(int $pageSize): self
     {
         $this->pageSize = $pageSize;
+
         return $this;
     }
 
-    public function getRecordIndex() : int
+    public function getRecordIndex(): int
     {
         return $this->recordIndex;
     }
 
-    public function setRecordIndex(int $recordIndex) : self
+    /**
+     * @return $this
+     */
+    public function setRecordIndex(int $recordIndex): self
     {
         $this->recordIndex = $recordIndex;
+
         return $this;
     }
 
-    public function getOrder() : string
+    public function getOrder(): string
     {
         return $this->order;
     }
 
-    public function setOrder(string $order) : self
+    /**
+     * @return $this
+     */
+    public function setOrder(string $order): self
     {
         if ($order !== self::ORDER_ASC && $order !== self::ORDER_DESC) {
-            throw new \InvalidArgumentException('Order must be `asc` or `desc`');
+            throw new InvalidArgumentException('Order must be `asc` or `desc`');
         }
 
         $this->order = $order;
+
         return $this;
     }
 
-    public function getConversationUUID() : ?string
+    public function getConversationUUID(): ?string
     {
         return $this->conversationUUID;
     }
 
-    public function setConversationUUID(string $conversationUUID) : self
+    /**
+     * @return $this
+     */
+    public function setConversationUUID(string $conversationUUID): self
     {
         $this->conversationUUID = $conversationUUID;
+
         return $this;
     }
 }

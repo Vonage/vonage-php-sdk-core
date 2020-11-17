@@ -1,18 +1,25 @@
 <?php
+
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
+
+declare(strict_types=1);
 
 namespace Vonage\Message\Response;
 
-use Vonage\Client\Response\Response;
+use Countable;
+use Iterator;
+use RuntimeException;
 use Vonage\Client\Response\Error;
-use Vonage\Client\Response\ResponseInterface;
+use Vonage\Client\Response\Response;
 
-class Collection extends Response implements ResponseInterface, \Countable, \Iterator
+use function count;
+
+class Collection extends Response implements Countable, Iterator
 {
     /**
      * @var int
@@ -25,9 +32,9 @@ class Collection extends Response implements ResponseInterface, \Countable, \Ite
     protected $data;
 
     /**
-     * @var Message[]
+     * @var array
      */
-    protected $messages = array();
+    protected $messages = [];
 
     /**
      * @var int
@@ -36,17 +43,17 @@ class Collection extends Response implements ResponseInterface, \Countable, \Ite
 
     public function __construct(array $data)
     {
-        $this->expected = array('message-count', 'messages');
-        $return = parent::__construct($data);
-
+        $this->expected = ['message-count', 'messages'];
         $this->count = $data['message-count'];
 
-        if (count($data['messages']) != $data['message-count']) {
-            throw new \RuntimeException('invalid message count');
+        parent::__construct($data);
+
+        if (count($data['messages']) !== $data['message-count']) {
+            throw new RuntimeException('invalid message count');
         }
 
         foreach ($data['messages'] as $message) {
-            if (0 != $message['status']) {
+            if (0 !== (int)$message['status']) {
                 $this->messages[] = new Error($message);
             } else {
                 $this->messages[] = new Message($message);
@@ -54,16 +61,14 @@ class Collection extends Response implements ResponseInterface, \Countable, \Ite
         }
 
         $this->data = $data;
-
-        return $return;
     }
 
-    public function getMessages()
+    public function getMessages(): array
     {
         return $this->messages;
     }
 
-    public function isSuccess()
+    public function isSuccess(): bool
     {
         foreach ($this->messages as $message) {
             if ($message instanceof Error) {
@@ -74,52 +79,35 @@ class Collection extends Response implements ResponseInterface, \Countable, \Ite
         return true;
     }
 
-    public function count()
+    public function count(): int
     {
         return $this->count;
     }
 
-    /**
-     * @link http://php.net/manual/en/iterator.current.php
-     * @return Message
-     */
-    public function current()
+    public function current(): Message
     {
         return $this->messages[$this->position];
     }
 
-    /**
-     * @link http://php.net/manual/en/iterator.next.php
-     * @return void
-     */
-    public function next()
+    public function next(): void
     {
         $this->position++;
     }
 
-    /**
-     * @link http://php.net/manual/en/iterator.key.php
-     * @return int
-     */
-    public function key()
+    public function key(): int
     {
         return $this->position;
     }
 
-    /**
-     * @link http://php.net/manual/en/iterator.valid.php
-     * @return boolean
-     */
-    public function valid()
+    public function valid(): bool
     {
         return $this->position < $this->count;
     }
 
     /**
      * @link http://php.net/manual/en/iterator.rewind.php
-     * @return void
      */
-    public function rewind()
+    public function rewind(): void
     {
         $this->position = 0;
     }

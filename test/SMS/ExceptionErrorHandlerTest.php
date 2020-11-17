@@ -1,33 +1,52 @@
 <?php
+
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
+ */
+
 declare(strict_types=1);
 
 namespace VonageTest\SMS;
 
-use Vonage\Client\Exception\Request as ExceptionRequest;
+use Laminas\Diactoros\Request;
+use Laminas\Diactoros\Response\JsonResponse;
+use Laminas\Diactoros\ResponseFactory;
+use PHPUnit\Framework\TestCase;
+use Vonage\Client\Exception\Request as RequestException;
+use Vonage\Client\Exception\Server as ServerException;
 use Vonage\Client\Exception\ThrottleException;
 use Vonage\SMS\ExceptionErrorHandler;
-use PHPUnit\Framework\TestCase;
-use Zend\Diactoros\Request;
-use Zend\Diactoros\Response\JsonResponse;
-use Zend\Diactoros\ResponseFactory;
 
 class ExceptionErrorHandlerTest extends TestCase
 {
-    public function test429ThrowsThrottleException()
+    /**
+     * @throws RequestException
+     * @throws ThrottleException
+     * @throws ServerException
+     */
+    public function test429ThrowsThrottleException(): void
     {
         $this->expectException(ThrottleException::class);
         $this->expectExceptionMessage('Too many concurrent requests');
 
-        $respFactory = new ResponseFactory();
-        $response = $respFactory->createResponse(429);
+        $response = (new ResponseFactory())
+            ->createResponse(429);
 
         $handler = new ExceptionErrorHandler();
         $handler($response, new Request());
     }
 
-    public function testGenericErrorThrowsRequestException()
+    /**
+     * @throws RequestException
+     * @throws ServerException
+     * @throws ThrottleException
+     */
+    public function testGenericErrorThrowsRequestException(): void
     {
-        $this->expectException(ExceptionRequest::class);
+        $this->expectException(RequestException::class);
         $this->expectExceptionMessage('This is a generic error being thrown');
         $this->expectExceptionCode(499);
 

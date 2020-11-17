@@ -1,116 +1,143 @@
 <?php
+
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
+ */
+
 declare(strict_types=1);
 
-namespace VonageTest\Voice;
+namespace VonageTest\Voice\Webhook;
 
+use DateTime;
+use DateTimeImmutable;
+use Exception;
 use InvalidArgumentException;
+use Laminas\Diactoros\Request\Serializer;
+use Laminas\Diactoros\ServerRequest;
+use PHPUnit\Framework\TestCase;
+use Vonage\Voice\Webhook\Answer;
 use Vonage\Voice\Webhook\Error;
 use Vonage\Voice\Webhook\Event;
-use Vonage\Voice\Webhook\Input;
-use Vonage\Voice\Webhook\Answer;
-use Vonage\Voice\Webhook\Record;
-use PHPUnit\Framework\TestCase;
 use Vonage\Voice\Webhook\Factory;
-use Vonage\Voice\Webhook\Transfer;
-use Zend\Diactoros\ServerRequest;
+use Vonage\Voice\Webhook\Input;
 use Vonage\Voice\Webhook\Notification;
-use Zend\Diactoros\Request\Serializer;
+use Vonage\Voice\Webhook\Record;
+use Vonage\Voice\Webhook\Transfer;
+
+use function file_get_contents;
+use function json_decode;
+use function parse_str;
 
 class FactoryTest extends TestCase
 {
-    public function testCanGenerateStartedEvent()
+    /**
+     * @throws Exception
+     */
+    public function testCanGenerateStartedEvent(): void
     {
         $request = $this->getRequest('event-post-started');
         $expected = json_decode($this->getRequest('event-post-started')->getBody()->getContents(), true);
         $event = Factory::createFromRequest($request);
 
-        $this->assertTrue($event instanceof Event);
+        $this->assertInstanceOf(Event::class, $event);
         $this->assertSame($expected['status'], $event->getStatus());
         $this->assertSame($expected['from'], $event->getFrom());
         $this->assertSame($expected['to'], $event->getTo());
         $this->assertSame($expected['uuid'], $event->getUuid());
         $this->assertSame($expected['conversation_uuid'], $event->getConversationUuid());
         $this->assertSame($expected['direction'], $event->getDirection());
-        $this->assertEquals(new \DateTime($expected['timestamp']), $event->getTimestamp());
-
+        $this->assertEquals(new DateTime($expected['timestamp']), $event->getTimestamp());
         $this->assertNull($event->getDuration());
         $this->assertNull($event->getPrice());
     }
 
-    public function testCanGenerateRingingEvent()
+    /**
+     * @throws Exception
+     */
+    public function testCanGenerateRingingEvent(): void
     {
         $request = $this->getRequest('event-post-ringing');
         $expected = json_decode($this->getRequest('event-post-ringing')->getBody()->getContents(), true);
         $event = Factory::createFromRequest($request);
 
-        $this->assertTrue($event instanceof Event);
+        $this->assertInstanceOf(Event::class, $event);
         $this->assertSame($expected['status'], $event->getStatus());
         $this->assertSame($expected['from'], $event->getFrom());
         $this->assertSame($expected['to'], $event->getTo());
         $this->assertSame($expected['uuid'], $event->getUuid());
         $this->assertSame($expected['conversation_uuid'], $event->getConversationUuid());
         $this->assertSame($expected['direction'], $event->getDirection());
-        $this->assertEquals(new \DateTime($expected['timestamp']), $event->getTimestamp());
-
+        $this->assertEquals(new DateTime($expected['timestamp']), $event->getTimestamp());
         $this->assertNull($event->getDuration());
         $this->assertNull($event->getPrice());
     }
 
-    public function testCanGenerateAnsweredEvent()
+    /**
+     * @throws Exception
+     */
+    public function testCanGenerateAnsweredEvent(): void
     {
         $request = $this->getRequest('event-post-answered');
         $expected = json_decode($this->getRequest('event-post-answered')->getBody()->getContents(), true);
         $event = Factory::createFromRequest($request);
 
-        $this->assertTrue($event instanceof Event);
+        $this->assertInstanceOf(Event::class, $event);
         $this->assertSame($expected['status'], $event->getStatus());
         $this->assertSame($expected['from'], $event->getFrom());
         $this->assertSame($expected['to'], $event->getTo());
         $this->assertSame($expected['uuid'], $event->getUuid());
         $this->assertSame($expected['conversation_uuid'], $event->getConversationUuid());
         $this->assertSame($expected['direction'], $event->getDirection());
-        $this->assertEquals(new \DateTime($expected['timestamp']), $event->getTimestamp());
-
+        $this->assertEquals(new DateTime($expected['timestamp']), $event->getTimestamp());
         $this->assertNull($event->getStartTime());
         $this->assertNull($event->getRate());
     }
 
-    public function testCanGenerateCompletedEvent()
+    /**
+     * @throws Exception
+     */
+    public function testCanGenerateCompletedEvent(): void
     {
         $request = $this->getRequest('event-post-completed');
         $expected = json_decode($this->getRequest('event-post-completed')->getBody()->getContents(), true);
         $event = Factory::createFromRequest($request);
 
-        $this->assertTrue($event instanceof Event);
+        $this->assertInstanceOf(Event::class, $event);
         $this->assertSame($expected['status'], $event->getStatus());
         $this->assertSame($expected['from'], $event->getFrom());
         $this->assertSame($expected['to'], $event->getTo());
         $this->assertSame($expected['uuid'], $event->getUuid());
         $this->assertSame($expected['conversation_uuid'], $event->getConversationUuid());
         $this->assertSame($expected['direction'], $event->getDirection());
-        $this->assertEquals(new \DateTime($expected['timestamp']), $event->getTimestamp());
+        $this->assertEquals(new DateTime($expected['timestamp']), $event->getTimestamp());
         $this->assertSame($expected['network'], $event->getNetwork());
         $this->assertSame($expected['duration'], $event->getDuration());
-        $this->assertEquals(new \DateTime($expected['start_time']), $event->getStartTime());
-        $this->assertEquals(new \DateTime($expected['end_time']), $event->getEndTime());
+        $this->assertEquals(new DateTime($expected['start_time']), $event->getStartTime());
+        $this->assertEquals(new DateTime($expected['end_time']), $event->getEndTime());
         $this->assertSame($expected['rate'], $event->getRate());
         $this->assertSame($expected['price'], $event->getPrice());
     }
 
-    public function testCanGenerateTransferWebhook()
+    /**
+     * @throws Exception
+     */
+    public function testCanGenerateTransferWebhook(): void
     {
         $request = $this->getRequest('event-post-transfer');
         $expected = json_decode($this->getRequest('event-post-transfer')->getBody()->getContents(), true);
         $event = Factory::createFromRequest($request);
 
-        $this->assertTrue($event instanceof Transfer);
+        $this->assertInstanceOf(Transfer::class, $event);
         $this->assertSame($expected['conversation_uuid_from'], $event->getConversationUuidFrom());
         $this->assertSame($expected['conversation_uuid_to'], $event->getConversationUuidTo());
         $this->assertSame($expected['uuid'], $event->getUuid());
-        $this->assertEquals(new \DateTimeImmutable($expected['timestamp']), $event->getTimestamp());
+        $this->assertEquals(new DateTimeImmutable($expected['timestamp']), $event->getTimestamp());
     }
 
-    public function testCanGenerateAnAnswerWebhook()
+    public function testCanGenerateAnAnswerWebhook(): void
     {
         $request = $this->getRequest('answer-get');
         $expected = $this->getRequest('answer-get')->getQueryParams();
@@ -118,14 +145,17 @@ class FactoryTest extends TestCase
         /** @var Answer $answer */
         $answer = Factory::createFromRequest($request);
 
-        $this->assertTrue($answer instanceof Answer);
+        $this->assertInstanceOf(Answer::class, $answer);
         $this->assertSame($expected['conversation_uuid'], $answer->getConversationUuid());
         $this->assertSame($expected['uuid'], $answer->getUuid());
         $this->assertSame($expected['to'], $answer->getTo());
         $this->assertSame($expected['from'], $answer->getFrom());
     }
 
-    public function testCanGenerateARecordingWebhook()
+    /**
+     * @throws Exception
+     */
+    public function testCanGenerateARecordingWebhook(): void
     {
         $request = $this->getRequest('recording-get');
         $expected = $this->getRequest('recording-get')->getQueryParams();
@@ -133,17 +163,20 @@ class FactoryTest extends TestCase
         /** @var Record $record */
         $record = Factory::createFromRequest($request);
 
-        $this->assertTrue($record instanceof Record);
+        $this->assertInstanceOf(Record::class, $record);
         $this->assertSame($expected['conversation_uuid'], $record->getConversationUuid());
-        $this->assertEquals(new \DateTimeImmutable($expected['end_time']), $record->getEndTime());
+        $this->assertEquals(new DateTimeImmutable($expected['end_time']), $record->getEndTime());
         $this->assertSame($expected['recording_url'], $record->getRecordingUrl());
         $this->assertSame($expected['recording_uuid'], $record->getRecordingUuid());
-        $this->assertSame((int) $expected['size'], $record->getSize());
-        $this->assertEquals(new \DateTimeImmutable($expected['start_time']), $record->getStartTime());
-        $this->assertEquals(new \DateTimeImmutable($expected['timestamp']), $record->getTimestamp());
+        $this->assertSame((int)$expected['size'], $record->getSize());
+        $this->assertEquals(new DateTimeImmutable($expected['start_time']), $record->getStartTime());
+        $this->assertEquals(new DateTimeImmutable($expected['timestamp']), $record->getTimestamp());
     }
 
-    public function testCanGenerateAnErrorWebhook()
+    /**
+     * @throws Exception
+     */
+    public function testCanGenerateAnErrorWebhook(): void
     {
         $request = $this->getRequest('error-get');
         $expected = $this->getRequest('error-get')->getQueryParams();
@@ -151,13 +184,16 @@ class FactoryTest extends TestCase
         /** @var Error $error */
         $error = Factory::createFromRequest($request);
 
-        $this->assertTrue($error instanceof Error);
+        $this->assertInstanceOf(Error::class, $error);
         $this->assertSame($expected['conversation_uuid'], $error->getConversationUuid());
         $this->assertSame($expected['reason'], $error->getReason());
-        $this->assertEquals(new \DateTimeImmutable($expected['timestamp']), $error->getTimestamp());
+        $this->assertEquals(new DateTimeImmutable($expected['timestamp']), $error->getTimestamp());
     }
 
-    public function testCanGenerateANotificationGetWebhook()
+    /**
+     * @throws Exception
+     */
+    public function testCanGenerateANotificationGetWebhook(): void
     {
         $request = $this->getRequest('event-get-notify');
         $expected = $this->getRequest('event-get-notify')->getQueryParams();
@@ -165,13 +201,16 @@ class FactoryTest extends TestCase
         /** @var Notification $notification */
         $notification = Factory::createFromRequest($request);
 
-        $this->assertTrue($notification instanceof Notification);
+        $this->assertInstanceOf(Notification::class, $notification);
         $this->assertSame($expected['conversation_uuid'], $notification->getConversationUuid());
         $this->assertSame(json_decode($expected['payload'], true), $notification->getPayload());
-        $this->assertEquals(new \DateTimeImmutable($expected['timestamp']), $notification->getTimestamp());
+        $this->assertEquals(new DateTimeImmutable($expected['timestamp']), $notification->getTimestamp());
     }
 
-    public function testCanGenerateANotificationPostWebhook()
+    /**
+     * @throws Exception
+     */
+    public function testCanGenerateANotificationPostWebhook(): void
     {
         $request = $this->getRequest('event-post-notify');
         $expected = json_decode($this->getRequest('event-post-notify')->getBody()->getContents(), true);
@@ -179,13 +218,16 @@ class FactoryTest extends TestCase
         /** @var Notification $notification */
         $notification = Factory::createFromRequest($request);
 
-        $this->assertTrue($notification instanceof Notification);
+        $this->assertInstanceOf(Notification::class, $notification);
         $this->assertSame($expected['conversation_uuid'], $notification->getConversationUuid());
         $this->assertSame($expected['payload'], $notification->getPayload());
-        $this->assertEquals(new \DateTimeImmutable($expected['timestamp']), $notification->getTimestamp());
+        $this->assertEquals(new DateTimeImmutable($expected['timestamp']), $notification->getTimestamp());
     }
 
-    public function testCanGenerateDtmfInputFromGetWebhook()
+    /**
+     * @throws Exception
+     */
+    public function testCanGenerateDtmfInputFromGetWebhook(): void
     {
         $request = $this->getRequest('dtmf-get');
         $expected = $this->getRequest('dtmf-get')->getQueryParams();
@@ -193,17 +235,20 @@ class FactoryTest extends TestCase
         /** @var Input $input */
         $input = Factory::createFromRequest($request);
 
-        $this->assertTrue($input instanceof Input);
+        $this->assertInstanceOf(Input::class, $input);
         $this->assertSame(json_decode($expected['speech'], true), $input->getSpeech());
         $this->assertSame(json_decode($expected['dtmf'], true), $input->getDtmf());
         $this->assertSame($expected['from'], $input->getFrom());
         $this->assertSame($expected['to'], $input->getTo());
         $this->assertSame($expected['uuid'], $input->getUuid());
         $this->assertSame($expected['conversation_uuid'], $input->getConversationUuid());
-        $this->assertEquals(new \DateTimeImmutable($expected['timestamp']), $input->getTimestamp());
+        $this->assertEquals(new DateTimeImmutable($expected['timestamp']), $input->getTimestamp());
     }
 
-    public function testCanGenerateDtmfInputFromPostWebhook()
+    /**
+     * @throws Exception
+     */
+    public function testCanGenerateDtmfInputFromPostWebhook(): void
     {
         $request = $this->getRequest('dtmf-post');
         $expected = json_decode($this->getRequest('dtmf-post')->getBody()->getContents(), true);
@@ -211,28 +256,32 @@ class FactoryTest extends TestCase
         /** @var Input $input */
         $input = Factory::createFromRequest($request);
 
-        $this->assertTrue($input instanceof Input);
+        $this->assertInstanceOf(Input::class, $input);
         $this->assertSame($expected['speech'], $input->getSpeech());
         $this->assertSame($expected['dtmf'], $input->getDtmf());
         $this->assertSame($expected['from'], $input->getFrom());
         $this->assertSame($expected['to'], $input->getTo());
         $this->assertSame($expected['uuid'], $input->getUuid());
         $this->assertSame($expected['conversation_uuid'], $input->getConversationUuid());
-        $this->assertEquals(new \DateTimeImmutable($expected['timestamp']), $input->getTimestamp());
+        $this->assertEquals(new DateTimeImmutable($expected['timestamp']), $input->getTimestamp());
     }
 
-    public function testThrowsExceptionOnUnknownWebhookData()
+    /**
+     * @throws Exception
+     */
+    public function testThrowsExceptionOnUnknownWebhookData(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Unable to detect incoming webhook type');
 
         Factory::createFromArray(['foo' => 'bar']);
     }
 
-    public function getRequest(string $requestName)
+    public function getRequest(string $requestName): ServerRequest
     {
         $text = file_get_contents(__DIR__ . '/../requests/' . $requestName . '.txt');
         $request = Serializer::fromString($text);
+
         parse_str($request->getUri()->getQuery(), $query);
 
         return new ServerRequest(

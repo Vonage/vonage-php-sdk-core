@@ -1,18 +1,26 @@
 <?php
+
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2019 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
+
+declare(strict_types=1);
 
 namespace VonageTest\Account;
 
-use Vonage\Account\Config;
 use PHPUnit\Framework\TestCase;
+use Vonage\Account\Config;
 
 class ConfigTest extends TestCase
 {
+    /**
+     * @var Config
+     */
+    private $config;
+
     public function setUp(): void
     {
         $this->config = new Config(
@@ -24,7 +32,7 @@ class ConfigTest extends TestCase
         );
     }
 
-    public function testObjectAccess()
+    public function testObjectAccess(): void
     {
         $this->assertEquals("https://example.com/webhooks/inbound-sms", $this->config->getSmsCallbackUrl());
         $this->assertEquals("https://example.com/webhooks/delivery-receipt", $this->config->getDrCallbackUrl());
@@ -33,7 +41,7 @@ class ConfigTest extends TestCase
         $this->assertEquals(32, $this->config->getMaxCallsPerSecond());
     }
 
-    public function testArrayAccess()
+    public function testArrayAccess(): void
     {
         $this->assertEquals("https://example.com/webhooks/inbound-sms", @$this->config['sms_callback_url']);
         $this->assertEquals("https://example.com/webhooks/delivery-receipt", @$this->config['dr_callback_url']);

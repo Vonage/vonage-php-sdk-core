@@ -1,31 +1,48 @@
 <?php
 
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
+ */
+
+declare(strict_types=1);
+
 namespace Vonage\Application;
 
+use Exception;
+use InvalidArgumentException;
 use Vonage\Entity\Hydrator\HydratorInterface;
 
 class Hydrator implements HydratorInterface
 {
-    public function hydrate(array $data)
+    /**
+     * @throws Exception
+     */
+    public function hydrate(array $data): Application
     {
         $application = new Application();
         return $this->hydrateObject($data, $application);
     }
 
-    public function hydrateObject(array $data, $object)
+    /**
+     * @throws Exception
+     */
+    public function hydrateObject(array $data, $object): Application
     {
         if (isset($data['answer_url']) || isset($data['event_url'])) {
             return $this->createFromArrayV1($data, $object);
         }
 
-        return $this->createFromArrayV2($data, $object);
+        return $this->createFromArrayV2($data);
     }
 
-    protected function createFromArrayV1(array $array, $application) : Application
+    protected function createFromArrayV1(array $array, $application): Application
     {
         foreach (['name',] as $param) {
             if (!isset($array[$param])) {
-                throw new \InvalidArgumentException('missing expected key `' . $param . '`');
+                throw new InvalidArgumentException('missing expected key `' . $param . '`');
             }
         }
 
@@ -38,25 +55,31 @@ class Hydrator implements HydratorInterface
 
         // Voice
         foreach (['event', 'answer'] as $type) {
-            if (isset($array[$type . '_url'])) {
-                $method = isset($array[$type . '_method']) ? $array[$type . '_method'] : null;
-                $application->getVoiceConfig()->setWebhook($type . '_url', new Webhook($array[$type . '_url'], $method));
+            $key = $type . '_url';
+
+            if (isset($array[$key])) {
+                $method = $array[$type . '_method'] ?? null;
+                $application->getVoiceConfig()->setWebhook($key, new Webhook($array[$key], $method));
             }
         }
 
         // Messages
         foreach (['status', 'inbound'] as $type) {
-            if (isset($array[$type . '_url'])) {
-                $method = isset($array[$type . '_method']) ? $array[$type . '_method'] : null;
-                $application->getMessagesConfig()->setWebhook($type . '_url', new Webhook($array[$type . '_url'], $method));
+            $key = $type . '_url';
+
+            if (isset($array[$key])) {
+                $method = $array[$type . '_method'] ?? null;
+                $application->getMessagesConfig()->setWebhook($key, new Webhook($array[$key], $method));
             }
         }
 
         // RTC
         foreach (['event'] as $type) {
-            if (isset($array[$type . '_url'])) {
-                $method = isset($array[$type . '_method']) ? $array[$type . '_method'] : null;
-                $application->getRtcConfig()->setWebhook($type . '_url', new Webhook($array[$type . '_url'], $method));
+            $key = $type . '_url';
+
+            if (isset($array[$key])) {
+                $method = $array[$type . '_method'] ?? null;
+                $application->getRtcConfig()->setWebhook($key, new Webhook($array[$key], $method));
             }
         }
 
@@ -68,11 +91,14 @@ class Hydrator implements HydratorInterface
         return $application;
     }
 
-    protected function createFromArrayV2(array $array) : Application
+    /**
+     * @throws Exception
+     */
+    protected function createFromArrayV2(array $array): Application
     {
         foreach (['name',] as $param) {
             if (!isset($array[$param])) {
-                throw new \InvalidArgumentException('missing expected key `' . $param . '`');
+                throw new InvalidArgumentException('missing expected key `' . $param . '`');
             }
         }
 
@@ -97,9 +123,9 @@ class Hydrator implements HydratorInterface
             $voiceCapabilities = $capabilities['voice']['webhooks'];
 
             foreach (['answer', 'event'] as $type) {
-                $application->getVoiceConfig()->setWebhook($type.'_url', new Webhook(
-                    $voiceCapabilities[$type.'_url']['address'],
-                    $voiceCapabilities[$type.'_url']['http_method']
+                $application->getVoiceConfig()->setWebhook($type . '_url', new Webhook(
+                    $voiceCapabilities[$type . '_url']['address'],
+                    $voiceCapabilities[$type . '_url']['http_method']
                 ));
             }
         }
@@ -109,9 +135,9 @@ class Hydrator implements HydratorInterface
             $messagesCapabilities = $capabilities['messages']['webhooks'];
 
             foreach (['status', 'inbound'] as $type) {
-                $application->getMessagesConfig()->setWebhook($type.'_url', new Webhook(
-                    $messagesCapabilities[$type.'_url']['address'],
-                    $messagesCapabilities[$type.'_url']['http_method']
+                $application->getMessagesConfig()->setWebhook($type . '_url', new Webhook(
+                    $messagesCapabilities[$type . '_url']['address'],
+                    $messagesCapabilities[$type . '_url']['http_method']
                 ));
             }
         }
@@ -121,9 +147,9 @@ class Hydrator implements HydratorInterface
             $rtcCapabilities = $capabilities['rtc']['webhooks'];
 
             foreach (['event'] as $type) {
-                $application->getRtcConfig()->setWebhook($type.'_url', new Webhook(
-                    $rtcCapabilities[$type.'_url']['address'],
-                    $rtcCapabilities[$type.'_url']['http_method']
+                $application->getRtcConfig()->setWebhook($type . '_url', new Webhook(
+                    $rtcCapabilities[$type . '_url']['address'],
+                    $rtcCapabilities[$type . '_url']['http_method']
                 ));
             }
         }

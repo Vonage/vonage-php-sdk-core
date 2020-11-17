@@ -1,9 +1,23 @@
 <?php
+
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
+ */
+
 declare(strict_types=1);
 
 namespace Vonage\Voice\NCCO\Action;
 
+use RuntimeException;
 use Vonage\Voice\Webhook;
+
+use function array_key_exists;
+use function filter_var;
+use function is_array;
+use function is_null;
 
 class Input implements ActionInterface
 {
@@ -72,18 +86,18 @@ class Input implements ActionInterface
      */
     public static function factory(array $data): Input
     {
-        $action = new Input();
+        $action = new self();
 
         if (array_key_exists('dtmf', $data)) {
             $dtmf = $data['dtmf'];
             $action->setEnableDtmf(true);
 
             if (array_key_exists('timeOut', $dtmf)) {
-                $action->setDtmfTimeout((int) $dtmf['timeOut']);
+                $action->setDtmfTimeout((int)$dtmf['timeOut']);
             }
 
             if (array_key_exists('maxDigits', $dtmf)) {
-                $action->setDtmfMaxDigits((int) $dtmf['maxDigits']);
+                $action->setDtmfMaxDigits((int)$dtmf['maxDigits']);
             }
 
             if (array_key_exists('submitOnHash', $dtmf)) {
@@ -102,7 +116,7 @@ class Input implements ActionInterface
             }
 
             if (array_key_exists('endOnSilence', $speech)) {
-                $action->setSpeechEndOnSilence((int) $speech['endOnSilence']);
+                $action->setSpeechEndOnSilence((int)$speech['endOnSilence']);
             }
 
             if (array_key_exists('language', $speech)) {
@@ -114,11 +128,11 @@ class Input implements ActionInterface
             }
 
             if (array_key_exists('startTimeout', $speech)) {
-                $action->setSpeechStartTimeout((int) $speech['startTimeout']);
+                $action->setSpeechStartTimeout((int)$speech['startTimeout']);
             }
 
             if (array_key_exists('maxDuration', $speech)) {
-                $action->setSpeechMaxDuration((int) $speech['maxDuration']);
+                $action->setSpeechMaxDuration((int)$speech['maxDuration']);
             }
         }
 
@@ -132,7 +146,7 @@ class Input implements ActionInterface
             } else {
                 $webhook = new Webhook($data['eventUrl']);
             }
-            
+
             $action->setEventWebhook($webhook);
         }
 
@@ -142,7 +156,7 @@ class Input implements ActionInterface
     /**
      * @return array<string, mixed>
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->toNCCOArray();
     }
@@ -157,7 +171,7 @@ class Input implements ActionInterface
         ];
 
         if ($this->getEnableDtmf() === false && $this->getEnableSpeech() === false) {
-            throw new \RuntimeException('Input NCCO action must have either speech or DTMF enabled');
+            throw new RuntimeException('Input NCCO action must have either speech or DTMF enabled');
         }
 
         if ($this->getEnableDtmf()) {
@@ -175,7 +189,7 @@ class Input implements ActionInterface
                 $dtmf['submitOnHash'] = $this->getDtmfSubmitOnHash() ? 'true' : 'false';
             }
 
-            $data['dtmf'] = (object) $dtmf;
+            $data['dtmf'] = (object)$dtmf;
         }
 
         if ($this->getEnableSpeech()) {
@@ -198,6 +212,7 @@ class Input implements ActionInterface
             }
 
             $context = $this->getSpeechContext();
+
             if (!empty($context)) {
                 $speech['context'] = $context;
             }
@@ -207,10 +222,11 @@ class Input implements ActionInterface
                 $speech['startTimeout'] = $startTimeout;
             }
 
-            $data['speech'] = (object) $speech;
+            $data['speech'] = (object)$speech;
         }
 
         $eventWebhook = $this->getEventWebhook();
+
         if ($eventWebhook) {
             $data['eventUrl'] = [$eventWebhook->getUrl()];
             $data['eventMethod'] = $eventWebhook->getMethod();
@@ -219,150 +235,194 @@ class Input implements ActionInterface
         return $data;
     }
 
-    public function getDtmfTimeout() : ?int
+    public function getDtmfTimeout(): ?int
     {
         return $this->dtmfTimeout;
     }
 
-    public function setDtmfTimeout(int $dtmfTimeout) : self
+    /**
+     * @return $this
+     */
+    public function setDtmfTimeout(int $dtmfTimeout): self
     {
         $this->setEnableDtmf(true);
         $this->dtmfTimeout = $dtmfTimeout;
+
         return $this;
     }
 
-    public function getDtmfMaxDigits() : ?int
+    public function getDtmfMaxDigits(): ?int
     {
         return $this->dtmfMaxDigits;
     }
 
-    public function setDtmfMaxDigits(int $dtmfMaxDigits) : self
+    /**
+     * @return $this
+     */
+    public function setDtmfMaxDigits(int $dtmfMaxDigits): self
     {
         $this->setEnableDtmf(true);
         $this->dtmfMaxDigits = $dtmfMaxDigits;
+
         return $this;
     }
 
-    public function getDtmfSubmitOnHash() : ?bool
+    public function getDtmfSubmitOnHash(): ?bool
     {
         return $this->dtmfSubmitOnHash;
     }
 
-    public function setDtmfSubmitOnHash(bool $dtmfSubmitOnHash) : self
+    /**
+     * @return $this
+     */
+    public function setDtmfSubmitOnHash(bool $dtmfSubmitOnHash): self
     {
         $this->setEnableDtmf(true);
         $this->dtmfSubmitOnHash = $dtmfSubmitOnHash;
+
         return $this;
     }
 
-    public function getSpeechUUID() : ?string
+    public function getSpeechUUID(): ?string
     {
         return $this->speechUUID;
     }
 
-    public function setSpeechUUID(string $speechUUID) : self
+    /**
+     * @return $this
+     */
+    public function setSpeechUUID(string $speechUUID): self
     {
         $this->setEnableSpeech(true);
         $this->speechUUID = $speechUUID;
+
         return $this;
     }
 
-    public function getSpeechEndOnSilence() : ?int
+    public function getSpeechEndOnSilence(): ?int
     {
         return $this->speechEndOnSilence;
     }
 
-    public function setSpeechEndOnSilence(int $speechEndOnSilence) : self
+    /**
+     * @return $this
+     */
+    public function setSpeechEndOnSilence(int $speechEndOnSilence): self
     {
         $this->setEnableSpeech(true);
         $this->speechEndOnSilence = $speechEndOnSilence;
+
         return $this;
     }
 
-    public function getSpeechLanguage() : ?string
+    public function getSpeechLanguage(): ?string
     {
         return $this->speechLanguage;
     }
 
-    public function setSpeechLanguage(string $speechLanguage) : self
+    /**
+     * @return $this
+     */
+    public function setSpeechLanguage(string $speechLanguage): self
     {
         $this->setEnableSpeech(true);
         $this->speechLanguage = $speechLanguage;
+
         return $this;
     }
 
     /**
      * @return array<string>
      */
-    public function getSpeechContext() : ?array
+    public function getSpeechContext(): ?array
     {
         return $this->speechContext;
     }
 
     /**
      * @param array<string> $speechContext Array of words to help with speech recognition
+     *
+     * @return Input
      */
-    public function setSpeechContext(array $speechContext) : self
+    public function setSpeechContext(array $speechContext): self
     {
         $this->setEnableSpeech(true);
         $this->speechContext = $speechContext;
+
         return $this;
     }
 
-    public function getSpeechStartTimeout() : ?int
+    public function getSpeechStartTimeout(): ?int
     {
         return $this->speechStartTimeout;
     }
 
-    public function setSpeechStartTimeout(int $speechStartTimeout) : self
+    /**
+     * @return $this
+     */
+    public function setSpeechStartTimeout(int $speechStartTimeout): self
     {
         $this->setEnableSpeech(true);
         $this->speechStartTimeout = $speechStartTimeout;
+
         return $this;
     }
 
-    public function getSpeechMaxDuration() : ?int
+    public function getSpeechMaxDuration(): ?int
     {
         return $this->speechMaxDuration;
     }
 
-    public function setSpeechMaxDuration(int $speechMaxDuration) : self
+    public function setSpeechMaxDuration(int $speechMaxDuration): self
     {
         $this->setEnableSpeech(true);
         $this->speechMaxDuration = $speechMaxDuration;
+
         return $this;
     }
 
-    public function getEventWebhook() : ?Webhook
+    public function getEventWebhook(): ?Webhook
     {
         return $this->eventWebhook;
     }
 
-    public function setEventWebhook(Webhook $eventWebhook) : self
+    /**
+     * @return $this
+     */
+    public function setEventWebhook(Webhook $eventWebhook): self
     {
         $this->eventWebhook = $eventWebhook;
+
         return $this;
     }
 
-    public function getEnableSpeech() : bool
+    public function getEnableSpeech(): bool
     {
         return $this->enableSpeech;
     }
 
-    public function setEnableSpeech(bool $enableSpeech)
+    /**
+     * @return $this
+     */
+    public function setEnableSpeech(bool $enableSpeech): Input
     {
         $this->enableSpeech = $enableSpeech;
+
         return $this;
     }
 
-    public function getEnableDtmf() : bool
+    public function getEnableDtmf(): bool
     {
         return $this->enableDtmf;
     }
 
-    public function setEnableDtmf(bool $enableDtmf)
+    /**
+     * @return $this
+     */
+    public function setEnableDtmf(bool $enableDtmf): Input
     {
         $this->enableDtmf = $enableDtmf;
+
         return $this;
     }
 }

@@ -1,11 +1,11 @@
 <?php
 
-use Nexmo\Client;
-use Nexmo\Application\Application;
+use Vonage\Application\Application;
+use Vonage\Client;
 
-require_once '../vendor/autoload.php';
+require_once __DIR__ . '/vonage.php';
 
-$client = new Client(new Nexmo\Client\Credentials\Basic(API_KEY, API_SECRET));
+$client = new Client(new Vonage\Client\Credentials\Basic(API_KEY, API_SECRET));
 
 $a = new Application();
 
@@ -19,4 +19,4 @@ $a->getVbcConfig()->enable();
 
 $r = $client->applications()->create($a);
 
-print_r($r);
+vonageDebug($r);

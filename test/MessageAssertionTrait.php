@@ -1,26 +1,31 @@
 <?php
+
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
+
+declare(strict_types=1);
 
 namespace VonageTest;
 
-use Vonage\Message\Message;
-use GuzzleHttp\Psr7\Request;
+use InvalidArgumentException;
 use Vonage\Message\MessageInterface;
+
+use function count;
 
 trait MessageAssertionTrait
 {
-    public static function assertListOfMessagesEqual(array $expected, array $actual)
+
+    public static function assertListOfMessagesEqual(array $expected, array $actual): void
     {
         $expectedCount = count($expected);
         $actualCount = count($actual);
 
         if ($expectedCount !== $actualCount) {
-            throw new \InvalidArgumentException('Expected count and actual count must match');
+            throw new InvalidArgumentException('Expected count and actual count must match');
         }
 
         // If passed empty arrays, there are no messages to compare
@@ -33,7 +38,7 @@ trait MessageAssertionTrait
         }
     }
 
-    public static function assertMessagesEqual(MessageInterface $expected, MessageInterface $actual)
+    public static function assertMessagesEqual(MessageInterface $expected, MessageInterface $actual): void
     {
         self::assertEquals($expected->getResponseData(), $actual->getResponseData());
     }

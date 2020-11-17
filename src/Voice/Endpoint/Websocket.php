@@ -1,12 +1,22 @@
 <?php
+
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
+ */
+
 declare(strict_types=1);
 
 namespace Vonage\Voice\Endpoint;
 
+use function array_key_exists;
+
 class Websocket implements EndpointInterface
 {
-    const TYPE_16000 = 'audio/116;rate=16000';
-    const TYPE_8000 = 'audio/116;rate=8000';
+    public const TYPE_16000 = 'audio/116;rate=16000';
+    public const TYPE_8000 = 'audio/116;rate=8000';
 
     /**
      * @var string
@@ -30,7 +40,7 @@ class Websocket implements EndpointInterface
         $this->setHeaders($headers);
     }
 
-    public static function factory(string $uri, array $data = []) : Websocket
+    public static function factory(string $uri, array $data = []): Websocket
     {
         $endpoint = new Websocket($uri);
 
@@ -48,7 +58,7 @@ class Websocket implements EndpointInterface
     /**
      * @return array{type: string, uri: string, content-type?: string, headers?: array<string, string>}
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->toArray();
     }
@@ -56,7 +66,7 @@ class Websocket implements EndpointInterface
     /**
      * @return array{type: string, uri: string, content-type?: string, headers?: array<string, string>}
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $data = [
             'type' => 'websocket',
@@ -71,39 +81,48 @@ class Websocket implements EndpointInterface
         return $data;
     }
 
-    /**
-     * @return string
-     */
-    public function getId() : string
+    public function getId(): string
     {
         return $this->id;
     }
 
-    public function getContentType() : string
+    public function getContentType(): string
     {
         return $this->contentType;
     }
 
-    public function setContentType(string $contentType) : self
+    /**
+     * @return $this
+     */
+    public function setContentType(string $contentType): self
     {
         $this->contentType = $contentType;
+
         return $this;
     }
 
-    public function getHeaders() : array
+    public function getHeaders(): array
     {
         return $this->headers;
     }
 
-    public function addHeader(string $key, string $value) : self
+    /**
+     * @return $this
+     */
+    public function addHeader(string $key, string $value): self
     {
         $this->headers[$key] = $value;
+
         return $this;
     }
 
-    public function setHeaders(array $headers) : self
+    /**
+     * @return $this
+     */
+    public function setHeaders(array $headers): self
     {
         $this->headers = $headers;
+
         return $this;
     }
 }

@@ -1,23 +1,28 @@
 <?php
+
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
+
+declare(strict_types=1);
 
 namespace VonageTest\Insights;
 
-use Vonage\Insights\Basic;
 use PHPUnit\Framework\TestCase;
+use Vonage\Insights\Basic;
 
 class BasicTest extends TestCase
 {
-
     /**
      * @dataProvider basicTestProvider
+     *
+     * @param $basic
+     * @param $inputData
      */
-    public function testArrayAccess($basic, $inputData)
+    public function testArrayAccess($basic, $inputData): void
     {
         $this->assertEquals($inputData['request_id'], @$basic['request_id']);
         $this->assertEquals($inputData['international_format_number'], @$basic['international_format_number']);
@@ -30,8 +35,11 @@ class BasicTest extends TestCase
 
     /**
      * @dataProvider basicTestProvider
+     *
+     * @param $basic
+     * @param $inputData
      */
-    public function testObjectAccess($basic, $inputData)
+    public function testObjectAccess($basic, $inputData): void
     {
         $this->assertEquals($inputData['request_id'], $basic->getRequestId());
         $this->assertEquals($inputData['international_format_number'], $basic->getInternationalFormatNumber());
@@ -42,7 +50,7 @@ class BasicTest extends TestCase
         $this->assertEquals($inputData['country_prefix'], $basic->getCountryPrefix());
     }
 
-    public function basicTestProvider()
+    public function basicTestProvider(): array
     {
         $r = [];
 
@@ -55,7 +63,7 @@ class BasicTest extends TestCase
                 'country_code' => 'GB',
                 'country_code_iso3' => 'GBR',
                 'country_name' => 'United Kingdom',
-                'country_prefix' => '44',
+                'country_prefix' => 44,
         ];
 
         $basic1 = new Basic($inputBasic1['national_format_number']);

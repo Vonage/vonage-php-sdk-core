@@ -1,20 +1,34 @@
 <?php
+
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
+
+declare(strict_types=1);
 
 namespace Vonage\Message;
 
+use function array_diff;
+use function array_map;
+use function mb_convert_encoding;
+use function ord;
+use function preg_split;
+
 class EncodingDetector
 {
-    public function requiresUnicodeEncoding($content)
+    /**
+     * @see https://en.wikipedia.org/wiki/GSM_03.38#GSM_7-bit_default_alphabet_and_extension_table_of_3GPP_TS_23.038_/_GSM_03.38
+     *
+     * @param $content
+     */
+    public function requiresUnicodeEncoding($content): bool
     {
         $gsmCodePoints = array_map(
             $this->convertIntoUnicode(),
-            [ // See: https://en.wikipedia.org/wiki/GSM_03.38#GSM_7-bit_default_alphabet_and_extension_table_of_3GPP_TS_23.038_/_GSM_03.38
+            [
                 '@', '£', '$', '¥', 'è', 'é', 'ù', 'ì', 'ò', 'ç', "\r", 'Ø', 'ø', "\n", 'Å', 'å',
                 'Δ', '_', 'Φ', 'Γ', 'Λ', 'Ω', 'Π', 'Ψ', 'Σ', 'Θ', 'Ξ', 'Æ', 'æ', 'ß', 'É',
                 ' ', '!', '"', '#', '¤', '%', '&', '\'', '(', ')', '*', '+', ',', '-', '.', '/',
@@ -28,7 +42,7 @@ class EncodingDetector
         );
 
         // Split $text into an array in a way that respects multibyte characters.
-        $textChars = preg_split('//u', $content, null, PREG_SPLIT_NO_EMPTY);
+        $textChars = preg_split('//u', $content, -1, PREG_SPLIT_NO_EMPTY);
 
         // Array of codepoint values for characters in $text.
         $textCodePoints = array_map($this->convertIntoUnicode(), $textChars);
@@ -40,12 +54,12 @@ class EncodingDetector
         return !empty($nonGsmCodePoints);
     }
 
-    private function convertIntoUnicode()
+    private function convertIntoUnicode(): callable
     {
-        return function ($char) {
+        return static function ($char) {
             $k = mb_convert_encoding($char, 'UTF-16LE', 'UTF-8');
-            $k1 = ord(substr($k, 0, 1));
-            $k2 = ord(substr($k, 1, 1));
+            $k1 = ord($k[0]);
+            $k2 = ord($k[1]);
 
             return $k2 * 256 + $k1;
         };

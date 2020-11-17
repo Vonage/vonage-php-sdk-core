@@ -1,27 +1,34 @@
 <?php
+
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2017 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
 
-namespace VonageTest\Calls;
+declare(strict_types=1);
 
-use Vonage\Call\Unearmuff;
-use EnricoStahn\JsonAssert\Assert as JsonAssert;
+namespace VonageTest\Call;
+
+use Helmich\JsonAssert\JsonAssertions;
 use PHPUnit\Framework\TestCase;
+use Vonage\Call\Unearmuff;
+
+use function file_get_contents;
+use function json_decode;
+use function json_encode;
 
 class UnearmuffTest extends TestCase
 {
-    use JsonAssert;
+    use JsonAssertions;
 
-    public function testStructure()
+    public function testStructure(): void
     {
-        $mute = @new Unearmuff();
+        $schema = file_get_contents(__DIR__ . '/schema/unearmuff.json');
+        $json = json_decode(json_encode(@new Unearmuff()), true);
 
-        $json = json_decode(json_encode($mute));
-        $this->assertJsonMatchesSchema($json, __DIR__ . '/schema/unearmuff.json');
-        $this->assertJsonValueEquals('unearmuff', 'action', $json);
+        $this->assertJsonDocumentMatchesSchema($json, json_decode(json_encode($schema), true));
+        $this->assertJsonValueEquals($json, '$.action', 'unearmuff');
     }
 }

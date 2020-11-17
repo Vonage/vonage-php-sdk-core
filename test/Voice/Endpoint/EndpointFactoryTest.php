@@ -1,30 +1,36 @@
 <?php
+
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
+ */
+
 declare(strict_types=1);
 
 namespace VonageTest\Voice\Endpoint;
 
+use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use Vonage\Voice\Endpoint\App;
+use Vonage\Voice\Endpoint\EndpointFactory;
+use Vonage\Voice\Endpoint\Phone;
 use Vonage\Voice\Endpoint\SIP;
 use Vonage\Voice\Endpoint\VBC;
-use Vonage\Voice\Endpoint\Phone;
-use PHPUnit\Framework\TestCase;
 use Vonage\Voice\Endpoint\Websocket;
-use Vonage\Voice\Endpoint\EndpointFactory;
 
 class EndpointFactoryTest extends TestCase
 {
-    public function testCanCreateAppEndpoint()
+    public function testCanCreateAppEndpoint(): void
     {
-        $factory = new EndpointFactory();
-        $endpoint = $factory->create([
+        $this->assertInstanceOf(App::class, (new EndpointFactory())->create([
             'type' => 'app',
             'user' => 'username',
-        ]);
-
-        $this->assertTrue($endpoint instanceof App);
+        ]));
     }
 
-    public function testCanCreatePhoneEndpoint()
+    public function testCanCreatePhoneEndpoint(): void
     {
         $data = [
             'type' => 'phone',
@@ -34,43 +40,38 @@ class EndpointFactoryTest extends TestCase
                 'ringbackTone' => 'https://test.domain/ringback.mp3'
             ]
         ];
-
         $factory = new EndpointFactory();
         $endpoint = $factory->create($data);
 
-        $this->assertTrue($endpoint instanceof Phone);
+        $this->assertInstanceOf(Phone::class, $endpoint);
         $this->assertSame($data, $endpoint->toArray());
     }
 
-    public function testCanCreateSIPEndpoint()
+    public function testCanCreateSIPEndpoint(): void
     {
         $data = [
             'type' => 'sip',
             'uri' => 'sip:rebekka@sip.example.com',
         ];
+        $endpoint = (new EndpointFactory())->create($data);
 
-        $factory = new EndpointFactory();
-        $endpoint = $factory->create($data);
-
-        $this->assertTrue($endpoint instanceof SIP);
+        $this->assertInstanceOf(SIP::class, $endpoint);
         $this->assertSame($data['uri'], $endpoint->getId());
     }
 
-    public function testCanCreateVBCEndpoint()
+    public function testCanCreateVBCEndpoint(): void
     {
         $data = [
             'type' => 'vbc',
             'extension' => '123',
         ];
+        $endpoint = (new EndpointFactory())->create($data);
 
-        $factory = new EndpointFactory();
-        $endpoint = $factory->create($data);
-
-        $this->assertTrue($endpoint instanceof VBC);
+        $this->assertInstanceOf(VBC::class, $endpoint);
         $this->assertSame($data, $endpoint->toArray());
     }
 
-    public function testCanCreateWebsocketEndpoint()
+    public function testCanCreateWebsocketEndpoint(): void
     {
         $data = [
             'type' => 'websocket',
@@ -78,23 +79,21 @@ class EndpointFactoryTest extends TestCase
             'content-type' => 'audio/116;rate=8000',
             'headers' => ['key' => 'value'],
         ];
+        $endpoint = (new EndpointFactory())->create($data);
 
-        $factory = new EndpointFactory();
-        $endpoint = $factory->create($data);
-
-        $this->assertTrue($endpoint instanceof Websocket);
+        $this->assertInstanceOf(Websocket::class, $endpoint);
         $this->assertSame($data, $endpoint->toArray());
     }
 
-    public function testThrowsExceptionOnUnknownEndpoint()
+    public function testThrowsExceptionOnUnknownEndpoint(): void
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Unknown endpoint type');
 
-        $factory = new EndpointFactory();
-        $factory->create([
-            'type' => 'foo',
-            'user' => 'username',
-        ]);
+        (new EndpointFactory())
+            ->create([
+                'type' => 'foo',
+                'user' => 'username',
+            ]);
     }
 }

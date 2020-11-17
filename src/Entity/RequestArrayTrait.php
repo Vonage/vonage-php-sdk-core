@@ -1,19 +1,30 @@
 <?php
+
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
 
+declare(strict_types=1);
+
 namespace Vonage\Entity;
+
+use Exception;
+use RuntimeException;
+use Vonage\Client\Exception\Exception as ClientException;
+
+use function get_class;
+use function method_exists;
+use function parse_str;
+use function sprintf;
 
 /**
  * Implements getRequestData from EntityInterface with a simple array. Request data stored in an array, and locked once
  * a request object has been set.
  *
  * @deprecated This information will be available at API client level as opposed to the model level
- *
  * @see EntityInterface::getRequestData()
  */
 trait RequestArrayTrait
@@ -25,15 +36,19 @@ trait RequestArrayTrait
 
     /**
      * Get an array of params to use in an API request.
+     *
+     * @throws ClientException
      */
-    public function getRequestData($sent = true)
+    public function getRequestData(bool $sent = true): array
     {
         if (!($this instanceof EntityInterface)) {
-            throw new \Exception(sprintf(
-                '%s can only be used if the class implements %s',
-                __TRAIT__,
-                EntityInterface::class
-            ));
+            throw new ClientException(
+                sprintf(
+                    '%s can only be used if the class implements %s',
+                    __TRAIT__,
+                    EntityInterface::class
+                )
+            );
         }
 
         if ($sent && ($request = $this->getRequest())) {
@@ -51,26 +66,34 @@ trait RequestArrayTrait
 
         return $this->requestData;
     }
-    
-    protected function setRequestData($name, $value)
+
+    /**
+     * @throws Exception
+     */
+    protected function setRequestData($name, $value): self
     {
         if (!($this instanceof EntityInterface)) {
-            throw new \Exception(sprintf(
-                '%s can only be used if the class implements %s',
-                __TRAIT__,
-                EntityInterface::class
-            ));
+            throw new RuntimeException(
+                sprintf(
+                    '%s can only be used if the class implements %s',
+                    __TRAIT__,
+                    EntityInterface::class
+                )
+            );
         }
 
         if (@$this->getResponse()) {
-            throw new \RuntimeException(sprintf(
-                'can not set request parameter `%s` for `%s` after API request has be made',
-                $name,
-                get_class($this)
-            ));
+            throw new RuntimeException(
+                sprintf(
+                    'can not set request parameter `%s` for `%s` after API request has be made',
+                    $name,
+                    get_class($this)
+                )
+            );
         }
 
         $this->requestData[$name] = $value;
+
         return $this;
     }
 }

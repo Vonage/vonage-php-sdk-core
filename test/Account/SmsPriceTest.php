@@ -1,27 +1,27 @@
 <?php
+
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
+
+declare(strict_types=1);
 
 namespace VonageTest\Account;
 
-use Vonage\Network;
-use Vonage\Account\SmsPrice;
 use PHPUnit\Framework\TestCase;
+use Vonage\Account\SmsPrice;
 
 class SmsPriceTest extends TestCase
 {
-    public function setUp(): void
-    {
-    }
-
     /**
      * @dataProvider smsPriceProvider
+     *
+     * @param $smsPrice
      */
-    public function testFromArray($smsPrice)
+    public function testFromArray($smsPrice): void
     {
         $this->assertEquals("US", $smsPrice->getCountryCode());
         $this->assertEquals("United States", $smsPrice->getCountryName());
@@ -31,8 +31,10 @@ class SmsPriceTest extends TestCase
 
     /**
      * @dataProvider smsPriceProvider
+     *
+     * @param $smsPrice
      */
-    public function testGetters($smsPrice)
+    public function testGetters($smsPrice): void
     {
         $this->assertEquals("US", $smsPrice->getCountryCode());
         $this->assertEquals("United States", $smsPrice->getCountryName());
@@ -43,8 +45,10 @@ class SmsPriceTest extends TestCase
 
     /**
      * @dataProvider smsPriceProvider
+     *
+     * @param $smsPrice
      */
-    public function testArrayAccess($smsPrice)
+    public function testArrayAccess($smsPrice): void
     {
         $this->assertEquals("US", @$smsPrice['country_code']);
         $this->assertEquals("United States", @$smsPrice['country_name']);
@@ -55,21 +59,25 @@ class SmsPriceTest extends TestCase
 
     /**
      * @dataProvider smsPriceProvider
+     *
+     * @param $smsPrice
      */
-    public function testUsesCustomPriceForKnownNetwork($smsPrice)
+    public function testUsesCustomPriceForKnownNetwork($smsPrice): void
     {
         $this->assertEquals("0.123", $smsPrice->getPriceForNetwork('21039'));
     }
 
     /**
      * @dataProvider smsPriceProvider
+     *
+     * @param $smsPrice
      */
-    public function testUsesDefaultPriceForUnknownNetwork($smsPrice)
+    public function testUsesDefaultPriceForUnknownNetwork($smsPrice): void
     {
         $this->assertEquals("0.00512", $smsPrice->getPriceForNetwork('007'));
     }
 
-    public function smsPriceProvider()
+    public function smsPriceProvider(): array
     {
         $r = [];
 

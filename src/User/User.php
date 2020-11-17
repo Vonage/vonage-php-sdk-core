@@ -1,28 +1,35 @@
 <?php
+
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
+
+declare(strict_types=1);
 
 namespace Vonage\User;
 
+use JsonSerializable;
+use Laminas\Diactoros\Request;
+use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Http\Message\ResponseInterface;
 use Vonage\Client\ClientAwareInterface;
 use Vonage\Client\ClientAwareTrait;
+use Vonage\Client\Exception as ClientException;
 use Vonage\Entity\EntityInterface;
 use Vonage\Entity\JsonResponseTrait;
 use Vonage\Entity\JsonSerializableTrait;
 use Vonage\Entity\JsonUnserializableInterface;
 use Vonage\Entity\NoRequestResponseTrait;
-use Zend\Diactoros\Request;
-use Vonage\Client\Exception;
-use Psr\Http\Message\ResponseInterface;
+
+use function json_decode;
 
 /**
  * @deprecated This will be removed in a future version, as this API is still considered Beta
  */
-class User implements EntityInterface, \JsonSerializable, JsonUnserializableInterface, ClientAwareInterface
+class User implements EntityInterface, JsonSerializable, JsonUnserializableInterface, ClientAwareInterface
 {
     use NoRequestResponseTrait;
     use JsonSerializableTrait;
@@ -36,9 +43,15 @@ class User implements EntityInterface, \JsonSerializable, JsonUnserializableInte
         $this->data['id'] = $id;
     }
 
-    public function setName($name)
+    /**
+     * @param $name
+     *
+     * @return $this
+     */
+    public function setName($name): self
     {
         $this->data['name'] = $name;
+
         return $this;
     }
 
@@ -47,13 +60,20 @@ class User implements EntityInterface, \JsonSerializable, JsonUnserializableInte
         return $this->data['id'];
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return (string)$this->getId();
     }
 
-
-    public function get()
+    /**
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
+     * @throws ClientExceptionInterface
+     *
+     * @return $this
+     */
+    public function get(): self
     {
         $request = new Request(
             $this->getClient()->getApiUrl() . Collection::getCollectionPath() . '/' . $this->getId(),
@@ -62,7 +82,7 @@ class User implements EntityInterface, \JsonSerializable, JsonUnserializableInte
 
         $response = $this->getClient()->send($request);
 
-        if ($response->getStatusCode() != '200') {
+        if ((int)$response->getStatusCode() !== 200) {
             throw $this->getException($response);
         }
 
@@ -72,13 +92,19 @@ class User implements EntityInterface, \JsonSerializable, JsonUnserializableInte
         return $this;
     }
 
+    /**
+     * @throws ClientExceptionInterface
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
+     */
     public function getConversations()
     {
         $response = $this->getClient()->get(
-            $this->getClient()->getApiUrl() . Collection::getCollectionPath().'/'.$this->getId().'/conversations'
+            $this->getClient()->getApiUrl() . Collection::getCollectionPath() . '/' . $this->getId() . '/conversations'
         );
 
-        if ($response->getStatusCode() != '200') {
+        if ((int)$response->getStatusCode() !== 200) {
             throw $this->getException($response);
         }
 
@@ -88,34 +114,41 @@ class User implements EntityInterface, \JsonSerializable, JsonUnserializableInte
         return $conversationCollection->hydrateAll($data);
     }
 
+    /**
+     * @return array|mixed
+     */
     public function jsonSerialize()
     {
         return $this->data;
     }
 
-    public function jsonUnserialize(array $json)
+    /**
+     * @return void|null
+     */
+    public function jsonUnserialize(array $json): void
     {
         $this->data = $json;
     }
 
-    public function getRequestDataForConversation()
+    public function getRequestDataForConversation(): array
     {
         return [
             'user_id' => $this->getId()
         ];
     }
 
+    /**
+     * @throws ClientException\Exception
+     *
+     * @return ClientException\Request|ClientException\Server
+     */
     protected function getException(ResponseInterface $response)
     {
         $body = json_decode($response->getBody()->getContents(), true);
-        $status = $response->getStatusCode();
+        $status = (int)$response->getStatusCode();
 
         // This message isn't very useful, but we shouldn't ever see it
-        $errorTitle = 'Unexpected error';
-
-        if (isset($body['code'])) {
-            $errorTitle = $body['code'];
-        }
+        $errorTitle = $body['code'] ?? 'Unexpected error';
 
         if (isset($body['description']) && $body['description']) {
             $errorTitle = $body['description'];
@@ -125,12 +158,12 @@ class User implements EntityInterface, \JsonSerializable, JsonUnserializableInte
             $errorTitle = $body['error_title'];
         }
 
-        if ($status >= 400 and $status < 500) {
-            $e = new Exception\Request($errorTitle, $status);
-        } elseif ($status >= 500 and $status < 600) {
-            $e = new Exception\Server($errorTitle, $status);
+        if ($status >= 400 && $status < 500) {
+            $e = new ClientException\Request($errorTitle, $status);
+        } elseif ($status >= 500 && $status < 600) {
+            $e = new ClientException\Server($errorTitle, $status);
         } else {
-            $e = new Exception\Exception('Unexpected HTTP Status Code');
+            $e = new ClientException\Exception('Unexpected HTTP Status Code');
             throw $e;
         }
 

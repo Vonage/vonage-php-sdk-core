@@ -1,4 +1,12 @@
 <?php
+
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
+ */
+
 declare(strict_types=1);
 
 namespace Vonage\Voice\Webhook;
@@ -33,22 +41,22 @@ class Answer
         $this->conversationUuid = $event['conversation_uuid'];
     }
 
-    public function getConversationUuid() : string
+    public function getConversationUuid(): string
     {
         return $this->conversationUuid;
     }
 
-    public function getFrom() : string
+    public function getFrom(): string
     {
         return $this->from;
     }
 
-    public function getTo() : string
+    public function getTo(): string
     {
         return $this->to;
     }
 
-    public function getUuid() : string
+    public function getUuid(): string
     {
         return $this->uuid;
     }

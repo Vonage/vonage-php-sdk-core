@@ -1,24 +1,31 @@
 <?php
+
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
+
+declare(strict_types=1);
 
 namespace VonageTest\Numbers;
 
-use Prophecy\Argument;
-use Vonage\Numbers\Client;
-use Vonage\Numbers\Number;
-use Vonage\Client\Exception;
-use Zend\Diactoros\Response;
-use Vonage\Client\APIResource;
+use Laminas\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
-use VonageTest\Psr7AssertionTrait;
-use Vonage\Client\Exception\Request;
+use Prophecy\Argument;
+use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
+use Vonage\Client\APIResource;
+use Vonage\Client\Exception as ClientException;
+use Vonage\Client\Exception\Request as RequestException;
+use Vonage\Numbers\Client as NumbersClient;
 use Vonage\Numbers\Filter\AvailableNumbers;
+use Vonage\Numbers\Number;
+use VonageTest\Psr7AssertionTrait;
+
+use function fopen;
+use function is_null;
 
 class ClientTest extends TestCase
 {
@@ -32,7 +39,7 @@ class ClientTest extends TestCase
     protected $vonageClient;
 
     /**
-     * @var Client
+     * @var NumbersClient
      */
     protected $numberClient;
 
@@ -41,18 +48,27 @@ class ClientTest extends TestCase
         $this->vonageClient = $this->prophesize('Vonage\Client');
         $this->vonageClient->getRestUrl()->willReturn('https://rest.nexmo.com');
 
-        $this->numberClient = new Client();
-        $this->numberClient->setClient($this->vonageClient->reveal());
+        /** @noinspection PhpParamsInspection */
+        $this->numberClient = (new NumbersClient())->setClient($this->vonageClient->reveal());
     }
 
     /**
      * @dataProvider updateNumber
+     *
+     * @param $payload
+     * @param $id
+     * @param $expectedId
+     * @param $lookup
+     *
+     * @throws ClientException\Exception
+     * @throws RequestException
+     * @throws ClientExceptionInterface
      */
-    public function testUpdateNumber($payload, $id, $expectedId, $lookup)
+    public function testUpdateNumber($payload, $id, $expectedId, $lookup): void
     {
         //based on the id provided, may need to look up the number first
         if ($lookup) {
-            if(is_null($id) OR ('1415550100' == $id)){
+            if (1415550100 === (int)$id || is_null($id)) {
                 $first = $this->getResponse('single');
             } else {
                 $first = $this->getResponse('single-update');
@@ -66,8 +82,8 @@ class ClientTest extends TestCase
             $third = null;
         }
 
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($expectedId, $lookup) {
-            if ($request->getUri()->getPath() == '/account/numbers') {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($expectedId) {
+            if ($request->getUri()->getPath() === '/account/numbers') {
                 //just getting the number first / last
                 return true;
             }
@@ -75,15 +91,14 @@ class ClientTest extends TestCase
             $this->assertEquals('/number/update', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('POST', $request->getMethod());
-            
+
             $this->assertRequestFormBodyContains('country', 'US', $request);
             $this->assertRequestFormBodyContains('msisdn', $expectedId, $request);
-
 
             $this->assertRequestFormBodyContains('moHttpUrl', 'https://example.com/new_message', $request);
             $this->assertRequestFormBodyContains('voiceCallbackType', 'vxml', $request);
             $this->assertRequestFormBodyContains('voiceCallbackValue', 'https://example.com/new_voice', $request);
-            $this->assertRequestFormBodyContains('voiceStatusCallbackUrl' , 'https://example.com/new_status' , $request);
+            $this->assertRequestFormBodyContains('voiceStatusCallbackUrl', 'https://example.com/new_status', $request);
 
             return true;
         }))->willReturn($first, $second, $third);
@@ -94,13 +109,16 @@ class ClientTest extends TestCase
             $number = @$this->numberClient->update($payload);
         }
 
-        $this->assertInstanceOf('Vonage\Numbers\Number', $number);
+        $this->assertInstanceOf(Number::class, $number);
         if ($payload instanceof Number) {
             $this->assertSame($payload, $number);
         }
     }
 
-    public function updateNumber()
+    /**
+     * @return array[]
+     */
+    public function updateNumber(): array
     {
 
         $raw = $rawId = [
@@ -127,7 +145,7 @@ class ClientTest extends TestCase
         $fresh->setWebhook(Number::WEBHOOK_MESSAGE, 'https://example.com/new_message');
         $fresh->setWebhook(Number::WEBHOOK_VOICE_STATUS, 'https://example.com/new_status');
         $fresh->setVoiceDestination('https://example.com/new_voice');
-        
+
         return [
             [$raw, '1415550100', '1415550100', true],
             [$rawId, null, '1415550100', false],
@@ -140,8 +158,16 @@ class ClientTest extends TestCase
 
     /**
      * @dataProvider numbers
+     *
+     * @param $payload
+     * @param $id
+     *
+     * @throws ClientExceptionInterface
+     * @throws ClientException\Exception
+     * @throws ClientException\Server
+     * @throws RequestException
      */
-    public function testGetNumber($payload, $id)
+    public function testGetNumber($payload, $id): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id) {
             $this->assertEquals('/account/numbers', $request->getUri()->getPath());
@@ -153,7 +179,8 @@ class ClientTest extends TestCase
 
         $number = @$this->numberClient->get($payload);
 
-        $this->assertInstanceOf('Vonage\Numbers\Number', $number);
+        $this->assertInstanceOf(Number::class, $number);
+
         if ($payload instanceof Number) {
             $this->assertSame($payload, $number);
         }
@@ -161,7 +188,7 @@ class ClientTest extends TestCase
         $this->assertSame($id, $number->getId());
     }
 
-    public function numbers()
+    public function numbers(): array
     {
         return [
             ['1415550100', '1415550100'],
@@ -169,9 +196,15 @@ class ClientTest extends TestCase
         ];
     }
 
-    public function testListNumbers()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws ClientException\Exception
+     * @throws ClientException\Server
+     * @throws RequestException
+     */
+    public function testListNumbers(): void
     {
-        $this->vonageClient->send(Argument::that(function(RequestInterface $request){
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/numbers', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
@@ -180,15 +213,20 @@ class ClientTest extends TestCase
 
         $numbers = $this->numberClient->search();
 
-        $this->assertInternalType('array', $numbers);
-        $this->assertInstanceOf('Vonage\Numbers\Number', $numbers[0]);
-        $this->assertInstanceOf('Vonage\Numbers\Number', $numbers[1]);
-
+        $this->assertIsArray($numbers);
+        $this->assertInstanceOf(Number::class, $numbers[0]);
+        $this->assertInstanceOf(Number::class, $numbers[1]);
         $this->assertSame('14155550100', $numbers[0]->getId());
         $this->assertSame('14155550101', $numbers[1]->getId());
     }
 
-    public function testSearchAvailablePassesThroughWhitelistedOptions()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws ClientException\Exception
+     * @throws ClientException\Server
+     * @throws RequestException
+     */
+    public function testSearchAvailablePassesThroughWhitelistedOptions(): void
     {
         $options = [
             'pattern' => '1',
@@ -214,7 +252,13 @@ class ClientTest extends TestCase
         @$this->numberClient->searchAvailable('US', $options);
     }
 
-    public function testSearchAvailableAcceptsFilterInterfaceOptions()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws ClientException\Exception
+     * @throws ClientException\Server
+     * @throws RequestException
+     */
+    public function testSearchAvailableAcceptsFilterInterfaceOptions(): void
     {
         $options = new AvailableNumbers([
             'pattern' => '1',
@@ -228,6 +272,7 @@ class ClientTest extends TestCase
             $this->assertEquals('/number/search', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
+
             return true;
         }))->willReturn($this->getResponse('available-numbers'));
 
@@ -236,64 +281,90 @@ class ClientTest extends TestCase
 
     /**
      * Make sure that unknown parameters fail validation
+     *
+     * @throws ClientExceptionInterface
+     * @throws ClientException\Exception
+     * @throws ClientException\Server
+     * @throws RequestException
      */
-    public function testUnknownParameterValueForSearchThrowsException()
+    public function testUnknownParameterValueForSearchThrowsException(): void
     {
-        $this->expectException(Request::class);
+        $this->expectException(RequestException::class);
         $this->expectExceptionMessage("Unknown option: 'foo'");
 
         @$this->numberClient->searchAvailable('US', ['foo' => 'bar']);
     }
 
-    public function testSearchAvailableReturnsNumberList()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws ClientException\Exception
+     * @throws ClientException\Server
+     * @throws RequestException
+     */
+    public function testSearchAvailableReturnsNumberList(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/number/search', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
+
             return true;
         }))->willReturn($this->getResponse('available-numbers'));
 
         $numbers = $this->numberClient->searchAvailable('US');
 
-        $this->assertInternalType('array', $numbers);
-        $this->assertInstanceOf('Vonage\Numbers\Number', $numbers[0]);
-        $this->assertInstanceOf('Vonage\Numbers\Number', $numbers[1]);
-
+        $this->assertIsArray($numbers);
+        $this->assertInstanceOf(Number::class, $numbers[0]);
+        $this->assertInstanceOf(Number::class, $numbers[1]);
         $this->assertSame('14155550100', $numbers[0]->getId());
         $this->assertSame('14155550101', $numbers[1]->getId());
     }
 
     /**
      * A search can return an empty set `[]` result when no numbers are found
+     *
+     * @throws ClientExceptionInterface
+     * @throws ClientException\Exception
+     * @throws ClientException\Server
+     * @throws RequestException
      */
-    public function testSearchAvailableReturnsEmptyNumberList()
+    public function testSearchAvailableReturnsEmptyNumberList(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/number/search', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
+
             return true;
         }))->willReturn($this->getResponse('empty'));
 
         $numbers = @$this->numberClient->searchAvailable('US');
 
-        $this->assertInternalType('array', $numbers);
+        $this->assertIsArray($numbers);
         $this->assertEmpty($numbers);
     }
 
-    public function testSearchOwnedErrorsOnUnknownSearchParameters()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws ClientException\Exception
+     * @throws ClientException\Server
+     * @throws RequestException
+     */
+    public function testSearchOwnedErrorsOnUnknownSearchParameters(): void
     {
-
-        $this->expectException(Exception\Request::class);
+        $this->expectException(ClientException\Request::class);
         $this->expectExceptionMessage("Unknown option: 'foo'");
-        
-        @$this->numberClient->searchOwned('1415550100', [
-            'foo' => 'bar',
-        ]);
+
+        @$this->numberClient->searchOwned('1415550100', ['foo' => 'bar']);
     }
 
-    public function testSearchOwnedPassesInAllowedAdditionalParameters()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws ClientException\Exception
+     * @throws ClientException\Server
+     * @throws RequestException
+     */
+    public function testSearchOwnedPassesInAllowedAdditionalParameters(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/numbers', $request->getUri()->getPath());
@@ -304,6 +375,7 @@ class ClientTest extends TestCase
             $this->assertRequestQueryContains('search_pattern', '0', $request);
             $this->assertRequestQueryContains('has_application', 'false', $request);
             $this->assertRequestQueryContains('pattern', '1415550100', $request);
+
             return true;
         }))->willReturn($this->getResponse('single'));
 
@@ -316,29 +388,40 @@ class ClientTest extends TestCase
         ]);
     }
 
-    public function testSearchOwnedReturnsSingleNumber()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws ClientException\Exception
+     * @throws ClientException\Server
+     * @throws RequestException
+     */
+    public function testSearchOwnedReturnsSingleNumber(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/numbers', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
+
             return true;
         }))->willReturn($this->getResponse('single'));
 
         $numbers = $this->numberClient->searchOwned('1415550100');
 
-        $this->assertInternalType('array', $numbers);
-        $this->assertInstanceOf('Vonage\Numbers\Number', $numbers[0]);
-
+        $this->assertIsArray($numbers);
+        $this->assertInstanceOf(Number::class, $numbers[0]);
         $this->assertSame('1415550100', $numbers[0]->getId());
     }
 
-    public function testPurchaseNumberWithNumberObject()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws ClientException\Exception
+     */
+    public function testPurchaseNumberWithNumberObject(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/number/buy', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('POST', $request->getMethod());
+
             return true;
         }))->willReturn($this->getResponse('post'));
 
@@ -349,7 +432,11 @@ class ClientTest extends TestCase
         // If there's no exception thrown, everything is fine!
     }
 
-    public function testPurchaseNumberWithNumberAndCountry()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws ClientException\Exception
+     */
+    public function testPurchaseNumberWithNumberAndCountry(): void
     {
         // When providing a number string, the first thing that happens is a GET request to fetch number details
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
@@ -374,9 +461,25 @@ class ClientTest extends TestCase
 
     /**
      * @dataProvider purchaseNumberErrorProvider
+     *
+     * @param $number
+     * @param $country
+     * @param $responseFile
+     * @param $expectedHttpCode
+     * @param $expectedException
+     * @param $expectedExceptionMessage
+     *
+     * @throws ClientExceptionInterface
+     * @throws ClientException\Exception
      */
-    public function testPurchaseNumberErrors($number, $country, $responseFile, $expectedHttpCode, $expectedException, $expectedExceptionMessage)
-    {
+    public function testPurchaseNumberErrors(
+        $number,
+        $country,
+        $responseFile,
+        $expectedHttpCode,
+        $expectedException,
+        $expectedExceptionMessage
+    ): void {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/number/buy', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
@@ -391,23 +494,53 @@ class ClientTest extends TestCase
         @$this->numberClient->purchase($num);
     }
 
-    public function purchaseNumberErrorProvider()
+    public function purchaseNumberErrorProvider(): array
     {
         $r = [];
 
-        $r['mismatched number/country'] = ['14155510100', 'GB', 'method-failed', 420, Exception\Request::class, 'method failed'];
-        $r['user already owns number'] = ['14155510100', 'GB', 'method-failed', 420, Exception\Request::class, 'method failed'];
-        $r['someone else owns the number'] = ['14155510100', 'GB', 'method-failed', 420, Exception\Request::class, 'method failed'];
+        $r['mismatched number/country'] = [
+            '14155510100',
+            'GB',
+            'method-failed',
+            420,
+            ClientException\Request::class,
+            'method failed'
+        ];
+
+        $r['user already owns number'] = [
+            '14155510100',
+            'GB',
+            'method-failed',
+            420,
+            ClientException\Request::class,
+            'method failed'
+        ];
+
+        $r['someone else owns the number'] = [
+            '14155510100',
+            'GB',
+            'method-failed',
+            420,
+            ClientException\Request::class,
+            'method failed'
+        ];
 
         return $r;
     }
 
-    public function testCancelNumberWithNumberObject()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws ClientException\Exception
+     * @throws ClientException\Server
+     * @throws RequestException
+     */
+    public function testCancelNumberWithNumberObject(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/number/cancel', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('POST', $request->getMethod());
+
             return true;
         }))->willReturn($this->getResponse('cancel'));
 
@@ -418,19 +551,25 @@ class ClientTest extends TestCase
         // If there's no exception thrown, everything is fine!
     }
 
-    public function testCancelNumberWithNumberString()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws ClientException\Exception
+     * @throws ClientException\Server
+     * @throws RequestException
+     */
+    public function testCancelNumberWithNumberString(): void
     {
         // When providing a number string, the first thing that happens is a GET request to fetch number details
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             return $request->getUri()->getPath() === '/account/numbers';
         }))->willReturn($this->getResponse('single'));
 
-
-        // Then we get a POST request to cancel
+    // Then we get a POST request to cancel
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             if ($request->getUri()->getPath() === '/number/cancel') {
                 $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
                 $this->assertEquals('POST', $request->getMethod());
+
                 return true;
             }
             return false;
@@ -439,19 +578,25 @@ class ClientTest extends TestCase
         @$this->numberClient->cancel('1415550100');
     }
 
-    public function testCancelNumberWithNumberAndCountryString()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws ClientException\Exception
+     * @throws ClientException\Server
+     * @throws RequestException
+     */
+    public function testCancelNumberWithNumberAndCountryString(): void
     {
         // When providing a number string, the first thing that happens is a GET request to fetch number details
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             return $request->getUri()->getPath() === '/account/numbers';
         }))->willReturn($this->getResponse('single'));
 
-
         // Then we get a POST request to cancel
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             if ($request->getUri()->getPath() === '/number/cancel') {
                 $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
                 $this->assertEquals('POST', $request->getMethod());
+
                 return true;
             }
             return false;
@@ -460,16 +605,23 @@ class ClientTest extends TestCase
         @$this->numberClient->cancel('1415550100', 'US');
     }
 
-    public function testCancelNumberError()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws ClientException\Exception
+     * @throws ClientException\Server
+     * @throws RequestException
+     */
+    public function testCancelNumberError(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/number/cancel', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('POST', $request->getMethod());
+
             return true;
         }))->willReturn($this->getResponse('method-failed', 420));
 
-        $this->expectException(Exception\Request::class);
+        $this->expectException(ClientException\Request::class);
         $this->expectExceptionMessage('method failed');
 
         $num = new Number('1415550100', 'US');
@@ -478,10 +630,15 @@ class ClientTest extends TestCase
 
     /**
      * Make sure that integer values that fail validation throw properly
+     *
+     * @throws ClientExceptionInterface
+     * @throws ClientException\Exception
+     * @throws ClientException\Server
+     * @throws RequestException
      */
-    public function testInvalidIntegerValueForSearchThrowsException()
+    public function testInvalidIntegerValueForSearchThrowsException(): void
     {
-        $this->expectException(Request::class);
+        $this->expectException(RequestException::class);
         $this->expectExceptionMessage("Invalid value: 'size' must be an integer");
 
         @$this->numberClient->searchOwned(null, ['size' => 'bob']);
@@ -489,10 +646,15 @@ class ClientTest extends TestCase
 
     /**
      * Make sure that boolean values that fail validation throw properly
+     *
+     * @throws ClientExceptionInterface
+     * @throws ClientException\Exception
+     * @throws ClientException\Server
+     * @throws RequestException
      */
-    public function testInvalidBooleanValueForSearchThrowsException()
+    public function testInvalidBooleanValueForSearchThrowsException(): void
     {
-        $this->expectException(Request::class);
+        $this->expectException(RequestException::class);
         $this->expectExceptionMessage("Invalid value: 'has_application' must be a boolean value");
 
         @$this->numberClient->searchOwned(null, ['has_application' => 'bob']);
@@ -500,13 +662,9 @@ class ClientTest extends TestCase
 
     /**
      * Get the API response we'd expect for a call to the API.
-     *
-     * @param string $type
-     * @return Response
      */
-    protected function getResponse($type = 'success', $status = 200)
+    protected function getResponse(string $type = 'success', int $status = 200): Response
     {
-        return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'r'), $status);
+        return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'rb'), $status);
     }
-
 }

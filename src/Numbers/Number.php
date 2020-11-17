@@ -1,13 +1,18 @@
 <?php
+
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
+
+declare(strict_types=1);
 
 namespace Vonage\Numbers;
 
+use InvalidArgumentException;
+use RuntimeException;
 use Vonage\Application\Application;
 use Vonage\Entity\EntityInterface;
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
@@ -17,31 +22,44 @@ use Vonage\Entity\JsonSerializableTrait;
 use Vonage\Entity\JsonUnserializableInterface;
 use Vonage\Entity\NoRequestResponseTrait;
 
+use function get_class;
+use function in_array;
+use function is_null;
+use function json_decode;
+use function json_last_error;
+use function preg_match;
+use function stripos;
+use function strpos;
+use function trigger_error;
+
 class Number implements EntityInterface, JsonSerializableInterface, JsonUnserializableInterface, ArrayHydrateInterface
 {
     use JsonSerializableTrait;
     use NoRequestResponseTrait;
     use JsonResponseTrait;
 
-    const TYPE_MOBILE = 'mobile-lvn';
-    const TYPE_FIXED  = 'landline';
+    public const TYPE_MOBILE = 'mobile-lvn';
+    public const TYPE_FIXED = 'landline';
 
-    const FEATURE_VOICE = 'VOICE';
-    const FEATURE_SMS   = 'SMS';
-    const FEATURE_MMS   = 'MMS';
-    const FEATURE_SMS_VOICE   = 'SMS,VOICE';
-    const FEATURE_SMS_MMS   = 'SMS,MMS';
-    const FEATURE_VOICE_MMS   = 'VOICE,MMS';
-    const FEATURE_ALL   = 'SMS,MMS,VOICE';
+    public const FEATURE_VOICE = 'VOICE';
+    public const FEATURE_SMS = 'SMS';
+    public const FEATURE_MMS = 'MMS';
+    public const FEATURE_SMS_VOICE = 'SMS,VOICE';
+    public const FEATURE_SMS_MMS = 'SMS,MMS';
+    public const FEATURE_VOICE_MMS = 'VOICE,MMS';
+    public const FEATURE_ALL = 'SMS,MMS,VOICE';
 
-    const WEBHOOK_MESSAGE      = 'moHttpUrl';
-    const WEBHOOK_VOICE_STATUS = 'voiceStatusCallbackUrl';
+    public const WEBHOOK_MESSAGE = 'moHttpUrl';
+    public const WEBHOOK_VOICE_STATUS = 'voiceStatusCallbackUrl';
 
-    const ENDPOINT_SIP  = 'sip';
-    const ENDPOINT_TEL  = 'tel';
-    const ENDPOINT_VXML = 'vxml';
-    const ENDPOINT_APP  = 'app';
+    public const ENDPOINT_SIP = 'sip';
+    public const ENDPOINT_TEL = 'tel';
+    public const ENDPOINT_VXML = 'vxml';
+    public const ENDPOINT_APP = 'app';
 
+    /**
+     * @var array
+     */
     protected $data = [];
 
     public function __construct($number = null, $country = null)
@@ -80,13 +98,16 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
         return $this->fromData('cost');
     }
 
-    public function hasFeature($feature)
+    /**
+     * @param $feature
+     */
+    public function hasFeature($feature): bool
     {
         if (!isset($this->data['features'])) {
             return false;
         }
 
-        return in_array($feature, $this->data['features']);
+        return in_array($feature, $this->data['features'], true);
     }
 
     public function getFeatures()
@@ -94,33 +115,47 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
         return $this->fromData('features');
     }
 
-    public function setWebhook($type, $url)
+    /**
+     * @param $type
+     * @param $url
+     */
+    public function setWebhook($type, $url): self
     {
-        if (!in_array($type, [self::WEBHOOK_MESSAGE, self::WEBHOOK_VOICE_STATUS])) {
-            throw new \InvalidArgumentException("invalid webhook type `$type`");
+        if (!in_array($type, [self::WEBHOOK_MESSAGE, self::WEBHOOK_VOICE_STATUS], true)) {
+            throw new InvalidArgumentException("invalid webhook type `$type`");
         }
 
         $this->data[$type] = $url;
         return $this;
     }
 
+    /**
+     * @param $type
+     */
     public function getWebhook($type)
     {
         return $this->fromData($type);
     }
 
-    public function hasWebhook($type)
+    /**
+     * @param $type
+     */
+    public function hasWebhook($type): bool
     {
         return isset($this->data[$type]);
     }
 
-    public function setVoiceDestination($endpoint, $type = null)
+    /**
+     * @param $endpoint
+     * @param $type
+     */
+    public function setVoiceDestination($endpoint, $type = null): self
     {
         if (is_null($type)) {
             $type = $this->autoType($endpoint);
         }
 
-        if (self::ENDPOINT_APP == $type and !($endpoint instanceof Application)) {
+        if (self::ENDPOINT_APP === $type && !($endpoint instanceof Application)) {
             $endpoint = new Application($endpoint);
         }
 
@@ -130,7 +165,10 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
         return $this;
     }
 
-    protected function autoType($endpoint)
+    /**
+     * @param $endpoint
+     */
+    protected function autoType($endpoint): string
     {
         if ($endpoint instanceof Application) {
             return self::ENDPOINT_APP;
@@ -140,7 +178,7 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
             return self::ENDPOINT_SIP;
         }
 
-        if (0 === strpos(strtolower($endpoint), 'http')) {
+        if (0 === stripos($endpoint, 'http')) {
             return self::ENDPOINT_VXML;
         }
 
@@ -156,48 +194,59 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
         return $this->fromData('voiceCallbackValue');
     }
 
+    /**
+     * @return mixed|null
+     */
     public function getVoiceType()
     {
-        if (!isset($this->data['voiceCallbackType'])) {
-            return null;
-        }
-
-        return $this->data['voiceCallbackType'];
+        return $this->data['voiceCallbackType'] ?? null;
     }
 
+    /**
+     * @param $name
+     */
     protected function fromData($name)
     {
         if (!isset($this->data[$name])) {
-            throw new \RuntimeException("`{$name}` has not been set");
+            throw new RuntimeException("`{$name}` has not been set");
         }
 
         return $this->data[$name];
     }
 
     /**
-     * @todo Either make this take JSON, or rename this to `fromArray`
+     * @param string|array $json
      */
-    public function jsonUnserialize(array $json)
+    public function jsonUnserialize($json): void
     {
         trigger_error(
             get_class($this) . "::jsonUnserialize is deprecated, please fromArray() instead",
             E_USER_DEPRECATED
         );
 
+        $jsonArr = json_decode($json, true);
+
+        if (json_last_error() === JSON_ERROR_NONE) {
+            $json = $jsonArr;
+        }
+
         $this->fromArray($json);
     }
 
-    public function fromArray(array $data)
+    public function fromArray(array $data): void
     {
         $this->data = $data;
     }
 
+    /**
+     * @return array|mixed
+     */
     public function jsonSerialize()
     {
         return $this->toArray();
     }
 
-    public function toArray() : array
+    public function toArray(): array
     {
         $json = $this->data;
 
@@ -207,12 +256,12 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
             unset($json['messagesCallbackValue'], $json['messagesCallbackType']);
         }
 
-        if (isset($json['voiceCallbackValue']) and ($json['voiceCallbackValue'] instanceof Application)) {
+        if (isset($json['voiceCallbackValue']) && ($json['voiceCallbackValue'] instanceof Application)) {
             $json['app_id'] = $json['voiceCallbackValue']->getId();
             unset($json['voiceCallbackValue'], $json['voiceCallbackType']);
         }
 
-        if (isset($json['voiceCallbackValue']) and $json['voiceCallbackType'] === 'app') {
+        if (isset($json['voiceCallbackValue']) && $json['voiceCallbackType'] === 'app') {
             $json['app_id'] = $json['voiceCallbackValue'];
             unset($json['voiceCallbackValue'], $json['voiceCallbackType']);
         }
@@ -220,12 +269,18 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
         return $json;
     }
 
+    /**
+     * @return string
+     */
     public function __toString()
     {
-        return (string) $this->getId();
+        return (string)$this->getId();
     }
 
-    public function setAppId(string $appId) : self
+    /**
+     * @return $this
+     */
+    public function setAppId(string $appId): self
     {
         $this->data['messagesCallbackType'] = self::ENDPOINT_APP;
         $this->data['messagesCallbackValue'] = $appId;
@@ -236,7 +291,7 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
         return $this;
     }
 
-    public function getAppId() : ?string
+    public function getAppId(): ?string
     {
         // These should never be different, but might not both be set
         return $this->data['voiceCallbackValue'] ?? $this->data['messagesCallbackValue'];

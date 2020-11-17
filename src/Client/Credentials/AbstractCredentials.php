@@ -1,18 +1,29 @@
 <?php
+
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
+
+declare(strict_types=1);
 
 namespace Vonage\Client\Credentials;
 
+use RuntimeException;
+
+use function get_class;
+use function sprintf;
+
 abstract class AbstractCredentials implements CredentialsInterface
 {
-    protected $credentials = array();
+    /**
+     * @var array
+     */
+    protected $credentials = [];
 
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return isset($this->credentials[$offset]);
     }
@@ -22,31 +33,36 @@ abstract class AbstractCredentials implements CredentialsInterface
         return $this->credentials[$offset];
     }
 
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         throw $this->readOnlyException();
     }
 
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         throw $this->readOnlyException();
     }
 
+    /**
+     * @noinspection MagicMethodsValidityInspection
+     */
     public function __get($name)
     {
         return $this->credentials[$name];
     }
 
-    public function asArray()
+    public function asArray(): array
     {
         return $this->credentials;
     }
 
-    protected function readOnlyException()
+    protected function readOnlyException(): RuntimeException
     {
-        return new \RuntimeException(sprintf(
-            '%s is read only, cannot modify using array access.',
-            get_class($this)
-        ));
+        return new RuntimeException(
+            sprintf(
+                '%s is read only, cannot modify using array access.',
+                get_class($this)
+            )
+        );
     }
 }

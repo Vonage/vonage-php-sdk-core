@@ -1,23 +1,35 @@
 <?php
+
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
+ */
+
 declare(strict_types=1);
 
 namespace Vonage\Verify;
 
+use InvalidArgumentException;
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
+
+use function array_key_exists;
+use function strlen;
 
 class RequestPSD2 implements ArrayHydrateInterface
 {
-    const PIN_LENGTH_4 = 4;
-    const PIN_LENGTH_6 = 6;
+    public const PIN_LENGTH_4 = 4;
+    public const PIN_LENGTH_6 = 6;
 
-    const WORKFLOW_SMS_TTS_TSS = 1;
-    const WORKFLOW_SMS_SMS_TSS = 2;
-    const WORKFLOW_TTS_TSS = 3;
-    const WORKFLOW_SMS_SMS = 4;
-    const WORKFLOW_SMS_TTS = 5;
-    const WORKFLOW_SMS = 6;
-    const WORKFLOW_TTS = 7;
-    
+    public const WORKFLOW_SMS_TTS_TSS = 1;
+    public const WORKFLOW_SMS_SMS_TSS = 2;
+    public const WORKFLOW_TTS_TSS = 3;
+    public const WORKFLOW_SMS_SMS = 4;
+    public const WORKFLOW_SMS_TTS = 5;
+    public const WORKFLOW_SMS = 6;
+    public const WORKFLOW_TTS = 7;
+
     /**
      * @var string
      */
@@ -74,107 +86,132 @@ class RequestPSD2 implements ArrayHydrateInterface
         }
     }
 
-    public function getCountry() : ?string
+    public function getCountry(): ?string
     {
         return $this->country;
     }
 
-    public function setCountry(string $country) : self
+    /**
+     * @return $this
+     */
+    public function setCountry(string $country): self
     {
         if (strlen($country) !== 2) {
-            throw new \InvalidArgumentException('Country must be in two character format');
+            throw new InvalidArgumentException('Country must be in two character format');
         }
+
         $this->country = $country;
+
         return $this;
     }
 
-    public function getCodeLength() : ?int
+    public function getCodeLength(): ?int
     {
         return $this->codeLength;
     }
 
-    public function setCodeLength(int $codeLength) : self
+    /**
+     * @return $this
+     */
+    public function setCodeLength(int $codeLength): self
     {
         if ($codeLength !== 4 || $codeLength !== 6) {
-            throw new \InvalidArgumentException('Pin length must be either 4 or 6 digits');
+            throw new InvalidArgumentException('Pin length must be either 4 or 6 digits');
         }
 
         $this->codeLength = $codeLength;
+
         return $this;
     }
 
-    public function getLocale() : ?string
+    public function getLocale(): ?string
     {
         return $this->locale;
     }
 
-    public function setLocale(string $locale) : self
+    /**
+     * @return $this
+     */
+    public function setLocale(string $locale): self
     {
         $this->locale = $locale;
+
         return $this;
     }
 
-    public function getPinExpiry() : ?int
+    public function getPinExpiry(): ?int
     {
         return $this->pinExpiry;
     }
 
-    public function setPinExpiry(int $pinExpiry) : self
+    /**
+     * @return $this
+     */
+    public function setPinExpiry(int $pinExpiry): self
     {
         if ($pinExpiry < 60 || $pinExpiry > 3600) {
-            throw new \InvalidArgumentException('Pin expiration must be between 60 and 3600 seconds');
+            throw new InvalidArgumentException('Pin expiration must be between 60 and 3600 seconds');
         }
 
         $this->pinExpiry = $pinExpiry;
+
         return $this;
     }
 
-    public function getNextEventWait() : ?int
+    public function getNextEventWait(): ?int
     {
         return $this->nextEventWait;
     }
 
-    public function setNextEventWait(int $nextEventWait) : self
+    /**
+     * @return $this
+     */
+    public function setNextEventWait(int $nextEventWait): self
     {
         if ($nextEventWait < 60 || $nextEventWait > 3600) {
-            throw new \InvalidArgumentException('Next Event time must be between 60 and 900 seconds');
+            throw new InvalidArgumentException('Next Event time must be between 60 and 900 seconds');
         }
 
         $this->nextEventWait = $nextEventWait;
+
         return $this;
     }
 
-    public function getWorkflowId() : ?int
+    public function getWorkflowId(): ?int
     {
         return $this->workflowId;
     }
 
-    public function setWorkflowId(int $workflowId) : self
+    /**
+     * @return $this
+     */
+    public function setWorkflowId(int $workflowId): self
     {
         if ($workflowId < 1 || $workflowId > 7) {
-            throw new \InvalidArgumentException('Workflow ID must be from 1 to 7');
+            throw new InvalidArgumentException('Workflow ID must be from 1 to 7');
         }
 
         $this->workflowId = $workflowId;
+
         return $this;
     }
 
-    public function getNumber() : string
+    public function getNumber(): string
     {
         return $this->number;
     }
 
-    public function getPayee() : string
+    public function getPayee(): string
     {
         return $this->payee;
     }
 
-    public function getAmount() : string
+    public function getAmount(): string
     {
         return $this->amount;
     }
 
-    public function fromArray(array $data)
+    public function fromArray(array $data): void
     {
         if (array_key_exists('code_length', $data)) {
             $this->setCodeLength($data['code_length']);
@@ -201,6 +238,9 @@ class RequestPSD2 implements ArrayHydrateInterface
         }
     }
 
+    /**
+     * @return string[]
+     */
     public function toArray(): array
     {
         $data = [

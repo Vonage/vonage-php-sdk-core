@@ -1,24 +1,28 @@
 <?php
+
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
+
+declare(strict_types=1);
 
 namespace VonageTest\Insights;
 
-use Vonage\Insights\Basic;
-use Vonage\Insights\Standard;
 use PHPUnit\Framework\TestCase;
+use Vonage\Insights\Standard;
 
 class StandardTest extends TestCase
 {
-
     /**
      * @dataProvider standardTestProvider
+     *
+     * @param $standard
+     * @param $inputData
      */
-    public function testArrayAccess($standard, $inputData)
+    public function testArrayAccess($standard, $inputData): void
     {
         $this->assertEquals($inputData['refund_price'], @$standard['refund_price']);
         $this->assertEquals($inputData['request_price'], @$standard['request_price']);
@@ -31,8 +35,11 @@ class StandardTest extends TestCase
 
     /**
      * @dataProvider standardTestProvider
+     *
+     * @param $standard
+     * @param $inputData
      */
-    public function testObjectAccess($standard, $inputData)
+    public function testObjectAccess($standard, $inputData): void
     {
         $this->assertEquals($inputData['refund_price'], @$standard->getRefundPrice());
         $this->assertEquals($inputData['request_price'], @$standard->getRequestPrice());
@@ -43,7 +50,7 @@ class StandardTest extends TestCase
         $this->assertEquals($inputData['roaming'], $standard->getRoaming());
     }
 
-    public function standardTestProvider()
+    public function standardTestProvider(): array
     {
         $r = [];
 

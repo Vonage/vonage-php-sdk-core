@@ -1,11 +1,20 @@
 <?php
+
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
+ */
+
 declare(strict_types=1);
 
 namespace VonageTest\Voice\NCCO\Action;
 
-use Vonage\Voice\Endpoint\Phone;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Vonage\Voice\Endpoint\EndpointInterface;
+use Vonage\Voice\Endpoint\Phone;
 use Vonage\Voice\NCCO\Action\Connect;
 use Vonage\Voice\Webhook;
 
@@ -21,9 +30,9 @@ class ConnectTest extends TestCase
         $this->endpoint = new Phone('15551231234');
     }
 
-    public function testSimpleSetup()
+    public function testSimpleSetup(): void
     {
-        $expected = [
+        $this->assertSame([
             'action' => 'connect',
             'endpoint' => [
                 [
@@ -31,27 +40,20 @@ class ConnectTest extends TestCase
                     'number' => '15551231234'
                 ]
             ]
-        ];
-
-        $action = new Connect($this->endpoint);
-
-        $this->assertSame($expected, $action->toNCCOArray());
+        ], (new Connect($this->endpoint))->toNCCOArray());
     }
 
-    public function testCanSetAdditionalInformation()
+    public function testCanSetAdditionalInformation(): void
     {
         $webhook = new Webhook('https://test.domain/events');
-
-        $action = new Connect($this->endpoint);
-        $action
+        $action = (new Connect($this->endpoint))
             ->setFrom('15553216547')
             ->setMachineDetection(Connect::MACHINE_CONTINUE)
             ->setEventType(Connect::EVENT_TYPE_SYNCHRONOUS)
             ->setLimit(6000)
             ->setRingbackTone('https://test.domain/ringback.mp3')
             ->setTimeout(10)
-            ->setEventWebhook($webhook)
-        ;
+            ->setEventWebhook($webhook);
 
         $this->assertSame('15553216547', $action->getFrom());
         $this->assertSame(Connect::MACHINE_CONTINUE, $action->getMachineDetection());
@@ -62,12 +64,10 @@ class ConnectTest extends TestCase
         $this->assertSame($webhook, $action->getEventWebhook());
     }
 
-    public function testGeneratesCorrectNCCOArray()
+    public function testGeneratesCorrectNCCOArray(): void
     {
         $webhook = new Webhook('https://test.domain/events');
-
-        $action = new Connect($this->endpoint);
-        $action
+        $ncco = (new Connect($this->endpoint))
             ->setFrom('15553216547')
             ->setMachineDetection(Connect::MACHINE_CONTINUE)
             ->setEventType(Connect::EVENT_TYPE_SYNCHRONOUS)
@@ -75,9 +75,7 @@ class ConnectTest extends TestCase
             ->setRingbackTone('https://test.domain/ringback.mp3')
             ->setTimeout(10)
             ->setEventWebhook($webhook)
-        ;
-
-        $ncco = $action->toNCCOArray();
+            ->toNCCOArray();
 
         $this->assertSame('15553216547', $ncco['from']);
         $this->assertSame(Connect::MACHINE_CONTINUE, $ncco['machineDetection']);
@@ -89,12 +87,10 @@ class ConnectTest extends TestCase
         $this->assertSame('POST', $ncco['eventMethod']);
     }
 
-    public function testJSONSerializesToCorrectStructure()
+    public function testJSONSerializesToCorrectStructure(): void
     {
         $webhook = new Webhook('https://test.domain/events');
-
-        $action = new Connect($this->endpoint);
-        $action
+        $ncco = (new Connect($this->endpoint))
             ->setFrom('15553216547')
             ->setMachineDetection(Connect::MACHINE_CONTINUE)
             ->setEventType(Connect::EVENT_TYPE_SYNCHRONOUS)
@@ -102,9 +98,7 @@ class ConnectTest extends TestCase
             ->setRingbackTone('https://test.domain/ringback.mp3')
             ->setTimeout(10)
             ->setEventWebhook($webhook)
-        ;
-
-        $ncco = $action->jsonSerialize();
+            ->jsonSerialize();
 
         $this->assertSame('15553216547', $ncco['from']);
         $this->assertSame(Connect::MACHINE_CONTINUE, $ncco['machineDetection']);
@@ -116,21 +110,19 @@ class ConnectTest extends TestCase
         $this->assertSame('POST', $ncco['eventMethod']);
     }
 
-    public function testInvalidMachineDetectionThrowsException()
+    public function testInvalidMachineDetectionThrowsException(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Uknown machine detection type');
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Unknown machine detection type');
 
-        $action = new Connect($this->endpoint);
-        $action->setMachineDetection('foo');
+        (new Connect($this->endpoint))->setMachineDetection('foo');
     }
 
-    public function testInvalidEventTypeThrowException()
+    public function testInvalidEventTypeThrowException(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Unknown event type for Connection action');
 
-        $action = new Connect($this->endpoint);
-        $action->setEventType('foo');
+        (new Connect($this->endpoint))->setEventType('foo');
     }
 }

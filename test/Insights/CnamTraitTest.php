@@ -1,23 +1,27 @@
 <?php
+
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
+
+declare(strict_types=1);
 
 namespace VonageTest\Insights;
 
-use Vonage\Insights\Standard;
 use PHPUnit\Framework\TestCase;
 
 class CnamTraitTest extends TestCase
 {
-
     /**
      * @dataProvider cnamProvider
+     *
+     * @param $cnam
+     * @param $inputData
      */
-    public function testArrayAccess($cnam, $inputData)
+    public function testArrayAccess($cnam, $inputData): void
     {
         $this->assertEquals($inputData['first_name'], @$cnam['first_name']);
         $this->assertEquals($inputData['last_name'], @$cnam['last_name']);
@@ -27,8 +31,11 @@ class CnamTraitTest extends TestCase
 
     /**
      * @dataProvider cnamProvider
+     *
+     * @param $cnam
+     * @param $inputData
      */
-    public function testObjectAccess($cnam, $inputData)
+    public function testObjectAccess($cnam, $inputData): void
     {
         $this->assertEquals($inputData['first_name'], $cnam->getFirstName());
         $this->assertEquals($inputData['last_name'], $cnam->getLastName());
@@ -36,7 +43,7 @@ class CnamTraitTest extends TestCase
         $this->assertEquals($inputData['caller_type'], $cnam->getCallerType());
     }
 
-    public function cnamProvider()
+    public function cnamProvider(): array
     {
         $r = [];
 
@@ -53,8 +60,4 @@ class CnamTraitTest extends TestCase
 
         return $r;
     }
-}
-
-class Cnam extends Standard {
-    use \Vonage\Insights\CnamTrait;
 }

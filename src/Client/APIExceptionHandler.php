@@ -1,4 +1,12 @@
 <?php
+
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
+ */
+
 declare(strict_types=1);
 
 namespace Vonage\Client;
@@ -6,27 +14,34 @@ namespace Vonage\Client;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
+use function is_string;
+use function json_decode;
+use function sprintf;
+
 class APIExceptionHandler
 {
     /**
      * Format to use for the rfc7807 formatted errors
+     *
      * @var string
      */
     protected $rfc7807Format = "%s: %s. See %s for more information";
 
-    /**
-     * @param string $format sprintf() format to use for error messages
-     */
-    public function setRfc7807Format(string $format)
+    public function setRfc7807Format(string $format): void
     {
         $this->rfc7807Format = $format;
     }
 
+    /**
+     * @throws Exception\Exception
+     *
+     * @return Exception\Request|Exception\Server
+     */
     public function __invoke(ResponseInterface $response, RequestInterface $request)
     {
         $body = json_decode($response->getBody()->getContents(), true);
         $response->getBody()->rewind();
-        $status = $response->getStatusCode();
+        $status = (int)$response->getStatusCode();
 
         // Error responses aren't consistent. Some are generated within the
         // proxy and some are generated within voice itself. This handles
@@ -61,11 +76,11 @@ class APIExceptionHandler
             $errorTitle = $body['description'];
         }
 
-        if ($status >= 400 and $status < 500) {
+        if ($status >= 400 && $status < 500) {
             $e = new Exception\Request($errorTitle, $status);
             @$e->setRequest($request);
             @$e->setResponse($response);
-        } elseif ($status >= 500 and $status < 600) {
+        } elseif ($status >= 500 && $status < 600) {
             $e = new Exception\Server($errorTitle, $status);
             @$e->setRequest($request);
             @$e->setResponse($response);

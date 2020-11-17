@@ -1,4 +1,12 @@
 <?php
+
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
+ */
+
 declare(strict_types=1);
 
 namespace VonageTest\Voice\NCCO\Action;
@@ -9,83 +17,73 @@ use Vonage\Voice\Webhook;
 
 class ConversationTest extends TestCase
 {
-    public function testSimpleSetup()
+    public function testSimpleSetup(): void
     {
-        $expected = [
+        $this->assertSame([
             'action' => 'conversation',
             'name' => 'my-conversation'
-        ];
-
-        $action = new Conversation('my-conversation');
-
-        $this->assertSame($expected, $action->toNCCOArray());
+        ], (new Conversation('my-conversation'))->toNCCOArray());
     }
 
-    public function testCanSetMusicOnHold()
+    public function testCanSetMusicOnHold(): void
     {
         $action = new Conversation('my-conversation');
         $action->setMusicOnHoldUrl('https://test.domain/hold.mp3');
-
         $data = $action->toNCCOArray();
+
         $this->assertSame(['https://test.domain/hold.mp3'], $data['musicOnHoldUrl']);
 
-        $action = Conversation::factory('my-conversation', ['musicOnHoldUrl' => 'https://test.domain/hold.mp3']);
-        $this->assertSame(['https://test.domain/hold.mp3'], $data['musicOnHoldUrl']);
+        $secondAction = Conversation::factory('my-conversation', ['musicOnHoldUrl' => 'https://test.domain/hold2.mp3']);
+        $newData = $secondAction->toNCCOArray();
+
+        $this->assertSame(['https://test.domain/hold2.mp3'], $newData['musicOnHoldUrl']);
     }
 
-    public function testCanAddIndividualSpeakers()
+    public function testCanAddIndividualSpeakers(): void
     {
-        $action = new Conversation('my-conversation');
-        $action->addCanSpeak('6a4d6af0-55a6-4667-be90-8614e4c8e83c');
+        $uuid = '6a4d6af0-55a6-4667-be90-8614e4c8e83c';
 
-        $ncco = $action->toNCCOArray();
-
-        $this->assertSame(['6a4d6af0-55a6-4667-be90-8614e4c8e83c'], $ncco['canSpeak']);
+        $this->assertSame([$uuid], (new Conversation('my-conversation'))
+            ->addCanSpeak($uuid)
+            ->toNCCOArray()['canSpeak']);
     }
 
-    public function testCanAddIndividualListeners()
+    public function testCanAddIndividualListeners(): void
     {
-        $action = new Conversation('my-conversation');
-        $action->addCanHear('6a4d6af0-55a6-4667-be90-8614e4c8e83c');
+        $uuid = '6a4d6af0-55a6-4667-be90-8614e4c8e83c';
 
-        $ncco = $action->toNCCOArray();
-
-        $this->assertSame(['6a4d6af0-55a6-4667-be90-8614e4c8e83c'], $ncco['canHear']);
+        $this->assertSame([$uuid], (new Conversation('my-conversation'))
+            ->addCanHear($uuid)
+            ->toNCCOArray()['canHear']);
     }
 
-    public function testJsonSerializesToCorrectStructure()
+    public function testJsonSerializesToCorrectStructure(): void
     {
-        $expected = [
+        $this->assertSame([
             'action' => 'conversation',
             'name' => 'my-conversation',
             'startOnEnter' => 'true',
             'endOnExit' => 'false',
             'record' => 'false',
-        ];
-
-        $action = new Conversation('my-conversation');
-        $action->setStartOnEnter(true);
-        $action->setEndOnExit(false);
-        $action->setRecord(false);
-
-        $data = $action->jsonSerialize();
-
-        $this->assertSame($expected, $data);
+        ], (new Conversation('my-conversation'))
+            ->setStartOnEnter(true)
+            ->setEndOnExit(false)
+            ->setRecord(false)
+            ->jsonSerialize());
     }
 
-    public function testCanSetRecordEventUrl()
+    public function testCanSetRecordEventUrl(): void
     {
-        $action = new Conversation('my-conversation');
-        $action->setRecord(true);
-        $action->setEventWebhook(new Webhook('https://test.domain/events'));
-
-        $data = $action->toNCCOArray();
+        $data = (new Conversation('my-conversation'))
+            ->setRecord(true)
+            ->setEventWebhook(new Webhook('https://test.domain/events'))
+            ->toNCCOArray();
 
         $this->assertSame(['https://test.domain/events'], $data['eventUrl']);
         $this->assertSame('POST', $data['eventMethod']);
     }
 
-    public function testWebhookSetInFactory()
+    public function testWebhookSetInFactory(): void
     {
         $expected = [
             'action' => 'conversation',
@@ -96,12 +94,12 @@ class ConversationTest extends TestCase
 
         $action = Conversation::factory($expected['name'], $expected);
 
-        $this->assertTrue($action->getEventWebhook() instanceof Webhook);
+        $this->assertInstanceOf(Webhook::class, $action->getEventWebhook());
         $this->assertSame($expected['eventUrl'][0], $action->getEventWebhook()->getUrl());
         $this->assertSame($expected['eventMethod'], $action->getEventWebhook()->getMethod());
     }
 
-    public function testWebhookSetInFactoryWithoutMethod()
+    public function testWebhookSetInFactoryWithoutMethod(): void
     {
         $expected = [
             'action' => 'conversation',
@@ -111,12 +109,12 @@ class ConversationTest extends TestCase
 
         $action = Conversation::factory($expected['name'], $expected);
 
-        $this->assertTrue($action->getEventWebhook() instanceof Webhook);
+        $this->assertInstanceOf(Webhook::class, $action->getEventWebhook());
         $this->assertSame($expected['eventUrl'][0], $action->getEventWebhook()->getUrl());
         $this->assertSame('POST', $action->getEventWebhook()->getMethod());
     }
 
-    public function testWebhookSetInFactoryWithStringEventUrl()
+    public function testWebhookSetInFactoryWithStringEventUrl(): void
     {
         $expected = [
             'action' => 'conversation',
@@ -126,7 +124,7 @@ class ConversationTest extends TestCase
 
         $action = Conversation::factory($expected['name'], $expected);
 
-        $this->assertTrue($action->getEventWebhook() instanceof Webhook);
+        $this->assertInstanceOf(Webhook::class, $action->getEventWebhook());
         $this->assertSame($expected['eventUrl'], $action->getEventWebhook()->getUrl());
         $this->assertSame('POST', $action->getEventWebhook()->getMethod());
     }

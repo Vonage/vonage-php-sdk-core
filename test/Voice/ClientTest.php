@@ -1,71 +1,81 @@
 <?php
+
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
+ */
+
+declare(strict_types=1);
+
 namespace VonageTest\Voice;
 
-use Vonage\Client;
-use Vonage\Voice\Call;
-use Prophecy\Argument;
-use Vonage\Voice\NCCO\NCCO;
-use Vonage\Voice\CallAction;
-use Zend\Diactoros\Response;
-use Vonage\Client\APIResource;
-use Vonage\Client\Exception\Request;
-use Vonage\Voice\Endpoint\Phone;
+use Laminas\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
-use Vonage\Voice\NCCO\Action\Talk;
+use Prophecy\Argument;
+use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Http\Message\RequestInterface;
+use Vonage\Client;
+use Vonage\Client\APIResource;
+use Vonage\Client\Exception\Request as RequestException;
 use VonageTest\Psr7AssertionTrait;
+use Vonage\Voice\CallAction;
 use Vonage\Voice\Client as VoiceClient;
-use Vonage\Voice\Webhook\Event;
+use Vonage\Voice\Endpoint\Phone;
 use Vonage\Voice\Filter\VoiceFilter;
+use Vonage\Voice\NCCO\Action\Talk;
+use Vonage\Voice\NCCO\NCCO;
 use Vonage\Voice\OutboundCall;
 use Vonage\Voice\Webhook;
-use Psr\Http\Message\RequestInterface;
+
+use function fopen;
+use function json_decode;
+use function json_encode;
 
 class ClientTest extends TestCase
 {
     use Psr7AssertionTrait;
-    
+
     /**
      * @var APIResource
      */
     protected $api;
 
-    /**
-     * @var \Prophecy\Prophecy\ObjectProphecy
-     */
     protected $vonageClient;
 
     /**
      * @var VoiceClient
      */
     protected $voiceClient;
-    
+
     public function setUp(): void
     {
         $this->vonageClient = $this->prophesize(Client::class);
         $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
 
-        $this->api = new APIResource();
-        $this->api
+        /** @noinspection PhpParamsInspection */
+        $this->api = (new APIResource())
             ->setBaseUri('/v1/calls')
             ->setCollectionName('calls')
-            ->setClient($this->vonageClient->reveal())
-        ;
+            ->setClient($this->vonageClient->reveal());
 
         $this->voiceClient = new VoiceClient($this->api);
     }
 
-    public function testHasAPI()
-    {
-        $this->assertTrue($this->voiceClient->getAPIResource() instanceof APIResource);
-    }
-
-    public function testCanCreateOutboundCall()
+    /**
+     * @throws Client\Exception\Exception
+     * @throws ClientExceptionInterface
+     */
+    public function testCanCreateOutboundCall(): void
     {
         $payload = [
-            'to' => [[
-                'type' => 'phone',
-                'number' => '15555555555'
-            ]],
+            'to' => [
+                [
+                    'type' => 'phone',
+                    'number' => '15555555555'
+                ]
+            ],
             'from' => [
                 'type' => 'phone',
                 'number' => '16666666666'
@@ -82,32 +92,37 @@ class ClientTest extends TestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
+
             return true;
-        }))->willReturn($this->getResponse('create-outbound-call-success', '201'));
+        }))->willReturn($this->getResponse('create-outbound-call-success', 201));
 
         $outboundCall = (new OutboundCall(new Phone('15555555555'), new Phone('16666666666')))
             ->setEventWebhook(new Webhook('http://domain.test/event'))
             ->setAnswerWebhook(new Webhook('http://domain.test/answer'))
-            ->setRingingTimer($payload['ringing_timer'])
-            ->setLengthTimer($payload['length_timer'])
-            ->setMachineDetection(OutboundCall::MACHINE_HANGUP)
-        ;
+            ->setRingingTimer((int)$payload['ringing_timer'])
+            ->setLengthTimer((int)$payload['length_timer'])
+            ->setMachineDetection(OutboundCall::MACHINE_HANGUP);
         $callData = $this->voiceClient->createOutboundCall($outboundCall);
 
-        $this->assertTrue($callData instanceof Event);
         $this->assertEquals('e46fd8bd-504d-4044-9600-26dd18b41111', $callData->getUuid());
         $this->assertEquals('started', $callData->getStatus());
         $this->assertEquals('outbound', $callData->getDirection());
         $this->assertEquals('2541d01c-253e-48be-a8e0-da4bbe4c3722', $callData->getConversationUuid());
     }
-    
-    public function testCanCreateOutboundCallWithNCCO()
+
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Client\Exception\Exception
+     */
+    public function testCanCreateOutboundCallWithNCCO(): void
     {
         $payload = [
-            'to' => [[
-                'type' => 'phone',
-                'number' => '15555555555'
-            ]],
+            'to' => [
+                [
+                    'type' => 'phone',
+                    'number' => '15555555555'
+                ]
+            ],
             'from' => [
                 'type' => 'phone',
                 'number' => '16666666666'
@@ -127,31 +142,35 @@ class ClientTest extends TestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
+
             return true;
-        }))->willReturn($this->getResponse('create-outbound-call-success', '201'));
+        }))->willReturn($this->getResponse('create-outbound-call-success', 201));
 
         $outboundCall = (new OutboundCall(new Phone('15555555555'), new Phone('16666666666')))
             ->setEventWebhook(new Webhook('http://domain.test/event'))
-            ->setNCCO((new NCCO)->addAction(new Talk('Thank you for trying Vonage')))
+            ->setNCCO((new NCCO())->addAction(new Talk('Thank you for trying Vonage')))
             ->setLengthTimer(7200)
-            ->setRingingTimer(60)
-        ;
+            ->setRingingTimer(60);
         $callData = $this->voiceClient->createOutboundCall($outboundCall);
 
-        $this->assertTrue($callData instanceof Event);
         $this->assertEquals('e46fd8bd-504d-4044-9600-26dd18b41111', $callData->getUuid());
         $this->assertEquals('started', $callData->getStatus());
         $this->assertEquals('outbound', $callData->getDirection());
         $this->assertEquals('2541d01c-253e-48be-a8e0-da4bbe4c3722', $callData->getConversationUuid());
     }
 
-    public function testCanHandleErrorWhileCreatingOutboundCall()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Client\Exception\Exception
+     */
+    public function testCanHandleErrorWhileCreatingOutboundCall(): void
     {
-        $this->expectException(Request::class);
+        $this->expectException(RequestException::class);
         $this->expectExceptionMessage('Bad Request');
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
+
             return true;
         }))->willReturn($this->getResponse('error_vapi', 400));
 
@@ -159,21 +178,28 @@ class ClientTest extends TestCase
         $this->voiceClient->createOutboundCall($outboundCall);
     }
 
-    public function testCreateOutboundCallErrorUnknownFormat()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Client\Exception\Exception
+     */
+    public function testCreateOutboundCallErrorUnknownFormat(): void
     {
-        $this->expectException(Request::class);
+        $this->expectException(RequestException::class);
         $this->expectExceptionMessage("Unexpected error");
 
         $this->vonageClient->send(Argument::that(function () {
             return true;
-        }))->willReturn($this->getResponse('error_unknown_format', '400'))
-        ;
+        }))->willReturn($this->getResponse('error_unknown_format', 400));
 
         $outboundCall = new OutboundCall(new Phone('15555555555'), new Phone('16666666666'));
         $this->voiceClient->createOutboundCall($outboundCall);
     }
 
-    public function testCanRetrieveCallInformation()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Client\Exception\Exception
+     */
+    public function testCanRetrieveCallInformation(): void
     {
         $id = '63f61863-4a51-4f6b-86e1-46edebcf9356';
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id) {
@@ -183,7 +209,6 @@ class ClientTest extends TestCase
 
         $call = $this->voiceClient->get($id);
 
-        $this->assertInstanceOf(Call::class, $call);
         $this->assertEquals($id, $call->getUuid());
         $this->assertEquals('447700900000', $call->getTo()->getId());
         $this->assertEquals('447700900001', $call->getFrom()->getId());
@@ -197,7 +222,11 @@ class ClientTest extends TestCase
         $this->assertEquals('65512', $call->getNetwork());
     }
 
-    public function testCanModifyACallLeg()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Client\Exception\Exception
+     */
+    public function testCanModifyACallLeg(): void
     {
         $id = 'ssf61863-4a51-ef6b-11e1-w6edebcf93bb';
         $payload = ['action' => 'earmuff'];
@@ -205,13 +234,18 @@ class ClientTest extends TestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'PUT', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
+
             return true;
         }))->willReturn($this->getResponse('empty', 204));
 
         $this->voiceClient->modifyCall($id, CallAction::EARMUFF);
     }
 
-    public function testCanEarmuffCall()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Client\Exception\Exception
+     */
+    public function testCanEarmuffCall(): void
     {
         $id = 'ssf61863-4a51-ef6b-11e1-w6edebcf93bb';
         $payload = ['action' => 'earmuff'];
@@ -219,13 +253,18 @@ class ClientTest extends TestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'PUT', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
+
             return true;
         }))->willReturn($this->getResponse('empty', 204));
 
         $this->voiceClient->earmuffCall($id);
     }
 
-    public function testCanUnearmuffCall()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Client\Exception\Exception
+     */
+    public function testCanUnearmuffCall(): void
     {
         $id = 'ssf61863-4a51-ef6b-11e1-w6edebcf93bb';
         $payload = ['action' => 'unearmuff'];
@@ -233,13 +272,18 @@ class ClientTest extends TestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'PUT', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
+
             return true;
         }))->willReturn($this->getResponse('empty', 204));
-        
+
         $this->voiceClient->unearmuffCall($id);
     }
 
-    public function testCanMuteCall()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Client\Exception\Exception
+     */
+    public function testCanMuteCall(): void
     {
         $id = 'ssf61863-4a51-ef6b-11e1-w6edebcf93bb';
         $payload = ['action' => 'mute'];
@@ -247,13 +291,18 @@ class ClientTest extends TestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'PUT', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
+
             return true;
         }))->willReturn($this->getResponse('empty', 204));
-        
+
         $this->voiceClient->muteCall($id);
     }
 
-    public function testCanUnmuteCall()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Client\Exception\Exception
+     */
+    public function testCanUnmuteCall(): void
     {
         $id = 'ssf61863-4a51-ef6b-11e1-w6edebcf93bb';
         $payload = ['action' => 'unmute'];
@@ -261,13 +310,18 @@ class ClientTest extends TestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'PUT', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
+
             return true;
         }))->willReturn($this->getResponse('empty', 204));
-        
+
         $this->voiceClient->unmuteCall($id);
     }
 
-    public function testCanHangupCall()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Client\Exception\Exception
+     */
+    public function testCanHangupCall(): void
     {
         $id = 'ssf61863-4a51-ef6b-11e1-w6edebcf93bb';
         $payload = ['action' => 'hangup'];
@@ -275,13 +329,18 @@ class ClientTest extends TestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'PUT', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
+
             return true;
         }))->willReturn($this->getResponse('empty', 204));
 
         $this->voiceClient->hangupCall($id);
     }
 
-    public function testCanTransferACallLegWithNCCO()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Client\Exception\Exception
+     */
+    public function testCanTransferACallLegWithNCCO(): void
     {
         $id = 'ssf61863-4a51-ef6b-11e1-w6edebcf93bb';
         $payload = [
@@ -300,17 +359,21 @@ class ClientTest extends TestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'PUT', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
+
             return true;
         }))->willReturn($this->getResponse('empty', 204));
 
-        $ncco = (new NCCO)
-            ->addAction(new Talk('Thank you for trying Vonage'))
-        ;
+        $ncco = (new NCCO())
+            ->addAction(new Talk('Thank you for trying Vonage'));
 
         $this->voiceClient->transferCallWithNCCO($id, $ncco);
     }
 
-    public function testCanTransferACallLegWithURL()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Client\Exception\Exception
+     */
+    public function testCanTransferACallLegWithURL(): void
     {
         $id = 'ssf61863-4a51-ef6b-11e1-w6edebcf93bb';
         $payload = [
@@ -324,13 +387,18 @@ class ClientTest extends TestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id, 'PUT', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
+
             return true;
         }))->willReturn($this->getResponse('empty', 204));
 
         $this->voiceClient->transferCallWithUrl($id, 'https://test.domain/transfer.json');
     }
 
-    public function testcanStreamAudioIntoCall()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Client\Exception\Exception
+     */
+    public function testcanStreamAudioIntoCall(): void
     {
         $id = 'ssf61863-4a51-ef6b-11e1-w6edebcf93bb';
         $url = 'http://domain.test/music.mp3';
@@ -343,17 +411,21 @@ class ClientTest extends TestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id . '/stream', 'PUT', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
+
             return true;
         }))->willReturn($this->getResponse('stream'));
 
-        
         $response = $this->voiceClient->streamAudio($id, $url);
 
         $this->assertEquals($id, $response['uuid']);
         $this->assertEquals('Stream started', $response['message']);
     }
 
-    public function testCanStopStreamingAudioIntoCall()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Client\Exception\Exception
+     */
+    public function testCanStopStreamingAudioIntoCall(): void
     {
         $id = '63f61863-4a51-4f6b-86e1-46edebcf9356';
 
@@ -362,14 +434,17 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('stream-stopped'));
 
-        
         $response = $this->voiceClient->stopStreamAudio($id);
 
         $this->assertEquals($id, $response['uuid']);
         $this->assertEquals('Stream stopped', $response['message']);
     }
 
-    public function testCanPlayTTSIntoCall()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Client\Exception\Exception
+     */
+    public function testCanPlayTTSIntoCall(): void
     {
         $id = 'ssf61863-4a51-ef6b-11e1-w6edebcf93bb';
         $payload = [
@@ -379,6 +454,7 @@ class ClientTest extends TestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id . '/talk', 'PUT', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
+
             return true;
         }))->willReturn($this->getResponse('talk'));
 
@@ -389,23 +465,31 @@ class ClientTest extends TestCase
         $this->assertEquals('Talk started', $response['message']);
     }
 
-    public function testCanStopTTSInCall()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Client\Exception\Exception
+     */
+    public function testCanStopTTSInCall(): void
     {
         $id = '63f61863-4a51-4f6b-86e1-46edebcf9356';
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id . '/talk', 'DELETE', $request);
+
             return true;
         }))->willReturn($this->getResponse('talk-stopped'));
 
-        
         $response = $this->voiceClient->stopTTS($id);
 
         $this->assertEquals($id, $response['uuid']);
         $this->assertEquals('Talk stopped', $response['message']);
     }
 
-    public function testCanPlayDTMFIntoCall()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Client\Exception\Exception
+     */
+    public function testCanPlayDTMFIntoCall(): void
     {
         $id = 'ssf61863-4a51-ef6b-11e1-w6edebcf93bb';
         $payload = ['digits' => '1492'];
@@ -413,6 +497,7 @@ class ClientTest extends TestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $id . '/dtmf', 'PUT', $request);
             $this->assertRequestBodyIsJson(json_encode($payload), $request);
+
             return true;
         }))->willReturn($this->getResponse('dtmf'));
 
@@ -422,7 +507,13 @@ class ClientTest extends TestCase
         $this->assertEquals('DTMF sent', $response['message']);
     }
 
-    public function testCanSearchCalls()
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Client\Exception\Exception
+     * @throws Client\Exception\Server
+     * @throws RequestException
+     */
+    public function testCanSearchCalls(): void
     {
         $response = $this->getResponse('search');
         $data = json_decode($response->getBody()->getContents(), true);
@@ -433,15 +524,16 @@ class ClientTest extends TestCase
             $this->assertRequestQueryContains('record_index', '0', $request);
             $this->assertRequestQueryContains('order', 'asc', $request);
             $this->assertRequestQueryContains('status', VoiceFilter::STATUS_STARTED, $request);
+
             return true;
         }))->willReturn($response);
 
         $filter = new VoiceFilter();
         $filter->setStatus(VoiceFilter::STATUS_STARTED);
-
         $response = $this->voiceClient->search($filter);
 
         $this->assertCount(1, $response);
+
         $call = $response->current();
 
         $this->assertEquals($data['_embedded']['calls'][0]['uuid'], $call->getUuid());
@@ -449,12 +541,9 @@ class ClientTest extends TestCase
 
     /**
      * Get the API response we'd expect for a call to the API.
-     *
-     * @param string $type
-     * @return Response
      */
-    protected function getResponse($type = 'success', $status = 200)
+    protected function getResponse(string $type = 'success', int $status = 200): Response
     {
-        return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'r'), (int) $status);
+        return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'rb'), $status);
     }
 }

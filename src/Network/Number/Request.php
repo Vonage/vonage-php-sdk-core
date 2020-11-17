@@ -1,32 +1,43 @@
 <?php
+
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
+
+declare(strict_types=1);
 
 namespace Vonage\Network\Number;
 
 use Vonage\Client\Request\AbstractRequest;
-use Vonage\Client\Request\RequestInterface;
 use Vonage\Client\Request\WrapResponseInterface;
 use Vonage\Client\Response\Error;
 use Vonage\Client\Response\ResponseInterface;
 
-class Request extends AbstractRequest implements RequestInterface, WrapResponseInterface
+use function implode;
+
+class Request extends AbstractRequest implements WrapResponseInterface
 {
-    const FEATURE_TYPE = 'type';
-    const FEATURE_VALID = 'valid';
-    const FEATURE_REACHABLE = 'reachable';
-    const FEATURE_CARRIER = 'carrier';
-    const FEATURE_PORTED = 'ported';
-    const FEATURE_ROAMING = 'roaming';
-    const FEATURE_SUBSCRIBER = 'subscriber';
+    public const FEATURE_TYPE = 'type';
+    public const FEATURE_VALID = 'valid';
+    public const FEATURE_REACHABLE = 'reachable';
+    public const FEATURE_CARRIER = 'carrier';
+    public const FEATURE_PORTED = 'ported';
+    public const FEATURE_ROAMING = 'roaming';
+    public const FEATURE_SUBSCRIBER = 'subscriber';
 
-    protected $params = array();
+    /**
+     * @var array
+     */
+    protected $params;
 
-    public function __construct($number, $callback, $features = array(), $timeout = null, $method = null, $ref = null)
+    /**
+     * @param $number
+     * @param $callback
+     */
+    public function __construct($number, $callback, array $features = [], $timeout = null, $method = null, $ref = null)
     {
         $this->params['number'] = $number;
         $this->params['callback'] = $callback;
@@ -39,16 +50,12 @@ class Request extends AbstractRequest implements RequestInterface, WrapResponseI
         }
     }
 
-    public function getURI()
+    public function getURI(): string
     {
         return '/ni/json';
     }
 
-    /**
-     * @param ResponseInterface $response
-     * @return ResponseInterface
-     */
-    public function wrapResponse(ResponseInterface $response)
+    public function wrapResponse(ResponseInterface $response): ResponseInterface
     {
         if ($response->isError()) {
             return new Error($response->getData());

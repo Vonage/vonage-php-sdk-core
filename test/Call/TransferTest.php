@@ -1,46 +1,49 @@
 <?php
+
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2017 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
 
-namespace VonageTest\Calls;
+declare(strict_types=1);
 
-use Vonage\Call\Transfer;
-use EnricoStahn\JsonAssert\Assert as JsonAssert;
+namespace VonageTest\Call;
+
+use Helmich\JsonAssert\JsonAssertions;
 use PHPUnit\Framework\TestCase;
+use Vonage\Call\Transfer;
+
+use function file_get_contents;
+use function json_decode;
+use function json_encode;
 
 class TransferTest extends TestCase
 {
-    use JsonAssert;
+    use JsonAssertions;
 
-    public function testStructureWithArray()
+    public function testStructureWithArray(): void
     {
-        $transfer = @new Transfer([
-            'http://example.com',
-            'http://alternate.example.com'
-        ]);
+        $urls = ['http://example.com', 'http://alternate.example.com'];
+        $schema = file_get_contents(__DIR__ . '/schema/transfer.json');
+        $json = json_decode(json_encode(@new Transfer($urls)), true);
 
-        $json = json_decode(json_encode($transfer));
-        $this->assertJsonMatchesSchema($json, __DIR__ . '/schema/transfer.json');
-        $this->assertJsonValueEquals('transfer', 'action', $json);
-        $this->assertJsonValueEquals('ncco', 'destination.type', $json);
-        $this->assertJsonValueEquals([
-            'http://example.com',
-            'http://alternate.example.com'
-        ], 'destination.url', $json);
+        $this->assertJsonDocumentMatchesSchema($json, json_decode(json_encode($schema), true));
+        $this->assertJsonValueEquals($json, '$.action', 'transfer');
+        $this->assertJsonValueEquals($json, '$.destination.type', 'ncco');
+        $this->assertJsonValueEquals($json, '$.destination.url', $urls);
     }
-    
-    public function testStructureWithString()
-    {
-        $transfer = @new Transfer('http://example.com');
 
-        $json = json_decode(json_encode($transfer));
-        $this->assertJsonMatchesSchema($json, __DIR__ . '/schema/transfer.json');
-        $this->assertJsonValueEquals('transfer', 'action', $json);
-        $this->assertJsonValueEquals('ncco', 'destination.type', $json);
-        $this->assertJsonValueEquals(['http://example.com'], 'destination.url', $json);
+    public function testStructureWithString(): void
+    {
+        $urls = 'http://example.com';
+        $schema = file_get_contents(__DIR__ . '/schema/transfer.json');
+        $json = json_decode(json_encode(@new Transfer($urls)), true);
+
+        $this->assertJsonDocumentMatchesSchema($json, json_decode(json_encode($schema), true));
+        $this->assertJsonValueEquals($json, '$.action', 'transfer');
+        $this->assertJsonValueEquals($json, '$.destination.type', 'ncco');
+        $this->assertJsonValueEquals($json, '$.destination.url', [$urls]);
     }
 }

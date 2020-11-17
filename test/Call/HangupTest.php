@@ -1,27 +1,34 @@
 <?php
+
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2017 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
 
-namespace VonageTest\Calls;
+declare(strict_types=1);
 
-use Vonage\Call\Hangup;
-use EnricoStahn\JsonAssert\Assert as JsonAssert;
+namespace VonageTest\Call;
+
+use Helmich\JsonAssert\JsonAssertions;
 use PHPUnit\Framework\TestCase;
+use Vonage\Call\Hangup;
+
+use function file_get_contents;
+use function json_decode;
+use function json_encode;
 
 class HangupTest extends TestCase
 {
-    use JsonAssert;
+    use JsonAssertions;
 
-    public function testStructure()
+    public function testStructure(): void
     {
-        $hangup = @new Hangup();
+        $schema = file_get_contents(__DIR__ . '/schema/hangup.json');
+        $json = json_decode(json_encode(@new Hangup()), true);
 
-        $json = json_decode(json_encode($hangup));
-        $this->assertJsonMatchesSchema($json, __DIR__ . '/schema/hangup.json');
-        $this->assertJsonValueEquals('hangup', 'action', $json);
+        $this->assertJsonDocumentMatchesSchema($json, json_decode(json_encode($schema), true));
+        $this->assertJsonValueEquals($json, '$.action', 'hangup');
     }
 }

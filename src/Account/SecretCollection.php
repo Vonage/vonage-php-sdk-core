@@ -1,14 +1,31 @@
 <?php
 
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
+ */
+
+declare(strict_types=1);
+
 namespace Vonage\Account;
 
-use Vonage\Entity\Hydrator\ArrayHydrateInterface;
+use ArrayAccess;
+use Vonage\Client\Exception\Exception as ClientException;
+use Vonage\InvalidResponseException;
 
-class SecretCollection implements \ArrayAccess
+use function get_class;
+use function trigger_error;
+
+class SecretCollection implements ArrayAccess
 {
     protected $data;
 
-    public function __construct($secrets, $links)
+    /**
+     * @throws InvalidResponseException
+     */
+    public function __construct(array $secrets, array $links)
     {
         $this->data = [
             'secrets' => $secrets,
@@ -22,35 +39,44 @@ class SecretCollection implements \ArrayAccess
         }
     }
 
-    public function getSecrets()
+    public function getSecrets(): array
     {
         return $this->data['secrets'];
     }
 
-    public function getLinks()
+    public function getLinks(): array
     {
         return $this->data['_links'];
     }
 
     /**
-     * @deprecated Instatiate the object directly
+     * @throws InvalidResponseException
+     *
+     * @deprecated Instantiate the object directly
      */
-    public static function fromApi($data)
+    public static function fromApi($data): SecretCollection
     {
-        trigger_error('Please instatiate a Vonage\Account\SecretCollection instead of using fromApi()', E_USER_DEPRECATED);
+        trigger_error(
+            'Please instantiate a Vonage\Account\SecretCollection instead of using fromApi()',
+            E_USER_DEPRECATED
+        );
+
         $secrets = [];
+
         foreach ($data['_embedded']['secrets'] as $s) {
             $secrets[] = Secret::fromApi($s);
         }
+
         return new self($secrets, $data['_links']);
     }
 
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         trigger_error(
             "Array access for " . get_class($this) . " is deprecated, please use getter methods",
             E_USER_DEPRECATED
         );
+
         return isset($this->data[$offset]);
     }
 
@@ -60,16 +86,23 @@ class SecretCollection implements \ArrayAccess
             "Array access for " . get_class($this) . " is deprecated, please use getter methods",
             E_USER_DEPRECATED
         );
+
         return $this->data[$offset];
     }
 
-    public function offsetSet($offset, $value)
+    /**
+     * @throws ClientException
+     */
+    public function offsetSet($offset, $value): void
     {
-        throw new \Exception('SecretCollection::offsetSet is not implemented');
+        throw new ClientException('SecretCollection::offsetSet is not implemented');
     }
 
-    public function offsetUnset($offset)
+    /**
+     * @throws ClientException
+     */
+    public function offsetUnset($offset): void
     {
-        throw new \Exception('SecretCollection::offsetUnset is not implemented');
+        throw new ClientException('SecretCollection::offsetUnset is not implemented');
     }
 }

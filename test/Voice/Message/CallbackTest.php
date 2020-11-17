@@ -1,13 +1,19 @@
 <?php
+
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
-namespace Vonage\Voice\Message;
 
+declare(strict_types=1);
+
+namespace VonageTest\Voice\Message;
+
+use DateTime;
 use PHPUnit\Framework\TestCase;
+use Vonage\Voice\Message\Callback;
 
 class CallbackTest extends TestCase
 {
@@ -25,7 +31,7 @@ class CallbackTest extends TestCase
     ];
 
     /**
-     * @var \Vonage\Voice\Message\Callback
+     * @var Callback
      */
     protected $callback;
 
@@ -34,7 +40,7 @@ class CallbackTest extends TestCase
         $this->callback = new Callback($this->data);
     }
 
-    public function testSimpleValues()
+    public function testSimpleValues(): void
     {
         $this->assertEquals($this->data['call-id'], $this->callback->getId());
         $this->assertEquals($this->data['status'], $this->callback->getStatus());
@@ -44,10 +50,10 @@ class CallbackTest extends TestCase
         $this->assertEquals($this->data['to'], $this->callback->getTo());
         $this->assertEquals($this->data['network-code'], $this->callback->getNetwork());
     }
-    public function testStartAndEndOptional()
+
+    public function testStartAndEndOptional(): void
     {
-        unset($this->data['call-start']);
-        unset($this->data['call-end']);
+        unset($this->data['call-start'], $this->data['call-end']);
 
         $this->callback = new Callback($this->data);
 
@@ -55,11 +61,10 @@ class CallbackTest extends TestCase
         $this->assertNull($this->callback->getEnd());
     }
 
-    public function testDateValues()
+    public function testDateValues(): void
     {
-        $this->assertEquals(new \DateTime('2014-01-01 10:30:15'), $this->callback->getCreated());
-        $this->assertEquals(new \DateTime('2014-01-01 10:30:25'), $this->callback->getStart());
-        $this->assertEquals(new \DateTime('2014-01-01 10:30:35'), $this->callback->getEnd());
+        $this->assertEquals(new DateTime('2014-01-01 10:30:15'), $this->callback->getCreated());
+        $this->assertEquals(new DateTime('2014-01-01 10:30:25'), $this->callback->getStart());
+        $this->assertEquals(new DateTime('2014-01-01 10:30:35'), $this->callback->getEnd());
     }
 }
- 

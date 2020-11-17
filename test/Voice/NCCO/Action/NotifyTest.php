@@ -1,26 +1,33 @@
 <?php
+
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
+ */
+
 declare(strict_types=1);
 
 namespace VonageTest\Voice\NCCO\Action;
 
-use Vonage\Voice\Webhook;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Vonage\Voice\NCCO\Action\Notify;
+use Vonage\Voice\Webhook;
 
 class NotifyTest extends TestCase
 {
-    public function testCanSetAdditionalInformation()
+    public function testCanSetAdditionalInformation(): void
     {
         $webhook = new Webhook('https://test.domain/events');
-
-        $action = new Notify(['foo' => 'bar'], $webhook);
-        $action->setEventWebhook($webhook);
+        $action = (new Notify(['foo' => 'bar'], $webhook))->setEventWebhook($webhook);
 
         $this->assertSame(['foo' => 'bar'], $action->getPayload());
         $this->assertSame($webhook, $action->getEventWebhook());
     }
 
-    public function testCanGenerateFromFactory()
+    public function testCanGenerateFromFactory(): void
     {
         $data = [
             'action' => 'notify',
@@ -35,7 +42,7 @@ class NotifyTest extends TestCase
         $this->assertSame('POST', $action->getEventWebhook()->getMethod());
     }
 
-    public function testGeneratesCorrectNCCOArray()
+    public function testGeneratesCorrectNCCOArray(): void
     {
         $webhook = new Webhook('https://test.domain/events');
 
@@ -50,14 +57,10 @@ class NotifyTest extends TestCase
         $this->assertSame('POST', $ncco['eventMethod']);
     }
 
-    public function testJSONSerializesToCorrectStructure()
+    public function testJSONSerializesToCorrectStructure(): void
     {
         $webhook = new Webhook('https://test.domain/events');
-
-        $action = new Notify(['foo' => 'bar'], $webhook);
-        $action->setEventWebhook($webhook);
-
-        $ncco = $action->jsonSerialize();
+        $ncco = (new Notify(['foo' => 'bar'], $webhook))->setEventWebhook($webhook)->jsonSerialize();
 
         $this->assertSame('notify', $ncco['action']);
         $this->assertSame(['foo' => 'bar'], $ncco['payload']);
@@ -65,18 +68,17 @@ class NotifyTest extends TestCase
         $this->assertSame('POST', $ncco['eventMethod']);
     }
 
-    public function testCanAddToPayload()
+    public function testCanAddToPayload(): void
     {
         $webhook = new Webhook('https://test.domain/events');
-        $action = new Notify(['foo' => 'bar'], $webhook);
-        $action->addToPayload('baz', 'biff');
+        $action = (new Notify(['foo' => 'bar'], $webhook))->addToPayload('baz', 'biff');
 
         $this->assertSame(['foo' => 'bar', 'baz' => 'biff'], $action->getPayload());
     }
 
-    public function testThrowsExceptionWhenMissingEventURL()
+    public function testThrowsExceptionWhenMissingEventURL(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Must supply at least an eventUrl for Notify NCCO');
 
         Notify::factory(['foo' => 'bar'], []);

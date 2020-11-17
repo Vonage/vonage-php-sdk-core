@@ -1,44 +1,44 @@
 <?php
+
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
+ */
+
 declare(strict_types=1);
 
 namespace VonageTest\Voice\Endpoint;
 
-use Vonage\Voice\Endpoint\VBC;
 use PHPUnit\Framework\TestCase;
+use Vonage\Voice\Endpoint\VBC;
 
 class VBCTest extends TestCase
 {
-    public function testSetsExtensionAtCreation()
+    public function testSetsExtensionAtCreation(): void
     {
-        $endpoint = new VBC("123");
-        $this->assertSame("123", $endpoint->getId());
+        $this->assertSame('123', (new VBC('123'))->getId());
     }
 
-    public function testFactoryCreatesVBCEndpoint()
+    public function testFactoryCreatesVBCEndpoint(): void
     {
-        $endpoint = VBC::factory('123');
-        $this->assertSame("123", $endpoint->getId());
+        $this->assertSame('123', (VBC::factory('123'))->getId());
     }
 
-    public function testToArrayHasCorrectStructure()
+    public function testToArrayHasCorrectStructure(): void
     {
-        $expected = [
+        $this->assertSame([
             'type' => 'vbc',
             'extension' => '123',
-        ];
-        
-        $endpoint = new VBC("123");
-        $this->assertSame($expected, $endpoint->toArray());
+        ], (new VBC('123'))->toArray());
     }
 
-    public function testSerializesToJSONCorrectly()
+    public function testSerializesToJSONCorrectly(): void
     {
-        $expected = [
+        $this->assertSame([
             'type' => 'vbc',
             'extension' => '123',
-        ];
-        
-        $endpoint = new VBC("123");
-        $this->assertSame($expected, $endpoint->jsonSerialize());
+        ], (new VBC('123'))->jsonSerialize());
     }
 }

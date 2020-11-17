@@ -1,14 +1,29 @@
 <?php
+
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
+ */
+
 declare(strict_types=1);
 
 namespace VonageTest\Voice;
 
-use Vonage\Voice\Call;
+use Exception;
 use PHPUnit\Framework\TestCase;
+use Vonage\Voice\Call;
+
+use function file_get_contents;
+use function json_decode;
 
 class CallTest extends TestCase
 {
-    public function testConvertsToArrayProperly()
+    /**
+     * @throws Exception
+     */
+    public function testConvertsToArrayProperly(): void
     {
         $data = json_decode(file_get_contents(__DIR__ . '/responses/call.json'), true);
         $call = new Call($data);
@@ -23,7 +38,6 @@ class CallTest extends TestCase
         $this->assertEquals($data['start_time'], $callData['start_time']);
         $this->assertEquals($data['end_time'], $callData['end_time']);
         $this->assertEquals($data['network'], $callData['network']);
-
         $this->assertEquals($data['to'][0]['type'], $callData['to'][0]['type']);
         $this->assertEquals($data['to'][0]['number'], $callData['to'][0]['number']);
         $this->assertEquals($data['from'][0]['type'], $callData['from'][0]['type']);

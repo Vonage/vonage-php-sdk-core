@@ -1,7 +1,19 @@
 <?php
+
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
+ */
+
 declare(strict_types=1);
 
 namespace Vonage\Voice\NCCO\Action;
+
+use function array_key_exists;
+use function filter_var;
+use function is_null;
 
 class Talk implements ActionInterface
 {
@@ -63,31 +75,31 @@ class Talk implements ActionInterface
         if (array_key_exists('voiceName', $data)) {
             $talk->setVoiceName($data['voiceName']);
         }
-        
+
         return $talk;
     }
 
-    public function getBargeIn() : ?bool
+    public function getBargeIn(): ?bool
     {
         return $this->bargeIn;
     }
 
-    public function getLevel() : ?float
+    public function getLevel(): ?float
     {
         return $this->level;
     }
 
-    public function getLoop() : ?int
+    public function getLoop(): ?int
     {
         return $this->loop;
     }
 
-    public function getText() : string
+    public function getText(): string
     {
         return $this->text;
     }
 
-    public function getVoiceName() : ?string
+    public function getVoiceName(): ?string
     {
         return $this->voiceName;
     }
@@ -95,32 +107,47 @@ class Talk implements ActionInterface
     /**
      * @return array{action: string, bargeIn: bool, level: float, loop: int, text: string, voiceName: string}
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->toNCCOArray();
     }
 
-    public function setBargeIn(bool $value) : self
+    /**
+     * @return $this
+     */
+    public function setBargeIn(bool $value): self
     {
         $this->bargeIn = $value;
         return $this;
     }
 
-    public function setLevel(float $level) : self
+    /**
+     * @return $this
+     */
+    public function setLevel(float $level): self
     {
         $this->level = $level;
+
         return $this;
     }
 
-    public function setLoop(int $times) : self
+    /**
+     * @return $this
+     */
+    public function setLoop(int $times): self
     {
         $this->loop = $times;
+
         return $this;
     }
 
-    public function setVoiceName(string $name) : self
+    /**
+     * @return $this
+     */
+    public function setVoiceName(string $name): self
     {
         $this->voiceName = $name;
+
         return $this;
     }
 
@@ -139,11 +166,11 @@ class Talk implements ActionInterface
         }
 
         if (!is_null($this->getLevel())) {
-            $data['level'] = (string) $this->getLevel();
+            $data['level'] = (string)$this->getLevel();
         }
 
         if (!is_null($this->getLoop())) {
-            $data['loop'] = (string) $this->getLoop();
+            $data['loop'] = (string)$this->getLoop();
         }
 
         if ($this->getVoiceName()) {

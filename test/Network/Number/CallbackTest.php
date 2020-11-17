@@ -1,24 +1,30 @@
 <?php
+
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
 
-namespace Vonage\Network\Number;
+declare(strict_types=1);
+
+namespace VonageTest\Network\Number;
 
 use PHPUnit\Framework\TestCase;
+use Vonage\Network\Number\Callback;
+
+use function array_merge;
 
 class CallbackTest extends TestCase
 {
-    protected $data = array(
+    protected $data = [
         'request_id' => '12345',
         'callback_total_parts' => 2,
         'callback_part' => 2,
         'number' => '14443332121',
         'status' => 0
-    );
+    ];
 
     /**
      * @var Callback
@@ -30,7 +36,7 @@ class CallbackTest extends TestCase
         $this->callback = new Callback($this->data);
     }
 
-    public function testMethodsMatchData()
+    public function testMethodsMatchData(): void
     {
         $this->assertEquals($this->data['request_id'], $this->callback->getId());
         $this->assertEquals($this->data['callback_total_parts'], $this->callback->getCallbackTotal());
@@ -40,36 +46,38 @@ class CallbackTest extends TestCase
 
     /**
      * @dataProvider optionalData
+     *
      * @param $key
      * @param $value
      * @param $method
+     * @param $expected
      */
-    public function testOptionalData($key, $value, $method, $expected)
+    public function testOptionalData($key, $value, $method, $expected): void
     {
         $has = 'has' . $method;
         $get = 'get' . $method;
+
         $this->assertFalse($this->callback->$has());
         $this->assertNull($this->callback->$get());
 
-        $callback = new Callback(array_merge($this->data, array($key => $value)));
+        $callback = new Callback(array_merge($this->data, [$key => $value]));
 
         $this->assertTrue($callback->$has());
         $this->assertEquals($expected, $callback->$get());
     }
 
-    public function optionalData()
+    public function optionalData(): array
     {
-        return array(
-            array('number_type', 'unknown', 'Type', 'unknown'),
-            array('carrier_network_code', 'CODE', 'Network', 'CODE'),
-            array('carrier_network_name', 'NAME', 'NetworkName', 'NAME'),
-            array('valid', 'unknown', 'Valid', 'unknown'),
-            array('ported', 'unknown', 'Ported', 'unknown'),
-            array('reachable', 'unknown', 'Reachable', 'unknown'),
-            array('roaming', 'unknown', 'Roaming', 'unknown'),
-            array('roaming_country_code', 'CODE', 'RoamingCountry', 'CODE'),
-            array('roaming_network_code', 'CODE', 'RoamingNetwork', 'CODE'),
-        );
+        return [
+            ['number_type', 'unknown', 'Type', 'unknown'],
+            ['carrier_network_code', 'CODE', 'Network', 'CODE'],
+            ['carrier_network_name', 'NAME', 'NetworkName', 'NAME'],
+            ['valid', 'unknown', 'Valid', 'unknown'],
+            ['ported', 'unknown', 'Ported', 'unknown'],
+            ['reachable', 'unknown', 'Reachable', 'unknown'],
+            ['roaming', 'unknown', 'Roaming', 'unknown'],
+            ['roaming_country_code', 'CODE', 'RoamingCountry', 'CODE'],
+            ['roaming_network_code', 'CODE', 'RoamingNetwork', 'CODE'],
+        ];
     }
 }
- 

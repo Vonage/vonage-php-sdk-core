@@ -1,17 +1,30 @@
 <?php
+
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
+ */
+
 declare(strict_types=1);
 
 namespace Vonage\Voice;
 
+use DateTimeImmutable;
+use DateTimeZone;
+use Exception;
+use Psr\Http\Client\ClientExceptionInterface;
 use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
-use Vonage\Voice\NCCO\Action\Talk;
-use Vonage\Voice\NCCO\Action\Transfer;
-use Vonage\Voice\Webhook\Event;
-use Vonage\Entity\IterableAPICollection;
 use Vonage\Entity\Filter\FilterInterface;
 use Vonage\Entity\Hydrator\ArrayHydrator;
+use Vonage\Entity\IterableAPICollection;
+use Vonage\Voice\NCCO\Action\Talk;
 use Vonage\Voice\NCCO\NCCO;
+use Vonage\Voice\Webhook\Event;
+
+use function is_null;
 
 class Client implements APIClient
 {
@@ -31,9 +44,14 @@ class Client implements APIClient
     }
 
     /**
-     * @return array{uuid: string, conversation_uuid: string, status: string, direction: string}
+     * @throws ClientExceptionInterface
+     * @throws \Vonage\Client\Exception\Exception
+     * @throws Exception
+     * @throws Exception
+     *
+     * @return Event {uuid: string, conversation_uuid: string, status: string, direction: string}
      */
-    public function createOutboundCall(OutboundCall $call) : Event
+    public function createOutboundCall(OutboundCall $call): Event
     {
         $json = [
             'to' => [$call->getTo()],
@@ -59,78 +77,97 @@ class Client implements APIClient
         }
 
         if (!is_null($call->getLengthTimer())) {
-            $json['length_timer'] = (string) $call->getLengthTimer();
+            $json['length_timer'] = (string)$call->getLengthTimer();
         }
 
         if (!is_null($call->getRingingTimer())) {
-            $json['ringing_timer'] = (string) $call->getRingingTimer();
+            $json['ringing_timer'] = (string)$call->getRingingTimer();
         }
 
         $event = $this->api->create($json);
         $event['to'] = $call->getTo()->getId();
         $event['from'] = $call->getFrom()->getId();
-        $event['timestamp'] = (new \DateTimeImmutable("now", new \DateTimeZone("UTC")))->format(DATE_ATOM);
+        $event['timestamp'] = (new DateTimeImmutable("now", new DateTimeZone("UTC")))->format(DATE_ATOM);
 
-        $event = new Event($event);
-        return $event;
+        return new Event($event);
     }
 
-    public function earmuffCall(string $callId) : void
+    /**
+     * @throws ClientExceptionInterface
+     * @throws \Vonage\Client\Exception\Exception
+     */
+    public function earmuffCall(string $callId): void
     {
         $this->modifyCall($callId, CallAction::EARMUFF);
     }
 
-    public function get(string $callId) : Call
+    /**
+     * @throws ClientExceptionInterface
+     * @throws \Vonage\Client\Exception\Exception
+     * @throws Exception
+     */
+    public function get(string $callId): Call
     {
-        $data = $this->api->get($callId);
-        $call = (new CallFactory())->create($data);
-
-        return $call;
+        return (new CallFactory())->create($this->api->get($callId));
     }
 
-    public function hangupCall(string $callId) : void
+    /**
+     * @throws ClientExceptionInterface
+     * @throws \Vonage\Client\Exception\Exception
+     */
+    public function hangupCall(string $callId): void
     {
         $this->modifyCall($callId, CallAction::HANGUP);
     }
 
-    public function modifyCall(string $callId, string $action) : void
+    /**
+     * @throws ClientExceptionInterface
+     * @throws \Vonage\Client\Exception\Exception
+     */
+    public function modifyCall(string $callId, string $action): void
     {
         $this->api->update($callId, [
             'action' => $action,
         ]);
     }
 
-    public function muteCall(string $callId) : void
+    /**
+     * @throws ClientExceptionInterface
+     * @throws \Vonage\Client\Exception\Exception
+     */
+    public function muteCall(string $callId): void
     {
         $this->modifyCall($callId, CallAction::MUTE);
     }
 
     /**
+     * @throws ClientExceptionInterface
+     * @throws \Vonage\Client\Exception\Exception
+     *
      * @return array{uuid: string, message: string}
      */
-    public function playDTMF(string $callId, string $digits) : array
+    public function playDTMF(string $callId, string $digits): array
     {
-        $response = $this->api->update($callId . '/dtmf', [
+        return $this->api->update($callId . '/dtmf', [
             'digits' => $digits
         ]);
-
-        return $response;
     }
 
     /**
+     * @throws ClientExceptionInterface
+     * @throws \Vonage\Client\Exception\Exception
+     *
      * @return array{uuid: string, message: string}
      */
-    public function playTTS(string $callId, Talk $action) : array
+    public function playTTS(string $callId, Talk $action): array
     {
         $payload = $action->toNCCOArray();
         unset($payload['action']);
 
-        $response = $this->api->update($callId . '/talk', $payload);
-
-        return $response;
+        return $this->api->update($callId . '/talk', $payload);
     }
 
-    public function search(FilterInterface $filter = null) : IterableAPICollection
+    public function search(FilterInterface $filter = null): IterableAPICollection
     {
         $response = $this->api->search($filter);
         $response->setApiResource(clone $this->api);
@@ -140,38 +177,52 @@ class Client implements APIClient
         $hydrator->setPrototype(new Call());
 
         $response->setHydrator($hydrator);
+
         return $response;
     }
 
     /**
+     * @throws ClientExceptionInterface
+     * @throws \Vonage\Client\Exception\Exception
+     *
      * @return array{uuid: string, message: string}
      */
-    public function stopStreamAudio(string $callId) : array
+    public function stopStreamAudio(string $callId): array
     {
         return $this->api->delete($callId . '/stream');
     }
 
     /**
+     * @throws ClientExceptionInterface
+     * @throws \Vonage\Client\Exception\Exception
+     *
      * @return array{uuid: string, message: string}
      */
-    public function stopTTS(string $callId) : array
+    public function stopTTS(string $callId): array
     {
         return $this->api->delete($callId . '/talk');
     }
 
     /**
+     * @throws ClientExceptionInterface
+     * @throws \Vonage\Client\Exception\Exception
+     *
      * @return array{uuid: string, message: string}
      */
-    public function streamAudio(string $callId, string $url, int $loop = 1, float $volumeLevel = 0.0) : array
+    public function streamAudio(string $callId, string $url, int $loop = 1, float $volumeLevel = 0.0): array
     {
         return $this->api->update($callId . '/stream', [
             'stream_url' => [$url],
-            'loop' => (string) $loop,
-            'level' => (string) $volumeLevel,
+            'loop' => (string)$loop,
+            'level' => (string)$volumeLevel,
         ]);
     }
 
-    public function transferCallWithNCCO(string $callId, NCCO $ncco) : void
+    /**
+     * @throws ClientExceptionInterface
+     * @throws \Vonage\Client\Exception\Exception
+     */
+    public function transferCallWithNCCO(string $callId, NCCO $ncco): void
     {
         $this->api->update($callId, [
             'action' => 'transfer',
@@ -182,7 +233,11 @@ class Client implements APIClient
         ]);
     }
 
-    public function transferCallWithUrl(string $callId, string $url) : void
+    /**
+     * @throws ClientExceptionInterface
+     * @throws \Vonage\Client\Exception\Exception
+     */
+    public function transferCallWithUrl(string $callId, string $url): void
     {
         $this->api->update($callId, [
             'action' => 'transfer',
@@ -193,12 +248,20 @@ class Client implements APIClient
         ]);
     }
 
-    public function unearmuffCall(string $callId) : void
+    /**
+     * @throws ClientExceptionInterface
+     * @throws \Vonage\Client\Exception\Exception
+     */
+    public function unearmuffCall(string $callId): void
     {
         $this->modifyCall($callId, CallAction::UNEARMUFF);
     }
 
-    public function unmuteCall(string $callId) : void
+    /**
+     * @throws ClientExceptionInterface
+     * @throws \Vonage\Client\Exception\Exception
+     */
+    public function unmuteCall(string $callId): void
     {
         $this->modifyCall($callId, CallAction::UNMUTE);
     }

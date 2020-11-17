@@ -1,7 +1,21 @@
 <?php
+
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
+ */
+
 declare(strict_types=1);
 
 namespace Vonage\SMS\Message;
+
+use InvalidArgumentException;
+
+use function array_merge;
+use function is_null;
+use function strlen;
 
 abstract class OutboundMessage implements Message
 {
@@ -42,12 +56,14 @@ abstract class OutboundMessage implements Message
 
     /**
      * TTL of the SMS delivery, in milliseconds
+     *
      * @var int
      */
     protected $ttl = 259200000;
 
     /**
      * Type of message, set by the child class
+     *
      * @var string
      */
     protected $type;
@@ -58,71 +74,93 @@ abstract class OutboundMessage implements Message
         $this->from = $from;
     }
 
-    abstract public function toArray() : array;
+    abstract public function toArray(): array;
 
-    public function getTtl() : int
+    public function getTtl(): int
     {
         return $this->ttl;
     }
 
-    public function setTtl(int $ttl) : self
+    /**
+     * @return $this
+     */
+    public function setTtl(int $ttl): self
     {
         if ($ttl < 20000 || $ttl > 604800000) {
-            throw new \InvalidArgumentException('SMS TTL must be in the range of 20000-604800000 milliseconds');
+            throw new InvalidArgumentException('SMS TTL must be in the range of 20000-604800000 milliseconds');
         }
+
         $this->ttl = $ttl;
+
         return $this;
     }
 
-    public function getRequestDeliveryReceipt() : bool
+    public function getRequestDeliveryReceipt(): bool
     {
         return $this->requestDeliveryReceipt;
     }
 
-    public function setRequestDeliveryReceipt(bool $requestDeliveryReceipt) : self
+    /**
+     * @return $this
+     */
+    public function setRequestDeliveryReceipt(bool $requestDeliveryReceipt): self
     {
         $this->requestDeliveryReceipt = $requestDeliveryReceipt;
+
         return $this;
     }
 
-    public function getDeliveryReceiptCallback() : ?string
+    public function getDeliveryReceiptCallback(): ?string
     {
         return $this->deliveryReceiptCallback;
     }
 
-    public function setDeliveryReceiptCallback(string $deliveryReceiptCallback) : self
+    /**
+     * @return $this
+     */
+    public function setDeliveryReceiptCallback(string $deliveryReceiptCallback): self
     {
         $this->deliveryReceiptCallback = $deliveryReceiptCallback;
         $this->setRequestDeliveryReceipt(true);
+
         return $this;
     }
 
-    public function getMessageClass() : int
+    public function getMessageClass(): int
     {
         return $this->messageClass;
     }
 
-    public function setMessageClass(int $messageClass) : self
+    /**
+     * @return $this
+     */
+    public function setMessageClass(int $messageClass): self
     {
         if ($messageClass < 0 || $messageClass > 3) {
-            throw new \InvalidArgumentException('Message Class must be 0-3');
+            throw new InvalidArgumentException('Message Class must be 0-3');
         }
+
         $this->messageClass = $messageClass;
+
         return $this;
     }
 
-    public function getClientRef() : string
+    public function getClientRef(): string
     {
         return $this->clientRef;
     }
 
-    public function setClientRef(string $clientRef) : self
+    /**
+     * @return $this
+     */
+    public function setClientRef(string $clientRef): self
     {
         if (strlen($clientRef) > 40) {
-            throw new \InvalidArgumentException('Client Ref can be no more than 40 characters');
+            throw new InvalidArgumentException('Client Ref can be no more than 40 characters');
         }
 
         $this->clientRef = $clientRef;
+
         return $this;
     }
 
@@ -131,14 +169,14 @@ abstract class OutboundMessage implements Message
      * This allows the child classes to set their special request options,
      * and then filter through here for additional request options;
      */
-    protected function appendUniversalOptions(array $data)
+    protected function appendUniversalOptions(array $data): array
     {
         $data = array_merge($data, [
             'to' => $this->getTo(),
             'from' => $this->getFrom(),
             'type' => $this->getType(),
             'ttl' => $this->getTtl(),
-            'status-report-req' => (int) $this->getRequestDeliveryReceipt(),
+            'status-report-req' => (int)$this->getRequestDeliveryReceipt(),
         ]);
 
         if ($this->getRequestDeliveryReceipt() && !is_null($this->getDeliveryReceiptCallback())) {
@@ -160,28 +198,32 @@ abstract class OutboundMessage implements Message
         return $data;
     }
 
-    public function getFrom() : string
+    public function getFrom(): string
     {
         return $this->from;
     }
 
-    public function getTo() : string
+    public function getTo(): string
     {
         return $this->to;
     }
 
-    public function getAccountRef() : ?string
+    public function getAccountRef(): ?string
     {
         return $this->accountRef;
     }
 
-    public function setAccountRef(string $accountRef)
+    /**
+     * @return $this
+     */
+    public function setAccountRef(string $accountRef): OutboundMessage
     {
         $this->accountRef = $accountRef;
+
         return $this;
     }
 
-    public function getType() : string
+    public function getType(): string
     {
         return $this->type;
     }

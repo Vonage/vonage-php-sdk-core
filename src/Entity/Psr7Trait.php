@@ -1,14 +1,27 @@
 <?php
+
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
+
+declare(strict_types=1);
 
 namespace Vonage\Entity;
 
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
+
+use function array_merge;
+use function get_class;
+use function is_array;
+use function json_decode;
+use function method_exists;
+use function parse_str;
+use function trigger_error;
 
 /**
  * Class Psr7Trait
@@ -18,36 +31,37 @@ use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 trait Psr7Trait
 {
     /**
-     * @var \Psr\Http\Message\RequestInterface
+     * @var RequestInterface
      */
     protected $request;
 
     /**
-     * @var \Psr\Http\Message\ResponseInterface
+     * @var ResponseInterface
      */
     protected $response;
 
-    public function setResponse(\Psr\Http\Message\ResponseInterface $response)
+    public function setResponse(ResponseInterface $response): void
     {
         trigger_error(
             get_class($this) . '::setResponse() is deprecated and will be removed',
             E_USER_DEPRECATED
         );
+
         $this->response = $response;
+        $status = (int)$response->getStatusCode();
 
-        $status = $response->getStatusCode();
-
-        if ($this instanceof ArrayHydrateInterface and ((200 == $status) or (201 == $status))) {
+        if ($this instanceof ArrayHydrateInterface && (200 === $status || 201 === $status)) {
             $this->fromArray($this->getResponseData());
         }
     }
 
-    public function setRequest(\Psr\Http\Message\RequestInterface $request)
+    public function setRequest(RequestInterface $request): void
     {
         trigger_error(
             get_class($this) . '::setRequest is deprecated and will be removed',
             E_USER_DEPRECATED
         );
+
         $this->request = $request;
         $this->data = [];
 
@@ -56,6 +70,7 @@ trait Psr7Trait
         }
 
         $contentType = $request->getHeader('Content-Type');
+
         if (!empty($contentType)) {
             if ($contentType[0] === 'application/json') {
                 $body = json_decode($request->getBody()->getContents(), true);
@@ -70,24 +85,27 @@ trait Psr7Trait
             parse_str($request->getBody()->getContents(), $body);
             $this->data = array_merge($this->data, $body);
         }
-        
     }
 
-    public function getRequest()
+    public function getRequest(): ?RequestInterface
     {
         trigger_error(
-            get_class($this) . '::getRequest() is deprecated. Please get the APIResource from the appropriate client to get this information',
+            get_class($this) . '::getRequest() is deprecated. ' .
+            'Please get the APIResource from the appropriate client to get this information',
             E_USER_DEPRECATED
         );
+
         return $this->request;
     }
 
-    public function getResponse()
+    public function getResponse(): ?ResponseInterface
     {
         trigger_error(
-            get_class($this) . '::getResponse() is deprecated. Please get the APIResource from the appropriate client to get this information',
+            get_class($this) . '::getResponse() is deprecated. ' .
+            'Please get the APIResource from the appropriate client to get this information',
             E_USER_DEPRECATED
         );
+
         return $this->response;
     }
 }

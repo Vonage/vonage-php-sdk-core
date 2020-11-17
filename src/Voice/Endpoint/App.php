@@ -1,4 +1,12 @@
 <?php
+
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
+ */
+
 declare(strict_types=1);
 
 namespace Vonage\Voice\Endpoint;
@@ -15,7 +23,7 @@ class App implements EndpointInterface
         $this->id = $user;
     }
 
-    public static function factory(string $user) : App
+    public static function factory(string $user): App
     {
         return new App($user);
     }
@@ -23,7 +31,7 @@ class App implements EndpointInterface
     /**
      * @return array{type: string, user: string}
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->toArray();
     }
@@ -31,7 +39,7 @@ class App implements EndpointInterface
     /**
      * @return array{type: string, user: string}
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         return [
             'type' => 'app',
@@ -39,10 +47,7 @@ class App implements EndpointInterface
         ];
     }
 
-    /**
-     * @return string
-     */
-    public function getId() : string
+    public function getId(): string
     {
         return $this->id;
     }

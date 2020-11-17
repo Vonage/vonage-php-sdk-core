@@ -1,80 +1,83 @@
 <?php
+
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
+ */
+
 declare(strict_types=1);
 
 namespace VonageTest\Voice\Endpoint;
 
-use Vonage\Voice\Endpoint\Websocket;
 use PHPUnit\Framework\TestCase;
+use Vonage\Voice\Endpoint\Websocket;
 
 class WebsocketTest extends TestCase
 {
-    public function testSetsURLAtCreation()
+    /**
+     * @var string
+     */
+    protected $uri = 'https://testdomain.com/websocket';
+
+    public function testSetsURLAtCreation(): void
     {
-        $endpoint = new Websocket("https://testdomain.com/websocket");
-        $this->assertSame("https://testdomain.com/websocket", $endpoint->getId());
+        $this->assertSame($this->uri, (new Websocket($this->uri))->getId());
     }
 
-    public function testCanAddHeader()
+    public function testCanAddHeader(): void
     {
-        $endpoint = new Websocket("https://testdomain.com/websocket");
-        $endpoint->addHeader('key', 'value');
-        $this->assertSame("https://testdomain.com/websocket", $endpoint->getId());
+        $endpoint = (new Websocket($this->uri))->addHeader('key', 'value');
+
+        $this->assertSame($this->uri, $endpoint->getId());
         $this->assertSame(['key' => 'value'], $endpoint->getHeaders());
     }
 
-    public function testFactoryCreatesWebsocketEndpoint()
+    public function testFactoryCreatesWebsocketEndpoint(): void
     {
-        $endpoint = Websocket::factory('https://testdomain.com/websocket');
-        $this->assertSame("https://testdomain.com/websocket", $endpoint->getId());
+        $this->assertSame($this->uri, (Websocket::factory($this->uri))->getId());
     }
 
-    public function testFactoryCreatesAdditionalOptions()
+    public function testFactoryCreatesAdditionalOptions(): void
     {
-        $endpoint = Websocket::factory('https://testdomain.com/websocket', [
+        $endpoint = Websocket::factory($this->uri, [
             'headers' => ['key' => 'value'],
             'content-type' => Websocket::TYPE_16000
         ]);
-        $this->assertSame("https://testdomain.com/websocket", $endpoint->getId());
+
+        $this->assertSame($this->uri, $endpoint->getId());
         $this->assertSame(['key' => 'value'], $endpoint->getHeaders());
         $this->assertSame(Websocket::TYPE_16000, $endpoint->getContentType());
     }
 
-    public function testToArrayHasCorrectStructure()
+    public function testToArrayHasCorrectStructure(): void
     {
-        $expected = [
+        $this->assertSame([
             'type' => 'websocket',
-            'uri' => 'https://testdomain.com/websocket',
-            'content-type' => 'audio/116;rate=8000'
-        ];
-        
-        $endpoint = new Websocket("https://testdomain.com/websocket");
-        $this->assertSame($expected, $endpoint->toArray());
+            'uri' => $this->uri,
+            'content-type' => Websocket::TYPE_8000
+        ], (new Websocket($this->uri))->toArray());
     }
 
-    public function testToArrayAddsHeaders()
+    public function testToArrayAddsHeaders(): void
     {
-        $expected = [
+        $headers = ['key' => 'value'];
+
+        $this->assertSame([
             'type' => 'websocket',
-            'uri' => 'https://testdomain.com/websocket',
-            'content-type' => 'audio/116;rate=8000',
-            'headers' => ['key' => 'value'],
-        ];
-        
-        $endpoint = new Websocket("https://testdomain.com/websocket");
-        $endpoint->setHeaders($expected['headers']);
-        
-        $this->assertSame($expected, $endpoint->toArray());
+            'uri' => $this->uri,
+            'content-type' => Websocket::TYPE_8000,
+            'headers' => $headers,
+        ], (new Websocket($this->uri))->setHeaders($headers)->toArray());
     }
 
-    public function testSerializesToJSONCorrectly()
+    public function testSerializesToJSONCorrectly(): void
     {
-        $expected = [
+        $this->assertSame([
             'type' => 'websocket',
-            'uri' => 'https://testdomain.com/websocket',
-            'content-type' => 'audio/116;rate=8000'
-        ];
-        
-        $endpoint = new Websocket("https://testdomain.com/websocket");
-        $this->assertSame($expected, $endpoint->jsonSerialize());
+            'uri' => $this->uri,
+            'content-type' => Websocket::TYPE_8000
+        ], (new Websocket($this->uri))->jsonSerialize());
     }
 }

@@ -1,9 +1,19 @@
 <?php
+
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
+ */
+
 declare(strict_types=1);
 
 namespace Vonage\SMS\Message;
 
 use Vonage\SMS\EncodingDetector;
+
+use function function_exists;
 
 class SMS extends OutboundMessage
 {
@@ -24,10 +34,13 @@ class SMS extends OutboundMessage
         if (function_exists('mb_convert_encoding') && $encoder->requiresUnicodeEncoding($message)) {
             $this->type = 'unicode';
         }
-        
+
         $this->message = $message;
     }
 
+    /**
+     * @return mixed
+     */
     public function toArray(): array
     {
         $data = ['text' => $this->getMessage()];
@@ -36,7 +49,7 @@ class SMS extends OutboundMessage
         return $data;
     }
 
-    public function getMessage() : string
+    public function getMessage(): string
     {
         return $this->message;
     }

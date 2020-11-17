@@ -1,17 +1,30 @@
 <?php
+
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
+ */
+
 declare(strict_types=1);
 
 namespace Vonage\Numbers\Filter;
 
-use Vonage\Numbers\Number;
 use InvalidArgumentException;
 use Vonage\Entity\Filter\FilterInterface;
+use Vonage\Numbers\Number;
+
+use function array_key_exists;
+use function implode;
+use function is_array;
+use function strlen;
 
 class AvailableNumbers implements FilterInterface
 {
-    const SEARCH_PATTERN_BEGIN = 0;
-    const SEARCH_PATTERN_CONTAINS = 1;
-    const SEARCH_PATTERN_ENDS = 2;
+    public const SEARCH_PATTERN_BEGIN = 0;
+    public const SEARCH_PATTERN_CONTAINS = 1;
+    public const SEARCH_PATTERN_ENDS = 2;
 
     /**
      * @var string
@@ -53,32 +66,40 @@ class AvailableNumbers implements FilterInterface
         if (array_key_exists('country', $filter)) {
             $this->setCountry($filter['country']);
         }
+
         if (array_key_exists('size', $filter)) {
             $this->setPageSize($filter['size']);
         }
+
         if (array_key_exists('index', $filter)) {
             $this->setPageIndex($filter['index']);
         }
-        
+
         if (array_key_exists('pattern', $filter)) {
             $this->setPattern($filter['pattern']);
             if (array_key_exists('search_pattern', $filter)) {
-                $this->setSearchPattern((int) $filter['search_pattern']);
+                $this->setSearchPattern((int)$filter['search_pattern']);
             }
         }
+
         if (array_key_exists('type', $filter)) {
             $this->setType($filter['type']);
         }
+
         if (array_key_exists('features', $filter)) {
             // Handle the old format where we asked for an array
             if (is_array($filter['features'])) {
                 $filter['features'] = implode(',', $filter['features']);
             }
+
             $this->setFeatures($filter['features']);
         }
     }
 
-    public function getQuery()
+    /**
+     * @return int[]
+     */
+    public function getQuery(): array
     {
         $data = [
             'size' => $this->getPageSize(),
@@ -105,70 +126,89 @@ class AvailableNumbers implements FilterInterface
         return $data;
     }
 
-    public function getCountry() : ?string
+    public function getCountry(): ?string
     {
         return $this->country;
     }
 
-    protected function setCountry(string $country) : void
+    protected function setCountry(string $country): void
     {
         if (strlen($country) !== 2) {
-            throw new \InvalidArgumentException("Country must be in ISO 3166-1 Alpha-2 Format");
+            throw new InvalidArgumentException("Country must be in ISO 3166-1 Alpha-2 Format");
         }
 
         $this->country = $country;
     }
 
-    public function getFeatures() : ?string
+    public function getFeatures(): ?string
     {
         return $this->features;
     }
 
-    public function setFeatures(string $features) : self
+    /**
+     * @return $this
+     */
+    public function setFeatures(string $features): self
     {
         $this->features = $features;
+
         return $this;
     }
 
-    public function getPageIndex() : int
+    public function getPageIndex(): int
     {
         return $this->pageIndex;
     }
 
-    public function setPageIndex(int $pageIndex) : self
+    /**
+     * @return $this
+     */
+    public function setPageIndex(int $pageIndex): self
     {
         $this->pageIndex = $pageIndex;
+
         return $this;
     }
 
-    public function getPattern() : ?string
+    public function getPattern(): ?string
     {
         return $this->pattern;
     }
 
-    public function setPattern(string $pattern) : self
+    /**
+     * @return $this
+     */
+    public function setPattern(string $pattern): self
     {
         $this->pattern = $pattern;
+
         return $this;
     }
 
-    public function getSearchPattern() : int
+    public function getSearchPattern(): int
     {
         return $this->searchPattern;
     }
 
-    public function setSearchPattern(int $searchPattern) : self
+    /**
+     * @return $this
+     */
+    public function setSearchPattern(int $searchPattern): self
     {
         $this->searchPattern = $searchPattern;
+
         return $this;
     }
 
-    public function getType() : ?string
+    public function getType(): ?string
     {
         return $this->type;
     }
 
-    public function setType(string $type) : self
+    /**
+     * @return $this
+     */
+    public function setType(string $type): self
     {
         // Workaround for code snippets
         if (empty($type)) {
@@ -176,22 +216,26 @@ class AvailableNumbers implements FilterInterface
         }
 
         if ($type !== Number::TYPE_FIXED && $type !== Number::TYPE_MOBILE) {
-            var_dump($type);
             throw new InvalidArgumentException('Invalid type of number');
         }
 
         $this->type = $type;
+
         return $this;
     }
 
-    public function getPageSize() : int
+    public function getPageSize(): int
     {
         return $this->pageSize;
     }
 
-    public function setPageSize(int $pageSize) : self
+    /**
+     * @return $this
+     */
+    public function setPageSize(int $pageSize): self
     {
         $this->pageSize = $pageSize;
+
         return $this;
     }
 }

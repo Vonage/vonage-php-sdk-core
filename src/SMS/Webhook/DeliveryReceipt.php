@@ -1,137 +1,159 @@
 <?php
+
+/**
+ * Vonage Client Library for PHP
+ *
+ * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
+ */
+
 declare(strict_types=1);
 
 namespace Vonage\SMS\Webhook;
+
+use DateTimeImmutable;
+use Exception;
+use InvalidArgumentException;
+
+use function array_key_exists;
+use function filter_var;
 
 class DeliveryReceipt
 {
     /**
      * Message was delivered successfully
      */
-    const CODE_DELIVERED = 0;
+    public const CODE_DELIVERED = 0;
 
     /**
      * Message was not delivered, and no reason could be determined
      */
-    const CODE_UKNOWN = 1;
+    public const CODE_UNKNOWN = 1;
 
     /**
      * Message was not delivered because handset was temporarily unavailable - retry
      */
-    const CODE_ABSENT_TEMPORARY = 2;
+    public const CODE_ABSENT_TEMPORARY = 2;
 
     /**
      * The number is no longer active and should be removed from your database
      */
-    const CODE_ABSENT_PERMANENT = 3;
+    public const CODE_ABSENT_PERMANENT = 3;
 
     /**
      * This is a permanent error.
      * The number should be removed from your database and the user must
      * contact their network operator to remove the bar
      */
-    const CODE_BARRED = 4;
+    public const CODE_BARRED = 4;
 
     /**
      * There is an issue relating to portability of the number and you should contact the network operator to resolve it
      */
-    const CODE_PORTABILITY_ERROR = 5;
+    public const CODE_PORTABILITY_ERROR = 5;
 
     /**
      * The message has been blocked by a carrier's anti-spam filter
      */
-    const CODE_SPAM_REJECTION = 6;
+    public const CODE_SPAM_REJECTION = 6;
 
     /**
      * The handset was not available at the time the message was sent - retry
      */
-    const CODE_HANDSET_BUSY = 7;
+    public const CODE_HANDSET_BUSY = 7;
 
     /**
      * The message failed due to a network error - retry
      */
-    const CODE_NETWORK_ERROR = 8;
+    public const CODE_NETWORK_ERROR = 8;
 
     /**
      * The user has specifically requested not to receive messages from a specific service
      */
-    const CODE_ILLEGAL_NUMBER = 9;
+    public const CODE_ILLEGAL_NUMBER = 9;
 
     /**
      * There is an error in a message parameter, e.g. wrong encoding flag
      */
-    const CODE_ILLEGAL_MESSAGE = 10;
+    public const CODE_ILLEGAL_MESSAGE = 10;
 
     /**
      * Vonage cannot find a suitable route to deliver the message
      * Contact support@Vonage.com
      */
-    const CODE_UNROUTABLE = 11;
+    public const CODE_UNROUTABLE = 11;
 
     /**
      * A route to the number cannot be found - confirm the recipient's number
      */
-    const CODE_UNREACHABLE = 12;
+    public const CODE_UNREACHABLE = 12;
 
     /**
      * The target cannot receive your message due to their age
      */
-    const CODE_AGE_RESTRICTION = 13;
+    public const CODE_AGE_RESTRICTION = 13;
 
     /**
      * The recipient should ask their carrier to enable SMS on their plan
      */
-    const CODE_CARRIER_BLOCK = 14;
+    public const CODE_CARRIER_BLOCK = 14;
 
     /**
      * The recipient is on a prepaid plan and does not have enough credit to receive your message
      */
-    const CODE_INSUFFICIENT_FUNDS = 15;
+    public const CODE_INSUFFICIENT_FUNDS = 15;
 
     /**
      * Typically refers to an error in the route
      * Contact support@Vonage.com
      */
-    const CODE_GENERAL_ERROR = 99;
+    public const CODE_GENERAL_ERROR = 99;
 
     /**
      * Message has been accepted for delivery, but has not yet been delivered
      */
-    const STATUS_ACCEPTED = 'accepted';
+    public const STATUS_ACCEPTED = 'accepted';
 
     /**
      * Message has been delivered
      */
-    const STATUS_DELIVERED = 'delivered';
+    public const STATUS_DELIVERED = 'delivered';
 
     /**
      * Message has been buffered for later delivery
      */
-    const STATUS_BUFFERED = 'buffered';
+    public const STATUS_BUFFERED = 'buffered';
 
     /**
      * Message was held at downstream carrier's retry scheme and could not be delivered within the expiry time
      */
-    const STATUS_EXPIRED = 'expired';
+    public const STATUS_EXPIRED = 'expired';
 
     /**
      * Message not delivered
      */
-    const STATUS_FAILED = 'failed';
+    public const STATUS_FAILED = 'failed';
 
     /**
      * Downstream carrier refuses to deliver message
      */
-    const STATUS_REJECTED = 'rejected';
+    public const STATUS_REJECTED = 'rejected';
 
     /**
      * No useful information available
      */
-    const STATUS_UNKNOWN = 'unknown';
-    
+    public const STATUS_UNKNOWN = 'unknown';
+
     public static $requiredFields = [
-        'err-code', 'message-timestamp', 'messageId', 'msisdn', 'network-code',
-        'price', 'scts', 'status', 'to'
+        'err-code',
+        'message-timestamp',
+        'messageId',
+        'msisdn',
+        'network-code',
+        'price',
+        'scts',
+        'status',
+        'to'
     ];
 
     /**
@@ -140,7 +162,7 @@ class DeliveryReceipt
     protected $errCode;
 
     /**
-     * @var \DateTimeImmutable
+     * @var DateTimeImmutable
      */
     protected $messageTimestamp;
 
@@ -186,17 +208,19 @@ class DeliveryReceipt
 
     /**
      * @param array<string, string> $data
+     *
+     * @throws Exception
      */
     public function __construct(array $data)
     {
         foreach (static::$requiredFields as $key) {
             if (!array_key_exists($key, $data)) {
-                throw new \InvalidArgumentException('Delivery Receipt missing required data `' . $key . '`');
+                throw new InvalidArgumentException('Delivery Receipt missing required data `' . $key . '`');
             }
         }
 
         $this->errCode = filter_var($data['err-code'], FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
-        $this->messageTimestamp = new \DateTimeImmutable($data['message-timestamp']);
+        $this->messageTimestamp = new DateTimeImmutable($data['message-timestamp']);
         $this->messageId = $data['messageId'];
         $this->msisdn = $data['msisdn'];
         $this->networkCode = $data['network-code'];
@@ -207,52 +231,52 @@ class DeliveryReceipt
         $this->apiKey = $data['api-key'];
     }
 
-    public function getErrCode() : int
+    public function getErrCode(): int
     {
         return $this->errCode;
     }
 
-    public function getMessageTimestamp() : \DateTimeImmutable
+    public function getMessageTimestamp(): DateTimeImmutable
     {
         return $this->messageTimestamp;
     }
 
-    public function getMessageId() : string
+    public function getMessageId(): string
     {
         return $this->messageId;
     }
 
-    public function getMsisdn() : string
+    public function getMsisdn(): string
     {
         return $this->msisdn;
     }
 
-    public function getNetworkCode() : string
+    public function getNetworkCode(): string
     {
         return $this->networkCode;
     }
 
-    public function getPrice() : string
+    public function getPrice(): string
     {
         return $this->price;
     }
 
-    public function getScts() : string
+    public function getScts(): string
     {
         return $this->scts;
     }
 
-    public function getStatus() : string
+    public function getStatus(): string
     {
         return $this->status;
     }
 
-    public function getTo() : string
+    public function getTo(): string
     {
         return $this->to;
     }
 
-    public function getApiKey() : string
+    public function getApiKey(): string
     {
         return $this->apiKey;
     }

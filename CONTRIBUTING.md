@@ -4,7 +4,7 @@ Thanks for your interest in the project, we'd love to have you involved! Check o
  
 ## Opening an Issue
  
-We always welcome issues, if you've seen something that isn't quite right or you have a suggestion for a new feature, please go ahead and open an issue in this project. Include as much information as you have, it really helps.
+We always welcome issues, if you've seen something that isn't quite right, or you have a suggestion for a new feature, please go ahead and open an issue in this project. Include as much information as you have, it really helps.
  
 ## Making a Code Change
  
