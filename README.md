@@ -260,7 +260,11 @@ $outboundCall
 $response = $client->voice()->createOutboundCall($outboundCall);
 ```
 
-Or you can provide an NCCO directly in the POST request
+### Building a call with NCCO Actions
+
+Full parameter lists for NCCO Actions can be found in the [Voice API Docs](https://developer.nexmo.com/voice/voice-api/ncco-reference).
+
+Each of these examples uses the following structure to add actions to a call:
 
 ```php
 $outboundCall = new \Vonage\Voice\OutboundCall(
@@ -268,11 +272,136 @@ $outboundCall = new \Vonage\Voice\OutboundCall(
     new \Vonage\Voice\Endpoint\Phone('14843335555')
 );
 $ncco = new NCCO();
+
+//ADD ACTIONS TO THE NCCO OBJECT HERE
+
+$outboundCall->setNCCO($ncco);
+
+$response = $client->voice()->createOutboundCall($outboundCall);
+```
+
+### Record a call
+
+```php
+$outboundCall = new \Vonage\Voice\OutboundCall(
+    new \Vonage\Voice\Endpoint\Phone('14843331234'),
+    new \Vonage\Voice\Endpoint\Phone('14843335555')
+);
+
+$ncco = new NCCO();
+$record = new \Vonage\Voice\NCCO\Action\Record;
+$ncco->addAction($record->factory([
+    'eventUrl' => 'https://webhook.url'
+]);
+$outboundCall->setNCCO($ncco);
+
+$response = $client->voice()->createOutboundCall($outboundCall);
+```
+
+Your webhook url will receive a payload like this:
+
+```
+{
+  "start_time": "2020-10-29T14:30:24Z",
+  "recording_url": "https://api.nexmo.com/v1/files/<recording-id>",
+  "size": 27918,
+  "recording_uuid": "<recording-id>",
+  "end_time": "2020-10-29T14:30:31Z",
+  "conversation_uuid": "<conversation-id>",
+  "timestamp": "2020-10-29T14:30:31.619Z"
+}
+```
+
+You can then fetch and store the recording like this:
+
+```
+$recordingId = '<recording-id>';
+$recordingUrl = 'https://api.nexmo.com/v1/files/' . $recordingId;
+$data = $client->get($recordingUrl);
+file_put_contents($recordingId.'.mp3', $data->getBody());
+```
+
+### Send a text to voice call
+```php
+$outboundCall = new \Vonage\Voice\OutboundCall(
+    new \Vonage\Voice\Endpoint\Phone('14843331234'),
+    new \Vonage\Voice\Endpoint\Phone('14843335555')
+);
+
+$ncco = new NCCO();
 $ncco->addAction(new \Vonage\Voice\NCCO\Action\Talk('This is a text to speech call from Vonage'));
 $outboundCall->setNCCO($ncco);
 
 $response = $client->voice()->createOutboundCall($outboundCall);
 ```
+
+### Stream an audio file on a call
+```php
+$outboundCall = new \Vonage\Voice\OutboundCall(
+    new \Vonage\Voice\Endpoint\Phone('14843331234'),
+    new \Vonage\Voice\Endpoint\Phone('14843335555')
+);
+
+$ncco = new NCCO();
+$ncco->addAction(new \Vonage\Voice\NCCO\Action\Stream('https://my-mp3.url'));
+$outboundCall->setNCCO($ncco);
+
+$response = $client->voice()->createOutboundCall($outboundCall);
+```
+
+### Collect user input from a call
+
+Supports keypad entry as well as voice. NB. the input action must follow an action with `bargeIn` set to `true`
+
+```php
+$outboundCall = new \Vonage\Voice\OutboundCall(
+    new \Vonage\Voice\Endpoint\Phone('14843331234'),
+    new \Vonage\Voice\Endpoint\Phone('14843335555')
+);
+
+$ncco = new NCCO();
+
+$talk = new \Vonage\Voice\NCCO\Action\Talk;    
+$ncco->addAction($talk->factory('Please record your name.',[
+  'bargeIn' => true,
+]));
+
+$input = new \Vonage\Voice\NCCO\Action\Input;
+$ncco->addAction($input->factory([
+  'eventUrl' => 'https://webhook.url',
+  'type' => [
+    'speech',
+  ],
+  'speech' => [
+    'endOnSilence' => true,
+  ],
+]));
+
+$outboundCall->setNCCO($ncco);
+
+$response = $client->voice()->createOutboundCall($outboundCall);
+```
+
+The webhook URL will receive a payload containing the input from the user with relative confidence ratings for speech input.
+
+### Send a notification to a webhook url
+
+```php
+$outboundCall = new \Vonage\Voice\OutboundCall(
+    new \Vonage\Voice\Endpoint\Phone('14843331234'),
+    new \Vonage\Voice\Endpoint\Phone('14843335555')
+);
+
+$ncco = new NCCO();    
+$ncco->addAction(new \Vonage\Voice\NCCO\Action\Talk('We are just testing the notify function, you do not need to do anything.'));
+$ncco->addAction(new \Vonage\Voice\NCCO\Action\Notify([
+  'foo' => 'bar',
+], new Vonage\Voice\Webhook('https://webhook.url')));
+$outboundCall->setNCCO($ncco);
+
+$response = $client->voice()->createOutboundCall($outboundCall);
+```
+The webhook URL will receive a payload as specified in the request.
 
 ### Fetching a Call
 
