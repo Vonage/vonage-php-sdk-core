@@ -226,8 +226,6 @@ class VerificationTest extends TestCase
         foreach ($json as $key => $value) {
             $this->assertEquals($value, @$this->existing[$key], "Could not access `$key` as a property.");
         }
-
-        self::markTestIncomplete('Remove deprecated tests');
     }
 
     /**
@@ -273,8 +271,6 @@ class VerificationTest extends TestCase
         } else {
             @$this->existing->$method();
         }
-
-        self::markTestIncomplete('Remove deprecated tests');
     }
 
     /**
@@ -294,8 +290,6 @@ class VerificationTest extends TestCase
 
         @$this->assertFalse($this->existing->check('4321'));
         @$this->assertTrue($this->existing->check('1234'));
-
-        self::markTestIncomplete('Remove deprecated tests');
     }
 
     /**
@@ -315,8 +309,6 @@ class VerificationTest extends TestCase
 
         @$this->assertFalse($this->existing->check('4321'));
         @$this->assertTrue($this->existing->check('1234'));
-
-        self::markTestIncomplete('Remove deprecated tests');
     }
 
     /**
@@ -336,8 +328,6 @@ class VerificationTest extends TestCase
 
         $this->expectException(RequestException::class);
         @$this->existing->check('4321');
-
-        self::markTestIncomplete('Remove deprecated tests');
     }
 
     /**
@@ -360,8 +350,6 @@ class VerificationTest extends TestCase
         $this->assertEquals(@$this->existing->getAccountId(), @$unserialized->getAccountId());
         $this->assertEquals(@$this->existing->getStatus(), @$unserialized->getStatus());
         $this->assertEquals(@$this->existing->getResponseData(), @$unserialized->getResponseData());
-
-        self::markTestIncomplete('Remove deprecated tests');
     }
 
     /**
