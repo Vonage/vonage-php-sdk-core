@@ -1,5 +1,9 @@
 # 2.6.0
 
+### Added
+
+* #265 - Added support for Language and Style for NCCO Talk action
+
 ### Changed
 
 * #257 Dropped support for PHPUnit 7
@@ -20,11 +24,19 @@
 * #257 Added missing punctuation in CONTRIBUTING.md
 * #257 Updated contact email address in CODE_OF_CONDUCT.md
 
+### Deprecated
+
+* #265 - Deprecated use of VoiceName for NCCO Talk action
+
 ### Fixed
 
 * #257 Fixed namespaces (Zend => Laminas, Nexmo => Vonage)
 * #257 Fixed condition in Verify\Request::setCodeLength
 * #257 Fixed typos and some wording in README.md
+
+### Removed
+
+* Removed `examples/` directory as the code snippets repo is much more up-to-date
 
 # 2.5.0
 
