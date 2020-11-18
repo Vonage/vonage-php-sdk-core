@@ -289,8 +289,7 @@ $outboundCall = new \Vonage\Voice\OutboundCall(
 );
 
 $ncco = new NCCO();
-$record = new \Vonage\Voice\NCCO\Action\Record;
-$ncco->addAction($record->factory([
+$ncco->addAction(\Vonage\Voice\NCCO\Action\Record::factory([
     'eventUrl' => 'https://webhook.url'
 ]);
 $outboundCall->setNCCO($ncco);
@@ -361,13 +360,11 @@ $outboundCall = new \Vonage\Voice\OutboundCall(
 
 $ncco = new NCCO();
 
-$talk = new \Vonage\Voice\NCCO\Action\Talk;    
-$ncco->addAction($talk->factory('Please record your name.',[
+$ncco->addAction(\Vonage\Voice\NCCO\Action\Talk::factory('Please record your name.',[
   'bargeIn' => true,
 ]));
 
-$input = new \Vonage\Voice\NCCO\Action\Input;
-$ncco->addAction($input->factory([
+$ncco->addAction(\Vonage\Voice\NCCO\Action\Input::factory([
   'eventUrl' => 'https://webhook.url',
   'type' => [
     'speech',
