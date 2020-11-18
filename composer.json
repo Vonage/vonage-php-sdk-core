@@ -28,6 +28,7 @@
     "vonage/nexmo-bridge": "^0.1.0"
   },
   "require-dev": {
+    "friendsofphp/php-cs-fixer": "^2.16",
     "guzzlehttp/guzzle": ">=6",
     "helmich/phpunit-json-assert": "^3.3",
     "php-http/mock-client": "^1.4",
