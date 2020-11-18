@@ -698,7 +698,7 @@ This library is actively developed, and we love to hear from you! Please feel fr
 [doc_inbound]: https://developer.nexmo.com/messaging/sms/guides/inbound-sms
 [doc_verify]: https://developer.nexmo.com/verify/overview
 [license]: LICENSE.txt
-[send_example]: examples/send.php
+[send_example]: https://github.com/Vonage/vonage-php-code-snippets/blob/master/sms/send-sms.php
 [spec]: https://github.com/Nexmo/client-library-specification
 [issues]: https://github.com/Vonage/vonage-php-core/issues
 [pulls]: https://github.com/Vonage/vonage-php-core/pulls
