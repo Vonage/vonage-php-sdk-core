@@ -115,7 +115,7 @@ create an inbound message object from a webhook:
 
 ```php
 try {
-    $inbound = \Vonage\SMS\InboundSMS::createFromGlobals();
+    $inbound = \Vonage\SMS\Webhook\Factory::createFromGlobals();
     error_log($inbound->getText());
 } catch (\InvalidArgumentException $e) {
     error_log('invalid message');
