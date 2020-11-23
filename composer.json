@@ -21,7 +21,7 @@
     "ext-json": "*",
     "ext-mbstring": "*",
     "laminas/laminas-diactoros": "^2.4",
-    "lcobucci/jwt": "^3.3",
+    "lcobucci/jwt": "^3.4@dev|^4.0@beta",
     "composer/package-versions-deprecated": "^1.11",
     "psr/container": "^1.0",
     "psr/http-client-implementation": "^1.0",
