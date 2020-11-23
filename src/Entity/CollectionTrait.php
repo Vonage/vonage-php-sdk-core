@@ -69,9 +69,9 @@ trait CollectionTrait
      */
     protected $filter;
 
-    abstract public function getCollectionName(): string;
+    abstract public static function getCollectionName(): string;
 
-    abstract public function getCollectionPath(): string;
+    abstract public static function getCollectionPath(): string;
 
     /**
      * @param $data
@@ -84,7 +84,7 @@ trait CollectionTrait
      */
     public function current()
     {
-        return $this->hydrateEntity($this->page['_embedded'][$this->getCollectionName()][$this->current], $this->key());
+        return $this->hydrateEntity($this->page['_embedded'][static::getCollectionName()][$this->current], $this->key());
     }
 
     /**
@@ -103,8 +103,8 @@ trait CollectionTrait
     public function key()
     {
         return
-            $this->page['_embedded'][$this->getCollectionName()][$this->current]['id'] ??
-            $this->page['_embedded'][$this->getCollectionName()][$this->current]['uuid'] ??
+            $this->page['_embedded'][static::getCollectionName()][$this->current]['id'] ??
+            $this->page['_embedded'][static::getCollectionName()][$this->current]['uuid'] ??
             $this->current;
     }
 
@@ -119,12 +119,12 @@ trait CollectionTrait
         }
 
         //all hal collections have an `_embedded` object, we expect there to be a property matching the collection name
-        if (!isset($this->page['_embedded'][$this->getCollectionName()])) {
+        if (!isset($this->page['_embedded'][static::getCollectionName()])) {
             return false;
         }
 
         //if we have a page with no items, we've gone beyond the end of the collection
-        if (!count($this->page['_embedded'][$this->getCollectionName()])) {
+        if (!count($this->page['_embedded'][static::getCollectionName()])) {
             return false;
         }
 
@@ -134,7 +134,7 @@ trait CollectionTrait
         }
 
         //if our current index is past the current page, fetch the next page if possible and reset the index
-        if (!isset($this->page['_embedded'][$this->getCollectionName()][$this->current])) {
+        if (!isset($this->page['_embedded'][static::getCollectionName()][$this->current])) {
             if (isset($this->page['_links']['next'])) {
                 $this->fetchPage($this->page['_links']['next']['href']);
                 $this->current = 0;
@@ -153,7 +153,7 @@ trait CollectionTrait
      */
     public function rewind(): void
     {
-        $this->fetchPage($this->getCollectionPath());
+        $this->fetchPage(static::getCollectionPath());
     }
 
     /**
