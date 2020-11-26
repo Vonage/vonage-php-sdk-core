@@ -57,7 +57,7 @@ class KeypairTest extends TestCase
         $credentials = new Keypair($this->key, $this->application);
 
         //could use the JWT object, but hope to remove as a dependency
-        $jwt = (string)$credentials->generateJwt();
+        $jwt = (string)$credentials->generateJwt()->toString();
 
         [$header, $payload] = $this->decodeJWT($jwt);
 
@@ -84,7 +84,7 @@ class KeypairTest extends TestCase
         ];
 
         $jwt = $credentials->generateJwt($claims);
-        [, $payload] = $this->decodeJWT($jwt);
+        [, $payload] = $this->decodeJWT($jwt->toString());
 
         $this->assertArrayHasKey('arbitrary', $payload);
         $this->assertEquals($claims['arbitrary'], $payload['arbitrary']);
