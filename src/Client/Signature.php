@@ -65,7 +65,7 @@ class Signature
         $signed = [];
 
         foreach ($this->signed as $key => $value) {
-            $signed[$key] = str_replace(["&", "="], "_", $value);
+            $signed[$key] = str_replace(["&", "="], "_", (string) $value);
         }
 
         //create base string

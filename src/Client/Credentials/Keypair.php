@@ -11,8 +11,9 @@ declare(strict_types=1);
 
 namespace Vonage\Client\Credentials;
 
-use Lcobucci\JWT\Builder;
+use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Key;
+use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Lcobucci\JWT\Token;
 use Vonage\Application\Application;
@@ -31,11 +32,6 @@ class Keypair extends AbstractCredentials
      */
     protected $key;
 
-    /**
-     * @var Sha256
-     */
-    protected $signer;
-
     public function __construct($privateKey, $application = null)
     {
         $this->credentials['key'] = $privateKey;
@@ -48,12 +44,13 @@ class Keypair extends AbstractCredentials
             $this->credentials['application'] = $application;
         }
 
-        $this->key = new Key($privateKey);
-        $this->signer = new Sha256();
+        $this->key = InMemory::plainText($privateKey);
     }
 
     public function generateJwt(array $claims = []): Token
     {
+        $config = Configuration::forSymmetricSigner(new Sha256(), $this->key);
+
         $exp = time() + 60;
         $iat = time();
         $jti = base64_encode((string)mt_rand());
@@ -76,13 +73,13 @@ class Keypair extends AbstractCredentials
             unset($claims['jti']);
         }
 
-        $builder = new Builder();
-        $builder->issuedAt($iat)
-            ->expiresAt($exp)
+        $builder = $config->builder();
+        $builder->issuedAt((new \DateTimeImmutable())->setTimestamp($iat))
+            ->expiresAt((new \DateTimeImmutable())->setTimestamp($exp))
             ->identifiedBy($jti);
 
         if (isset($claims['nbf'])) {
-            $builder->canOnlyBeUsedAfter($claims['nbf']);
+            $builder->canOnlyBeUsedAfter((new \DateTimeImmutable())->setTimestamp($claims['nbf']));
 
             unset($claims['nbf']);
         }
@@ -97,6 +94,6 @@ class Keypair extends AbstractCredentials
             }
         }
 
-        return $builder->getToken($this->signer, $this->key);
+        return $builder->getToken($config->signer(), $config->signingKey());
     }
 }

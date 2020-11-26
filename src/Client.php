@@ -205,9 +205,9 @@ class Client
                 static function (
                     int $errno,
                     string $errstr,
-                    string $errfile,
-                    int $errline,
-                    array $errorcontext
+                    string $errfile = null,
+                    int $errline = null,
+                    array $errorcontext = null
                 ) {
                     return true;
                 },
@@ -478,14 +478,14 @@ class Client
             if ($this->needsKeypairAuthentication($request)) {
                 $token = $this->credentials->get(Keypair::class)->generateJwt();
 
-                $request = $request->withHeader('Authorization', 'Bearer ' . $token);
+                $request = $request->withHeader('Authorization', 'Bearer ' . $token->toString());
             } else {
                 $request = self::authRequest($request, $this->credentials->get(Basic::class));
             }
         } elseif ($this->credentials instanceof Keypair) {
             $token = $this->credentials->generateJwt();
 
-            $request = $request->withHeader('Authorization', 'Bearer ' . $token);
+            $request = $request->withHeader('Authorization', 'Bearer ' . $token->toString());
         } elseif ($this->credentials instanceof SignatureSecret) {
             $request = self::signRequest($request, $this->credentials);
         } elseif ($this->credentials instanceof Basic) {
