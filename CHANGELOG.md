@@ -1,3 +1,9 @@
+# 2.7.0
+
+### Added
+
+* #269 - Added PHP 8 Support
+
 # 2.6.0
 
 ### Added
