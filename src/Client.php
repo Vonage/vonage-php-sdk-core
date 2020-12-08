@@ -124,14 +124,18 @@ class Client
         if (is_null($client)) {
             // Since the user did not pass a client, try and make a client
             // using the Guzzle 6 adapter or Guzzle 7 (depending on availability)
-            /** @noinspection ClassConstantCanBeUsedInspection */
-            if (class_exists('\GuzzleHttp\Client')) {
-                $client = new \GuzzleHttp\Client();
-            } elseif (class_exists('\Http\Adapter\Guzzle6\Client')) {
+            list($guzzleVersion) = explode('@', Versions::getVersion('guzzlehttp/guzzle'), 1);
+            $guzzleVersion = (float) $guzzleVersion;
+
+            if ($guzzleVersion >= 6.0 && $guzzleVersion < 7) {
                 /** @noinspection CallableParameterUseCaseInTypeContextInspection */
                 /** @noinspection PhpUndefinedNamespaceInspection */
                 /** @noinspection PhpUndefinedClassInspection */
                 $client = new \Http\Adapter\Guzzle6\Client();
+            }
+
+            if ($guzzleVersion >= 7.0 && $guzzleVersion < 8.0) {
+                $client = new \GuzzleHttp\Client();
             }
         }
 
