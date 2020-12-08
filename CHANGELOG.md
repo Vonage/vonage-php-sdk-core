@@ -1,3 +1,9 @@
+# 2.7.1
+
+### Changed
+
+* #270 - Use the actual Guzzle package version to determine of 6 or 7 is in the project
+
 # 2.7.0
 
 ### Added
