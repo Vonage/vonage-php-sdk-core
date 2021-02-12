@@ -814,8 +814,20 @@ If you have a conflicting package installation that cannot co-exist with our rec
 
 See the [Packagist page for client-implementation](https://packagist.org/providers/php-http/client-implementation) for options.
 
-Contributing
-------------
+### Enabling Request/Response Logging
+
+Our client library has support for logging the request and response for debugging via PSR-3 compatible logging mechanisms. If the `debug` option is passed into the client and a PSR-3 compatible logger is set in our client's service factory, we will use the logger for debugging purposes.
+
+```php
+$client = new \Vonage\Client(new Basic('abcd1234', 's3cr3tk3y'), ['debug' => true]);
+$logger = new \Monolog\Logger('test');
+$logger->pushHandler(new \Monolog\Handler\StreamHandler(__DIR__ . '/log.txt', \Monolog\Logger::DEBUG));
+$client->getFactory()->set(\PSR\Log\LoggerInterface::class, $logger);
+```
+
+**ENABLING DEBUGING LOGGING HAS THE POTENTIAL FOR LOGGING SENSITIVE INFORMATION, DO NOT ENABLE IN PRODUCTION**
+
+## Contributing
 
 This library is actively developed, and we love to hear from you! Please feel free to [create an issue][issues] or [open a pull request][pulls] with your questions, comments, suggestions and feedback.
 

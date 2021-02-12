@@ -22,6 +22,8 @@ use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use RuntimeException;
 use Vonage\Account\ClientFactory;
 use Vonage\Application\ClientFactory as ApplicationClientFactory;
@@ -41,6 +43,7 @@ use Vonage\Conversations\Collection as ConversationsCollection;
 use Vonage\Conversion\ClientFactory as ConversionClientFactory;
 use Vonage\Entity\EntityInterface;
 use Vonage\Insights\ClientFactory as InsightsClientFactory;
+use Vonage\Logger\LoggerAwareInterface;
 use Vonage\Message\Client as MessageClient;
 use Vonage\Numbers\ClientFactory as NumbersClientFactory;
 use Vonage\Redact\ClientFactory as RedactClientFactory;
@@ -68,6 +71,7 @@ use function set_error_handler;
 use function str_replace;
 use function strpos;
 use function unserialize;
+use Vonage\Logger\LoggerTrait;
 
 /**
  * Vonage API Client, allows access to the API from PHP.
@@ -86,8 +90,10 @@ use function unserialize;
  * @property string restUrl
  * @property string apiUrl
  */
-class Client
+class Client implements LoggerAwareInterface
 {
+    use LoggerTrait;
+
     public const VERSION = '2.5.0';
     public const BASE_API = 'https://api.nexmo.com';
     public const BASE_REST = 'https://rest.nexmo.com';
@@ -107,14 +113,24 @@ class Client
     protected $client;
 
     /**
+     * @var bool
+     */
+    protected $debug = false;
+
+    /**
      * @var ContainerInterface
      */
     protected $factory;
 
     /**
+     * @var LoggerInterface
+     */
+    protected $logger;
+
+    /**
      * @var array
      */
-    protected $options = ['show_deprecations' => false];
+    protected $options = ['show_deprecations' => false, 'debug' => false];
 
     /**
      * Create a new API client using the provided credentials.
@@ -174,6 +190,10 @@ class Client
 
         if (isset($options['base_api_url'])) {
             $this->apiUrl = $options['base_api_url'];
+        }
+
+        if (isset($options['debug'])) {
+            $this->debug = $options['debug'];
         }
 
         $this->setFactory(
@@ -532,6 +552,32 @@ class Client
         /** @noinspection PhpUnnecessaryLocalVariableInspection */
         $response = $this->client->sendRequest($request);
 
+        if ($this->debug) {
+            $id = uniqid();
+            $request->getBody()->rewind();
+            $response->getBody()->rewind();
+            $this->log(
+                LogLevel::DEBUG,
+                'Request ' . $id,
+                [
+                    'url' => $request->getUri()->__toString(),
+                    'headers' => $request->getHeaders(),
+                    'body' => explode("\n", $request->getBody()->__toString())
+                ]
+            );
+            $this->log(
+                LogLevel::DEBUG,
+                'Response ' . $id,
+                [
+                    'headers ' => $response->getHeaders(),
+                    'body' => explode("\n", $response->getBody()->__toString())
+                ]
+            );
+
+            $request->getBody()->rewind();
+            $response->getBody()->rewind();
+        }
+
         return $response;
     }
 
@@ -636,5 +682,14 @@ class Client
     protected function getVersion(): string
     {
         return Versions::getVersion('vonage/client-core');
+    }
+
+    public function getLogger(): ?LoggerInterface
+    {
+        if (!$this->logger && $this->getFactory()->has(LoggerInterface::class)) {
+            $this->setLogger($this->getFactory()->get(LoggerInterface::class));
+        }
+
+        return $this->logger;
     }
 }
