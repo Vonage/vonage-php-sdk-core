@@ -90,4 +90,77 @@ class SMSTest extends TestCase
         (new SMS('447700900000', '16105551212', 'Test Message'))
             ->setClientRef('This is a really long client ref and should throw an exception');
     }
+
+    public function testCanSetEntityId()
+    {
+        $sms = new SMS('447700900000', '16105551212', 'Test Message');
+        $sms->setEntityId('abcd');
+
+        $expected = [
+            'text' => 'Test Message',
+            'entity-id' => 'abcd',
+            'to' => '447700900000',
+            'from' => '16105551212',
+            'type' => 'text',
+            'ttl' => 259200000,
+            'status-report-req' => 1,
+        ];
+
+        $this->assertSame($expected, $sms->toArray());
+        $this->assertSame($expected['entity-id'], $sms->getEntityId());
+    }
+
+    public function testCanSetContentId()
+    {
+        $sms = new SMS('447700900000', '16105551212', 'Test Message');
+        $sms->setContentId('1234');
+
+        $expected = [
+            'text' => 'Test Message',
+            'content-id' => '1234',
+            'to' => '447700900000',
+            'from' => '16105551212',
+            'type' => 'text',
+            'ttl' => 259200000,
+            'status-report-req' => 1,
+        ];
+
+        $this->assertSame($expected, $sms->toArray());
+        $this->assertSame($expected['content-id'], $sms->getContentId());
+    }
+
+    public function testDLTInfoAppearsInRequest()
+    {
+        $sms = new SMS('447700900000', '16105551212', 'Test Message');
+        $sms->enableDLT('abcd', '1234');
+
+        $expected = [
+            'text' => 'Test Message',
+            'entity-id' => 'abcd',
+            'content-id' => '1234',
+            'to' => '447700900000',
+            'from' => '16105551212',
+            'type' => 'text',
+            'ttl' => 259200000,
+            'status-report-req' => 1,
+        ];
+
+        $this->assertSame($expected, $sms->toArray());
+    }
+
+    public function testDLTInfoDoesNotAppearsWhenNotSet()
+    {
+        $sms = new SMS('447700900000', '16105551212', 'Test Message');
+
+        $expected = [
+            'text' => 'Test Message',
+            'to' => '447700900000',
+            'from' => '16105551212',
+            'type' => 'text',
+            'ttl' => 259200000,
+            'status-report-req' => 1,
+        ];
+
+        $this->assertSame($expected, $sms->toArray());
+    }
 }
