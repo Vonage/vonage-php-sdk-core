@@ -277,6 +277,30 @@ class FactoryTest extends TestCase
         Factory::createFromArray(['foo' => 'bar']);
     }
 
+    public function testEventWithDetailIsDeserializedProperly()
+    {
+        $request = $this->getRequest('event-post-failed');
+        $expected = json_decode($this->getRequest('event-post-failed')->getBody()->getContents(), true);
+
+        /** @var Event $event */
+        $event = Factory::createFromRequest($request);
+
+        $this->assertInstanceOf(Event::class, $event);
+        $this->assertSame($expected['detail'], $event->getDetail());
+    }
+
+    public function testEventWithoutDetailIsDeserializedProperly()
+    {
+        $request = $this->getRequest('event-post-ringing');
+        $expected = json_decode($this->getRequest('event-post-ringing')->getBody()->getContents(), true);
+
+        /** @var Event $event */
+        $event = Factory::createFromRequest($request);
+
+        $this->assertInstanceOf(Event::class, $event);
+        $this->assertNull($event->getDetail());
+    }
+
     public function getRequest(string $requestName): ServerRequest
     {
         $text = file_get_contents(__DIR__ . '/../requests/' . $requestName . '.txt');

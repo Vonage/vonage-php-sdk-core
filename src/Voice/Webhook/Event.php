@@ -41,6 +41,11 @@ class Event
     /**
      * @var string
      */
+    protected $detail;
+
+    /**
+     * @var string
+     */
     protected $direction;
 
     /**
@@ -122,11 +127,22 @@ class Event
         if (array_key_exists('end_time', $event)) {
             $this->endTime = new DateTimeImmutable($event['end_time']);
         }
+
+        $this->detail = $event['detail'] ?? null;
     }
 
     public function getConversationUuid(): string
     {
         return $this->conversationUuid;
+    }
+
+    /**
+     * Returns additional details on the event, if available
+     * Not all events contain this field, so it may be null.
+     */
+    public function getDetail(): ?string
+    {
+        return $this->detail;
     }
 
     public function getDirection(): string
