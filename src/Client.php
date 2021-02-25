@@ -44,6 +44,7 @@ use Vonage\Insights\ClientFactory as InsightsClientFactory;
 use Vonage\Message\Client as MessageClient;
 use Vonage\Numbers\ClientFactory as NumbersClientFactory;
 use Vonage\Redact\ClientFactory as RedactClientFactory;
+use Vonage\Secrets\ClientFactory as SecretsClientFactory;
 use Vonage\SMS\ClientFactory as SMSClientFactory;
 use Vonage\User\Collection as UserCollection;
 use Vonage\Verify\ClientFactory as VerifyClientFactory;
@@ -79,6 +80,7 @@ use function unserialize;
  * @method Insights\Client insights()
  * @method Numbers\Client numbers()
  * @method Redact\Client redact()
+ * @method Secrets\Client secrets()
  * @method SMS\Client sms()
  * @method Verify\Client  verify()
  * @method Voice\Client voice()
@@ -192,6 +194,7 @@ class Client
                     'insights' => InsightsClientFactory::class,
                     'numbers' => NumbersClientFactory::class,
                     'redact' => RedactClientFactory::class,
+                    'secrets' => SecretsClientFactory::class,
                     'sms' => SMSClientFactory::class,
                     'verify' => VerifyClientFactory::class,
                     'voice' => VoiceClientFactory::class,
