@@ -819,7 +819,7 @@ See the [Packagist page for client-implementation](https://packagist.org/provide
 Our client library has support for logging the request and response for debugging via PSR-3 compatible logging mechanisms. If the `debug` option is passed into the client and a PSR-3 compatible logger is set in our client's service factory, we will use the logger for debugging purposes.
 
 ```php
-$client = new \Vonage\Client(new Basic('abcd1234', 's3cr3tk3y'), ['debug' => true]);
+$client = new \Vonage\Client(new \Vonage\Client\Credentials\Basic('abcd1234', 's3cr3tk3y'), ['debug' => true]);
 $logger = new \Monolog\Logger('test');
 $logger->pushHandler(new \Monolog\Handler\StreamHandler(__DIR__ . '/log.txt', \Monolog\Logger::DEBUG));
 $client->getFactory()->set(\PSR\Log\LoggerInterface::class, $logger);
@@ -840,4 +840,3 @@ This library is actively developed, and we love to hear from you! Please feel fr
 [spec]: https://github.com/Nexmo/client-library-specification
 [issues]: https://github.com/Vonage/vonage-php-core/issues
 [pulls]: https://github.com/Vonage/vonage-php-core/pulls
-
