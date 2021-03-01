@@ -19,6 +19,7 @@ use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Vonage\Client;
 use Vonage\Client\Credentials\Basic;
@@ -662,6 +663,21 @@ class ClientTest extends TestCase
 
         $this->assertRequestMethod("DELETE", $request);
         $this->assertRequestBodyIsEmpty($request);
+    }
+
+    public function testLoggerIsNullWhenNotSet(): void
+    {
+        $client = new Client($this->basic_credentials, [], $this->http);
+        $this->assertNull($client->getLogger());
+    }
+
+    public function testCanGetLoggerWhenOneIsSet(): void
+    {
+        $client = new Client($this->basic_credentials, [], $this->http);
+        $logger = $this->prophesize(LoggerInterface::class);
+        $client->getFactory()->set(LoggerInterface::class, $logger->reveal());
+
+        $this->assertNotNull($client->getLogger());
     }
 
     public function genericDeleteProvider(): array
