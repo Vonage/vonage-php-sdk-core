@@ -455,7 +455,7 @@ class ClientTest extends TestCase
             return true;
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('secret-management/list'));
 
-        $this->accountClient->listSecrets('abcd1234');
+        @$this->accountClient->listSecrets('abcd1234');
     }
 
     /**
@@ -471,7 +471,7 @@ class ClientTest extends TestCase
             Argument::any()
         )->willReturn($this->getGenericResponse('500', 500));
 
-        $this->accountClient->listSecrets('abcd1234');
+        @$this->accountClient->listSecrets('abcd1234');
     }
 
     /**
@@ -487,7 +487,7 @@ class ClientTest extends TestCase
             Argument::any()
         )->willReturn($this->getGenericResponse('401', 401));
 
-        $this->accountClient->listSecrets('abcd1234');
+        @$this->accountClient->listSecrets('abcd1234');
     }
 
     /**
@@ -507,7 +507,7 @@ class ClientTest extends TestCase
             return true;
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('secret-management/get'));
 
-        $this->accountClient->getSecret('abcd1234', 'ad6dc56f-07b5-46e1-a527-85530e625800');
+        @$this->accountClient->getSecret('abcd1234', 'ad6dc56f-07b5-46e1-a527-85530e625800');
     }
 
     /**
@@ -523,7 +523,7 @@ class ClientTest extends TestCase
             Argument::any()
         )->willReturn($this->getGenericResponse('500', 500));
 
-        $this->accountClient->getSecret('abcd1234', 'ad6dc56f-07b5-46e1-a527-85530e625800');
+        @$this->accountClient->getSecret('abcd1234', 'ad6dc56f-07b5-46e1-a527-85530e625800');
     }
 
     /**
@@ -539,7 +539,7 @@ class ClientTest extends TestCase
             Argument::any()
         )->willReturn($this->getGenericResponse('401', 401));
 
-        $this->accountClient->getSecret('abcd1234', 'ad6dc56f-07b5-46e1-a527-85530e625800');
+        @$this->accountClient->getSecret('abcd1234', 'ad6dc56f-07b5-46e1-a527-85530e625800');
     }
 
     /**
@@ -558,7 +558,7 @@ class ClientTest extends TestCase
             return true;
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('secret-management/create'));
 
-        $this->accountClient->createSecret('abcd1234', 'example-4PI-secret');
+        @$this->accountClient->createSecret('abcd1234', 'example-4PI-secret');
     }
 
     /**
@@ -576,7 +576,7 @@ class ClientTest extends TestCase
             Argument::any()
         )->willReturn($this->getGenericResponse('500', 500));
 
-        $this->accountClient->createSecret('abcd1234', 'example-4PI-secret');
+        @$this->accountClient->createSecret('abcd1234', 'example-4PI-secret');
     }
 
     /**
@@ -592,7 +592,7 @@ class ClientTest extends TestCase
 
         $this->vonageClient->send(Argument::any())->willReturn($this->getGenericResponse('401', 401));
 
-        $this->accountClient->createSecret('abcd1234', 'example-4PI-secret');
+        @$this->accountClient->createSecret('abcd1234', 'example-4PI-secret');
     }
 
     /**
@@ -606,12 +606,12 @@ class ClientTest extends TestCase
         try {
             $this->vonageClient->send(Argument::any())
                 ->willReturn($this->getResponse('secret-management/create-validation', 400));
-            $this->accountClient->createSecret('abcd1234', 'example-4PI-secret');
+            @$this->accountClient->createSecret('abcd1234', 'example-4PI-secret');
         } catch (ValidationException $e) {
             $this->assertEquals(
                 'Bad Request: The request failed due to validation errors. ' .
-                'See https://developer.nexmo.com/api-errors/account/secret-management#validation ' .
-                'for more information',
+                    'See https://developer.nexmo.com/api-errors/account/secret-management#validation ' .
+                    'for more information',
                 $e->getMessage()
             );
             $this->assertEquals(
@@ -642,7 +642,7 @@ class ClientTest extends TestCase
             return true;
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('secret-management/delete'));
 
-        $this->accountClient->deleteSecret('abcd1234', 'ad6dc56f-07b5-46e1-a527-85530e625800');
+        @$this->accountClient->deleteSecret('abcd1234', 'ad6dc56f-07b5-46e1-a527-85530e625800');
     }
 
     /**
@@ -653,7 +653,7 @@ class ClientTest extends TestCase
     {
         $this->expectException(ClientException\Server::class);
         $this->vonageClient->send(Argument::any())->willReturn($this->getGenericResponse('500', 500));
-        $this->accountClient->deleteSecret('abcd1234', 'ad6dc56f-07b5-46e1-a527-85530e625800');
+        @$this->accountClient->deleteSecret('abcd1234', 'ad6dc56f-07b5-46e1-a527-85530e625800');
     }
 
     /**
@@ -664,7 +664,7 @@ class ClientTest extends TestCase
     {
         $this->expectException(ClientException\Request::class);
         $this->vonageClient->send(Argument::any())->willReturn($this->getGenericResponse('401', 401));
-        $this->accountClient->deleteSecret('abcd1234', 'ad6dc56f-07b5-46e1-a527-85530e625800');
+        @$this->accountClient->deleteSecret('abcd1234', 'ad6dc56f-07b5-46e1-a527-85530e625800');
     }
 
     /**
