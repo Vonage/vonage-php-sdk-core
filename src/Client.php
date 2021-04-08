@@ -32,6 +32,14 @@ use Vonage\Client\APIResource;
 use Vonage\Client\Credentials\Basic;
 use Vonage\Client\Credentials\Container;
 use Vonage\Client\Credentials\CredentialsInterface;
+use Vonage\Client\Credentials\Handler\BasicHandler;
+use Vonage\Client\Credentials\Handler\KeypairHandler;
+use Vonage\Client\Credentials\Handler\SignatureBodyFormHandler;
+use Vonage\Client\Credentials\Handler\SignatureBodyHandler;
+use Vonage\Client\Credentials\Handler\SignatureQueryHandler;
+use Vonage\Client\Credentials\Handler\TokenBodyFormHandler;
+use Vonage\Client\Credentials\Handler\TokenBodyHandler;
+use Vonage\Client\Credentials\Handler\TokenQueryHandler;
 use Vonage\Client\Credentials\Keypair;
 use Vonage\Client\Credentials\OAuth;
 use Vonage\Client\Credentials\SignatureSecret;
@@ -296,39 +304,17 @@ class Client implements LoggerAwareInterface
     {
         switch ($request->getHeaderLine('content-type')) {
             case 'application/json':
-                $body = $request->getBody();
-                $body->rewind();
-                $content = $body->getContents();
-                $params = json_decode($content, true);
-                $params['api_key'] = $credentials['api_key'];
-                $signature = new Signature($params, $credentials['signature_secret'], $credentials['signature_method']);
-                $body->rewind();
-                $body->write(json_encode($signature->getSignedParams()));
+                $handler = new SignatureBodyHandler();
                 break;
             case 'application/x-www-form-urlencoded':
-                $body = $request->getBody();
-                $body->rewind();
-                $content = $body->getContents();
-                $params = [];
-                parse_str($content, $params);
-                $params['api_key'] = $credentials['api_key'];
-                $signature = new Signature($params, $credentials['signature_secret'], $credentials['signature_method']);
-                $params = $signature->getSignedParams();
-                $body->rewind();
-                $body->write(http_build_query($params, '', '&'));
+                $handler = new SignatureBodyFormHandler();
                 break;
             default:
-                $query = [];
-                parse_str($request->getUri()->getQuery(), $query);
-                $query['api_key'] = $credentials['api_key'];
-                $signature = new Signature($query, $credentials['signature_secret'], $credentials['signature_method']);
-                $request = $request->withUri(
-                    $request->getUri()->withQuery(http_build_query($signature->getSignedParams()))
-                );
+                $handler = new SignatureQueryHandler();
                 break;
         }
 
-        return $request;
+        return $handler($request, $credentials);
     }
 
     public static function authRequest(RequestInterface $request, Basic $credentials): RequestInterface
@@ -336,57 +322,26 @@ class Client implements LoggerAwareInterface
         switch ($request->getHeaderLine('content-type')) {
             case 'application/json':
                 if (static::requiresBasicAuth($request)) {
-                    $c = $credentials->asArray();
-                    $cx = base64_encode($c['api_key'] . ':' . $c['api_secret']);
-
-                    $request = $request->withHeader('Authorization', 'Basic ' . $cx);
+                    $handler = new BasicHandler();
                 } elseif (static::requiresAuthInUrlNotBody($request)) {
-                    $query = [];
-                    parse_str($request->getUri()->getQuery(), $query);
-                    $query = array_merge($query, $credentials->asArray());
-
-                    $request = $request->withUri($request->getUri()->withQuery(http_build_query($query)));
+                    $handler = new TokenQueryHandler();
                 } else {
-                    $body = $request->getBody();
-                    $body->rewind();
-                    $content = $body->getContents();
-                    $params = json_decode($content, true);
-
-                    if (!$params) {
-                        $params = [];
-                    }
-
-                    $params = array_merge($params, $credentials->asArray());
-                    $body->rewind();
-                    $body->write(json_encode($params));
+                    $handler = new TokenBodyHandler();
                 }
                 break;
             case 'application/x-www-form-urlencoded':
-                $body = $request->getBody();
-                $body->rewind();
-                $content = $body->getContents();
-                $params = [];
-                parse_str($content, $params);
-                $params = array_merge($params, $credentials->asArray());
-                $body->rewind();
-                $body->write(http_build_query($params, '', '&'));
+                $handler = new TokenBodyFormHandler();
                 break;
             default:
                 if (static::requiresBasicAuth($request)) {
-                    $c = $credentials->asArray();
-                    $cx = base64_encode($c['api_key'] . ':' . $c['api_secret']);
-
-                    $request = $request->withHeader('Authorization', 'Basic ' . $cx);
+                    $handler = new BasicHandler();
                 } else {
-                    $query = [];
-                    parse_str($request->getUri()->getQuery(), $query);
-                    $query = array_merge($query, $credentials->asArray());
-                    $request = $request->withUri($request->getUri()->withQuery(http_build_query($query)));
+                    $handler = new TokenQueryHandler();
                 }
                 break;
         }
 
-        return $request;
+        return $handler($request, $credentials);
     }
 
     /**
@@ -503,16 +458,14 @@ class Client implements LoggerAwareInterface
     {
         if ($this->credentials instanceof Container) {
             if ($this->needsKeypairAuthentication($request)) {
-                $token = $this->credentials->get(Keypair::class)->generateJwt();
-
-                $request = $request->withHeader('Authorization', 'Bearer ' . $token->toString());
+                $handler = new KeypairHandler();
+                $request = $handler($request, $this->getCredentials());
             } else {
                 $request = self::authRequest($request, $this->credentials->get(Basic::class));
             }
         } elseif ($this->credentials instanceof Keypair) {
-            $token = $this->credentials->generateJwt();
-
-            $request = $request->withHeader('Authorization', 'Bearer ' . $token->toString());
+            $handler = new KeypairHandler();
+            $request = $handler($request, $this->getCredentials());
         } elseif ($this->credentials instanceof SignatureSecret) {
             $request = self::signRequest($request, $this->credentials);
         } elseif ($this->credentials instanceof Basic) {
@@ -694,5 +647,10 @@ class Client implements LoggerAwareInterface
         }
 
         return $this->logger;
+    }
+
+    public function getCredentials(): CredentialsInterface
+    {
+        return $this->credentials;
     }
 }
