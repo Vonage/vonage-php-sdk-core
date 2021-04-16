@@ -11,22 +11,27 @@ declare(strict_types=1);
 
 namespace Vonage\Client;
 
-use Laminas\Diactoros\Request;
-use Psr\Http\Client\ClientExceptionInterface;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
-use Vonage\Entity\Filter\EmptyFilter;
-use Vonage\Entity\Filter\FilterInterface;
-use Vonage\Entity\IterableAPICollection;
-
-use function http_build_query;
 use function is_null;
 use function json_decode;
 use function json_encode;
+use function http_build_query;
+use Laminas\Diactoros\Request;
+use Vonage\Entity\Filter\EmptyFilter;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use Vonage\Entity\IterableAPICollection;
+use Vonage\Entity\Filter\FilterInterface;
+use Psr\Http\Client\ClientExceptionInterface;
+use Vonage\Client\Credentials\Handler\HandlerInterface;
 
 class APIResource implements ClientAwareInterface
 {
     use ClientAwareTrait;
+
+    /**
+     * @var HandlerInterface
+     */
+    protected $authHandler;
 
     /**
      * Base URL that we will hit. This can be overridden from the underlying
@@ -81,6 +86,16 @@ class APIResource implements ClientAwareInterface
     protected $lastResponse;
 
     /**
+     * Adds authentication to a request
+     * @todo Use this method when Vonage\Client no longer adds authentication
+     */
+    public function addAuth(RequestInterface $request)
+    {
+        $creds = $this->getClient()->getCredentials();
+        return $this->getAuthHandler()($request, $creds);
+    }
+
+    /**
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
      */
@@ -96,6 +111,10 @@ class APIResource implements ClientAwareInterface
             'php://temp',
             $headers
         );
+
+        if ($this->getAuthHandler()) {
+            $request = $this->addAuth($request);
+        }
 
         $request->getBody()->write(json_encode($body));
         $this->lastRequest = $request;
@@ -142,6 +161,10 @@ class APIResource implements ClientAwareInterface
             $headers
         );
 
+        if ($this->getAuthHandler()) {
+            $request = $this->addAuth($request);
+        }
+
         $response = $this->getClient()->send($request);
         $status = (int)$response->getStatusCode();
 
@@ -186,6 +209,10 @@ class APIResource implements ClientAwareInterface
             $headers
         );
 
+        if ($this->getAuthHandler()) {
+            $request = $this->addAuth($request);
+        }
+
         $response = $this->getClient()->send($request);
         $status = (int)$response->getStatusCode();
 
@@ -200,6 +227,11 @@ class APIResource implements ClientAwareInterface
         }
 
         return json_decode($response->getBody()->getContents(), true);
+    }
+
+    public function getAuthHandler(): ?HandlerInterface
+    {
+        return $this->authHandler;
     }
 
     public function getBaseUrl(): ?string
@@ -294,6 +326,13 @@ class APIResource implements ClientAwareInterface
         return $collection;
     }
 
+    public function setAuthHandler($handler): self
+    {
+        $this->authHandler = $handler;
+
+        return $this;
+    }
+
     public function setBaseUrl(string $url): self
     {
         $this->baseUrl = $url;
@@ -362,6 +401,10 @@ class APIResource implements ClientAwareInterface
             $headers
         );
 
+        if ($this->getAuthHandler()) {
+            $request = $this->addAuth($request);
+        }
+
         $request->getBody()->write(http_build_query($formData));
         $response = $this->getClient()->send($request);
         $status = $response->getStatusCode();
@@ -395,6 +438,10 @@ class APIResource implements ClientAwareInterface
             'php://temp',
             $headers
         );
+
+        if ($this->getAuthHandler()) {
+            $request = $this->addAuth($request);
+        }
 
         $request->getBody()->write(json_encode($body));
         $response = $this->getClient()->send($request);
