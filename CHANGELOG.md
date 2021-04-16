@@ -1,3 +1,20 @@
+# 2.8.1
+
+### Fixed
+
+* #278 - Fixed issue retrieving Conversations and Users clients where the service locator didn't know what to do
+
+### Changed
+
+* #283 - Moved auth logic to individual handlers, to better prepare for a fix where Containers do not allow Signature and Token auth
+# 2.8.0
+
+### Added
+
+* #272 - Added support for PSR-3 compatible logging solutions and a new debug feature to log requests/responses
+* #274 - Added support for the detail field on some new Voice API incoming events (https://developer.nexmo.com/voice/voice-api/webhook-reference#event-webhook)
+* #273 - Added new content-id and entity-id fields to support regional SMS requirements, and a shortcut for enabling DLT on Indian-based SMS
+
 # 2.7.1
 
 ### Changed
