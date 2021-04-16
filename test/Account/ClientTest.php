@@ -11,26 +11,28 @@ declare(strict_types=1);
 
 namespace VonageTest\Account;
 
+use Vonage\Client;
+use function fopen;
+use Vonage\Network;
+use Prophecy\Argument;
 use Laminas\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
-use Psr\Http\Client\ClientExceptionInterface;
+use Vonage\Account\PrefixPrice;
+use VonageTest\Psr7AssertionTrait;
+use Prophecy\PhpUnit\ProphecyTrait;
+use Vonage\InvalidResponseException;
 use Psr\Http\Message\RequestInterface;
 use Vonage\Account\Client as AccountClient;
-use Vonage\Account\PrefixPrice;
-use Vonage\Client;
+use Psr\Http\Client\ClientExceptionInterface;
 use Vonage\Client\Exception as ClientException;
-use Vonage\Client\Exception\Request as RequestException;
 use Vonage\Client\Exception\Server as ServerException;
-use Vonage\Client\Exception\Validation as ValidationException;
-use Vonage\InvalidResponseException;
-use Vonage\Network;
-use VonageTest\Psr7AssertionTrait;
 
-use function fopen;
+use Vonage\Client\Exception\Request as RequestException;
+use Vonage\Client\Exception\Validation as ValidationException;
 
 class ClientTest extends TestCase
 {
+    use ProphecyTrait;
     use Psr7AssertionTrait;
 
     protected $vonageClient;

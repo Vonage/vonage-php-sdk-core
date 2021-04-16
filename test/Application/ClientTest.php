@@ -13,32 +13,34 @@ namespace VonageTest\Application;
 
 use DateTime;
 use Exception;
+use Vonage\Client;
+use function fopen;
+use function substr;
+use function is_null;
+use Prophecy\Argument;
+use function json_decode;
 use Laminas\Diactoros\Request;
+use Vonage\Application\Filter;
+use Vonage\Client\APIResource;
 use Laminas\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
-use Psr\Http\Client\ClientExceptionInterface;
-use Psr\Http\Message\RequestInterface;
-use Vonage\Application\Application;
-use Vonage\Application\Client as ApplicationClient;
-use Vonage\Application\Filter;
-use Vonage\Application\MessagesConfig;
 use Vonage\Application\RtcConfig;
-use Vonage\Application\VoiceConfig;
-use Vonage\Client;
-use Vonage\Client\APIResource;
-use Vonage\Client\Exception\Exception as ClientException;
-use Vonage\Client\Exception\Server as ServerException;
-use Vonage\Entity\Filter\EmptyFilter;
 use VonageTest\Psr7AssertionTrait;
+use Prophecy\PhpUnit\ProphecyTrait;
+use Vonage\Application\Application;
+use Vonage\Application\VoiceConfig;
+use Vonage\Entity\Filter\EmptyFilter;
+use Psr\Http\Message\RequestInterface;
 
-use function fopen;
-use function is_null;
-use function json_decode;
-use function substr;
+use Vonage\Application\MessagesConfig;
+use Psr\Http\Client\ClientExceptionInterface;
+use Vonage\Application\Client as ApplicationClient;
+use Vonage\Client\Exception\Server as ServerException;
+use Vonage\Client\Exception\Exception as ClientException;
 
 class ClientTest extends TestCase
 {
+    use ProphecyTrait;
     use Psr7AssertionTrait;
 
     protected $vonageClient;

@@ -11,12 +11,15 @@ declare(strict_types=1);
 
 namespace VonageTest\Client;
 
-use PHPUnit\Framework\TestCase;
 use Vonage\Client;
 use Vonage\Client\APIResource;
+use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 
 class APIResourceTest extends TestCase
 {
+    use ProphecyTrait;
+
     public function testOverridingBaseUrlUsesClientApiUrl(): void
     {
         /** @var mixed $mockClient */

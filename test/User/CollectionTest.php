@@ -11,22 +11,24 @@ declare(strict_types=1);
 
 namespace VonageTest\User;
 
+use Vonage\Client;
+use function fopen;
+use Vonage\User\User;
+use Prophecy\Argument;
+use function json_encode;
+use Vonage\User\Collection;
 use Laminas\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
-use Psr\Http\Client\ClientExceptionInterface;
-use Psr\Http\Message\RequestInterface;
-use Vonage\Client;
-use Vonage\Client\Exception as ClientException;
 use VonageTest\Psr7AssertionTrait;
-use Vonage\User\Collection;
-use Vonage\User\User;
+use Prophecy\PhpUnit\ProphecyTrait;
 
-use function fopen;
-use function json_encode;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Client\ClientExceptionInterface;
+use Vonage\Client\Exception as ClientException;
 
 class CollectionTest extends TestCase
 {
+    use ProphecyTrait;
     use Psr7AssertionTrait;
 
     protected $vonageClient;

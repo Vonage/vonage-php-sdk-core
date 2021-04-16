@@ -10,10 +10,12 @@ use VonageTest\HTTPTestTrait;
 use Vonage\Client\APIResource;
 use PHPUnit\Framework\TestCase;
 use Vonage\Client as VonageClient;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Http\Message\RequestInterface;
 
 class ClientTest extends TestCase
 {
+    use ProphecyTrait;
     use HTTPTestTrait;
 
     /**

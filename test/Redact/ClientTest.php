@@ -11,21 +11,23 @@ declare(strict_types=1);
 
 namespace VonageTest\Redact;
 
+use Vonage\Client;
+use function fopen;
+use Prophecy\Argument;
+use Vonage\Client\APIResource;
 use Laminas\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
-use Psr\Http\Client\ClientExceptionInterface;
-use Psr\Http\Message\RequestInterface;
-use Vonage\Client;
-use Vonage\Client\APIResource;
-use Vonage\Client\Exception as ClientException;
-use Vonage\Redact\Client as RedactClient;
 use VonageTest\Psr7AssertionTrait;
+use Prophecy\PhpUnit\ProphecyTrait;
+use Psr\Http\Message\RequestInterface;
+use Vonage\Redact\Client as RedactClient;
 
-use function fopen;
+use Psr\Http\Client\ClientExceptionInterface;
+use Vonage\Client\Exception as ClientException;
 
 class ClientTest extends TestCase
 {
+    use ProphecyTrait;
     use Psr7AssertionTrait;
 
     /**
