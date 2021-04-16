@@ -236,4 +236,79 @@ class Collection implements ClientAwareInterface, CollectionInterface, ArrayAcce
     {
         throw new RuntimeException('can not unset collection properties');
     }
+
+    /**
+     * Handle pagination automatically (unless configured not to).
+     */
+    public function valid(): bool
+    {
+        //can't be valid if there's not a page (rewind sets this)
+        if (!isset($this->page)) {
+            return false;
+        }
+
+        if (isset($this->page['_embedded'])) {
+            //all hal collections have an `_embedded` object, we expect there to be a property matching the collection name
+            if (!isset($this->page['_embedded'][static::getCollectionName()])) {
+                return false;
+            }
+
+            //if we have a page with no items, we've gone beyond the end of the collection
+            if (!count($this->page['_embedded'][static::getCollectionName()])) {
+                return false;
+            }
+
+            //index the start of a page at 0
+            if (is_null($this->current)) {
+                $this->current = 0;
+            }
+
+            //if our current index is past the current page, fetch the next page if possible and reset the index
+            if (!isset($this->page['_embedded'][static::getCollectionName()][$this->current])) {
+                if (isset($this->page['_links']['next'])) {
+                    $this->fetchPage($this->page['_links']['next']['href']);
+                    $this->current = 0;
+
+                    return true;
+                }
+
+                return false;
+            }
+        } else {
+            if (!isset($this->page)) {
+                return false;
+            }
+
+            //index the start of a page at 0
+            if (is_null($this->current)) {
+                $this->current = 0;
+            }
+
+            //if our current index is past the current page, fetch the next page if possible and reset the index
+            if (!isset($this->page[$this->current])) {
+                if (isset($this->page['_links']['next'])) {
+                    $this->fetchPage($this->page['_links']['next']['href']);
+                    $this->current = 0;
+
+                    return true;
+                }
+
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Return the current item, expects concrete collection to handle creating the object.
+     */
+    public function current(): User
+    {
+        if (isset($this->page['_embedded'])) {
+            return $this->hydrateEntity($this->page['_embedded'][static::getCollectionName()][$this->current], $this->key());
+        } else {
+            return $this->hydrateEntity($this->page[$this->current], $this->key());
+        }
+    }
 }

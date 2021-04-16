@@ -39,7 +39,7 @@ use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Client\Factory\FactoryInterface;
 use Vonage\Client\Factory\MapFactory;
 use Vonage\Client\Signature;
-use Vonage\Conversations\Collection as ConversationsCollection;
+use Vonage\Conversations\ClientFactory as ConversationsClientFactory;
 use Vonage\Conversion\ClientFactory as ConversionClientFactory;
 use Vonage\Entity\EntityInterface;
 use Vonage\Insights\ClientFactory as InsightsClientFactory;
@@ -49,7 +49,6 @@ use Vonage\Numbers\ClientFactory as NumbersClientFactory;
 use Vonage\Redact\ClientFactory as RedactClientFactory;
 use Vonage\Secrets\ClientFactory as SecretsClientFactory;
 use Vonage\SMS\ClientFactory as SMSClientFactory;
-use Vonage\User\Collection as UserCollection;
 use Vonage\Verify\ClientFactory as VerifyClientFactory;
 use Vonage\Verify\Verification;
 use Vonage\Voice\ClientFactory as VoiceClientFactory;
@@ -58,7 +57,6 @@ use function array_key_exists;
 use function array_merge;
 use function base64_encode;
 use function call_user_func_array;
-use function class_exists;
 use function get_class;
 use function http_build_query;
 use function implode;
@@ -73,6 +71,7 @@ use function str_replace;
 use function strpos;
 use function unserialize;
 use Vonage\Logger\LoggerTrait;
+use Vonage\User\ClientFactory as UserClientFactory;
 
 /**
  * Vonage API Client, allows access to the API from PHP.
@@ -88,6 +87,8 @@ use Vonage\Logger\LoggerTrait;
  * @method SMS\Client sms()
  * @method Verify\Client  verify()
  * @method Voice\Client voice()
+ * @method User\Collection user()
+ * @method Conversation\Collection conversation()
  *
  * @property string restUrl
  * @property string apiUrl
@@ -204,8 +205,8 @@ class Client implements LoggerAwareInterface
                     // Legacy Namespaces
                     'message' => MessageClient::class,
                     'calls' => Collection::class,
-                    'conversation' => ConversationsCollection::class,
-                    'user' => UserCollection::class,
+                    'conversation' => ConversationsClientFactory::class,
+                    'user' => UserClientFactory::class,
 
                     // Registered Services by name
                     'account' => ClientFactory::class,
