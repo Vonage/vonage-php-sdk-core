@@ -108,7 +108,7 @@ class Client implements ClientAwareInterface
                                 $e->setTimeout(1);
                                 $e->setEntity($data);
 
-                                if (preg_match('#\[\s+(\d+)\s+]#', $part['error-text'], $match)) {
+                                if (preg_match('#Throughput Rate Exceeded - please wait \[\s+(\d+)\s+] and retry#', $part['error-text'], $match)) {
                                     $seconds = max((int)$match[1] / 1000, 1);
                                     $e->setTimeout($seconds);
                                 }

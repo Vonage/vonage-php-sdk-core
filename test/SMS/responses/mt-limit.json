@@ -1,0 +1,9 @@
+{
+  "message-count": "1",
+  "messages": [
+    {
+      "status": "1",
+      "error-text": "Exceeded maximum MT throughput[ MAX [ 30 ] INTERVAL [ 1000 ] COUNT [ 30 ] LAST INT-START [ 1617784922564 ] TIME_SINCE_LAST_INTERVAL_START [ 529 ]  ] "
+    }
+  ]
+}
