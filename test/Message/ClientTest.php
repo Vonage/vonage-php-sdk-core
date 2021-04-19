@@ -673,6 +673,7 @@ class ClientTest extends TestCase
      */
     public function testRateLimitRetries(): void
     {
+        $start = microtime(true);
         $rate = $this->getResponse('ratelimit');
         $rate2 = $this->getResponse('ratelimit');
         $success = $this->getResponse('success');
@@ -692,8 +693,10 @@ class ClientTest extends TestCase
         }))->willReturn($rate, $rate2, $success);
 
         $message = $this->messageClient->send(new Text($args['to'], $args['from'], $args['text']));
+        $end = microtime(true);
 
         $this->assertEquals($success, @$message->getResponse());
+        $this->assertGreaterThanOrEqual(2, $end - $start);
     }
 
     /**

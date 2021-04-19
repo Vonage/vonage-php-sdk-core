@@ -109,7 +109,8 @@ class Client implements ClientAwareInterface
                                 $e->setEntity($data);
 
                                 if (preg_match('#\[\s+(\d+)\s+]#', $part['error-text'], $match)) {
-                                    $e->setTimeout((int)$match[1] + 1);
+                                    $seconds = max((int)$match[1] / 1000, 1);
+                                    $e->setTimeout($seconds);
                                 }
 
                                 throw $e;
