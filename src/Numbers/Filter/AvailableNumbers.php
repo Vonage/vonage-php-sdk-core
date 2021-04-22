@@ -215,7 +215,13 @@ class AvailableNumbers implements FilterInterface
             return $this;
         }
 
-        if ($type !== Number::TYPE_FIXED && $type !== Number::TYPE_MOBILE) {
+        $valid = [
+            Number::TYPE_FIXED,
+            Number::TYPE_MOBILE,
+            Number::TYPE_TOLLFREE,
+        ];
+
+        if (!in_array($type, $valid)) {
             throw new InvalidArgumentException('Invalid type of number');
         }
 

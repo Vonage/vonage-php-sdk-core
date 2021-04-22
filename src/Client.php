@@ -105,7 +105,7 @@ class Client implements LoggerAwareInterface
 {
     use LoggerTrait;
 
-    public const VERSION = '2.8.1';
+    public const VERSION = '2.9.0';
     public const BASE_API = 'https://api.nexmo.com';
     public const BASE_REST = 'https://rest.nexmo.com';
 

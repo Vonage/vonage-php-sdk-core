@@ -40,6 +40,7 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
 
     public const TYPE_MOBILE = 'mobile-lvn';
     public const TYPE_FIXED = 'landline';
+    public const TYPE_TOLLFREE = 'landline-toll-free';
 
     public const FEATURE_VOICE = 'VOICE';
     public const FEATURE_SMS = 'SMS';

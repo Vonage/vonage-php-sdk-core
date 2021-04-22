@@ -1,3 +1,9 @@
+# 2.9.0
+
+### Changed
+
+* Nexmo/nexmo-laravel#62 - Landline Toll Free numbers can be searched for
+
 # 2.8.1
 
 ### Fixed
