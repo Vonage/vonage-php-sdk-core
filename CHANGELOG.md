@@ -1,3 +1,10 @@
+# 2.9.1
+
+### Fixed
+
+* #282 - SMS Throttling response is now handled as milliseconds instead of seconds
+* #282 - Fixed regex to not consume API rate limiting error and basically time out PHP scripts
+
 # 2.9.0
 
 ### Changed
