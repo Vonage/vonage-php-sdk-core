@@ -93,6 +93,39 @@ class KeypairTest extends TestCase
     }
 
     /**
+     * @link https://github.com/Vonage/vonage-php-sdk-core/issues/276
+     */
+    public function testExampleConversationJWTWorks()
+    {
+        $credentials = new Keypair($this->key, $this->application);
+        $claims = [
+            'exp' => strtotime(date('Y-m-d', strtotime('+24 Hours'))),
+            'sub' => 'apg-cs',
+            'acl' => [
+                'paths' => [
+                    '/*/users/**' => (object) [],
+                    '/*/conversations/**' => (object) [],
+                    '/*/sessions/**' => (object) [],
+                    '/*/devices/**' => (object) [],
+                    '/*/image/**' => (object) [],
+                    '/*/media/**' => (object) [],
+                    '/*/applications/**' => (object) [],
+                    '/*/push/**' => (object) [],
+                    '/*/knocking/**' => (object) [],
+                    '/*/legs/**' => (object) [],
+                ]
+            ],
+        ];
+
+        $jwt = $credentials->generateJwt($claims);
+        [, $payload] = $this->decodeJWT($jwt->toString());
+
+        $this->assertArrayHasKey('exp', $payload);
+        $this->assertEquals($claims['exp'], $payload['exp']);
+        $this->assertEquals($claims['sub'], $payload['sub']);
+    }
+
+    /**
      * @param $jwt
      */
     protected function decodeJWT($jwt): array
