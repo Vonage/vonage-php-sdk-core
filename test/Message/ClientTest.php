@@ -673,6 +673,7 @@ class ClientTest extends TestCase
      */
     public function testRateLimitRetries(): void
     {
+        $start = microtime(true);
         $rate = $this->getResponse('ratelimit');
         $rate2 = $this->getResponse('ratelimit');
         $success = $this->getResponse('success');
@@ -692,8 +693,10 @@ class ClientTest extends TestCase
         }))->willReturn($rate, $rate2, $success);
 
         $message = $this->messageClient->send(new Text($args['to'], $args['from'], $args['text']));
+        $end = microtime(true);
 
         $this->assertEquals($success, @$message->getResponse());
+        $this->assertGreaterThanOrEqual(2, $end - $start);
     }
 
     /**
@@ -729,6 +732,40 @@ class ClientTest extends TestCase
         $successData = json_decode($success->getBody()->getContents(), true);
 
         $this->assertEquals($successData['messages'][0]['message-id'], $message->getMessageId());
+    }
+
+    /**
+     * @throws ClientExceptionInterface
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ServerException
+     */
+    public function testAPIRateLimitRetries(): void
+    {
+        $start = microtime(true);
+        $rate = $this->getResponse('mt-limit');
+        $rate2 = $this->getResponse('mt-limit');
+        $success = $this->getResponse('success');
+
+        $args = [
+            'to' => '14845551345',
+            'from' => '1105551334',
+            'text' => 'test message'
+        ];
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
+            $this->assertRequestJsonBodyContains('to', $args['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $args['from'], $request);
+            $this->assertRequestJsonBodyContains('text', $args['text'], $request);
+
+            return true;
+        }))->willReturn($rate, $rate2, $success);
+
+        $message = $this->messageClient->send(new Text($args['to'], $args['from'], $args['text']));
+        $end = microtime(true);
+
+        $this->assertEquals($success, @$message->getResponse());
+        $this->assertGreaterThanOrEqual(2, $end - $start);
     }
 
     /**

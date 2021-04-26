@@ -154,6 +154,7 @@ class ClientTest extends TestCase
      */
     public function testCanHandleRateLimitRequests(): void
     {
+        $start = microtime(true);
         $rate = $this->getResponse('ratelimit');
         $rate2 = $this->getResponse('ratelimit');
         $success = $this->getResponse('send-success');
@@ -173,6 +174,7 @@ class ClientTest extends TestCase
 
         $response = $this->smsClient->send(new SMS($args['to'], $args['from'], $args['text']));
         $sentData = $response->current();
+        $end = microtime(true);
 
         $this->assertCount(1, $response);
         $this->assertSame($args['to'], $sentData->getTo());
@@ -181,6 +183,7 @@ class ClientTest extends TestCase
         $this->assertSame("12345", $sentData->getNetwork());
         $this->assertSame("3.14159265", $sentData->getRemainingBalance());
         $this->assertSame(0, $sentData->getStatus());
+        $this->assertGreaterThanOrEqual(2, $end - $start);
     }
 
     /**
@@ -217,6 +220,44 @@ class ClientTest extends TestCase
         $this->assertSame("12345", $sentData->getNetwork());
         $this->assertSame("3.14159265", $sentData->getRemainingBalance());
         $this->assertSame(0, $sentData->getStatus());
+    }
+
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Client\Exception\Exception
+     */
+    public function testCanHandleAPIRateLimitRequests(): void
+    {
+        $start = microtime(true);
+        $rate = $this->getResponse('mt-limit');
+        $rate2 = $this->getResponse('mt-limit');
+        $success = $this->getResponse('send-success');
+        $args = [
+            'to' => '447700900000',
+            'from' => '1105551334',
+            'text' => 'test message'
+        ];
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
+            $this->assertRequestJsonBodyContains('to', $args['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $args['from'], $request);
+            $this->assertRequestJsonBodyContains('text', $args['text'], $request);
+
+            return true;
+        }))->willReturn($rate, $rate2, $success);
+
+        $response = $this->smsClient->send(new SMS($args['to'], $args['from'], $args['text']));
+        $sentData = $response->current();
+        $end = microtime(true);
+
+        $this->assertCount(1, $response);
+        $this->assertSame($args['to'], $sentData->getTo());
+        $this->assertSame('0A0000000123ABCD1', $sentData->getMessageId());
+        $this->assertSame("0.03330000", $sentData->getMessagePrice());
+        $this->assertSame("12345", $sentData->getNetwork());
+        $this->assertSame("3.14159265", $sentData->getRemainingBalance());
+        $this->assertSame(0, $sentData->getStatus());
+        $this->assertGreaterThanOrEqual(2, $end - $start);
     }
 
     /**
