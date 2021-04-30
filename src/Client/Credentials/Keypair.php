@@ -88,6 +88,12 @@ class Keypair extends AbstractCredentials
             $builder->withClaim('application_id', $this->credentials['application']);
         }
 
+        if (isset($claims['sub'])) {
+            $builder->relatedTo($claims['sub']);
+
+            unset($claims['sub']);
+        }
+
         if (!empty($claims)) {
             foreach ($claims as $claim => $value) {
                 $builder->withClaim($claim, $value);
