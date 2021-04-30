@@ -1,3 +1,9 @@
+# 2.9.2
+
+### Fixed
+
+* #276 - JWTs with `sub` should now generate properly under newer PHP versions
+
 # 2.9.1
 
 ### Fixed
