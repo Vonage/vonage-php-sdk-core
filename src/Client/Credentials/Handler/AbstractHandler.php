@@ -6,9 +6,9 @@ use Psr\Http\Message\RequestInterface;
 use Vonage\Client\Credentials\Container;
 use Vonage\Client\Credentials\CredentialsInterface;
 
-abstract class AbstractHandler
+abstract class AbstractHandler implements HandlerInterface
 {
-    abstract function __invoke(RequestInterface $request, CredentialsInterface $credentials);
+    abstract function __invoke(RequestInterface $request, CredentialsInterface $credentials): RequestInterface;
 
     protected function extract(string $class, CredentialsInterface $credentials): CredentialsInterface
     {
