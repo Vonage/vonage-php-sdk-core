@@ -55,8 +55,13 @@ class Client implements APIClient
     {
         $json = [
             'to' => [$call->getTo()],
-            'from' => $call->getFrom(),
         ];
+
+        if ($call->getFrom()) {
+            $json['from'] = $call->getFrom();
+        } else {
+            $json['random_from_number'] = true;
+        }
 
         if (null !== $call->getAnswerWebhook()) {
             $json['answer_url'] = [$call->getAnswerWebhook()->getUrl()];
@@ -86,7 +91,9 @@ class Client implements APIClient
 
         $event = $this->api->create($json);
         $event['to'] = $call->getTo()->getId();
-        $event['from'] = $call->getFrom()->getId();
+        if ($call->getFrom()) {
+            $event['from'] = $call->getFrom()->getId();
+        }
         $event['timestamp'] = (new DateTimeImmutable("now", new DateTimeZone("UTC")))->format(DATE_ATOM);
 
         return new Event($event);
