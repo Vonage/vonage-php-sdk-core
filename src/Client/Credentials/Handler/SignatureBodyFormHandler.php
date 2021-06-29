@@ -9,7 +9,7 @@ use Vonage\Client\Signature;
 
 class SignatureBodyFormHandler extends AbstractHandler
 {
-    public function __invoke(RequestInterface $request, CredentialsInterface $credentials)
+    public function __invoke(RequestInterface $request, CredentialsInterface $credentials): RequestInterface
     {
         $credentials = $this->extract(SignatureSecret::class, $credentials);
 

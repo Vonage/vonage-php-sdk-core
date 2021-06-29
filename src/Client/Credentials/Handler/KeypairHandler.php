@@ -8,7 +8,7 @@ use Vonage\Client\Credentials\Keypair;
 
 class KeypairHandler extends AbstractHandler
 {
-    public function __invoke(RequestInterface $request, CredentialsInterface $credentials)
+    public function __invoke(RequestInterface $request, CredentialsInterface $credentials): RequestInterface
     {
         /** @var Keypair $credentials  */
         $credentials = $this->extract(Keypair::class, $credentials);
