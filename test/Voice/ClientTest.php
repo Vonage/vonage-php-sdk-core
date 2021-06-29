@@ -110,6 +110,46 @@ class ClientTest extends TestCase
         $this->assertEquals('2541d01c-253e-48be-a8e0-da4bbe4c3722', $callData->getConversationUuid());
     }
 
+    public function testCanCreateOutboundCallWithRandomFromNumber(): void
+    {
+        $payload = [
+            'to' => [
+                [
+                    'type' => 'phone',
+                    'number' => '15555555555'
+                ]
+            ],
+            'random_from_number' => true,
+            'answer_url' => ['http://domain.test/answer'],
+            'answer_method' => 'POST',
+            'event_url' => ['http://domain.test/event'],
+            'event_method' => 'POST',
+            'machine_detection' => 'hangup',
+            'length_timer' => '7200',
+            'ringing_timer' => '60',
+        ];
+
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
+            $this->assertRequestBodyIsJson(json_encode($payload), $request);
+
+            return true;
+        }))->willReturn($this->getResponse('create-outbound-call-success', 201));
+
+        $outboundCall = (new OutboundCall(new Phone('15555555555')))
+            ->setEventWebhook(new Webhook('http://domain.test/event'))
+            ->setAnswerWebhook(new Webhook('http://domain.test/answer'))
+            ->setRingingTimer((int)$payload['ringing_timer'])
+            ->setLengthTimer((int)$payload['length_timer'])
+            ->setMachineDetection(OutboundCall::MACHINE_HANGUP);
+        $callData = $this->voiceClient->createOutboundCall($outboundCall);
+
+        $this->assertEquals('e46fd8bd-504d-4044-9600-26dd18b41111', $callData->getUuid());
+        $this->assertEquals('started', $callData->getStatus());
+        $this->assertEquals('outbound', $callData->getDirection());
+        $this->assertEquals('2541d01c-253e-48be-a8e0-da4bbe4c3722', $callData->getConversationUuid());
+    }
+
     /**
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Exception

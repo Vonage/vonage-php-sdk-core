@@ -260,6 +260,10 @@ $outboundCall
 $response = $client->voice()->createOutboundCall($outboundCall);
 ```
 
+If you would like to have the system randomly pick a FROM number from the numbers linked to an application, you can
+leave off the second parameter to `\Vonage\Voice\OutboundCall`'s constructor, and the system will select a number
+at random for you.
+
 ### Building a call with NCCO Actions
 
 Full parameter lists for NCCO Actions can be found in the [Voice API Docs](https://developer.nexmo.com/voice/voice-api/ncco-reference).

@@ -108,7 +108,7 @@ class Event
      */
     public function __construct(array $event)
     {
-        $this->from = $event['from'];
+        $this->from = $event['from'] ?? null;
         $this->to = $event['to'];
         $this->uuid = $event['uuid'] ?? $event['call_uuid'];
         $this->conversationUuid = $event['conversation_uuid'];
@@ -150,7 +150,7 @@ class Event
         return $this->direction;
     }
 
-    public function getFrom(): string
+    public function getFrom(): ?string
     {
         return $this->from;
     }
