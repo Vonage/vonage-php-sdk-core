@@ -11,26 +11,28 @@ declare(strict_types=1);
 
 namespace VonageTest\SMS;
 
+use Vonage\Client;
+use function fopen;
+use Prophecy\Argument;
+use function str_repeat;
+use function json_decode;
+use Vonage\SMS\Message\SMS;
 use Laminas\Diactoros\Request;
+use Vonage\Client\APIResource;
 use Laminas\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
-use Psr\Http\Client\ClientExceptionInterface;
-use Psr\Http\Message\RequestInterface;
-use Vonage\Client;
-use Vonage\Client\APIResource;
-use Vonage\Client\Exception\Server as ServerException;
-use Vonage\SMS\Client as SMSClient;
-use Vonage\SMS\ExceptionErrorHandler;
-use Vonage\SMS\Message\SMS;
 use VonageTest\Psr7AssertionTrait;
+use Prophecy\PhpUnit\ProphecyTrait;
+use Vonage\SMS\Client as SMSClient;
 
-use function fopen;
-use function json_decode;
-use function str_repeat;
+use Vonage\SMS\ExceptionErrorHandler;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Client\ClientExceptionInterface;
+use Vonage\Client\Exception\Server as ServerException;
 
 class ClientTest extends TestCase
 {
+    use ProphecyTrait;
     use Psr7AssertionTrait;
 
     /**

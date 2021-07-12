@@ -11,27 +11,29 @@ declare(strict_types=1);
 
 namespace VonageTest\Insights;
 
+use Vonage\Client;
+use function fopen;
+use Prophecy\Argument;
+use Vonage\Insights\Basic;
+use Vonage\Insights\Advanced;
+use Vonage\Insights\Standard;
+use Vonage\Client\APIResource;
 use Laminas\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
-use Psr\Http\Client\ClientExceptionInterface;
-use Psr\Http\Message\RequestInterface;
-use Vonage\Client;
-use Vonage\Client\APIResource;
-use Vonage\Client\Exception\Request as RequestException;
-use Vonage\Client\Exception\Server as ServerException;
-use Vonage\Insights\Advanced;
 use Vonage\Insights\AdvancedCnam;
-use Vonage\Insights\Basic;
-use Vonage\Insights\Client as InsightsClient;
-use Vonage\Insights\Standard;
 use Vonage\Insights\StandardCnam;
 use VonageTest\Psr7AssertionTrait;
+use Prophecy\PhpUnit\ProphecyTrait;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Client\ClientExceptionInterface;
+use Vonage\Insights\Client as InsightsClient;
 
-use function fopen;
+use Vonage\Client\Exception\Server as ServerException;
+use Vonage\Client\Exception\Request as RequestException;
 
 class ClientTest extends TestCase
 {
+    use ProphecyTrait;
     use Psr7AssertionTrait;
 
     /**

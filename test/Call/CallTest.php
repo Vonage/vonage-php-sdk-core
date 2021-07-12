@@ -11,31 +11,33 @@ declare(strict_types=1);
 
 namespace VonageTest\Call;
 
-use Laminas\Diactoros\Response;
-use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
-use Psr\Http\Client\ClientExceptionInterface;
-use Psr\Http\Message\RequestInterface;
+use function fopen;
 use Vonage\Call\Call;
 use Vonage\Call\Dtmf;
-use Vonage\Call\Endpoint;
-use Vonage\Call\Stream;
 use Vonage\Call\Talk;
-use Vonage\Call\Transfer;
+use Prophecy\Argument;
+use Vonage\Call\Stream;
 use Vonage\Call\Webhook;
-use Vonage\Client\Exception\Exception as ClientException;
-use Vonage\Client\Exception\Request as RequestException;
-use Vonage\Client\Exception\Server as ServerException;
-use Vonage\Conversations\Conversation;
-use VonageTest\Psr7AssertionTrait;
-
-use function file_get_contents;
-use function fopen;
 use function json_decode;
 use function json_encode;
+use Vonage\Call\Endpoint;
+use Vonage\Call\Transfer;
+use function file_get_contents;
+use Laminas\Diactoros\Response;
+use PHPUnit\Framework\TestCase;
+use VonageTest\Psr7AssertionTrait;
+use Prophecy\PhpUnit\ProphecyTrait;
+use Psr\Http\Message\RequestInterface;
+
+use Vonage\Conversations\Conversation;
+use Psr\Http\Client\ClientExceptionInterface;
+use Vonage\Client\Exception\Server as ServerException;
+use Vonage\Client\Exception\Request as RequestException;
+use Vonage\Client\Exception\Exception as ClientException;
 
 class CallTest extends TestCase
 {
+    use ProphecyTrait;
     use Psr7AssertionTrait;
 
     /**

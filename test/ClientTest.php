@@ -11,33 +11,35 @@ declare(strict_types=1);
 
 namespace VonageTest;
 
-use GuzzleHttp\Client as HttpClient;
-use Http\Message\MessageFactory\DiactorosMessageFactory;
-use Http\Mock\Client as HttpMock;
-use InvalidArgumentException;
-use Laminas\Diactoros\Request;
-use Laminas\Diactoros\Response;
-use PHPUnit\Framework\TestCase;
-use Psr\Http\Client\ClientExceptionInterface;
-use Psr\Log\LoggerInterface;
-use RuntimeException;
 use Vonage\Client;
-use Vonage\Client\Credentials\Basic;
-use Vonage\Client\Factory\FactoryInterface;
-use Vonage\Client\Signature;
-use Vonage\Verify\Verification;
-
-use function file_get_contents;
-use function http_build_query;
 use function implode;
-use function json_decode;
-use function json_encode;
+use RuntimeException;
 use function parse_str;
 use function serialize;
+use function json_decode;
+use function json_encode;
+use Psr\Log\LoggerInterface;
+use Vonage\Client\Signature;
+use InvalidArgumentException;
+use function http_build_query;
 use function set_include_path;
+use Laminas\Diactoros\Request;
+use function file_get_contents;
+use Laminas\Diactoros\Response;
+
+use PHPUnit\Framework\TestCase;
+use Vonage\Verify\Verification;
+use Http\Mock\Client as HttpMock;
+use Prophecy\PhpUnit\ProphecyTrait;
+use GuzzleHttp\Client as HttpClient;
+use Vonage\Client\Credentials\Basic;
+use Vonage\Client\Factory\FactoryInterface;
+use Psr\Http\Client\ClientExceptionInterface;
+use Http\Message\MessageFactory\DiactorosMessageFactory;
 
 class ClientTest extends TestCase
 {
+    use ProphecyTrait;
     use Psr7AssertionTrait;
 
     /**

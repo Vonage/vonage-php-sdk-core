@@ -13,25 +13,28 @@ namespace VonageTest\Verify;
 
 use DateTime;
 use Exception;
+use function fopen;
+use function is_null;
+use Prophecy\Argument;
+use function get_class;
+use function serialize;
+use Vonage\Verify\Check;
+use function unserialize;
 use Laminas\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
-use Psr\Http\Client\ClientExceptionInterface;
-use Vonage\Client\Exception\Exception as ClientException;
-use Vonage\Client\Exception\Request as RequestException;
-use Vonage\Client\Exception\Server as ServerException;
-use Vonage\Verify\Check;
-use Vonage\Verify\Client as VerifyClient;
 use Vonage\Verify\Verification;
 
-use function fopen;
-use function get_class;
-use function is_null;
-use function serialize;
-use function unserialize;
+use Prophecy\PhpUnit\ProphecyTrait;
+use Vonage\Verify\Client as VerifyClient;
+use Psr\Http\Client\ClientExceptionInterface;
+use Vonage\Client\Exception\Server as ServerException;
+use Vonage\Client\Exception\Request as RequestException;
+use Vonage\Client\Exception\Exception as ClientException;
 
 class VerificationTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @var string
      */

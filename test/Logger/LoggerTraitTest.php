@@ -5,9 +5,12 @@ namespace VonageTest\Logger;
 use Psr\Log\LoggerInterface;
 use Vonage\Logger\LoggerTrait;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 
 class LoggerTraitTest extends TestCase
 {
+    use ProphecyTrait;
+
     public function testCanSetAndGetLogger()
     {
         /** @var LoggerTrait $trait */

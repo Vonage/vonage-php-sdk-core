@@ -11,22 +11,24 @@ declare(strict_types=1);
 
 namespace VonageTest\Call;
 
-use Laminas\Diactoros\Response;
-use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
-use Psr\Http\Client\ClientExceptionInterface;
-use Psr\Http\Message\RequestInterface;
-use Vonage\Call\Dtmf;
-use Vonage\Call\Event;
 use Vonage\Client;
-use VonageTest\Psr7AssertionTrait;
-
 use function fopen;
+use Vonage\Call\Dtmf;
+use Prophecy\Argument;
+use Vonage\Call\Event;
 use function json_decode;
 use function json_encode;
+use Laminas\Diactoros\Response;
+use PHPUnit\Framework\TestCase;
+
+use VonageTest\Psr7AssertionTrait;
+use Prophecy\PhpUnit\ProphecyTrait;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Client\ClientExceptionInterface;
 
 class DtmfTest extends TestCase
 {
+    use ProphecyTrait;
     use Psr7AssertionTrait;
 
     protected $id;

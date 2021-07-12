@@ -11,14 +11,17 @@ declare(strict_types=1);
 
 namespace VonageTest\Account;
 
-use PHPUnit\Framework\TestCase;
-use Vonage\Account\ClientFactory;
 use Vonage\Client;
 use Vonage\Client\APIResource;
+use PHPUnit\Framework\TestCase;
+use Vonage\Account\ClientFactory;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Vonage\Client\Factory\MapFactory;
 
 class ClientFactoryTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @var MapFactory
      */

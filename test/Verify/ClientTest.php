@@ -11,27 +11,29 @@ declare(strict_types=1);
 
 namespace VonageTest\Verify;
 
+use Vonage\Client;
+use function fopen;
+use Prophecy\Argument;
+use function serialize;
+use Vonage\Verify\Request;
+use function array_unshift;
 use InvalidArgumentException;
+use Vonage\Verify\RequestPSD2;
 use Laminas\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
-use Psr\Http\Client\ClientExceptionInterface;
-use Psr\Http\Message\RequestInterface;
-use Vonage\Client;
-use Vonage\Client\Exception\Server as ServerException;
-use Vonage\Verify\Client as VerifyClient;
-use Vonage\Verify\Request;
-use Vonage\Verify\RequestPSD2;
 use Vonage\Verify\Verification;
+use function call_user_func_array;
 use VonageTest\Psr7AssertionTrait;
 
-use function array_unshift;
-use function call_user_func_array;
-use function fopen;
-use function serialize;
+use Prophecy\PhpUnit\ProphecyTrait;
+use Psr\Http\Message\RequestInterface;
+use Vonage\Verify\Client as VerifyClient;
+use Psr\Http\Client\ClientExceptionInterface;
+use Vonage\Client\Exception\Server as ServerException;
 
 class ClientTest extends TestCase
 {
+    use ProphecyTrait;
     use Psr7AssertionTrait;
 
     /**

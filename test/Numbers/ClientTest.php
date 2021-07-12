@@ -11,24 +11,26 @@ declare(strict_types=1);
 
 namespace VonageTest\Numbers;
 
-use Laminas\Diactoros\Response;
-use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
-use Psr\Http\Client\ClientExceptionInterface;
-use Psr\Http\Message\RequestInterface;
-use Vonage\Client\APIResource;
-use Vonage\Client\Exception as ClientException;
-use Vonage\Client\Exception\Request as RequestException;
-use Vonage\Numbers\Client as NumbersClient;
-use Vonage\Numbers\Filter\AvailableNumbers;
-use Vonage\Numbers\Number;
-use VonageTest\Psr7AssertionTrait;
-
 use function fopen;
 use function is_null;
+use Prophecy\Argument;
+use Vonage\Numbers\Number;
+use Vonage\Client\APIResource;
+use Laminas\Diactoros\Response;
+use PHPUnit\Framework\TestCase;
+use VonageTest\Psr7AssertionTrait;
+use Prophecy\PhpUnit\ProphecyTrait;
+use Psr\Http\Message\RequestInterface;
+use Vonage\Numbers\Client as NumbersClient;
+use Vonage\Numbers\Filter\AvailableNumbers;
+
+use Psr\Http\Client\ClientExceptionInterface;
+use Vonage\Client\Exception as ClientException;
+use Vonage\Client\Exception\Request as RequestException;
 
 class ClientTest extends TestCase
 {
+    use ProphecyTrait;
     use Psr7AssertionTrait;
 
     /**

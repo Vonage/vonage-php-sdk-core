@@ -12,14 +12,17 @@ declare(strict_types=1);
 namespace VonageTest;
 
 use Exception;
-use PHPUnit\Framework\TestCase;
 use Vonage\ApiErrorHandler;
-use Vonage\Client\Exception\Request as RequestException;
+use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Vonage\Client\Exception\Server as ServerException;
+use Vonage\Client\Exception\Request as RequestException;
 use Vonage\Client\Exception\Validation as ValidationException;
 
 class ApiErrorHandlerTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * Valid HTTP responses do not throw an error
      * There is not a good way to test for an exception _not_ being thrown,

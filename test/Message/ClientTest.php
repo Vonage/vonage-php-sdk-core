@@ -12,33 +12,35 @@ declare(strict_types=1);
 namespace VonageTest\Message;
 
 use DateTime;
+use stdClass;
 use Exception;
+use Vonage\Client;
+use function fopen;
+use RuntimeException;
+use Prophecy\Argument;
+use Vonage\Message\Text;
+use function json_decode;
+use Vonage\Message\Query;
+use Vonage\Message\Message;
 use InvalidArgumentException;
 use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
-use Psr\Http\Client\ClientExceptionInterface;
+use Vonage\Message\InboundMessage;
+use VonageTest\Psr7AssertionTrait;
+use Prophecy\PhpUnit\ProphecyTrait;
+use VonageTest\MessageAssertionTrait;
 use Psr\Http\Message\RequestInterface;
-use RuntimeException;
-use stdClass;
-use Vonage\Client;
+use Vonage\Message\Shortcode\TwoFactor;
+use Vonage\Message\Client as MessageClient;
+
+use Psr\Http\Client\ClientExceptionInterface;
 use Vonage\Client\Exception as ClientException;
 use Vonage\Client\Exception\Server as ServerException;
-use Vonage\Message\Client as MessageClient;
-use Vonage\Message\InboundMessage;
-use Vonage\Message\Message;
-use Vonage\Message\Query;
-use Vonage\Message\Shortcode\TwoFactor;
-use Vonage\Message\Text;
-use VonageTest\MessageAssertionTrait;
-use VonageTest\Psr7AssertionTrait;
-
-use function fopen;
-use function json_decode;
 
 class ClientTest extends TestCase
 {
+    use ProphecyTrait;
     use Psr7AssertionTrait;
     use MessageAssertionTrait;
 
