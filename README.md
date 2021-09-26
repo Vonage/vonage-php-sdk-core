@@ -1,4 +1,4 @@
-Client Library for PHP 
+Client Library for PHP
 ============================
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg)](CODE_OF_CONDUCT.md)
 [![Build Status](https://github.com/vonage/vonage-php-sdk-core/workflows/build/badge.svg)](https://github.com/Vonage/vonage-php-sdk-core/actions?query=workflow%3Abuild)
@@ -10,18 +10,19 @@ Client Library for PHP
 
 *This library requires a minimum PHP version of 7.2*
 
-This is the PHP client library for use Vonage's API. To use this, you'll need a Vonage account. Sign up [for free at 
+This is the PHP client library for use Vonage's API. To use this, you'll need a Vonage account. Sign up [for free at
 nexmo.com][signup].
 
- * [Installation](#installation)
- * [Usage](#usage)
- * [Examples](#examples)
- * [Contributing](#contributing) 
+* [Installation](#installation)
+* [Usage](#usage)
+* [Examples](#examples)
+* [Test Suite](#test-suite)
+* [Contributing](#contributing)
 
 Installation
 ------------
 
-To use the client library you'll need to have [created a Vonage account][signup]. 
+To use the client library you'll need to have [created a Vonage account][signup].
 
 To install the PHP client library to your project, we recommend using [Composer](https://getcomposer.org/).
 
@@ -72,7 +73,7 @@ Examples
 
 To use [Vonage's SMS API][doc_sms] to send an SMS message, call the `$client->sms()->send()` method.
 
-**A message object** is used to create the SMS messages. Each message type can be constructed with the 
+**A message object** is used to create the SMS messages. Each message type can be constructed with the
 required parameters, and a fluent interface provides access to optional parameters.
 
 ```php
@@ -85,14 +86,14 @@ The message object is passed to the `send` method:
 ```php
 $response = $client->sms()->send($text);
 ```
-    
+
 Once sent, the message object can be used to access the response data.
 
 ```php
 $data = $response->current();
 echo "Sent message to " . $data->getTo() . ". Balance is now " . $data->getRemainingBalance() . PHP_EOL;
 ```
-    
+
 Since each SMS message can be split into multiple messages, the response contains an object for each
 message that was generated. You can check to see how many messages were generated using the standard
 `count()` function in PHP. If you want to get the first message, you can use the `current()` method
@@ -110,7 +111,7 @@ The [send example][send_example] also has full working examples.
 
 ### Receiving a Message
 
-Inbound messages are [sent to your application as a webhook][doc_inbound], and the client library provides a way to 
+Inbound messages are [sent to your application as a webhook][doc_inbound], and the client library provides a way to
 create an inbound message object from a webhook:
 
 ```php
@@ -121,7 +122,7 @@ try {
     error_log('invalid message');
 }
 ```
-    
+
 ### Signing a Message
 
 _You may also like to read the [documentation about message signing](https://developer.nexmo.com/concepts/guides/signing-messages)._
@@ -175,8 +176,8 @@ echo "Started verification with an id of: " . $response->getRequestId();
 Once the user inputs the pin code they received, call the `/check` endpoint with the request ID and the pin to confirm the pin is correct.
 
 ### Controlling a Verification
-    
-To cancel an in-progress verification, or to trigger the next attempt to send the confirmation code, you can pass 
+
+To cancel an in-progress verification, or to trigger the next attempt to send the confirmation code, you can pass
 either an existing verification object to the client library, or simply use a request ID:
 
 ```php
@@ -200,7 +201,7 @@ try {
 
 ### Searching For a Verification
 
-You can check the status of a verification, or access the results of past verifications using a request ID. 
+You can check the status of a verification, or access the results of past verifications using a request ID.
 The verification object will then provide a rich interface:
 
 ```php
@@ -226,9 +227,9 @@ echo "Started verification with an id of: " . $response['request_id'];
 
 Once the user inputs the pin code they received, call the `/check` endpoint with the request ID and the pin to confirm the pin is correct.
 
-### Making a Call 
+### Making a Call
 
-All `$client->voice()` methods require the client to be constructed with a `Vonage\Client\Credentials\Keypair`, or a 
+All `$client->voice()` methods require the client to be constructed with a `Vonage\Client\Credentials\Keypair`, or a
 `Vonage\Client\Credentials\Container` that includes the `Keypair` credentials:
 
 ```php
@@ -506,7 +507,7 @@ $application = $client->applications()->get('1a20a124-1775-412b-b623-e6985f4aace
 
 ### Updating an Application
 
-Once you have an application object, you can modify and save it. 
+Once you have an application object, you can modify and save it.
 
 ```php
 $application = $client->applications()->get('1a20a124-1775-412b-b623-e6985f4aace0');
@@ -748,7 +749,7 @@ Check out the [documentation](https://developer.nexmo.com/number-insight/code-sn
 
 ### Checking for Deprecated Features
 
-Over time, the Vonage APIs evolve and add new features, change how existing 
+Over time, the Vonage APIs evolve and add new features, change how existing
 features work, and deprecate and remove older methods and features. To help
 developers know when deprecation changes are being made, the SDK will trigger
 an `E_USER_DEPRECATION` warning. These warnings will not stop the execution
@@ -826,6 +827,23 @@ $client->getFactory()->set(\PSR\Log\LoggerInterface::class, $logger);
 ```
 
 **ENABLING DEBUGING LOGGING HAS THE POTENTIAL FOR LOGGING SENSITIVE INFORMATION, DO NOT ENABLE IN PRODUCTION**
+
+## Test Suite
+This library has a full test suite designed to be run with [PHPUnit](https://phpunit.de).
+
+To run, use composer:
+```
+composer test -- -v --coverage-clover=coverage.xml
+```
+
+> Please note: this test suite is large, and may require a considerable amount of memory
+> to run. If you encounter the "too many files open" error in MacOS or Linux, there is a hack to
+> increase the amount of file pointers permitted. Increase the amount of files that can be open by entering the
+> following on the command line (10240 is the maximum amount of pointers MacOS will open currently):
+>
+```
+ ulimit -n 10240
+```
 
 ## Contributing
 
