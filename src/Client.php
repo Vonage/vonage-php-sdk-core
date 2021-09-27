@@ -78,6 +78,7 @@ use function set_error_handler;
 use function str_replace;
 use function strpos;
 use function unserialize;
+
 use Vonage\Logger\LoggerTrait;
 use Vonage\User\ClientFactory as UserClientFactory;
 

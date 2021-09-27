@@ -61,7 +61,7 @@ class Talk implements ActionInterface
     /**
      * @param array{text: string, bargeIn?: bool, level?: float, loop?: int, voiceName?: string} $data
      */
-    public static function factory(string $text, array $data) : Talk
+    public static function factory(string $text, array $data): Talk
     {
         $talk = new Talk($text);
 
@@ -94,26 +94,26 @@ class Talk implements ActionInterface
                 $talk->setLanguage($data['language']);
             }
         }
-        
+
         return $talk;
     }
 
-    public function getBargeIn() : ?bool
+    public function getBargeIn(): ?bool
     {
         return $this->bargeIn;
     }
 
-    public function getLevel() : ?float
+    public function getLevel(): ?float
     {
         return $this->level;
     }
 
-    public function getLoop() : ?int
+    public function getLoop(): ?int
     {
         return $this->loop;
     }
 
-    public function getText() : string
+    public function getText(): string
     {
         return $this->text;
     }
@@ -121,7 +121,7 @@ class Talk implements ActionInterface
     /**
      * @deprecated use getLanguage() and getLanguageStyle() instead
      */
-    public function getVoiceName() : ?string
+    public function getVoiceName(): ?string
     {
         return $this->voiceName;
     }
@@ -129,7 +129,7 @@ class Talk implements ActionInterface
     /**
      * @return array{action: string, bargeIn: bool, level: float, loop: int, text: string, voiceName: string}
      */
-    public function jsonSerialize() : array
+    public function jsonSerialize(): array
     {
         return $this->toNCCOArray();
     }
@@ -137,7 +137,7 @@ class Talk implements ActionInterface
     /**
      * @return $this
      */
-    public function setBargeIn(bool $value) : self
+    public function setBargeIn(bool $value): self
     {
         $this->bargeIn = $value;
         return $this;
@@ -146,7 +146,7 @@ class Talk implements ActionInterface
     /**
      * @return $this
      */
-    public function setLevel(float $level) : self
+    public function setLevel(float $level): self
     {
         $this->level = $level;
 
@@ -156,7 +156,7 @@ class Talk implements ActionInterface
     /**
      * @return $this
      */
-    public function setLoop(int $times) : self
+    public function setLoop(int $times): self
     {
         $this->loop = $times;
 
@@ -167,7 +167,7 @@ class Talk implements ActionInterface
      * @deprecated Use setLanguage()
      * @return $this
      */
-    public function setVoiceName(string $name) : self
+    public function setVoiceName(string $name): self
     {
         trigger_error(
             'Voice Name is deprecated, please use setLanguage()',
@@ -189,7 +189,7 @@ class Talk implements ActionInterface
     /**
      * @return array{action: string, bargeIn: bool, level: string, loop: string, text: string, voiceName: string, language: string, style: string}
      */
-    public function toNCCOArray() : array
+    public function toNCCOArray(): array
     {
         $data = [
             'action' => 'talk',
@@ -220,7 +220,7 @@ class Talk implements ActionInterface
         return $data;
     }
 
-    public function setLanguage(string $language, int $style = 0) : self
+    public function setLanguage(string $language, int $style = 0): self
     {
         if ($this->getVoiceName()) {
             trigger_error(
@@ -235,12 +235,12 @@ class Talk implements ActionInterface
         return $this;
     }
 
-    public function getLanguage() : ?string
+    public function getLanguage(): ?string
     {
         return $this->language;
     }
 
-    public function getLanguageStyle() : int
+    public function getLanguageStyle(): int
     {
         return $this->languageStyle;
     }

@@ -22,7 +22,7 @@ class AvailableNumbersTest extends TestCase
 
     /**
      * List of valid number types that can be searched on
-     * 
+     *
      * @return array<array<string>>
      */
     public function numberTypes(): array

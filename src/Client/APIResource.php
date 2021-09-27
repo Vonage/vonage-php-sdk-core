@@ -15,6 +15,7 @@ use function is_null;
 use function json_decode;
 use function json_encode;
 use function http_build_query;
+
 use Laminas\Diactoros\Request;
 use Vonage\Entity\Filter\EmptyFilter;
 use Psr\Http\Message\RequestInterface;
