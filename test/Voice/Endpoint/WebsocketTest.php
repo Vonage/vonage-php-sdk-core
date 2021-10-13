@@ -11,10 +11,10 @@ declare(strict_types=1);
 
 namespace VonageTest\Voice\Endpoint;
 
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Voice\Endpoint\Websocket;
 
-class WebsocketTest extends TestCase
+class WebsocketTest extends VonageTestCase
 {
     /**
      * @var string

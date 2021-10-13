@@ -9,7 +9,7 @@
 
 namespace VonageTest\Client\Credentials;
 
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Client\Credentials\Keypair;
 
 use function base64_decode;
@@ -17,7 +17,7 @@ use function explode;
 use function file_get_contents;
 use function json_decode;
 
-class KeypairTest extends TestCase
+class KeypairTest extends VonageTestCase
 {
     protected $key;
     protected $application = 'c90ddd99-9a5d-455f-8ade-dde4859e590e';

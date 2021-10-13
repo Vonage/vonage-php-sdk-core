@@ -11,10 +11,10 @@ declare(strict_types=1);
 
 namespace VonageTest\SMS\Message;
 
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\SMS\Message\Vcal;
 
-class VcalTest extends TestCase
+class VcalTest extends VonageTestCase
 {
     public function testCanCreateVcalMessage(): void
     {

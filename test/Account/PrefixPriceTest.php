@@ -12,10 +12,10 @@ declare(strict_types=1);
 namespace VonageTest\Account;
 
 use Exception;
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Account\PrefixPrice;
 
-class PrefixPriceTest extends TestCase
+class PrefixPriceTest extends VonageTestCase
 {
     /**
      * @dataProvider prefixPriceProvider

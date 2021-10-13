@@ -12,13 +12,13 @@ declare(strict_types=1);
 namespace VonageTest\Voice\NCCO\Action;
 
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Voice\Endpoint\EndpointInterface;
 use Vonage\Voice\Endpoint\Phone;
 use Vonage\Voice\NCCO\Action\Connect;
 use Vonage\Voice\Webhook;
 
-class ConnectTest extends TestCase
+class ConnectTest extends VonageTestCase
 {
     /**
      * @var EndpointInterface

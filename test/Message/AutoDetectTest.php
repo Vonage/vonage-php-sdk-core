@@ -11,10 +11,10 @@ declare(strict_types=1);
 
 namespace VonageTest\Message;
 
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Message\AutoDetect;
 
-class AutoDetectTest extends TestCase
+class AutoDetectTest extends VonageTestCase
 {
     /**
      * When creating a message, it should not auto-detect encoding by default

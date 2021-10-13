@@ -11,10 +11,10 @@ declare(strict_types=1);
 
 namespace VonageTest\Voice\NCCO\Action;
 
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Voice\NCCO\Action\Talk;
 
-class TalkTest extends TestCase
+class TalkTest extends VonageTestCase
 {
     public function testSimpleSetup(): void
     {

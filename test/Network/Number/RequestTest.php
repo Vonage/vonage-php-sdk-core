@@ -11,12 +11,12 @@ declare(strict_types=1);
 
 namespace VonageTest\Network\Number;
 
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Network\Number\Request;
 
 use function explode;
 
-class RequestTest extends TestCase
+class RequestTest extends VonageTestCase
 {
     public function testNullValuesNotPresent(): void
     {

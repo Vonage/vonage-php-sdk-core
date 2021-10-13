@@ -11,9 +11,9 @@ declare(strict_types=1);
 
 namespace VonageTest\Insights;
 
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 
-class CnamTraitTest extends TestCase
+class CnamTraitTest extends VonageTestCase
 {
     /**
      * @dataProvider cnamProvider

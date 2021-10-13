@@ -12,7 +12,7 @@ declare(strict_types=1);
 namespace VonageTest\Numbers;
 
 use Laminas\Diactoros\Response;
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
@@ -27,7 +27,7 @@ use VonageTest\Psr7AssertionTrait;
 use function fopen;
 use function is_null;
 
-class ClientTest extends TestCase
+class ClientTest extends VonageTestCase
 {
     use Psr7AssertionTrait;
 

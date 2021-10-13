@@ -11,10 +11,10 @@ declare(strict_types=1);
 
 namespace VonageTest\Voice\Endpoint;
 
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Voice\Endpoint\VBC;
 
-class VBCTest extends TestCase
+class VBCTest extends VonageTestCase
 {
     public function testSetsExtensionAtCreation(): void
     {

@@ -11,10 +11,10 @@ declare(strict_types=1);
 
 namespace VonageTest\Voice\Message;
 
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Voice\Message\Message;
 
-class MessageTest extends TestCase
+class MessageTest extends VonageTestCase
 {
     /**
      * @var Message

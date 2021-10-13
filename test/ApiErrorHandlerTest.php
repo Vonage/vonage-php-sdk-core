@@ -12,13 +12,13 @@ declare(strict_types=1);
 namespace VonageTest;
 
 use Exception;
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\ApiErrorHandler;
 use Vonage\Client\Exception\Request as RequestException;
 use Vonage\Client\Exception\Server as ServerException;
 use Vonage\Client\Exception\Validation as ValidationException;
 
-class ApiErrorHandlerTest extends TestCase
+class ApiErrorHandlerTest extends VonageTestCase
 {
     /**
      * Valid HTTP responses do not throw an error

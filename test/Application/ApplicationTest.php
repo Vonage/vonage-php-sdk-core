@@ -13,7 +13,7 @@ namespace VonageTest\Application;
 
 use Exception;
 use Laminas\Diactoros\Response;
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Application\Application;
 use Vonage\Application\MessagesConfig;
 use Vonage\Application\RtcConfig;
@@ -22,7 +22,7 @@ use Vonage\Client\Exception\Exception as ClientException;
 
 use function fopen;
 
-class ApplicationTest extends TestCase
+class ApplicationTest extends VonageTestCase
 {
     /**
      * @var Application

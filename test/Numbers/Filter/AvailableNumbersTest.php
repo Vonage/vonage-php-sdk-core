@@ -4,10 +4,10 @@ namespace VonageTest\Numbers\Filter;
 
 use InvalidArgumentException;
 use Vonage\Numbers\Number;
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Numbers\Filter\AvailableNumbers;
 
-class AvailableNumbersTest extends TestCase
+class AvailableNumbersTest extends VonageTestCase
 {
     /**
      * @dataProvider numberTypes

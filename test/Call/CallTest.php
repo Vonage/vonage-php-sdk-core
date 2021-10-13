@@ -12,7 +12,7 @@ declare(strict_types=1);
 namespace VonageTest\Call;
 
 use Laminas\Diactoros\Response;
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
@@ -34,7 +34,7 @@ use function fopen;
 use function json_decode;
 use function json_encode;
 
-class CallTest extends TestCase
+class CallTest extends VonageTestCase
 {
     use Psr7AssertionTrait;
 

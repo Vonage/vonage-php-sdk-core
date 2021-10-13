@@ -11,11 +11,11 @@ declare(strict_types=1);
 
 namespace VonageTest\Account;
 
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Account\Secret;
 use Vonage\InvalidResponseException;
 
-class SecretTest extends TestCase
+class SecretTest extends VonageTestCase
 {
     /**
      * @var Secret

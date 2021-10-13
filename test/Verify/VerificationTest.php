@@ -14,7 +14,7 @@ namespace VonageTest\Verify;
 use DateTime;
 use Exception;
 use Laminas\Diactoros\Response;
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
 use Vonage\Client\Exception\Exception as ClientException;
@@ -30,7 +30,7 @@ use function is_null;
 use function serialize;
 use function unserialize;
 
-class VerificationTest extends TestCase
+class VerificationTest extends VonageTestCase
 {
     /**
      * @var string

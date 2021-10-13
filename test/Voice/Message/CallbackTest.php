@@ -12,10 +12,10 @@ declare(strict_types=1);
 namespace VonageTest\Voice\Message;
 
 use DateTime;
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Voice\Message\Callback;
 
-class CallbackTest extends TestCase
+class CallbackTest extends VonageTestCase
 {
     protected $data = [
         'call-id' => '1234abcd',

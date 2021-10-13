@@ -11,10 +11,10 @@ declare(strict_types=1);
 
 namespace VonageTest\Insights;
 
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Insights\Advanced;
 
-class AdvancedTest extends TestCase
+class AdvancedTest extends VonageTestCase
 {
     /**
      * @dataProvider advancedTestProvider

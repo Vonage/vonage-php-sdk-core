@@ -11,11 +11,11 @@ declare(strict_types=1);
 
 namespace VonageTest\Call;
 
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Call\Event;
 use VonageTest\Fixture\ResponseTrait;
 
-class EventTest extends TestCase
+class EventTest extends VonageTestCase
 {
     use ResponseTrait;
 

@@ -17,7 +17,7 @@ use Http\Mock\Client as HttpMock;
 use InvalidArgumentException;
 use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
@@ -36,7 +36,7 @@ use function parse_str;
 use function serialize;
 use function set_include_path;
 
-class ClientTest extends TestCase
+class ClientTest extends VonageTestCase
 {
     use Psr7AssertionTrait;
 

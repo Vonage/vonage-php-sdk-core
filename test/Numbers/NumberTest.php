@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace VonageTest\Numbers;
 
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Application\Application;
 use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Numbers\Number;
@@ -19,7 +19,7 @@ use Vonage\Numbers\Number;
 use function file_get_contents;
 use function json_decode;
 
-class NumberTest extends TestCase
+class NumberTest extends VonageTestCase
 {
     /**
      * @var Number;

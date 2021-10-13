@@ -12,8 +12,9 @@ declare(strict_types=1);
 namespace VonageTest\Account;
 
 use Laminas\Diactoros\Response;
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
 use Vonage\Account\Client as AccountClient;
@@ -29,9 +30,10 @@ use VonageTest\Psr7AssertionTrait;
 
 use function fopen;
 
-class ClientTest extends TestCase
+class ClientTest extends VonageTestCase
 {
     use Psr7AssertionTrait;
+
 
     protected $vonageClient;
 
