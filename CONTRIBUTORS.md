@@ -3,11 +3,12 @@
 If you have any problems with our library, feel free to reach out to our
 maintainers.
 
-* [Chris Tankersley](https://github.com/dragonmantank)
-* [Lorna Jane Mitchell](https://github.com/lornajane)
+* [James Seconde](https://github.com/SecondeJK)
 
 ### Past Maintainers
 
+* [Chris Tankersley](https://github.com/dragonmantank)
+* [Lorna Jane Mitchell](https://github.com/lornajane)
 * [Tim Lytle](https://github.com/tjlytle)
 * [Micheal Heap](https://github.com/mheap)
 
