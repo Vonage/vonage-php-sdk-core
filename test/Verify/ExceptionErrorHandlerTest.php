@@ -10,13 +10,13 @@ declare(strict_types=1);
 namespace VonageTest\Verify;
 
 use Laminas\Diactoros\Request;
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Entity\Psr7Trait;
 use Laminas\Diactoros\Response;
 use Vonage\Client\Exception\Request as ExceptionRequest;
 use Vonage\Verify\ExceptionErrorHandler;
 
-class ExceptionErrorHandlerTest extends TestCase
+class ExceptionErrorHandlerTest extends VonageTestCase
 {
     use Psr7Trait;
 

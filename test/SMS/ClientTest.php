@@ -13,7 +13,7 @@ namespace VonageTest\SMS;
 
 use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
@@ -29,7 +29,7 @@ use function fopen;
 use function json_decode;
 use function str_repeat;
 
-class ClientTest extends TestCase
+class ClientTest extends VonageTestCase
 {
     use Psr7AssertionTrait;
 

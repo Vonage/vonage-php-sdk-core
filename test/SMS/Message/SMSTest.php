@@ -12,10 +12,10 @@ declare(strict_types=1);
 namespace VonageTest\SMS\Message;
 
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\SMS\Message\SMS;
 
-class SMSTest extends TestCase
+class SMSTest extends VonageTestCase
 {
     public function testSwitchesToUnicodeAutomatically(): void
     {

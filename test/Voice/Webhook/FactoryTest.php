@@ -17,7 +17,7 @@ use Exception;
 use InvalidArgumentException;
 use Laminas\Diactoros\Request\Serializer;
 use Laminas\Diactoros\ServerRequest;
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Voice\Webhook\Answer;
 use Vonage\Voice\Webhook\Error;
 use Vonage\Voice\Webhook\Event;
@@ -31,7 +31,7 @@ use function file_get_contents;
 use function json_decode;
 use function parse_str;
 
-class FactoryTest extends TestCase
+class FactoryTest extends VonageTestCase
 {
     /**
      * @throws Exception

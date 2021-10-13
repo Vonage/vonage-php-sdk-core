@@ -11,14 +11,14 @@ declare(strict_types=1);
 
 namespace VonageTest\Message;
 
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Message\Shortcode;
 use Vonage\Message\Shortcode\Alert;
 use Vonage\Message\Shortcode\Marketing;
 use Vonage\Message\Shortcode\TwoFactor;
 
-class ShortcodeTest extends TestCase
+class ShortcodeTest extends VonageTestCase
 {
     /**
      * @dataProvider typeProvider

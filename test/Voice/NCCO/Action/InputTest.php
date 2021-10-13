@@ -11,11 +11,11 @@ declare(strict_types=1);
 
 namespace VonageTest\Voice\NCCO\Action;
 
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use RuntimeException;
 use Vonage\Voice\NCCO\Action\Input;
 
-class InputTest extends TestCase
+class InputTest extends VonageTestCase
 {
     public function testSpeechSettingsGenerateCorrectNCCO(): void
     {

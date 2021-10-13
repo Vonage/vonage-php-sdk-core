@@ -12,10 +12,10 @@ declare(strict_types=1);
 namespace VonageTest\Voice\NCCO\Action;
 
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Voice\NCCO\Action\Record;
 
-class RecordTest extends TestCase
+class RecordTest extends VonageTestCase
 {
     public function testWebhookMethodCanBeSetInFactory(): void
     {

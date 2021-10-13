@@ -15,7 +15,7 @@ use Exception;
 use InvalidArgumentException;
 use Laminas\Diactoros\Request\Serializer;
 use Laminas\Diactoros\ServerRequest;
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use RuntimeException;
 use Vonage\SMS\Webhook\Factory;
 use Vonage\SMS\Webhook\InboundSMS;
@@ -24,7 +24,7 @@ use function file_get_contents;
 use function json_decode;
 use function parse_str;
 
-class InboundSMSTest extends TestCase
+class InboundSMSTest extends VonageTestCase
 {
     public function testCanCreateFromFormPostServerRequest(): void
     {

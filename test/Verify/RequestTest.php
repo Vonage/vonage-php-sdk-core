@@ -3,10 +3,10 @@
 namespace VonageTest\Verify;
 
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Verify\Request;
 
-class RequestTest extends TestCase
+class RequestTest extends VonageTestCase
 {
     public function invalidDataDataProvider(): array
     {

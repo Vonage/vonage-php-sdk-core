@@ -11,10 +11,10 @@ declare(strict_types=1);
 
 namespace VonageTest\Account;
 
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Account\SmsPrice;
 
-class SmsPriceTest extends TestCase
+class SmsPriceTest extends VonageTestCase
 {
     /**
      * @dataProvider smsPriceProvider

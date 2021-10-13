@@ -11,14 +11,14 @@ declare(strict_types=1);
 
 namespace VonageTest\Voice\NCCO;
 
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Voice\NCCO\Action\Record;
 use Vonage\Voice\NCCO\NCCO;
 
 use function json_decode;
 use function json_encode;
 
-class NCCOTest extends TestCase
+class NCCOTest extends VonageTestCase
 {
     public function testCanCreateNCCOFromArray(): void
     {

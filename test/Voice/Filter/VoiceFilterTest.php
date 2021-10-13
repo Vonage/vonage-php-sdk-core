@@ -15,10 +15,10 @@ use DateTimeImmutable;
 use DateTimeZone;
 use Exception;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Voice\Filter\VoiceFilter;
 
-class VoiceFilterTest extends TestCase
+class VoiceFilterTest extends VonageTestCase
 {
     /**
      * @throws Exception

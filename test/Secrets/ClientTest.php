@@ -8,11 +8,11 @@ use Vonage\Secrets\Client;
 use Vonage\Secrets\Secret;
 use VonageTest\HTTPTestTrait;
 use Vonage\Client\APIResource;
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Client as VonageClient;
 use Psr\Http\Message\RequestInterface;
 
-class ClientTest extends TestCase
+class ClientTest extends VonageTestCase
 {
     use HTTPTestTrait;
 

@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace VonageTest\Voice\Endpoint;
 
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use RuntimeException;
 use Vonage\Voice\Endpoint\App;
 use Vonage\Voice\Endpoint\EndpointFactory;
@@ -20,7 +20,7 @@ use Vonage\Voice\Endpoint\SIP;
 use Vonage\Voice\Endpoint\VBC;
 use Vonage\Voice\Endpoint\Websocket;
 
-class EndpointFactoryTest extends TestCase
+class EndpointFactoryTest extends VonageTestCase
 {
     public function testCanCreateAppEndpoint(): void
     {

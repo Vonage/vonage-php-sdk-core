@@ -9,10 +9,10 @@
 
 namespace VonageTest;
 
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Network;
 
-class NetworkTest extends TestCase
+class NetworkTest extends VonageTestCase
 {
     public function testNetworkArrayAccess(): void
     {

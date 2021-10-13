@@ -4,9 +4,9 @@ namespace VonageTest\Logger;
 
 use Psr\Log\LoggerInterface;
 use Vonage\Logger\LoggerTrait;
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 
-class LoggerTraitTest extends TestCase
+class LoggerTraitTest extends VonageTestCase
 {
     public function testCanSetAndGetLogger()
     {

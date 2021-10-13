@@ -12,13 +12,13 @@ declare(strict_types=1);
 namespace VonageTest\Voice;
 
 use Exception;
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Voice\Call;
 
 use function file_get_contents;
 use function json_decode;
 
-class CallTest extends TestCase
+class CallTest extends VonageTestCase
 {
     /**
      * @throws Exception

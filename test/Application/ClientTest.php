@@ -15,7 +15,7 @@ use DateTime;
 use Exception;
 use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
@@ -37,7 +37,7 @@ use function is_null;
 use function json_decode;
 use function substr;
 
-class ClientTest extends TestCase
+class ClientTest extends VonageTestCase
 {
     use Psr7AssertionTrait;
 

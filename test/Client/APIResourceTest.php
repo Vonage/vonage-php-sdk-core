@@ -11,11 +11,11 @@ declare(strict_types=1);
 
 namespace VonageTest\Client;
 
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 
-class APIResourceTest extends TestCase
+class APIResourceTest extends VonageTestCase
 {
     public function testOverridingBaseUrlUsesClientApiUrl(): void
     {

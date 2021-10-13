@@ -13,7 +13,7 @@ namespace VonageTest\Message;
 
 use Exception;
 use Laminas\Diactoros\Response;
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Message\Message;
 
 use function fopen;
@@ -22,7 +22,7 @@ use function fopen;
  * Test that split messages allow access to all the underlying messages. The response from sending a message is the
  * only time a message may contain multiple 'parts'. When fetched from the API, each message is separate.
  */
-class MultiMessageTest extends TestCase
+class MultiMessageTest extends VonageTestCase
 {
     protected $to = '14845551212';
     protected $from = '16105551212';

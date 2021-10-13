@@ -11,10 +11,10 @@ declare(strict_types=1);
 
 namespace VonageTest\Client\Credentials;
 
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Client\Credentials\OAuth;
 
-class OAuthTest extends TestCase
+class OAuthTest extends VonageTestCase
 {
     protected $appToken = 'appToken';
     protected $appSecret = 'appSecret';

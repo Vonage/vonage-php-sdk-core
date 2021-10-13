@@ -12,12 +12,12 @@ declare(strict_types=1);
 namespace VonageTest\Message\Callback;
 
 use DateTime;
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Message\Callback\Receipt;
 
 use function array_merge;
 
-class ReceiptTest extends TestCase
+class ReceiptTest extends VonageTestCase
 {
     protected $data = [
         'err-code' => '0',

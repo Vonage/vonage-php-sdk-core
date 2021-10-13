@@ -13,7 +13,7 @@ namespace VonageTest\Conversion;
 
 use Laminas\Diactoros\Response;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
 use Vonage\Client;
@@ -26,7 +26,7 @@ use VonageTest\Psr7AssertionTrait;
 
 use function fopen;
 
-class ClientTest extends TestCase
+class ClientTest extends VonageTestCase
 {
     use Psr7AssertionTrait;
 

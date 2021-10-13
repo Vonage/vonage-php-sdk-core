@@ -11,11 +11,11 @@ declare(strict_types=1);
 
 namespace VonageTest\Account;
 
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Account\Balance;
 use Vonage\Client\Exception\Exception as ClientException;
 
-class BalanceTest extends TestCase
+class BalanceTest extends VonageTestCase
 {
     /**
      * @var Balance

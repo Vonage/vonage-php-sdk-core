@@ -11,14 +11,14 @@ declare(strict_types=1);
 
 namespace VonageTest\Account;
 
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Account\Secret;
 use Vonage\Account\SecretCollection;
 use Vonage\InvalidResponseException;
 
 use function array_map;
 
-class SecretCollectionTest extends TestCase
+class SecretCollectionTest extends VonageTestCase
 {
     /**
      * @var array[]
