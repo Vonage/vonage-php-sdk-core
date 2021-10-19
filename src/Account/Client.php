@@ -12,90 +12,25 @@ declare(strict_types=1);
 namespace Vonage\Account;
 
 use Psr\Http\Client\ClientExceptionInterface;
-use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
-use Vonage\Client\ClientAwareInterface;
-use Vonage\Client\ClientAwareTrait;
 use Vonage\Client\Exception as ClientException;
 use Vonage\Client\Exception\Request as ClientRequestException;
-use Vonage\Client\Exception\Validation as ClientValidationException;
 use Vonage\Entity\Filter\KeyValueFilter;
-use Vonage\InvalidResponseException;
 
-use function array_key_exists;
 use function count;
 use function is_null;
 use function json_decode;
 
-/**
- * @todo Unify the exception handling to avoid duplicated code and logic (ie: getPrefixPricing())
- */
-class Client implements ClientAwareInterface, APIClient
+class Client
 {
-    /**
-     * @deprecated This object will be dropping support for ClientAwareInterface in the future
-     */
-    use ClientAwareTrait;
-
     /**
      * @var APIResource
      */
     protected $accountAPI;
 
-    /**
-     * @var APIResource
-     */
-    protected $secretsAPI;
-
-    public function __construct(?APIResource $accountAPI = null, ?APIResource $secretsAPI = null)
+    public function __construct(?APIResource $accountAPI = null)
     {
         $this->accountAPI = $accountAPI;
-        $this->secretsAPI = $secretsAPI;
-    }
-
-    /**
-     * Shim to handle older instantiations of this class
-     *
-     * @deprecated Will remove in v3
-     */
-    public function getAccountAPI(): APIResource
-    {
-        if (is_null($this->accountAPI)) {
-            $api = new APIResource();
-            $api->setClient($this->getClient())
-                ->setBaseUrl($this->getClient()->getRestUrl())
-                ->setIsHAL(false)
-                ->setBaseUri('/account')
-                ->setCollectionName('');
-            $this->accountAPI = $api;
-        }
-
-        return clone $this->accountAPI;
-    }
-
-    public function getAPIResource(): APIResource
-    {
-        return $this->getAccountAPI();
-    }
-
-    /**
-     * Shim to handle older instantiations of this class
-     *
-     * @deprecated Will remove in v3
-     */
-    public function getSecretsAPI(): APIResource
-    {
-        if (is_null($this->secretsAPI)) {
-            $api = new APIResource();
-            $api->setClient($this->getClient())
-                ->setBaseUrl($this->getClient()->getApiUrl())
-                ->setIsHAL(false)
-                ->setBaseUri('/accounts')
-                ->setCollectionName('');
-            $this->secretsAPI = $api;
-        }
-
-        return clone $this->secretsAPI;
     }
 
     /**
@@ -105,11 +40,10 @@ class Client implements ClientAwareInterface, APIClient
      */
     public function getPrefixPricing($prefix): array
     {
-        $api = $this->getAccountAPI();
-        $api->setBaseUri('/account/get-prefix-pricing/outbound');
-        $api->setCollectionName('prices');
+        $this->accountAPI->setBaseUri('/account/get-prefix-pricing/outbound');
+        $this->accountAPI->setCollectionName('prices');
 
-        $data = $api->search(new KeyValueFilter(['prefix' => $prefix]));
+        $data = $this->accountAPI->search(new KeyValueFilter(['prefix' => $prefix]));
 
         if (count($data) === 0) {
             return [];
@@ -171,9 +105,8 @@ class Client implements ClientAwareInterface, APIClient
      */
     protected function makePricingRequest($country, $pricingType): array
     {
-        $api = $this->getAccountAPI();
-        $api->setBaseUri('/account/get-pricing/outbound/' . $pricingType);
-        $results = $api->search(new KeyValueFilter(['country' => $country]));
+        $this->accountAPI->setBaseUri('/account/get-pricing/outbound/' . $pricingType);
+        $results = $this->accountAPI->search(new KeyValueFilter(['country' => $country]));
         $data = $results->getPageData();
 
         if (is_null($data)) {
@@ -194,7 +127,7 @@ class Client implements ClientAwareInterface, APIClient
      */
     public function getBalance(): Balance
     {
-        $data = $this->getAccountAPI()->get('get-balance', [], ['accept' => 'application/json']);
+        $data = $this->accountAPI->get('get-balance', [], ['accept' => 'application/json']);
 
         if (is_null($data)) {
             throw new ClientException\Server('No results found');
@@ -209,9 +142,8 @@ class Client implements ClientAwareInterface, APIClient
      */
     public function topUp($trx): void
     {
-        $api = $this->getAccountAPI();
-        $api->setBaseUri('/account/top-up');
-        $api->submit(['trx' => $trx]);
+        $this->accountAPI->setBaseUri('/account/top-up');
+        $this->accountAPI->submit(['trx' => $trx]);
     }
 
     /**
@@ -223,9 +155,8 @@ class Client implements ClientAwareInterface, APIClient
      */
     public function getConfig(): Config
     {
-        $api = $this->getAccountAPI();
-        $api->setBaseUri('/account/settings');
-        $body = $api->submit();
+        $this->accountAPI->setBaseUri('/account/settings');
+        $body = $this->accountAPI->submit();
 
         if ($body === '') {
             throw new ClientException\Server('Response was empty');
@@ -262,10 +193,9 @@ class Client implements ClientAwareInterface, APIClient
             $params['drCallBackUrl'] = $options['dr_callback_url'];
         }
 
-        $api = $this->getAccountAPI();
-        $api->setBaseUri('/account/settings');
+        $this->accountAPI->setBaseUri('/account/settings');
 
-        $rawBody = $api->submit($params);
+        $rawBody = $this->accountAPI->submit($params);
 
         if ($rawBody === '') {
             throw new ClientException\Server('Response was empty');
@@ -280,90 +210,5 @@ class Client implements ClientAwareInterface, APIClient
             $body['max-inbound-request'],
             $body['max-calls-per-second']
         );
-    }
-
-    /**
-     * @deprecated use the Vonage\Secrets\Client::list method
-     *
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws InvalidResponseException
-     */
-    public function listSecrets(string $apiKey): SecretCollection
-    {
-        trigger_error('Vonage\Account\Client::listSecrets is deprecated, please use the Vonage\Secrets\Client::list method', E_USER_DEPRECATED);
-        $api = $this->getSecretsAPI();
-
-        $data = $api->get($apiKey . '/secrets');
-        return new SecretCollection($data['_embedded']['secrets'], $data['_links']);
-    }
-
-    /**
-     * @deprecated use the Vonage\Secrets\Client::get method
-     *
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws InvalidResponseException
-     */
-    public function getSecret(string $apiKey, string $secretId): Secret
-    {
-        trigger_error('Vonage\Account\Client::getSecret is deprecated, please use the Vonage\Secrets\Client::get method', E_USER_DEPRECATED);
-        $api = $this->getSecretsAPI();
-
-        $data = $api->get($apiKey . '/secrets/' . $secretId);
-        return new Secret($data);
-    }
-
-    /**
-     * Create a new account secret
-     *
-     * @deprecated use the Vonage\Secrets\Client::create method
-     *
-     * @throws ClientExceptionInterface
-     * @throws ClientRequestException
-     * @throws ClientException\Exception
-     * @throws InvalidResponseException
-     * @throws ClientValidationException
-     */
-    public function createSecret(string $apiKey, string $newSecret): Secret
-    {
-        trigger_error('Vonage\Account\Client::createSecret is deprecated, please use the Vonage\Secrets\Client::create method', E_USER_DEPRECATED);
-        $api = $this->getSecretsAPI();
-        $api->setBaseUri('/accounts/' . $apiKey . '/secrets');
-
-        try {
-            $response = $api->create(['secret' => $newSecret]);
-        } catch (ClientRequestException $e) {
-            // @deprecated Throw a Validation exception to preserve old behavior
-            // This will change to a general Request exception in the future
-            $rawResponse = json_decode(@$e->getResponse()->getBody()->getContents(), true);
-
-            if (array_key_exists('invalid_parameters', $rawResponse)) {
-                throw new ClientValidationException(
-                    $e->getMessage(),
-                    $e->getCode(),
-                    null,
-                    $rawResponse['invalid_parameters']
-                );
-            }
-
-            throw $e;
-        }
-
-        return new Secret($response);
-    }
-
-    /**
-     * @deprecated use the Vonage\Secrets\Client::revoke method
-     *
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     */
-    public function deleteSecret(string $apiKey, string $secretId): void
-    {
-        trigger_error('Vonage\Account\Client::deleteSecret is deprecated, please use the Vonage\Secrets\Client::revoke method', E_USER_DEPRECATED);
-        $api = $this->getSecretsAPI();
-        $api->setBaseUri('/accounts/' . $apiKey . '/secrets');
-        $api->delete($secretId);
     }
 }
