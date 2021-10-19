@@ -31,21 +31,11 @@ use function preg_replace;
 use function strtolower;
 use function trigger_error;
 
-/**
- * This class will no longer be accessible via array access, nor contain request/response information after v2.
- */
 abstract class Price implements
-    EntityInterface,
     JsonSerializable,
     JsonSerializableInterface,
-    JsonUnserializableInterface,
-    ArrayAccess,
     ArrayHydrateInterface
 {
-    use JsonSerializableTrait;
-    use NoRequestResponseTrait;
-    use JsonResponseTrait;
-
     /**
      * @var array<string, mixed>
      */
@@ -106,16 +96,6 @@ abstract class Price implements
         return $this->getDefaultPrice();
     }
 
-    public function jsonUnserialize(array $json): void
-    {
-        trigger_error(
-            get_class($this) . "::jsonUnserialize is deprecated, please fromArray() instead",
-            E_USER_DEPRECATED
-        );
-
-        $this->fromArray($json);
-    }
-
     public function fromArray(array $data): void
     {
         // Convert CamelCase to snake_case as that's how we use array access in every other object
@@ -174,58 +154,5 @@ abstract class Price implements
     public function toArray(): array
     {
         return $this->data;
-    }
-
-    public function offsetExists($offset): bool
-    {
-        trigger_error(
-            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
-            E_USER_DEPRECATED
-        );
-
-        return isset($this->data[$offset]);
-    }
-
-    public function offsetGet($offset)
-    {
-        trigger_error(
-            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
-            E_USER_DEPRECATED
-        );
-
-        return $this->data[$offset];
-    }
-
-    /**
-     * @throws ClientException
-     */
-    public function offsetSet($offset, $value): void
-    {
-        throw new ClientException('Price is read only');
-    }
-
-    /**
-     * @throws ClientException
-     */
-    public function offsetUnset($offset): void
-    {
-        throw new ClientException('Price is read only');
-    }
-
-    /**
-     * @noinspection MagicMethodsValidityInspection
-     */
-    public function __get($key): ?array
-    {
-        if ($key === 'data') {
-            trigger_error(
-                "Direct access to " . get_class($this) . "::data is deprecated, please use getter to toArray() methods",
-                E_USER_DEPRECATED
-            );
-
-            return $this->data;
-        }
-
-        return null;
     }
 }

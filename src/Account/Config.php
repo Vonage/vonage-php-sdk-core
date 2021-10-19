@@ -25,8 +25,6 @@ use function trigger_error;
 class Config implements
     JsonSerializable,
     JsonSerializableInterface,
-    JsonUnserializableInterface,
-    ArrayAccess,
     ArrayHydrateInterface
 {
     /**
@@ -101,16 +99,6 @@ class Config implements
         return $this->data['max_calls_per_second'];
     }
 
-    public function jsonUnserialize(array $json): void
-    {
-        trigger_error(
-            get_class($this) . "::jsonUnserialize is deprecated, please fromArray() instead",
-            E_USER_DEPRECATED
-        );
-
-        $this->fromArray($json);
-    }
-
     public function fromArray(array $data): void
     {
         $this->data = [
@@ -130,58 +118,5 @@ class Config implements
     public function toArray(): array
     {
         return $this->data;
-    }
-
-    public function offsetExists($offset): bool
-    {
-        trigger_error(
-            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
-            E_USER_DEPRECATED
-        );
-
-        return isset($this->data[$offset]);
-    }
-
-    public function offsetGet($offset)
-    {
-        trigger_error(
-            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
-            E_USER_DEPRECATED
-        );
-
-        return $this->data[$offset];
-    }
-
-    /**
-     * @throws ClientException
-     */
-    public function offsetSet($offset, $value): void
-    {
-        throw new ClientException('Balance is read only');
-    }
-
-    /**
-     * @throws ClientException
-     */
-    public function offsetUnset($offset): void
-    {
-        throw new ClientException('Balance is read only');
-    }
-
-    /**
-     * @noinspection MagicMethodsValidityInspection
-     */
-    public function __get($key): ?array
-    {
-        if ($key === 'data') {
-            trigger_error(
-                "Direct access to " . get_class($this) . "::data is deprecated, please use getter to toArray() methods",
-                E_USER_DEPRECATED
-            );
-
-            return $this->data;
-        }
-
-        return null;
     }
 }
