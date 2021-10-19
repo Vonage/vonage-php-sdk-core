@@ -33,12 +33,6 @@ class BalanceTest extends VonageTestCase
         $this->assertEquals(false, $this->balance->getAutoReload());
     }
 
-    public function testArrayAccess(): void
-    {
-        $this->assertEquals("12.99", @$this->balance['balance']);
-        $this->assertEquals(false, @$this->balance['auto_reload']);
-    }
-
     public function testJsonSerialize(): void
     {
         $data = $this->balance->jsonSerialize();
@@ -47,41 +41,23 @@ class BalanceTest extends VonageTestCase
         $this->assertFalse($data['auto_reload']);
     }
 
-    public function testJsonUnserialize(): void
+    public function testDoesNotActLikeArray(): void
     {
-        $data = ['value' => '5.00', 'autoReload' => false];
-
-        $balance = new Balance('1.99', true);
-        $balance->fromArray($data);
-
-        $this->assertSame($data['value'], @$balance['balance']);
-        $this->assertSame($data['autoReload'], @$balance['auto_reload']);
+        $this->expectErrorMessage('Cannot use object of type Vonage\Account\Balance as array');
+        $balance = $this->balance['balance'];
     }
 
-    public function testActsLikeArray(): void
+    public function testCannotSetArrayKey(): void
     {
-        $this->assertSame('12.99', @$this->balance['balance']);
-        $this->assertTrue(@isset($this->balance['balance']));
+        $this->expectErrorMessage('Cannot use object of type Vonage\Account\Balance as array');
+        $newBalance = '14.99';
+        $this->balance['balance'] = $newBalance;
     }
 
-    public function testCannotRemoveArrayKey(): void
+    public function testCannotSetArrayKeyInsideStorage(): void
     {
-        $this->expectException(ClientException::class);
-        $this->expectExceptionMessage('Balance is read only');
-
-        unset($this->balance['balance']);
-    }
-
-    public function testCannotDirectlySetArrayKey(): void
-    {
-        $this->expectException(ClientException::class);
-        $this->expectExceptionMessage('Balance is read only');
-
-        $this->balance['balance'] = '5.00';
-    }
-
-    public function testMakeSureDataIsPubliclyVisible(): void
-    {
-        $this->assertSame('12.99', @$this->balance->data['balance']);
+        $this->expectErrorMessage('Cannot access protected property Vonage\Account\Balance::$data');
+        $newBalance = '14.99';
+        $this->balance->data['balance'] = $newBalance;
     }
 }
