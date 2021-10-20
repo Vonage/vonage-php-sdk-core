@@ -50,6 +50,7 @@ class SmsPriceTest extends VonageTestCase
      */
     public function testArrayAccess($smsPrice): void
     {
+        $this->expectErrorMessage('Cannot use object of type Vonage\Account\SmsPrice as array');
         $this->assertEquals("US", @$smsPrice['country_code']);
         $this->assertEquals("United States", @$smsPrice['country_name']);
         $this->assertEquals("United States", @$smsPrice['country_display_name']);

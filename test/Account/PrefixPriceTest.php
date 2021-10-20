@@ -47,12 +47,13 @@ class PrefixPriceTest extends VonageTestCase
      *
      * @param $prefixPrice
      */
-    public function testArrayAccess($prefixPrice): void
+    public function testDoesNotHaveArrayAccess($prefixPrice): void
     {
-        $this->assertEquals("ZW", @$prefixPrice['country_code']);
-        $this->assertEquals("Zimbabwe", @$prefixPrice['country_name']);
-        $this->assertEquals("Zimbabwe", @$prefixPrice['country_display_name']);
-        $this->assertEquals("263", @$prefixPrice['dialing_prefix']);
+        $this->expectErrorMessage('Cannot use object of type Vonage\Account\PrefixPrice as array');
+        $this->assertEquals("ZW", $prefixPrice['country_code']);
+        $this->assertEquals("Zimbabwe", $prefixPrice['country_name']);
+        $this->assertEquals("Zimbabwe", $prefixPrice['country_display_name']);
+        $this->assertEquals("263", $prefixPrice['dialing_prefix']);
     }
 
     /**

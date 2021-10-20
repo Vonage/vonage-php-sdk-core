@@ -325,8 +325,8 @@ class ClientTest extends VonageTestCase
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('smsprice-us'));
 
         $smsPrice = $this->accountClient->getSmsPrice('US');
-
-        $this->assertInstanceOf(Network::class, @$smsPrice['networks']['311310']);
+        $networks = $smsPrice->getNetworks();
+        $this->assertInstanceOf(Network::class, $networks['311310']);
     }
 
     /**
@@ -370,8 +370,8 @@ class ClientTest extends VonageTestCase
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('voiceprice-us'));
 
         $voicePrice = $this->accountClient->getVoicePrice('US');
-
-        $this->assertInstanceOf(Network::class, @$voicePrice['networks']['311310']);
+        $networks = $voicePrice->getNetworks();
+        $this->assertInstanceOf(Network::class, $networks['311310']);
     }
 
     public function testGetPrefixPricing(): void
@@ -396,8 +396,9 @@ class ClientTest extends VonageTestCase
         }))->shouldBeCalledTimes(2)->willReturn($first, $noResults);
 
         $prefixPrice = $this->accountClient->getPrefixPricing('263');
-        $this->assertInstanceOf(PrefixPrice::class, @$prefixPrice[0]);
-        $this->assertInstanceOf(Network::class, @$prefixPrice[0]['networks']['64804']);
+        $this->assertInstanceOf(PrefixPrice::class, $prefixPrice[0]);
+        $networks = $prefixPrice[0]->getNetworks();
+        $this->assertInstanceOf(Network::class, $networks['64804']);
     }
 
     public function testGetPrefixPricingNoResults(): void
