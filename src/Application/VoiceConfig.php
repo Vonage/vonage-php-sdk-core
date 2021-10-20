@@ -11,8 +11,6 @@ declare(strict_types=1);
 
 namespace Vonage\Application;
 
-use function trigger_error;
-
 class VoiceConfig
 {
     public const EVENT = 'event_url';
@@ -23,18 +21,9 @@ class VoiceConfig
      */
     protected $webhooks = [];
 
-    public function setWebhook($type, $url, $method = null): self
+    public function setWebhook($type, Webhook $webhook): self
     {
-        if (!$url instanceof Webhook) {
-            trigger_error(
-                'Passing a string URL and method are deprecated, please pass a Webhook object instead',
-                E_USER_DEPRECATED
-            );
-
-            $url = new Webhook($url, $method);
-        }
-
-        $this->webhooks[$type] = $url;
+        $this->webhooks[$type] = $webhook;
 
         return $this;
     }

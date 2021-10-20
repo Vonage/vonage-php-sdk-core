@@ -13,6 +13,7 @@ namespace VonageTest\Application;
 
 use Exception;
 use Laminas\Diactoros\Response;
+use Vonage\Application\Webhook;
 use VonageTest\VonageTestCase;
 use Vonage\Application\Application;
 use Vonage\Application\MessagesConfig;
@@ -54,8 +55,11 @@ class ApplicationTest extends VonageTestCase
      */
     public function testVoiceWebhookParams(): void
     {
-        @$this->app->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'http://example.com/event');
-        @$this->app->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'http://example.com/answer');
+        $eventWebhook = new Webhook('http://example.com/event');
+        $answerWebhook = new Webhook('http://example.com/answer');
+
+        $this->app->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, $eventWebhook);
+        $this->app->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, $answerWebhook);
 
         $params = @$this->app->getRequestData();
         $capabilities = $params['capabilities'];
@@ -64,6 +68,12 @@ class ApplicationTest extends VonageTestCase
         $this->assertArrayHasKey('answer_url', $capabilities['voice']['webhooks']);
         $this->assertEquals('http://example.com/event', $capabilities['voice']['webhooks']['event_url']['address']);
         $this->assertEquals('http://example.com/answer', $capabilities['voice']['webhooks']['answer_url']['address']);
+    }
+
+    public function testCannotPassStringToSetWebhook(): void
+    {
+        $this->expectException(\TypeError::class);
+        $this->app->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'http://example.com/event');
     }
 
     public function testResponseSetsProperties(): void

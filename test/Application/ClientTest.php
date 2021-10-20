@@ -15,6 +15,7 @@ use DateTime;
 use Exception;
 use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
+use Vonage\Application\Webhook as ApplicationWebhook;
 use VonageTest\VonageTestCase;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
@@ -298,7 +299,7 @@ class ClientTest extends VonageTestCase
      * @param $id
      * @param $expectedId
      */
-    public function testUpdateApplication($payload, $method, $id, $expectedId): void
+    public function testUpdateApplication($payload, $method, $expectedId): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($expectedId) {
             $this->assertEquals('/v2/applications/' . $expectedId, $request->getUri()->getPath());
@@ -313,12 +314,12 @@ class ClientTest extends VonageTestCase
                     'webhooks' => [
                         'answer_url' => [
                             'address' => 'https://example.com/webhooks/answer',
-                            'http_method' => null
+                            'http_method' => 'POST'
 
                         ],
                         'event_url' => [
                             'address' => 'https://example.com/webhooks/event',
-                            'http_method' => null
+                            'http_method' => 'POST'
                         ]
                     ]
                 ],
@@ -336,11 +337,7 @@ class ClientTest extends VonageTestCase
             return true;
         }))->willReturn($this->getResponse());
 
-        if ($id) {
-            $application = @$this->applicationClient->$method($payload, $id);
-        } else {
-            $application = @$this->applicationClient->$method($payload);
-        }
+        $application = $this->applicationClient->$method($payload);
 
         $expectedData = json_decode($this->getResponse()->getBody()->getContents(), true);
 
@@ -387,11 +384,6 @@ class ClientTest extends VonageTestCase
             $expectedData['capabilities']['rtc']['webhooks']['event_url']['address'],
             $application->getRtcConfig()->getWebhook('event_url')->getUrl()
         );
-
-        @self::markTestIncomplete("Remove error suppression when object passing has been removed");
-        @self::markTestIncomplete(
-            "Rework this whole test, because it uses stock responses it's impossible to test in its current form"
-        );
     }
 
     /**
@@ -401,33 +393,24 @@ class ClientTest extends VonageTestCase
      */
     public function updateApplication(): array
     {
+        $answerWebhook = new ApplicationWebhook('https://example.com/webhooks/answer');
+        $eventWebhook = new ApplicationWebhook('https://example.com/webhooks/event');
+
         $id = '1a20a124-1775-412b-b623-e6985f4aace0';
-        $copy = '1a20a124-1775-412b-4444-e6985f4aace0';
         $existing = new Application($id);
         $existing->setName('My Application');
-        @$existing->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'https://example.com/webhooks/answer');
-        @$existing->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'https://example.com/webhooks/event');
+        $existing->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, $answerWebhook);
+        $existing->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, $eventWebhook);
         @$existing->getRtcConfig()->setWebhook(RtcConfig::EVENT, 'https://example.com/webhooks/event');
 
         $new = new Application();
         $new->setName('My Application');
-        @$new->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'https://example.com/webhooks/answer');
-        @$new->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'https://example.com/webhooks/event');
+        $new->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, $answerWebhook);
+        $new->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, $eventWebhook);
         @$new->getRtcConfig()->setWebhook(RtcConfig::EVENT, 'https://example.com/webhooks/event');
 
-        $raw = [
-            'name' => 'My Application',
-            'answer_url' => 'https://example.com/webhooks/answer',
-            'event_url' => 'https://example.com/webhooks/event'
-        ];
-
         return [
-            //can send an application to update it
-            [clone $existing, 'update', null, $id],
-            //can send raw array and id
-            [$raw, 'update', $id, $id],
-            //one application overwrites another if id provided
-            [clone $existing, 'update', $copy, $copy],
+            [clone $existing, 'update', $id]
         ];
     }
 

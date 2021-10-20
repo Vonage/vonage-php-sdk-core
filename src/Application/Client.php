@@ -174,32 +174,11 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
      * @throws ClientException
      * @throws Exception
      */
-    public function update($application, ?string $id = null): Application
+    public function update(Application $application): Application
     {
-        if (!($application instanceof Application)) {
-            trigger_error(
-                'Passing an array to Vonage\Application\Client::update() is deprecated, ' .
-                'please pass an Application object instead.',
-                E_USER_DEPRECATED
-            );
+        $data = $this->getApiResource()->update($application->getId(), $application->toArray());
 
-            $application = $this->fromArray($application);
-        }
-
-        if (is_null($id)) {
-            $id = $application->getId();
-        } else {
-            trigger_error(
-                'Passing an ID to Vonage\Application\Client::update() is deprecated ' .
-                'and will be removed in a future release',
-                E_USER_DEPRECATED
-            );
-        }
-
-        $data = $this->getApiResource()->update($id, $application->toArray());
-        $application = $this->hydrator->hydrate($data);
-
-        return $application;
+        return $this->hydrator->hydrate($data);
     }
 
     /**
