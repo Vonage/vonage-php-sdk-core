@@ -19,20 +19,15 @@ use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 use Vonage\Entity\JsonResponseTrait;
 use Vonage\Entity\JsonSerializableInterface;
 use Vonage\Entity\JsonSerializableTrait;
-use Vonage\Entity\JsonUnserializableInterface;
 use Vonage\Entity\NoRequestResponseTrait;
 
-use function get_class;
 use function in_array;
 use function is_null;
-use function json_decode;
-use function json_last_error;
 use function preg_match;
 use function stripos;
 use function strpos;
-use function trigger_error;
 
-class Number implements EntityInterface, JsonSerializableInterface, JsonUnserializableInterface, ArrayHydrateInterface
+class Number implements EntityInterface, JsonSerializableInterface, ArrayHydrateInterface
 {
     use JsonSerializableTrait;
     use NoRequestResponseTrait;
@@ -101,6 +96,7 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
 
     /**
      * @param $feature
+     * @return bool
      */
     public function hasFeature($feature): bool
     {
@@ -119,6 +115,7 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
     /**
      * @param $type
      * @param $url
+     * @return Number
      */
     public function setWebhook($type, $url): self
     {
@@ -132,6 +129,7 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
 
     /**
      * @param $type
+     * @return mixed
      */
     public function getWebhook($type)
     {
@@ -140,6 +138,7 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
 
     /**
      * @param $type
+     * @return bool
      */
     public function hasWebhook($type): bool
     {
@@ -148,7 +147,8 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
 
     /**
      * @param $endpoint
-     * @param $type
+     * @param null $type
+     * @return Number
      */
     public function setVoiceDestination($endpoint, $type = null): self
     {
@@ -168,6 +168,7 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
 
     /**
      * @param $endpoint
+     * @return string
      */
     protected function autoType($endpoint): string
     {
@@ -205,6 +206,7 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
 
     /**
      * @param $name
+     * @return mixed
      */
     protected function fromData($name)
     {
@@ -215,34 +217,15 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
         return $this->data[$name];
     }
 
-    /**
-     * @param string|array $json
-     */
-    public function jsonUnserialize($json): void
-    {
-        trigger_error(
-            get_class($this) . "::jsonUnserialize is deprecated, please fromArray() instead",
-            E_USER_DEPRECATED
-        );
-
-        $jsonArr = json_decode($json, true);
-
-        if (json_last_error() === JSON_ERROR_NONE) {
-            $json = $jsonArr;
-        }
-
-        $this->fromArray($json);
-    }
-
     public function fromArray(array $data): void
     {
         $this->data = $data;
     }
 
     /**
-     * @return array|mixed
+     * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->toArray();
     }
