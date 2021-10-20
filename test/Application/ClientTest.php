@@ -15,6 +15,7 @@ use DateTime;
 use Exception;
 use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
+use Vonage\Application\Webhook;
 use Vonage\Application\Webhook as ApplicationWebhook;
 use VonageTest\VonageTestCase;
 use Prophecy\Argument;
@@ -634,8 +635,11 @@ class ClientTest extends VonageTestCase
     {
         $application = new Application();
         $application->setName('My Application');
-        @$application->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'https://example.com/webhooks/answer', 'GET');
-        @$application->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'https://example.com/webhooks/event', 'POST');
+
+        $answerWebhook = new Webhook('https://example.com/webhooks/answer', 'GET');
+        $eventWebhook = new Webhook('https://example.com/webhooks/event', 'POST');
+        $application->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, $answerWebhook);
+        $application->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, $eventWebhook);
         @$application->getMessagesConfig()->setWebhook(
             MessagesConfig::STATUS,
             'https://example.com/webhooks/status',

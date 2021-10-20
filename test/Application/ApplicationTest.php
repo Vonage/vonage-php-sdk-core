@@ -156,12 +156,15 @@ class ApplicationTest extends VonageTestCase
         $this->app->setName('new');
         $this->assertEquals('new', $this->app->getName());
 
+        /** @var Webhook $webhook */
         $webhook = $this->app->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER);
         $this->assertEquals('https://example.com/webhooks/answer', $webhook);
 
-        @$this->app->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'http://example.com');
+        $newWebhook = new Webhook('https://example.com');
+
+        @$this->app->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, $newWebhook);
         $webhook = $this->app->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER);
-        $this->assertEquals('http://example.com', (string)$webhook);
+        $this->assertEquals('https://example.com', $webhook->getUrl());
     }
 
     /**
