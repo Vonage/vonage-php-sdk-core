@@ -23,18 +23,9 @@ class MessagesConfig
      */
     protected $webhooks = [];
 
-    public function setWebhook($type, $url, $method = null): self
+    public function setWebhook($type, Webhook $webhook): self
     {
-        if (!$url instanceof Webhook) {
-            trigger_error(
-                'Passing a string URL and method are deprecated, please pass a Webhook object instead',
-                E_USER_DEPRECATED
-            );
-
-            $url = new Webhook($url, $method);
-        }
-
-        $this->webhooks[$type] = $url;
+        $this->webhooks[$type] = $webhook;
 
         return $this;
     }

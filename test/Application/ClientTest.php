@@ -638,18 +638,13 @@ class ClientTest extends VonageTestCase
 
         $answerWebhook = new Webhook('https://example.com/webhooks/answer', 'GET');
         $eventWebhook = new Webhook('https://example.com/webhooks/event', 'POST');
+        $statusWebhook = new Webhook('https://example.com/webhooks/status', 'POST');
+        $inboundWebhook = new Webhook('https://example.com/webhooks/inbound', 'POST');
+
         $application->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, $answerWebhook);
         $application->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, $eventWebhook);
-        @$application->getMessagesConfig()->setWebhook(
-            MessagesConfig::STATUS,
-            'https://example.com/webhooks/status',
-            'POST'
-        );
-        @$application->getMessagesConfig()->setWebhook(
-            MessagesConfig::INBOUND,
-            'https://example.com/webhooks/inbound',
-            'POST'
-        );
+        $application->getMessagesConfig()->setWebhook(MessagesConfig::STATUS, $statusWebhook);
+        $application->getMessagesConfig()->setWebhook(MessagesConfig::INBOUND, $inboundWebhook);
 
         $application->getRtcConfig()->setWebhook(RtcConfig::EVENT, $eventWebhook);
 
