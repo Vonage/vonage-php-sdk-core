@@ -328,7 +328,7 @@ class ClientTest extends VonageTestCase
                     'webhooks' => [
                         'event_url' => [
                             'address' => 'https://example.com/webhooks/event',
-                            'http_method' => null
+                            'http_method' => 'POST'
                         ]
                     ]
                 ],
@@ -402,13 +402,13 @@ class ClientTest extends VonageTestCase
         $existing->setName('My Application');
         $existing->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, $answerWebhook);
         $existing->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, $eventWebhook);
-        @$existing->getRtcConfig()->setWebhook(RtcConfig::EVENT, 'https://example.com/webhooks/event');
+        $existing->getRtcConfig()->setWebhook(RtcConfig::EVENT, $eventWebhook);
 
         $new = new Application();
         $new->setName('My Application');
         $new->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, $answerWebhook);
         $new->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, $eventWebhook);
-        @$new->getRtcConfig()->setWebhook(RtcConfig::EVENT, 'https://example.com/webhooks/event');
+        $new->getRtcConfig()->setWebhook(RtcConfig::EVENT, $eventWebhook);
 
         return [
             [clone $existing, 'update', $id]
@@ -650,7 +650,9 @@ class ClientTest extends VonageTestCase
             'https://example.com/webhooks/inbound',
             'POST'
         );
-        @$application->getRtcConfig()->setWebhook(RtcConfig::EVENT, 'https://example.com/webhooks/event', 'POST');
+
+        $application->getRtcConfig()->setWebhook(RtcConfig::EVENT, $eventWebhook);
+
         $application->setPublicKey("-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSL" .
             "cjxu33G\nd/vynKnlw9SENi+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xsO\nOU" .
             "NhPx2LhuLmgwWSRS4L5W851Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n");
