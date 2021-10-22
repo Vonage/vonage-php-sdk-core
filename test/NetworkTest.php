@@ -14,12 +14,13 @@ use Vonage\Network;
 
 class NetworkTest extends VonageTestCase
 {
-    public function testNetworkArrayAccess(): void
+    public function testNetworkHasNoArrayAccess(): void
     {
+        $this->expectErrorMessage('Cannot use object of type Vonage\Network as array');
         $network = new Network('12345', 'Demo Network');
 
-        $this->assertEquals('12345', @$network['network_code']);
-        $this->assertEquals('Demo Network', @$network['network_name']);
+        $this->assertEquals('12345', $network['network_code']);
+        $this->assertEquals('Demo Network', $network['network_name']);
     }
 
     public function testNetworkGetters(): void
