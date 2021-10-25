@@ -25,11 +25,9 @@ use Vonage\Entity\NoRequestResponseTrait;
 use Vonage\Network;
 
 use function array_key_exists;
-use function get_class;
 use function ltrim;
 use function preg_replace;
 use function strtolower;
-use function trigger_error;
 
 abstract class Price implements
     JsonSerializable,

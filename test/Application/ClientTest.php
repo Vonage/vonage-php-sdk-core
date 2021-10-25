@@ -122,6 +122,12 @@ class ClientTest extends VonageTestCase
         $this->applicationClient->rewind();
     }
 
+    public function testCannotCreateApplicationClientWithId(): void
+    {
+        $this->expectException(\TypeError::class);
+        $applicationClient = new ApplicationClient('78d335fa323d01149c3dd6f0d48968cf');
+    }
+
     /**
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Request
@@ -225,8 +231,12 @@ class ClientTest extends VonageTestCase
      * @throws ClientException
      * @throws Exception
      */
-    public function testGetApplication($payload, $id): void
+    public function testGetApplication($payload, $id, $expectsError): void
     {
+        if ($expectsError) {
+            $this->expectError();
+        }
+
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id) {
             $this->assertEquals('/v2/applications/' . $id, $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
@@ -287,8 +297,8 @@ class ClientTest extends VonageTestCase
     public function getApplication(): array
     {
         return [
-            ['78d335fa323d01149c3dd6f0d48968cf', '78d335fa323d01149c3dd6f0d48968cf'],
-            [new Application('78d335fa323d01149c3dd6f0d48968cf'), '78d335fa323d01149c3dd6f0d48968cf']
+            ['78d335fa323d01149c3dd6f0d48968cf', '78d335fa323d01149c3dd6f0d48968cf', false],
+            [new Application('78d335fa323d01149c3dd6f0d48968cf'), '78d335fa323d01149c3dd6f0d48968cf', true]
         ];
     }
 
@@ -436,11 +446,17 @@ class ClientTest extends VonageTestCase
         $this->assertTrue(@$this->applicationClient->delete($payload));
     }
 
+    public function testCannotDeleteApplicationByPassingApplicationObject(): void
+    {
+        $this->expectException(\TypeError::class);
+        $application = new Application();
+        $applicationClient = new ApplicationClient($application);
+    }
+
     public function deleteApplication(): array
     {
         return [
-            [new Application('abcd1234'), 'abcd1234'],
-            ['abcd1234', 'abcd1234'],
+            ['abcd1234', 'abcd1234']
         ];
     }
 
@@ -504,8 +520,6 @@ class ClientTest extends VonageTestCase
             ['update', 'unauthorized', 401],
             ['create', 'bad', 400],
             ['create', 'unauthorized', 401],
-            ['delete', 'bad', 400],
-            ['delete', 'unauthorized', 401],
         ];
     }
 
@@ -716,11 +730,6 @@ class ClientTest extends VonageTestCase
 
         return [
             'createApplication' => [clone $application, 'create'],
-            'postApplication' => [clone $application, 'post'],
-            'createRawV1' => [$rawV1, 'create'],
-            'postRawV1' => [$rawV1, 'post'],
-            'createRawV2' => [$rawV2, 'create'],
-            'postRawV2' => [$rawV2, 'post'],
         ];
     }
 

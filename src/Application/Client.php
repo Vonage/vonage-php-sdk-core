@@ -25,7 +25,6 @@ use Vonage\Entity\IterableAPICollection;
 use Vonage\Entity\IterableServiceShimTrait;
 
 use function is_null;
-use function trigger_error;
 
 class Client implements ClientAwareInterface, CollectionInterface, APIClient
 {
@@ -93,17 +92,8 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
      * @throws ClientExceptionInterface
      * @throws ClientException
      */
-    public function get($application): Application
+    public function get(string $application): Application
     {
-        if ($application instanceof Application) {
-            trigger_error(
-                "Passing a Application object to Vonage\\Application\\Client::get is deprecated, ' .
-                 'please pass the String ID instead.",
-                E_USER_DEPRECATED
-            );
-            $application = $application->getId();
-        }
-
         $data = $this->getApiResource()->get($application);
         $application = new Application();
         $application->fromArray($data);
@@ -130,41 +120,15 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
      * @throws ClientException
      * @throws Exception
      */
-    public function create($application): Application
+    public function create(Application $application): Application
     {
-        if (!($application instanceof Application)) {
-            trigger_error(
-                'Passing an array to Vonage\Application\Client::create() is deprecated, ' .
-                'please pass an Application object instead.',
-                E_USER_DEPRECATED
-            );
-            $application = $this->fromArray($application);
-        }
-
         // Avoids a mishap in the API where an ID can be set during creation
         $data = $application->toArray();
         unset($data['id']);
 
         $response = $this->getApiResource()->create($data);
-        $application = $this->hydrator->hydrate($response);
 
-        return $application;
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException
-     *
-     * @deprecated Use `create()` instead
-     */
-    public function post($application): Application
-    {
-        trigger_error(
-            'Vonage\Application\Client::post() has been deprecated in favor of the create() method',
-            E_USER_DEPRECATED
-        );
-
-        return $this->create($application);
+        return $this->hydrator->hydrate($response);
     }
 
     /**
@@ -182,41 +146,14 @@ class Client implements ClientAwareInterface, CollectionInterface, APIClient
     }
 
     /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException
-     *
-     * @deprecated Use `update()` instead
-     */
-    public function put($application, ?string $id = null): Application
-    {
-        trigger_error(
-            'Vonage\Application\Client::put() has been deprecated in favor of the update() method',
-            E_USER_DEPRECATED
-        );
-
-        return $this->update($application, $id);
-    }
-
-    /**
      * Deletes an application from the Vonage account
      *
      * @throws ClientExceptionInterface
      * @throws ClientException
      */
-    public function delete($application): bool
+    public function delete(string $application): bool
     {
-        if ($application instanceof Application) {
-            trigger_error(
-                'Passing an Application to Vonage\Application\Client::delete() is deprecated, ' .
-                'please pass a string ID instead',
-                E_USER_DEPRECATED
-            );
-            $id = $application->getId();
-        } else {
-            $id = $application;
-        }
-
-        $this->getApiResource()->delete($id);
+        $this->getApiResource()->delete($application);
 
         return true;
     }

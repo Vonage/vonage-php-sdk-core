@@ -21,8 +21,6 @@ use Vonage\Entity\JsonSerializableTrait;
 use Vonage\Entity\Psr7Trait;
 
 use function count;
-use function get_class;
-use function trigger_error;
 use function ucfirst;
 
 class Application implements EntityInterface, JsonSerializable, ArrayHydrateInterface
