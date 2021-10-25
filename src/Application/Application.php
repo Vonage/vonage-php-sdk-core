@@ -18,7 +18,6 @@ use Vonage\Entity\EntityInterface;
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 use Vonage\Entity\JsonResponseTrait;
 use Vonage\Entity\JsonSerializableTrait;
-use Vonage\Entity\JsonUnserializableInterface;
 use Vonage\Entity\Psr7Trait;
 
 use function count;
@@ -26,7 +25,7 @@ use function get_class;
 use function trigger_error;
 use function ucfirst;
 
-class Application implements EntityInterface, JsonSerializable, JsonUnserializableInterface, ArrayHydrateInterface
+class Application implements EntityInterface, JsonSerializable, ArrayHydrateInterface
 {
     use JsonSerializableTrait;
     use Psr7Trait;
@@ -113,9 +112,8 @@ class Application implements EntityInterface, JsonSerializable, JsonUnserializab
             if (isset($data['voice']['webhooks'])) {
                 foreach ($data['voice']['webhooks'] as $webhook) {
                     $this->voiceConfig->setWebhook(
-                        $webhook['endpoint_type'],
-                        $webhook['endpoint'],
-                        $webhook['http_method']
+                        $webhook->getMethod(),
+                        $webhook
                     );
                 }
             }
@@ -136,9 +134,8 @@ class Application implements EntityInterface, JsonSerializable, JsonUnserializab
             if (isset($data['messages']['webhooks'])) {
                 foreach ($data['messages']['webhooks'] as $webhook) {
                     $this->getMessagesConfig()->setWebhook(
-                        $webhook['endpoint_type'],
-                        $webhook['endpoint'],
-                        $webhook['http_method']
+                        $webhook->getMethod(),
+                        $webhook
                     );
                 }
             }
@@ -159,9 +156,8 @@ class Application implements EntityInterface, JsonSerializable, JsonUnserializab
             if (isset($data['rtc']['webhooks'])) {
                 foreach ($data['rtc']['webhooks'] as $webhook) {
                     $this->getRtcConfig()->setWebhook(
-                        $webhook['endpoint_type'],
-                        $webhook['endpoint'],
-                        $webhook['http_method']
+                        $webhook->getMethod(),
+                        $webhook
                     );
                 }
             }
@@ -206,16 +202,6 @@ class Application implements EntityInterface, JsonSerializable, JsonUnserializab
     public function getName(): ?string
     {
         return $this->name;
-    }
-
-    public function jsonUnserialize(array $json): void
-    {
-        trigger_error(
-            get_class($this) . "::jsonUnserialize is deprecated, please fromArray() instead",
-            E_USER_DEPRECATED
-        );
-
-        $this->fromArray($json);
     }
 
     public function jsonSerialize(): array

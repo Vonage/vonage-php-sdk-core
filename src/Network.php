@@ -12,7 +12,6 @@ declare(strict_types=1);
 namespace Vonage;
 
 use JsonSerializable;
-use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Entity\EntityInterface;
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 use Vonage\Entity\JsonResponseTrait;
