@@ -53,7 +53,9 @@ class Talk implements ActionInterface
     }
 
     /**
+     * @param string $text
      * @param array{text: string, bargeIn?: bool, level?: float, loop?: int, voiceName?: string} $data
+     * @return Talk
      */
     public static function factory(string $text, array $data): Talk
     {
