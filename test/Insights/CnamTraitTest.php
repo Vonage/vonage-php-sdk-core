@@ -21,12 +21,14 @@ class CnamTraitTest extends VonageTestCase
      * @param $cnam
      * @param $inputData
      */
-    public function testArrayAccess($cnam, $inputData): void
+    public function testDoesNotHaveArrayAccess($cnam, $inputData): void
     {
-        $this->assertEquals($inputData['first_name'], @$cnam['first_name']);
-        $this->assertEquals($inputData['last_name'], @$cnam['last_name']);
-        $this->assertEquals($inputData['caller_name'], @$cnam['caller_name']);
-        $this->assertEquals($inputData['caller_type'], @$cnam['caller_type']);
+        $this->expectErrorMessage('Cannot use object of type VonageTest\Insights\Cnam as array');
+
+        $this->assertEquals($inputData['first_name'], $cnam['first_name']);
+        $this->assertEquals($inputData['last_name'], $cnam['last_name']);
+        $this->assertEquals($inputData['caller_name'], $cnam['caller_name']);
+        $this->assertEquals($inputData['caller_type'], $cnam['caller_type']);
     }
 
     /**

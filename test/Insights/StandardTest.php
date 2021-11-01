@@ -22,15 +22,17 @@ class StandardTest extends VonageTestCase
      * @param $standard
      * @param $inputData
      */
-    public function testArrayAccess($standard, $inputData): void
+    public function testDoesNotHaveArrayAccess($standard, $inputData): void
     {
-        $this->assertEquals($inputData['refund_price'], @$standard['refund_price']);
-        $this->assertEquals($inputData['request_price'], @$standard['request_price']);
-        $this->assertEquals($inputData['remaining_balance'], @$standard['remaining_balance']);
-        $this->assertEquals($inputData['current_carrier'], @$standard['current_carrier']);
-        $this->assertEquals($inputData['original_carrier'], @$standard['original_carrier']);
-        $this->assertEquals($inputData['ported'], @$standard['ported']);
-        $this->assertEquals($inputData['roaming'], @$standard['roaming']);
+        $this->expectErrorMessage('Cannot use object of type Vonage\Insights\Standard as array');
+
+        $this->assertEquals($inputData['refund_price'], $standard['refund_price']);
+        $this->assertEquals($inputData['request_price'], $standard['request_price']);
+        $this->assertEquals($inputData['remaining_balance'], $standard['remaining_balance']);
+        $this->assertEquals($inputData['current_carrier'], $standard['current_carrier']);
+        $this->assertEquals($inputData['original_carrier'], $standard['original_carrier']);
+        $this->assertEquals($inputData['ported'], $standard['ported']);
+        $this->assertEquals($inputData['roaming'], $standard['roaming']);
     }
 
     /**

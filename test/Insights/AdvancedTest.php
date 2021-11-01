@@ -22,10 +22,11 @@ class AdvancedTest extends VonageTestCase
      * @param $advanced
      * @param $inputData
      */
-    public function testArrayAccess($advanced, $inputData): void
+    public function testDoesNotHaveArrayAccess($advanced, $inputData): void
     {
-        $this->assertEquals($inputData['valid_number'], @$advanced['valid_number']);
-        $this->assertEquals($inputData['reachable'], @$advanced['reachable']);
+        $this->expectErrorMessage('Cannot use object of type Vonage\Insights\Advanced as array');
+        $this->assertEquals($inputData['valid_number'], $advanced['valid_number']);
+        $this->assertEquals($inputData['reachable'], $advanced['reachable']);
     }
 
     /**
