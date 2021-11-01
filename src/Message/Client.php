@@ -38,7 +38,6 @@ use function sprintf;
 use function strpos;
 use function strtolower;
 use function substr;
-use function trigger_error;
 use function ucfirst;
 
 /**
@@ -141,18 +140,8 @@ class Client implements ClientAwareInterface
      * @throws ClientException\Server
      * @throws ClientExceptionInterface
      */
-    public function send($message): Message
+    public function send(MessageInterface $message): Message
     {
-        if (!($message instanceof MessageInterface)) {
-            trigger_error(
-                'Passing an array to Vonage\Messages\Client::send() is deprecated, ' .
-                'please pass a MessageInterface object instead',
-                E_USER_DEPRECATED
-            );
-
-            $message = $this->createMessageFromArray($message);
-        }
-
         $params = @$message->getRequestData(false);
 
         try {

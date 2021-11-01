@@ -16,6 +16,7 @@ use Exception;
 use InvalidArgumentException;
 use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
+use PHPUnit\Util\Type;
 use VonageTest\VonageTestCase;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
@@ -114,30 +115,6 @@ class ClientTest extends VonageTestCase
         }))->willReturn($this->getResponse('empty'));
 
         $this->messageClient->send(new Text($args['to'], $args['from'], $args['text']));
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ServerException
-     */
-    public function testCanUseArguments(): void
-    {
-        $args = [
-            'to' => '14845551212',
-            'from' => '16105551212',
-            'text' => 'Go To Gino\'s'
-        ];
-
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
-            $this->assertRequestJsonBodyContains('to', $args['to'], $request);
-            $this->assertRequestJsonBodyContains('from', $args['from'], $request);
-            $this->assertRequestJsonBodyContains('text', $args['text'], $request);
-            return true;
-        }))->willReturn($this->getResponse());
-
-        @$message = $this->messageClient->send($args);
     }
 
     /**
@@ -992,11 +969,9 @@ class ClientTest extends VonageTestCase
      */
     public function testCreateMessageThrowsExceptionOnBadData(): void
     {
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('message must implement `Vonage\Message\MessageInterface` or be an array`');
-
+        $this->expectError(\TypeError::class);
         /** @noinspection PhpParamsInspection */
-        @$this->messageClient->send('Bob');
+        $this->messageClient->send('Bob');
     }
 
     /**
@@ -1007,10 +982,8 @@ class ClientTest extends VonageTestCase
      */
     public function testCreateMessageThrowsExceptionOnMissingData(): void
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('missing expected key `from`');
-
-        @$this->messageClient->send(['to' => '15555555555']);
+        $this->expectException(\TypeError::class);
+        $this->messageClient->send(['to' => '15555555555']);
     }
 
     public function testMagicMethodIsCalledProperly(): void
