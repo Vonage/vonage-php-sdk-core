@@ -11,10 +11,6 @@ declare(strict_types=1);
 
 namespace Vonage\SMS\Message;
 
-use Vonage\SMS\EncodingDetector;
-
-use function function_exists;
-
 class SMS extends OutboundMessage
 {
     /**
@@ -40,10 +36,6 @@ class SMS extends OutboundMessage
     public function __construct(string $to, string $from, string $message)
     {
         parent::__construct($to, $from);
-        $encoder = new EncodingDetector();
-        if (function_exists('mb_convert_encoding') && $encoder->requiresUnicodeEncoding($message)) {
-            $this->type = 'unicode';
-        }
 
         $this->message = $message;
     }

@@ -227,4 +227,11 @@ abstract class OutboundMessage implements Message
     {
         return $this->type;
     }
+
+    public function setType(string $type): OutboundMessage
+    {
+        $this->type = $type;
+
+        return $this;
+    }
 }

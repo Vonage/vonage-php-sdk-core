@@ -17,13 +17,12 @@ use Vonage\SMS\Message\SMS;
 
 class SMSTest extends TestCase
 {
-    public function testSwitchesToUnicodeAutomatically(): void
+    public function testCanSetUnicodeType(): void
     {
-        $this->assertSame(
-            'unicode',
-            (new SMS('447700900000', '16105551212', 'こんにちは世界'))
-                ->getType()
-        );
+        $sms = (new SMS('447700900000', '16105551212', 'Test Message'));
+        $this->assertSame('text', $sms->getType());
+        $sms->setType('unicode');
+        $this->assertSame('unicode', $sms->getType());
     }
 
     public function testDeliveryCallbackCanBeSet(): void
