@@ -31,13 +31,14 @@ class SMS extends OutboundMessage
     /**
      * @var string
      */
-    protected $type = 'text';
+    protected $type = 'unicode';
 
-    public function __construct(string $to, string $from, string $message)
+    public function __construct(string $to, string $from, string $message, string $type = 'unicode')
     {
         parent::__construct($to, $from);
 
         $this->message = $message;
+        $this->setType($type);
     }
 
     public function getContentId(): string

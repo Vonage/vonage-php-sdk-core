@@ -20,9 +20,15 @@ class SMSTest extends TestCase
     public function testCanSetUnicodeType(): void
     {
         $sms = (new SMS('447700900000', '16105551212', 'Test Message'));
-        $this->assertSame('text', $sms->getType());
-        $sms->setType('unicode');
         $this->assertSame('unicode', $sms->getType());
+        $sms->setType('text');
+        $this->assertSame('text', $sms->getType());
+    }
+
+    public function testCanSetUnicodeTypeInConstructor(): void
+    {
+        $sms = (new SMS('447700900000', '16105551212', 'Test Message', 'text'));
+        $this->assertSame('text', $sms->getType());
     }
 
     public function testDeliveryCallbackCanBeSet(): void
@@ -100,7 +106,7 @@ class SMSTest extends TestCase
             'entity-id' => 'abcd',
             'to' => '447700900000',
             'from' => '16105551212',
-            'type' => 'text',
+            'type' => 'unicode',
             'ttl' => 259200000,
             'status-report-req' => 1,
         ];
@@ -119,7 +125,7 @@ class SMSTest extends TestCase
             'content-id' => '1234',
             'to' => '447700900000',
             'from' => '16105551212',
-            'type' => 'text',
+            'type' => 'unicode',
             'ttl' => 259200000,
             'status-report-req' => 1,
         ];
@@ -139,7 +145,7 @@ class SMSTest extends TestCase
             'content-id' => '1234',
             'to' => '447700900000',
             'from' => '16105551212',
-            'type' => 'text',
+            'type' => 'unicode',
             'ttl' => 259200000,
             'status-report-req' => 1,
         ];
@@ -155,7 +161,7 @@ class SMSTest extends TestCase
             'text' => 'Test Message',
             'to' => '447700900000',
             'from' => '16105551212',
-            'type' => 'text',
+            'type' => 'unicode',
             'ttl' => 259200000,
             'status-report-req' => 1,
         ];
