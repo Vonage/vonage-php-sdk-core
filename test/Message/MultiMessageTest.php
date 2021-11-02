@@ -75,28 +75,25 @@ class MultiMessageTest extends VonageTestCase
         ];
     }
 
-    public function testCanAccessLastMessageAsArray(): void
+    public function testCannotAccessLastMessageAsArray(): void
     {
-        @$this->message->setResponse($this->getResponse('multi'));
+        $this->expectErrorMessage('Cannot use object of type Vonage\Message\Message as array');
 
-        $this->assertEquals('0', @$this->message['status']);
-        $this->assertEquals('00000126', @$this->message['message-id']);
-        $this->assertEquals('44123456789', @$this->message['to']);
-        $this->assertEquals('1.00', @$this->message['remaining-balance']);
-        $this->assertEquals('0.05', @$this->message['message-price']);
-        $this->assertEquals('23410', @$this->message['network']);
+        $this->assertEquals('00000126', $this->message['message-id']);
     }
 
-    public function testCanAccessAnyMessageAsArray(): void
+    public function testCannotAccessAnyMessageAsArray(): void
     {
+        $this->expectErrorMessage('Cannot use object of type Vonage\Message\Message as array');
+
         @$this->message->setResponse($this->getResponse('multi'));
 
-        $this->assertEquals('00000124', @$this->message[0]['message-id']);
-        $this->assertEquals('00000125', @$this->message[1]['message-id']);
-        $this->assertEquals('00000126', @$this->message[2]['message-id']);
-        $this->assertEquals('1.10', @$this->message[0]['remaining-balance']);
-        $this->assertEquals('1.05', @$this->message[1]['remaining-balance']);
-        $this->assertEquals('1.00', @$this->message[2]['remaining-balance']);
+        $this->assertEquals('00000124', $this->message[0]['message-id']);
+        $this->assertEquals('00000125', $this->message[1]['message-id']);
+        $this->assertEquals('00000126', $this->message[2]['message-id']);
+        $this->assertEquals('1.10', $this->message[0]['remaining-balance']);
+        $this->assertEquals('1.05', $this->message[1]['remaining-balance']);
+        $this->assertEquals('1.00', $this->message[2]['remaining-balance']);
     }
 
     /**

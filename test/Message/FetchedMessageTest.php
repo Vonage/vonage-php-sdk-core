@@ -45,20 +45,11 @@ class FetchedMessageTest extends VonageTestCase
         $this->message = null;
     }
 
-    public function testCanAccessLastMessageAsArray(): void
+    public function testCannotAccessLastMessageAsArray(): void
     {
-        @$this->message->setResponse($this->getResponse('search-outbound'));
+        $this->expectErrorMessage('Cannot use object of type Vonage\Message\Message as array');
 
-        $this->assertEquals('ACCEPTD', @$this->message['status']);
-        $this->assertEquals('02000000D912945A', @$this->message['message-id']);
-        $this->assertEquals('14845551212', @$this->message['to']);
-        $this->assertEquals('16105553980', @$this->message['from']);
-        $this->assertEquals('test with signature', @$this->message['body']);
-        $this->assertEquals('0.00570000', @$this->message['price']);
-        $this->assertEquals('2016-05-19 17:44:06', @$this->message['date-received']);
-        $this->assertEquals('1', @$this->message['error-code']);
-        $this->assertEquals('Unknown', @$this->message['error-code-label']);
-        $this->assertEquals('MT', @$this->message['type']);
+        $this->assertEquals('02000000D912945A', $this->message['message-id']);
     }
 
     /**

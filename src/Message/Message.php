@@ -11,13 +11,10 @@ declare(strict_types=1);
 
 namespace Vonage\Message;
 
-use ArrayAccess;
 use Countable;
 use DateTime;
 use Exception;
 use Iterator;
-use RuntimeException;
-use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 use Vonage\Entity\JsonResponseTrait;
 use Vonage\Entity\Psr7Trait;
@@ -25,18 +22,14 @@ use Vonage\Entity\RequestArrayTrait;
 
 use function array_merge;
 use function count;
-use function get_class;
-use function is_int;
 use function is_null;
-use function sprintf;
-use function trigger_error;
 
 /**
  * Abstract Message
  *
  * Extended by concrete message types (text, binary, etc).
  */
-class Message implements MessageInterface, Countable, ArrayAccess, Iterator, ArrayHydrateInterface
+class Message implements MessageInterface, Countable, Iterator, ArrayHydrateInterface
 {
     use Psr7Trait;
     use JsonResponseTrait;
@@ -359,98 +352,6 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
         }
 
         return static::TYPE;
-    }
-
-    /**
-     * @throws ClientException
-     * @throws Exception
-     */
-    public function offsetExists($offset): bool
-    {
-        trigger_error(
-            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
-            E_USER_DEPRECATED
-        );
-
-        $response = @$this->getResponseData();
-
-        if (isset($this->index)) {
-            $response = $response['items'][$this->index];
-        }
-
-        $request = @$this->getRequestData();
-        $dirty = @$this->getRequestData(false);
-
-        if (isset($response[$offset]) || isset($request[$offset]) || isset($dirty[$offset])) {
-            return true;
-        }
-
-        //provide access to split messages by virtual index
-        if (is_int($offset) && $offset < $this->count()) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * @throws ClientException
-     * @throws Exception
-     */
-    public function offsetGet($offset)
-    {
-        trigger_error(
-            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
-            E_USER_DEPRECATED
-        );
-
-        $response = @$this->getResponseData();
-
-        if (isset($this->index)) {
-            $response = $response['items'][$this->index];
-        }
-
-        $request = @$this->getRequestData();
-        $dirty = @$this->getRequestData(false);
-
-        if (isset($response[$offset])) {
-            return $response[$offset];
-        }
-
-        //provide access to split messages by virtual index, if there is data
-        if (isset($response['messages'])) {
-            if (is_int($offset) && isset($response['messages'][$offset])) {
-                return $response['messages'][$offset];
-            }
-
-            $index = $this->count() - 1;
-
-            if (isset($response['messages'][$index][$offset])) {
-                return $response['messages'][$index][$offset];
-            }
-        }
-
-        return $request[$offset] ?? $dirty[$offset] ?? null;
-    }
-
-    public function offsetSet($offset, $value): void
-    {
-        throw $this->getReadOnlyException($offset);
-    }
-
-    public function offsetUnset($offset): void
-    {
-        throw $this->getReadOnlyException($offset);
-    }
-
-    protected function getReadOnlyException($offset): RuntimeException
-    {
-        return new RuntimeException(
-            sprintf(
-                'can not modify `%s` using array access',
-                $offset
-            )
-        );
     }
 
     /**
