@@ -58,6 +58,8 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      * Create a verification with a number and brand, or the `request_id` of an existing verification.
      * Note that in the future, this constructor will accept only the ID as the first parameter.
      *
+     * @TODO v3.0 untangle this mess when removing deprecations
+     *
      * @param $idOrNumber
      * @param $brand
      * @param array $additional
@@ -65,7 +67,6 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
     public function __construct($idOrNumber, $brand = null, array $additional = [])
     {
         if (is_null($brand)) {
-            $this->dirty = false;
             $this->requestData['request_id'] = $idOrNumber;
         } else {
             trigger_error(
@@ -74,7 +75,6 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
                 E_USER_DEPRECATED
             );
 
-            $this->dirty = true;
             $this->requestData['number'] = $idOrNumber;
             $this->requestData['brand'] = $brand;
             $this->requestData = array_merge($this->requestData, $additional);

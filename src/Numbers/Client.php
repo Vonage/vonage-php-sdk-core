@@ -11,11 +11,10 @@ declare(strict_types=1);
 
 namespace Vonage\Numbers;
 
+use Hoa\Iterator\Filter;
 use Psr\Http\Client\ClientExceptionInterface;
 use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
-use Vonage\Client\ClientAwareInterface;
-use Vonage\Client\ClientAwareTrait;
 use Vonage\Client\Exception as ClientException;
 use Vonage\Client\Exception\ThrottleException;
 use Vonage\Entity\Filter\FilterInterface;
@@ -32,13 +31,8 @@ use function is_null;
 use function sleep;
 use function trigger_error;
 
-class Client implements ClientAwareInterface, APIClient
+class Client implements APIClient
 {
-    /**
-     * @deprecated This client no longer needs to be ClientAware
-     */
-    use ClientAwareTrait;
-
     /**
      * @var APIResource
      */
@@ -55,14 +49,6 @@ class Client implements ClientAwareInterface, APIClient
      */
     public function getApiResource(): APIResource
     {
-        if (is_null($this->api)) {
-            $api = new APIResource();
-            $api->setClient($this->getClient())
-                ->setBaseUrl($this->getClient()->getRestUrl())
-                ->setIsHAL(false);
-            $this->api = $api;
-        }
-
         return $this->api;
     }
 
@@ -76,29 +62,18 @@ class Client implements ClientAwareInterface, APIClient
      *
      * @todo Clean up the logic here, we are doing a lot of GET requests
      */
-    public function update($number, ?string $id = null): Number
+    public function update(Number $number, ?string $id = null): Number
     {
-        if (!$number instanceof Number) {
-            trigger_error(
-                'Passing a string to `Vonage\Number\Client::update()` is deprecated, ' .
-                'please pass a `Number` object instead',
-                E_USER_DEPRECATED
-            );
-        }
-
         if (!is_null($id)) {
             $update = $this->get($id);
         }
 
-        if ($number instanceof Number) {
-            $body = $number->toArray();
-            if (!isset($update) && !isset($body['country'])) {
-                $data = $this->get($number->getId());
-                $body['msisdn'] = $data->getId();
-                $body['country'] = $data->getCountry();
-            }
-        } else {
-            $body = $number;
+        $body = $number->toArray();
+
+        if (!isset($update) && !isset($body['country'])) {
+            $data = $this->get($number->getId());
+            $body['msisdn'] = $data->getId();
+            $body['country'] = $data->getCountry();
         }
 
         if (isset($update)) {
@@ -114,6 +89,9 @@ class Client implements ClientAwareInterface, APIClient
         // Yes, the following blocks of code are ugly. This will get refactored
         // in v3 where we no longer have to worry about multiple types of
         // inputs for $number
+
+        // some of the groundwork for depreciation removal has happened, but this is
+        // way too volatile to decipher right now
         if (isset($update) && ($number instanceof Number)) {
             try {
                 return $this->get($number);
@@ -200,23 +178,16 @@ class Client implements ClientAwareInterface, APIClient
      * Returns a set of numbers for the specified country
      *
      * @param string $country The two character country code in ISO 3166-1 alpha-2 format
-     * @param array $options Additional options, see https://developer.nexmo.com/api/numbers#getAvailableNumbers
+     * @param FilterInterface $options Additional options, see
+     * https://developer.nexmo.com/api/numbers#getAvailableNumbers
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
      */
-    public function searchAvailable(string $country, $options = []): array
+    public function searchAvailable(string $country, FilterInterface $options): array
     {
-        if (is_array($options) && !empty($options)) {
-            trigger_error(
-                'Passing an array to ' . get_class($this) . '::searchAvailable() is deprecated, ' .
-                'pass a FilterInterface instead',
-                E_USER_DEPRECATED
-            );
-        }
-
         // These are all optional parameters
         $possibleParameters = [
             'country' => 'string',
@@ -228,9 +199,7 @@ class Client implements ClientAwareInterface, APIClient
             'index' => 'integer'
         ];
 
-        if ($options instanceof FilterInterface) {
-            $options = $options->getQuery();
-        }
+        $options = $options->getQuery();
 
         $options = $this->parseParameters($possibleParameters, $options);
         $options = new AvailableNumbers($options);

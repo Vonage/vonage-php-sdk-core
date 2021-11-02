@@ -267,20 +267,6 @@ class VerificationTest extends VonageTestCase
     }
 
     /**
-     * @return string[]
-     */
-    public function getClientProxyMethods(): array
-    {
-        return [
-            ['cancel', 'cancel'],
-            ['trigger', 'trigger'],
-            ['sync', 'search'],
-            ['check', 'check', '1234'],
-            ['check', 'check', '1234', '192.168.1.1'],
-        ];
-    }
-
-    /**
      * Get the API response we'd expect for a call to the API. Verify API currently returns 200 all the time, so only
      * change between success / fail is body of the message.
      */
