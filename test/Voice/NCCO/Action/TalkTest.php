@@ -32,19 +32,17 @@ class TalkTest extends VonageTestCase
             'bargeIn' => 'false',
             'level' => '0',
             'loop' => '1',
-            'voiceName' => 'kimberly'
         ];
 
         $action = new Talk('Hello');
         $action->setBargeIn(false);
         $action->setLevel(0);
         $action->setLoop(1);
-        @$action->setVoiceName('kimberly');
 
         $this->assertSame($expected, $action->jsonSerialize());
     }
 
-    public function testCanSetLanguage()
+    public function testCanSetLanguage(): void
     {
         $expected = [
             'action' => 'talk',
