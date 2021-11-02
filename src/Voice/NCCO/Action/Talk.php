@@ -47,12 +47,6 @@ class Talk implements ActionInterface
      */
     protected $text;
 
-    /**
-     * @var string
-     * @deprecated Use $language and $languageStyle
-     */
-    protected $voiceName;
-
     public function __construct(string $text = null)
     {
         $this->text = $text;
@@ -61,7 +55,7 @@ class Talk implements ActionInterface
     /**
      * @param array{text: string, bargeIn?: bool, level?: float, loop?: int, voiceName?: string} $data
      */
-    public static function factory(string $text, array $data) : Talk
+    public static function factory(string $text, array $data): Talk
     {
         $talk = new Talk($text);
 
@@ -83,10 +77,6 @@ class Talk implements ActionInterface
             );
         }
 
-        if (array_key_exists('voiceName', $data)) {
-            $talk->setVoiceName($data['voiceName']);
-        }
-
         if (array_key_exists('language', $data)) {
             if (array_key_exists('style', $data)) {
                 $talk->setLanguage($data['language'], (int) $data['style']);
@@ -94,42 +84,34 @@ class Talk implements ActionInterface
                 $talk->setLanguage($data['language']);
             }
         }
-        
+
         return $talk;
     }
 
-    public function getBargeIn() : ?bool
+    public function getBargeIn(): ?bool
     {
         return $this->bargeIn;
     }
 
-    public function getLevel() : ?float
+    public function getLevel(): ?float
     {
         return $this->level;
     }
 
-    public function getLoop() : ?int
+    public function getLoop(): ?int
     {
         return $this->loop;
     }
 
-    public function getText() : string
+    public function getText(): string
     {
         return $this->text;
     }
 
     /**
-     * @deprecated use getLanguage() and getLanguageStyle() instead
-     */
-    public function getVoiceName() : ?string
-    {
-        return $this->voiceName;
-    }
-
-    /**
      * @return array{action: string, bargeIn: bool, level: float, loop: int, text: string, voiceName: string}
      */
-    public function jsonSerialize() : array
+    public function jsonSerialize(): array
     {
         return $this->toNCCOArray();
     }
@@ -137,7 +119,7 @@ class Talk implements ActionInterface
     /**
      * @return $this
      */
-    public function setBargeIn(bool $value) : self
+    public function setBargeIn(bool $value): self
     {
         $this->bargeIn = $value;
         return $this;
@@ -146,7 +128,7 @@ class Talk implements ActionInterface
     /**
      * @return $this
      */
-    public function setLevel(float $level) : self
+    public function setLevel(float $level): self
     {
         $this->level = $level;
 
@@ -156,7 +138,7 @@ class Talk implements ActionInterface
     /**
      * @return $this
      */
-    public function setLoop(int $times) : self
+    public function setLoop(int $times): self
     {
         $this->loop = $times;
 
@@ -164,32 +146,9 @@ class Talk implements ActionInterface
     }
 
     /**
-     * @deprecated Use setLanguage()
-     * @return $this
-     */
-    public function setVoiceName(string $name) : self
-    {
-        trigger_error(
-            'Voice Name is deprecated, please use setLanguage()',
-            E_USER_DEPRECATED
-        );
-
-        if ($this->getLanguage()) {
-            trigger_error(
-                'Language already set. Please use only Language or Voice Name',
-                E_USER_WARNING
-            );
-        }
-
-        $this->voiceName = $name;
-
-        return $this;
-    }
-
-    /**
      * @return array{action: string, bargeIn: bool, level: string, loop: string, text: string, voiceName: string, language: string, style: string}
      */
-    public function toNCCOArray() : array
+    public function toNCCOArray(): array
     {
         $data = [
             'action' => 'talk',
@@ -208,10 +167,6 @@ class Talk implements ActionInterface
             $data['loop'] = (string)$this->getLoop();
         }
 
-        if ($this->getVoiceName()) {
-            $data['voiceName'] = $this->getVoiceName();
-        }
-
         if ($this->getLanguage()) {
             $data['language'] = $this->getLanguage();
             $data['style'] = (string) $this->getLanguageStyle();
@@ -220,27 +175,20 @@ class Talk implements ActionInterface
         return $data;
     }
 
-    public function setLanguage(string $language, int $style = 0) : self
+    public function setLanguage(string $language, int $style = 0): self
     {
-        if ($this->getVoiceName()) {
-            trigger_error(
-                'Voice Name already set. Please use only Language or Voice Name',
-                E_USER_WARNING
-            );
-        }
-
         $this->language = $language;
         $this->languageStyle = $style;
 
         return $this;
     }
 
-    public function getLanguage() : ?string
+    public function getLanguage(): ?string
     {
         return $this->language;
     }
 
-    public function getLanguageStyle() : int
+    public function getLanguageStyle(): int
     {
         return $this->languageStyle;
     }
