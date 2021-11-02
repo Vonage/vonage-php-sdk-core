@@ -33,7 +33,6 @@ use function is_null;
 use function serialize;
 use function sprintf;
 use function trigger_error;
-use function unserialize;
 
 class Verification implements VerificationInterface, ArrayAccess, Serializable, ArrayHydrateInterface
 {
@@ -52,15 +51,6 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
     public const SUCCESSFUL = 'SUCCESSFUL';
     public const EXPIRED = 'EXPIRED';
     public const IN_PROGRESS = 'IN PROGRESS';
-
-    protected $dirty = true;
-
-    /**
-     * @deprecated Use the Vonage\Verify\Client instead to interact with the API
-     *
-     * @var Client;
-     */
-    protected $client;
 
     /**
      * Verification constructor.
@@ -89,158 +79,6 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
             $this->requestData['brand'] = $brand;
             $this->requestData = array_merge($this->requestData, $additional);
         }
-    }
-
-    /**
-     * Allow Verification to have actions.
-     *
-     * @param Client $client Verify Client
-     *
-     * @return $this
-     *
-     * @deprecated Use the Vonage\Verification\Client service object directly
-     */
-    public function setClient(Client $client): self
-    {
-        trigger_error(
-            'Setting a client directly on a Verification object is deprecated, ' .
-            'please use the Vonage\Verification\Client service object directly',
-            E_USER_DEPRECATED
-        );
-
-        $this->client = $client;
-
-        return $this;
-    }
-
-    /**
-     * @deprecated Use the Vonage\Verification\Client service object directly
-     */
-    protected function useClient(): ?Client
-    {
-        if (isset($this->client)) {
-            return $this->client;
-        }
-
-        throw new RuntimeException('can not act on the verification directly unless a verify client has been set');
-    }
-
-    /**
-     * Check if the code is correct. Unlike the method it proxies, an invalid code does not throw an exception.
-     *
-     * @param $code
-     * @param $ip
-     *
-     * @throws ClientException
-     * @throws RequestException
-     * @throws ServerException
-     * @throws ClientExceptionInterface
-     */
-    public function check($code, $ip = null): ?bool
-    {
-        trigger_error(
-            'Vonage\Verify\Verification::check() is deprecated, use Vonage\Verification\Client::check()',
-            E_USER_DEPRECATED
-        );
-        try {
-            if (null !== $this->useClient()) {
-                $this->useClient()->check($this, $code, $ip);
-
-                return true;
-            }
-
-            return false;
-        } catch (RequestException $e) {
-            $code = $e->getCode();
-
-            if ($code === 16 || $code === 17) {
-                return false;
-            }
-
-            throw $e;
-        }
-    }
-
-    /**
-     * Cancel the verification.
-     *
-     * @throws ClientExceptionInterface
-     * @throws ClientException
-     * @throws RequestException
-     * @throws ServerException
-     *
-     * @deprecated Use Vonage\Verification\Client::cancel()
-     */
-    public function cancel(): void
-    {
-        trigger_error(
-            'Vonage\Verify\Verification::cancel() is deprecated, use Vonage\Verification\Client::cancel()',
-            E_USER_DEPRECATED
-        );
-
-        if (null !== $this->useClient()) {
-            $this->useClient()->cancel($this);
-        }
-    }
-
-    /**
-     * Trigger the next verification.
-     *
-     * @throws ClientExceptionInterface
-     * @throws ClientException
-     * @throws RequestException
-     * @throws ServerException
-     *
-     * @deprecated Use Vonage\Verification\Client::trigger()
-     */
-    public function trigger(): void
-    {
-        trigger_error(
-            'Vonage\Verify\Verification::trigger() is deprecated, use Vonage\Verification\Client::trigger()',
-            E_USER_DEPRECATED
-        );
-
-        if (null !== $this->useClient()) {
-            $this->useClient()->trigger($this);
-        }
-    }
-
-    /**
-     * Update Verification from the API.
-     *
-     * @throws ClientExceptionInterface
-     * @throws ClientException
-     * @throws RequestException
-     * @throws ServerException
-     *
-     * @deprecated Use Vonage\Verification\Client::get() to retrieve the object directly
-     */
-    public function sync(): void
-    {
-        trigger_error(
-            'Vonage\Verify\Verification::sync() is deprecated, ' .
-            'use Vonage\Verification\Client::search() to get a new copy of this object',
-            E_USER_DEPRECATED
-        );
-
-        if (null !== $this->useClient()) {
-            $this->useClient()->search($this);
-        }
-    }
-
-    /**
-     * Check if the user provided data has sent to the API yet
-     *
-     * @deprecated This object will not hold this information in the future
-     */
-    public function isDirty(): bool
-    {
-        trigger_error(
-            'Vonage\Verify\Verification::isDirty() is deprecated',
-            E_USER_DEPRECATED
-        );
-
-        return $this->dirty;
     }
 
     /**

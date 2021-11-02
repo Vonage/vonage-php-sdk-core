@@ -500,27 +500,6 @@ class ClientTest extends VonageTestCase
         $this->assertEquals($expected, $agent);
     }
 
-    public function testSerializationProxiesVerify(): void
-    {
-        /** @var mixed $verify */
-        $verify = $this->prophesize(\Vonage\Verify\Client::class);
-        /** @var mixed $factory */
-        $factory = $this->prophesize(FactoryInterface::class);
-
-        $factory->hasApi('verify')->willReturn(true);
-        $factory->getApi('verify')->willReturn($verify->reveal());
-
-        $client = new Client($this->basic_credentials);
-        $client->setFactory($factory->reveal());
-
-        $verification = @new Verification('15554441212', 'test app');
-        $verify->serialize($verification)->willReturn('string data')->shouldBeCalled();
-        $verify->unserialize($verification)->willReturn($verification)->shouldBeCalled();
-
-        $this->assertEquals('string data', $client->serialize($verification));
-        $this->assertEquals($verification, $client->unserialize(serialize($verification)));
-    }
-
     /**
      * @dataProvider genericGetProvider
      *

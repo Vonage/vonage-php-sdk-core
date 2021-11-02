@@ -61,12 +61,6 @@ class VerificationTest extends VonageTestCase
         $this->existing = new Verification('44a5279b27dd4a638d614d265ad57a77');
     }
 
-    public function testExistingAndNew(): void
-    {
-        $this->assertTrue(@$this->verification->isDirty());
-        $this->assertFalse(@$this->existing->isDirty());
-    }
-
     public function testConstructDataAsObject(): void
     {
         $this->assertEquals($this->number, @$this->verification->getNumber());
@@ -240,97 +234,6 @@ class VerificationTest extends VonageTestCase
     }
 
     /**
-     * @dataProvider getClientProxyMethods
-     *
-     * @param $method
-     * @param $proxy
-     * @param null $code
-     * @param null $ip
-     */
-    public function testMethodsProxyClient($method, $proxy, $code = null, $ip = null): void
-    {
-        /** @var mixed $client */
-        $client = $this->prophesize(VerifyClient::class);
-
-        if (!is_null($ip)) {
-            $prediction = $client->$proxy($this->existing, $code, $ip);
-        } elseif (!is_null($code)) {
-            $prediction = $client->$proxy($this->existing, $code, Argument::cetera());
-        } else {
-            $prediction = $client->$proxy($this->existing);
-        }
-
-        $prediction->shouldBeCalled()->willReturn($this->existing);
-
-        @$this->existing->setClient($client->reveal());
-
-        if (!is_null($ip)) {
-            @$this->existing->$method($code, $ip);
-        } elseif (!is_null($code)) {
-            @$this->existing->$method($code);
-        } else {
-            @$this->existing->$method();
-        }
-    }
-
-    /**
-     * @throws ClientException
-     * @throws RequestException
-     * @throws ClientExceptionInterface
-     * @throws ServerException
-     */
-    public function testCheckReturnsBoolForInvalidCode(): void
-    {
-        /** @var mixed $client */
-        $client = $this->prophesize(VerifyClient::class);
-        $client->check($this->existing, '1234', Argument::cetera())->willReturn($this->existing);
-        $client->check($this->existing, '4321', Argument::cetera())->willThrow(new RequestException('dummy', 16));
-
-        @$this->existing->setClient($client->reveal());
-
-        @$this->assertFalse($this->existing->check('4321'));
-        @$this->assertTrue($this->existing->check('1234'));
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException
-     * @throws RequestException
-     * @throws ServerException
-     */
-    public function testCheckReturnsBoolForTooManyAttempts(): void
-    {
-        /** @var mixed $client */
-        $client = $this->prophesize(VerifyClient::class);
-        $client->check($this->existing, '1234', Argument::cetera())->willReturn($this->existing);
-        $client->check($this->existing, '4321', Argument::cetera())->willThrow(new RequestException('dummy', 17));
-
-        @$this->existing->setClient($client->reveal());
-
-        @$this->assertFalse($this->existing->check('4321'));
-        @$this->assertTrue($this->existing->check('1234'));
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException
-     * @throws RequestException
-     * @throws ServerException
-     */
-    public function testExceptionForCheckFail(): void
-    {
-        /** @var mixed $client */
-        $client = $this->prophesize(VerifyClient::class);
-        $client->check($this->existing, '1234', Argument::cetera())->willReturn($this->existing);
-        $client->check($this->existing, '4321', Argument::cetera())->willThrow(new RequestException('dummy', 6));
-
-        @$this->existing->setClient($client->reveal());
-
-        $this->expectException(RequestException::class);
-        @$this->existing->check('4321');
-    }
-
-    /**
      * @dataProvider getSerializeResponses
      *
      * @param $response
@@ -361,28 +264,6 @@ class VerificationTest extends VonageTestCase
             [$this->getResponse('search')],
             [$this->getResponse('start')],
         ];
-    }
-
-    /**
-     * @dataProvider getClientProxyMethods
-     *
-     * @param $method
-     * @param $proxy
-     * @param null $code
-     * @param null $ip
-     * @noinspection PhpUnusedParameterInspection
-     */
-    public function testMissingClientException($method, $proxy, $code = null, $ip = null): void
-    {
-        $this->expectException('RuntimeException');
-
-        if (!is_null($ip)) {
-            @$this->existing->$method($code, $ip);
-        } elseif (!is_null($code)) {
-            @$this->existing->$method($code);
-        } else {
-            @$this->existing->$method();
-        }
     }
 
     /**
