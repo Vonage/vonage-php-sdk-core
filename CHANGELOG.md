@@ -1,3 +1,10 @@
+# 2.9.3
+
+### Fixed
+
+* #295 - Removed the automatic unicode detection as this isn't implemented in any other SDK, and caused a client bug.
+* Changed Readme to include how to fire test suite from composer
+
 # 2.9.2
 
 ### Fixed
