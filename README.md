@@ -16,6 +16,7 @@ nexmo.com][signup].
  * [Installation](#installation)
  * [Usage](#usage)
  * [Examples](#examples)
+ * [Test Suite](#test-suite)
  * [Contributing](#contributing) 
 
 Installation
@@ -826,6 +827,24 @@ $client->getFactory()->set(\PSR\Log\LoggerInterface::class, $logger);
 ```
 
 **ENABLING DEBUGING LOGGING HAS THE POTENTIAL FOR LOGGING SENSITIVE INFORMATION, DO NOT ENABLE IN PRODUCTION**
+
+## Test Suite
+
+This library has a full test suite designed to be run with [PHPUnit](https://phpunit.de).
+
+To run, use composer:
+```
+composer test
+```
+
+> Please note: this test suite is large, and may require a considerable amount of memory
+> to run. If you encounter the "too many files open" error in MacOS or Linux, there is a hack to
+> increase the amount of file pointers permitted. Increase the amount of files that can be open by entering the
+> following on the command line (10240 is the maximum amount of pointers MacOS will open currently):
+>
+```
+ ulimit -n 10240
+```
 
 ## Contributing
 
