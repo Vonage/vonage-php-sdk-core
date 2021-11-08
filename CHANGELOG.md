@@ -1,3 +1,10 @@
+# 2.9.3
+
+### Fixed
+
+* Removed the automatic unicode detection to allow for intentional selection.
+* Changed Readme to include how to fire test suite from composer
+
 # 2.9.2
 
 ### Fixed
