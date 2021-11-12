@@ -24,10 +24,8 @@ use Vonage\Numbers\Filter\OwnedNumbers;
 use function array_key_exists;
 use function count;
 use function filter_var;
-use function get_class;
 use function is_null;
 use function sleep;
-use function trigger_error;
 
 class Client implements APIClient
 {
@@ -295,25 +293,9 @@ class Client implements APIClient
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      */
-    public function purchase($number, ?string $country = null): void
+    public function purchase(string $numberId, ?string $country = null): void
     {
-        // We cheat here and fetch a number using the API so that we have the country code which is required
-        // to make a purchase request
-        if (!$number instanceof Number) {
-            if (!$country) {
-                throw new ClientException\Exception(
-                    "You must supply a country in addition to a number to purchase a number"
-                );
-            }
-
-            trigger_error(
-                'Passing a Number object to Vonage\Number\Client::purchase() is being deprecated, ' .
-                'please pass a string MSISDN instead',
-                E_USER_DEPRECATED
-            );
-
-            $number = new Number($number, $country);
-        }
+        $number = new Number($numberId, $country);
 
         $body = [
             'msisdn' => $number->getMsisdn(),
@@ -326,30 +308,15 @@ class Client implements APIClient
     }
 
     /**
-     * @param $number
-     *
+     * @param string $numberId
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
      */
-    public function cancel($number, ?string $country = null): void
+    public function cancel(string $numberId): void
     {
-        // We cheat here and fetch a number using the API so that we have the country code which is required
-        // to make a cancel request
-        if (!$number instanceof Number) {
-            $number = $this->get($number);
-        } else {
-            trigger_error(
-                'Passing a Number object to Vonage\Number\Client::cancel() is being deprecated, ' .
-                'please pass a string MSISDN instead',
-                E_USER_DEPRECATED
-            );
-
-            if (!is_null($country)) {
-                $number = new Number($number, $country);
-            }
-        }
+        $number = $this->get($numberId);
 
         $body = [
             'msisdn' => $number->getMsisdn(),

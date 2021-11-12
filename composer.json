@@ -8,17 +8,13 @@
     {
       "name": "James Seconde",
       "email": "jim.seconde@vonage.com",
-      "role": "Developer"
+      "role": "PHP Developer Advocate"
     },
     {
-      "name": "Chris Tankersley",
-      "email": "chris.tankersley@vonage.com",
-      "role": "Developer"
+      "name": "Chris Tankersley"
     },
     {
-      "name": "Lorna Mitchell",
-      "email": "lorna.mitchell@vonage.com",
-      "role": "Developer"
+      "name": "Lorna Mitchell"
     }
   ],
   "require": {
