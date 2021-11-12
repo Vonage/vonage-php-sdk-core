@@ -22,13 +22,9 @@ use Vonage\Client\ClientAwareInterface;
 use Vonage\Client\ClientAwareTrait;
 use Vonage\Client\Exception as ClientException;
 
-use function get_class;
 use function is_array;
 use function is_null;
 use function is_string;
-use function serialize;
-use function trigger_error;
-use function unserialize;
 
 class Client implements ClientAwareInterface, APIClient
 {
@@ -69,29 +65,10 @@ class Client implements ClientAwareInterface, APIClient
      * @throws ClientException\Request
      * @throws ClientException\Server
      */
-    public function start($verification): Verification
+    public function start(Request $verification): Verification
     {
-        if (is_array($verification)) {
-            trigger_error(
-                'Passing an array to Vonage\Verification\Client::start() is deprecated, ' .
-                'please pass a Vonage\Verify\Request object instead',
-                E_USER_DEPRECATED
-            );
-        } elseif (is_string($verification)) {
-            trigger_error(
-                'Passing a string to Vonage\Verification\Client::start() is deprecated, ' .
-                'please pass a Vonage\Verify\Request object instead',
-                E_USER_DEPRECATED
-            );
-        }
-
-        if ($verification instanceof Request) {
-            // Reformat to an array to work with v2.x code, but prep for v3.0.0
-            $verification = $verification->toArray();
-        }
-
         $api = $this->getApiResource();
-        $verification = $this->createVerification($verification);
+        $verification = $this->createVerification($verification->toArray());
         $response = $api->create($verification->toArray(), '/json');
 
         $this->processReqRes($verification, $api->getLastRequest(), $api->getLastResponse(), true);
@@ -118,25 +95,17 @@ class Client implements ClientAwareInterface, APIClient
     }
 
     /**
-     * @param string|Verification $verification
+     * @param string $verificationId
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
      */
-    public function search($verification)
+    public function search(string $verificationId)
     {
-        if ($verification instanceof Verification) {
-            trigger_error(
-                'Passing a Verification object to Vonage\Verification\Client::search() is deprecated, ' .
-                'please pass a string ID instead',
-                E_USER_DEPRECATED
-            );
-        }
-
         $api = $this->getApiResource();
-        $verification = $this->createVerification($verification);
+        $verification = $this->createVerification($verificationId);
 
         $params = [
             'request_id' => $verification->getRequestId()
@@ -149,73 +118,45 @@ class Client implements ClientAwareInterface, APIClient
     }
 
     /**
-     * @param $verification
+     * @param string $verificationId
      *
+     * @return Verification
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
      */
-    public function cancel($verification): Verification
+    public function cancel(string $verificationId): Verification
     {
-        if ($verification instanceof Verification) {
-            trigger_error(
-                'Passing a Verification object to Vonage\Verification\Client::cancel() is deprecated, ' .
-                'please pass a string ID instead',
-                E_USER_DEPRECATED
-            );
-        }
-
-        return $this->control($verification, 'cancel');
+        return $this->control($verificationId, 'cancel');
     }
 
     /**
-     * @param $verification
+     * @param string $verificationId
      *
+     * @return Verification
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
      */
-    public function trigger($verification): Verification
+    public function trigger(string $verificationId): Verification
     {
-        if ($verification instanceof Verification) {
-            trigger_error(
-                'Passing a Verification object to Vonage\Verification\Client::trigger() is deprecated, ' .
-                'please pass a string ID instead',
-                E_USER_DEPRECATED
-            );
-        }
-
-        return $this->control($verification, 'trigger_next_event');
+        return $this->control($verificationId, 'trigger_next_event');
     }
 
     /**
-     * @param string|array|Verification $verification
+     * @param string $verificationId
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
      */
-    public function check($verification, string $code, string $ip = null): Verification
+    public function check(string $verificationId, string $code, string $ip = null): Verification
     {
-        if (is_array($verification)) {
-            trigger_error(
-                'Passing an array for parameter 1 to Vonage\Verification\Client::check() is deprecated, ' .
-                'please pass a string ID instead',
-                E_USER_DEPRECATED
-            );
-        } elseif ($verification instanceof Verification) {
-            trigger_error(
-                'Passing a Verification object for parameter 1 to Vonage\Verification\Client::check() is deprecated, ' .
-                'please pass a string ID instead',
-                E_USER_DEPRECATED
-            );
-        }
-
         $api = $this->getApiResource();
-        $verification = $this->createVerification($verification);
+        $verification = $this->createVerification($verificationId);
         $params = [
             'request_id' => $verification->getRequestId(),
             'code' => $code
@@ -233,42 +174,7 @@ class Client implements ClientAwareInterface, APIClient
     }
 
     /**
-     * @deprecated Serialize the Verification object directly instead
-     */
-    public function serialize(Verification $verification): string
-    {
-        trigger_error(
-            get_class($this) . '::serialize() is deprecated, serialize the Verification object directly',
-            E_USER_DEPRECATED
-        );
-
-        return serialize($verification);
-    }
-
-    /**
-     * @param $verification
-     */
-    public function unserialize($verification): Verification
-    {
-        trigger_error(
-            get_class($this) . '::unserialize() is deprecated, unserialize the Verification object directly',
-            E_USER_DEPRECATED
-        );
-
-        if (is_string($verification)) {
-            $verification = unserialize($verification, [Verification::class]);
-        }
-
-        if (!($verification instanceof Verification)) {
-            throw new InvalidArgumentException('expected verification object or serialize verification object');
-        }
-
-        @$verification->setClient($this);
-        return $verification;
-    }
-
-    /**
-     * @param string|array|Verification $verification
+     * @param string $verificationId
      * @param string $cmd Next command to execute, must be `cancel` or `trigger_next_event`
      *
      * @throws ClientExceptionInterface
@@ -276,27 +182,13 @@ class Client implements ClientAwareInterface, APIClient
      * @throws ClientException\Request
      * @throws ClientException\Server
      */
-    protected function control($verification, string $cmd): Verification
+    protected function control(string $verificationId, string $cmd): Verification
     {
-        if (is_array($verification)) {
-            trigger_error(
-                'Passing an array for parameter 1 to Vonage\Verification\Client::control() is deprecated,' .
-                'please pass a string ID instead',
-                E_USER_DEPRECATED
-            );
-        } elseif ($verification instanceof Verification) {
-            trigger_error(
-                'Passing a Verification object for parameter 1 to Vonage\Verification\Client::control() ' .
-                'is deprecated, please pass a string ID instead',
-                E_USER_DEPRECATED
-            );
-        }
-
         $api = $this->getApiResource();
-        $verification = $this->createVerification($verification);
+        $verification = $this->createVerification($verificationId);
 
         $params = [
-            'request_id' => $verification->getRequestId(),
+            'request_id' => $verificationId->getRequestId(),
             'cmd' => $cmd
         ];
 
