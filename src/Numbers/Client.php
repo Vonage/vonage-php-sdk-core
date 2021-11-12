@@ -11,7 +11,6 @@ declare(strict_types=1);
 
 namespace Vonage\Numbers;
 
-use Hoa\Iterator\Filter;
 use Psr\Http\Client\ClientExceptionInterface;
 use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
@@ -26,7 +25,6 @@ use function array_key_exists;
 use function count;
 use function filter_var;
 use function get_class;
-use function is_array;
 use function is_null;
 use function sleep;
 use function trigger_error;
@@ -121,31 +119,16 @@ class Client implements APIClient
     /**
      * Returns a number
      *
-     * @param $number Number to fetch, deprecating passing a `Number` object
+     * @param string $number Number to fetch
      *
+     * @return Number
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
      */
-    public function get($number = null): Number
+    public function get(string $number): Number
     {
-        if (is_null($number)) {
-            trigger_error(
-                'Calling Vonage\Numbers\Client::get() without a parameter is deprecated, ' .
-                'please use `searchOwned()` or `searchAvailable()` instead',
-                E_USER_DEPRECATED
-            );
-        }
-
-        if ($number instanceof Number) {
-            trigger_error(
-                'Calling Vonage\Numbers\Client::get() with a `Number` object is deprecated, ' .
-                'please pass a string MSISDN instead',
-                E_USER_DEPRECATED
-            );
-        }
-
         $items = $this->searchOwned($number);
 
         // This is legacy behaviour, so we need to keep it even though
@@ -155,23 +138,6 @@ class Client implements APIClient
         }
 
         return $items[0];
-    }
-
-    /**
-     * @param null|string|Number $number
-     *
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
-     *
-     * @return array []Number
-     *
-     * @deprecated Use `searchOwned` instead
-     */
-    public function search($number = null): array
-    {
-        return $this->searchOwned($number);
     }
 
     /**
@@ -220,36 +186,18 @@ class Client implements APIClient
     /**
      * Returns a set of numbers for the specified country
      *
-     * @param $number
+     * @param FilterInterface|null $number
      *
+     * @return array
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
      */
-    public function searchOwned($number = null, array $options = []): array
+    public function searchOwned(FilterInterface $number = null): array
     {
-        if (!empty($options)) {
-            trigger_error(
-                'Passing a array for Parameter 2 into ' . get_class($this) . '::searchOwned() ' .
-                'is deprecated, please pass a FilterInterface as the first parameter only',
-                E_USER_DEPRECATED
-            );
-        }
-
         if ($number !== null) {
-            if ($number instanceof FilterInterface) {
-                $options = $number->getQuery() + $options;
-            } elseif ($number instanceof Number) {
-                trigger_error(
-                    'Passing a Number object into ' . get_class($this) . '::searchOwned() is deprecated, ' .
-                    'please pass a FilterInterface',
-                    E_USER_DEPRECATED
-                );
-                $options['pattern'] = (string)$number->getId();
-            } else {
-                $options['pattern'] = (string)$number;
-            }
+            $options = $number->getQuery();
         }
 
         // These are all optional parameters
