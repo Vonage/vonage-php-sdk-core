@@ -14,6 +14,7 @@ namespace VonageTest\Verify;
 use DateTime;
 use Exception;
 use Laminas\Diactoros\Response;
+use Vonage\Verify\Request;
 use VonageTest\VonageTestCase;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
@@ -57,7 +58,7 @@ class VerificationTest extends VonageTestCase
      */
     public function setUp(): void
     {
-        $this->verification = @new Verification($this->number, $this->brand);
+        $this->verification = new Verification(new Request($this->number, $this->brand));
         $this->existing = new Verification('44a5279b27dd4a638d614d265ad57a77');
     }
 
@@ -83,7 +84,7 @@ class VerificationTest extends VonageTestCase
     }
 
     /**
-     * @dataProvider optionalValues
+     * @dataProvider optionalRequestValues
      *
      * @param $value
      * @param $setter
@@ -99,9 +100,10 @@ class VerificationTest extends VonageTestCase
             $normal = $value;
         }
 
-        $verification = @new Verification('14845552121', 'brand', [
-            $param => $normal
-        ]);
+        $request = new Request('14845552121', 'brand');
+        $request->{$setter}($normal);
+
+        $verification = new Verification($request);
 
         $params = $verification->getRequestData(false);
 
@@ -110,41 +112,53 @@ class VerificationTest extends VonageTestCase
     }
 
     /**
-     * @dataProvider optionalValues
+     * @dataProvider optionalVerificationValues
      *
      * @param $value
      * @param $setter
      * @param $param
-     * @param null $normal
      *
      * @throws ClientException
      */
-    public function testCanSetOptionalValues($value, $setter, $param, $normal = null): void
+    public function testCanSetOptionalValues($value, $setter, $param): void
     {
-        if (is_null($normal)) {
-            $normal = $value;
-        }
+        $this->verification->{$setter}($value);
 
-        $this->verification->$setter($value);
         $params = @$this->verification->getRequestData(false);
 
-        $this->assertEquals($normal, $params[$param]);
-        $this->assertEquals($normal, @$this->verification[$param]);
+        $this->assertEquals($value, $params[$param]);
+        $this->assertEquals($value, @$this->verification[$param]);
     }
 
     /**
      * @return string[]
      */
-    public function optionalValues(): array
+    public function optionalVerificationValues(): array
+    {
+        return [
+            ['us', 'setCountry', 'country'],
+            ['09sdf09sg09', 'setSenderId', 'sender_id'],
+            [6, 'setCodeLength', 'code_length'],
+            ['en-us', 'setLanguage', 'lg'],
+            ['landline', 'setRequireType', 'require_type'],
+            [400, 'setPinExpiry', 'pin_expiry'],
+            [200, 'setWaitTime', 'next_event_wait'],
+            [1, 'setWorkflowId', 'workflow_id'],
+        ];
+    }
+
+    /**
+     * @return string[]
+     */
+    public function optionalRequestValues(): array
     {
         return [
             ['us', 'setCountry', 'country'],
             ['16105551212', 'setSenderId', 'sender_id'],
-            ['6', 'setCodeLength', 'code_length'],
-            ['en-us', 'setLanguage', 'lg'],
-            ['landline', 'setRequireType', 'require_type'],
-            ['400', 'setPinExpiry', 'pin_expiry'],
-            ['200', 'setWaitTime', 'next_event_wait'],
+            [6, 'setCodeLength', 'code_length'],
+            ['en-us', 'setLocale', 'lg'],
+            [400, 'setPinExpiry', 'pin_expiry'],
+            [200, 'setNextEventWait', 'next_event_wait'],
         ];
     }
 

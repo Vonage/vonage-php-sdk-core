@@ -24,9 +24,6 @@ use Vonage\Entity\JsonResponseTrait;
 use Vonage\Entity\Psr7Trait;
 use Vonage\Entity\RequestArrayTrait;
 
-use function array_merge;
-use function get_class;
-use function is_null;
 use function serialize;
 use function sprintf;
 use function trigger_error;
@@ -41,6 +38,8 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
     use RequestArrayTrait;
     use JsonResponseTrait;
 
+    protected $id;
+
     /**
      * Possible verification statuses.
      */
@@ -53,28 +52,16 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      * Verification constructor.
      *
      * Create a verification with a number and brand, or the `request_id` of an existing verification.
-     * Note that in the future, this constructor will accept only the ID as the first parameter.
+     * You can pass in a request ID or an existing Verify\Request object.
      *
-     * @TODO v3.0 untangle this mess when removing deprecations
-     *
-     * @param $idOrNumber
-     * @param $brand
-     * @param array $additional
+     * @param string|Request $idOrRequest
      */
-    public function __construct($idOrNumber, $brand = null, array $additional = [])
+    public function __construct($idOrRequest)
     {
-        if (is_null($brand)) {
-            $this->requestData['request_id'] = $idOrNumber;
+        if (!$idOrRequest instanceof Request) {
+            $this->requestData['request_id'] = $idOrRequest;
         } else {
-            trigger_error(
-                'Using ' . get_class($this) . ' for starting a verification is deprecated, ' .
-                'please use Vonage\Verify\Request instead',
-                E_USER_DEPRECATED
-            );
-
-            $this->requestData['number'] = $idOrNumber;
-            $this->requestData['brand'] = $brand;
-            $this->requestData = array_merge($this->requestData, $additional);
+            $this->requestData = $idOrRequest->toArray();
         }
     }
 
