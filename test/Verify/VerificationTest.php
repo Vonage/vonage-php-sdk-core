@@ -64,7 +64,7 @@ class VerificationTest extends VonageTestCase
 
     public function testConstructDataAsObject(): void
     {
-        $this->assertEquals($this->number, @$this->verification->getNumber());
+        $this->assertEquals($this->number, $this->verification->getNumber());
     }
 
     /**
@@ -79,8 +79,10 @@ class VerificationTest extends VonageTestCase
 
     public function testConstructDataAsArray(): void
     {
-        $this->assertEquals($this->number, @$this->verification['number']);
-        $this->assertEquals($this->brand, @$this->verification['brand']);
+        $this->expectErrorMessage('Cannot use object of type Vonage\Verify\Verification as array');
+
+        $this->assertEquals($this->number, $this->verification['number']);
+        $this->assertEquals($this->brand, $this->verification['brand']);
     }
 
     /**
@@ -108,7 +110,6 @@ class VerificationTest extends VonageTestCase
         $params = $verification->getRequestData(false);
 
         $this->assertEquals($normal, $params[$param]);
-        $this->assertEquals($normal, @$verification[$param]);
     }
 
     /**
@@ -127,7 +128,6 @@ class VerificationTest extends VonageTestCase
         $params = @$this->verification->getRequestData(false);
 
         $this->assertEquals($value, $params[$param]);
-        $this->assertEquals($value, @$this->verification[$param]);
     }
 
     /**
@@ -167,11 +167,11 @@ class VerificationTest extends VonageTestCase
      */
     public function testRequestId(): void
     {
-        $this->assertEquals('44a5279b27dd4a638d614d265ad57a77', @$this->existing->getRequestId());
+        $this->assertEquals('44a5279b27dd4a638d614d265ad57a77', $this->existing->getRequestId());
 
         @$this->verification->setResponse($this->getResponse('search'));
 
-        $this->assertEquals('44a5279b27dd4a638d614d265ad57a77', @$this->verification->getRequestId());
+        $this->assertEquals('44a5279b27dd4a638d614d265ad57a77', $this->verification->getRequestId());
     }
 
     /**
@@ -181,16 +181,17 @@ class VerificationTest extends VonageTestCase
      */
     public function testSearchParamsAsObject(): void
     {
-        @$this->existing->setResponse($this->getResponse('search'));
+        $searchResponse = json_decode($this->getResponse('search')->getBody()->getContents(), true);
+        $this->existing->fromArray($searchResponse);
 
-        $this->assertEquals('6cff3913', @$this->existing->getAccountId());
-        $this->assertEquals('14845551212', @$this->existing->getNumber());
-        $this->assertEquals('verify', @$this->existing->getSenderId());
-        $this->assertEquals(new DateTime("2016-05-15 03:55:05"), @$this->existing->getSubmitted());
+        $this->assertEquals('6cff3913', $this->existing->getAccountId());
+        $this->assertEquals('14845551212', $this->existing->getNumber());
+        $this->assertEquals('verify', $this->existing->getSenderId());
+        $this->assertEquals(new DateTime("2016-05-15 03:55:05"), $this->existing->getSubmitted());
         $this->assertEquals(null, @$this->existing->getFinalized());
-        $this->assertEquals(new DateTime("2016-05-15 03:55:05"), @$this->existing->getFirstEvent());
-        $this->assertEquals(new DateTime("2016-05-15 03:57:12"), @$this->existing->getLastEvent());
-        $this->assertEquals('0.10000000', @$this->existing->getPrice());
+        $this->assertEquals(new DateTime("2016-05-15 03:55:05"), $this->existing->getFirstEvent());
+        $this->assertEquals(new DateTime("2016-05-15 03:57:12"), $this->existing->getLastEvent());
+        $this->assertEquals('0.10000000', $this->existing->getPrice());
         $this->assertEquals('EUR', @$this->existing->getCurrency());
         $this->assertEquals(Verification::FAILED, @$this->existing->getStatus());
 
@@ -228,6 +229,8 @@ class VerificationTest extends VonageTestCase
      */
     public function testResponseDataAsArray($type): void
     {
+        $this->expectErrorMessage('Cannot use object of type Vonage\Verify\Verification as array');
+
         @$this->existing->setResponse($this->getResponse($type));
         $json = $this->existing->getResponseData();
 
@@ -244,39 +247,6 @@ class VerificationTest extends VonageTestCase
         return [
             ['search'],
             ['start']
-        ];
-    }
-
-    /**
-     * @dataProvider getSerializeResponses
-     *
-     * @param $response
-     *
-     * @throws Exception
-     */
-    public function testSerialize($response): void
-    {
-        @$this->existing->setResponse($response);
-        @$this->existing->getResponse()->getBody()->rewind();
-        @$this->existing->getResponse()->getBody()->getContents();
-
-        $serialized = serialize($this->existing);
-        $unserialized = unserialize($serialized, [Verification::class]);
-
-        $this->assertInstanceOf(get_class($this->existing), $unserialized);
-        $this->assertEquals(@$this->existing->getAccountId(), @$unserialized->getAccountId());
-        $this->assertEquals(@$this->existing->getStatus(), @$unserialized->getStatus());
-        $this->assertEquals(@$this->existing->getResponseData(), @$unserialized->getResponseData());
-    }
-
-    /**
-     * @return Response[]
-     */
-    public function getSerializeResponses(): array
-    {
-        return [
-            [$this->getResponse('search')],
-            [$this->getResponse('start')],
         ];
     }
 

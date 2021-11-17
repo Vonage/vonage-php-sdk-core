@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace Vonage\Verify;
 
+use DateTime;
+use Exception;
 use InvalidArgumentException;
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 
@@ -74,6 +76,16 @@ class Request implements ArrayHydrateInterface
      * @var int
      */
     protected $workflowId = 1;
+
+    /**
+     * @var DateTime
+     */
+    protected $firstEventDate;
+
+    /**
+     * @var DateTime
+     */
+    protected $lastEventDate;
 
     public function __construct(string $number, string $brand, int $workflowId = 1)
     {
@@ -237,6 +249,14 @@ class Request implements ArrayHydrateInterface
             $this->setNextEventWait($data['next_event_wait']);
         }
 
+        if (array_key_exists('first_event_date', $data)) {
+            $this->setFirstEventDate($data['first_event_date']);
+        }
+
+        if (array_key_exists('last_event_date', $data)) {
+            $this->setLastEventDate($data['last_event_date']);
+        }
+
         if (array_key_exists('workflow_id', $data)) {
             $this->setWorkflowId($data['workflow_id']);
         }
@@ -259,7 +279,9 @@ class Request implements ArrayHydrateInterface
             'code_length' => $this->getCodeLength(),
             'pin_expiry' => $this->getPinExpiry(),
             'next_event_wait' => $this->getNextEventWait(),
-            'workflow_id' => $this->getWorkflowId()
+            'first_event_date' => $this->getFirstEventDate(),
+            'last_event_date' => $this->getLastEventDate(),
+            'workflow_id' => $this->getWorkflowId(),
         ];
 
         if ($this->getCountry()) {
@@ -271,5 +293,35 @@ class Request implements ArrayHydrateInterface
         }
 
         return $data;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function setFirstEventDate($firstEventDate): Request
+    {
+        $this->firstEventDate = new DateTime($firstEventDate);
+
+        return $this;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function setLastEventDate($lastEventDate): Request
+    {
+        $this->lastEventDate = new DateTime($lastEventDate);
+
+        return $this;
+    }
+
+    public function getFirstEventDate(): ?DateTime
+    {
+        return $this->firstEventDate;
+    }
+
+    public function getLastEventDate(): ?DateTime
+    {
+        return $this->lastEventDate;
     }
 }

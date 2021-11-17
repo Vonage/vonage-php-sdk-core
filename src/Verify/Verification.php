@@ -11,24 +11,19 @@ declare(strict_types=1);
 
 namespace Vonage\Verify;
 
-use ArrayAccess;
+use Cassandra\Date;
 use DateTime;
 use Exception;
 use Laminas\Diactoros\Request\Serializer as RequestSerializer;
 use Laminas\Diactoros\Response\Serializer as ResponseSerializer;
-use RuntimeException;
-use Serializable;
-use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 use Vonage\Entity\JsonResponseTrait;
 use Vonage\Entity\Psr7Trait;
 use Vonage\Entity\RequestArrayTrait;
 
 use function serialize;
-use function sprintf;
-use function trigger_error;
 
-class Verification implements VerificationInterface, ArrayAccess, Serializable, ArrayHydrateInterface
+class Verification implements VerificationInterface, ArrayHydrateInterface
 {
     use Psr7Trait;
 
@@ -38,7 +33,31 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
     use RequestArrayTrait;
     use JsonResponseTrait;
 
-    protected $id;
+    protected $requestId;
+
+    protected $accountId;
+
+    protected $number;
+
+    protected $senderId;
+
+    protected $dateSubmitted;
+
+    protected $dateFinalized;
+
+    protected $firstEventDate;
+
+    protected $lastEventDate;
+
+    protected $price;
+
+    protected $currency;
+
+    protected $status;
+
+    protected $country;
+
+    protected $checks;
 
     /**
      * Possible verification statuses.
@@ -51,8 +70,7 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
     /**
      * Verification constructor.
      *
-     * Create a verification with a number and brand, or the `request_id` of an existing verification.
-     * You can pass in a request ID or an existing Verify\Request object.
+     * Create a verification with a request ID or Request Object
      *
      * @param string|Request $idOrRequest
      */
@@ -76,13 +94,13 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      *
      * @param $country
      *
-     * @throws Exception
-     *
-     * @return RequestArrayTrait|Verification
+     * @return Verification
      */
-    public function setCountry($country)
+    public function setCountry($country): Verification
     {
-        return $this->setRequestData('country', $country);
+        $this->setRequestDataProxyKey('country', $country);
+
+        return $this;
     }
 
     /**
@@ -95,13 +113,13 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      *
      * @param $id
      *
-     * @throws Exception
-     *
-     * @return RequestArrayTrait|Verification
+     * @return Verification
      */
-    public function setSenderId($id)
+    public function setSenderId($id): Verification
     {
-        return $this->setRequestData('sender_id', $id);
+        $this->requestData['sender_id'] = $id;
+
+        return $this;
     }
 
     /**
@@ -113,13 +131,13 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      *
      * @param $length
      *
-     * @throws Exception
-     *
-     * @return RequestArrayTrait|Verification
+     * @return Verification
      */
-    public function setCodeLength($length)
+    public function setCodeLength($length): Verification
     {
-        return $this->setRequestData('code_length', $length);
+        $this->requestData['code_length'] = $length;
+
+        return $this;
     }
 
     /**
@@ -133,13 +151,13 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      *
      * @param $language
      *
-     * @throws Exception
-     *
-     * @return RequestArrayTrait|Verification
+     * @return Verification
      */
-    public function setLanguage($language)
+    public function setLanguage($language): Verification
     {
-        return $this->setRequestData('lg', $language);
+        $this->requestData['lg'] = $language;
+
+        return $this;
     }
 
     /**
@@ -156,13 +174,13 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      *
      * @param $type
      *
-     * @throws Exception
-     *
-     * @return RequestArrayTrait|Verification
+     * @return Verification
      */
-    public function setRequireType($type)
+    public function setRequireType($type): Verification
     {
-        return $this->setRequestData('require_type', $type);
+        $this->requestData['require_type'] = $type;
+
+        return $this;
     }
 
     /**
@@ -176,13 +194,13 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      *
      * @param $time
      *
-     * @throws Exception
-     *
-     * @return RequestArrayTrait|Verification
+     * @return Verification
      */
-    public function setPinExpiry($time)
+    public function setPinExpiry($time): Verification
     {
-        return $this->setRequestData('pin_expiry', $time);
+        $this->requestData['pin_expiry'] = $time;
+
+        return $this;
     }
 
     /**
@@ -195,13 +213,13 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      *
      * @param $time
      *
-     * @throws Exception
-     *
-     * @return RequestArrayTrait|Verification
+     * @return Verification
      */
-    public function setWaitTime($time)
+    public function setWaitTime($time): Verification
     {
-        return $this->setRequestData('next_event_wait', $time);
+        $this->requestData['next_event_wait'] = $time;
+
+        return $this;
     }
 
     /**
@@ -213,13 +231,13 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      *
      * @param $workflow_id
      *
-     * @throws Exception
-     *
-     * @return RequestArrayTrait|Verification
+     * @return Verification
      */
-    public function setWorkflowId($workflow_id)
+    public function setWorkflowId($workflow_id): Verification
     {
-        return $this->setRequestData('workflow_id', $workflow_id);
+        $this->requestData['workflow_id'] = $workflow_id;
+
+        return $this;
     }
 
     /**
@@ -227,7 +245,7 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      */
     public function getRequestId()
     {
-        return $this->proxyArrayAccess('request_id');
+        return $this->requestData['request_id'];
     }
 
     /**
@@ -237,7 +255,7 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      */
     public function getNumber()
     {
-        return $this->proxyArrayAccess('number');
+        return $this->requestData['number'];
     }
 
     /**
@@ -249,7 +267,7 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      */
     public function getAccountId(): ?string
     {
-        return $this->proxyArrayAccess('account_id');
+        return $this->getRequestDataProxyKey('account_id');
     }
 
     /**
@@ -260,7 +278,7 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      */
     public function getSenderId()
     {
-        return $this->proxyArrayAccess('sender_id');
+        return $this->requestData['sender_id'];
     }
 
     /**
@@ -272,7 +290,7 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      */
     public function getPrice()
     {
-        return $this->proxyArrayAccess('price');
+        return $this->requestData['price'];
     }
 
     /**
@@ -284,7 +302,7 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      */
     public function getCurrency()
     {
-        return $this->proxyArrayAccess('currency');
+        return $this->requestData['currency'];
     }
 
     /**
@@ -296,7 +314,7 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      */
     public function getStatus()
     {
-        return $this->proxyArrayAccess('status');
+        return $this->requestData['status'];
     }
 
     /**
@@ -309,7 +327,8 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      */
     public function getChecks()
     {
-        $checks = $this->proxyArrayAccess('checks');
+        $checks = $this->requestData['checks'];
+
         if (!$checks) {
             return [];
         }
@@ -330,9 +349,9 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      *
      * @see \Vonage\Verify\Client::search();
      */
-    public function getSubmitted()
+    public function getSubmitted(): DateTime
     {
-        return $this->proxyArrayAccessDate('date_submitted');
+        return new DateTime($this->getRequestDataProxyKey('date_submitted'));
     }
 
     /**
@@ -346,7 +365,7 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      */
     public function getFinalized()
     {
-        return $this->proxyArrayAccessDate('date_finalized');
+        return $this->requestData['date_finalized'];
     }
 
     /**
@@ -358,9 +377,9 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      *
      * @see \Vonage\Verify\Client::search();
      */
-    public function getFirstEvent()
+    public function getFirstEvent(): DateTime
     {
-        return $this->proxyArrayAccessDate('first_event_date');
+        return new DateTime($this->getRequestDataProxyKey('first_event_date'));
     }
 
     /**
@@ -372,133 +391,21 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
      *
      * @see \Vonage\Verify\Client::search();
      */
-    public function getLastEvent()
+    public function getLastEvent(): DateTime
     {
-        return $this->proxyArrayAccessDate('last_event_date');
+        return new DateTime($this->getRequestDataProxyKey('last_event_date'));
     }
 
-    /**
-     * Proxies `proxyArrayAccess()` and returns a DateTime if the parameter is found.
-     *
-     * @param $param
-     *
-     * @throws Exception
-     */
-    protected function proxyArrayAccessDate($param): ?DateTime
+    private function getRequestDataProxyKey(string $key)
     {
-        $date = $this->proxyArrayAccess($param);
-
-        if ($date) {
-            return new DateTime($date);
-        }
-
-        return null;
+        return $this->requestData[$key];
     }
 
-    /**
-     * Simply proxies array access to check for a parameter in the response, request, or user provided data.
-     *
-     * @param $param
-     *
-     * @return mixed|null
-     */
-    protected function proxyArrayAccess($param)
+    private function setRequestDataProxyKey(string $key, $value): Verification
     {
-        $value = @$this[$param];
+        $this->requestData[$key] = $value;
 
-        if (isset($value)) {
-            return @$this[$param];
-        }
-
-        return null;
-    }
-
-    /**
-     * Allow the object to access the data from the API response, a sent API request, or the user set data that the
-     * request will be created from - in that order.
-     *
-     * @throws ClientException
-     * @throws Exception
-     */
-    public function offsetExists($offset): bool
-    {
-        trigger_error(
-            'Using Vonage\Verify\Verification as an array is deprecated',
-            E_USER_DEPRECATED
-        );
-
-        $response = $this->getResponseData();
-        $request = $this->getRequestData();
-        $dirty = $this->requestData;
-
-        return isset($response[$offset]) || isset($request[$offset]) || isset($dirty[$offset]);
-    }
-
-    /**
-     * Allow the object to access the data from the API response, a sent API request, or the user set data that the
-     * request will be created from - in that order.
-     *
-     * @throws ClientException
-     * @throws Exception
-     *
-     * @return mixed|null
-     */
-    public function offsetGet($offset)
-    {
-        trigger_error(
-            'Using Vonage\Verify\Verification as an array is deprecated',
-            E_USER_DEPRECATED
-        );
-
-        $response = $this->getResponseData();
-        $request = $this->getRequestData();
-        $dirty = $this->requestData;
-
-        return $response[$offset] ?? $request[$offset] ?? $dirty[$offset] ?? null;
-    }
-
-    /**
-     * All properties are read only.
-     */
-    public function offsetSet($offset, $value): void
-    {
-        trigger_error(
-            'Using Vonage\Verify\Verification as an array is deprecated',
-            E_USER_DEPRECATED
-        );
-
-        throw $this->getReadOnlyException($offset);
-    }
-
-    /**
-     * All properties are read only.
-     */
-    public function offsetUnset($offset): void
-    {
-        trigger_error(
-            'Using Vonage\Verify\Verification as an array is deprecated',
-            E_USER_DEPRECATED
-        );
-
-        throw $this->getReadOnlyException($offset);
-    }
-
-    /**
-     * All properties are read only.
-     */
-    protected function getReadOnlyException(string $offset): RuntimeException
-    {
-        trigger_error(
-            'Using Vonage\Verify\Verification as an array is deprecated',
-            E_USER_DEPRECATED
-        );
-
-        return new RuntimeException(
-            sprintf(
-                'can not modify `%s` using array access',
-                $offset
-            )
-        );
+        return $this;
     }
 
     public function serialize(): string
@@ -516,24 +423,6 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
         }
 
         return serialize($data);
-    }
-
-    /**
-     * @param $serialized
-     */
-    public function unserialize($serialized): void
-    {
-        $data = unserialize($serialized, [true]);
-
-        $this->requestData = $data['requestData'];
-
-        if (isset($data['request'])) {
-            $this->request = RequestSerializer::fromString($data['request']);
-        }
-
-        if (isset($data['response'])) {
-            $this->response = ResponseSerializer::fromString($data['response']);
-        }
     }
 
     /**
