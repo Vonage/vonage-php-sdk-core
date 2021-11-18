@@ -77,11 +77,6 @@ class InboundMessage implements MessageInterface, ArrayAccess, ArrayHydrateInter
         );
     }
 
-    public static function createFromGlobals(): self
-    {
-        return new self(ServerRequestFactory::fromGlobals());
-    }
-
     /**
      * Create a matching reply to the inbound message. Currently only supports text replies.
      */
