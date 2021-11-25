@@ -212,9 +212,7 @@ class Client implements LoggerAwareInterface
                 [
                     // Legacy Namespaces
                     'message' => MessageClient::class,
-                    'calls' => Collection::class,
                     'conversation' => ConversationsClientFactory::class,
-                    'user' => UserClientFactory::class,
 
                     // Registered Services by name
                     'account' => ClientFactory::class,
