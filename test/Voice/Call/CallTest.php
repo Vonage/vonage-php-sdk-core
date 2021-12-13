@@ -11,10 +11,10 @@ declare(strict_types=1);
 
 namespace VonageTest\Voice\Call;
 
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Voice\Call\Call;
 
-class CallTest extends TestCase
+class CallTest extends VonageTestCase
 {
     /**
      * @var Call

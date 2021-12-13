@@ -11,10 +11,10 @@ declare(strict_types=1);
 
 namespace VonageTest\Message;
 
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Message\EncodingDetector;
 
-class EncodingDetectorTest extends TestCase
+class EncodingDetectorTest extends VonageTestCase
 {
     /**
      * @dataProvider unicodeProvider

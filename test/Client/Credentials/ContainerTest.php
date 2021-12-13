@@ -11,13 +11,13 @@ declare(strict_types=1);
 
 namespace VonageTest\Client\Credentials;
 
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Client\Credentials\Basic;
 use Vonage\Client\Credentials\Container;
 use Vonage\Client\Credentials\Keypair;
 use Vonage\Client\Credentials\SignatureSecret;
 
-class ContainerTest extends TestCase
+class ContainerTest extends VonageTestCase
 {
     protected $types = [
         Basic::class,

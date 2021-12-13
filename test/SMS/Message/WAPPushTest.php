@@ -11,10 +11,10 @@ declare(strict_types=1);
 
 namespace VonageTest\SMS\Message;
 
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\SMS\Message\WAPPush;
 
-class WAPPushTest extends TestCase
+class WAPPushTest extends VonageTestCase
 {
     public function testCanCreateWAPMessage(): void
     {

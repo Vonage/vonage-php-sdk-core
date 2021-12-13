@@ -11,11 +11,11 @@ declare(strict_types=1);
 
 namespace VonageTest\Client;
 
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Client\Signature;
 
-class SignatureTest extends TestCase
+class SignatureTest extends VonageTestCase
 {
     public function testInvalidSignatureMethod(): void
     {

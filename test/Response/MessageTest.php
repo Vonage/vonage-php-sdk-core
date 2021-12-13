@@ -11,13 +11,13 @@ declare(strict_types=1);
 
 namespace VonageTest\Response;
 
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use RuntimeException;
 use Vonage\Response\Message;
 
 use function json_decode;
 
-class MessageTest extends TestCase
+class MessageTest extends VonageTestCase
 {
     protected $message;
 

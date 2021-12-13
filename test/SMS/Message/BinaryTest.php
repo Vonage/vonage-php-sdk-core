@@ -11,10 +11,10 @@ declare(strict_types=1);
 
 namespace VonageTest\SMS\Message;
 
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\SMS\Message\Binary;
 
-class BinaryTest extends TestCase
+class BinaryTest extends VonageTestCase
 {
     public function testCanCreateBinaryMessage(): void
     {

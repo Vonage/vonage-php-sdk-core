@@ -12,11 +12,11 @@ declare(strict_types=1);
 namespace VonageTest\Voice;
 
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Voice\Endpoint\Phone;
 use Vonage\Voice\OutboundCall;
 
-class OutboundCallTest extends TestCase
+class OutboundCallTest extends VonageTestCase
 {
     public function testMachineDetectionThrowsExceptionOnBadValue(): void
     {

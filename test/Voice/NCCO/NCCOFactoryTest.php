@@ -12,10 +12,10 @@ declare(strict_types=1);
 namespace VonageTest\Voice\NCCO;
 
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Voice\NCCO\NCCOFactory;
 
-class NCCOFactoryTest extends TestCase
+class NCCOFactoryTest extends VonageTestCase
 {
     public function testThrowsExceptionWithBadAction(): void
     {

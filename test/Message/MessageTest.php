@@ -14,7 +14,7 @@ namespace VonageTest\Message;
 use Exception;
 use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Message\Message;
 use Vonage\Message\Text;
@@ -23,7 +23,7 @@ use function fopen;
 use function http_build_query;
 use function json_encode;
 
-class MessageTest extends TestCase
+class MessageTest extends VonageTestCase
 {
     protected $to = '14845551212';
     protected $from = '16105551212';

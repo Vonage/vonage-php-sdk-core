@@ -12,13 +12,13 @@ declare(strict_types=1);
 namespace VonageTest;
 
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Response;
 use Vonage\Response\Message;
 
 use function json_decode;
 
-class ResponseTest extends TestCase
+class ResponseTest extends VonageTestCase
 {
     /**
      * @var Response

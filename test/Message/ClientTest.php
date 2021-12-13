@@ -16,7 +16,7 @@ use Exception;
 use InvalidArgumentException;
 use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
@@ -37,7 +37,7 @@ use VonageTest\Psr7AssertionTrait;
 use function fopen;
 use function json_decode;
 
-class ClientTest extends TestCase
+class ClientTest extends VonageTestCase
 {
     use Psr7AssertionTrait;
     use MessageAssertionTrait;

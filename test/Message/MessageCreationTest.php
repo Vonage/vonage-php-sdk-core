@@ -12,7 +12,7 @@ declare(strict_types=1);
 namespace VonageTest\Message;
 
 use Laminas\Diactoros\Response;
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Message\Message;
 use Vonage\Message\Text;
@@ -21,7 +21,7 @@ use function array_diff;
 use function array_keys;
 use function json_encode;
 
-class MessageCreationTest extends TestCase
+class MessageCreationTest extends VonageTestCase
 {
     protected $to = '14845551212';
     protected $from = '16105551212';

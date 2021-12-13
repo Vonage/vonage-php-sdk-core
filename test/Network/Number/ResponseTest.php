@@ -12,11 +12,11 @@ declare(strict_types=1);
 namespace VonageTest\Network\Number;
 
 use BadMethodCallException;
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Network\Number\Callback;
 use Vonage\Network\Number\Response;
 
-class ResponseTest extends TestCase
+class ResponseTest extends VonageTestCase
 {
     protected $data = [
         'request_id' => '12345',

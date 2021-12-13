@@ -12,11 +12,11 @@ declare(strict_types=1);
 namespace VonageTest\Voice\NCCO\Action;
 
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Voice\NCCO\Action\Notify;
 use Vonage\Voice\Webhook;
 
-class NotifyTest extends TestCase
+class NotifyTest extends VonageTestCase
 {
     public function testCanSetAdditionalInformation(): void
     {

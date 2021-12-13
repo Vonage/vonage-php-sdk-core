@@ -13,7 +13,7 @@ namespace VonageTest\Message;
 
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\ServerRequest;
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Message\InboundMessage;
 use Vonage\Message\Message;
@@ -26,7 +26,7 @@ use function json_decode;
 use function parse_str;
 use function strtoupper;
 
-class InboundMessageTest extends TestCase
+class InboundMessageTest extends VonageTestCase
 {
     public function testConstructionWithId(): void
     {

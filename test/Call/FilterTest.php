@@ -12,11 +12,11 @@ declare(strict_types=1);
 namespace VonageTest\Call;
 
 use DateTime;
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Call\Filter;
 use Vonage\Conversations\Conversation;
 
-class FilterTest extends TestCase
+class FilterTest extends VonageTestCase
 {
     /**
      * @var Filter

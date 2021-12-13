@@ -12,14 +12,14 @@ declare(strict_types=1);
 namespace VonageTest\Call;
 
 use Helmich\JsonAssert\JsonAssertions;
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Call\Mute;
 
 use function file_get_contents;
 use function json_decode;
 use function json_encode;
 
-class MuteTest extends TestCase
+class MuteTest extends VonageTestCase
 {
     use JsonAssertions;
 

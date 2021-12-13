@@ -12,10 +12,10 @@ declare(strict_types=1);
 namespace VonageTest\Application;
 
 use DateTime;
-use PHPUnit\Framework\TestCase;
+use VonageTest\VonageTestCase;
 use Vonage\Application\Filter;
 
-class FilterTest extends TestCase
+class FilterTest extends VonageTestCase
 {
     /**
      * @dataProvider ranges
