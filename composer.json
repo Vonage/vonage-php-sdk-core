@@ -53,7 +53,7 @@
   "scripts": {
     "cs-check": "phpcs",
     "cs-fix": "phpcbf",
-    "test": "phpunit --testdox",
+    "test": "phpunit",
     "phpstan": "phpstan analyse -l 2 src"
   },
   "support": {
