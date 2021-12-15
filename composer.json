@@ -53,7 +53,8 @@
   "scripts": {
     "cs-check": "phpcs",
     "cs-fix": "phpcbf",
-    "test": "phpunit"
+    "test": "phpunit --testdox",
+    "phpstan": "phpstan analyse -l 2 src"
   },
   "support": {
     "email": "devrel@vonage.com",
