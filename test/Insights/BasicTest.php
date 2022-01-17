@@ -63,7 +63,7 @@ class BasicTest extends VonageTestCase
                 'country_code' => 'GB',
                 'country_code_iso3' => 'GBR',
                 'country_name' => 'United Kingdom',
-                'country_prefix' => 44,
+                'country_prefix' => '44',
         ];
 
         $basic1 = new Basic($inputBasic1['national_format_number']);

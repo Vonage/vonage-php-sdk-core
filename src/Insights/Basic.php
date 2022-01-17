@@ -62,7 +62,7 @@ class Basic implements JsonSerializable, JsonUnserializableInterface, ArrayAcces
         return $this->data['country_name'];
     }
 
-    public function getCountryPrefix(): int
+    public function getCountryPrefix(): string
     {
         return $this->data['country_prefix'];
     }
