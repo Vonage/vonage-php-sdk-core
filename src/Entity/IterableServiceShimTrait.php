@@ -84,6 +84,7 @@ trait IterableServiceShimTrait
      *
      * @deprecated This will be removed in a future release, and will be part of a search response
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         if (is_null($this->collection)) {
@@ -114,6 +115,7 @@ trait IterableServiceShimTrait
      *
      * @deprecated This will be removed in a future release, and will be part of a search response
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         if (is_null($this->collection)) {

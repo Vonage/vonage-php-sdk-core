@@ -242,6 +242,7 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
     /**
      * @return array|mixed
      */
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return $this->toArray();

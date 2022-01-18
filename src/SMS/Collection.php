@@ -44,6 +44,7 @@ class Collection implements Countable, Iterator
     /**
      * @return bool|float|int|string|null
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->current;
