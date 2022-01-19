@@ -397,6 +397,7 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
      * @throws ClientException
      * @throws Exception
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         trigger_error(
@@ -456,6 +457,7 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
     /**
      * @throws Exception
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         if (!isset($this->response)) {
@@ -471,6 +473,7 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
         $this->current++;
     }
 
+    #[\ReturnTypeWillChange]
     public function key()
     {
         if (!isset($this->response)) {
@@ -483,6 +486,7 @@ class Message implements MessageInterface, Countable, ArrayAccess, Iterator, Arr
     /**
      * @throws Exception
      */
+    #[\ReturnTypeWillChange]
     public function valid(): ?bool
     {
         if (!isset($this->response)) {

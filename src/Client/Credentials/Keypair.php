@@ -47,6 +47,14 @@ class Keypair extends AbstractCredentials
         $this->key = InMemory::plainText($privateKey);
     }
 
+    /**
+     * @return Key
+     */
+    public function getKey(): Key
+    {
+        return $this->key;
+    }
+
     public function generateJwt(array $claims = []): Token
     {
         $config = Configuration::forSymmetricSigner(new Sha256(), $this->key);

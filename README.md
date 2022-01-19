@@ -8,7 +8,7 @@ Client Library for PHP
 
 <img src="https://developer.nexmo.com/assets/images/Vonage_Nexmo.svg" height="48px" alt="Nexmo is now known as Vonage" />
 
-*This library requires a minimum PHP version of 7.2*
+*This library requires a minimum PHP version of 7.4*
 
 This is the PHP client library for use Vonage's API. To use this, you'll need a Vonage account. Sign up [for free at 
 nexmo.com][signup].

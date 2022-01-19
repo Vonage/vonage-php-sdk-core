@@ -7,7 +7,7 @@
 ### Changed
 
 * Maintainer and Contribution documents changed to reflect current ownership
-* All test cases now extend off a the new `VonageTestCase` class that implements the `ProphesizeTrait`
+* All test cases now extend off the new `VonageTestCase` class that implements the `ProphesizeTrait`
 
 # 2.9.3
 

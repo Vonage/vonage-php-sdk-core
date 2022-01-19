@@ -1,7 +1,0 @@
-{
-    "type": 400,
-    "title": "Bad Request",
-    "invalid_parameters": [
-        { "reason": "can contain up to 15 digits prefixed with +", "name": "number" }
-    ]
-}

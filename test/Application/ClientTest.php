@@ -213,185 +213,12 @@ class ClientTest extends VonageTestCase
         $this->assertSame($application->getId(), $id);
     }
 
-    /**
-     * @dataProvider getApplication
-     *
-     * @param $payload
-     * @param $id
-     *
-     * @throws ClientExceptionInterface
-     * @throws ClientException
-     * @throws Exception
-     */
-    public function testGetApplication($payload, $id): void
-    {
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id) {
-            $this->assertEquals('/v2/applications/' . $id, $request->getUri()->getPath());
-            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('GET', $request->getMethod());
-            return true;
-        }))->willReturn($this->getResponse());
-
-        $application = @$this->applicationClient->get($payload);
-        $expectedData = json_decode($this->getResponse()->getBody()->getContents(), true);
-
-        $this->assertInstanceOf(Application::class, $application);
-        $this->assertSame($expectedData['id'], $application->getId());
-        $this->assertSame($expectedData['name'], $application->getName());
-        $this->assertSame(
-            $expectedData['capabilities']['voice']['webhooks']['answer_url']['address'],
-            $application->getVoiceConfig()->getWebhook('answer_url')->getUrl()
-        );
-        $this->assertSame(
-            $expectedData['capabilities']['voice']['webhooks']['answer_url']['http_method'],
-            $application->getVoiceConfig()->getWebhook('answer_url')->getMethod()
-        );
-        $this->assertSame(
-            $expectedData['capabilities']['voice']['webhooks']['event_url']['address'],
-            $application->getVoiceConfig()->getWebhook('event_url')->getUrl()
-        );
-        $this->assertSame(
-            $expectedData['capabilities']['voice']['webhooks']['event_url']['http_method'],
-            $application->getVoiceConfig()->getWebhook('event_url')->getMethod()
-        );
-        $this->assertSame(
-            $expectedData['capabilities']['messages']['webhooks']['inbound_url']['address'],
-            $application->getMessagesConfig()->getWebhook('inbound_url')->getUrl()
-        );
-        $this->assertSame(
-            $expectedData['capabilities']['messages']['webhooks']['inbound_url']['http_method'],
-            $application->getMessagesConfig()->getWebhook('inbound_url')->getMethod()
-        );
-        $this->assertSame(
-            $expectedData['capabilities']['messages']['webhooks']['status_url']['address'],
-            $application->getMessagesConfig()->getWebhook('status_url')->getUrl()
-        );
-        $this->assertSame(
-            $expectedData['capabilities']['messages']['webhooks']['status_url']['http_method'],
-            $application->getMessagesConfig()->getWebhook('status_url')->getMethod()
-        );
-        $this->assertSame(
-            $expectedData['capabilities']['rtc']['webhooks']['event_url']['address'],
-            $application->getRtcConfig()->getWebhook('event_url')->getUrl()
-        );
-        $this->assertSame(
-            $expectedData['capabilities']['rtc']['webhooks']['event_url']['address'],
-            $application->getRtcConfig()->getWebhook('event_url')->getUrl()
-        );
-
-        self::markTestIncomplete('Remove error suppression when object passing has been removed');
-    }
-
     public function getApplication(): array
     {
         return [
             ['78d335fa323d01149c3dd6f0d48968cf', '78d335fa323d01149c3dd6f0d48968cf'],
             [new Application('78d335fa323d01149c3dd6f0d48968cf'), '78d335fa323d01149c3dd6f0d48968cf']
         ];
-    }
-
-    /**
-     * @dataProvider updateApplication
-     *
-     * @param $payload
-     * @param $method
-     * @param $id
-     * @param $expectedId
-     */
-    public function testUpdateApplication($payload, $method, $id, $expectedId): void
-    {
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($expectedId) {
-            $this->assertEquals('/v2/applications/' . $expectedId, $request->getUri()->getPath());
-            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('PUT', $request->getMethod());
-
-            $this->assertRequestJsonBodyContains('name', 'My Application', $request);
-
-            // And check all other capabilities
-            $capabilities = [
-                'voice' => [
-                    'webhooks' => [
-                        'answer_url' => [
-                            'address' => 'https://example.com/webhooks/answer',
-                            'http_method' => null
-
-                        ],
-                        'event_url' => [
-                            'address' => 'https://example.com/webhooks/event',
-                            'http_method' => null
-                        ]
-                    ]
-                ],
-                'rtc' => [
-                    'webhooks' => [
-                        'event_url' => [
-                            'address' => 'https://example.com/webhooks/event',
-                            'http_method' => null
-                        ]
-                    ]
-                ],
-            ];
-            $this->assertRequestJsonBodyContains('capabilities', $capabilities, $request);
-
-            return true;
-        }))->willReturn($this->getResponse());
-
-        if ($id) {
-            $application = @$this->applicationClient->$method($payload, $id);
-        } else {
-            $application = @$this->applicationClient->$method($payload);
-        }
-
-        $expectedData = json_decode($this->getResponse()->getBody()->getContents(), true);
-
-        $this->assertInstanceOf(Application::class, $application);
-        $this->assertSame($expectedData['id'], $application->getId());
-        $this->assertSame($expectedData['name'], $application->getName());
-        $this->assertSame(
-            $expectedData['capabilities']['voice']['webhooks']['answer_url']['address'],
-            $application->getVoiceConfig()->getWebhook('answer_url')->getUrl()
-        );
-        $this->assertSame(
-            $expectedData['capabilities']['voice']['webhooks']['answer_url']['http_method'],
-            $application->getVoiceConfig()->getWebhook('answer_url')->getMethod()
-        );
-        $this->assertSame(
-            $expectedData['capabilities']['voice']['webhooks']['event_url']['address'],
-            $application->getVoiceConfig()->getWebhook('event_url')->getUrl()
-        );
-        $this->assertSame(
-            $expectedData['capabilities']['voice']['webhooks']['event_url']['http_method'],
-            $application->getVoiceConfig()->getWebhook('event_url')->getMethod()
-        );
-        $this->assertSame(
-            $expectedData['capabilities']['messages']['webhooks']['inbound_url']['address'],
-            $application->getMessagesConfig()->getWebhook('inbound_url')->getUrl()
-        );
-        $this->assertSame(
-            $expectedData['capabilities']['messages']['webhooks']['inbound_url']['http_method'],
-            $application->getMessagesConfig()->getWebhook('inbound_url')->getMethod()
-        );
-        $this->assertSame(
-            $expectedData['capabilities']['messages']['webhooks']['status_url']['address'],
-            $application->getMessagesConfig()->getWebhook('status_url')->getUrl()
-        );
-        $this->assertSame(
-            $expectedData['capabilities']['messages']['webhooks']['status_url']['http_method'],
-            $application->getMessagesConfig()->getWebhook('status_url')->getMethod()
-        );
-        $this->assertSame(
-            $expectedData['capabilities']['rtc']['webhooks']['event_url']['address'],
-            $application->getRtcConfig()->getWebhook('event_url')->getUrl()
-        );
-        $this->assertSame(
-            $expectedData['capabilities']['rtc']['webhooks']['event_url']['address'],
-            $application->getRtcConfig()->getWebhook('event_url')->getUrl()
-        );
-
-        @self::markTestIncomplete("Remove error suppression when object passing has been removed");
-        @self::markTestIncomplete(
-            "Rework this whole test, because it uses stock responses it's impossible to test in its current form"
-        );
     }
 
     /**
@@ -504,8 +331,6 @@ class ClientTest extends VonageTestCase
                     break;
             }
         }
-
-        self::markTestIncomplete('Break this test up, it is doing way too much');
     }
 
     /**
