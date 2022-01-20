@@ -25,11 +25,9 @@ use Vonage\Entity\NoRequestResponseTrait;
 use Vonage\Network;
 
 use function array_key_exists;
-use function get_class;
 use function ltrim;
 use function preg_replace;
 use function strtolower;
-use function trigger_error;
 
 /**
  * This class will no longer be accessible via array access, nor contain request/response information after v2.

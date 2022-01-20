@@ -15,6 +15,8 @@ use DateTime;
 use Exception;
 use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
+use Vonage\Application\Webhook;
+use Vonage\Application\Webhook as ApplicationWebhook;
 use VonageTest\VonageTestCase;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
@@ -120,6 +122,12 @@ class ClientTest extends VonageTestCase
         $this->applicationClient->rewind();
     }
 
+    public function testCannotCreateApplicationClientWithId(): void
+    {
+        $this->expectException(\TypeError::class);
+        $applicationClient = new ApplicationClient('78d335fa323d01149c3dd6f0d48968cf');
+    }
+
     /**
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Request
@@ -213,12 +221,180 @@ class ClientTest extends VonageTestCase
         $this->assertSame($application->getId(), $id);
     }
 
+    /**
+     * @dataProvider getApplication
+     *
+     * @param $payload
+     * @param $id
+     *
+     * @throws ClientExceptionInterface
+     * @throws ClientException
+     * @throws Exception
+     */
+    public function testGetApplication($payload, $id, $expectsError): void
+    {
+        if ($expectsError) {
+            $this->expectError();
+        }
+
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id) {
+            $this->assertEquals('/v2/applications/' . $id, $request->getUri()->getPath());
+            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('GET', $request->getMethod());
+            return true;
+        }))->willReturn($this->getResponse());
+
+        $application = @$this->applicationClient->get($payload);
+        $expectedData = json_decode($this->getResponse()->getBody()->getContents(), true);
+
+        $this->assertInstanceOf(Application::class, $application);
+        $this->assertSame($expectedData['id'], $application->getId());
+        $this->assertSame($expectedData['name'], $application->getName());
+        $this->assertSame(
+            $expectedData['capabilities']['voice']['webhooks']['answer_url']['address'],
+            $application->getVoiceConfig()->getWebhook('answer_url')->getUrl()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['voice']['webhooks']['answer_url']['http_method'],
+            $application->getVoiceConfig()->getWebhook('answer_url')->getMethod()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['voice']['webhooks']['event_url']['address'],
+            $application->getVoiceConfig()->getWebhook('event_url')->getUrl()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['voice']['webhooks']['event_url']['http_method'],
+            $application->getVoiceConfig()->getWebhook('event_url')->getMethod()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['messages']['webhooks']['inbound_url']['address'],
+            $application->getMessagesConfig()->getWebhook('inbound_url')->getUrl()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['messages']['webhooks']['inbound_url']['http_method'],
+            $application->getMessagesConfig()->getWebhook('inbound_url')->getMethod()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['messages']['webhooks']['status_url']['address'],
+            $application->getMessagesConfig()->getWebhook('status_url')->getUrl()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['messages']['webhooks']['status_url']['http_method'],
+            $application->getMessagesConfig()->getWebhook('status_url')->getMethod()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['rtc']['webhooks']['event_url']['address'],
+            $application->getRtcConfig()->getWebhook('event_url')->getUrl()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['rtc']['webhooks']['event_url']['address'],
+            $application->getRtcConfig()->getWebhook('event_url')->getUrl()
+        );
+
+        self::markTestIncomplete('Remove error suppression when object passing has been removed');
+    }
+
     public function getApplication(): array
     {
         return [
-            ['78d335fa323d01149c3dd6f0d48968cf', '78d335fa323d01149c3dd6f0d48968cf'],
-            [new Application('78d335fa323d01149c3dd6f0d48968cf'), '78d335fa323d01149c3dd6f0d48968cf']
+            ['78d335fa323d01149c3dd6f0d48968cf', '78d335fa323d01149c3dd6f0d48968cf', false],
+            [new Application('78d335fa323d01149c3dd6f0d48968cf'), '78d335fa323d01149c3dd6f0d48968cf', true]
         ];
+    }
+
+    /**
+     * @dataProvider updateApplication
+     *
+     * @param $payload
+     * @param $method
+     * @param $id
+     * @param $expectedId
+     */
+    public function testUpdateApplication($payload, $method, $expectedId): void
+    {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($expectedId) {
+            $this->assertEquals('/v2/applications/' . $expectedId, $request->getUri()->getPath());
+            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('PUT', $request->getMethod());
+
+            $this->assertRequestJsonBodyContains('name', 'My Application', $request);
+
+            // And check all other capabilities
+            $capabilities = [
+                'voice' => [
+                    'webhooks' => [
+                        'answer_url' => [
+                            'address' => 'https://example.com/webhooks/answer',
+                            'http_method' => 'POST'
+
+                        ],
+                        'event_url' => [
+                            'address' => 'https://example.com/webhooks/event',
+                            'http_method' => 'POST'
+                        ]
+                    ]
+                ],
+                'rtc' => [
+                    'webhooks' => [
+                        'event_url' => [
+                            'address' => 'https://example.com/webhooks/event',
+                            'http_method' => 'POST'
+                        ]
+                    ]
+                ],
+            ];
+            $this->assertRequestJsonBodyContains('capabilities', $capabilities, $request);
+
+            return true;
+        }))->willReturn($this->getResponse());
+
+        $application = $this->applicationClient->$method($payload);
+
+        $expectedData = json_decode($this->getResponse()->getBody()->getContents(), true);
+
+        $this->assertInstanceOf(Application::class, $application);
+        $this->assertSame($expectedData['id'], $application->getId());
+        $this->assertSame($expectedData['name'], $application->getName());
+        $this->assertSame(
+            $expectedData['capabilities']['voice']['webhooks']['answer_url']['address'],
+            $application->getVoiceConfig()->getWebhook('answer_url')->getUrl()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['voice']['webhooks']['answer_url']['http_method'],
+            $application->getVoiceConfig()->getWebhook('answer_url')->getMethod()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['voice']['webhooks']['event_url']['address'],
+            $application->getVoiceConfig()->getWebhook('event_url')->getUrl()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['voice']['webhooks']['event_url']['http_method'],
+            $application->getVoiceConfig()->getWebhook('event_url')->getMethod()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['messages']['webhooks']['inbound_url']['address'],
+            $application->getMessagesConfig()->getWebhook('inbound_url')->getUrl()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['messages']['webhooks']['inbound_url']['http_method'],
+            $application->getMessagesConfig()->getWebhook('inbound_url')->getMethod()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['messages']['webhooks']['status_url']['address'],
+            $application->getMessagesConfig()->getWebhook('status_url')->getUrl()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['messages']['webhooks']['status_url']['http_method'],
+            $application->getMessagesConfig()->getWebhook('status_url')->getMethod()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['rtc']['webhooks']['event_url']['address'],
+            $application->getRtcConfig()->getWebhook('event_url')->getUrl()
+        );
+        $this->assertSame(
+            $expectedData['capabilities']['rtc']['webhooks']['event_url']['address'],
+            $application->getRtcConfig()->getWebhook('event_url')->getUrl()
+        );
     }
 
     /**
@@ -228,33 +404,24 @@ class ClientTest extends VonageTestCase
      */
     public function updateApplication(): array
     {
+        $answerWebhook = new ApplicationWebhook('https://example.com/webhooks/answer');
+        $eventWebhook = new ApplicationWebhook('https://example.com/webhooks/event');
+
         $id = '1a20a124-1775-412b-b623-e6985f4aace0';
-        $copy = '1a20a124-1775-412b-4444-e6985f4aace0';
         $existing = new Application($id);
         $existing->setName('My Application');
-        @$existing->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'https://example.com/webhooks/answer');
-        @$existing->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'https://example.com/webhooks/event');
-        @$existing->getRtcConfig()->setWebhook(RtcConfig::EVENT, 'https://example.com/webhooks/event');
+        $existing->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, $answerWebhook);
+        $existing->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, $eventWebhook);
+        $existing->getRtcConfig()->setWebhook(RtcConfig::EVENT, $eventWebhook);
 
         $new = new Application();
         $new->setName('My Application');
-        @$new->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'https://example.com/webhooks/answer');
-        @$new->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'https://example.com/webhooks/event');
-        @$new->getRtcConfig()->setWebhook(RtcConfig::EVENT, 'https://example.com/webhooks/event');
-
-        $raw = [
-            'name' => 'My Application',
-            'answer_url' => 'https://example.com/webhooks/answer',
-            'event_url' => 'https://example.com/webhooks/event'
-        ];
+        $new->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, $answerWebhook);
+        $new->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, $eventWebhook);
+        $new->getRtcConfig()->setWebhook(RtcConfig::EVENT, $eventWebhook);
 
         return [
-            //can send an application to update it
-            [clone $existing, 'update', null, $id],
-            //can send raw array and id
-            [$raw, 'update', $id, $id],
-            //one application overwrites another if id provided
-            [clone $existing, 'update', $copy, $copy],
+            [clone $existing, 'update', $id]
         ];
     }
 
@@ -279,11 +446,17 @@ class ClientTest extends VonageTestCase
         $this->assertTrue(@$this->applicationClient->delete($payload));
     }
 
+    public function testCannotDeleteApplicationByPassingApplicationObject(): void
+    {
+        $this->expectException(\TypeError::class);
+        $application = new Application();
+        $applicationClient = new ApplicationClient($application);
+    }
+
     public function deleteApplication(): array
     {
         return [
-            [new Application('abcd1234'), 'abcd1234'],
-            ['abcd1234', 'abcd1234'],
+            ['abcd1234', 'abcd1234']
         ];
     }
 
@@ -331,6 +504,8 @@ class ClientTest extends VonageTestCase
                     break;
             }
         }
+
+        self::markTestIncomplete('Break this test up, it is doing way too much');
     }
 
     /**
@@ -345,8 +520,6 @@ class ClientTest extends VonageTestCase
             ['update', 'unauthorized', 401],
             ['create', 'bad', 400],
             ['create', 'unauthorized', 401],
-            ['delete', 'bad', 400],
-            ['delete', 'unauthorized', 401],
         ];
     }
 
@@ -476,19 +649,19 @@ class ClientTest extends VonageTestCase
     {
         $application = new Application();
         $application->setName('My Application');
-        @$application->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'https://example.com/webhooks/answer', 'GET');
-        @$application->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'https://example.com/webhooks/event', 'POST');
-        @$application->getMessagesConfig()->setWebhook(
-            MessagesConfig::STATUS,
-            'https://example.com/webhooks/status',
-            'POST'
-        );
-        @$application->getMessagesConfig()->setWebhook(
-            MessagesConfig::INBOUND,
-            'https://example.com/webhooks/inbound',
-            'POST'
-        );
-        @$application->getRtcConfig()->setWebhook(RtcConfig::EVENT, 'https://example.com/webhooks/event', 'POST');
+
+        $answerWebhook = new Webhook('https://example.com/webhooks/answer', 'GET');
+        $eventWebhook = new Webhook('https://example.com/webhooks/event', 'POST');
+        $statusWebhook = new Webhook('https://example.com/webhooks/status', 'POST');
+        $inboundWebhook = new Webhook('https://example.com/webhooks/inbound', 'POST');
+
+        $application->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, $answerWebhook);
+        $application->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, $eventWebhook);
+        $application->getMessagesConfig()->setWebhook(MessagesConfig::STATUS, $statusWebhook);
+        $application->getMessagesConfig()->setWebhook(MessagesConfig::INBOUND, $inboundWebhook);
+
+        $application->getRtcConfig()->setWebhook(RtcConfig::EVENT, $eventWebhook);
+
         $application->setPublicKey("-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSL" .
             "cjxu33G\nd/vynKnlw9SENi+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xsO\nOU" .
             "NhPx2LhuLmgwWSRS4L5W851Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n");
@@ -557,11 +730,6 @@ class ClientTest extends VonageTestCase
 
         return [
             'createApplication' => [clone $application, 'create'],
-            'postApplication' => [clone $application, 'post'],
-            'createRawV1' => [$rawV1, 'create'],
-            'postRawV1' => [$rawV1, 'post'],
-            'createRawV2' => [$rawV2, 'create'],
-            'postRawV2' => [$rawV2, 'post'],
         ];
     }
 
