@@ -65,160 +65,10 @@ class ClientTest extends VonageTestCase
         $this->applicationClient->setClient($this->vonageClient->reveal());
     }
 
-    public function testSizeException(): void
-    {
-        $this->expectException('RuntimeException');
-        $this->applicationClient->getSize();
-    }
-
-    /**
-     * @throws ClientException
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Request
-     * @throws ServerException
-     */
-    public function testSetFilter(): void
-    {
-        $filter = new Filter(new DateTime('yesterday'), new DateTime('tomorrow'));
-
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($filter) {
-            $this->assertEquals('/v2/applications', $request->getUri()->getPath());
-            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('GET', $request->getMethod());
-
-            foreach ($filter->getQuery() as $key => $value) {
-                $this->assertRequestQueryContains($key, $value, $request);
-            }
-
-            return true;
-        }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('list'));
-
-        $this->assertInstanceOf(EmptyFilter::class, $this->applicationClient->getFilter());
-        $this->assertSame($this->applicationClient, $this->applicationClient->setFilter($filter));
-        $this->assertSame($filter, $this->applicationClient->getFilter());
-
-        $this->applicationClient->rewind();
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Request
-     * @throws ClientException
-     * @throws ServerException
-     */
-    public function testSetPage(): void
-    {
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            $this->assertEquals('/v2/applications', $request->getUri()->getPath());
-            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('GET', $request->getMethod());
-            $this->assertRequestQueryContains('page_index', '1', $request);
-            return true;
-        }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('list'));
-
-        $this->assertSame($this->applicationClient, $this->applicationClient->setPage(1));
-        $this->assertEquals(1, $this->applicationClient->getPage());
-
-        $this->applicationClient->rewind();
-    }
-
     public function testCannotCreateApplicationClientWithId(): void
     {
         $this->expectException(\TypeError::class);
         $applicationClient = new ApplicationClient('78d335fa323d01149c3dd6f0d48968cf');
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Request
-     * @throws ClientException
-     * @throws ServerException
-     */
-    public function testSetSize(): void
-    {
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            $this->assertEquals('/v2/applications', $request->getUri()->getPath());
-            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('GET', $request->getMethod());
-            $this->assertRequestQueryContains('page_size', '5', $request);
-            return true;
-        }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('list'));
-
-        $this->assertSame($this->applicationClient, $this->applicationClient->setSize(5));
-        $this->assertEquals(5, $this->applicationClient->getSize());
-
-        $this->applicationClient->rewind();
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Request
-     * @throws ClientException
-     * @throws ServerException
-     */
-    public function testIterationProperties(): void
-    {
-        $this->vonageClient->send(Argument::type(RequestInterface::class))
-            ->shouldBeCalledTimes(1)
-            ->willReturn($this->getResponse('list'));
-
-        $this->assertEquals(7, $this->applicationClient->count());
-        $this->assertCount(7, $this->applicationClient);
-        $this->assertEquals(2, $this->applicationClient->getPage());
-        $this->assertEquals(3, $this->applicationClient->getSize());
-    }
-
-    public function testIteratePages(): void
-    {
-        $page = $this->getResponse('list');
-        $last = $this->getResponse('last');
-
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            //a bit hacky here
-            static $last;
-            if (is_null($last)) { //first call
-                $last = $request;
-            }
-
-            $this->assertEquals('/v2/applications', $request->getUri()->getPath());
-            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('GET', $request->getMethod());
-
-            if ($last !== $request) { //second call
-                $this->assertRequestQueryContains('page_size', '3', $request);
-                $this->assertRequestQueryContains('page_index', '3', $request);
-            }
-
-            return true;
-        }))->shouldBeCalledTimes(2)->willReturn($page, $last);
-
-        foreach ($this->applicationClient as $id => $application) {
-            $this->assertInstanceOf(Application::class, $application);
-            $this->assertSame($application->getId(), $id);
-        }
-    }
-
-    public function testCanIterateClient(): void
-    {
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            $this->assertEquals('/v2/applications', $request->getUri()->getPath());
-            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('GET', $request->getMethod());
-            return true;
-        }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('list'));
-
-        $this->assertInstanceOf('Iterator', $this->applicationClient);
-
-        $application = $id = null;
-
-        /** @noinspection LoopWhichDoesNotLoopInspection */
-        foreach ($this->applicationClient as $id => $application) {
-            break;
-        }
-
-        $this->assertTrue(isset($application));
-        $this->assertInstanceOf(Application::class, $application);
-        $this->assertSame($application->getId(), $id);
     }
 
     /**
@@ -244,10 +94,9 @@ class ClientTest extends VonageTestCase
             return true;
         }))->willReturn($this->getResponse());
 
-        $application = @$this->applicationClient->get($payload);
+        $application = $this->applicationClient->get($payload);
         $expectedData = json_decode($this->getResponse()->getBody()->getContents(), true);
 
-        $this->assertInstanceOf(Application::class, $application);
         $this->assertSame($expectedData['id'], $application->getId());
         $this->assertSame($expectedData['name'], $application->getName());
         $this->assertSame(
@@ -290,8 +139,6 @@ class ClientTest extends VonageTestCase
             $expectedData['capabilities']['rtc']['webhooks']['event_url']['address'],
             $application->getRtcConfig()->getWebhook('event_url')->getUrl()
         );
-
-        self::markTestIncomplete('Remove error suppression when object passing has been removed');
     }
 
     public function getApplication(): array
@@ -504,8 +351,6 @@ class ClientTest extends VonageTestCase
                     break;
             }
         }
-
-        self::markTestIncomplete('Break this test up, it is doing way too much');
     }
 
     /**
