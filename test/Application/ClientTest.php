@@ -11,7 +11,6 @@ declare(strict_types=1);
 
 namespace VonageTest\Application;
 
-use DateTime;
 use Exception;
 use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
@@ -255,6 +254,7 @@ class ClientTest extends VonageTestCase
         $eventWebhook = new ApplicationWebhook('https://example.com/webhooks/event');
 
         $id = '1a20a124-1775-412b-b623-e6985f4aace0';
+        $copy = '1a20a124-1775-412b-4444-e6985f4aace0';
         $existing = new Application($id);
         $existing->setName('My Application');
         $existing->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, $answerWebhook);
