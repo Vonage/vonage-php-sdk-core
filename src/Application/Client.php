@@ -31,56 +31,22 @@ class Client implements ClientAwareInterface, APIClient
     /**
      * @var APIResource
      */
-    protected $api;
+    protected APIResource $api;
 
     /**
      * @var HydratorInterface
      */
-    protected $hydrator;
+    protected HydratorInterface $hydrator;
 
     public function __construct(APIResource $api = null, HydratorInterface $hydrator = null)
     {
         $this->api = $api;
         $this->hydrator = $hydrator;
-
-        // Shim to handle BC with old constructor
-        // Will remove in v3
-        if (is_null($this->hydrator)) {
-            $this->hydrator = new Hydrator();
-        }
     }
 
-    /**
-     * Shim to handle older instantiations of this class
-     * Will change in v3 to just return the required API object
-     */
     public function getApiResource(): APIResource
     {
-        if (is_null($this->api)) {
-            $api = new APIResource();
-            $api->setClient($this->getClient())
-                ->setBaseUri('/v2/applications')
-                ->setCollectionName('applications');
-            $this->api = $api;
-        }
-
         return $this->api;
-    }
-
-    /**
-     * @deprecated Use an IterableAPICollection object instead
-     */
-    public static function getCollectionName(): string
-    {
-        return 'applications';
-    }
-
-    /**
-     * @deprecated Use an IterableAPICollection object instead
-     */
-    public static function getCollectionPath(): string
-    {
-        return '/v2/' . self::getCollectionName();
     }
 
     /**
@@ -158,9 +124,7 @@ class Client implements ClientAwareInterface, APIClient
         }
 
         $data = $this->getApiResource()->update($id, $application->toArray());
-        $application = $this->hydrator->hydrate($data);
-
-        return $application;
+        return $this->hydrator->hydrate($data);
     }
 
     /**
@@ -174,15 +138,5 @@ class Client implements ClientAwareInterface, APIClient
         $this->getApiResource()->delete($application);
 
         return true;
-    }
-
-    /**
-     * @throws Exception
-     *
-     * @deprecated Use Vonage\Application\Hydrator directly instead
-     */
-    protected function fromArray(array $array): Application
-    {
-        return $this->hydrator->hydrate($array);
     }
 }
