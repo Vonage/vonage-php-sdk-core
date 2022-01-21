@@ -11,15 +11,11 @@ declare(strict_types=1);
 
 namespace Vonage\Account;
 
-use JsonSerializable;
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
-use Vonage\Entity\JsonSerializableInterface;
 
 use function is_null;
 
 class Config implements
-    JsonSerializable,
-    JsonSerializableInterface,
     ArrayHydrateInterface
 {
     /**
@@ -103,11 +99,6 @@ class Config implements
             'max_inbound_request' => $data['max_inbound_request'],
             'max_calls_per_second' => $data['max_calls_per_second'],
         ];
-    }
-
-    public function jsonSerialize(): array
-    {
-        return $this->toArray();
     }
 
     public function toArray(): array

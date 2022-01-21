@@ -11,13 +11,10 @@ declare(strict_types=1);
 
 namespace Vonage\Account;
 
-use ArrayAccess;
-use JsonSerializable;
 use RuntimeException;
 use Vonage\Entity\EntityInterface;
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 use Vonage\Entity\JsonResponseTrait;
-use Vonage\Entity\JsonSerializableInterface;
 use Vonage\Entity\NoRequestResponseTrait;
 use Vonage\Network;
 
@@ -26,13 +23,8 @@ use function ltrim;
 use function preg_replace;
 use function strtolower;
 
-/**
- * This class will no longer be accessible via array access, nor contain request/response information after v2.
- */
 abstract class Price implements
     EntityInterface,
-    JsonSerializable,
-    JsonSerializableInterface,
     ArrayHydrateInterface
 {
     use NoRequestResponseTrait;
@@ -146,11 +138,6 @@ abstract class Price implements
 
         $storage['networks'] = $networks;
         $this->data = $storage;
-    }
-
-    public function jsonSerialize(): array
-    {
-        return $this->toArray();
     }
 
     public function toArray(): array

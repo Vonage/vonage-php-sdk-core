@@ -11,13 +11,9 @@ declare(strict_types=1);
 
 namespace Vonage\Account;
 
-use JsonSerializable;
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
-use Vonage\Entity\JsonSerializableInterface;
 
 class Balance implements
-    JsonSerializable,
-    JsonSerializableInterface,
     ArrayHydrateInterface
 {
     /**
@@ -39,11 +35,6 @@ class Balance implements
     public function getAutoReload()
     {
         return $this->data['auto_reload'];
-    }
-
-    public function jsonSerialize(): array
-    {
-        return $this->data;
     }
 
     public function fromArray(array $data): void

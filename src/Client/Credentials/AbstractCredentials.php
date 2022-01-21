@@ -21,28 +21,7 @@ abstract class AbstractCredentials implements CredentialsInterface
     /**
      * @var array
      */
-    protected $credentials = [];
-
-    public function offsetExists($offset): bool
-    {
-        return isset($this->credentials[$offset]);
-    }
-
-    #[\ReturnTypeWillChange]
-    public function offsetGet($offset)
-    {
-        return $this->credentials[$offset];
-    }
-
-    public function offsetSet($offset, $value): void
-    {
-        throw $this->readOnlyException();
-    }
-
-    public function offsetUnset($offset): void
-    {
-        throw $this->readOnlyException();
-    }
+    protected array $credentials = [];
 
     /**
      * @noinspection MagicMethodsValidityInspection
@@ -55,15 +34,5 @@ abstract class AbstractCredentials implements CredentialsInterface
     public function asArray(): array
     {
         return $this->credentials;
-    }
-
-    protected function readOnlyException(): RuntimeException
-    {
-        return new RuntimeException(
-            sprintf(
-                '%s is read only, cannot modify using array access.',
-                get_class($this)
-            )
-        );
     }
 }

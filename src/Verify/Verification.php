@@ -11,7 +11,6 @@ declare(strict_types=1);
 
 namespace Vonage\Verify;
 
-use ArrayAccess;
 use DateTime;
 use Exception;
 use Laminas\Diactoros\Request\Serializer as RequestSerializer;
@@ -35,7 +34,7 @@ use function sprintf;
 use function trigger_error;
 use function unserialize;
 
-class Verification implements VerificationInterface, ArrayAccess, Serializable, ArrayHydrateInterface
+class Verification implements VerificationInterface, Serializable, ArrayHydrateInterface
 {
     use Psr7Trait;
 
@@ -589,76 +588,6 @@ class Verification implements VerificationInterface, ArrayAccess, Serializable, 
         }
 
         return null;
-    }
-
-    /**
-     * Allow the object to access the data from the API response, a sent API request, or the user set data that the
-     * request will be created from - in that order.
-     *
-     * @throws ClientException
-     * @throws Exception
-     */
-    public function offsetExists($offset): bool
-    {
-        trigger_error(
-            'Using Vonage\Verify\Verification as an array is deprecated',
-            E_USER_DEPRECATED
-        );
-
-        $response = $this->getResponseData();
-        $request = $this->getRequestData();
-        $dirty = $this->requestData;
-
-        return isset($response[$offset]) || isset($request[$offset]) || isset($dirty[$offset]);
-    }
-
-    /**
-     * Allow the object to access the data from the API response, a sent API request, or the user set data that the
-     * request will be created from - in that order.
-     *
-     * @throws ClientException
-     * @throws Exception
-     *
-     * @return mixed|null
-     */
-    public function offsetGet($offset)
-    {
-        trigger_error(
-            'Using Vonage\Verify\Verification as an array is deprecated',
-            E_USER_DEPRECATED
-        );
-
-        $response = $this->getResponseData();
-        $request = $this->getRequestData();
-        $dirty = $this->requestData;
-
-        return $response[$offset] ?? $request[$offset] ?? $dirty[$offset] ?? null;
-    }
-
-    /**
-     * All properties are read only.
-     */
-    public function offsetSet($offset, $value): void
-    {
-        trigger_error(
-            'Using Vonage\Verify\Verification as an array is deprecated',
-            E_USER_DEPRECATED
-        );
-
-        throw $this->getReadOnlyException($offset);
-    }
-
-    /**
-     * All properties are read only.
-     */
-    public function offsetUnset($offset): void
-    {
-        trigger_error(
-            'Using Vonage\Verify\Verification as an array is deprecated',
-            E_USER_DEPRECATED
-        );
-
-        throw $this->getReadOnlyException($offset);
     }
 
     /**
