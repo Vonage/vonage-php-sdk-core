@@ -38,7 +38,7 @@ class Client implements ClientAwareInterface, APIClient
      */
     protected HydratorInterface $hydrator;
 
-    public function __construct(APIResource $api = null, HydratorInterface $hydrator = null)
+    public function __construct(APIResource $api, HydratorInterface $hydrator = null)
     {
         $this->api = $api;
         $this->hydrator = $hydrator;

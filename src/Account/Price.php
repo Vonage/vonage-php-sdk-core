@@ -11,10 +11,14 @@ declare(strict_types=1);
 
 namespace Vonage\Account;
 
+use JsonSerializable;
 use RuntimeException;
 use Vonage\Entity\EntityInterface;
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 use Vonage\Entity\JsonResponseTrait;
+use Vonage\Entity\JsonSerializableInterface;
+use Vonage\Entity\JsonSerializableTrait;
+use Vonage\Entity\JsonUnserializableInterface;
 use Vonage\Entity\NoRequestResponseTrait;
 use Vonage\Network;
 
@@ -27,6 +31,7 @@ abstract class Price implements
     EntityInterface,
     ArrayHydrateInterface
 {
+    use JsonSerializableTrait;
     use NoRequestResponseTrait;
     use JsonResponseTrait;
 

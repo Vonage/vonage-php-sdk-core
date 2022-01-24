@@ -11,11 +11,6 @@ declare(strict_types=1);
 
 namespace Vonage\Client\Credentials;
 
-use RuntimeException;
-
-use function get_class;
-use function sprintf;
-
 abstract class AbstractCredentials implements CredentialsInterface
 {
     /**

@@ -48,20 +48,6 @@ class SmsPriceTest extends VonageTestCase
      *
      * @param $smsPrice
      */
-    public function testArrayAccess($smsPrice): void
-    {
-        $this->assertEquals("US", @$smsPrice['country_code']);
-        $this->assertEquals("United States", @$smsPrice['country_name']);
-        $this->assertEquals("United States", @$smsPrice['country_display_name']);
-        $this->assertEquals("1", @$smsPrice['dialing_prefix']);
-        $this->assertEquals("0.00512", @$smsPrice['default_price']);
-    }
-
-    /**
-     * @dataProvider smsPriceProvider
-     *
-     * @param $smsPrice
-     */
     public function testUsesCustomPriceForKnownNetwork($smsPrice): void
     {
         $this->assertEquals("0.123", $smsPrice->getPriceForNetwork('21039'));
@@ -82,7 +68,7 @@ class SmsPriceTest extends VonageTestCase
         $r = [];
 
         $smsPrice = new SmsPrice();
-        @$smsPrice->fromArray([
+        $smsPrice->fromArray([
             'dialing_prefix' => 1,
             'default_price' => '0.00512',
             'currency' => 'EUR',

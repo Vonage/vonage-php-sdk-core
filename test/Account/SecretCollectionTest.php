@@ -83,18 +83,4 @@ class SecretCollectionTest extends VonageTestCase
 
         $this->assertEquals($secrets, $this->collection->getSecrets());
     }
-
-    /**
-     * @throws InvalidResponseException
-     */
-    public function testArrayAccess(): void
-    {
-        $this->assertEquals($this->links, @$this->collection['_links']);
-
-        $secrets = array_map(static function ($v) {
-            return @Secret::fromApi($v);
-        }, $this->secrets);
-
-        $this->assertEquals($secrets, @$this->collection['secrets']);
-    }
 }
