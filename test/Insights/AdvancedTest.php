@@ -22,18 +22,6 @@ class AdvancedTest extends VonageTestCase
      * @param $advanced
      * @param $inputData
      */
-    public function testArrayAccess($advanced, $inputData): void
-    {
-        $this->assertEquals($inputData['valid_number'], @$advanced['valid_number']);
-        $this->assertEquals($inputData['reachable'], @$advanced['reachable']);
-    }
-
-    /**
-     * @dataProvider advancedTestProvider
-     *
-     * @param $advanced
-     * @param $inputData
-     */
     public function testObjectAccess($advanced, $inputData): void
     {
         $this->assertEquals($inputData['valid_number'], $advanced->getValidNumber());

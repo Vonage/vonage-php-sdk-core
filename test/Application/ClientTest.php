@@ -56,8 +56,12 @@ class ClientTest extends VonageTestCase
     {
         $this->vonageClient = $this->prophesize(Client::class);
         $this->vonageClient->getApiUrl()->willReturn('http://api.nexmo.com');
+        $apiResource = new APIResource();
+        $apiResource->setClient($this->vonageClient->reveal())
+            ->setBaseUri('/v2/applications')
+            ->setCollectionName('applications');
 
-        $this->applicationClient = new ApplicationClient(new APIResource(), new Hydrator());
+        $this->applicationClient = new ApplicationClient($apiResource, new Hydrator());
 
         /** @noinspection PhpParamsInspection */
         $this->applicationClient->setClient($this->vonageClient->reveal());

@@ -573,21 +573,24 @@ class Verification implements VerificationInterface, Serializable, ArrayHydrateI
     }
 
     /**
-     * Simply proxies array access to check for a parameter in the response, request, or user provided data.
+     * This is hideous and will be refactored in future versions
      *
      * @param $param
      *
      * @return mixed|null
+     * @throws ClientException
      */
     protected function proxyArrayAccess($param)
     {
-        $value = @$this[$param];
+        $requestDataArray = $this->getRequestData();
 
-        if (isset($value)) {
-            return @$this[$param];
+        if (isset($requestDataArray[$param])) {
+            return $requestDataArray[$param];
         }
 
-        return null;
+        $responseDataArray = $this->getResponseData();
+
+        return $responseDataArray[$param] ?? null;
     }
 
     /**
