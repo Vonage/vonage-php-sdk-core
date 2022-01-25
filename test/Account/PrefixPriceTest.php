@@ -47,19 +47,6 @@ class PrefixPriceTest extends VonageTestCase
      *
      * @param $prefixPrice
      */
-    public function testArrayAccess($prefixPrice): void
-    {
-        $this->assertEquals("ZW", @$prefixPrice['country_code']);
-        $this->assertEquals("Zimbabwe", @$prefixPrice['country_name']);
-        $this->assertEquals("Zimbabwe", @$prefixPrice['country_display_name']);
-        $this->assertEquals("263", @$prefixPrice['dialing_prefix']);
-    }
-
-    /**
-     * @dataProvider prefixPriceProvider
-     *
-     * @param $prefixPrice
-     */
     public function testUsesCustomPriceForKnownNetwork($prefixPrice): void
     {
         $this->assertEquals("0.123", $prefixPrice->getPriceForNetwork('21039'));

@@ -19,15 +19,15 @@ use Vonage\Client\Credentials\SignatureSecret;
 
 class ContainerTest extends VonageTestCase
 {
-    protected $types = [
+    protected array $types = [
         Basic::class,
         SignatureSecret::class,
         Keypair::class
     ];
 
-    protected $basic;
-    protected $secret;
-    protected $keypair;
+    protected Basic $basic;
+    protected SignatureSecret $secret;
+    protected Keypair $keypair;
 
     public function setUp(): void
     {
@@ -47,7 +47,6 @@ class ContainerTest extends VonageTestCase
         $container = new Container($credential);
 
         $this->assertSame($credential, $container->get($type));
-        $this->assertSame($credential, $container[$type]);
 
         foreach ($this->types as $class) {
             if ($type === $class) {

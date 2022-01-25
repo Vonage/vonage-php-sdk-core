@@ -28,14 +28,6 @@ class BasicTest extends VonageTestCase
         $this->assertEquals($this->secret, $array['api_secret']);
     }
 
-    public function testArrayAccess(): void
-    {
-        $credentials = new Basic($this->key, $this->secret);
-
-        $this->assertEquals($this->key, $credentials['api_key']);
-        $this->assertEquals($this->secret, $credentials['api_secret']);
-    }
-
     public function testProperties(): void
     {
         $credentials = new Basic($this->key, $this->secret);

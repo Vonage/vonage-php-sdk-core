@@ -12,15 +12,20 @@ class SignatureQueryHandler extends AbstractHandler
     public function __invoke(RequestInterface $request, CredentialsInterface $credentials): RequestInterface
     {
         $credentials = $this->extract(SignatureSecret::class, $credentials);
+        $credentialsArray = $credentials->asArray();
 
         $query = [];
         parse_str($request->getUri()->getQuery(), $query);
-        $query['api_key'] = $credentials['api_key'];
-        $signature = new Signature($query, $credentials['signature_secret'], $credentials['signature_method']);
-        $request = $request->withUri(
-            $request->getUri()->withQuery(http_build_query($signature->getSignedParams()))
+        $query['api_key'] = $credentialsArray['api_key'];
+
+        $signature = new Signature(
+            $query,
+            $credentialsArray['signature_secret'],
+            $credentialsArray['signature_method']
         );
 
-        return $request;
+        return $request->withUri(
+            $request->getUri()->withQuery(http_build_query($signature->getSignedParams()))
+        );
     }
 }

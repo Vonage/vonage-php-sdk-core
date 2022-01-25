@@ -27,7 +27,7 @@ class Container extends AbstractCredentials
     /**
      * @var array
      */
-    protected $credentials;
+    protected array $credentials;
 
     public function __construct($credentials)
     {

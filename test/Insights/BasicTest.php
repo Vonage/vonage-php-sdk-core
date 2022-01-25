@@ -22,23 +22,6 @@ class BasicTest extends VonageTestCase
      * @param $basic
      * @param $inputData
      */
-    public function testArrayAccess($basic, $inputData): void
-    {
-        $this->assertEquals($inputData['request_id'], @$basic['request_id']);
-        $this->assertEquals($inputData['international_format_number'], @$basic['international_format_number']);
-        $this->assertEquals($inputData['national_format_number'], @$basic['national_format_number']);
-        $this->assertEquals($inputData['country_code'], @$basic['country_code']);
-        $this->assertEquals($inputData['country_code_iso3'], @$basic['country_code_iso3']);
-        $this->assertEquals($inputData['country_name'], @$basic['country_name']);
-        $this->assertEquals($inputData['country_prefix'], @$basic['country_prefix']);
-    }
-
-    /**
-     * @dataProvider basicTestProvider
-     *
-     * @param $basic
-     * @param $inputData
-     */
     public function testObjectAccess($basic, $inputData): void
     {
         $this->assertEquals($inputData['request_id'], $basic->getRequestId());
