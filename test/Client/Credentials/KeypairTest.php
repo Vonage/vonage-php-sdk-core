@@ -36,14 +36,6 @@ class KeypairTest extends VonageTestCase
         $this->assertEquals($this->application, $array['application']);
     }
 
-    public function testArrayAccess(): void
-    {
-        $credentials = new Keypair($this->key, $this->application);
-
-        $this->assertEquals($this->key, $credentials['key']);
-        $this->assertEquals($this->application, $credentials['application']);
-    }
-
     public function testProperties(): void
     {
         $credentials = new Keypair($this->key, $this->application);

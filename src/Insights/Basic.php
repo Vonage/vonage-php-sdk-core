@@ -11,18 +11,11 @@ declare(strict_types=1);
 
 namespace Vonage\Insights;
 
-use ArrayAccess;
-use JsonSerializable;
-use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
-use Vonage\Entity\JsonUnserializableInterface;
 
-use function get_class;
-use function trigger_error;
-
-class Basic implements JsonSerializable, JsonUnserializableInterface, ArrayAccess, ArrayHydrateInterface
+class Basic implements ArrayHydrateInterface
 {
-    protected $data = [];
+    protected array $data = [];
 
     /**
      * @param $number
@@ -65,65 +58,6 @@ class Basic implements JsonSerializable, JsonUnserializableInterface, ArrayAcces
     public function getCountryPrefix(): string
     {
         return $this->data['country_prefix'];
-    }
-
-    /**
-     * @return array|mixed
-     */
-    #[\ReturnTypeWillChange]
-    public function jsonSerialize()
-    {
-        return $this->toArray();
-    }
-
-    /**
-     * @return void|null
-     */
-    public function jsonUnserialize(array $json): void
-    {
-        trigger_error(
-            get_class($this) . "::jsonUnserialize is deprecated, please fromArray() instead",
-            E_USER_DEPRECATED
-        );
-
-        $this->fromArray($json);
-    }
-
-    public function offsetExists($offset): bool
-    {
-        trigger_error(
-            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
-            E_USER_DEPRECATED
-        );
-
-        return isset($this->data[$offset]);
-    }
-
-    #[\ReturnTypeWillChange]
-    public function offsetGet($offset)
-    {
-        trigger_error(
-            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
-            E_USER_DEPRECATED
-        );
-
-        return $this->data[$offset];
-    }
-
-    /**
-     * @throws ClientException
-     */
-    public function offsetSet($offset, $value): void
-    {
-        throw new ClientException('Number insights results are read only');
-    }
-
-    /**
-     * @throws ClientException
-     */
-    public function offsetUnset($offset): void
-    {
-        throw new ClientException('Number insights results are read only');
     }
 
     public function fromArray(array $data): void

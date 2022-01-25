@@ -82,12 +82,6 @@ class VerificationTest extends VonageTestCase
         $this->assertEquals($this->brand, @$params['brand']);
     }
 
-    public function testConstructDataAsArray(): void
-    {
-        $this->assertEquals($this->number, @$this->verification['number']);
-        $this->assertEquals($this->brand, @$this->verification['brand']);
-    }
-
     /**
      * @dataProvider optionalValues
      *
@@ -112,7 +106,8 @@ class VerificationTest extends VonageTestCase
         $params = $verification->getRequestData(false);
 
         $this->assertEquals($normal, $params[$param]);
-        $this->assertEquals($normal, @$verification[$param]);
+        $verificationArray = $verification->toArray();
+        $this->assertEquals($normal, $verificationArray[$param]);
     }
 
     /**
@@ -135,7 +130,8 @@ class VerificationTest extends VonageTestCase
         $params = @$this->verification->getRequestData(false);
 
         $this->assertEquals($normal, $params[$param]);
-        $this->assertEquals($normal, @$this->verification[$param]);
+        $verificationArray = $this->verification->toArray();
+        $this->assertEquals($normal, $verificationArray[$param]);
     }
 
     /**
@@ -221,10 +217,11 @@ class VerificationTest extends VonageTestCase
     public function testResponseDataAsArray($type): void
     {
         @$this->existing->setResponse($this->getResponse($type));
+        $existingAsArray = $this->existing->toArray();
         $json = $this->existing->getResponseData();
 
         foreach ($json as $key => $value) {
-            $this->assertEquals($value, @$this->existing[$key], "Could not access `$key` as a property.");
+            $this->assertEquals($value, $existingAsArray[$key], "Could not access `$key` as a property.");
         }
     }
 

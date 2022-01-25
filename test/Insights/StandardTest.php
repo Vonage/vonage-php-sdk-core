@@ -22,23 +22,6 @@ class StandardTest extends VonageTestCase
      * @param $standard
      * @param $inputData
      */
-    public function testArrayAccess($standard, $inputData): void
-    {
-        $this->assertEquals($inputData['refund_price'], @$standard['refund_price']);
-        $this->assertEquals($inputData['request_price'], @$standard['request_price']);
-        $this->assertEquals($inputData['remaining_balance'], @$standard['remaining_balance']);
-        $this->assertEquals($inputData['current_carrier'], @$standard['current_carrier']);
-        $this->assertEquals($inputData['original_carrier'], @$standard['original_carrier']);
-        $this->assertEquals($inputData['ported'], @$standard['ported']);
-        $this->assertEquals($inputData['roaming'], @$standard['roaming']);
-    }
-
-    /**
-     * @dataProvider standardTestProvider
-     *
-     * @param $standard
-     * @param $inputData
-     */
     public function testObjectAccess($standard, $inputData): void
     {
         $this->assertEquals($inputData['refund_price'], @$standard->getRefundPrice());

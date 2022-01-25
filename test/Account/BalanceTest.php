@@ -20,7 +20,7 @@ class BalanceTest extends VonageTestCase
     /**
      * @var Balance
      */
-    protected $balance;
+    protected Balance $balance;
 
     public function setUp(): void
     {
@@ -31,57 +31,5 @@ class BalanceTest extends VonageTestCase
     {
         $this->assertEquals("12.99", $this->balance->getBalance());
         $this->assertEquals(false, $this->balance->getAutoReload());
-    }
-
-    public function testArrayAccess(): void
-    {
-        $this->assertEquals("12.99", @$this->balance['balance']);
-        $this->assertEquals(false, @$this->balance['auto_reload']);
-    }
-
-    public function testJsonSerialize(): void
-    {
-        $data = $this->balance->jsonSerialize();
-
-        $this->assertSame('12.99', $data['balance']);
-        $this->assertFalse($data['auto_reload']);
-    }
-
-    public function testJsonUnserialize(): void
-    {
-        $data = ['value' => '5.00', 'autoReload' => false];
-
-        $balance = new Balance('1.99', true);
-        $balance->fromArray($data);
-
-        $this->assertSame($data['value'], @$balance['balance']);
-        $this->assertSame($data['autoReload'], @$balance['auto_reload']);
-    }
-
-    public function testActsLikeArray(): void
-    {
-        $this->assertSame('12.99', @$this->balance['balance']);
-        $this->assertTrue(@isset($this->balance['balance']));
-    }
-
-    public function testCannotRemoveArrayKey(): void
-    {
-        $this->expectException(ClientException::class);
-        $this->expectExceptionMessage('Balance is read only');
-
-        unset($this->balance['balance']);
-    }
-
-    public function testCannotDirectlySetArrayKey(): void
-    {
-        $this->expectException(ClientException::class);
-        $this->expectExceptionMessage('Balance is read only');
-
-        $this->balance['balance'] = '5.00';
-    }
-
-    public function testMakeSureDataIsPubliclyVisible(): void
-    {
-        $this->assertSame('12.99', @$this->balance->data['balance']);
     }
 }
