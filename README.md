@@ -30,6 +30,10 @@ To install the PHP client library to your project, we recommend using [Composer]
 composer require vonage/client
 ```
 
+> Note that this actually points to a wrapper library that includes an HTTP client -and- this core library. You can
+> install this library directly from Composer if you wish, with the ability to choose the HTTP client your project
+> uses.
+
 > You don't need to clone this repository to use this library in your own projects. Use Composer to install it from Packagist.
 
 If you're new to Composer, here are some resources that you may find useful:
@@ -111,7 +115,7 @@ The [send example][send_example] also has full working examples.
 
 ### Receiving a Message
 
-Inbound messages are [sent to your application as a webhook][doc_inbound], and the client library provides a way to 
+Inbound messages are [sent to your application as a webhook][doc_inbound]. The Client library provides a way to 
 create an inbound message object from a webhook:
 
 ```php
@@ -274,7 +278,7 @@ $outboundCall = new \Vonage\Voice\OutboundCall(
 );
 $ncco = new NCCO();
 
-//ADD ACTIONS TO THE NCCO OBJECT HERE
+// ADD ACTIONS TO THE NCCO OBJECT HERE
 
 $outboundCall->setNCCO($ncco);
 
@@ -423,7 +427,7 @@ foreach($client->search($filter) as $call){
 
 ### Creating an Application
 
-Application are configuration containers. You can create one using a simple array structure:
+Application are configuration containers. You can create one using an array structure:
 
 ```php
 $application = new \Vonage\Application\Application();
@@ -476,7 +480,7 @@ $client->applications()->create($application);
 You can also pass the client an application object:
 
 ```php
-$a = new Vonage\Application\Application;
+$a = new Vonage\Application\Application();
 
 $a->setName('PHP Client Example');
 $a->getVoiceConfig()->setWebhook('answer_url', 'https://example.com/answer', 'GET');
