@@ -11,9 +11,7 @@ declare(strict_types=1);
 
 namespace Vonage\Client\Credentials;
 
-use ArrayAccess;
-
-interface CredentialsInterface extends ArrayAccess
+interface CredentialsInterface
 {
     public function asArray();
 }

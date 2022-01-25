@@ -18,9 +18,9 @@ use Vonage\InvalidResponseException;
 use function get_class;
 use function trigger_error;
 
-class SecretCollection implements ArrayAccess
+class SecretCollection
 {
-    protected $data;
+    protected array $data;
 
     /**
      * @throws InvalidResponseException
@@ -68,41 +68,5 @@ class SecretCollection implements ArrayAccess
         }
 
         return new self($secrets, $data['_links']);
-    }
-
-    public function offsetExists($offset): bool
-    {
-        trigger_error(
-            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
-            E_USER_DEPRECATED
-        );
-
-        return isset($this->data[$offset]);
-    }
-
-    public function offsetGet($offset)
-    {
-        trigger_error(
-            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
-            E_USER_DEPRECATED
-        );
-
-        return $this->data[$offset];
-    }
-
-    /**
-     * @throws ClientException
-     */
-    public function offsetSet($offset, $value): void
-    {
-        throw new ClientException('SecretCollection::offsetSet is not implemented');
-    }
-
-    /**
-     * @throws ClientException
-     */
-    public function offsetUnset($offset): void
-    {
-        throw new ClientException('SecretCollection::offsetUnset is not implemented');
     }
 }

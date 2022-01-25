@@ -12,9 +12,11 @@ declare(strict_types=1);
 namespace VonageTest\Account;
 
 use Laminas\Diactoros\Response;
+use Vonage\Account\ClientFactory;
+use Vonage\Client\APIResource;
+use Vonage\Client\Factory\MapFactory;
 use VonageTest\VonageTestCase;
 use Prophecy\Argument;
-use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
 use Vonage\Account\Client as AccountClient;
@@ -23,8 +25,6 @@ use Vonage\Client;
 use Vonage\Client\Exception as ClientException;
 use Vonage\Client\Exception\Request as RequestException;
 use Vonage\Client\Exception\Server as ServerException;
-use Vonage\Client\Exception\Validation as ValidationException;
-use Vonage\InvalidResponseException;
 use Vonage\Network;
 use VonageTest\Psr7AssertionTrait;
 
@@ -33,7 +33,6 @@ use function fopen;
 class ClientTest extends VonageTestCase
 {
     use Psr7AssertionTrait;
-
 
     protected $vonageClient;
 
@@ -47,15 +46,22 @@ class ClientTest extends VonageTestCase
      */
     protected $api;
 
+    /**
+     * @var MapFactory
+     */
+    private $mapFactory;
+
     public function setUp(): void
     {
         $this->vonageClient = $this->prophesize(Client::class);
         $this->vonageClient->getRestUrl()->willReturn('https://rest.nexmo.com');
         $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
 
-        $this->accountClient = new AccountClient();
         /** @noinspection PhpParamsInspection */
-        $this->accountClient->setClient($this->vonageClient->reveal());
+        $this->mapFactory = new MapFactory([APIResource::class => APIResource::class], $this->vonageClient->reveal());
+
+        $factory = new ClientFactory();
+        $this->accountClient = $factory($this->mapFactory);
     }
 
     /**
@@ -319,8 +325,8 @@ class ClientTest extends VonageTestCase
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('smsprice-us'));
 
         $smsPrice = $this->accountClient->getSmsPrice('US');
-
-        $this->assertInstanceOf(Network::class, @$smsPrice['networks']['311310']);
+        $networks = $smsPrice->getNetworks();
+        $this->assertInstanceOf(Network::class, $networks['311310']);
     }
 
     /**
@@ -364,8 +370,8 @@ class ClientTest extends VonageTestCase
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('voiceprice-us'));
 
         $voicePrice = $this->accountClient->getVoicePrice('US');
-
-        $this->assertInstanceOf(Network::class, @$voicePrice['networks']['311310']);
+        $networks = $voicePrice->getNetworks();
+        $this->assertInstanceOf(Network::class, $networks['311310']);
     }
 
     public function testGetPrefixPricing(): void
@@ -390,8 +396,9 @@ class ClientTest extends VonageTestCase
         }))->shouldBeCalledTimes(2)->willReturn($first, $noResults);
 
         $prefixPrice = $this->accountClient->getPrefixPricing('263');
-        $this->assertInstanceOf(PrefixPrice::class, @$prefixPrice[0]);
-        $this->assertInstanceOf(Network::class, @$prefixPrice[0]['networks']['64804']);
+        $this->assertInstanceOf(PrefixPrice::class, $prefixPrice[0]);
+        $networks = $prefixPrice[0]->getNetworks();
+        $this->assertInstanceOf(Network::class, $networks['64804']);
     }
 
     public function testGetPrefixPricingNoResults(): void
@@ -441,232 +448,6 @@ class ClientTest extends VonageTestCase
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('prefix-pricing-server-failure', 500));
 
         $this->accountClient->getPrefixPricing('263');
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws InvalidResponseException
-     */
-    public function testListSecrets(): void
-    {
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            $this->assertEquals('/accounts/abcd1234/secrets', $request->getUri()->getPath());
-            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('GET', $request->getMethod());
-            return true;
-        }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('secret-management/list'));
-
-        @$this->accountClient->listSecrets('abcd1234');
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws InvalidResponseException
-     */
-    public function testListSecretsServerError(): void
-    {
-        $this->expectException(ClientException\Server::class);
-
-        $this->vonageClient->send(
-            Argument::any()
-        )->willReturn($this->getGenericResponse('500', 500));
-
-        @$this->accountClient->listSecrets('abcd1234');
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws InvalidResponseException
-     */
-    public function testListSecretsRequestError(): void
-    {
-        $this->expectException(ClientException\Request::class);
-
-        $this->vonageClient->send(
-            Argument::any()
-        )->willReturn($this->getGenericResponse('401', 401));
-
-        @$this->accountClient->listSecrets('abcd1234');
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws InvalidResponseException
-     */
-    public function testGetSecret(): void
-    {
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            $this->assertEquals(
-                '/accounts/abcd1234/secrets/ad6dc56f-07b5-46e1-a527-85530e625800',
-                $request->getUri()->getPath()
-            );
-            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('GET', $request->getMethod());
-            return true;
-        }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('secret-management/get'));
-
-        @$this->accountClient->getSecret('abcd1234', 'ad6dc56f-07b5-46e1-a527-85530e625800');
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws InvalidResponseException
-     */
-    public function testGetSecretsServerError(): void
-    {
-        $this->expectException(ClientException\Server::class);
-
-        $this->vonageClient->send(
-            Argument::any()
-        )->willReturn($this->getGenericResponse('500', 500));
-
-        @$this->accountClient->getSecret('abcd1234', 'ad6dc56f-07b5-46e1-a527-85530e625800');
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws InvalidResponseException
-     */
-    public function testGetSecretsRequestError(): void
-    {
-        $this->expectException(ClientException\Request::class);
-
-        $this->vonageClient->send(
-            Argument::any()
-        )->willReturn($this->getGenericResponse('401', 401));
-
-        @$this->accountClient->getSecret('abcd1234', 'ad6dc56f-07b5-46e1-a527-85530e625800');
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws InvalidResponseException
-     * @throws RequestException
-     * @throws ValidationException
-     */
-    public function testCreateSecret(): void
-    {
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            $this->assertEquals('/accounts/abcd1234/secrets', $request->getUri()->getPath());
-            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('POST', $request->getMethod());
-            return true;
-        }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('secret-management/create'));
-
-        @$this->accountClient->createSecret('abcd1234', 'example-4PI-secret');
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws InvalidResponseException
-     * @throws RequestException
-     * @throws ValidationException
-     */
-    public function testCreateSecretsServerError(): void
-    {
-        $this->expectException(ClientException\Server::class);
-
-        $this->vonageClient->send(
-            Argument::any()
-        )->willReturn($this->getGenericResponse('500', 500));
-
-        @$this->accountClient->createSecret('abcd1234', 'example-4PI-secret');
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws InvalidResponseException
-     * @throws RequestException
-     * @throws ValidationException
-     */
-    public function testCreateSecretsRequestError(): void
-    {
-        $this->expectException(ClientException\Request::class);
-
-        $this->vonageClient->send(Argument::any())->willReturn($this->getGenericResponse('401', 401));
-
-        @$this->accountClient->createSecret('abcd1234', 'example-4PI-secret');
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws InvalidResponseException
-     * @throws RequestException
-     */
-    public function testCreateSecretsValidationError(): void
-    {
-        try {
-            $this->vonageClient->send(Argument::any())
-                ->willReturn($this->getResponse('secret-management/create-validation', 400));
-            @$this->accountClient->createSecret('abcd1234', 'example-4PI-secret');
-        } catch (ValidationException $e) {
-            $this->assertEquals(
-                'Bad Request: The request failed due to validation errors. ' .
-                    'See https://developer.nexmo.com/api-errors/account/secret-management#validation ' .
-                    'for more information',
-                $e->getMessage()
-            );
-            $this->assertEquals(
-                [
-                    [
-                        'name' => 'secret',
-                        'reason' => 'Does not meet complexity requirements'
-                    ]
-                ],
-                $e->getValidationErrors()
-            );
-        }
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     */
-    public function testDeleteSecret(): void
-    {
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            $this->assertEquals(
-                '/accounts/abcd1234/secrets/ad6dc56f-07b5-46e1-a527-85530e625800',
-                $request->getUri()->getPath()
-            );
-            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('DELETE', $request->getMethod());
-            return true;
-        }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('secret-management/delete'));
-
-        @$this->accountClient->deleteSecret('abcd1234', 'ad6dc56f-07b5-46e1-a527-85530e625800');
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     */
-    public function testDeleteSecretsServerError(): void
-    {
-        $this->expectException(ClientException\Server::class);
-        $this->vonageClient->send(Argument::any())->willReturn($this->getGenericResponse('500', 500));
-        @$this->accountClient->deleteSecret('abcd1234', 'ad6dc56f-07b5-46e1-a527-85530e625800');
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     */
-    public function testDeleteSecretsRequestError(): void
-    {
-        $this->expectException(ClientException\Request::class);
-        $this->vonageClient->send(Argument::any())->willReturn($this->getGenericResponse('401', 401));
-        @$this->accountClient->deleteSecret('abcd1234', 'ad6dc56f-07b5-46e1-a527-85530e625800');
     }
 
     /**

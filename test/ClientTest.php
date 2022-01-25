@@ -17,6 +17,10 @@ use Http\Mock\Client as HttpMock;
 use InvalidArgumentException;
 use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
+use Lcobucci\JWT\Configuration;
+use Lcobucci\JWT\Signer\Rsa\Sha256;
+use Lcobucci\JWT\UnencryptedToken;
+use Lcobucci\JWT\Validation\Validator;
 use VonageTest\VonageTestCase;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Log\LoggerInterface;
@@ -185,10 +189,14 @@ class ClientTest extends VonageTestCase
 
         $this->assertEmpty($request->getUri()->getQuery());
 
+        // Does not validate JWT completely, but does check it can be decoded
         $auth = $request->getHeaderLine('Authorization');
-
         $this->assertStringStartsWith('Bearer ', $auth);
-        self::markTestIncomplete('Has correct format, but not tested as output of JWT generation');
+        $jwtString = preg_replace('/^Bearer /', '', $auth);
+        $key = $this->key_credentials->getKey();
+        $config = Configuration::forSymmetricSigner(new Sha256(), $key);
+        $token = $config->parser()->parse($jwtString);
+        $this->assertInstanceOf(UnencryptedToken::class, $token);
     }
 
     /**
@@ -204,10 +212,14 @@ class ClientTest extends VonageTestCase
 
         $this->assertEmpty($request->getUri()->getQuery());
 
+        // Does not validate JWT completely, but does check it can be decoded
         $auth = $request->getHeaderLine('Authorization');
-
         $this->assertStringStartsWith('Bearer ', $auth);
-        self::markTestIncomplete('Has correct format, but not tested as output of JWT generation');
+        $jwtString = preg_replace('/^Bearer /', '', $auth);
+        $key = $this->key_credentials->getKey();
+        $config = Configuration::forSymmetricSigner(new Sha256(), $key);
+        $token = $config->parser()->parse($jwtString);
+        $this->assertInstanceOf(UnencryptedToken::class, $token);
     }
 
     /**
@@ -226,12 +238,6 @@ class ClientTest extends VonageTestCase
         $this->assertRequestJsonBodyContains('api_secret', $this->api_secret, $request);
     }
 
-    public function testOAuthCredentials(): void
-    {
-        //$client = new Client(new OAuth('ctoken', 'ckey', 'token', 'key'));
-        self::markTestSkipped('not yet implemented');
-    }
-
     /**
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Exception
@@ -245,10 +251,14 @@ class ClientTest extends VonageTestCase
 
         $this->assertEmpty($request->getUri()->getQuery());
 
+        // Does not validate JWT completely, but does check it can be decoded
         $auth = $request->getHeaderLine('Authorization');
-
         $this->assertStringStartsWith('Bearer ', $auth);
-        self::markTestIncomplete('Has correct format, but not tested as output of JWT generation');
+        $jwtString = preg_replace('/^Bearer /', '', $auth);
+        $key = $this->key_credentials->getKey();
+        $config = Configuration::forSymmetricSigner(new Sha256(), $key);
+        $token = $config->parser()->parse($jwtString);
+        $this->assertInstanceOf(UnencryptedToken::class, $token);
     }
 
     /**

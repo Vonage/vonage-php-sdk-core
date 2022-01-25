@@ -32,16 +32,6 @@ class OAuthTest extends VonageTestCase
         $this->assertEquals($this->appSecret, $array['consumer_secret']);
     }
 
-    public function testArrayAccess(): void
-    {
-        $credentials = new OAuth($this->appToken, $this->appSecret, $this->clientToken, $this->clientSecret);
-
-        $this->assertEquals($this->clientToken, $credentials['token']);
-        $this->assertEquals($this->clientSecret, $credentials['token_secret']);
-        $this->assertEquals($this->appToken, $credentials['consumer_key']);
-        $this->assertEquals($this->appSecret, $credentials['consumer_secret']);
-    }
-
     public function testProperties(): void
     {
         $credentials = new OAuth($this->appToken, $this->appSecret, $this->clientToken, $this->clientSecret);
