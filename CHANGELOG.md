@@ -1,8 +1,5 @@
 # 3.0.1
 
-### Fixed
-Nothing
-
 ### Changed
 
 * Allow composer to choose psr/container 1 or 2 for downstream dependencies
