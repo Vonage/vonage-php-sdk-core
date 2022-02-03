@@ -47,4 +47,4 @@ work that they do.
 * [Sascha Greuel](https://github.com/SoftCreatR)
 * [Mou Ikkai](https://github.com/Mou-Ikkai)
 * [Jesse O'Brien](https://github.com/JesseObrien)
-
+* [Fabien Salathe](https://github.com/BafS)
