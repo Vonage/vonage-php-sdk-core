@@ -70,6 +70,7 @@ class Basic implements JsonSerializable, JsonUnserializableInterface, ArrayAcces
     /**
      * @return array|mixed
      */
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return $this->toArray();
@@ -98,6 +99,7 @@ class Basic implements JsonSerializable, JsonUnserializableInterface, ArrayAcces
         return isset($this->data[$offset]);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         trigger_error(

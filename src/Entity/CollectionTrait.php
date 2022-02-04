@@ -82,6 +82,7 @@ trait CollectionTrait
     /**
      * Return the current item, expects concrete collection to handle creating the object.
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return $this->hydrateEntity($this->page['_embedded'][static::getCollectionName()][$this->current], $this->key());
@@ -100,6 +101,7 @@ trait CollectionTrait
      *
      * @return string|int
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return
@@ -158,7 +160,8 @@ trait CollectionTrait
 
     /**
      * Count of total items
-     */
+     */#
+    #[\ReturnTypeWillChange]
     public function count(): ?int
     {
         if (isset($this->page)) {

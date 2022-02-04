@@ -36,6 +36,7 @@ class Collection implements Countable, Iterator
         return (int)$this->data['message-count'];
     }
 
+    #[\ReturnTypeWillChange]
     public function current(): SentSMS
     {
         return new SentSMS($this->data['messages'][$this->current]);
@@ -44,6 +45,7 @@ class Collection implements Countable, Iterator
     /**
      * @return bool|float|int|string|null
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->current;
