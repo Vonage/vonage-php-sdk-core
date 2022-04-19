@@ -55,6 +55,13 @@ class OutboundCall
     protected $ncco;
 
     /**
+     * Whether or not to use random numbers linked on the application
+     *
+     * @var bool
+     */
+    protected $randomFrom = false;
+
+    /**
      * Length of time Vonage will allow a phone number to ring before hanging up
      *
      * @var int
@@ -66,10 +73,23 @@ class OutboundCall
      */
     protected $to;
 
-    public function __construct(EndpointInterface $to, Phone $from)
+    /**
+     * Creates a new Outbound Call object
+     * If no `$from` parameter is passed, the system will use a random number
+     * that is linked to the application instead.
+     *
+     * @param EndpointInterface $to
+     * @param Phone|null $from
+     * @return void
+     */
+    public function __construct(EndpointInterface $to, Phone $from = null)
     {
         $this->to = $to;
         $this->from = $from;
+
+        if (!$from) {
+            $this->randomFrom = true;
+        }
     }
 
     public function getAnswerWebhook(): ?Webhook
@@ -82,7 +102,7 @@ class OutboundCall
         return $this->eventWebhook;
     }
 
-    public function getFrom(): Phone
+    public function getFrom(): ?Phone
     {
         return $this->from;
     }
@@ -174,5 +194,10 @@ class OutboundCall
         $this->ringingTimer = $timer;
 
         return $this;
+    }
+
+    public function getRandomFrom(): bool
+    {
+        return $this->randomFrom;
     }
 }
