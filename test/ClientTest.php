@@ -525,10 +525,8 @@ class ClientTest extends VonageTestCase
 
         $verification = @new Verification('15554441212', 'test app');
         $verify->serialize($verification)->willReturn('string data')->shouldBeCalled();
-        $verify->unserialize($verification)->willReturn($verification)->shouldBeCalled();
 
         $this->assertEquals('string data', $client->serialize($verification));
-        $this->assertEquals($verification, $client->unserialize(serialize($verification)));
     }
 
     /**
