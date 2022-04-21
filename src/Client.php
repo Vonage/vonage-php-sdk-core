@@ -27,7 +27,6 @@ use Psr\Log\LogLevel;
 use RuntimeException;
 use Vonage\Account\ClientFactory;
 use Vonage\Application\ClientFactory as ApplicationClientFactory;
-use Vonage\Call\Collection;
 use Vonage\Client\APIResource;
 use Vonage\Client\Credentials\Basic;
 use Vonage\Client\Credentials\Container;
@@ -46,13 +45,9 @@ use Vonage\Client\Credentials\SignatureSecret;
 use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Client\Factory\FactoryInterface;
 use Vonage\Client\Factory\MapFactory;
-use Vonage\Client\Signature;
-use Vonage\Conversations\ClientFactory as ConversationsClientFactory;
 use Vonage\Conversion\ClientFactory as ConversionClientFactory;
 use Vonage\Entity\EntityInterface;
 use Vonage\Insights\ClientFactory as InsightsClientFactory;
-use Vonage\Logger\LoggerAwareInterface;
-use Vonage\Message\Client as MessageClient;
 use Vonage\Numbers\ClientFactory as NumbersClientFactory;
 use Vonage\Redact\ClientFactory as RedactClientFactory;
 use Vonage\Secrets\ClientFactory as SecretsClientFactory;
@@ -60,32 +55,25 @@ use Vonage\SMS\ClientFactory as SMSClientFactory;
 use Vonage\Verify\ClientFactory as VerifyClientFactory;
 use Vonage\Verify\Verification;
 use Vonage\Voice\ClientFactory as VoiceClientFactory;
+use Vonage\Logger\{LoggerAwareInterface, LoggerTrait};
 
 use function array_key_exists;
 use function array_merge;
-use function base64_encode;
 use function call_user_func_array;
 use function get_class;
 use function http_build_query;
 use function implode;
 use function is_null;
-use function is_string;
-use function json_decode;
 use function json_encode;
 use function method_exists;
-use function parse_str;
 use function set_error_handler;
 use function str_replace;
 use function strpos;
-use function unserialize;
-use Vonage\Logger\LoggerTrait;
-use Vonage\User\ClientFactory as UserClientFactory;
 
 /**
  * Vonage API Client, allows access to the API from PHP.
  *
  * @method Account\Client account()
- * @method Message\Client message()
  * @method Application\Client applications()
  * @method Conversion\Client conversion()
  * @method Insights\Client insights()
@@ -95,8 +83,6 @@ use Vonage\User\ClientFactory as UserClientFactory;
  * @method SMS\Client sms()
  * @method Verify\Client  verify()
  * @method Voice\Client voice()
- * @method User\Collection user()
- * @method Conversation\Collection conversation()
  *
  * @property string restUrl
  * @property string apiUrl
@@ -105,7 +91,6 @@ class Client implements LoggerAwareInterface
 {
     use LoggerTrait;
 
-    public const VERSION = '2.9.2';
     public const BASE_API = 'https://api.nexmo.com';
     public const BASE_REST = 'https://rest.nexmo.com';
 
@@ -210,12 +195,6 @@ class Client implements LoggerAwareInterface
         $this->setFactory(
             new MapFactory(
                 [
-                    // Legacy Namespaces
-                    'message' => MessageClient::class,
-                    'calls' => Collection::class,
-                    'conversation' => ConversationsClientFactory::class,
-                    'user' => UserClientFactory::class,
-
                     // Registered Services by name
                     'account' => ClientFactory::class,
                     'applications' => ApplicationClientFactory::class,
@@ -559,24 +538,6 @@ class Client implements LoggerAwareInterface
     {
         if ($entity instanceof Verification) {
             return $this->verify()->serialize($entity);
-        }
-
-        throw new RuntimeException('unknown class `' . get_class($entity) . '``');
-    }
-
-    /**
-     * @param string|Verification $entity
-     *
-     * @deprecated
-     */
-    public function unserialize($entity): Verification
-    {
-        if (is_string($entity)) {
-            $entity = unserialize($entity);
-        }
-
-        if ($entity instanceof Verification) {
-            return $this->verify()->unserialize($entity);
         }
 
         throw new RuntimeException('unknown class `' . get_class($entity) . '``');
