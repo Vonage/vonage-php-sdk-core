@@ -56,6 +56,7 @@ use Vonage\Verify\ClientFactory as VerifyClientFactory;
 use Vonage\Verify\Verification;
 use Vonage\Voice\ClientFactory as VoiceClientFactory;
 use Vonage\Logger\{LoggerAwareInterface, LoggerTrait};
+use Vonage\Message\Client as MessageClient;
 
 use function array_key_exists;
 use function array_merge;
@@ -74,6 +75,7 @@ use function strpos;
  * Vonage API Client, allows access to the API from PHP.
  *
  * @method Account\Client account()
+ * @method Message\Client message()
  * @method Application\Client applications()
  * @method Conversion\Client conversion()
  * @method Insights\Client insights()
@@ -195,6 +197,8 @@ class Client implements LoggerAwareInterface
         $this->setFactory(
             new MapFactory(
                 [
+                    // Legacy namespace (used by Laravel, needs to be moved over in future
+                    'message' => MessageClient::class,
                     // Registered Services by name
                     'account' => ClientFactory::class,
                     'applications' => ApplicationClientFactory::class,
