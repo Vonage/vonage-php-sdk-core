@@ -162,7 +162,7 @@ class NumberTest extends VonageTestCase
     {
         $this->assertSame($this->number, $this->number->setWebhook(Number::WEBHOOK_VOICE_STATUS, 'http://example.com'));
         $this->assertEquals('http://example.com', $this->number->getWebhook(Number::WEBHOOK_VOICE_STATUS));
-        $this->assertArrayHas('voiceStatusCallbackUrl', 'http://example.com', $this->number->getRequestData());
+        $this->assertArrayHas('voiceStatusCallback', 'http://example.com', $this->number->getRequestData());
     }
 
     /**

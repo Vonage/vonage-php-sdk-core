@@ -12,7 +12,7 @@
       ],
       "voiceCallbackType": "vxml",
       "voiceCallbackValue": "https://example.com/voice",
-      "voiceStatusCallbackUrl": "https://example.com/status"
+      "voiceStatusCallback": "https://example.com/status"
     },
     {
       "country": "US",
@@ -24,7 +24,7 @@
       ],
       "voiceCallbackType": "vxml",
       "voiceCallbackValue": "https://example.com/second_voice",
-      "voiceStatusCallbackUrl": "https://example.com/second_status"
+      "voiceStatusCallback": "https://example.com/second_status"
     }
   ]
 }

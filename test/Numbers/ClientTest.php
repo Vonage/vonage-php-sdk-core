@@ -98,7 +98,7 @@ class ClientTest extends VonageTestCase
             $this->assertRequestFormBodyContains('moHttpUrl', 'https://example.com/new_message', $request);
             $this->assertRequestFormBodyContains('voiceCallbackType', 'vxml', $request);
             $this->assertRequestFormBodyContains('voiceCallbackValue', 'https://example.com/new_voice', $request);
-            $this->assertRequestFormBodyContains('voiceStatusCallbackUrl', 'https://example.com/new_status', $request);
+            $this->assertRequestFormBodyContains('voiceStatusCallback', 'https://example.com/new_status', $request);
 
             return true;
         }))->willReturn($first, $second, $third);
@@ -125,7 +125,7 @@ class ClientTest extends VonageTestCase
             'moHttpUrl' => 'https://example.com/new_message',
             'voiceCallbackType' => 'vxml',
             'voiceCallbackValue' => 'https://example.com/new_voice',
-            'voiceStatusCallbackUrl' => 'https://example.com/new_status'
+            'voiceStatusCallback' => 'https://example.com/new_status'
         ];
 
         $rawId['country'] = 'US';

@@ -12,7 +12,7 @@
       ],
       "voiceCallbackType": "vxml",
       "voiceCallbackValue": "http://example.com/voice",
-      "voiceStatusCallbackUrl": "http://example.com/status"
+      "voiceStatusCallback": "http://example.com/status"
     }
   ]
 }
