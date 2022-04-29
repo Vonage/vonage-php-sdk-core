@@ -6,7 +6,7 @@ Client Library for PHP
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![codecov](https://codecov.io/gh/Vonage/vonage-php-sdk-core/branch/master/graph/badge.svg)](https://codecov.io/gh/vonage/vonage-php-sdk-core)
 
-<img src="https://developer.nexmo.com/assets/images/Vonage_Nexmo.svg" height="48px" alt="Nexmo is now known as Vonage" />
+![The Vonage logo](./vonage_logo.png)
 
 *This library requires a minimum PHP version of 7.4*
 
