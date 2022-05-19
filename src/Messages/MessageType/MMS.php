@@ -14,4 +14,9 @@ class MMS extends BaseMessage
     ];
 
     protected string $channel = 'mms';
+
+    public function toArray(): array
+    {
+        // TODO: Implement toArray() method.
+    }
 }

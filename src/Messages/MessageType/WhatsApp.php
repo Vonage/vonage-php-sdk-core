@@ -17,4 +17,9 @@ class WhatsApp extends BaseMessage
     ];
 
     protected string $channel = 'whatsapp';
+
+    public function toArray(): array
+    {
+        // TODO: Implement toArray() method.
+    }
 }

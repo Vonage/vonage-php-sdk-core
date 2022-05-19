@@ -12,4 +12,9 @@ class Viber extends BaseMessage
     ];
 
     protected string $channel = 'viber_service';
+
+    public function toArray(): array
+    {
+        // TODO: Implement toArray() method.
+    }
 }

@@ -14,4 +14,9 @@ class Messenger extends BaseMessage
     ];
 
     protected string $channel = 'messenger';
+
+    public function toArray(): array
+    {
+        // TODO: Implement toArray() method.
+    }
 }

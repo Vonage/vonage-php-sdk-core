@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace VonageTest\Messages;
 
+use Laminas\Diactoros\Response;
 use Prophecy\Prophecy\ObjectProphecy;
 use Vonage\Client\APIResource;
 use Vonage\Messages\MessageType\Messenger;
@@ -57,8 +58,10 @@ class ClientTest extends VonageTestCase
 
     public function testCanSendDefaultSMS(): void
     {
-        $message = new SMS();
-        $this->markTestIncomplete('To write');
+        $message = new SMS('447700900000', '16105551212', 'Reticulating Splines');
+        $this->vonageClient->send()->willReturn($this->getResponse('sms-success'));
+        $result = $this->messageClient->send($message);
+        $this->assertTrue($result);
     }
 
     public function testCanSendDefaultWhatsApp(): void
@@ -83,5 +86,13 @@ class ClientTest extends VonageTestCase
     {
         $message = new Viber();
         $this->markTestIncomplete('To write');
+    }
+
+    /**
+     * This method gets the fixtures and wraps them in a Response object to mock the API
+     */
+    protected function getResponse(string $identifier, int $status = 200): Response
+    {
+        return new Response(fopen(__DIR__ . '/Fixtures/Responses/' . $identifier . '.json', 'rb'), $status);
     }
 }
