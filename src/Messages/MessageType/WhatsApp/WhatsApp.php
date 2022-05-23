@@ -4,8 +4,6 @@ namespace Vonage\Messages\MessageType;
 
 class WhatsApp extends BaseMessage
 {
-    protected string $subtype = BaseMessage::MESSAGES_SUBTYPE_TEXT;
-
     protected array $validSubtypes = [
         BaseMessage::MESSAGES_SUBTYPE_TEXT,
         BaseMessage::MESSAGES_SUBTYPE_IMAGE,
@@ -16,7 +14,17 @@ class WhatsApp extends BaseMessage
         BaseMessage::MESSAGES_SUBTYPE_CUSTOM
     ];
 
-    protected string $channel = 'whatsapp';
+    public string $channel = 'whatsapp';
+
+    public function __construct(
+        string $to,
+        string $from,
+        string $subtype = BaseMessage::MESSAGES_SUBTYPE_TEXT
+    ) {
+        $this->to = $to;
+        $this->from = $from;
+        $this->subtype = $subtype;
+    }
 
     public function toArray(): array
     {

@@ -4,12 +4,10 @@ namespace Vonage\Messages\MessageType;
 
 abstract class BaseMessage implements Message
 {
-    protected string $messageType;
+    protected string $subType;
     protected string $to;
     protected string $from;
     protected string $channel;
-    protected string $subtype;
-    protected array $validSubtypes;
     protected string $clientRef;
 
     public const MESSAGES_SUBTYPE_TEXT = 'text';
@@ -31,9 +29,24 @@ abstract class BaseMessage implements Message
         $this->clientRef = $clientRef;
     }
 
-    public function getMessageType(): string
+    public function getSubType(): string
     {
-        return $this->messageType;
+        return $this->subType;
+    }
+
+    public function getFrom(): string
+    {
+        return $this->from;
+    }
+
+    public function setFrom(string $from): void
+    {
+        $this->from = $from;
+    }
+
+    public function getChannel(): string
+    {
+        return $this->channel;
     }
 
     public function getTo(): string
@@ -44,20 +57,5 @@ abstract class BaseMessage implements Message
     public function setTo(string $to): void
     {
         $this->to = $to;
-    }
-
-    public function getSubType(): string
-    {
-        return $this->subtype;
-    }
-
-    public function setSubType(string $subType): void
-    {
-        $this->subtype = $subType;
-    }
-
-    public function setMessageType(string $messageType): void
-    {
-        $this->messageType = $messageType;
     }
 }

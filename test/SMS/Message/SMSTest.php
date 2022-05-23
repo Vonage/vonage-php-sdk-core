@@ -81,7 +81,7 @@ class SMSTest extends VonageTestCase
     public function testCannotSetInvalidTTL(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('SMS TTL must be in the range of 20000-604800000 milliseconds');
+        $this->expectExceptionMessage('SMSText TTL must be in the range of 20000-604800000 milliseconds');
 
         (new SMS('447700900000', '16105551212', 'Test Message'))
             ->setTtl(2);

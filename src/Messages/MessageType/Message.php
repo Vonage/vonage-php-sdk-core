@@ -14,12 +14,12 @@ namespace Vonage\Messages\MessageType;
 interface Message
 {
     public function toArray(): array;
-    public function getMessageType(): string;
-    public function setMessageType(string $messageType): void;
     public function getTo(): string;
     public function setTo(string $to): void;
-    public function getSubType(): string;
-    public function setSubType(string $subType): void;
+    public function getFrom(): string;
+    public function setFrom(string $from): void;
     public function getClientRef(): string;
+    public function getChannel(): string;
+    public function getSubType(): string;
     public function setClientRef(string $clientRef): void;
 }

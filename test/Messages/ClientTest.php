@@ -11,21 +11,22 @@ declare(strict_types=1);
 
 namespace VonageTest\Messages;
 
+use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
+use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
 use Vonage\Client\APIResource;
-use Vonage\Messages\MessageType\Messenger;
-use Vonage\Messages\MessageType\MMS;
-use Vonage\Messages\MessageType\SMS;
-use Vonage\Messages\MessageType\Viber;
-use Vonage\Messages\MessageType\WhatsApp;
+use Vonage\Messages\MessageType\SMS\SMSText;
 use Vonage\SMS\ExceptionErrorHandler;
+use VonageTest\Psr7AssertionTrait;
 use VonageTest\VonageTestCase;
 use Vonage\Client;
 use Vonage\Messages\Client as MessagesClient;
 
 class ClientTest extends VonageTestCase
 {
+    use Psr7AssertionTrait;
+
     protected ObjectProphecy $vonageClient;
     protected MessagesClient $messageClient;
     protected APIResource $api;
@@ -42,7 +43,7 @@ class ClientTest extends VonageTestCase
         $this->api = (new APIResource())
             ->setCollectionName('messages')
             ->setIsHAL(false)
-            ->setErrorsOn200(true)
+            ->setErrorsOn200(false)
             ->setClient($this->vonageClient->reveal())
             ->setExceptionErrorHandler(new ExceptionErrorHandler())
             ->setBaseUrl('https://rest.nexmo.com');
@@ -52,39 +53,48 @@ class ClientTest extends VonageTestCase
 
     public function testHasSetupClientCorrectly(): void
     {
-        $this->assertInstanceOf(APIResource::class, $this->api);
         $this->assertInstanceOf(MessagesClient::class, $this->messageClient);
     }
 
-    public function testCanSendDefaultSMS(): void
+    public function testCanSendSMS(): void
     {
-        $message = new SMS('447700900000', '16105551212', 'Reticulating Splines');
-        $this->vonageClient->send()->willReturn($this->getResponse('sms-success'));
+        $payload = [
+            'to' => '447700900000',
+            'from' => '16105551212',
+            'text' => 'Reticulating Splines'
+        ];
+
+        $message = new SMSText($payload['to'], $payload['from'], $payload['text']);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
+            $this->assertRequestJsonBodyContains('text', $payload['text'], $request);
+
+            return true;
+        }))->willReturn($this->getResponse('sms-success', 202));
         $result = $this->messageClient->send($message);
-        $this->assertTrue($result);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('message_uuid', $result);
     }
 
-    public function testCanSendDefaultWhatsApp(): void
+    public function testCanSendWhatsApp(): void
     {
-        $message = new WhatsApp();
         $this->markTestIncomplete('To write');
     }
 
-    public function testCanSendDefaultMMS(): void
+    public function testCanSendMMS(): void
     {
-        $message = new MMS();
         $this->markTestIncomplete('To write');
     }
 
-    public function testCanSendDefaultMessenger(): void
+    public function testCanSendMessenger(): void
     {
-        $message = new Messenger();
         $this->markTestIncomplete('To write');
     }
 
-    public function testCanSendDefaultViber(): void
+    public function testCanSendViber(): void
     {
-        $message = new Viber();
         $this->markTestIncomplete('To write');
     }
 

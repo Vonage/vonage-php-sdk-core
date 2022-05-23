@@ -4,8 +4,6 @@ namespace Vonage\Messages\MessageType;
 
 class MMS extends BaseMessage
 {
-    protected string $subtype = BaseMessage::MESSAGES_SUBTYPE_IMAGE;
-
     protected array $validSubtypes = [
         BaseMessage::MESSAGES_SUBTYPE_IMAGE,
         BaseMessage::MESSAGES_SUBTYPE_VCARD,
@@ -14,6 +12,16 @@ class MMS extends BaseMessage
     ];
 
     protected string $channel = 'mms';
+
+    public function __construct(
+        string $to,
+        string $from,
+        string $subtype = BaseMessage::MESSAGES_SUBTYPE_IMAGE
+    ) {
+        $this->to = $to;
+        $this->from = $from;
+        $this->subtype = $subtype;
+    }
 
     public function toArray(): array
     {
