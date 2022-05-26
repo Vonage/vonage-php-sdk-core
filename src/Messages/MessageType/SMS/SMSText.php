@@ -40,7 +40,7 @@ class SMSText extends BaseMessage
             'to' => $this->getTo(),
             'from' => $this->getFrom(),
             'channel' => $this->getChannel(),
-            'client_ref' => $this->getSubType()
+            'client_ref' => $this->getClientRef()
         ];
     }
 }

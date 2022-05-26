@@ -16,6 +16,14 @@ use Laminas\Diactoros\Response;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
 use Vonage\Client\APIResource;
+use Vonage\Messages\MessageObjects\AudioObject;
+use Vonage\Messages\MessageObjects\ImageObject;
+use Vonage\Messages\MessageObjects\VCardObject;
+use Vonage\Messages\MessageObjects\VideoObject;
+use Vonage\Messages\MessageType\MMS\MMSAudio;
+use Vonage\Messages\MessageType\MMS\MMSImage;
+use Vonage\Messages\MessageType\MMS\MMSvCard;
+use Vonage\Messages\MessageType\MMS\MMSVideo;
 use Vonage\Messages\MessageType\SMS\SMSText;
 use Vonage\SMS\ExceptionErrorHandler;
 use VonageTest\Psr7AssertionTrait;
@@ -70,6 +78,7 @@ class ClientTest extends VonageTestCase
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('text', $payload['text'], $request);
+            $this->assertEquals('POST', $request->getMethod());
 
             return true;
         }))->willReturn($this->getResponse('sms-success', 202));
@@ -78,24 +87,112 @@ class ClientTest extends VonageTestCase
         $this->assertArrayHasKey('message_uuid', $result);
     }
 
-    public function testCanSendWhatsApp(): void
+    public function testCanSendMMSImage(): void
     {
-        $this->markTestIncomplete('To write');
+        $imageUrl = 'https://picsum.photos/200/300';
+        $mmsImageObject = new ImageObject($imageUrl, 'Picture of a skateboarder');
+
+        $payload = [
+            'to' => '447700900000',
+            'from' => '16105551212',
+            'image' => $mmsImageObject
+        ];
+
+        $message = new MMSImage($payload['to'], $payload['from'], $mmsImageObject);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
+            $this->assertRequestJsonBodyContains('image', $payload['image']->toArray(), $request);
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('sms-success', 202));
+        $result = $this->messageClient->send($message);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('message_uuid', $result);
     }
 
-    public function testCanSendMMS(): void
+    public function testCanSendMMSvCard(): void
     {
-        $this->markTestIncomplete('To write');
+        $vCardUrl = 'https://github.com/nuovo/vCard-parser/blob/master/Example.vcf';
+        $vCardObject = new VCardObject($vCardUrl);
+
+        $payload = [
+            'to' => '447700900000',
+            'from' => '16105551212',
+            'vcard' => $vCardObject
+        ];
+
+        $message = new MMSvCard($payload['to'], $payload['from'], $vCardObject);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
+            $this->assertRequestJsonBodyContains('vcard', $payload['vcard']->toArray(), $request);
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('sms-success', 202));
+        $result = $this->messageClient->send($message);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('message_uuid', $result);
     }
 
-    public function testCanSendMessenger(): void
+    public function testCanSendMMSAudio(): void
     {
-        $this->markTestIncomplete('To write');
+        $audioObject = new AudioObject(
+            'https://file-examples.com/wp-content/uploads/2017/11/file_example_MP3_700KB.mp3',
+            'some audio'
+        );
+
+        $payload = [
+            'to' => '447700900000',
+            'from' => '16105551212',
+            'audio' => $audioObject
+        ];
+
+        $message = new MMSAudio($payload['to'], $payload['from'], $audioObject);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
+            $this->assertRequestJsonBodyContains('audio', $payload['audio']->toArray(), $request);
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('sms-success', 202));
+        $result = $this->messageClient->send($message);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('message_uuid', $result);
     }
 
-    public function testCanSendViber(): void
+    public function testCanSendMMSVideo(): void
     {
-        $this->markTestIncomplete('To write');
+        $videoObject = new VideoObject(
+            'https://file-examples.com/wp-content/uploads/2017/04/file_example_MP4_480_1_5MG.mp4',
+            'some video'
+        );
+
+        $payload = [
+            'to' => '447700900000',
+            'from' => '16105551212',
+            'video' => $videoObject
+        ];
+
+        $message = new MMSVideo($payload['to'], $payload['from'], $videoObject);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
+            $this->assertRequestJsonBodyContains('video', $payload['video']->toArray(), $request);
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('sms-success', 202));
+        $result = $this->messageClient->send($message);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('message_uuid', $result);
     }
 
     /**

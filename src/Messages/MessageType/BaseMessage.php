@@ -8,7 +8,7 @@ abstract class BaseMessage implements Message
     protected string $to;
     protected string $from;
     protected string $channel;
-    protected string $clientRef;
+    protected string $clientRef = '';
 
     public const MESSAGES_SUBTYPE_TEXT = 'text';
     public const MESSAGES_SUBTYPE_IMAGE = 'image';
