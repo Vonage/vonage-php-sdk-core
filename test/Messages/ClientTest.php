@@ -195,6 +195,192 @@ class ClientTest extends VonageTestCase
         $this->assertArrayHasKey('message_uuid', $result);
     }
 
+    public function testCanSendWhatsAppText(): void
+    {
+        $payload = [
+            'to' => '447700900000',
+            'from' => '16105551212',
+            'text' => 'This is a WhatsApp text'
+        ];
+
+        $message = new WhatsAppText($payload['to'], $payload['from'], $payload['text']);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
+            $this->assertRequestJsonBodyContains('text', $payload['text'], $request);
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('sms-success', 202));
+        $result = $this->messageClient->send($message);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('message_uuid', $result);
+    }
+
+    public function testCanSendWhatsAppImage(): void
+    {
+        $imageUrl = 'https://picsum.photos/200/300';
+        $whatsAppImageObject = new ImageObject($imageUrl, 'Picture of a skateboarder');
+
+        $payload = [
+            'to' => '447700900000',
+            'from' => '16105551212',
+            'image' => $whatsAppImageObject
+        ];
+
+        $message = new WhatsAppImage($payload['to'], $payload['from'], $payload['text']);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
+            $this->assertRequestJsonBodyContains('image', $payload['image']->toArray(), $request);
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('sms-success', 202));
+        $result = $this->messageClient->send($message);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('message_uuid', $result);
+    }
+
+    public function testCanSendWhatsAppAudio(): void
+    {
+        $audioObject = new AudioObject(
+            'https://file-examples.com/wp-content/uploads/2017/11/file_example_MP3_700KB.mp3',
+            'some audio'
+        );
+
+        $payload = [
+            'to' => '447700900000',
+            'from' => '16105551212',
+            'audio' => $audioObject
+        ];
+
+        $message = new WhatsAppAudio($payload['to'], $payload['from'], $audioObject);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
+            $this->assertRequestJsonBodyContains('audio', $payload['audio']->toArray(), $request);
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('sms-success', 202));
+        $result = $this->messageClient->send($message);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('message_uuid', $result);
+    }
+
+    public function testCanSendWhatsAppVideo(): void
+    {
+        $videoObject = new VideoObject(
+            'https://file-examples.com/wp-content/uploads/2017/04/file_example_MP4_480_1_5MG.mp4',
+            'some video'
+        );
+
+        $payload = [
+            'to' => '447700900000',
+            'from' => '16105551212',
+            'video' => $videoObject
+        ];
+
+        $message = new WhatsAppVideo($payload['to'], $payload['from'], $videoObject);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
+            $this->assertRequestJsonBodyContains('video', $payload['video']->toArray(), $request);
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('sms-success', 202));
+        $result = $this->messageClient->send($message);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('message_uuid', $result);
+    }
+
+    public function testCanSendWhatsAppFile(): void
+    {
+        $fileObject = new FileObject(
+            'https://file-examples.com/wp-content/uploads/2017/04/file_example_MP4_480_1_5MG.mp4',
+            'some video'
+        );
+
+        $payload = [
+            'to' => '447700900000',
+            'from' => '16105551212',
+            'file' => $fileObject
+        ];
+
+        $message = new WhatsAppFile($payload['to'], $payload['from'], $fileObject);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
+            $this->assertRequestJsonBodyContains('file', $payload['file']->toArray(), $request);
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('sms-success', 202));
+        $result = $this->messageClient->send($message);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('message_uuid', $result);
+    }
+
+    public function testCanSendWhatsAppTemplate(): void
+    {
+        $templateObject = new TemplateObject(
+            'https://file-examples.com/wp-content/uploads/2017/04/file_example_MP4_480_1_5MG.mp4',
+            'some video'
+        );
+
+        $payload = [
+            'to' => '447700900000',
+            'from' => '16105551212',
+            'template' => $templateObject
+        ];
+
+        $message = new WhatsAppTemplate($payload['to'], $payload['from'], $templateObject);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
+            $this->assertRequestJsonBodyContains('file', $payload['file']->toArray(), $request);
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('sms-success', 202));
+        $result = $this->messageClient->send($message);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('message_uuid', $result);
+    }
+
+    public function testCanSendWhatsAppCustom(): void
+    {
+        $payload = [
+            'to' => '447700900000',
+            'from' => '16105551212',
+            'custom' => [
+                'someKey' => 'someValue'
+            ]
+        ];
+
+        $message = new WhatsAppCustom($payload['to'], $payload['from'], $payload['custom']);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
+            $this->assertRequestJsonBodyContains('custom', $payload['custom']->toArray(), $request);
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('sms-success', 202));
+        $result = $this->messageClient->send($message);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('message_uuid', $result);
+    }
+
     /**
      * This method gets the fixtures and wraps them in a Response object to mock the API
      */
