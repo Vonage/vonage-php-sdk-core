@@ -17,8 +17,8 @@ class MessengerFile extends BaseMessage
         string $to,
         string $from,
         FileObject $fileObject,
-        string $category,
-        string $tag = ''
+        ?string $category = null,
+        ?string $tag = null
     ) {
         $this->to = $to;
         $this->from = $from;
@@ -29,14 +29,19 @@ class MessengerFile extends BaseMessage
 
     public function toArray(): array
     {
-        return [
+        $returnArray = [
             'message_type' => $this->getSubType(),
             'file' => $this->fileObject->toArray(),
             'to' => $this->getTo(),
             'from' => $this->getFrom(),
             'channel' => $this->getChannel(),
             'client_ref' => $this->getClientRef(),
-            'messenger' => $this->getMessengerObject()
         ];
+
+        if ($this->requiresMessengerObject()) {
+            $returnArray['messenger'] = $this->getMessengerObject();
+        }
+
+        return $returnArray;
     }
 }

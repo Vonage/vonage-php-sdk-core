@@ -17,8 +17,8 @@ class MessengerText extends BaseMessage
         string $to,
         string $from,
         string $text,
-        string $category,
-        string $tag = ''
+        ?string $category = null,
+        ?string $tag = null
     ) {
         $this->to = $to;
         $this->from = $from;
@@ -29,18 +29,19 @@ class MessengerText extends BaseMessage
 
     public function toArray(): array
     {
-        if (!self::validateCategory($this->getCategory())) {
-            throw new InvalidCategoryException('Cannot convert object to array, invalid Messenger Category');
-        }
-
-        return [
+        $returnArray = [
             'message_type' => $this->getSubType(),
             'text' => $this->getText(),
             'to' => $this->getTo(),
             'from' => $this->getFrom(),
             'channel' => $this->getChannel(),
             'client_ref' => $this->getClientRef(),
-            'messenger' => $this->getMessengerObject()
         ];
+
+        if ($this->requiresMessengerObject()) {
+            $returnArray['messenger'] = $this->getMessengerObject();
+        }
+
+        return $returnArray;
     }
 }

@@ -17,8 +17,8 @@ class MessengerVideo extends BaseMessage
         string $to,
         string $from,
         VideoObject $videoObject,
-        string $category,
-        string $tag = ''
+        ?string $category = null,
+        ?string $tag = null
     ) {
         $this->to = $to;
         $this->from = $from;
@@ -29,14 +29,19 @@ class MessengerVideo extends BaseMessage
 
     public function toArray(): array
     {
-        return [
+        $returnArray = [
             'message_type' => $this->getSubType(),
             'video' => $this->videoObject->toArray(),
             'to' => $this->getTo(),
             'from' => $this->getFrom(),
             'channel' => $this->getChannel(),
-            'client_ref' => $this->getClientRef(),
-            'messenger' => $this->getMessengerObject()
+            'client_ref' => $this->getClientRef()
         ];
+
+        if ($this->requiresMessengerObject()) {
+            $returnArray['messenger'] = $this->getMessengerObject();
+        }
+
+        return $returnArray;
     }
 }

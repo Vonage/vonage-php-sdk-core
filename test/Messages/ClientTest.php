@@ -32,6 +32,8 @@ use Vonage\Messages\MessageType\MMS\MMSImage;
 use Vonage\Messages\MessageType\MMS\MMSvCard;
 use Vonage\Messages\MessageType\MMS\MMSVideo;
 use Vonage\Messages\MessageType\SMS\SMSText;
+use Vonage\Messages\MessageType\Viber\ViberImage;
+use Vonage\Messages\MessageType\Viber\ViberText;
 use Vonage\Messages\MessageType\WhatsApp\WhatsAppAudio;
 use Vonage\Messages\MessageType\WhatsApp\WhatsAppCustom;
 use Vonage\Messages\MessageType\WhatsApp\WhatsAppFile;
@@ -576,6 +578,119 @@ class ClientTest extends VonageTestCase
             $this->assertRequestJsonBodyContains('channel', 'messenger', $request);
             $this->assertRequestJsonBodyContains('messenger', ['category' => 'response'], $request);
             $this->assertRequestJsonBodyContains('message_type', 'file', $request);
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('sms-success', 202));
+        $result = $this->messageClient->send($message);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('message_uuid', $result);
+    }
+
+    public function testCanSendViberText(): void
+    {
+        $payload = [
+            'to' => '447700900000',
+            'from' => '16105551212',
+            'text' => 'This is a viber text',
+            'category' => 'transaction',
+            'ttl' => 500,
+            'type' => 'test_type'
+        ];
+
+        $message = new ViberText(
+            $payload['to'],
+            $payload['from'],
+            $payload['text'],
+            $payload['category'],
+            $payload['ttl'],
+            $payload['type']
+        );
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
+            $this->assertRequestJsonBodyContains('text', $payload['text'], $request);
+            $this->assertRequestJsonBodyContains('channel', 'viber_service', $request);
+            $this->assertRequestJsonBodyContains('message_type', 'text', $request);
+            $this->assertRequestJsonBodyContains(
+                'viber_service',
+                [
+                    'category' => 'transaction',
+                    'ttl' => 500,
+                    'type' => 'test_type'
+                ],
+                $request
+            );
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('sms-success', 202));
+        $result = $this->messageClient->send($message);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('message_uuid', $result);
+    }
+
+    public function testCanSendViberTextWithoutViberObject(): void
+    {
+        $payload = [
+            'to' => '447700900000',
+            'from' => '16105551212',
+            'text' => 'This is a viber text',
+        ];
+
+        $message = new ViberText(
+            $payload['to'],
+            $payload['from'],
+            $payload['text']
+        );
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
+            $this->assertRequestJsonBodyContains('text', $payload['text'], $request);
+            $this->assertRequestJsonBodyContains('channel', 'viber_service', $request);
+            $this->assertRequestJsonBodyContains('message_type', 'text', $request);
+            $this->assertRequestJsonBodyMissing('viber_service', $request);
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('sms-success', 202));
+        $result = $this->messageClient->send($message);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('message_uuid', $result);
+    }
+
+    public function testCanSendViberImage(): void
+    {
+        $imageUrl = 'https://picsum.photos/200/300';
+        $imageObject = new ImageObject($imageUrl, 'Picture of a skateboarder');
+
+        $payload = [
+            'to' => '447700900000',
+            'from' => '16105551212',
+            'image' => $imageObject,
+            'category' => 'transaction',
+            'ttl' => 500,
+            'type' => 'test_type'
+        ];
+
+        $message = new ViberImage(
+            $payload['to'],
+            $payload['from'],
+            $imageObject,
+            $payload['category'],
+            $payload['ttl'],
+            $payload['type']
+        );
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
+            $this->assertRequestJsonBodyContains('image', $payload['image']->toArray(), $request);
+            $this->assertRequestJsonBodyContains('channel', 'viber_service', $request);
+            $this->assertRequestJsonBodyContains('message_type', 'image', $request);
+
             $this->assertEquals('POST', $request->getMethod());
 
             return true;

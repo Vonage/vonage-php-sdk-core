@@ -4,25 +4,21 @@ namespace Vonage\Messages\MessageType\Messenger;
 
 trait MessengerObjectTrait
 {
-    private string $category;
-    private string $tag;
-    private static array $validCategories = [
-        'response',
-        'update',
-        'message_tag'
-    ];
+    private ?string $category;
+    private ?string $tag;
 
     /**
      * @return string
      */
-    public function getCategory(): string
+    public function getCategory(): ?string
     {
         return $this->category;
     }
 
-    public static function validateCategory(string $category): bool
+
+    public function requiresMessengerObject(): bool
     {
-        return in_array($category, self::$validCategories, true);
+        return $this->getTag() || $this->getCategory();
     }
 
     /**
@@ -36,7 +32,7 @@ trait MessengerObjectTrait
     /**
      * @return string
      */
-    public function getTag(): string
+    public function getTag(): ?string
     {
         return $this->tag;
     }
