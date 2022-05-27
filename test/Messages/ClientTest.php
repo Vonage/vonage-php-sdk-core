@@ -17,7 +17,9 @@ use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
 use Vonage\Client\APIResource;
 use Vonage\Messages\MessageObjects\AudioObject;
+use Vonage\Messages\MessageObjects\FileObject;
 use Vonage\Messages\MessageObjects\ImageObject;
+use Vonage\Messages\MessageObjects\TemplateObject;
 use Vonage\Messages\MessageObjects\VCardObject;
 use Vonage\Messages\MessageObjects\VideoObject;
 use Vonage\Messages\MessageType\MMS\MMSAudio;
@@ -25,6 +27,13 @@ use Vonage\Messages\MessageType\MMS\MMSImage;
 use Vonage\Messages\MessageType\MMS\MMSvCard;
 use Vonage\Messages\MessageType\MMS\MMSVideo;
 use Vonage\Messages\MessageType\SMS\SMSText;
+use Vonage\Messages\MessageType\WhatsApp\WhatsAppAudio;
+use Vonage\Messages\MessageType\WhatsApp\WhatsAppCustom;
+use Vonage\Messages\MessageType\WhatsApp\WhatsAppFile;
+use Vonage\Messages\MessageType\WhatsApp\WhatsAppImage;
+use Vonage\Messages\MessageType\WhatsApp\WhatsAppTemplate;
+use Vonage\Messages\MessageType\WhatsApp\WhatsAppText;
+use Vonage\Messages\MessageType\WhatsApp\WhatsAppVideo;
 use Vonage\SMS\ExceptionErrorHandler;
 use VonageTest\Psr7AssertionTrait;
 use VonageTest\VonageTestCase;
@@ -78,6 +87,8 @@ class ClientTest extends VonageTestCase
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('text', $payload['text'], $request);
+            $this->assertRequestJsonBodyContains('channel', 'sms', $request);
+            $this->assertRequestJsonBodyContains('message_type', 'text', $request);
             $this->assertEquals('POST', $request->getMethod());
 
             return true;
@@ -104,6 +115,8 @@ class ClientTest extends VonageTestCase
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('image', $payload['image']->toArray(), $request);
+            $this->assertRequestJsonBodyContains('channel', 'mms', $request);
+            $this->assertRequestJsonBodyContains('message_type', 'image', $request);
             $this->assertEquals('POST', $request->getMethod());
 
             return true;
@@ -130,6 +143,8 @@ class ClientTest extends VonageTestCase
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('vcard', $payload['vcard']->toArray(), $request);
+            $this->assertRequestJsonBodyContains('channel', 'mms', $request);
+            $this->assertRequestJsonBodyContains('message_type', 'vcard', $request);
             $this->assertEquals('POST', $request->getMethod());
 
             return true;
@@ -158,6 +173,8 @@ class ClientTest extends VonageTestCase
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('audio', $payload['audio']->toArray(), $request);
+            $this->assertRequestJsonBodyContains('channel', 'mms', $request);
+            $this->assertRequestJsonBodyContains('message_type', 'audio', $request);
             $this->assertEquals('POST', $request->getMethod());
 
             return true;
@@ -186,6 +203,8 @@ class ClientTest extends VonageTestCase
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('video', $payload['video']->toArray(), $request);
+            $this->assertRequestJsonBodyContains('channel', 'mms', $request);
+            $this->assertRequestJsonBodyContains('message_type', 'video', $request);
             $this->assertEquals('POST', $request->getMethod());
 
             return true;
@@ -209,6 +228,8 @@ class ClientTest extends VonageTestCase
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('text', $payload['text'], $request);
+            $this->assertRequestJsonBodyContains('channel', 'whatsapp', $request);
+            $this->assertRequestJsonBodyContains('message_type', 'text', $request);
             $this->assertEquals('POST', $request->getMethod());
 
             return true;
@@ -229,12 +250,14 @@ class ClientTest extends VonageTestCase
             'image' => $whatsAppImageObject
         ];
 
-        $message = new WhatsAppImage($payload['to'], $payload['from'], $payload['text']);
+        $message = new WhatsAppImage($payload['to'], $payload['from'], $whatsAppImageObject);
 
         $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('image', $payload['image']->toArray(), $request);
+            $this->assertRequestJsonBodyContains('channel', 'whatsapp', $request);
+            $this->assertRequestJsonBodyContains('message_type', 'image', $request);
             $this->assertEquals('POST', $request->getMethod());
 
             return true;
@@ -263,6 +286,8 @@ class ClientTest extends VonageTestCase
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('audio', $payload['audio']->toArray(), $request);
+            $this->assertRequestJsonBodyContains('channel', 'whatsapp', $request);
+            $this->assertRequestJsonBodyContains('message_type', 'audio', $request);
             $this->assertEquals('POST', $request->getMethod());
 
             return true;
@@ -291,6 +316,8 @@ class ClientTest extends VonageTestCase
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('video', $payload['video']->toArray(), $request);
+            $this->assertRequestJsonBodyContains('channel', 'whatsapp', $request);
+            $this->assertRequestJsonBodyContains('message_type', 'video', $request);
             $this->assertEquals('POST', $request->getMethod());
 
             return true;
@@ -304,7 +331,7 @@ class ClientTest extends VonageTestCase
     {
         $fileObject = new FileObject(
             'https://file-examples.com/wp-content/uploads/2017/04/file_example_MP4_480_1_5MG.mp4',
-            'some video'
+            'some file'
         );
 
         $payload = [
@@ -319,6 +346,8 @@ class ClientTest extends VonageTestCase
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('file', $payload['file']->toArray(), $request);
+            $this->assertRequestJsonBodyContains('channel', 'whatsapp', $request);
+            $this->assertRequestJsonBodyContains('message_type', 'file', $request);
             $this->assertEquals('POST', $request->getMethod());
 
             return true;
@@ -331,8 +360,8 @@ class ClientTest extends VonageTestCase
     public function testCanSendWhatsAppTemplate(): void
     {
         $templateObject = new TemplateObject(
-            'https://file-examples.com/wp-content/uploads/2017/04/file_example_MP4_480_1_5MG.mp4',
-            'some video'
+            'verify',
+            ['key' => 'value']
         );
 
         $payload = [
@@ -341,12 +370,14 @@ class ClientTest extends VonageTestCase
             'template' => $templateObject
         ];
 
-        $message = new WhatsAppTemplate($payload['to'], $payload['from'], $templateObject);
+        $message = new WhatsAppTemplate($payload['to'], $payload['from'], $templateObject, 'en_GB');
 
         $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
-            $this->assertRequestJsonBodyContains('file', $payload['file']->toArray(), $request);
+            $this->assertRequestJsonBodyContains('template', $payload['template']->toArray(), $request);
+            $this->assertRequestJsonBodyContains('channel', 'whatsapp', $request);
+            $this->assertRequestJsonBodyContains('message_type', 'template', $request);
             $this->assertEquals('POST', $request->getMethod());
 
             return true;
@@ -362,7 +393,7 @@ class ClientTest extends VonageTestCase
             'to' => '447700900000',
             'from' => '16105551212',
             'custom' => [
-                'someKey' => 'someValue'
+                'type' => 'template'
             ]
         ];
 
@@ -371,7 +402,9 @@ class ClientTest extends VonageTestCase
         $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
-            $this->assertRequestJsonBodyContains('custom', $payload['custom']->toArray(), $request);
+            $this->assertRequestJsonBodyContains('custom', $payload['custom'], $request);
+            $this->assertRequestJsonBodyContains('channel', 'whatsapp', $request);
+            $this->assertRequestJsonBodyContains('message_type', 'custom', $request);
             $this->assertEquals('POST', $request->getMethod());
 
             return true;

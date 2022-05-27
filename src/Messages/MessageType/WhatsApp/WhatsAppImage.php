@@ -1,32 +1,31 @@
 <?php
 
-namespace Vonage\Messages\MessageType\SMS;
+namespace Vonage\Messages\MessageType\WhatsApp;
 
-use Vonage\Messages\MessageTraits\TextTrait;
+use Vonage\Messages\MessageObjects\ImageObject;
 use Vonage\Messages\MessageType\BaseMessage;
 
-class SMSText extends BaseMessage
+class WhatsAppImage extends BaseMessage
 {
-    use TextTrait;
-
-    protected string $subType = BaseMessage::MESSAGES_SUBTYPE_TEXT;
-    protected string $channel = 'sms';
+    protected string $channel = 'whatsapp';
+    protected string $subType = BaseMessage::MESSAGES_SUBTYPE_IMAGE;
+    protected ImageObject $image;
 
     public function __construct(
         string $to,
         string $from,
-        string $message
+        ImageObject $image
     ) {
         $this->to = $to;
         $this->from = $from;
-        $this->text = $message;
+        $this->image = $image;
     }
 
     public function toArray(): array
     {
         return [
-            'message_type' => $this->subType,
-            'text' => $this->getText(),
+            'message_type' => $this->getSubType(),
+            'image' => $this->image->toArray(),
             'to' => $this->getTo(),
             'from' => $this->getFrom(),
             'channel' => $this->getChannel(),

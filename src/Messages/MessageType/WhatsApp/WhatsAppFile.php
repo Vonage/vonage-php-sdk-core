@@ -1,32 +1,31 @@
 <?php
 
-namespace Vonage\Messages\MessageType\MMS;
+namespace Vonage\Messages\MessageType\WhatsApp;
 
-use Vonage\Messages\MessageObjects\AudioObject;
-use Vonage\Messages\MessageObjects\VideoObject;
+use Vonage\Messages\MessageObjects\FileObject;
 use Vonage\Messages\MessageType\BaseMessage;
 
-class MMSVideo extends BaseMessage
+class WhatsAppFile extends BaseMessage
 {
-    protected string $channel = 'mms';
-    protected string $subType = BaseMessage::MESSAGES_SUBTYPE_VIDEO;
-    protected VideoObject $videoObject;
+    protected string $channel = 'whatsapp';
+    protected string $subType = BaseMessage::MESSAGES_SUBTYPE_FILE;
+    protected FileObject $fileObject;
 
     public function __construct(
         string $to,
         string $from,
-        VideoObject $videoObject
+        FileObject $fileObject
     ) {
         $this->to = $to;
         $this->from = $from;
-        $this->videoObject = $videoObject;
+        $this->fileObject = $fileObject;
     }
 
     public function toArray(): array
     {
         return [
             'message_type' => $this->getSubType(),
-            'video' => $this->videoObject->toArray(),
+            'file' => $this->fileObject->toArray(),
             'to' => $this->getTo(),
             'from' => $this->getFrom(),
             'channel' => $this->getChannel(),

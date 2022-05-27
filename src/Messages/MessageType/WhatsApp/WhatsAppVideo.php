@@ -1,14 +1,14 @@
 <?php
 
-namespace Vonage\Messages\MessageType\MMS;
+namespace Vonage\Messages\MessageType\WhatsApp;
 
 use Vonage\Messages\MessageObjects\AudioObject;
 use Vonage\Messages\MessageObjects\VideoObject;
 use Vonage\Messages\MessageType\BaseMessage;
 
-class MMSVideo extends BaseMessage
+class WhatsAppVideo extends BaseMessage
 {
-    protected string $channel = 'mms';
+    protected string $channel = 'whatsapp';
     protected string $subType = BaseMessage::MESSAGES_SUBTYPE_VIDEO;
     protected VideoObject $videoObject;
 
