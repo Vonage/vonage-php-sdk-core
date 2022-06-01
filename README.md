@@ -73,7 +73,7 @@ For APIs that would usually hit `rest.nexmo.com`, supplying a `base_rest_url` as
 Examples
 --------
 
-### Sending a Message
+### Sending a Message via the SMS API
 
 To use [Vonage's SMS API][doc_sms] to send an SMS message, call the `$client->sms()->send()` method.
 
@@ -163,6 +163,71 @@ $isValid = $signature->check($_GET['sig']);
 ```
 
 Using your signature secret and the other supplied parameters, the signature can be calculated and checked against the incoming signature value.
+
+### Sending a Message via. the Messages API
+
+The [Messages API](https://developer.vonage.com/api/messages-olympus) is used to send a variety of outbound messages. 
+The following platforms are currently supported:
+* **SMS**
+* **MMS**
+* **WhatsApp**
+* **Messenger**
+* **Viber**
+
+Each one of these platforms has a different category of message you can send (for example, with WhatsApp you can send
+text, an image, audio, video, a file or a template but for Viber you can only send a text or an image). You can find
+all the sendable message types under the namespace `\Vonage\Messages\MessageType`. The reason each type is separated
+out this way is that the platform and message type requires different parameters in the API call.
+
+The `\Vonage\Messages\Client` is configured in a similar way to the SMS API Client. The difference is that the
+authentication can be either a JSON Web Token (JWT) or Basic Authentication. Read [this documentation] for how to set
+up your Client's credentials first.
+
+Here some examples:
+
+### Sending a WhatsApp Text
+
+First, we need to create a new WhatsAppText object like so:
+
+```php
+$whatsAppText = new Vonage\Messages\MessageType\WhatsApp\WhatsAppText(
+    FROM_NUMBER,
+    TO_NUMBER,
+    'this is a WA text from vonage'
+);
+```
+
+The Messages API Client has one method, `send()` where you can send any of the message types provided. So, to send this
+message, the following code will do that, assuming you have [already set up your Vonage client]():
+
+```php
+$client->messages()->send($whatsAppText);
+```
+
+Your response will be a JSON payload if the error range is with 200, or will throw a relevant `APIException` if it's
+within 400/500.
+
+### Send a Viber Image
+
+Some `MessageType` objects require more arguments in order to be created. You can see the rough mapping of these
+requirements by comparing the constructor arguments vs. the API Documentation. Some of these messages take custom
+reusable objects (that are under the `\Vonage\Messages\MessageObjects` namespace). One of these is an image - so
+here is an example of how to send a Viber Image:
+
+```php
+$imageObject = Vonage\Messages\MessageObjects\ImageObject(
+    'https://picsum.photos/200/300',
+    'image caption'
+);
+
+$viberImage = new Vonage\Messages\MessageType\Viber\ViberImage(
+    FROM_NUMBER,
+    TO_NUMBER,
+    $imageObject
+);
+
+$client->messages()->send($viberImage);
+```
 
 ### Starting a Verification
 
