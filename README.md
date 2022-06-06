@@ -808,7 +808,7 @@ Check out the [documentation](https://developer.nexmo.com/number-insight/code-sn
 | Dispatch API | Beta |❌|
 | External Accounts API | Beta |❌|
 | Media API | Beta | ❌|
-| Messages API | Beta |❌|
+| Messages API | General Availability |✅|
 | Number Insight API | General Availability |✅|
 | Number Management API | General Availability |✅|
 | Pricing API | General Availability |✅|
