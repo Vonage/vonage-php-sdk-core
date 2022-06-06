@@ -52,6 +52,7 @@ use Vonage\Numbers\ClientFactory as NumbersClientFactory;
 use Vonage\Redact\ClientFactory as RedactClientFactory;
 use Vonage\Secrets\ClientFactory as SecretsClientFactory;
 use Vonage\SMS\ClientFactory as SMSClientFactory;
+use Vonage\Messages\ClientFactory as MessagesClientFactory;
 use Vonage\Verify\ClientFactory as VerifyClientFactory;
 use Vonage\Verify\Verification;
 use Vonage\Voice\ClientFactory as VoiceClientFactory;
@@ -76,6 +77,7 @@ use function strpos;
  *
  * @method Account\Client account()
  * @method Message\Client message()
+ * @method Messages\Client messages()
  * @method Application\Client applications()
  * @method Conversion\Client conversion()
  * @method Insights\Client insights()
@@ -205,6 +207,7 @@ class Client implements LoggerAwareInterface
                     'conversion' => ConversionClientFactory::class,
                     'insights' => InsightsClientFactory::class,
                     'numbers' => NumbersClientFactory::class,
+                    'messages' => MessagesClientFactory::class,
                     'redact' => RedactClientFactory::class,
                     'secrets' => SecretsClientFactory::class,
                     'sms' => SMSClientFactory::class,

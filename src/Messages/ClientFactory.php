@@ -1,18 +1,10 @@
 <?php
 
-/**
- * Vonage Client Library for PHP
- *
- * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
- * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
- */
-
-declare(strict_types=1);
-
-namespace Vonage\SMS;
+namespace Vonage\Messages;
 
 use Psr\Container\ContainerInterface;
 use Vonage\Client\APIResource;
+use Vonage\SMS\ExceptionErrorHandler;
 
 class ClientFactory
 {
@@ -22,7 +14,7 @@ class ClientFactory
         $api = $container->make(APIResource::class);
         $api
             ->setBaseUrl($api->getClient()->getRestUrl())
-            ->setCollectionName('sms')
+            ->setCollectionName('messages')
             ->setIsHAL(false)
             ->setErrorsOn200(true)
             ->setExceptionErrorHandler(new ExceptionErrorHandler());
