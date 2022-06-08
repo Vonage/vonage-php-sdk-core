@@ -55,7 +55,7 @@ class EncodingDetectorTest extends VonageTestCase
             true
         ];
         $r['frenchWithOnlyGSM'] = [
-            'Le progrès est le moteur de la science ; l’idéal est le générateur de l’art.',
+            'Le progrès est le moteur de la science ; l\'idéal est le générateur de l\'art.',
             false
         ];
         $r['icelandic'] = ['Kæmi ný öxi hér ykist þjófum nú bæði víl og ádrepa ', true];
