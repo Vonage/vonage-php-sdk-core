@@ -49,9 +49,13 @@ class EncodingDetectorTest extends VonageTestCase
             'près du mälström où brûlent les novæ.',
             true
         ];
-        $r['frenchWithOnlyGSM'] = [
+        $r['frenchWithUnicode2'] = [
             'j\'étais donc plein de songes ! L\'espérance en chantant me berçait de mensonges. J\'étais ' .
             'donc cet enfant, hélas !',
+            true
+        ];
+        $r['frenchWithOnlyGSM'] = [
+            'Le progrès est le moteur de la science ; l’idéal est le générateur de l’art.',
             false
         ];
         $r['icelandic'] = ['Kæmi ný öxi hér ykist þjófum nú bæði víl og ádrepa ', true];
