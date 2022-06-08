@@ -32,13 +32,9 @@ class WhatsAppCustom extends BaseMessage
 
     public function toArray(): array
     {
-        return [
-            'message_type' => $this->getSubType(),
-            'custom' => $this->getCustom(),
-            'to' => $this->getTo(),
-            'from' => $this->getFrom(),
-            'channel' => $this->getChannel(),
-            'client_ref' => $this->getClientRef()
-        ];
+        $returnArray = $this->baseMessageArrayOutput();
+        $returnArray['custom'] = $this->getCustom();
+
+        return $returnArray;
     }
 }

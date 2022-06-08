@@ -31,14 +31,8 @@ class ViberImage extends BaseMessage
 
     public function toArray(): array
     {
-        $returnArray = [
-            'message_type' => $this->getSubType(),
-            'image' => $this->image->toArray(),
-            'to' => $this->getTo(),
-            'from' => $this->getFrom(),
-            'channel' => $this->getChannel(),
-            'client_ref' => $this->getClientRef(),
-        ];
+        $returnArray = $this->baseMessageArrayOutput();
+        $returnArray['image'] = $this->image->toArray();
 
         if ($this->requiresViberServiceObject()) {
             $returnArray['viber_service']['category'] = $this->getCategory();

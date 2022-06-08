@@ -107,7 +107,7 @@ class ClientTest extends VonageTestCase
     public function testHandlesEmptyResponse(): void
     {
         $this->expectException(Client\Exception\Request::class);
-        $this->expectExceptionMessage('unexpected response from API');
+        $this->expectExceptionMessage('Unexpected response from the API');
 
         $this->vonageClient
             ->send(Argument::type(RequestInterface::class))

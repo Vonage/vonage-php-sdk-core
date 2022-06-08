@@ -23,13 +23,9 @@ class MMSAudio extends BaseMessage
 
     public function toArray(): array
     {
-        return [
-            'message_type' => $this->getSubType(),
-            'audio' => $this->audioObject->toArray(),
-            'to' => $this->getTo(),
-            'from' => $this->getFrom(),
-            'channel' => $this->getChannel(),
-            'client_ref' => $this->getClientRef()
-        ];
+        $returnArray = $this->baseMessageArrayOutput();
+        $returnArray['audio'] = $this->audioObject->toArray();
+
+        return $returnArray;
     }
 }

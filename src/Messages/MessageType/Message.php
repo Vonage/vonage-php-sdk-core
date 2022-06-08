@@ -18,7 +18,7 @@ interface Message
     public function setTo(string $to): void;
     public function getFrom(): string;
     public function setFrom(string $from): void;
-    public function getClientRef(): string;
+    public function getClientRef(): ?string;
     public function getChannel(): string;
     public function getSubType(): string;
     public function setClientRef(string $clientRef): void;

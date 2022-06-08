@@ -8,7 +8,7 @@ abstract class BaseMessage implements Message
     protected string $to;
     protected string $from;
     protected string $channel;
-    protected string $clientRef = '';
+    protected ?string $clientRef = null;
 
     public const MESSAGES_SUBTYPE_TEXT = 'text';
     public const MESSAGES_SUBTYPE_IMAGE = 'image';
@@ -19,7 +19,7 @@ abstract class BaseMessage implements Message
     public const MESSAGES_SUBTYPE_TEMPLATE = 'template';
     public const MESSAGES_SUBTYPE_CUSTOM = 'custom';
 
-    public function getClientRef(): string
+    public function getClientRef(): ?string
     {
         return $this->clientRef;
     }
@@ -57,5 +57,21 @@ abstract class BaseMessage implements Message
     public function setTo(string $to): void
     {
         $this->to = $to;
+    }
+
+    public function baseMessageArrayOutput(): array
+    {
+        $returnArray = [
+            'message_type' => $this->getSubType(),
+            'to' => $this->getTo(),
+            'from' => $this->getFrom(),
+            'channel' => $this->getChannel(),
+        ];
+
+        if ($this->getClientRef()) {
+            $returnArray['client_ref'] = $this->getClientRef();
+        }
+
+        return $returnArray;
     }
 }

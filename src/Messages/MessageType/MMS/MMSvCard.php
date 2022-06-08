@@ -23,13 +23,9 @@ class MMSvCard extends BaseMessage
 
     public function toArray(): array
     {
-        return [
-            'message_type' => $this->getSubType(),
-            'vcard' => $this->vCard->toArray(),
-            'to' => $this->getTo(),
-            'from' => $this->getFrom(),
-            'channel' => $this->getChannel(),
-            'client_ref' => $this->getClientRef()
-        ];
+        $returnArray = $this->baseMessageArrayOutput();
+        $returnArray['vcard'] = $this->vCard->toArray();
+
+        return $returnArray;
     }
 }

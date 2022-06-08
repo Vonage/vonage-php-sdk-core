@@ -29,14 +29,8 @@ class MessengerFile extends BaseMessage
 
     public function toArray(): array
     {
-        $returnArray = [
-            'message_type' => $this->getSubType(),
-            'file' => $this->fileObject->toArray(),
-            'to' => $this->getTo(),
-            'from' => $this->getFrom(),
-            'channel' => $this->getChannel(),
-            'client_ref' => $this->getClientRef(),
-        ];
+        $returnArray = $this->baseMessageArrayOutput();
+        $returnArray['file'] = $this->fileObject->toArray();
 
         if ($this->requiresMessengerObject()) {
             $returnArray['messenger'] = $this->getMessengerObject();

@@ -24,13 +24,9 @@ class SMSText extends BaseMessage
 
     public function toArray(): array
     {
-        return [
-            'message_type' => $this->subType,
-            'text' => $this->getText(),
-            'to' => $this->getTo(),
-            'from' => $this->getFrom(),
-            'channel' => $this->getChannel(),
-            'client_ref' => $this->getClientRef()
-        ];
+        $returnArray = $this->baseMessageArrayOutput();
+        $returnArray['text'] = $this->getText();
+
+        return $returnArray;
     }
 }

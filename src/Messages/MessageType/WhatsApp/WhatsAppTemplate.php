@@ -27,18 +27,15 @@ class WhatsAppTemplate extends BaseMessage
 
     public function toArray(): array
     {
-        return [
-            'message_type' => $this->getSubType(),
+        $returnArray = [
             'template' => $this->templateObject->toArray(),
-            'to' => $this->getTo(),
-            'from' => $this->getFrom(),
-            'channel' => $this->getChannel(),
-            'client_ref' => $this->getClientRef(),
             'whatsapp' => [
                 'policy' => 'deterministic',
                 'locale' => $this->getLocale()
             ]
         ];
+
+        return array_merge($this->baseMessageArrayOutput(), $returnArray);
     }
 
     public function getLocale(): string

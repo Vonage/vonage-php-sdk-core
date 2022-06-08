@@ -590,7 +590,10 @@ class Client implements LoggerAwareInterface
     {
         $path = $request->getUri()->getPath();
 
-        return strpos($path, '/v1/redact') === 0;
+        $isRedact =  strpos($path, '/v1/redact') === 0;
+        $isMessages =  strpos($path, '/v1/messages') === 0;
+
+        return $isRedact || $isMessages;
     }
 
     protected function needsKeypairAuthentication(RequestInterface $request): bool
