@@ -23,7 +23,7 @@ class MMSvCard extends BaseMessage
 
     public function toArray(): array
     {
-        $returnArray = $this->baseMessageArrayOutput();
+        $returnArray = $this->getBaseMessageUniversalOutputArray();
         $returnArray['vcard'] = $this->vCard->toArray();
 
         return $returnArray;

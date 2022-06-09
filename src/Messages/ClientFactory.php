@@ -4,7 +4,6 @@ namespace Vonage\Messages;
 
 use Psr\Container\ContainerInterface;
 use Vonage\Client\APIResource;
-use Vonage\SMS\ExceptionErrorHandler;
 
 class ClientFactory
 {

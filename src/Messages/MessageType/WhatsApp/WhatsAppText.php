@@ -24,7 +24,7 @@ class WhatsAppText extends BaseMessage
 
     public function toArray(): array
     {
-        $returnArray = $this->baseMessageArrayOutput();
+        $returnArray = $this->getBaseMessageUniversalOutputArray();
         $returnArray['text'] = $this->getText();
 
         return $returnArray;

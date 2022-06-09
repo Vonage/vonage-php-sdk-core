@@ -29,7 +29,7 @@ class MessengerFile extends BaseMessage
 
     public function toArray(): array
     {
-        $returnArray = $this->baseMessageArrayOutput();
+        $returnArray = $this->getBaseMessageUniversalOutputArray();
         $returnArray['file'] = $this->fileObject->toArray();
 
         if ($this->requiresMessengerObject()) {

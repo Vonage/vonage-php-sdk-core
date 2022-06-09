@@ -29,7 +29,7 @@ class MessengerImage extends BaseMessage
 
     public function toArray(): array
     {
-        $returnArray = $this->baseMessageArrayOutput();
+        $returnArray = $this->getBaseMessageUniversalOutputArray();
         $returnArray['image'] = $this->image->toArray();
 
         if ($this->requiresMessengerObject()) {

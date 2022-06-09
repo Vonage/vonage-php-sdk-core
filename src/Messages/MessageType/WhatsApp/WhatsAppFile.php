@@ -23,7 +23,7 @@ class WhatsAppFile extends BaseMessage
 
     public function toArray(): array
     {
-        $returnArray = $this->baseMessageArrayOutput();
+        $returnArray = $this->getBaseMessageUniversalOutputArray();
         $returnArray['file'] = $this->fileObject->toArray();
 
         return $returnArray;

@@ -35,7 +35,7 @@ class WhatsAppTemplate extends BaseMessage
             ]
         ];
 
-        return array_merge($this->baseMessageArrayOutput(), $returnArray);
+        return array_merge($this->getBaseMessageUniversalOutputArray(), $returnArray);
     }
 
     public function getLocale(): string

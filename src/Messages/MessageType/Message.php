@@ -22,4 +22,13 @@ interface Message
     public function getChannel(): string;
     public function getSubType(): string;
     public function setClientRef(string $clientRef): void;
+
+    /**
+     * All message types have shared outputs required by the endpoint.
+     * Child classes are required to call this before assembling their
+     * own specific output
+     *
+     * @return array
+     */
+    public function getBaseMessageUniversalOutputArray(): array;
 }

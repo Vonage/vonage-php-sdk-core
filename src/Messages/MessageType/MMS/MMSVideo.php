@@ -24,7 +24,7 @@ class MMSVideo extends BaseMessage
 
     public function toArray(): array
     {
-        $returnArray = $this->baseMessageArrayOutput();
+        $returnArray = $this->getBaseMessageUniversalOutputArray();
         $returnArray['video'] = $this->videoObject->toArray();
 
         return $returnArray;

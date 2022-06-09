@@ -59,7 +59,7 @@ abstract class BaseMessage implements Message
         $this->to = $to;
     }
 
-    public function baseMessageArrayOutput(): array
+    public function getBaseMessageUniversalOutputArray(): array
     {
         $returnArray = [
             'message_type' => $this->getSubType(),

@@ -23,7 +23,7 @@ class WhatsAppAudio extends BaseMessage
 
     public function toArray(): array
     {
-        $returnArray = $this->baseMessageArrayOutput();
+        $returnArray = $this->getBaseMessageUniversalOutputArray();
         $returnArray['audio'] = $this->audioObject->toArray();
 
         return $returnArray;

@@ -16,6 +16,7 @@ use Laminas\Diactoros\Response;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
 use Vonage\Client\APIResource;
+use Vonage\Messages\ExceptionErrorHandler;
 use Vonage\Messages\MessageObjects\AudioObject;
 use Vonage\Messages\MessageObjects\FileObject;
 use Vonage\Messages\MessageObjects\ImageObject;
@@ -41,7 +42,6 @@ use Vonage\Messages\MessageType\WhatsApp\WhatsAppImage;
 use Vonage\Messages\MessageType\WhatsApp\WhatsAppTemplate;
 use Vonage\Messages\MessageType\WhatsApp\WhatsAppText;
 use Vonage\Messages\MessageType\WhatsApp\WhatsAppVideo;
-use Vonage\SMS\ExceptionErrorHandler;
 use VonageTest\Psr7AssertionTrait;
 use VonageTest\VonageTestCase;
 use Vonage\Client;
@@ -629,6 +629,58 @@ class ClientTest extends VonageTestCase
         $result = $this->messageClient->send($message);
         $this->assertIsArray($result);
         $this->assertArrayHasKey('message_uuid', $result);
+    }
+
+    public function testThrowsRequestErrorOnBadRequest(): void
+    {
+        $this->expectException(Client\Exception\Request::class);
+        $this->expectErrorMessage('The request body did not contain valid JSONUnexpected character (\'"\' (code 34)): was expecting comma to separate Object entries');
+
+        $payload = [
+            'to' => '447700900000',
+            'from' => '16105551212',
+            'text' => '\\{text: "reticulating splines"}'
+        ];
+
+        $message = new SMSText($payload['to'], $payload['from'], $payload['text']);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
+            $this->assertRequestJsonBodyContains('text', $payload['text'], $request);
+            $this->assertRequestJsonBodyContains('channel', 'sms', $request);
+            $this->assertRequestJsonBodyContains('message_type', 'text', $request);
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('bad-request', 422));
+        $result = $this->messageClient->send($message);
+    }
+
+    public function testThrowsRateLimit(): void
+    {
+        $this->expectException(Client\Exception\ThrottleException::class);
+        $this->expectErrorMessage('Rate Limit Hit: Please wait, then retry your request');
+
+        $payload = [
+            'to' => '447700900000',
+            'from' => '16105551212',
+            'text' => 'Reticulating Splines'
+        ];
+
+        $message = new SMSText($payload['to'], $payload['from'], $payload['text']);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
+            $this->assertRequestJsonBodyContains('text', $payload['text'], $request);
+            $this->assertRequestJsonBodyContains('channel', 'sms', $request);
+            $this->assertRequestJsonBodyContains('message_type', 'text', $request);
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('rate-limit', 429));
+        $result = $this->messageClient->send($message);
     }
 
     public function testCanSendViberTextWithoutViberObject(): void
