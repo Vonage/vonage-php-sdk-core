@@ -180,8 +180,8 @@ all the sendable message types under the namespace `\Vonage\Messages\MessageType
 out this way is that the platform and message type requires different parameters in the API call.
 
 The `\Vonage\Messages\Client` is configured in a similar way to the SMS API Client. The difference is that the
-authentication can be either a JSON Web Token (JWT) or Basic Authentication. Read [this documentation] for how to set
-up your Client's credentials first.
+authentication can be either a JSON Web Token (JWT) or Basic Authentication. You can find more info on how to set
+up your Client's credentials under the 'Usage' section of this ReadMe.
 
 Here some examples:
 
@@ -198,7 +198,7 @@ $whatsAppText = new Vonage\Messages\MessageType\WhatsApp\WhatsAppText(
 ```
 
 The Messages API Client has one method, `send()` where you can send any of the message types provided. So, to send this
-message, the following code will do that, assuming you have [already set up your Vonage client]():
+message, the following code will do that, assuming you have already set up your Vonage client correctly:
 
 ```php
 $client->messages()->send($whatsAppText);
