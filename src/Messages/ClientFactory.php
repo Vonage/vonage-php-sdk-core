@@ -13,7 +13,6 @@ class ClientFactory
         $api = $container->make(APIResource::class);
         $api
             ->setBaseUrl($api->getClient()->getApiUrl() . '/v1')
-            ->setCollectionName('messages')
             ->setIsHAL(false)
             ->setErrorsOn200(false)
             ->setExceptionErrorHandler(new ExceptionErrorHandler());

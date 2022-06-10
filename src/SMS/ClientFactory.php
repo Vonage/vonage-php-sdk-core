@@ -22,7 +22,7 @@ class ClientFactory
         $api = $container->make(APIResource::class);
         $api
             ->setBaseUrl($api->getClient()->getRestUrl())
-            ->setCollectionName('sms')
+            ->setCollectionName('messages')
             ->setIsHAL(false)
             ->setErrorsOn200(true)
             ->setExceptionErrorHandler(new ExceptionErrorHandler());

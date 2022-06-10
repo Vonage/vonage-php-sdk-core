@@ -11,11 +11,8 @@ declare(strict_types=1);
 
 namespace Vonage\Messages;
 
-use Psr\Http\Client\ClientExceptionInterface;
 use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
-use Vonage\Client\Exception\Exception;
-use Vonage\Client\Exception\ThrottleException;
 use Vonage\Messages\MessageType\BaseMessage;
 
 class Client implements APIClient
