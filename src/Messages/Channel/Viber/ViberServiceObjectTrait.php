@@ -1,6 +1,6 @@
 <?php
 
-namespace Vonage\Messages\MessageType\Viber;
+namespace Vonage\Messages\Channel\Viber;
 
 trait ViberServiceObjectTrait
 {

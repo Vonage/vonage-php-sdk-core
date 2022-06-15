@@ -1,6 +1,6 @@
 <?php
 
-namespace Vonage\Messages\MessageType;
+namespace Vonage\Messages\Channel;
 
 abstract class BaseMessage implements Message
 {

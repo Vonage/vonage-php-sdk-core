@@ -1,30 +1,40 @@
 <?php
 
-namespace Vonage\Messages\MessageType\MMS;
+namespace Vonage\Messages\Channel\Messenger;
 
 use Vonage\Messages\MessageObjects\ImageObject;
-use Vonage\Messages\MessageType\BaseMessage;
+use Vonage\Messages\Channel\BaseMessage;
 
-class MMSImage extends BaseMessage
+class MessengerImage extends BaseMessage
 {
-    protected string $channel = 'mms';
+    use MessengerObjectTrait;
+
+    protected string $channel = 'messenger';
     protected string $subType = BaseMessage::MESSAGES_SUBTYPE_IMAGE;
     protected ImageObject $image;
 
     public function __construct(
         string $to,
         string $from,
-        ImageObject $image
+        ImageObject $image,
+        ?string $category = null,
+        ?string $tag = null
     ) {
         $this->to = $to;
         $this->from = $from;
         $this->image = $image;
+        $this->category = $category;
+        $this->tag = $tag;
     }
 
     public function toArray(): array
     {
         $returnArray = $this->getBaseMessageUniversalOutputArray();
         $returnArray['image'] = $this->image->toArray();
+
+        if ($this->requiresMessengerObject()) {
+            $returnArray['messenger'] = $this->getMessengerObject();
+        }
 
         return $returnArray;
     }

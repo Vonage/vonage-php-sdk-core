@@ -1,9 +1,9 @@
 <?php
 
-namespace Vonage\Messages\MessageType\MMS;
+namespace Vonage\Messages\Channel\MMS;
 
 use Vonage\Messages\MessageObjects\VCardObject;
-use Vonage\Messages\MessageType\BaseMessage;
+use Vonage\Messages\Channel\BaseMessage;
 
 class MMSvCard extends BaseMessage
 {

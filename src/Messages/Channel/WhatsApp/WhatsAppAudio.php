@@ -1,13 +1,13 @@
 <?php
 
-namespace Vonage\Messages\MessageType\MMS;
+namespace Vonage\Messages\Channel\WhatsApp;
 
 use Vonage\Messages\MessageObjects\AudioObject;
-use Vonage\Messages\MessageType\BaseMessage;
+use Vonage\Messages\Channel\BaseMessage;
 
-class MMSAudio extends BaseMessage
+class WhatsAppAudio extends BaseMessage
 {
-    protected string $channel = 'mms';
+    protected string $channel = 'whatsapp';
     protected string $subType = BaseMessage::MESSAGES_SUBTYPE_AUDIO;
     protected AudioObject $audioObject;
 

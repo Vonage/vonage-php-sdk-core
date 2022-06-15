@@ -1,28 +1,28 @@
 <?php
 
-namespace Vonage\Messages\MessageType\Messenger;
+namespace Vonage\Messages\Channel\Messenger;
 
-use Vonage\Messages\MessageObjects\VideoObject;
-use Vonage\Messages\MessageType\BaseMessage;
+use Vonage\Messages\MessageTraits\TextTrait;
+use Vonage\Messages\Channel\BaseMessage;
 
-class MessengerVideo extends BaseMessage
+class MessengerText extends BaseMessage
 {
+    use TextTrait;
     use MessengerObjectTrait;
 
+    protected string $subType = BaseMessage::MESSAGES_SUBTYPE_TEXT;
     protected string $channel = 'messenger';
-    protected string $subType = BaseMessage::MESSAGES_SUBTYPE_VIDEO;
-    protected VideoObject $videoObject;
 
     public function __construct(
         string $to,
         string $from,
-        VideoObject $videoObject,
+        string $text,
         ?string $category = null,
         ?string $tag = null
     ) {
         $this->to = $to;
         $this->from = $from;
-        $this->videoObject = $videoObject;
+        $this->text = $text;
         $this->category = $category;
         $this->tag = $tag;
     }
@@ -30,7 +30,7 @@ class MessengerVideo extends BaseMessage
     public function toArray(): array
     {
         $returnArray = $this->getBaseMessageUniversalOutputArray();
-        $returnArray['video'] = $this->videoObject->toArray();
+        $returnArray['text'] = $this->getText();
 
         if ($this->requiresMessengerObject()) {
             $returnArray['messenger'] = $this->getMessengerObject();

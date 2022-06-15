@@ -1,28 +1,28 @@
 <?php
 
-namespace Vonage\Messages\MessageType\Messenger;
+namespace Vonage\Messages\Channel\Messenger;
 
-use Vonage\Messages\MessageObjects\AudioObject;
-use Vonage\Messages\MessageType\BaseMessage;
+use Vonage\Messages\MessageObjects\FileObject;
+use Vonage\Messages\Channel\BaseMessage;
 
-class MessengerAudio extends BaseMessage
+class MessengerFile extends BaseMessage
 {
     use MessengerObjectTrait;
 
     protected string $channel = 'messenger';
-    protected string $subType = BaseMessage::MESSAGES_SUBTYPE_AUDIO;
-    protected AudioObject $audioObject;
+    protected string $subType = BaseMessage::MESSAGES_SUBTYPE_FILE;
+    protected FileObject $fileObject;
 
     public function __construct(
         string $to,
         string $from,
-        AudioObject $audioObject,
+        FileObject $fileObject,
         ?string $category = null,
         ?string $tag = null
     ) {
         $this->to = $to;
         $this->from = $from;
-        $this->audioObject = $audioObject;
+        $this->fileObject = $fileObject;
         $this->category = $category;
         $this->tag = $tag;
     }
@@ -30,7 +30,7 @@ class MessengerAudio extends BaseMessage
     public function toArray(): array
     {
         $returnArray = $this->getBaseMessageUniversalOutputArray();
-        $returnArray['audio'] = $this->audioObject->toArray();
+        $returnArray['file'] = $this->fileObject->toArray();
 
         if ($this->requiresMessengerObject()) {
             $returnArray['messenger'] = $this->getMessengerObject();

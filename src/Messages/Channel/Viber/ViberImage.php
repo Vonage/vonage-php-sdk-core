@@ -1,9 +1,9 @@
 <?php
 
-namespace Vonage\Messages\MessageType\Viber;
+namespace Vonage\Messages\Channel\Viber;
 
 use Vonage\Messages\MessageObjects\ImageObject;
-use Vonage\Messages\MessageType\BaseMessage;
+use Vonage\Messages\Channel\BaseMessage;
 
 class ViberImage extends BaseMessage
 {

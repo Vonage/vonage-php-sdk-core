@@ -190,7 +190,7 @@ Here some examples:
 First, we need to create a new WhatsAppText object like so:
 
 ```php
-$whatsAppText = new Vonage\Messages\MessageType\WhatsApp\WhatsAppText(
+$whatsAppText = new Vonage\Messages\Channel\WhatsApp\WhatsAppText(
     FROM_NUMBER,
     TO_NUMBER,
     'this is a WA text from vonage'
@@ -220,7 +220,7 @@ $imageObject = Vonage\Messages\MessageObjects\ImageObject(
     'image caption'
 );
 
-$viberImage = new Vonage\Messages\MessageType\Viber\ViberImage(
+$viberImage = new Vonage\Messages\Channel\Viber\ViberImage(
     FROM_NUMBER,
     TO_NUMBER,
     $imageObject

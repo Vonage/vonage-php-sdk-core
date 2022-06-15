@@ -1,9 +1,9 @@
 <?php
 
-namespace Vonage\Messages\MessageType\WhatsApp;
+namespace Vonage\Messages\Channel\WhatsApp;
 
 use Vonage\Messages\MessageObjects\FileObject;
-use Vonage\Messages\MessageType\BaseMessage;
+use Vonage\Messages\Channel\BaseMessage;
 
 class WhatsAppFile extends BaseMessage
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Vonage\Messages\MessageType\Messenger;
+namespace Vonage\Messages\Channel\Messenger;
 
 trait MessengerObjectTrait
 {

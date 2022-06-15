@@ -1,40 +1,31 @@
 <?php
 
-namespace Vonage\Messages\MessageType\Messenger;
+namespace Vonage\Messages\Channel\WhatsApp;
 
 use Vonage\Messages\MessageTraits\TextTrait;
-use Vonage\Messages\MessageType\BaseMessage;
+use Vonage\Messages\Channel\BaseMessage;
 
-class MessengerText extends BaseMessage
+class WhatsAppText extends BaseMessage
 {
     use TextTrait;
-    use MessengerObjectTrait;
 
     protected string $subType = BaseMessage::MESSAGES_SUBTYPE_TEXT;
-    protected string $channel = 'messenger';
+    protected string $channel = 'whatsapp';
 
     public function __construct(
         string $to,
         string $from,
-        string $text,
-        ?string $category = null,
-        ?string $tag = null
+        string $text
     ) {
         $this->to = $to;
         $this->from = $from;
         $this->text = $text;
-        $this->category = $category;
-        $this->tag = $tag;
     }
 
     public function toArray(): array
     {
         $returnArray = $this->getBaseMessageUniversalOutputArray();
         $returnArray['text'] = $this->getText();
-
-        if ($this->requiresMessengerObject()) {
-            $returnArray['messenger'] = $this->getMessengerObject();
-        }
 
         return $returnArray;
     }

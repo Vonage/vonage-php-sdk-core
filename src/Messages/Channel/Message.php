@@ -9,7 +9,7 @@
 
 declare(strict_types=1);
 
-namespace Vonage\Messages\MessageType;
+namespace Vonage\Messages\Channel;
 
 interface Message
 {

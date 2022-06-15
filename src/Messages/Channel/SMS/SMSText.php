@@ -1,25 +1,25 @@
 <?php
 
-namespace Vonage\Messages\MessageType\WhatsApp;
+namespace Vonage\Messages\Channel\SMS;
 
 use Vonage\Messages\MessageTraits\TextTrait;
-use Vonage\Messages\MessageType\BaseMessage;
+use Vonage\Messages\Channel\BaseMessage;
 
-class WhatsAppText extends BaseMessage
+class SMSText extends BaseMessage
 {
     use TextTrait;
 
     protected string $subType = BaseMessage::MESSAGES_SUBTYPE_TEXT;
-    protected string $channel = 'whatsapp';
+    protected string $channel = 'sms';
 
     public function __construct(
         string $to,
         string $from,
-        string $text
+        string $message
     ) {
         $this->to = $to;
         $this->from = $from;
-        $this->text = $text;
+        $this->text = $message;
     }
 
     public function toArray(): array
