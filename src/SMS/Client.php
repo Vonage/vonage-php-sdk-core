@@ -22,10 +22,7 @@ use function sleep;
 
 class Client implements APIClient
 {
-    /**
-     * @var APIResource
-     */
-    protected $api;
+    protected APIResource $api;
 
     public function __construct(APIResource $api)
     {

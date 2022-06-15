@@ -21,7 +21,6 @@ use function parse_str;
 
 abstract class Factory
 {
-
     abstract public static function createFromArray(array $data);
 
     public static function createFromJson(string $json)

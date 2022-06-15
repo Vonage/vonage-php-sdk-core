@@ -38,8 +38,10 @@ class ExceptionErrorHandler
         if (!isset($data['messages'])) {
             if (isset($data['error-code'], $data['error-code-label'])) {
                 $e = new ClientException\Request($data['error-code-label'], (int)$data['error-code']);
+            } elseif (isset($data['title'], $data['detail'])) {
+                $e = new ClientException\Request($data['title'] . ' : ' . $data['detail']);
             } else {
-                $e = new ClientException\Request('unexpected response from API');
+                $e = new ClientException\Request('Unexpected response from the API');
             }
 
             $e->setEntity($data);
