@@ -31,6 +31,6 @@ class Client implements APIClient
 
     public function send(BaseMessage $message): ?array
     {
-        return $this->api->create($message->toArray(), '/messages');
+        return $this->api->create($message->toArray());
     }
 }
