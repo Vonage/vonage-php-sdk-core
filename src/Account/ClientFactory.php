@@ -26,9 +26,6 @@ class ClientFactory
             ->setBaseUri('/account')
         ;
 
-        $secretsApi = $container->make(APIResource::class);
-        $secretsApi->setBaseUri('/accounts');
-
-        return new Client($accountApi, $secretsApi);
+        return new Client($accountApi);
     }
 }
