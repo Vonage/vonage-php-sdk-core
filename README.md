@@ -176,7 +176,7 @@ The following platforms are currently supported:
 
 Each one of these platforms has a different category of message you can send (for example, with WhatsApp you can send
 text, an image, audio, video, a file or a template but for Viber you can only send a text or an image). You can find
-all the sendable message types under the namespace `\Vonage\Messages\MessageType`. The reason each type is separated
+all the sendable message types under the namespace `\Vonage\Messages\Channel`. The reason each type is separated
 out this way is that the platform and message type requires different parameters in the API call.
 
 The `\Vonage\Messages\Client` is configured in a similar way to the SMS API Client. The difference is that the
@@ -209,7 +209,7 @@ within 400/500.
 
 ### Send a Viber Image
 
-Some `MessageType` objects require more arguments in order to be created. You can see the rough mapping of these
+Some `Channel` objects require more arguments in order to be created. You can see the rough mapping of these
 requirements by comparing the constructor arguments vs. the API Documentation. Some of these messages take custom
 reusable objects (that are under the `\Vonage\Messages\MessageObjects` namespace). One of these is an image - so
 here is an example of how to send a Viber Image:
