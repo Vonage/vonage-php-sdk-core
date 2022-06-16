@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Vonage;
 
+use Composer\InstalledVersions;
 use Http\Client\HttpClient;
 use InvalidArgumentException;
 use Laminas\Diactoros\Request;
@@ -272,7 +273,7 @@ class Client implements LoggerAwareInterface
     /**
      * Set the factory used to create API specific clients.
      */
-    public function setFactory(FactoryInterface $factory): self
+    public function setFactory(ContainerInterface $factory): self
     {
         $this->factory = $factory;
 
@@ -552,11 +553,11 @@ class Client implements LoggerAwareInterface
 
     public function __call($name, $args)
     {
-        if (!$this->factory->hasApi($name)) {
+        if (!$this->factory->has($name)) {
             throw new RuntimeException('no api namespace found: ' . $name);
         }
 
-        $collection = $this->factory->getApi($name);
+        $collection = $this->factory->get($name);
 
         if (empty($args)) {
             return $collection;
@@ -609,6 +610,7 @@ class Client implements LoggerAwareInterface
 
     protected function getVersion(): string
     {
+        return InstalledVersions::getVersion('vonage/client-core');
         return Versions::getVersion('vonage/client-core');
     }
 

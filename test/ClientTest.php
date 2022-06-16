@@ -21,6 +21,7 @@ use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Lcobucci\JWT\UnencryptedToken;
 use Lcobucci\JWT\Validation\Validator;
+use Psr\Container\ContainerInterface;
 use VonageTest\VonageTestCase;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Log\LoggerInterface;
@@ -426,13 +427,13 @@ class ClientTest extends VonageTestCase
     {
         $api = $this->prophesize('stdClass')->reveal();
         /** @var mixed $factory */
-        $factory = $this->prophesize(FactoryInterface::class);
+        $containerInterface = $this->prophesize(ContainerInterface::class);
 
-        $factory->hasApi('sms')->willReturn(true);
-        $factory->getApi('sms')->willReturn($api);
+        $containerInterface->has('sms')->willReturn(true);
+        $containerInterface->get('sms')->willReturn($api);
 
         $client = new Client(new Basic('key', 'secret'));
-        $client->setFactory($factory->reveal());
+        $client->setFactory($containerInterface->reveal());
 
         $this->assertSame($api, $client->sms());
     }
@@ -515,10 +516,10 @@ class ClientTest extends VonageTestCase
         /** @var mixed $verify */
         $verify = $this->prophesize(\Vonage\Verify\Client::class);
         /** @var mixed $factory */
-        $factory = $this->prophesize(FactoryInterface::class);
+        $factory = $this->prophesize(ContainerInterface::class);
 
-        $factory->hasApi('verify')->willReturn(true);
-        $factory->getApi('verify')->willReturn($verify->reveal());
+        $factory->has('verify')->willReturn(true);
+        $factory->get('verify')->willReturn($verify->reveal());
 
         $client = new Client($this->basic_credentials);
         $client->setFactory($factory->reveal());
