@@ -34,9 +34,7 @@ class TemplateObject implements ArrayHydrateInterface
         ];
 
         if ($this->parameters) {
-            $returnArray[] = [
-                'parameters' => $this->parameters
-            ];
+            $returnArray['parameters'] = $this->parameters;
         }
 
         return $returnArray;
