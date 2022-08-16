@@ -611,7 +611,7 @@ class Verification implements VerificationInterface, Serializable, ArrayHydrateI
         );
     }
 
-    public function serialize(): string
+    public function __serialize(): string
     {
         $data = [
             'requestData' => $this->requestData
@@ -628,10 +628,7 @@ class Verification implements VerificationInterface, Serializable, ArrayHydrateI
         return serialize($data);
     }
 
-    /**
-     * @param $serialized
-     */
-    public function unserialize($serialized): void
+    public function __unserialize($serialized): void
     {
         $data = unserialize($serialized, [true]);
 
@@ -644,6 +641,19 @@ class Verification implements VerificationInterface, Serializable, ArrayHydrateI
         if (isset($data['response'])) {
             $this->response = ResponseSerializer::fromString($data['response']);
         }
+    }
+
+    public function serialize(): string
+    {
+        return $this->__serialize();
+    }
+
+    /**
+     * @param $serialized
+     */
+    public function unserialize($serialized): void
+    {
+        $this->__unserialize($serialized);
     }
 
     /**
