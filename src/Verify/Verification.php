@@ -34,6 +34,9 @@ use function sprintf;
 use function trigger_error;
 use function unserialize;
 
+/**
+ * Serializable interface is deprecated and will be removed in the future
+ */
 class Verification implements VerificationInterface, Serializable, ArrayHydrateInterface
 {
     use Psr7Trait;
@@ -611,6 +614,9 @@ class Verification implements VerificationInterface, Serializable, ArrayHydrateI
         );
     }
 
+    /**
+     * @deprecated Serialization will be removed in the future
+     */
     public function serialize(): string
     {
         $data = [
@@ -628,6 +634,9 @@ class Verification implements VerificationInterface, Serializable, ArrayHydrateI
         return serialize($data);
     }
 
+    /**
+     * @deprecated Serialization will be removed in the future
+     */
     public function __serialize(): array
     {
         return unserialize($this->serialize());
@@ -635,6 +644,7 @@ class Verification implements VerificationInterface, Serializable, ArrayHydrateI
 
     /**
      * @param $serialized
+     * @deprecated Serialization will be removed in the future
      */
     public function unserialize(string $serialized): void
     {
@@ -651,6 +661,9 @@ class Verification implements VerificationInterface, Serializable, ArrayHydrateI
         }
     }
 
+    /**
+     * @deprecated Serialization will be removed in the future
+     */
     public function __unserialize(array $data): void
     {
         $this->unserialize(serialize($data));
