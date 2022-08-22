@@ -643,10 +643,10 @@ class Verification implements VerificationInterface, Serializable, ArrayHydrateI
     }
 
     /**
-     * @param $serialized
+     * @param string $serialized
      * @deprecated Serialization will be removed in the future
      */
-    public function unserialize(string $serialized): void
+    public function unserialize($serialized)
     {
         $data = unserialize($serialized, [true]);
 
