@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd" bootstrap="vendor/autoload.php" colors="true" backupGlobals="true" >
+<phpunit 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
+  bootstrap="vendor/autoload.php"
+  colors="true"
+  backupGlobals="true"
+  convertErrorsToExceptions="true"
+  convertNoticesToExceptions="true"
+  convertWarningsToExceptions="true"
+  stopOnFailure="false"
+  >
   <coverage processUncoveredFiles="true">
     <include>
       <directory suffix=".php">src</directory>
@@ -10,4 +20,8 @@
       <directory>test</directory>
     </testsuite>
   </testsuites>
+  <php>
+        <ini name='error_reporting' value='E_ALL' />
+        <ini name='display_errors' value='true' />
+    </php>
 </phpunit>
