@@ -72,7 +72,7 @@ class ClientTest extends VonageTestCase
 
         $this->client->setClient($client->reveal());
 
-        $mock = @$this->getMockBuilder(Verification::class)
+        $mock = $this->getMockBuilder(Verification::class)
             ->setConstructorArgs($construct)
             ->setMethods(['setClient'])
             ->getMock();
