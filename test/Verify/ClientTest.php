@@ -285,6 +285,34 @@ class ClientTest extends VonageTestCase
     /**
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Exception
+     * @throws ServerException
+     */
+    public function testStartThrowsExceptionAndHandlesBlock(): void
+    {
+        $response = $this->setupClientForStart('start-error-blocked');
+
+        try {
+            @$this->client->start(
+                [
+                    'number' => '14845551212',
+                    'brand' => 'Test Verify'
+                ]
+            );
+
+            self::fail('did not throw exception');
+        } catch (Client\Exception\Request $e) {
+            $this->assertEquals('7', $e->getCode());
+            $this->assertEquals(
+                'The number you are trying to verify is blacklisted for verification',
+                $e->getMessage()
+            );
+            $this->assertSame($response, @$e->getEntity()->getResponse());
+        }
+    }
+
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Client\Exception\Exception
      * @throws Client\Exception\Request
      */
     public function testStartThrowsServerException(): void
