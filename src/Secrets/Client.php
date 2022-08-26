@@ -4,11 +4,14 @@ namespace Vonage\Secrets;
 
 use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
+use Vonage\ClientPreferredCredentialsTrait;
 use Vonage\Entity\Hydrator\ArrayHydrator;
 use Vonage\Entity\IterableAPICollection;
 
 class Client implements APIClient
 {
+    use ClientPreferredCredentialsTrait;
+
     /**
      * @var APIResource
      */

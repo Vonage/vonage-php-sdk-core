@@ -22,6 +22,7 @@ use Vonage\Client\ClientAwareInterface;
 use Vonage\Client\ClientAwareTrait;
 use Vonage\Client\Exception as ClientException;
 
+use Vonage\ClientPreferredCredentialsTrait;
 use function get_class;
 use function is_array;
 use function is_null;
@@ -32,6 +33,7 @@ use function unserialize;
 
 class Client implements ClientAwareInterface, APIClient
 {
+    use ClientPreferredCredentialsTrait;
     use ClientAwareTrait;
 
     /**

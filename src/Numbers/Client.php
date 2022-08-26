@@ -18,6 +18,7 @@ use Vonage\Client\ClientAwareInterface;
 use Vonage\Client\ClientAwareTrait;
 use Vonage\Client\Exception as ClientException;
 use Vonage\Client\Exception\ThrottleException;
+use Vonage\ClientPreferredCredentialsTrait;
 use Vonage\Entity\Filter\FilterInterface;
 use Vonage\Entity\IterableAPICollection;
 use Vonage\Numbers\Filter\AvailableNumbers;
@@ -34,6 +35,8 @@ use function trigger_error;
 
 class Client implements ClientAwareInterface, APIClient
 {
+    use ClientPreferredCredentialsTrait;
+
     /**
      * @deprecated This client no longer needs to be ClientAware
      */

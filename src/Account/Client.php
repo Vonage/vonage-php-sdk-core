@@ -19,6 +19,7 @@ use Vonage\Client\ClientAwareTrait;
 use Vonage\Client\Exception as ClientException;
 use Vonage\Client\Exception\Request as ClientRequestException;
 use Vonage\Client\Exception\Validation as ClientValidationException;
+use Vonage\ClientPreferredCredentialsTrait;
 use Vonage\Entity\Filter\KeyValueFilter;
 use Vonage\InvalidResponseException;
 
@@ -32,6 +33,8 @@ use function json_decode;
  */
 class Client implements ClientAwareInterface, APIClient
 {
+    use ClientPreferredCredentialsTrait;
+
     /**
      * @deprecated This object will be dropping support for ClientAwareInterface in the future
      */

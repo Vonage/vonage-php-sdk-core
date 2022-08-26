@@ -22,6 +22,7 @@ use Vonage\Client\ClientAwareInterface;
 use Vonage\Client\ClientAwareTrait;
 use Vonage\Client\Exception as ClientException;
 use Vonage\Client\Exception\ThrottleException;
+use Vonage\ClientPreferredCredentialsTrait;
 use Vonage\Entity\Filter\FilterInterface;
 use Vonage\Entity\Filter\KeyValueFilter;
 
@@ -50,6 +51,8 @@ use function ucfirst;
  */
 class Client implements ClientAwareInterface
 {
+    use ClientPreferredCredentialsTrait;
+
     /**
      * @deprecated This service will no longer be directly ClientAware
      */

@@ -443,6 +443,7 @@ class Client implements LoggerAwareInterface
      */
     public function send(RequestInterface $request): ResponseInterface
     {
+        // does the request match the default required credentials inserted?
         if ($this->credentials instanceof Container) {
             if ($this->needsKeypairAuthentication($request)) {
                 $handler = new KeypairHandler();
