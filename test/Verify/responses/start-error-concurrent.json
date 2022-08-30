@@ -1,0 +1,5 @@
+{
+  "status": "10",
+  "request_id": "abcdef0123456789abcdef0123456789",
+  "error_text": "Concurrent verifications to the same number are not allowed"
+}

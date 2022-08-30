@@ -285,6 +285,63 @@ class ClientTest extends VonageTestCase
     /**
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Exception
+     * @throws ServerException
+     */
+    public function testStartThrowsExceptionAndHandlesBlock(): void
+    {
+        $response = $this->setupClientForStart('start-error-blocked');
+
+        try {
+            @$this->client->start(
+                [
+                    'number' => '14845551212',
+                    'brand' => 'Test Verify'
+                ]
+            );
+
+            self::fail('did not throw exception');
+        } catch (Client\Exception\Request $e) {
+            $this->assertEquals('7', $e->getCode());
+            $this->assertEquals(
+                'The number you are trying to verify is blacklisted for verification',
+                $e->getMessage()
+            );
+            $this->assertSame($response, @$e->getEntity()->getResponse());
+        }
+    }
+
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Client\Exception\Exception
+     * @throws ServerException
+     */
+    public function testStartThrowsExceptionAndHandlesConcurrentVerifications(): void
+    {
+        $response = $this->setupClientForStart('start-error-concurrent');
+
+        try {
+            @$this->client->start(
+                [
+                    'number' => '14845551212',
+                    'brand' => 'Test Verify'
+                ]
+            );
+
+            self::fail('did not throw exception');
+        } catch (Client\Exception\Request $e) {
+            $this->assertEquals('10', $e->getCode());
+            $this->assertEquals(
+                'Concurrent verifications to the same number are not allowed',
+                $e->getMessage()
+            );
+            $this->assertEquals('abcdef0123456789abcdef0123456789', $e->getRequestId());
+            $this->assertSame($response, @$e->getEntity()->getResponse());
+        }
+    }
+
+    /**
+     * @throws ClientExceptionInterface
+     * @throws Client\Exception\Exception
      * @throws Client\Exception\Request
      */
     public function testStartThrowsServerException(): void
