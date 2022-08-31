@@ -19,7 +19,7 @@ use Vonage\Client\ClientAwareInterface;
 use Vonage\Client\ClientAwareTrait;
 use Vonage\Client\Exception as ClientException;
 
-use Vonage\ClientPreferredCredentialsTrait;
+use Vonage\Client\ClientPreferredCredentialsTrait;
 use function http_build_query;
 use function is_null;
 use function json_decode;

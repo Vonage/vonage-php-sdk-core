@@ -19,7 +19,7 @@ use Vonage\Client\ClientAwareTrait;
 use Vonage\Client\Exception as ClientException;
 use Vonage\Client\Exception\Request as ClientRequestException;
 use Vonage\Client\Exception\Validation as ClientValidationException;
-use Vonage\ClientPreferredCredentialsTrait;
+use Vonage\Client\ClientPreferredCredentialsTrait;
 use Vonage\Entity\Filter\KeyValueFilter;
 use Vonage\InvalidResponseException;
 

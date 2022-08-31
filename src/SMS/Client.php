@@ -16,7 +16,7 @@ use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
 use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Client\Exception\ThrottleException;
-use Vonage\ClientPreferredCredentialsTrait;
+use Vonage\Client\ClientPreferredCredentialsTrait;
 use Vonage\SMS\Message\Message;
 
 use function sleep;

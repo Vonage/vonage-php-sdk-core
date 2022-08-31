@@ -17,7 +17,7 @@ use Vonage\Client\APIResource;
 use Vonage\Client\ClientAwareInterface;
 use Vonage\Client\ClientAwareTrait;
 use Vonage\Client\Exception as ClientException;
-use Vonage\ClientPreferredCredentialsTrait;
+use Vonage\Client\ClientPreferredCredentialsTrait;
 use Vonage\Entity\Filter\KeyValueFilter;
 use Vonage\Numbers\Number;
 

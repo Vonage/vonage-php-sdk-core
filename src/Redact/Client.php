@@ -18,7 +18,7 @@ use Vonage\Client\APIResource;
 use Vonage\Client\ClientAwareInterface;
 use Vonage\Client\ClientAwareTrait;
 use Vonage\Client\Exception\Exception as ClientException;
-use Vonage\ClientPreferredCredentialsTrait;
+use Vonage\Client\ClientPreferredCredentialsTrait;
 
 use function is_null;
 

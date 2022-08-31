@@ -13,7 +13,7 @@ namespace Vonage\Messages;
 
 use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
-use Vonage\ClientPreferredCredentialsTrait;
+use Vonage\Client\ClientPreferredCredentialsTrait;
 use Vonage\Messages\Channel\BaseMessage;
 
 class Client implements APIClient
