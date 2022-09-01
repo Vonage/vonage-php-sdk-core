@@ -13,6 +13,7 @@ namespace Vonage\Voice;
 
 use Psr\Container\ContainerInterface;
 use Vonage\Client\APIResource;
+use Vonage\Client\Credentials\Keypair;
 
 class ClientFactory
 {
@@ -25,6 +26,9 @@ class ClientFactory
             ->setBaseUri('/v1/calls')
             ->setCollectionName('calls');
 
-        return new Client($api);
+        $client = new Client($api);
+        $client->setPreferredCredentialsClass(Keypair::class);
+
+        return $client;
     }
 }

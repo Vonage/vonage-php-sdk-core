@@ -13,6 +13,7 @@ namespace Vonage\Application;
 
 use Psr\Container\ContainerInterface;
 use Vonage\Client\APIResource;
+use Vonage\Client\Credentials\Basic;
 
 class ClientFactory
 {
@@ -24,6 +25,9 @@ class ClientFactory
             ->setBaseUri('/v2/applications')
             ->setCollectionName('applications');
 
-        return new Client($api, new Hydrator());
+        $client = new Client($api, new Hydrator());
+        $client->setPreferredCredentialsClass(Basic::class);
+
+        return $client;
     }
 }

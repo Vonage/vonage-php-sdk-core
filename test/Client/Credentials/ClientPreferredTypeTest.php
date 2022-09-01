@@ -29,11 +29,12 @@ class ClientPreferredTypeTest extends VonageTestCase
     {
         if (!$allowedType) {
             $this->expectException(Credentials::class);
+        } else {
+            $this->expectNotToPerformAssertions();
         }
 
         $client = new Client(new APIResource());
         $client->setPreferredCredentialsClass($credentialType);
-        $this->expectNotToPerformAssertions();
     }
 
     public function credentialTypes(): array

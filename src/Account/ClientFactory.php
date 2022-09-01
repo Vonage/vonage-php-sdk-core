@@ -13,6 +13,7 @@ namespace Vonage\Account;
 
 use Psr\Container\ContainerInterface;
 use Vonage\Client\APIResource;
+use Vonage\Client\Credentials\Basic;
 
 class ClientFactory
 {
@@ -29,6 +30,9 @@ class ClientFactory
         $secretsApi = $container->make(APIResource::class);
         $secretsApi->setBaseUri('/accounts');
 
-        return new Client($accountApi, $secretsApi);
+        $client = new Client($accountApi, $secretsApi);
+        $client->setPreferredCredentialsClass(Basic::class);
+
+        return $client;
     }
 }

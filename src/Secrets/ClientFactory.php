@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace Vonage\Secrets;
 
 use Vonage\Client\APIResource;
+use Vonage\Client\Credentials\Basic;
 use Vonage\Client\Factory\FactoryInterface;
 
 class ClientFactory
@@ -22,6 +23,9 @@ class ClientFactory
         $api->setBaseUri('/accounts')
             ->setCollectionName('secrets');
 
-        return new Client($api);
+        $client = new Client($api);
+        $client->setPreferredCredentialsClass(Basic::class);
+
+        return $client;
     }
 }

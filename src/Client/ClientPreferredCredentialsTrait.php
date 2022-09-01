@@ -3,6 +3,7 @@
 namespace Vonage\Client;
 
 use Vonage\Client\Credentials\Basic;
+use Vonage\Client\Credentials\BasicBody;
 use Vonage\Client\Credentials\Keypair;
 use Vonage\Client\Credentials\OAuth;
 use Vonage\Client\Credentials\SignatureSecret;

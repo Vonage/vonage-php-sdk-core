@@ -4,6 +4,7 @@ namespace Vonage\Messages;
 
 use Psr\Container\ContainerInterface;
 use Vonage\Client\APIResource;
+use Vonage\Client\Credentials\Keypair;
 
 class ClientFactory
 {
@@ -17,6 +18,9 @@ class ClientFactory
             ->setErrorsOn200(false)
             ->setExceptionErrorHandler(new ExceptionErrorHandler());
 
-        return new Client($api);
+        $client = new Client($api);
+        $client->setPreferredCredentialsClass(Keypair::class);
+
+        return $client;
     }
 }

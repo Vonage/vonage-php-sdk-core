@@ -13,6 +13,7 @@ namespace Vonage\Numbers;
 
 use Psr\Container\ContainerInterface;
 use Vonage\Client\APIResource;
+use Vonage\Client\Credentials\Basic;
 
 class ClientFactory
 {
@@ -25,6 +26,9 @@ class ClientFactory
             ->setBaseUrl($api->getClient()->getRestUrl())
             ->setIsHAL(false);
 
-        return new Client($api);
+        $client = new Client($api);
+        $client->setPreferredCredentialsClass(Basic::class);
+
+        return $client;
     }
 }

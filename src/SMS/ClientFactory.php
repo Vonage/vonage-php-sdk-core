@@ -13,6 +13,7 @@ namespace Vonage\SMS;
 
 use Psr\Container\ContainerInterface;
 use Vonage\Client\APIResource;
+use Vonage\Client\Credentials\Basic;
 
 class ClientFactory
 {
@@ -27,6 +28,9 @@ class ClientFactory
             ->setErrorsOn200(true)
             ->setExceptionErrorHandler(new ExceptionErrorHandler());
 
-        return new Client($api);
+        $client = new Client($api);
+        $client->setPreferredCredentialsClass(Basic::class);
+
+        return $client;
     }
 }
