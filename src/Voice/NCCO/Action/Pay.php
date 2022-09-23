@@ -8,8 +8,6 @@ use InvalidArgumentException;
 
 class Pay implements ActionInterface
 {
-    protected const PROMPT_TYPES = ['CardNumber', 'ExpirationDate', 'SecurityCode'];
-
     protected const PERMITTED_VOICE_KEYS = ['language', 'style'];
 
     protected const PERMITTED_ERROR_KEYS = [
@@ -100,7 +98,7 @@ class Pay implements ActionInterface
             throw new InvalidArgumentException('type is required when setting a text prompt.');
         }
 
-        if (!in_array($prompts['type'], self::PROMPT_TYPES, true)) {
+        if (!array_key_exists($prompts['type'], self::PERMITTED_ERROR_KEYS)) {
             throw new InvalidArgumentException('invalid prompt type.');
         }
 
