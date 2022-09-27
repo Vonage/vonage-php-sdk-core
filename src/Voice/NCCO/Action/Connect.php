@@ -66,10 +66,7 @@ class Connect implements ActionInterface
         $this->endpoint = $endpoint;
     }
 
-    /**
-     * @todo Remove the $data parameter as it's useless
-     */
-    public static function factory(EndpointInterface $endpoint, array $data = []): Connect
+    public static function factory(EndpointInterface $endpoint): Connect
     {
         return new Connect($endpoint);
     }
