@@ -42,7 +42,6 @@ class ClientPreferredTypeTest extends VonageTestCase
         return [
             [Basic::class, true],
             [Keypair::class, true],
-            [OAuth::class, true],
             [SignatureSecret::class, true],
             ['Vonage\Credentials\Baconator', false]
         ];
