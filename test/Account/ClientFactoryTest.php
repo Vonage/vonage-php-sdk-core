@@ -41,9 +41,7 @@ class ClientFactoryTest extends VonageTestCase
         $factory = new ClientFactory();
         $client = $factory($this->mapFactory);
 
-        $this->assertSame('/accounts', $client->getSecretsAPI()->getBaseUri());
-        $this->assertSame('https://api.nexmo.com', $client->getSecretsAPI()->getBaseUrl());
-        $this->assertSame('/account', $client->getAccountAPI()->getBaseUri());
-        $this->assertSame('https://rest.nexmo.com', $client->getAccountAPI()->getBaseUrl());
+        $this->assertSame('/account', $client->getAPIResource()->getBaseUri());
+        $this->assertSame('https://rest.nexmo.com', $client->getAPIResource()->getBaseUrl());
     }
 }

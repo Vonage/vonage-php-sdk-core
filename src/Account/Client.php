@@ -42,11 +42,6 @@ class Client implements ClientAwareInterface, APIClient
      */
     protected ?APIResource $accountAPI;
 
-    /**
-     * @var APIResource|null
-     */
-    protected ?APIResource $secretsAPI;
-
     public function __construct(?APIResource $accountAPI = null)
     {
         $this->accountAPI = $accountAPI;
@@ -183,7 +178,7 @@ class Client implements ClientAwareInterface, APIClient
      */
     public function getConfig(): Config
     {
-        $api = $this->getAccountAPI();
+        $api = $this->getAPIResource();
         $api->setBaseUri('/account/settings');
         $body = $api->submit();
 
@@ -222,7 +217,7 @@ class Client implements ClientAwareInterface, APIClient
             $params['drCallBackUrl'] = $options['dr_callback_url'];
         }
 
-        $api = $this->getAccountAPI();
+        $api = $this->getAPIResource();
         $api->setBaseUri('/account/settings');
 
         $rawBody = $api->submit($params);

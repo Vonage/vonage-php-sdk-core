@@ -231,6 +231,11 @@ class APIResource implements ClientAwareInterface
 
     public function getAuthHandler(): ?HandlerInterface
     {
+        // handlers look in the containers
+        // is this an array of auth handlers or is it one
+        // if it's not an array then just return the handler
+
+
         return $this->authHandler;
     }
 
