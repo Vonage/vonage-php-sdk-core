@@ -20,32 +20,32 @@ class Talk implements ActionInterface
     /**
      * @var bool
      */
-    protected $bargeIn;
+    protected bool $bargeIn;
 
     /**
      * @var string
      */
-    protected $language;
+    protected string $language;
 
     /**
      * @var int
      */
-    protected $languageStyle = 0;
+    protected int $languageStyle = 0;
 
     /**
      * @var float
      */
-    protected $level;
+    protected float $level;
 
     /**
      * @var int
      */
-    protected $loop;
+    protected int $loop;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected $text;
+    protected ?string $text;
 
     public function __construct(string $text = null)
     {
@@ -54,7 +54,7 @@ class Talk implements ActionInterface
 
     /**
      * @param string $text
-     * @param array{text: string, bargeIn?: bool, level?: float, loop?: int, voiceName?: string} $data
+     * @param array{text: string, bargeIn?: bool, level?: float, loop?: int} $data
      * @return Talk
      */
     public static function factory(string $text, array $data): Talk
@@ -111,7 +111,7 @@ class Talk implements ActionInterface
     }
 
     /**
-     * @return array{action: string, bargeIn: bool, level: float, loop: int, text: string, voiceName: string}
+     * @return array{action: string, bargeIn: bool, level: float, loop: int, text: string}
      */
     public function jsonSerialize(): array
     {
@@ -148,7 +148,7 @@ class Talk implements ActionInterface
     }
 
     /**
-     * @return array{action: string, bargeIn: bool, level: string, loop: string, text: string, voiceName: string, language: string, style: string}
+     * @return array{action: string, bargeIn: bool, level: string, loop: string, text: string, language: string, style: string}
      */
     public function toNCCOArray(): array
     {
