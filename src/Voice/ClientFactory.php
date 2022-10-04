@@ -13,11 +13,9 @@ namespace Vonage\Voice;
 
 use Psr\Container\ContainerInterface;
 use Vonage\Client\APIResource;
-use Vonage\Client\Credentials\Keypair;
 
 class ClientFactory
 {
-
     public function __invoke(ContainerInterface $container): Client
     {
         /** @var APIResource $api */
@@ -26,9 +24,6 @@ class ClientFactory
             ->setBaseUri('/v1/calls')
             ->setCollectionName('calls');
 
-        $client = new Client($api);
-        $client->setPreferredCredentialsClass(Keypair::class);
-
-        return $client;
+        return new Client($api);
     }
 }

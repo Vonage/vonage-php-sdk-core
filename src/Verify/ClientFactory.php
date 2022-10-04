@@ -13,7 +13,6 @@ namespace Vonage\Verify;
 
 use Psr\Container\ContainerInterface;
 use Vonage\Client\APIResource;
-use Vonage\Insights\Basic;
 
 class ClientFactory
 {
@@ -28,9 +27,6 @@ class ClientFactory
             ->setErrorsOn200(true)
             ->setExceptionErrorHandler(new ExceptionErrorHandler());
 
-        $client = new Client($api);
-        $client->setPreferredCredentialsClass(Basic::class);
-
-        return $client;
+        return new Client($api);
     }
 }

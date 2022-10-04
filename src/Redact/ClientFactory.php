@@ -14,7 +14,6 @@ namespace Vonage\Redact;
 use Psr\Container\ContainerInterface;
 use Vonage\Client\APIExceptionHandler;
 use Vonage\Client\APIResource;
-use Vonage\Client\Credentials\BasicBody;
 
 /**
  * @todo Finish this Namespace
@@ -38,9 +37,6 @@ class ClientFactory
 
         $api->setExceptionErrorHandler($exceptionHandler);
 
-        $client = new Client($api);
-        $client->setPreferredCredentialsClass(BasicBody::class);
-
-        return $client;
+        return new Client($api);
     }
 }

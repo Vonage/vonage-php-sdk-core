@@ -23,9 +23,6 @@ class ClientFactory
         $api->setBaseUri('/accounts')
             ->setCollectionName('secrets');
 
-        $client = new Client($api);
-        $client->setPreferredCredentialsClass(Basic::class);
-
-        return $client;
+        return new Client($api);
     }
 }

@@ -13,11 +13,9 @@ namespace Vonage\Numbers;
 
 use Psr\Container\ContainerInterface;
 use Vonage\Client\APIResource;
-use Vonage\Client\Credentials\Basic;
 
 class ClientFactory
 {
-
     public function __invoke(ContainerInterface $container): Client
     {
         /** @var APIResource $api */
@@ -26,9 +24,6 @@ class ClientFactory
             ->setBaseUrl($api->getClient()->getRestUrl())
             ->setIsHAL(false);
 
-        $client = new Client($api);
-        $client->setPreferredCredentialsClass(Basic::class);
-
-        return $client;
+        return new Client($api);
     }
 }
