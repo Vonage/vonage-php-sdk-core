@@ -17,7 +17,6 @@ use Vonage\Client\APIResource;
 use Vonage\Client\ClientAwareInterface;
 use Vonage\Client\ClientAwareTrait;
 use Vonage\Client\Exception as ClientException;
-use Vonage\Client\ClientPreferredCredentialsTrait;
 use Vonage\Entity\Filter\KeyValueFilter;
 use Vonage\Numbers\Number;
 
@@ -28,8 +27,6 @@ use function is_null;
  */
 class Client implements ClientAwareInterface, APIClient
 {
-    use ClientPreferredCredentialsTrait;
-
     /**
      * @deprecated This client no longer needs to be ClientAware
      */

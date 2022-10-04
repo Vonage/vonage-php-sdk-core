@@ -16,15 +16,12 @@ use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
 use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Client\Exception\ThrottleException;
-use Vonage\Client\ClientPreferredCredentialsTrait;
 use Vonage\SMS\Message\Message;
 
 use function sleep;
 
 class Client implements APIClient
 {
-    use ClientPreferredCredentialsTrait;
-
     protected APIResource $api;
 
     public function __construct(APIResource $api)

@@ -18,14 +18,11 @@ use Vonage\Client\APIResource;
 use Vonage\Client\ClientAwareInterface;
 use Vonage\Client\ClientAwareTrait;
 use Vonage\Client\Exception\Exception as ClientException;
-use Vonage\Client\ClientPreferredCredentialsTrait;
 
 use function is_null;
 
 class Client implements ClientAwareInterface, APIClient
 {
-    use ClientPreferredCredentialsTrait;
-
     /**
      * @deprecated This object no longer needs to be client aware
      */

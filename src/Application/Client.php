@@ -18,7 +18,6 @@ use Vonage\Client\APIResource;
 use Vonage\Client\ClientAwareInterface;
 use Vonage\Client\ClientAwareTrait;
 use Vonage\Client\Exception\Exception as ClientException;
-use Vonage\Client\ClientPreferredCredentialsTrait;
 use Vonage\Entity\Hydrator\ArrayHydrator;
 use Vonage\Entity\Hydrator\HydratorInterface;
 use Vonage\Entity\IterableAPICollection;
@@ -27,7 +26,6 @@ use function is_null;
 
 class Client implements ClientAwareInterface, APIClient
 {
-    use ClientPreferredCredentialsTrait;
     use ClientAwareTrait;
 
     /**

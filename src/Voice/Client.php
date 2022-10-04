@@ -17,7 +17,6 @@ use Exception;
 use Psr\Http\Client\ClientExceptionInterface;
 use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
-use Vonage\Client\ClientPreferredCredentialsTrait;
 use Vonage\Entity\Filter\FilterInterface;
 use Vonage\Entity\Hydrator\ArrayHydrator;
 use Vonage\Entity\IterableAPICollection;
@@ -29,8 +28,6 @@ use function is_null;
 
 class Client implements APIClient
 {
-    use ClientPreferredCredentialsTrait;
-
     /**
      * @var APIResource
      */

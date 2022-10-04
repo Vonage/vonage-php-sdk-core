@@ -13,13 +13,10 @@ namespace Vonage\Messages;
 
 use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
-use Vonage\Client\ClientPreferredCredentialsTrait;
 use Vonage\Messages\Channel\BaseMessage;
 
 class Client implements APIClient
 {
-    use ClientPreferredCredentialsTrait;
-
     protected APIResource $api;
 
     public function __construct(APIResource $apiResource)

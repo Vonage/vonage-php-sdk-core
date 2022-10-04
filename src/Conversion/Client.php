@@ -19,14 +19,12 @@ use Vonage\Client\ClientAwareInterface;
 use Vonage\Client\ClientAwareTrait;
 use Vonage\Client\Exception as ClientException;
 
-use Vonage\Client\ClientPreferredCredentialsTrait;
 use function http_build_query;
 use function is_null;
 use function json_decode;
 
 class Client implements ClientAwareInterface, APIClient
 {
-    use ClientPreferredCredentialsTrait;
     use ClientAwareTrait;
 
     /**
