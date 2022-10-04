@@ -11,10 +11,6 @@ declare(strict_types=1);
 
 namespace Vonage\Client;
 
-use function is_null;
-use function json_decode;
-use function json_encode;
-use function http_build_query;
 use Laminas\Diactoros\Request;
 use Vonage\Entity\Filter\EmptyFilter;
 use Psr\Http\Message\RequestInterface;
@@ -24,6 +20,11 @@ use Vonage\Entity\Filter\FilterInterface;
 use Psr\Http\Client\ClientExceptionInterface;
 use Vonage\Client\Credentials\Handler\HandlerInterface;
 
+use function is_null;
+use function json_decode;
+use function json_encode;
+use function http_build_query;
+
 class APIResource implements ClientAwareInterface
 {
     use ClientAwareTrait;
@@ -31,7 +32,7 @@ class APIResource implements ClientAwareInterface
     /**
      * @var HandlerInterface
      */
-    protected $authHandler;
+    protected HandlerInterface $authHandler;
 
     /**
      * Base URL that we will hit. This can be overridden from the underlying
@@ -39,29 +40,29 @@ class APIResource implements ClientAwareInterface
      *
      * @var string
      */
-    protected $baseUrl = '';
+    protected string $baseUrl = '';
 
     /**
      * @var string
      */
-    protected $baseUri;
+    protected string $baseUri;
 
     /**
      * @var string
      */
-    protected $collectionName = '';
+    protected string $collectionName = '';
 
     /**
      * @var IterableAPICollection
      */
-    protected $collectionPrototype;
+    protected IterableAPICollection $collectionPrototype;
 
     /**
      * Sets flag that says to check for errors even on 200 Success
      *
      * @var bool
      */
-    protected $errorsOn200 = false;
+    protected bool $errorsOn200 = false;
 
     /**
      * Error handler to use when reviewing API responses
@@ -73,25 +74,25 @@ class APIResource implements ClientAwareInterface
     /**
      * @var bool
      */
-    protected $isHAL = true;
+    protected bool $isHAL = true;
 
     /**
      * @var RequestInterface
      */
-    protected $lastRequest;
+    protected RequestInterface $lastRequest;
 
     /**
      * @var ResponseInterface
      */
-    protected $lastResponse;
+    protected ResponseInterface $lastResponse;
 
     /**
      * Adds authentication to a request
-     * @todo Use this method when Vonage\Client no longer adds authentication
      */
     public function addAuth(RequestInterface $request)
     {
         $creds = $this->getClient()->getCredentials();
+
         return $this->getAuthHandler()($request, $creds);
     }
 
