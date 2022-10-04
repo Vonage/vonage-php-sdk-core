@@ -3,9 +3,7 @@
 namespace Vonage\Client;
 
 use Vonage\Client\Credentials\Basic;
-use Vonage\Client\Credentials\BasicBody;
 use Vonage\Client\Credentials\Keypair;
-use Vonage\Client\Credentials\OAuth;
 use Vonage\Client\Credentials\SignatureSecret;
 use Vonage\Client\Exception\Credentials;
 
@@ -16,7 +14,6 @@ trait ClientPreferredCredentialsTrait
     protected array $allowedCredentialTypes = [
         Basic::class,
         Keypair::class,
-        OAuth::class,
         SignatureSecret::class
     ];
 

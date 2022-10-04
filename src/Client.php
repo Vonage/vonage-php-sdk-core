@@ -40,7 +40,6 @@ use Vonage\Client\Credentials\Handler\TokenBodyFormHandler;
 use Vonage\Client\Credentials\Handler\TokenBodyHandler;
 use Vonage\Client\Credentials\Handler\TokenQueryHandler;
 use Vonage\Client\Credentials\Keypair;
-use Vonage\Client\Credentials\OAuth;
 use Vonage\Client\Credentials\SignatureSecret;
 use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Client\Factory\FactoryInterface;
@@ -162,7 +161,6 @@ class Client implements LoggerAwareInterface
             !($credentials instanceof Container) &&
             !($credentials instanceof Basic) &&
             !($credentials instanceof SignatureSecret) &&
-            !($credentials instanceof OAuth) &&
             !($credentials instanceof Keypair)
         ) {
             throw new RuntimeException('unknown credentials type: ' . get_class($credentials));

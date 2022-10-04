@@ -13,7 +13,6 @@ namespace VonageTest\Client\Credentials;
 
 use Vonage\Client\APIResource;
 use Vonage\Client\Credentials\Keypair;
-use Vonage\Client\Credentials\OAuth;
 use Vonage\Client\Credentials\SignatureSecret;
 use Vonage\Client\Exception\Credentials;
 use Vonage\Messages\Client;
