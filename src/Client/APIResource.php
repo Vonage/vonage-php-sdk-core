@@ -29,10 +29,7 @@ class APIResource implements ClientAwareInterface
 {
     use ClientAwareTrait;
 
-    /**
-     * @var HandlerInterface
-     */
-    protected HandlerInterface $authHandler;
+    protected $authHandler;
 
     /**
      * Base URL that we will hit. This can be overridden from the underlying
@@ -40,29 +37,29 @@ class APIResource implements ClientAwareInterface
      *
      * @var string
      */
-    protected string $baseUrl = '';
+    protected $baseUrl = '';
 
     /**
      * @var string
      */
-    protected string $baseUri;
+    protected $baseUri;
 
     /**
      * @var string
      */
-    protected string $collectionName = '';
+    protected $collectionName = '';
 
     /**
      * @var IterableAPICollection
      */
-    protected IterableAPICollection $collectionPrototype;
+    protected $collectionPrototype;
 
     /**
      * Sets flag that says to check for errors even on 200 Success
      *
      * @var bool
      */
-    protected bool $errorsOn200 = false;
+    protected $errorsOn200 = false;
 
     /**
      * Error handler to use when reviewing API responses
@@ -74,26 +71,37 @@ class APIResource implements ClientAwareInterface
     /**
      * @var bool
      */
-    protected bool $isHAL = true;
+    protected $isHAL = true;
 
     /**
      * @var RequestInterface
      */
-    protected RequestInterface $lastRequest;
+    protected $lastRequest;
 
     /**
      * @var ResponseInterface
      */
-    protected ResponseInterface $lastResponse;
+    protected $lastResponse;
 
     /**
      * Adds authentication to a request
+     *
+     * @param RequestInterface $request
+     *
+     * @return RequestInterface
      */
-    public function addAuth(RequestInterface $request)
+    public function addAuth(RequestInterface $request): RequestInterface
     {
-        $creds = $this->getClient()->getCredentials();
+        $credentials = $this->getClient()->getCredentials();
 
-        return $this->getAuthHandler()($request, $creds);
+        if (is_array($this->getAuthHandler())) {
+            foreach ($this->getAuthHandler() as $handler) {
+                $request = $handler($request, $credentials);
+            }
+            return $request;
+        }
+
+        return $this->getAuthHandler()($request, $credentials);
     }
 
     /**
@@ -236,7 +244,6 @@ class APIResource implements ClientAwareInterface
         // is this an array of auth handlers or is it one
         // if it's not an array then just return the handler
 
-
         return $this->authHandler;
     }
 
@@ -332,6 +339,14 @@ class APIResource implements ClientAwareInterface
         return $collection;
     }
 
+    /**
+     * Set the auth handler(s). This can be a handler that extends off AbstractHandler,
+     * or an array of handlers that will attempt to resolve at runtime
+     *
+     * @param HandlerInterface|array $handler
+     *
+     * @return $this
+     */
     public function setAuthHandler($handler): self
     {
         $this->authHandler = $handler;
