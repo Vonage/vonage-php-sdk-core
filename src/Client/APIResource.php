@@ -12,6 +12,8 @@ declare(strict_types=1);
 namespace Vonage\Client;
 
 use Laminas\Diactoros\Request;
+use Psr\Log\LogLevel;
+use Vonage\Client\Credentials\Handler\BasicHandler;
 use Vonage\Entity\Filter\EmptyFilter;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -20,6 +22,7 @@ use Vonage\Entity\Filter\FilterInterface;
 use Psr\Http\Client\ClientExceptionInterface;
 use Vonage\Client\Credentials\Handler\HandlerInterface;
 
+use Vonage\Logger\LoggerTrait;
 use function is_null;
 use function json_decode;
 use function json_encode;
@@ -28,6 +31,7 @@ use function http_build_query;
 class APIResource implements ClientAwareInterface
 {
     use ClientAwareTrait;
+    use LoggerTrait;
 
     protected $authHandler;
 
@@ -96,7 +100,16 @@ class APIResource implements ClientAwareInterface
 
         if (is_array($this->getAuthHandler())) {
             foreach ($this->getAuthHandler() as $handler) {
-                $request = $handler($request, $credentials);
+                try {
+                    $request = $handler($request, $credentials);
+                    break;
+                } catch (\RuntimeException $e) {
+                    continue; // We are OK if multiple are sent but only one match
+                }
+                throw new \RuntimeException(
+                    'Unable to set credentials, please check configuration and 
+                    supplied authentication'
+                );
             }
             return $request;
         }
@@ -240,9 +253,16 @@ class APIResource implements ClientAwareInterface
 
     public function getAuthHandler(): ?HandlerInterface
     {
-        // handlers look in the containers
-        // is this an array of auth handlers or is it one
-        // if it's not an array then just return the handler
+        // If we have not set a handler, default to Basic and issue warning.
+        if (!$this->authHandler) {
+            $this->log(
+                LogLevel::WARNING,
+                'Warning: no authorisation handler set for this Client. Defaulting to Basic which might not be
+                the correct authorisation for this API call'
+            );
+
+            return new BasicHandler();
+        }
 
         return $this->authHandler;
     }

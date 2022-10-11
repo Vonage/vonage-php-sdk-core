@@ -32,7 +32,6 @@ use Vonage\Client\Credentials\Basic;
 use Vonage\Client\Credentials\Container;
 use Vonage\Client\Credentials\CredentialsInterface;
 use Vonage\Client\Credentials\Handler\BasicHandler;
-use Vonage\Client\Credentials\Handler\KeypairHandler;
 use Vonage\Client\Credentials\Handler\SignatureBodyFormHandler;
 use Vonage\Client\Credentials\Handler\SignatureBodyHandler;
 use Vonage\Client\Credentials\Handler\SignatureQueryHandler;
@@ -156,7 +155,7 @@ class Client implements LoggerAwareInterface
 
         $this->setHttpClient($client);
 
-        //make sure we know how to use the credentials
+        // Make sure we know how to use the credentials
         if (
             !($credentials instanceof Container) &&
             !($credentials instanceof Basic) &&
@@ -441,26 +440,7 @@ class Client implements LoggerAwareInterface
      */
     public function send(RequestInterface $request): ResponseInterface
     {
-        // does the request match the default required credentials inserted?
-        if ($this->credentials instanceof Container) {
-            if ($this->needsKeypairAuthentication($request)) {
-                $handler = new KeypairHandler();
-                $request = $handler($request, $this->getCredentials());
-            } else {
-                $request = self::authRequest($request, $this->credentials->get(Basic::class));
-            }
-        } elseif ($this->credentials instanceof Keypair) {
-            $handler = new KeypairHandler();
-            $request = $handler($request, $this->getCredentials());
-        } elseif ($this->credentials instanceof SignatureSecret) {
-            $request = self::signRequest($request, $this->credentials);
-        } elseif ($this->credentials instanceof Basic) {
-            $request = self::authRequest($request, $this->credentials);
-        }
-
-        //todo: add oauth support
-
-        //allow any part of the URI to be replaced with a simple search
+        // Allow any part of the URI to be replaced with a simple search
         if (isset($this->options['url'])) {
             foreach ($this->options['url'] as $search => $replace) {
                 $uri = (string)$request->getUri();
