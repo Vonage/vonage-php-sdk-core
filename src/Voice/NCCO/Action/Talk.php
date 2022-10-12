@@ -17,19 +17,19 @@ use function is_null;
 
 class Talk implements ActionInterface
 {
-    protected bool $bargeIn;
+    protected bool $bargeIn = false;
 
-    protected string $language;
+    protected string $language = '';
 
     protected int $languageStyle = 0;
 
-    protected float $level;
+    protected ?float $level = 0;
 
-    protected int $loop;
+    protected int $loop = 1;
 
-    protected ?string $text;
+    protected ?string $text = '';
 
-    protected bool $premium;
+    protected bool $premium = false;
 
     public function __construct(string $text = null)
     {

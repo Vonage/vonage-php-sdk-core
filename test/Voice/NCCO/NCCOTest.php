@@ -31,6 +31,7 @@ class NCCOTest extends VonageTestCase
                 'text' => 'Thank you for trying Vonage',
                 'language' => 'en-US',
                 'style' => '0',
+                'premium' => 'false'
             ],
             [
                 'action' => 'record',
