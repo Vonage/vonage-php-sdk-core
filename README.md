@@ -242,7 +242,7 @@ $response = $client->verify()->start($request);
 echo "Started verification with an id of: " . $response->getRequestId();
 ```
 
-Once the user inputs the pin code they received, call the `/check` endpoint with the request ID and the pin to confirm the pin is correct.
+Once the user inputs the pin code they received, call the `check()` method (see below) with the request ID and the PIN to confirm the PIN is correct.
 
 ### Controlling a Verification
     
@@ -256,7 +256,7 @@ $client->verify()->cancel('00e6c3377e5348cdaf567e1417c707a5');
 
 ### Checking a Verification
 
-In the same way, checking a verification requires the code the user provided, and the request ID:
+In the same way, checking a verification requires the PIN the user provided, and the request ID:
 
 ```php
 try {
