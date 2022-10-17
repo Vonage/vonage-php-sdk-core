@@ -48,7 +48,7 @@ class Client implements APIClient
         if (($message->getType() === 'text') && $this->isUnicode($message->getMessage())) {
             trigger_error(
                 "Sending unicode text SMS without setting the type parameter to 'unicode'.
-                    See https://developer.nexmo.com/messaging/sms for details, or email support@vonage.com 
+                    See https://developer.vonage.com/messaging/sms for details, or email support@vonage.com 
                     if you have any questions.",
                 E_USER_WARNING
             );

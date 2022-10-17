@@ -334,6 +334,29 @@ class ClientTest extends VonageTestCase
         $this->smsClient->sendTwoFactor('447700900000', 1245);
     }
 
+    public function testThrowsWarningSendingUnicodeAsTest(): void
+    {
+        $this->expectError();
+        $this->expectErrorMessage("Sending unicode text SMS without setting the type parameter to 'unicode'.
+                    See https://developer.vonage.com/messaging/sms for details, or email support@vonage.com 
+                    if you have any questions.");
+
+        $args = [
+            'to' => '447700900000',
+            'from' => '16105551212',
+            'text' => "♗ⳋ⤞ⶢⲍ⫓⵬⬕⫹⿁⊅⇧ⰾ⾵ ⃚",
+            'account-ref' => 'customer1234',
+            'client-ref' => 'my-personal-reference'
+        ];
+
+        $message = (new SMS($args['to'], $args['from'], $args['text']))
+            ->setClientRef($args['client-ref'])
+            ->setAccountRef($args['account-ref'])
+            ->setType('text');
+
+        $response = $this->smsClient->send($message);
+    }
+
     /**
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Exception
