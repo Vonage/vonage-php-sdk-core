@@ -17,9 +17,6 @@ use Vonage\Client\Exception\Exception as ClientException;
 
 class BalanceTest extends VonageTestCase
 {
-    /**
-     * @var Balance
-     */
     protected Balance $balance;
 
     public function setUp(): void

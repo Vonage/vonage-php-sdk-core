@@ -16,9 +16,6 @@ use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 class Balance implements
     ArrayHydrateInterface
 {
-    /**
-     * @var array
-     */
     protected array $data;
 
     public function __construct($balance, $autoReload)

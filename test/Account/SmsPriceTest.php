@@ -18,8 +18,6 @@ class SmsPriceTest extends VonageTestCase
 {
     /**
      * @dataProvider smsPriceProvider
-     *
-     * @param $smsPrice
      */
     public function testFromArray($smsPrice): void
     {
@@ -31,8 +29,6 @@ class SmsPriceTest extends VonageTestCase
 
     /**
      * @dataProvider smsPriceProvider
-     *
-     * @param $smsPrice
      */
     public function testGetters($smsPrice): void
     {
@@ -45,8 +41,6 @@ class SmsPriceTest extends VonageTestCase
 
     /**
      * @dataProvider smsPriceProvider
-     *
-     * @param $smsPrice
      */
     public function testUsesCustomPriceForKnownNetwork($smsPrice): void
     {
@@ -55,8 +49,6 @@ class SmsPriceTest extends VonageTestCase
 
     /**
      * @dataProvider smsPriceProvider
-     *
-     * @param $smsPrice
      */
     public function testUsesDefaultPriceForUnknownNetwork($smsPrice): void
     {
