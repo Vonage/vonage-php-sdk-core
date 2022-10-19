@@ -42,14 +42,8 @@ class ClientTest extends VonageTestCase
 
     protected $vonageClient;
 
-    /**
-     * @var APIResource
-     */
     protected APIResource $apiClient;
 
-    /**
-     * @var ApplicationClient
-     */
     protected ApplicationClient $applicationClient;
 
     public function setUp(): void
@@ -75,9 +69,6 @@ class ClientTest extends VonageTestCase
 
     /**
      * @dataProvider getApplication
-     *
-     * @param $payload
-     * @param $id
      *
      * @throws ClientExceptionInterface
      * @throws ClientException
@@ -153,11 +144,6 @@ class ClientTest extends VonageTestCase
 
     /**
      * @dataProvider updateApplication
-     *
-     * @param $payload
-     * @param $method
-     * @param $id
-     * @param $expectedId
      */
     public function testUpdateApplication($payload, $method, $expectedId): void
     {
@@ -278,9 +264,6 @@ class ClientTest extends VonageTestCase
     /**
      * @dataProvider deleteApplication
      *
-     * @param $payload
-     * @param $id
-     *
      * @throws ClientExceptionInterface
      * @throws ClientException
      */
@@ -312,10 +295,6 @@ class ClientTest extends VonageTestCase
 
     /**
      * @dataProvider exceptions
-     *
-     * @param $method
-     * @param $response
-     * @param $code
      */
     public function testThrowsException($method, $response, $code): void
     {
@@ -373,9 +352,6 @@ class ClientTest extends VonageTestCase
 
     /**
      * @dataProvider createApplication
-     *
-     * @param $payload
-     * @param $method
      */
     public function testCreateApplication($payload, $method): void
     {
