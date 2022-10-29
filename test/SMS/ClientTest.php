@@ -336,7 +336,11 @@ class ClientTest extends VonageTestCase
 
     public function testThrowsWarningSendingUnicodeAsTest(): void
     {
-        $this->expectError();
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            return true;
+        }))->willReturn($this->getResponse('send-success'));
+
+        $this->expectWarning();
         $this->expectErrorMessage("Sending unicode text SMS without setting the type parameter to 'unicode'.
                     See https://developer.vonage.com/messaging/sms for details, or email support@vonage.com 
                     if you have any questions.");

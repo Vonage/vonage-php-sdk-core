@@ -72,7 +72,8 @@ class ClientTest extends VonageTestCase
 
         $this->client->setClient($client->reveal());
 
-        $mock = $this->getMockBuilder(Verification::class)
+        // Silencing a few instances were we use old deprecated construction
+        $mock = @$this->getMockBuilder(Verification::class)
             ->setConstructorArgs($construct)
             ->setMethods(['setClient'])
             ->getMock();
