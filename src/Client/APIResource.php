@@ -305,6 +305,11 @@ class APIResource implements ClientAwareInterface
         return $this->isHAL;
     }
 
+    public function partiallyUpdate(string $id, array $body, array $headers = []): ?array
+    {
+        return $this->updateEntity('PATCH', $id, $body, $headers);
+    }
+
     public function search(?FilterInterface $filter = null, string $uri = ''): IterableAPICollection
     {
         if (is_null($filter)) {
@@ -422,11 +427,16 @@ class APIResource implements ClientAwareInterface
         return $response->getBody()->getContents();
     }
 
+    public function update(string $id, array $body, array $headers = []): ?array
+    {
+        return $this->updateEntity('PUT', $id, $body, $headers);
+    }
+
     /**
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
      */
-    public function update(string $id, array $body, array $headers = []): ?array
+    protected function updateEntity(string $method, string $id, array $body, array $headers = []): ?array
     {
         if (empty($headers)) {
             $headers = ['content-type' => 'application/json'];
@@ -434,7 +444,7 @@ class APIResource implements ClientAwareInterface
 
         $request = new Request(
             $this->getBaseUrl() . $this->baseUri . '/' . $id,
-            'PUT',
+            $method,
             'php://temp',
             $headers
         );
