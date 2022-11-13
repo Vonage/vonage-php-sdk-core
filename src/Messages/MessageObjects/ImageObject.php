@@ -33,7 +33,7 @@ class ImageObject implements ArrayHydrateInterface
         ];
 
         if ($this->caption) {
-            $returnArray[] = [
+            $returnArray += [
                 'caption' => $this->caption
             ];
         }
