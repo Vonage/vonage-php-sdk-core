@@ -37,20 +37,8 @@ class Client implements ClientAwareInterface, APIClient
      */
     use ClientAwareTrait;
 
-    /**
-     * @var APIResource
-     */
-    protected $accountAPI;
-
-    /**
-     * @var APIResource
-     */
-    protected $secretsAPI;
-
-    public function __construct(?APIResource $accountAPI = null, ?APIResource $secretsAPI = null)
+    public function __construct(protected ?APIResource $accountAPI = null, protected ?APIResource $secretsAPI = null)
     {
-        $this->accountAPI = $accountAPI;
-        $this->secretsAPI = $secretsAPI;
     }
 
     /**
@@ -231,7 +219,7 @@ class Client implements ClientAwareInterface, APIClient
             throw new ClientException\Server('Response was empty');
         }
 
-        $body = json_decode($body, true);
+        $body = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
 
         return new Config(
             $body['mo-callback-url'],
@@ -271,7 +259,7 @@ class Client implements ClientAwareInterface, APIClient
             throw new ClientException\Server('Response was empty');
         }
 
-        $body = json_decode($rawBody, true);
+        $body = json_decode($rawBody, true, 512, JSON_THROW_ON_ERROR);
 
         return new Config(
             $body['mo-callback-url'],
@@ -336,7 +324,7 @@ class Client implements ClientAwareInterface, APIClient
         } catch (ClientRequestException $e) {
             // @deprecated Throw a Validation exception to preserve old behavior
             // This will change to a general Request exception in the future
-            $rawResponse = json_decode(@$e->getResponse()->getBody()->getContents(), true);
+            $rawResponse = json_decode(@$e->getResponse()->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
 
             if (array_key_exists('invalid_parameters', $rawResponse)) {
                 throw new ClientValidationException(

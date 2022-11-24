@@ -17,7 +17,7 @@ class SignatureBodyHandler extends AbstractHandler
         $body = $request->getBody();
         $body->rewind();
         $content = $body->getContents();
-        $params = json_decode($content, true);
+        $params = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
         $params['api_key'] = $credentialsArray['api_key'];
 
         $signature = new Signature(
@@ -27,7 +27,7 @@ class SignatureBodyHandler extends AbstractHandler
         );
 
         $body->rewind();
-        $body->write(json_encode($signature->getSignedParams()));
+        $body->write(json_encode($signature->getSignedParams(), JSON_THROW_ON_ERROR));
 
         return $request;
     }

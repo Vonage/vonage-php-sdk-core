@@ -40,7 +40,7 @@ class Notification
     public function __construct(array $data)
     {
         if (is_string($data['payload'])) {
-            $data['payload'] = json_decode($data['payload'], true);
+            $data['payload'] = json_decode($data['payload'], true, 512, JSON_THROW_ON_ERROR);
         }
 
         $this->payload = $data['payload'];

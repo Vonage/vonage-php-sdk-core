@@ -23,20 +23,14 @@ class Unicode extends Message
     public const TYPE = 'unicode';
 
     /**
-     * Message Body
-     *
-     * @var string
-     */
-    protected $text;
-
-    /**
      * Create a new SMS text message.
      */
-    public function __construct(string $to, string $from, string $text)
+    public function __construct(string $to, string $from, /**
+     * Message Body
+     */
+    protected string $text)
     {
         parent::__construct($to, $from);
-
-        $this->text = $text;
     }
 
     /**

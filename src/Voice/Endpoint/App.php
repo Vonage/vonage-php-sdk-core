@@ -13,14 +13,8 @@ namespace Vonage\Voice\Endpoint;
 
 class App implements EndpointInterface
 {
-    /**
-     * @var string
-     */
-    protected $id;
-
-    public function __construct(string $user)
+    public function __construct(protected string $id)
     {
-        $this->id = $user;
     }
 
     public static function factory(string $user): App

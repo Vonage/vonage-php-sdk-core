@@ -29,7 +29,7 @@ class ExceptionErrorHandler
      */
     public function __invoke(ResponseInterface $response, RequestInterface $request)
     {
-        $data = json_decode($response->getBody()->getContents(), true);
+        $data = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
         $response->getBody()->rewind();
         $e = null;
 

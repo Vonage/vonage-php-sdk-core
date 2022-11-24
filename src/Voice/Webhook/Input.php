@@ -61,14 +61,14 @@ class Input
     {
         // GET requests push this in as a string
         if (is_string($data['speech'])) {
-            $data['speech'] = json_decode($data['speech'], true);
+            $data['speech'] = json_decode($data['speech'], true, 512, JSON_THROW_ON_ERROR);
         }
 
         $this->speech = $data['speech'];
 
         // GET requests push this in as a string
         if (is_string($data['dtmf'])) {
-            $data['dtmf'] = json_decode($data['dtmf'], true);
+            $data['dtmf'] = json_decode($data['dtmf'], true, 512, JSON_THROW_ON_ERROR);
         }
 
         $this->dtmf = $data['dtmf'];

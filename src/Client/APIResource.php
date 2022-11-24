@@ -116,7 +116,7 @@ class APIResource implements ClientAwareInterface
             $request = $this->addAuth($request);
         }
 
-        $request->getBody()->write(json_encode($body));
+        $request->getBody()->write(json_encode($body, JSON_THROW_ON_ERROR));
         $this->lastRequest = $request;
 
         $response = $this->getClient()->send($request);
@@ -136,7 +136,7 @@ class APIResource implements ClientAwareInterface
 
         $response->getBody()->rewind();
 
-        return json_decode($response->getBody()->getContents(), true);
+        return json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
     }
 
     /**
@@ -180,7 +180,7 @@ class APIResource implements ClientAwareInterface
 
         $response->getBody()->rewind();
 
-        return json_decode($response->getBody()->getContents(), true);
+        return json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
     }
 
     /**
@@ -226,7 +226,7 @@ class APIResource implements ClientAwareInterface
             throw $e;
         }
 
-        return json_decode($response->getBody()->getContents(), true);
+        return json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
     }
 
     public function getAuthHandler(): ?HandlerInterface
@@ -453,7 +453,7 @@ class APIResource implements ClientAwareInterface
             $request = $this->addAuth($request);
         }
 
-        $request->getBody()->write(json_encode($body));
+        $request->getBody()->write(json_encode($body, JSON_THROW_ON_ERROR));
         $response = $this->getClient()->send($request);
 
         $this->lastRequest = $request;
@@ -467,7 +467,7 @@ class APIResource implements ClientAwareInterface
             throw $e;
         }
 
-        return json_decode($response->getBody()->getContents(), true);
+        return json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
     }
 
     public function errorsOn200(): bool

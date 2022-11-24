@@ -47,9 +47,6 @@ class Keypair extends AbstractCredentials
         $this->key = InMemory::plainText($privateKey);
     }
 
-    /**
-     * @return Key
-     */
     public function getKey(): Key
     {
         return $this->key;
@@ -61,7 +58,7 @@ class Keypair extends AbstractCredentials
 
         $exp = time() + 60;
         $iat = time();
-        $jti = base64_encode((string)mt_rand());
+        $jti = base64_encode((string)random_int(0, mt_getrandmax()));
 
         if (isset($claims['exp'])) {
             $exp = $claims['exp'];

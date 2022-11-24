@@ -13,14 +13,8 @@ namespace Vonage\Voice\Endpoint;
 
 class VBC implements EndpointInterface
 {
-    /**
-     * @var string
-     */
-    protected $id;
-
-    public function __construct(string $extension)
+    public function __construct(protected string $id)
     {
-        $this->id = $extension;
     }
 
     public static function factory(string $extension): VBC

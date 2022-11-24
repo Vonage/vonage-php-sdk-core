@@ -49,7 +49,7 @@ class Response implements Countable, Iterator
             throw new InvalidArgumentException('expected response data to be a string');
         }
 
-        $this->data = json_decode($data, true);
+        $this->data = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
     }
 
     public function getMessages(): array

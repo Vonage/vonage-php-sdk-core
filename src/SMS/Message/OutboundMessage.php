@@ -35,11 +35,6 @@ abstract class OutboundMessage implements Message
     protected $deliveryReceiptCallback;
 
     /**
-     * @var string
-     */
-    protected $from;
-
-    /**
      * @var int
      */
     protected $messageClass;
@@ -50,16 +45,11 @@ abstract class OutboundMessage implements Message
     protected $requestDeliveryReceipt = true;
 
     /**
-     * @var string
-     */
-    protected $to;
-
-    /**
      * TTL of the SMS delivery, in milliseconds
      *
      * @var int
      */
-    protected $ttl = 259200000;
+    protected $ttl = 259_200_000;
 
     /**
      * Type of message, set by the child class
@@ -68,10 +58,8 @@ abstract class OutboundMessage implements Message
      */
     protected $type;
 
-    public function __construct(string $to, string $from)
+    public function __construct(protected string $to, protected string $from)
     {
-        $this->to = $to;
-        $this->from = $from;
     }
 
     abstract public function toArray(): array;
@@ -86,7 +74,7 @@ abstract class OutboundMessage implements Message
      */
     public function setTtl(int $ttl): self
     {
-        if ($ttl < 20000 || $ttl > 604800000) {
+        if ($ttl < 20000 || $ttl > 604_800_000) {
             throw new InvalidArgumentException('SMS TTL must be in the range of 20000-604800000 milliseconds');
         }
 
@@ -213,9 +201,6 @@ abstract class OutboundMessage implements Message
         return $this->accountRef;
     }
 
-    /**
-     * @return $this
-     */
     public function setAccountRef(string $accountRef): OutboundMessage
     {
         $this->accountRef = $accountRef;

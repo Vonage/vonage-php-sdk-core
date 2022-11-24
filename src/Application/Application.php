@@ -24,7 +24,7 @@ use Vonage\Entity\Psr7Trait;
 use function count;
 use function ucfirst;
 
-class Application implements EntityInterface, JsonSerializable, JsonUnserializableInterface, ArrayHydrateInterface
+class Application implements EntityInterface, JsonSerializable, JsonUnserializableInterface, ArrayHydrateInterface, \Stringable
 {
     use JsonSerializableTrait;
     use Psr7Trait;
@@ -57,14 +57,8 @@ class Application implements EntityInterface, JsonSerializable, JsonUnserializab
      */
     protected $keys = [];
 
-    /**
-     * @var string|null
-     */
-    protected $id;
-
-    public function __construct(?string $id = null)
+    public function __construct(protected ?string $id = null)
     {
-        $this->id = $id;
     }
 
     public function getId(): ?string
@@ -209,7 +203,7 @@ class Application implements EntityInterface, JsonSerializable, JsonUnserializab
     public function jsonUnserialize(array $json): void
     {
         trigger_error(
-            get_class($this) . "::jsonUnserialize is deprecated, please fromArray() instead",
+            $this::class . "::jsonUnserialize is deprecated, please fromArray() instead",
             E_USER_DEPRECATED
         );
 

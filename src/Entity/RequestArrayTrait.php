@@ -87,7 +87,7 @@ trait RequestArrayTrait
                 sprintf(
                     'can not set request parameter `%s` for `%s` after API request has be made',
                     $name,
-                    get_class($this)
+                    $this::class
                 )
             );
         }

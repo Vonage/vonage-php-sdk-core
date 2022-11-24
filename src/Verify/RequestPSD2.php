@@ -33,22 +33,7 @@ class RequestPSD2 implements ArrayHydrateInterface
     /**
      * @var string
      */
-    protected $number;
-
-    /**
-     * @var string
-     */
     protected $country;
-
-    /**
-     * @var string
-     */
-    protected $payee;
-
-    /**
-     * @var string
-     */
-    protected $amount;
 
     /**
      * @var int
@@ -75,12 +60,8 @@ class RequestPSD2 implements ArrayHydrateInterface
      */
     protected $workflowId;
 
-    public function __construct(string $number, string $payee, string $amount, int $workflowId = null)
+    public function __construct(protected string $number, protected string $payee, protected string $amount, int $workflowId = null)
     {
-        $this->number = $number;
-        $this->payee = $payee;
-        $this->amount = $amount;
-
         if ($workflowId) {
             $this->setWorkflowId($workflowId);
         }

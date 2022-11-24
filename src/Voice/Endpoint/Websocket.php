@@ -28,14 +28,8 @@ class Websocket implements EndpointInterface
      */
     protected $headers = [];
 
-    /**
-     * @var string
-     */
-    protected $id;
-
-    public function __construct(string $uri, string $rate = self::TYPE_8000, array $headers = [])
+    public function __construct(protected string $id, string $rate = self::TYPE_8000, array $headers = [])
     {
-        $this->id = $uri;
         $this->setContentType($rate);
         $this->setHeaders($headers);
     }

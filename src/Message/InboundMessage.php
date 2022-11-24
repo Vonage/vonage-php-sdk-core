@@ -53,7 +53,7 @@ class InboundMessage implements MessageInterface, ArrayAccess, ArrayHydrateInter
     {
         if ($idOrRequest instanceof ServerRequestInterface) {
             trigger_error(
-                'Passing a Request object into ' . get_class($this) . ' has been deprecated. ' .
+                'Passing a Request object into ' . $this::class . ' has been deprecated. ' .
                 'Please use fromArray() instead',
                 E_USER_DEPRECATED
             );
@@ -114,19 +114,13 @@ class InboundMessage implements MessageInterface, ArrayAccess, ArrayHydrateInter
             $isApplicationJson = true;
         }
 
-        switch ($request->getMethod()) {
-            case 'POST':
-                $params = $isApplicationJson ?
-                    json_decode((string)$request->getBody(), true) :
-                    $request->getParsedBody();
-                break;
-            case 'GET':
-                $params = $request->getQueryParams();
-                break;
-            default:
-                $params = [];
-                break;
-        }
+        $params = match ($request->getMethod()) {
+            'POST' => $isApplicationJson ?
+                json_decode((string)$request->getBody(), true, 512, JSON_THROW_ON_ERROR) :
+                $request->getParsedBody(),
+            'GET' => $request->getQueryParams(),
+            default => [],
+        };
 
         return $params;
     }
@@ -188,7 +182,7 @@ class InboundMessage implements MessageInterface, ArrayAccess, ArrayHydrateInter
     public function offsetExists($offset): bool
     {
         trigger_error(
-            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
+            "Array access for " . $this::class . " is deprecated, please use getter methods",
             E_USER_DEPRECATED
         );
 
@@ -214,7 +208,7 @@ class InboundMessage implements MessageInterface, ArrayAccess, ArrayHydrateInter
     public function offsetGet($offset)
     {
         trigger_error(
-            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
+            "Array access for " . $this::class . " is deprecated, please use getter methods",
             E_USER_DEPRECATED
         );
 

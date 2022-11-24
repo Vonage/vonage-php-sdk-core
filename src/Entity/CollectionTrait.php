@@ -97,10 +97,8 @@ trait CollectionTrait
 
     /**
      * Return the ID of the resource, in some cases this is `id`, in others `uuid`.
-     *
-     * @return string|int
      */
-    public function key()
+    public function key(): string|int
     {
         return
             $this->page['_embedded'][static::getCollectionName()][$this->current]['id'] ??
@@ -253,7 +251,7 @@ trait CollectionTrait
     protected function fetchPage($absoluteUri): void
     {
         //use filter if no query provided
-        if (false === strpos($absoluteUri, '?')) {
+        if (!str_contains($absoluteUri, '?')) {
             $query = [];
 
             if (isset($this->size)) {
@@ -283,6 +281,6 @@ trait CollectionTrait
         }
 
         $this->response = $response;
-        $this->page = json_decode($this->response->getBody()->getContents(), true);
+        $this->page = json_decode($this->response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
     }
 }

@@ -26,15 +26,8 @@ use function strtoupper;
 use function time;
 use function urldecode;
 
-class Signature
+class Signature implements \Stringable
 {
-    /**
-     * Params to Sign
-     *
-     * @var array
-     */
-    protected $params;
-
     /**
      * Params with Signature (and timestamp if not present)
      *
@@ -47,9 +40,11 @@ class Signature
      *
      * @throws ClientException
      */
-    public function __construct(array $params, $secret, $signatureMethod)
+    public function __construct(/**
+     * Params to Sign
+     */
+    protected array $params, $secret, $signatureMethod)
     {
-        $this->params = $params;
         $this->signed = $params;
 
         if (!isset($this->signed['timestamp'])) {
@@ -137,7 +132,7 @@ class Signature
      *
      * @throws InvalidArgumentException
      */
-    public function check($signature): bool
+    public function check(array|string $signature): bool
     {
         if (is_array($signature) && isset($signature['sig'])) {
             $signature = $signature['sig'];

@@ -20,26 +20,8 @@ use function strtolower;
 
 abstract class Shortcode
 {
-    /**
-     * @var string
-     */
-    protected $to;
-
-    /**
-     * @var array
-     */
-    protected $custom;
-
-    /**
-     * @var array
-     */
-    protected $options;
-
-    public function __construct(string $to, array $custom = [], array $options = [])
+    public function __construct(protected string $to, protected array $custom = [], protected array $options = [])
     {
-        $this->to = $to;
-        $this->custom = $custom;
-        $this->options = $options;
     }
 
     public function setCustom(array $custom): void

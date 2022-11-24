@@ -39,14 +39,8 @@ class Client implements ClientAwareInterface, APIClient
      */
     use ClientAwareTrait;
 
-    /**
-     * @var APIResource
-     */
-    protected $api;
-
-    public function __construct(APIResource $api = null)
+    public function __construct(protected APIResource $api = null)
     {
-        $this->api = $api;
     }
 
     /**
@@ -76,7 +70,7 @@ class Client implements ClientAwareInterface, APIClient
      *
      * @todo Clean up the logic here, we are doing a lot of GET requests
      */
-    public function update($number, ?string $id = null): Number
+    public function update(mixed $number, ?string $id = null): Number
     {
         if (!$number instanceof Number) {
             trigger_error(
@@ -117,7 +111,7 @@ class Client implements ClientAwareInterface, APIClient
         if (isset($update) && ($number instanceof Number)) {
             try {
                 return $this->get($number);
-            } catch (ThrottleException $e) {
+            } catch (ThrottleException) {
                 sleep(1); // This API is 1 request per second :/
                 return $this->get($number);
             }
@@ -126,7 +120,7 @@ class Client implements ClientAwareInterface, APIClient
         if ($number instanceof Number) {
             try {
                 return @$this->get($number);
-            } catch (ThrottleException $e) {
+            } catch (ThrottleException) {
                 sleep(1); // This API is 1 request per second :/
                 return @$this->get($number);
             }
@@ -134,7 +128,7 @@ class Client implements ClientAwareInterface, APIClient
 
         try {
             return $this->get($body['msisdn']);
-        } catch (ThrottleException $e) {
+        } catch (ThrottleException) {
             sleep(1); // This API is 1 request per second :/
             return $this->get($body['msisdn']);
         }
@@ -211,7 +205,7 @@ class Client implements ClientAwareInterface, APIClient
     {
         if (is_array($options) && !empty($options)) {
             trigger_error(
-                'Passing an array to ' . get_class($this) . '::searchAvailable() is deprecated, ' .
+                'Passing an array to ' . $this::class . '::searchAvailable() is deprecated, ' .
                 'pass a FilterInterface instead',
                 E_USER_DEPRECATED
             );
@@ -262,7 +256,7 @@ class Client implements ClientAwareInterface, APIClient
     {
         if (!empty($options)) {
             trigger_error(
-                'Passing a array for Parameter 2 into ' . get_class($this) . '::searchOwned() ' .
+                'Passing a array for Parameter 2 into ' . $this::class . '::searchOwned() ' .
                 'is deprecated, please pass a FilterInterface as the first parameter only',
                 E_USER_DEPRECATED
             );
@@ -273,7 +267,7 @@ class Client implements ClientAwareInterface, APIClient
                 $options = $number->getQuery() + $options;
             } elseif ($number instanceof Number) {
                 trigger_error(
-                    'Passing a Number object into ' . get_class($this) . '::searchOwned() is deprecated, ' .
+                    'Passing a Number object into ' . $this::class . '::searchOwned() is deprecated, ' .
                     'please pass a FilterInterface',
                     E_USER_DEPRECATED
                 );

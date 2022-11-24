@@ -27,14 +27,8 @@ class Client implements ClientAwareInterface, APIClient
 {
     use ClientAwareTrait;
 
-    /**
-     * @var APIResource
-     */
-    protected $api;
-
-    public function __construct(APIResource $api = null)
+    public function __construct(protected APIResource $api = null)
     {
-        $this->api = $api;
     }
 
     public function getAPIResource(): APIResource
@@ -118,7 +112,7 @@ class Client implements ClientAwareInterface, APIClient
      */
     protected function getException(ResponseInterface $response)
     {
-        $body = json_decode($response->getBody()->getContents(), true);
+        $body = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
         $status = (int)$response->getStatusCode();
 
         if ($status === 402) {

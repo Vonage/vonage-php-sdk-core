@@ -21,11 +21,6 @@ use function is_null;
 class Conversation implements ActionInterface
 {
     /**
-     * @var string
-     */
-    protected $name;
-
-    /**
      * @var ?string
      */
     protected $musicOnHoldUrl;
@@ -60,9 +55,8 @@ class Conversation implements ActionInterface
      */
     protected $eventWebhook;
 
-    public function __construct(string $name)
+    public function __construct(protected string $name)
     {
-        $this->name = $name;
     }
 
     public function getName(): string
@@ -140,8 +134,6 @@ class Conversation implements ActionInterface
 
     /**
      * @param array<string> $canSpeak
-     *
-     * @return Conversation
      */
     public function setCanSpeak(array $canSpeak): self
     {
@@ -170,8 +162,6 @@ class Conversation implements ActionInterface
 
     /**
      * @param array<string> $canHear
-     *
-     * @return Conversation
      */
     public function setCanHear(array $canHear): self
     {
@@ -312,9 +302,6 @@ class Conversation implements ActionInterface
         return $this->eventWebhook;
     }
 
-    /**
-     * @return $this
-     */
     public function setEventWebhook(Webhook $eventWebhook): Conversation
     {
         $this->eventWebhook = $eventWebhook;

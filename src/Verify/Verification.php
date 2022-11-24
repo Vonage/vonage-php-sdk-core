@@ -81,7 +81,7 @@ class Verification implements VerificationInterface, Serializable, ArrayHydrateI
             $this->requestData['request_id'] = $idOrNumber;
         } else {
             trigger_error(
-                'Using ' . get_class($this) . ' for starting a verification is deprecated, ' .
+                'Using ' . $this::class . ' for starting a verification is deprecated, ' .
                 'please use Vonage\Verify\Request instead',
                 E_USER_DEPRECATED
             );
@@ -257,10 +257,8 @@ class Verification implements VerificationInterface, Serializable, ArrayHydrateI
      * @param $country
      *
      * @throws Exception
-     *
-     * @return RequestArrayTrait|Verification
      */
-    public function setCountry($country)
+    public function setCountry($country): \Vonage\Entity\RequestArrayTrait|\Vonage\Verify\Verification
     {
         return $this->setRequestData('country', $country);
     }
@@ -276,10 +274,8 @@ class Verification implements VerificationInterface, Serializable, ArrayHydrateI
      * @param $id
      *
      * @throws Exception
-     *
-     * @return RequestArrayTrait|Verification
      */
-    public function setSenderId($id)
+    public function setSenderId($id): \Vonage\Entity\RequestArrayTrait|\Vonage\Verify\Verification
     {
         return $this->setRequestData('sender_id', $id);
     }
@@ -294,10 +290,8 @@ class Verification implements VerificationInterface, Serializable, ArrayHydrateI
      * @param $length
      *
      * @throws Exception
-     *
-     * @return RequestArrayTrait|Verification
      */
-    public function setCodeLength($length)
+    public function setCodeLength($length): \Vonage\Entity\RequestArrayTrait|\Vonage\Verify\Verification
     {
         return $this->setRequestData('code_length', $length);
     }
@@ -314,10 +308,8 @@ class Verification implements VerificationInterface, Serializable, ArrayHydrateI
      * @param $language
      *
      * @throws Exception
-     *
-     * @return RequestArrayTrait|Verification
      */
-    public function setLanguage($language)
+    public function setLanguage($language): \Vonage\Entity\RequestArrayTrait|\Vonage\Verify\Verification
     {
         return $this->setRequestData('lg', $language);
     }
@@ -337,10 +329,8 @@ class Verification implements VerificationInterface, Serializable, ArrayHydrateI
      * @param $type
      *
      * @throws Exception
-     *
-     * @return RequestArrayTrait|Verification
      */
-    public function setRequireType($type)
+    public function setRequireType($type): \Vonage\Entity\RequestArrayTrait|\Vonage\Verify\Verification
     {
         return $this->setRequestData('require_type', $type);
     }
@@ -357,10 +347,8 @@ class Verification implements VerificationInterface, Serializable, ArrayHydrateI
      * @param $time
      *
      * @throws Exception
-     *
-     * @return RequestArrayTrait|Verification
      */
-    public function setPinExpiry($time)
+    public function setPinExpiry($time): \Vonage\Entity\RequestArrayTrait|\Vonage\Verify\Verification
     {
         return $this->setRequestData('pin_expiry', $time);
     }
@@ -376,10 +364,8 @@ class Verification implements VerificationInterface, Serializable, ArrayHydrateI
      * @param $time
      *
      * @throws Exception
-     *
-     * @return RequestArrayTrait|Verification
      */
-    public function setWaitTime($time)
+    public function setWaitTime($time): \Vonage\Entity\RequestArrayTrait|\Vonage\Verify\Verification
     {
         return $this->setRequestData('next_event_wait', $time);
     }
@@ -394,10 +380,8 @@ class Verification implements VerificationInterface, Serializable, ArrayHydrateI
      * @param $workflow_id
      *
      * @throws Exception
-     *
-     * @return RequestArrayTrait|Verification
      */
-    public function setWorkflowId($workflow_id)
+    public function setWorkflowId($workflow_id): \Vonage\Entity\RequestArrayTrait|\Vonage\Verify\Verification
     {
         return $this->setRequestData('workflow_id', $workflow_id);
     }

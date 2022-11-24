@@ -472,7 +472,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
     protected function fetchPage($absoluteUri): void
     {
         //use filter if no query provided
-        if (false === strpos($absoluteUri, '?')) {
+        if (!str_contains($absoluteUri, '?')) {
             $query = [];
 
             if (isset($this->size)) {
@@ -511,7 +511,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
         $this->getApiResource()->setLastResponse($response);
 
         $body = $this->response->getBody()->getContents();
-        $json = json_decode($body, true);
+        $json = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
         $this->cache[md5($requestUri)] = $json;
         $this->page = $json;
 
@@ -528,7 +528,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
     protected function getException(ResponseInterface $response)
     {
         $response->getBody()->rewind();
-        $body = json_decode($response->getBody()->getContents(), true);
+        $body = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
         $status = (int)$response->getStatusCode();
 
         // Error responses aren't consistent. Some are generated within the

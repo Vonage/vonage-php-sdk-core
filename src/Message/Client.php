@@ -55,14 +55,8 @@ class Client implements ClientAwareInterface
      */
     use ClientAwareTrait;
 
-    /**
-     * @var APIResource
-     */
-    protected $api;
-
-    public function __construct(APIResource $api = null)
+    public function __construct(protected APIResource $api = null)
     {
-        $this->api = $api;
     }
 
     /**
@@ -85,7 +79,7 @@ class Client implements ClientAwareInterface
                         throw new ClientException\Request('too many concurrent requests', $response->getStatusCode());
                     }
 
-                    $data = json_decode($response->getBody()->getContents(), true);
+                    $data = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
 
                     if (!isset($data['messages'])) {
                         if (isset($data['error-code'], $data['error-code-label'])) {
@@ -134,14 +128,13 @@ class Client implements ClientAwareInterface
     }
 
     /**
-     * @param Message|array $message
      *
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
      * @throws ClientExceptionInterface
      */
-    public function send($message): Message
+    public function send(\Vonage\Message\Message|array $message): Message
     {
         if (!($message instanceof MessageInterface)) {
             trigger_error(
@@ -277,7 +270,7 @@ class Client implements ClientAwareInterface
             }
         }
 
-        if (count($data['items']) === 0) {
+        if ((is_countable($data['items']) ? count($data['items']) : 0) === 0) {
             return [];
         }
 
@@ -308,18 +301,17 @@ class Client implements ClientAwareInterface
     /**
      * @todo Fix all this error detection so it's standard
      *
-     * @param string|MessageInterface $idOrMessage
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
      *
      * @return InboundMessage|Message|MessageInterface|null
-     *
      * @deprecated Please use the Reports API instead
      */
-    public function search($idOrMessage)
+    public function search(string|\Vonage\Message\MessageInterface $idOrMessage)
     {
+        $data = [];
         if ($idOrMessage instanceof MessageInterface) {
             $id = $idOrMessage->getMessageId();
             $message = $idOrMessage;
@@ -391,8 +383,8 @@ class Client implements ClientAwareInterface
                 throw new ClientException\Exception(
                     sprintf(
                         'searched for message with type `%s` but message of type `%s`',
-                        get_class($message),
-                        get_class($new)
+                        $message::class,
+                        $new::class
                     )
                 );
             }
@@ -460,7 +452,7 @@ class Client implements ClientAwareInterface
                 throw $e;
             }
 
-            if (count($data['items']) === 0) {
+            if ((is_countable($data['items']) ? count($data['items']) : 0) === 0) {
                 return [];
             }
 
@@ -492,10 +484,7 @@ class Client implements ClientAwareInterface
         return [];
     }
 
-    /**
-     * @param MessageInterface|array $message
-     */
-    protected function createMessageFromArray($message): Message
+    protected function createMessageFromArray(\Vonage\Message\MessageInterface|array $message): Message
     {
         if (!is_array($message)) {
             throw new RuntimeException('message must implement `' . MessageInterface::class . '` or be an array`');
@@ -528,12 +517,12 @@ class Client implements ClientAwareInterface
      */
     public function __call(string $name, $arguments)
     {
-        if (strpos($name, "send") !== 0) {
+        if (!str_starts_with($name, "send")) {
             throw new RuntimeException(
                 sprintf(
                     '`%s` is not a valid method on `%s`',
                     $name,
-                    get_class($this)
+                    $this::class
                 )
             );
         }
@@ -546,7 +535,7 @@ class Client implements ClientAwareInterface
                 sprintf(
                     '`%s` is not a valid method on `%s`',
                     $name,
-                    get_class($this)
+                    $this::class
                 )
             );
         }

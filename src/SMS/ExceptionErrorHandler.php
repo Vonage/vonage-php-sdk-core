@@ -33,7 +33,7 @@ class ExceptionErrorHandler
             throw new ThrottleException('Too many concurrent requests', $response->getStatusCode());
         }
 
-        $data = json_decode($response->getBody()->getContents(), true);
+        $data = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
 
         if (!isset($data['messages'])) {
             if (isset($data['error-code'], $data['error-code-label'])) {

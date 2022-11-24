@@ -140,7 +140,7 @@ class Client implements LoggerAwareInterface
         if (is_null($client)) {
             // Since the user did not pass a client, try and make a client
             // using the Guzzle 6 adapter or Guzzle 7 (depending on availability)
-            list($guzzleVersion) = explode('@', Versions::getVersion('guzzlehttp/guzzle'), 1);
+            [$guzzleVersion] = explode('@', Versions::getVersion('guzzlehttp/guzzle'), 1);
             $guzzleVersion = (float) $guzzleVersion;
 
             if ($guzzleVersion >= 6.0 && $guzzleVersion < 7) {
@@ -165,7 +165,7 @@ class Client implements LoggerAwareInterface
             !($credentials instanceof OAuth) &&
             !($credentials instanceof Keypair)
         ) {
-            throw new RuntimeException('unknown credentials type: ' . get_class($credentials));
+            throw new RuntimeException('unknown credentials type: ' . $credentials::class);
         }
 
         $this->credentials = $credentials;
@@ -224,15 +224,7 @@ class Client implements LoggerAwareInterface
         // Disable throwing E_USER_DEPRECATED notices by default, the user can turn it on during development
         if (array_key_exists('show_deprecations', $this->options) && ($this->options['show_deprecations'] == true)) {
             set_error_handler(
-                static function (
-                    int $errno,
-                    string $errstr,
-                    string $errfile = null,
-                    int $errline = null,
-                    array $errorcontext = null
-                ) {
-                    return true;
-                },
+                static fn(int $errno, string $errstr, string $errfile = null, int $errline = null, array $errorcontext = null) => true,
                 E_USER_DEPRECATED
             );
         }
@@ -289,17 +281,11 @@ class Client implements LoggerAwareInterface
      */
     public static function signRequest(RequestInterface $request, SignatureSecret $credentials): RequestInterface
     {
-        switch ($request->getHeaderLine('content-type')) {
-            case 'application/json':
-                $handler = new SignatureBodyHandler();
-                break;
-            case 'application/x-www-form-urlencoded':
-                $handler = new SignatureBodyFormHandler();
-                break;
-            default:
-                $handler = new SignatureQueryHandler();
-                break;
-        }
+        $handler = match ($request->getHeaderLine('content-type')) {
+            'application/json' => new SignatureBodyHandler(),
+            'application/x-www-form-urlencoded' => new SignatureBodyFormHandler(),
+            default => new SignatureQueryHandler(),
+        };
 
         return $handler($request, $credentials);
     }
@@ -340,7 +326,7 @@ class Client implements LoggerAwareInterface
             return $this->credentials->generateJwt($claims);
         }
 
-        throw new ClientException(get_class($this->credentials) . ' does not support JWT generation');
+        throw new ClientException($this->credentials::class . ' does not support JWT generation');
     }
 
     /**
@@ -374,7 +360,7 @@ class Client implements LoggerAwareInterface
             ['content-type' => 'application/json']
         );
 
-        $request->getBody()->write(json_encode($params));
+        $request->getBody()->write(json_encode($params, JSON_THROW_ON_ERROR));
 
         return $this->send($request);
     }
@@ -414,7 +400,7 @@ class Client implements LoggerAwareInterface
             ['content-type' => 'application/json']
         );
 
-        $request->getBody()->write(json_encode($params));
+        $request->getBody()->write(json_encode($params, JSON_THROW_ON_ERROR));
 
         return $this->send($request);
     }
@@ -534,7 +520,7 @@ class Client implements LoggerAwareInterface
             }
 
             foreach ($disallowedCharacters as $char) {
-                if (strpos($app[$key], $char) !== false) {
+                if (str_contains($app[$key], $char)) {
                     throw new InvalidArgumentException('app.' . $key . ' cannot contain the ' . $char . ' character');
                 }
             }
@@ -547,7 +533,7 @@ class Client implements LoggerAwareInterface
             return $this->verify()->serialize($entity);
         }
 
-        throw new RuntimeException('unknown class `' . get_class($entity) . '``');
+        throw new RuntimeException('unknown class `' . $entity::class . '``');
     }
 
     public function __call($name, $args)
@@ -580,8 +566,8 @@ class Client implements LoggerAwareInterface
     protected static function requiresBasicAuth(RequestInterface $request): bool
     {
         $path = $request->getUri()->getPath();
-        $isSecretManagementEndpoint = strpos($path, '/accounts') === 0 && strpos($path, '/secrets') !== false;
-        $isApplicationV2 = strpos($path, '/v2/applications') === 0;
+        $isSecretManagementEndpoint = str_starts_with($path, '/accounts') && str_contains($path, '/secrets');
+        $isApplicationV2 = str_starts_with($path, '/v2/applications');
 
         return $isSecretManagementEndpoint || $isApplicationV2;
     }
@@ -590,8 +576,8 @@ class Client implements LoggerAwareInterface
     {
         $path = $request->getUri()->getPath();
 
-        $isRedact =  strpos($path, '/v1/redact') === 0;
-        $isMessages =  strpos($path, '/v1/messages') === 0;
+        $isRedact =  str_starts_with($path, '/v1/redact');
+        $isMessages =  str_starts_with($path, '/v1/messages');
 
         return $isRedact || $isMessages;
     }
@@ -599,10 +585,10 @@ class Client implements LoggerAwareInterface
     protected function needsKeypairAuthentication(RequestInterface $request): bool
     {
         $path = $request->getUri()->getPath();
-        $isCallEndpoint = strpos($path, '/v1/calls') === 0;
-        $isRecordingUrl = strpos($path, '/v1/files') === 0;
-        $isStitchEndpoint = strpos($path, '/beta/conversation') === 0;
-        $isUserEndpoint = strpos($path, '/beta/users') === 0;
+        $isCallEndpoint = str_starts_with($path, '/v1/calls');
+        $isRecordingUrl = str_starts_with($path, '/v1/files');
+        $isStitchEndpoint = str_starts_with($path, '/beta/conversation');
+        $isUserEndpoint = str_starts_with($path, '/beta/users');
 
         return $isCallEndpoint || $isRecordingUrl || $isStitchEndpoint || $isUserEndpoint;
     }

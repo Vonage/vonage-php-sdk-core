@@ -15,14 +15,8 @@ use RuntimeException;
 
 class Message
 {
-    /**
-     * @var array
-     */
-    protected $data;
-
-    public function __construct(array $data)
+    public function __construct(protected array $data)
     {
-        $this->data = $data;
     }
 
     public function getStatus()

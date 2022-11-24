@@ -38,8 +38,6 @@ class Call extends AbstractRequest
     /**
      * @param $url
      * @param $method
-     *
-     * @return $this
      */
     public function setAnswer($url, $method = null): Call
     {
@@ -57,8 +55,6 @@ class Call extends AbstractRequest
     /**
      * @param $url
      * @param $method
-     *
-     * @return $this
      */
     public function setError($url, $method = null): Call
     {
@@ -75,8 +71,6 @@ class Call extends AbstractRequest
     /**
      * @param $url
      * @param $method
-     *
-     * @return $this
      */
     public function setStatus($url, $method = null): Call
     {
@@ -93,8 +87,6 @@ class Call extends AbstractRequest
     /**
      * @param bool $hangup
      * @param $timeout
-     *
-     * @return $this
      */
     public function setMachineDetection($hangup = true, $timeout = null): Call
     {

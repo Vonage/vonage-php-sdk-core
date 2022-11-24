@@ -22,11 +22,6 @@ class Connect implements ActionInterface
     public const MACHINE_HANGUP = 'hangup';
 
     /**
-     * @var EndpointInterface
-     */
-    protected $endpoint;
-
-    /**
      * @var ?string
      */
     protected $from;
@@ -61,9 +56,8 @@ class Connect implements ActionInterface
      */
     protected $ringbackTone;
 
-    public function __construct(EndpointInterface $endpoint)
+    public function __construct(protected EndpointInterface $endpoint)
     {
-        $this->endpoint = $endpoint;
     }
 
     public static function factory(EndpointInterface $endpoint): Connect

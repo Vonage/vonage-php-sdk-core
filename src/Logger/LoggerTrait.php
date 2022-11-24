@@ -20,7 +20,7 @@ trait LoggerTrait
      * @param string|int $level Level of message that we are logging
      * @param array<mixed> $context Additional information for context
      */
-    public function log($level, string $message, array $context = []): void
+    public function log(string|int $level, string $message, array $context = []): void
     {
         $logger = $this->getLogger();
         if ($logger) {

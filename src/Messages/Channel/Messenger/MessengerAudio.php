@@ -11,18 +11,16 @@ class MessengerAudio extends BaseMessage
 
     protected string $channel = 'messenger';
     protected string $subType = BaseMessage::MESSAGES_SUBTYPE_AUDIO;
-    protected AudioObject $audioObject;
 
     public function __construct(
         string $to,
         string $from,
-        AudioObject $audioObject,
+        protected AudioObject $audioObject,
         ?string $category = null,
         ?string $tag = null
     ) {
         $this->to = $to;
         $this->from = $from;
-        $this->audioObject = $audioObject;
         $this->category = $category;
         $this->tag = $tag;
     }

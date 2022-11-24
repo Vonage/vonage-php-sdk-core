@@ -39,7 +39,7 @@ class APIExceptionHandler
      */
     public function __invoke(ResponseInterface $response, RequestInterface $request)
     {
-        $body = json_decode($response->getBody()->getContents(), true);
+        $body = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
         $response->getBody()->rewind();
         $status = (int)$response->getStatusCode();
 

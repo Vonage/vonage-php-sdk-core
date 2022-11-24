@@ -16,30 +16,11 @@ class WAPPush extends OutboundMessage
     /**
      * @var string
      */
-    protected $title;
-
-    /**
-     * @var string
-     */
     protected $type = 'wappush';
 
-    /**
-     * @var string
-     */
-    protected $url;
-
-    /**
-     * @var int
-     */
-    protected $validity;
-
-    public function __construct(string $to, string $from, string $title, string $url, int $validity)
+    public function __construct(string $to, string $from, protected string $title, protected string $url, protected int $validity)
     {
         parent::__construct($to, $from);
-
-        $this->title = $title;
-        $this->url = $url;
-        $this->validity = $validity;
     }
 
     public function toArray(): array

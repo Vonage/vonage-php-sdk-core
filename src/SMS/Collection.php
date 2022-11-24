@@ -17,18 +17,15 @@ use Iterator;
 class Collection implements Countable, Iterator
 {
     /**
-     * @var array{message-count: int, messages: array<string, mixed>}
-     */
-    protected $data;
-
-    /**
      * @var int
      */
     protected $current = 0;
 
-    public function __construct(array $apiResponse)
+    /**
+     * @param array<string, int|array<string, mixed>> $data
+     */
+    public function __construct(protected array $data)
     {
-        $this->data = $apiResponse;
     }
 
     public function count(): int

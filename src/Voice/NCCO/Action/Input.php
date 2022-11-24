@@ -341,8 +341,6 @@ class Input implements ActionInterface
 
     /**
      * @param array<string> $speechContext Array of words to help with speech recognition
-     *
-     * @return Input
      */
     public function setSpeechContext(array $speechContext): self
     {
@@ -401,9 +399,6 @@ class Input implements ActionInterface
         return $this->enableSpeech;
     }
 
-    /**
-     * @return $this
-     */
     public function setEnableSpeech(bool $enableSpeech): Input
     {
         $this->enableSpeech = $enableSpeech;
@@ -416,9 +411,6 @@ class Input implements ActionInterface
         return $this->enableDtmf;
     }
 
-    /**
-     * @return $this
-     */
     public function setEnableDtmf(bool $enableDtmf): Input
     {
         $this->enableDtmf = $enableDtmf;

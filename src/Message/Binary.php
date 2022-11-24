@@ -22,26 +22,15 @@ class Binary extends Message
 {
     public const TYPE = 'binary';
 
-    /**
+    public function __construct(string $to, string $from, /**
      * Message Body
-     *
-     * @var string
      */
-    protected $body;
-
-    /**
+    protected string $body, /**
      * Message UDH
-     *
-     * @var string
      */
-    protected $udh;
-
-    public function __construct(string $to, string $from, string $body, string $udh)
+    protected string $udh)
     {
         parent::__construct($to, $from);
-
-        $this->body = $body;
-        $this->udh = $udh;
     }
 
     /**

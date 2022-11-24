@@ -14,7 +14,7 @@ class TokenBodyHandler extends AbstractHandler
         $body = $request->getBody();
         $body->rewind();
         $content = $body->getContents();
-        $params = json_decode($content, true);
+        $params = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
 
         if (!$params) {
             $params = [];
@@ -22,7 +22,7 @@ class TokenBodyHandler extends AbstractHandler
 
         $params = array_merge($params, $credentials->asArray());
         $body->rewind();
-        $body->write(json_encode($params));
+        $body->write(json_encode($params, JSON_THROW_ON_ERROR));
 
         return $request;
     }

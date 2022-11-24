@@ -15,15 +15,8 @@ use Throwable;
 
 class Validation extends Request
 {
-    /**
-     * @var array
-     */
-    private $errors;
-
-    public function __construct(string $message = '', int $code = 0, Throwable $previous = null, array $errors = [])
+    public function __construct(string $message = '', int $code = 0, Throwable $previous = null, private array $errors = [])
     {
-        $this->errors = $errors;
-
         parent::__construct($message, $code, $previous);
     }
 

@@ -25,7 +25,7 @@ abstract class Factory
 
     public static function createFromJson(string $json)
     {
-        $data = json_decode($json, true);
+        $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
 
         if (is_null($data)) {
             throw new RuntimeException("Invalid JSON string detected for webhook transformation");
@@ -58,7 +58,7 @@ abstract class Factory
             case 'POST':
                 $type = $request->getHeader('content-type');
                 if (!isset($type[0]) || $type[0] === 'application/json') {
-                    $params = json_decode($request->getBody()->getContents(), true);
+                    $params = json_decode($request->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
                 } else {
                     parse_str($request->getBody()->getContents(), $params);
                     // Fix "null" values coming in from URL encoded requests

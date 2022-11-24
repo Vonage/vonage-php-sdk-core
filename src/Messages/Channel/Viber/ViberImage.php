@@ -11,19 +11,17 @@ class ViberImage extends BaseMessage
 
     protected string $channel = 'viber_service';
     protected string $subType = BaseMessage::MESSAGES_SUBTYPE_IMAGE;
-    protected ImageObject $image;
 
     public function __construct(
         string $to,
         string $from,
-        ImageObject $image,
+        protected ImageObject $image,
         ?string $category = null,
         ?int $ttl = null,
         ?string $type = null
     ) {
         $this->to = $to;
         $this->from = $from;
-        $this->image = $image;
         $this->category = $category;
         $this->ttl = $ttl;
         $this->type = $type;

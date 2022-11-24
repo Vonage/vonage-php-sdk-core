@@ -48,7 +48,7 @@ class Collection extends Response implements Countable, Iterator
 
         parent::__construct($data);
 
-        if (count($data['messages']) !== $data['message-count']) {
+        if ((is_countable($data['messages']) ? count($data['messages']) : 0) !== $data['message-count']) {
             throw new RuntimeException('invalid message count');
         }
 

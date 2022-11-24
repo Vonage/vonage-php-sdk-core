@@ -34,14 +34,8 @@ class Client implements ClientAwareInterface, APIClient
 {
     use ClientAwareTrait;
 
-    /**
-     * @var APIResource
-     */
-    protected $api;
-
-    public function __construct(APIResource $api = null)
+    public function __construct(protected APIResource $api = null)
     {
-        $this->api = $api;
     }
 
     /**
@@ -62,14 +56,13 @@ class Client implements ClientAwareInterface, APIClient
     }
 
     /**
-     * @param string|array|Verification|Request $verification
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
      */
-    public function start($verification): Verification
+    public function start(string|array|\Vonage\Verify\Verification|\Vonage\Verify\Request $verification): Verification
     {
         if (is_array($verification)) {
             trigger_error(
@@ -118,14 +111,13 @@ class Client implements ClientAwareInterface, APIClient
     }
 
     /**
-     * @param string|Verification $verification
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
      */
-    public function search($verification)
+    public function search(string|\Vonage\Verify\Verification $verification)
     {
         if ($verification instanceof Verification) {
             trigger_error(
@@ -191,14 +183,13 @@ class Client implements ClientAwareInterface, APIClient
     }
 
     /**
-     * @param string|array|Verification $verification
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
      */
-    public function check($verification, string $code, string $ip = null): Verification
+    public function check(string|array|\Vonage\Verify\Verification $verification, string $code, string $ip = null): Verification
     {
         if (is_array($verification)) {
             trigger_error(
@@ -238,7 +229,7 @@ class Client implements ClientAwareInterface, APIClient
     public function serialize(Verification $verification): string
     {
         trigger_error(
-            get_class($this) . '::serialize() is deprecated, serialize the Verification object directly',
+            $this::class . '::serialize() is deprecated, serialize the Verification object directly',
             E_USER_DEPRECATED
         );
 
@@ -251,7 +242,7 @@ class Client implements ClientAwareInterface, APIClient
     public function unserialize($verification): Verification
     {
         trigger_error(
-            get_class($this) . '::unserialize() is deprecated, unserialize the Verification object directly',
+            $this::class . '::unserialize() is deprecated, unserialize the Verification object directly',
             E_USER_DEPRECATED
         );
 
@@ -268,7 +259,6 @@ class Client implements ClientAwareInterface, APIClient
     }
 
     /**
-     * @param string|array|Verification $verification
      * @param string $cmd Next command to execute, must be `cancel` or `trigger_next_event`
      *
      * @throws ClientExceptionInterface
@@ -276,7 +266,7 @@ class Client implements ClientAwareInterface, APIClient
      * @throws ClientException\Request
      * @throws ClientException\Server
      */
-    protected function control($verification, string $cmd): Verification
+    protected function control(string|array|\Vonage\Verify\Verification $verification, string $cmd): Verification
     {
         if (is_array($verification)) {
             trigger_error(

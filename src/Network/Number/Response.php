@@ -91,6 +91,7 @@ class Response extends BaseResponse
      */
     public function __call($name, $args)
     {
+        $last = null;
         if (empty($this->callbacks)) {
             throw new BadMethodCallException('can not check for response data without callback data');
         }
@@ -110,9 +111,6 @@ class Response extends BaseResponse
         return $this->callbacks;
     }
 
-    /**
-     * @param Callback $callback
-     */
     public static function addCallback(Response $response, callable $callback): Response
     {
         $callbacks = $response->getCallbacks();

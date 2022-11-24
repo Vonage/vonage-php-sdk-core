@@ -18,13 +18,12 @@ use Vonage\Client\Exception\Validation as ValidationException;
 class ApiErrorHandler
 {
     /**
-     * @param string|int $statusCode
      *
      * @throws RequestException
      * @throws ServerException
      * @throws ValidationException
      */
-    public static function check(array $body, $statusCode): void
+    public static function check(array $body, string|int $statusCode): void
     {
         $statusCodeType = (int)($statusCode / 100);
 

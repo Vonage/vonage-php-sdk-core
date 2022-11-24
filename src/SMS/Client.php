@@ -22,11 +22,8 @@ use function sleep;
 
 class Client implements APIClient
 {
-    protected APIResource $api;
-
-    public function __construct(APIResource $api)
+    public function __construct(protected APIResource $api)
     {
-        $this->api = $api;
     }
 
     public function getAPIResource(): APIResource

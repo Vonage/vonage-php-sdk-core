@@ -172,7 +172,7 @@ class Message implements MessageInterface, Countable, Iterator, ArrayHydrateInte
             return 0;
         }
 
-        return count($data['messages']);
+        return is_countable($data['messages']) ? count($data['messages']) : 0;
     }
 
     /**

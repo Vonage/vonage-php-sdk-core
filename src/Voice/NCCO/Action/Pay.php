@@ -51,9 +51,6 @@ class Pay implements ActionInterface
      */
     protected array $voice;
 
-    /**
-     * @return float
-     */
     public function getAmount(): float
     {
         return $this->amount;
@@ -84,9 +81,6 @@ class Pay implements ActionInterface
         $this->eventUrl = $eventUrl;
     }
 
-    /**
-     * @return array
-     */
     public function getPrompts(): array
     {
         return $this->prompts;

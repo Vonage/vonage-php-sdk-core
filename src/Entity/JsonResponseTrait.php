@@ -48,7 +48,7 @@ trait JsonResponseTrait
             }
 
             $body = $response->getBody()->getContents();
-            $this->responseJson = json_decode($body, true);
+            $this->responseJson = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
 
             return $this->responseJson;
         }

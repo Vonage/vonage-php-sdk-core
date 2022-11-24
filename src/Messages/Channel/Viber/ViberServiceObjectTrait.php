@@ -4,34 +4,25 @@ namespace Vonage\Messages\Channel\Viber;
 
 trait ViberServiceObjectTrait
 {
-    private ?string $category;
-    private ?int $ttl;
-    private ?string $type;
+    private ?string $category = null;
+    private ?int $ttl = null;
+    private ?string $type = null;
 
     public function requiresViberServiceObject(): bool
     {
         return $this->getCategory() || $this->getTtl() || $this->getType();
     }
 
-    /**
-     * @return string|null
-     */
     public function getCategory(): ?string
     {
         return $this->category;
     }
 
-    /**
-     * @param string|null $category
-     */
     public function setCategory(?string $category): void
     {
         $this->category = $category;
     }
 
-    /**
-     * @return int|null
-     */
     public function getTtl(): ?int
     {
         return $this->ttl;
@@ -45,9 +36,6 @@ trait ViberServiceObjectTrait
         $this->ttl = $ttl;
     }
 
-    /**
-     * @return string|null
-     */
     public function getType(): ?string
     {
         return $this->type;
