@@ -49,6 +49,13 @@ class ClientTest extends VonageTestCase
     {
         $this->vonageClient = $this->prophesize(Client::class);
         $this->vonageClient->getRestUrl()->willReturn('https://rest.nexmo.com');
+        $this->vonageClient->getCredentials()->willReturn(
+            new Client\Credentials\Container(
+                new Client\Credentials\Basic('abc', 'def'),
+                new Client\Credentials\SignatureSecret('erwer', 'dfsiodgsjk')
+            )
+        );
+
         /** @noinspection PhpParamsInspection */
         $this->api = (new APIResource())
             ->setCollectionName('messages')
@@ -114,6 +121,11 @@ class ClientTest extends VonageTestCase
             ->willReturn($this->getResponse('empty'));
 
         $this->smsClient->send(new SMS('14845551212', '16105551212', "Go To Gino's"));
+    }
+
+    public function testShouldSignatureAuthAsPreferred(): void
+    {
+        $this->markTestIncomplete('in progress');
     }
 
     /**

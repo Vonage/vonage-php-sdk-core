@@ -133,6 +133,11 @@ class ClientTest extends VonageTestCase
         $this->assertArrayHasKey('message_uuid', $result);
     }
 
+    public function testShouldUseKeypairAuthAsPreferredInsteadOfSignature(): void
+    {
+        $this->markTestIncomplete('in progress');
+    }
+
     public function testCanSendMMSvCard(): void
     {
         $vCardUrl = 'https://github.com/nuovo/vCard-parser/blob/master/Example.vcf';

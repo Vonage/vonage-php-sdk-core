@@ -15,6 +15,7 @@ use Laminas\Diactoros\Response;
 use Vonage\Account\ClientFactory;
 use Vonage\Client\APIResource;
 use Vonage\Client\Factory\MapFactory;
+use Vonage\Insights\Basic;
 use VonageTest\VonageTestCase;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
@@ -56,6 +57,9 @@ class ClientTest extends VonageTestCase
         $this->vonageClient = $this->prophesize(Client::class);
         $this->vonageClient->getRestUrl()->willReturn('https://rest.nexmo.com');
         $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
+        $this->vonageClient->getCredentials()->willReturn(
+            new Client\Credentials\Container(new Client\Credentials\Basic('abc', 'def'))
+        );
 
         /** @noinspection PhpParamsInspection */
         $this->mapFactory = new MapFactory([APIResource::class => APIResource::class], $this->vonageClient->reveal());

@@ -20,6 +20,8 @@ use RuntimeException;
 use Vonage\Client\APIResource;
 use Vonage\Client\ClientAwareInterface;
 use Vonage\Client\ClientAwareTrait;
+use Vonage\Client\Credentials\Handler\BasicHandler;
+use Vonage\Client\Credentials\Handler\SignatureBodyHandler;
 use Vonage\Client\Exception as ClientException;
 use Vonage\Client\Exception\ThrottleException;
 use Vonage\Entity\Filter\FilterInterface;
@@ -77,7 +79,8 @@ class Client implements ClientAwareInterface
             $api->setClient($this->getClient())
                 ->setBaseUrl($this->getClient()->getRestUrl())
                 ->setIsHAL(false)
-                ->setErrorsOn200(true);
+                ->setErrorsOn200(true)
+                ->setAuthHandler([new BasicHandler(), new SignatureBodyHandler()]);
             $api->setExceptionErrorHandler(
                 function (ResponseInterface $response) {
                     //check for valid data, as well as an error response from the API
