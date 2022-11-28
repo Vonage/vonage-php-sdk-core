@@ -96,6 +96,7 @@ class DeliveryReceiptTest extends VonageTestCase
         $this->assertSame($expected['status'], $dlr->getStatus());
         $this->assertSame($expected['to'], $dlr->getTo());
         $this->assertSame($expected['api-key'], $dlr->getApiKey());
+        $this->assertSame($expected['client-ref'], $dlr->getClientRef());
         $this->assertSame($expected['message-timestamp'], $dlr->getMessageTimestamp()->format('Y-m-d H:i:s'));
     }
 
