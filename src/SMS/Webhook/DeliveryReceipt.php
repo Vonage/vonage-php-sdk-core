@@ -207,6 +207,11 @@ class DeliveryReceipt
     protected $apiKey;
 
     /**
+     * @var mixed|string
+     */
+    protected $clientRef;
+
+    /**
      * @param array<string, string> $data
      *
      * @throws Exception
@@ -229,6 +234,10 @@ class DeliveryReceipt
         $this->status = $data['status'];
         $this->to = $data['to'];
         $this->apiKey = $data['api-key'];
+
+        if (isset($data['client-ref'])) {
+            $this->clientRef = $data['client-ref'];
+        }
     }
 
     public function getErrCode(): int
@@ -279,5 +288,10 @@ class DeliveryReceipt
     public function getApiKey(): string
     {
         return $this->apiKey;
+    }
+
+    public function getClientRef(): ?string
+    {
+        return $this->clientRef ?? null;
     }
 }
