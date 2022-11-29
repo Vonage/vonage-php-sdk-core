@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace Vonage\Application;
 
-class Webhook
+class Webhook implements \Stringable
 {
     public const METHOD_POST = 'POST';
     public const METHOD_GET = 'GET';

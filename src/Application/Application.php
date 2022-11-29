@@ -24,7 +24,7 @@ use Vonage\Entity\Psr7Trait;
 use function count;
 use function ucfirst;
 
-class Application implements EntityInterface, JsonSerializable, JsonUnserializableInterface, ArrayHydrateInterface
+class Application implements EntityInterface, JsonSerializable, JsonUnserializableInterface, ArrayHydrateInterface, \Stringable
 {
     use JsonSerializableTrait;
     use Psr7Trait;

@@ -32,7 +32,7 @@ use function stripos;
 use function strpos;
 use function trigger_error;
 
-class Number implements EntityInterface, JsonSerializableInterface, JsonUnserializableInterface, ArrayHydrateInterface
+class Number implements EntityInterface, JsonSerializableInterface, JsonUnserializableInterface, ArrayHydrateInterface, \Stringable
 {
     use JsonSerializableTrait;
     use NoRequestResponseTrait;
@@ -274,7 +274,7 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
     /**
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return (string)$this->getId();
     }

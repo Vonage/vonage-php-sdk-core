@@ -111,7 +111,7 @@ class Client implements ClientAwareInterface, APIClient
         if (isset($update) && ($number instanceof Number)) {
             try {
                 return $this->get($number);
-            } catch (ThrottleException $e) {
+            } catch (ThrottleException) {
                 sleep(1); // This API is 1 request per second :/
                 return $this->get($number);
             }
@@ -120,7 +120,7 @@ class Client implements ClientAwareInterface, APIClient
         if ($number instanceof Number) {
             try {
                 return @$this->get($number);
-            } catch (ThrottleException $e) {
+            } catch (ThrottleException) {
                 sleep(1); // This API is 1 request per second :/
                 return @$this->get($number);
             }
@@ -128,7 +128,7 @@ class Client implements ClientAwareInterface, APIClient
 
         try {
             return $this->get($body['msisdn']);
-        } catch (ThrottleException $e) {
+        } catch (ThrottleException) {
             sleep(1); // This API is 1 request per second :/
             return $this->get($body['msisdn']);
         }

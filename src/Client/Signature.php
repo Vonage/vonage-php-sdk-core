@@ -26,7 +26,7 @@ use function strtoupper;
 use function time;
 use function urldecode;
 
-class Signature
+class Signature implements \Stringable
 {
     /**
      * Params with Signature (and timestamp if not present)
