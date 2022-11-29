@@ -29,16 +29,10 @@ class Client implements ClientAwareInterface, APIClient
     use ClientAwareTrait;
 
     /**
-     * @var APIResource
-     */
-    protected $api;
-
-    /**
      * @todo Stop having this use its own formatting for exceptions
      */
-    public function __construct(APIResource $api = null)
+    public function __construct(protected ?APIResource $api = null)
     {
-        $this->api = $api;
     }
 
     /**

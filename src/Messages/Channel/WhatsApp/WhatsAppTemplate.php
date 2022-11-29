@@ -10,19 +10,15 @@ class WhatsAppTemplate extends BaseMessage
 {
     protected string $channel = 'whatsapp';
     protected string $subType = BaseMessage::MESSAGES_SUBTYPE_TEMPLATE;
-    protected TemplateObject $templateObject;
-    protected string $locale = 'en_US';
 
     public function __construct(
         string $to,
         string $from,
-        TemplateObject $templateObject,
-        string $locale
+        protected TemplateObject $templateObject,
+        protected string $locale
     ) {
         $this->to = $to;
         $this->from = $from;
-        $this->templateObject = $templateObject;
-        $this->locale = $locale;
     }
 
     public function toArray(): array

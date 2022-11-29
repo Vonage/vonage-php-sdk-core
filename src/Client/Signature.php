@@ -29,13 +29,6 @@ use function urldecode;
 class Signature
 {
     /**
-     * Params to Sign
-     *
-     * @var array
-     */
-    protected $params;
-
-    /**
      * Params with Signature (and timestamp if not present)
      *
      * @var array
@@ -47,9 +40,11 @@ class Signature
      *
      * @throws ClientException
      */
-    public function __construct(array $params, $secret, $signatureMethod)
+    public function __construct(/**
+     * Params to Sign
+     */
+    protected array $params, $secret, $signatureMethod)
     {
-        $this->params = $params;
         $this->signed = $params;
 
         if (!isset($this->signed['timestamp'])) {

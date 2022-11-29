@@ -21,11 +21,6 @@ use function is_null;
 class Conversation implements ActionInterface
 {
     /**
-     * @var string
-     */
-    protected $name;
-
-    /**
      * @var ?string
      */
     protected $musicOnHoldUrl;
@@ -60,9 +55,8 @@ class Conversation implements ActionInterface
      */
     protected $eventWebhook;
 
-    public function __construct(string $name)
+    public function __construct(protected string $name)
     {
-        $this->name = $name;
     }
 
     public function getName(): string

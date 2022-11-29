@@ -6,11 +6,8 @@ use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 
 class VCardObject implements ArrayHydrateInterface
 {
-    private string $url;
-
-    public function __construct(string $url)
+    public function __construct(private string $url)
     {
-        $this->url = $url;
     }
 
     public function fromArray(array $data): VCardObject

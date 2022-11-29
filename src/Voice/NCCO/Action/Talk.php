@@ -27,13 +27,10 @@ class Talk implements ActionInterface
 
     protected int $loop = 1;
 
-    protected ?string $text = '';
-
     protected bool $premium = false;
 
-    public function __construct(string $text = null)
+    public function __construct(protected ?string $text = null)
     {
-        $this->text = $text;
     }
 
     /**

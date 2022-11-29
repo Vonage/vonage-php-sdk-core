@@ -6,14 +6,8 @@ use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 
 class TemplateObject implements ArrayHydrateInterface
 {
-    private string $name;
-    private array $parameters;
-
-    public function __construct(string $name, array $parameters)
+    public function __construct(private string $name, private array $parameters)
     {
-
-        $this->name = $name;
-        $this->parameters = $parameters;
     }
 
     public function fromArray(array $data): TemplateObject

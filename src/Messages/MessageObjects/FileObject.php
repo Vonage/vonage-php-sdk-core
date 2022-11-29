@@ -6,13 +6,8 @@ use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 
 class FileObject implements ArrayHydrateInterface
 {
-    private string $url;
-    private string $caption;
-
-    public function __construct(string $url, string $caption = '')
+    public function __construct(private string $url, private string $caption = '')
     {
-        $this->url = $url;
-        $this->caption = $caption;
     }
 
     public function fromArray(array $data): FileObject

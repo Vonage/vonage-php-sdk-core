@@ -28,20 +28,8 @@ class Client implements ClientAwareInterface, APIClient
 {
     use ClientAwareTrait;
 
-    /**
-     * @var APIResource
-     */
-    protected APIResource $api;
-
-    /**
-     * @var HydratorInterface
-     */
-    protected HydratorInterface $hydrator;
-
-    public function __construct(APIResource $api, HydratorInterface $hydrator = null)
+    public function __construct(protected APIResource $api, protected ?HydratorInterface $hydrator = null)
     {
-        $this->api = $api;
-        $this->hydrator = $hydrator;
     }
 
     public function getApiResource(): APIResource

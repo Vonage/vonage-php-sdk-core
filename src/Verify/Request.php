@@ -33,17 +33,7 @@ class Request implements ArrayHydrateInterface
     /**
      * @var string
      */
-    protected $number;
-
-    /**
-     * @var string
-     */
     protected $country;
-
-    /**
-     * @var string
-     */
-    protected $brand;
 
     /**
      * @var string
@@ -75,10 +65,8 @@ class Request implements ArrayHydrateInterface
      */
     protected $workflowId = 1;
 
-    public function __construct(string $number, string $brand, int $workflowId = 1)
+    public function __construct(protected string $number, protected string $brand, int $workflowId = 1)
     {
-        $this->number = $number;
-        $this->brand = $brand;
         $this->setWorkflowId($workflowId);
     }
 

@@ -18,20 +18,8 @@ use function array_key_exists;
 
 class Notify implements ActionInterface
 {
-    /**
-     * @var array
-     */
-    protected $payload = [];
-
-    /**
-     * @var ?Webhook
-     */
-    protected $eventWebhook;
-
-    public function __construct(array $payload, Webhook $eventWebhook)
+    public function __construct(protected array $payload, protected ?\Vonage\Voice\Webhook $eventWebhook)
     {
-        $this->payload = $payload;
-        $this->eventWebhook = $eventWebhook;
     }
 
     /**

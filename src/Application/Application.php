@@ -57,14 +57,8 @@ class Application implements EntityInterface, JsonSerializable, JsonUnserializab
      */
     protected $keys = [];
 
-    /**
-     * @var string|null
-     */
-    protected $id;
-
-    public function __construct(?string $id = null)
+    public function __construct(protected ?string $id = null)
     {
-        $this->id = $id;
     }
 
     public function getId(): ?string

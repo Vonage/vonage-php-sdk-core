@@ -23,13 +23,6 @@ use function sprintf;
 class MapFactory implements FactoryInterface, ContainerInterface
 {
     /**
-     * Map of api namespaces to classes.
-     *
-     * @var array
-     */
-    protected $map = [];
-
-    /**
      * Map of instances.
      *
      * @var array
@@ -37,16 +30,19 @@ class MapFactory implements FactoryInterface, ContainerInterface
     protected $cache = [];
 
     /**
-     * Vonage Client
-     *
-     * @var Client
+     * @param mixed[] $map
      */
-    protected $client;
-
-    public function __construct($map, Client $client)
+    public function __construct(
+        /**
+         * Map of api namespaces to classes.
+         */
+        protected $map,
+        /**
+         * Vonage Client
+         */
+        protected Client $client
+    )
     {
-        $this->map = $map;
-        $this->client = $client;
     }
 
     /**

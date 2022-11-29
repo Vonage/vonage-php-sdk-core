@@ -32,14 +32,8 @@ class Stream implements ActionInterface
      */
     protected $loop;
 
-    /**
-     * @var string
-     */
-    protected $streamUrl;
-
-    public function __construct(string $streamUrl)
+    public function __construct(protected string $streamUrl)
     {
-        $this->streamUrl = $streamUrl;
     }
 
     /**

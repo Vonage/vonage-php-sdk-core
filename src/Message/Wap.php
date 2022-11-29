@@ -23,36 +23,20 @@ class Wap extends Message
     public const TYPE = 'wappush';
 
     /**
-     * Message Title
-     *
-     * @var string
-     */
-    protected $title;
-
-    /**
-     * Message URL
-     *
-     * @var string
-     */
-    protected $url;
-
-    /**
-     * Message Timeout
-     *
-     * @var int
-     */
-    protected $validity;
-
-    /**
      * Create a new SMS text message.
      */
-    public function __construct(string $to, string $from, string $title, string $url, int $validity)
+    public function __construct(string $to, string $from, /**
+     * Message Title
+     */
+    protected string $title, /**
+     * Message URL
+     */
+    protected string $url, /**
+     * Message Timeout
+     */
+    protected int $validity)
     {
         parent::__construct($to, $from);
-
-        $this->title = $title;
-        $this->url = $url;
-        $this->validity = $validity;
     }
 
     /**

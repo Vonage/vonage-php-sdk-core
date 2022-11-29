@@ -16,20 +16,8 @@ class Webhook
     public const METHOD_POST = 'POST';
     public const METHOD_GET = 'GET';
 
-    /**
-     * @var string|null
-     */
-    protected $method;
-
-    /**
-     * @var string|null
-     */
-    protected $url;
-
-    public function __construct(?string $url, ?string $method = self::METHOD_POST)
+    public function __construct(protected ?string $url, protected ?string $method = self::METHOD_POST)
     {
-        $this->url = $url;
-        $this->method = $method;
     }
 
     public function getMethod(): ?string

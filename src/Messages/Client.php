@@ -17,11 +17,8 @@ use Vonage\Messages\Channel\BaseMessage;
 
 class Client implements APIClient
 {
-    protected APIResource $api;
-
-    public function __construct(APIResource $apiResource)
+    public function __construct(protected APIResource $api)
     {
-        $this->api = $apiResource;
     }
 
     public function getAPIResource(): APIResource

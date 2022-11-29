@@ -22,14 +22,8 @@ class Check
     public const VALID = 'VALID';
     public const INVALID = 'INVALID';
 
-    /**
-     * @var array
-     */
-    protected $data;
-
-    public function __construct(array $data)
+    public function __construct(protected array $data)
     {
-        $this->data = $data;
     }
 
     public function getCode()

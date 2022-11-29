@@ -32,14 +32,8 @@ class Client implements ClientAwareInterface, APIClient
      */
     use ClientAwareTrait;
 
-    /**
-     * @var APIResource
-     */
-    protected $api;
-
-    public function __construct(APIResource $api = null)
+    public function __construct(protected ?APIResource $api = null)
     {
-        $this->api = $api;
     }
 
     /**

@@ -18,14 +18,8 @@ class SIP implements EndpointInterface
      */
     protected $headers = [];
 
-    /**
-     * @var string
-     */
-    protected $id;
-
-    public function __construct(string $uri, array $headers = [])
+    public function __construct(protected string $id, array $headers = [])
     {
-        $this->id = $uri;
         $this->setHeaders($headers);
     }
 

@@ -17,16 +17,10 @@ namespace Vonage\Entity\Filter;
 class KeyValueFilter implements FilterInterface
 {
     /**
-     * @var array<string, string>
-     */
-    protected $query;
-
-    /**
      * @param array<string, string> $query
      */
-    public function __construct(array $query = [])
+    public function __construct(protected array $query = [])
     {
-        $this->query = $query;
     }
 
     public function getQuery(): array

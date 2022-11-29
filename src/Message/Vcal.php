@@ -23,20 +23,14 @@ class Vcal extends Message
     public const TYPE = 'vcal';
 
     /**
-     * Message Body
-     *
-     * @var string
-     */
-    protected $vcal;
-
-    /**
      * Create a new SMS text message.
      */
-    public function __construct(string $to, string $from, string $vcal)
+    public function __construct(string $to, string $from, /**
+     * Message Body
+     */
+    protected string $vcal)
     {
         parent::__construct($to, $from);
-
-        $this->vcal = $vcal;
     }
 
     /**

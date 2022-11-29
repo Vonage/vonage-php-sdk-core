@@ -23,20 +23,14 @@ class Vcard extends Message
     public const TYPE = 'vcard';
 
     /**
-     * Message Body
-     *
-     * @var string
-     */
-    protected $vcard;
-
-    /**
      * Create a new SMS text message.
      */
-    public function __construct(string $to, string $from, string $vcard)
+    public function __construct(string $to, string $from, /**
+     * Message Body
+     */
+    protected string $vcard)
     {
         parent::__construct($to, $from);
-
-        $this->vcard = $vcard;
     }
 
     /**
