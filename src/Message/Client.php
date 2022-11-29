@@ -385,8 +385,8 @@ class Client implements ClientAwareInterface
                 throw new ClientException\Exception(
                     sprintf(
                         'searched for message with type `%s` but message of type `%s`',
-                        get_class($message),
-                        get_class($new)
+                        $message::class,
+                        $new::class
                     )
                 );
             }
@@ -527,7 +527,7 @@ class Client implements ClientAwareInterface
                 sprintf(
                     '`%s` is not a valid method on `%s`',
                     $name,
-                    get_class($this)
+                    $this::class
                 )
             );
         }
@@ -540,7 +540,7 @@ class Client implements ClientAwareInterface
                 sprintf(
                     '`%s` is not a valid method on `%s`',
                     $name,
-                    get_class($this)
+                    $this::class
                 )
             );
         }

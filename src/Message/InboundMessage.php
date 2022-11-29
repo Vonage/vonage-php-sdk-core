@@ -53,7 +53,7 @@ class InboundMessage implements MessageInterface, ArrayAccess, ArrayHydrateInter
     {
         if ($idOrRequest instanceof ServerRequestInterface) {
             trigger_error(
-                'Passing a Request object into ' . get_class($this) . ' has been deprecated. ' .
+                'Passing a Request object into ' . $this::class . ' has been deprecated. ' .
                 'Please use fromArray() instead',
                 E_USER_DEPRECATED
             );
@@ -182,7 +182,7 @@ class InboundMessage implements MessageInterface, ArrayAccess, ArrayHydrateInter
     public function offsetExists($offset): bool
     {
         trigger_error(
-            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
+            "Array access for " . $this::class . " is deprecated, please use getter methods",
             E_USER_DEPRECATED
         );
 
@@ -208,7 +208,7 @@ class InboundMessage implements MessageInterface, ArrayAccess, ArrayHydrateInter
     public function offsetGet($offset)
     {
         trigger_error(
-            "Array access for " . get_class($this) . " is deprecated, please use getter methods",
+            "Array access for " . $this::class . " is deprecated, please use getter methods",
             E_USER_DEPRECATED
         );
 

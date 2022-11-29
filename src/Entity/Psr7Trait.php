@@ -43,7 +43,7 @@ trait Psr7Trait
     public function setResponse(ResponseInterface $response): void
     {
         trigger_error(
-            get_class($this) . '::setResponse() is deprecated and will be removed',
+            $this::class . '::setResponse() is deprecated and will be removed',
             E_USER_DEPRECATED
         );
 
@@ -58,7 +58,7 @@ trait Psr7Trait
     public function setRequest(RequestInterface $request): void
     {
         trigger_error(
-            get_class($this) . '::setRequest is deprecated and will be removed',
+            $this::class . '::setRequest is deprecated and will be removed',
             E_USER_DEPRECATED
         );
 
@@ -90,7 +90,7 @@ trait Psr7Trait
     public function getRequest(): ?RequestInterface
     {
         trigger_error(
-            get_class($this) . '::getRequest() is deprecated. ' .
+            $this::class . '::getRequest() is deprecated. ' .
             'Please get the APIResource from the appropriate client to get this information',
             E_USER_DEPRECATED
         );
@@ -101,7 +101,7 @@ trait Psr7Trait
     public function getResponse(): ?ResponseInterface
     {
         trigger_error(
-            get_class($this) . '::getResponse() is deprecated. ' .
+            $this::class . '::getResponse() is deprecated. ' .
             'Please get the APIResource from the appropriate client to get this information',
             E_USER_DEPRECATED
         );

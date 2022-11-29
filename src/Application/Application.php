@@ -203,7 +203,7 @@ class Application implements EntityInterface, JsonSerializable, JsonUnserializab
     public function jsonUnserialize(array $json): void
     {
         trigger_error(
-            get_class($this) . "::jsonUnserialize is deprecated, please fromArray() instead",
+            $this::class . "::jsonUnserialize is deprecated, please fromArray() instead",
             E_USER_DEPRECATED
         );
 

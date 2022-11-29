@@ -205,7 +205,7 @@ class Client implements ClientAwareInterface, APIClient
     {
         if (is_array($options) && !empty($options)) {
             trigger_error(
-                'Passing an array to ' . get_class($this) . '::searchAvailable() is deprecated, ' .
+                'Passing an array to ' . $this::class . '::searchAvailable() is deprecated, ' .
                 'pass a FilterInterface instead',
                 E_USER_DEPRECATED
             );
@@ -256,7 +256,7 @@ class Client implements ClientAwareInterface, APIClient
     {
         if (!empty($options)) {
             trigger_error(
-                'Passing a array for Parameter 2 into ' . get_class($this) . '::searchOwned() ' .
+                'Passing a array for Parameter 2 into ' . $this::class . '::searchOwned() ' .
                 'is deprecated, please pass a FilterInterface as the first parameter only',
                 E_USER_DEPRECATED
             );
@@ -267,7 +267,7 @@ class Client implements ClientAwareInterface, APIClient
                 $options = $number->getQuery() + $options;
             } elseif ($number instanceof Number) {
                 trigger_error(
-                    'Passing a Number object into ' . get_class($this) . '::searchOwned() is deprecated, ' .
+                    'Passing a Number object into ' . $this::class . '::searchOwned() is deprecated, ' .
                     'please pass a FilterInterface',
                     E_USER_DEPRECATED
                 );

@@ -165,7 +165,7 @@ class Client implements LoggerAwareInterface
             !($credentials instanceof OAuth) &&
             !($credentials instanceof Keypair)
         ) {
-            throw new RuntimeException('unknown credentials type: ' . get_class($credentials));
+            throw new RuntimeException('unknown credentials type: ' . $credentials::class);
         }
 
         $this->credentials = $credentials;
@@ -334,7 +334,7 @@ class Client implements LoggerAwareInterface
             return $this->credentials->generateJwt($claims);
         }
 
-        throw new ClientException(get_class($this->credentials) . ' does not support JWT generation');
+        throw new ClientException($this->credentials::class . ' does not support JWT generation');
     }
 
     /**
@@ -541,7 +541,7 @@ class Client implements LoggerAwareInterface
             return $this->verify()->serialize($entity);
         }
 
-        throw new RuntimeException('unknown class `' . get_class($entity) . '``');
+        throw new RuntimeException('unknown class `' . $entity::class . '``');
     }
 
     public function __call($name, $args)
