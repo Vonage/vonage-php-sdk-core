@@ -85,14 +85,10 @@ class Callback extends BaseCallback
         }
 
         $property = $this->optional[$property];
-
-        switch ($type) {
-            case 'get':
-                return $this->data[$property] ?? null;
-            case 'has':
-                return isset($this->data[$property]);
-        }
-
-        throw new BadMethodCallException('method does not exist: ' . $name);
+        return match ($type) {
+            'get' => $this->data[$property] ?? null,
+            'has' => isset($this->data[$property]),
+            default => throw new BadMethodCallException('method does not exist: ' . $name),
+        };
     }
 }

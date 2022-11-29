@@ -289,17 +289,11 @@ class Client implements LoggerAwareInterface
      */
     public static function signRequest(RequestInterface $request, SignatureSecret $credentials): RequestInterface
     {
-        switch ($request->getHeaderLine('content-type')) {
-            case 'application/json':
-                $handler = new SignatureBodyHandler();
-                break;
-            case 'application/x-www-form-urlencoded':
-                $handler = new SignatureBodyFormHandler();
-                break;
-            default:
-                $handler = new SignatureQueryHandler();
-                break;
-        }
+        $handler = match ($request->getHeaderLine('content-type')) {
+            'application/json' => new SignatureBodyHandler(),
+            'application/x-www-form-urlencoded' => new SignatureBodyFormHandler(),
+            default => new SignatureQueryHandler(),
+        };
 
         return $handler($request, $credentials);
     }

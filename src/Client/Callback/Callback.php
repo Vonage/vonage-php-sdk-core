@@ -58,19 +58,12 @@ class Callback implements CallbackInterface
      */
     public static function fromEnv(string $source = self::ENV_ALL)
     {
-        switch (strtolower($source)) {
-            case 'post':
-                $data = $_POST;
-                break;
-            case 'get':
-                $data = $_GET;
-                break;
-            case 'all':
-                $data = array_merge($_GET, $_POST);
-                break;
-            default:
-                throw new InvalidArgumentException('invalid source: ' . $source);
-        }
+        $data = match (strtolower($source)) {
+            'post' => $_POST,
+            'get' => $_GET,
+            'all' => array_merge($_GET, $_POST),
+            default => throw new InvalidArgumentException('invalid source: ' . $source),
+        };
 
         return new static($data);
     }

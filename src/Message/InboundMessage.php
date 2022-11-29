@@ -114,19 +114,13 @@ class InboundMessage implements MessageInterface, ArrayAccess, ArrayHydrateInter
             $isApplicationJson = true;
         }
 
-        switch ($request->getMethod()) {
-            case 'POST':
-                $params = $isApplicationJson ?
-                    json_decode((string)$request->getBody(), true) :
-                    $request->getParsedBody();
-                break;
-            case 'GET':
-                $params = $request->getQueryParams();
-                break;
-            default:
-                $params = [];
-                break;
-        }
+        $params = match ($request->getMethod()) {
+            'POST' => $isApplicationJson ?
+                json_decode((string)$request->getBody(), true) :
+                $request->getParsedBody(),
+            'GET' => $request->getQueryParams(),
+            default => [],
+        };
 
         return $params;
     }
