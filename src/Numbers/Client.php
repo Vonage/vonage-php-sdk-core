@@ -70,7 +70,7 @@ class Client implements ClientAwareInterface, APIClient
      *
      * @todo Clean up the logic here, we are doing a lot of GET requests
      */
-    public function update($number, ?string $id = null): Number
+    public function update(mixed $number, ?string $id = null): Number
     {
         if (!$number instanceof Number) {
             trigger_error(

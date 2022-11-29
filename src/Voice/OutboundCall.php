@@ -68,8 +68,6 @@ class OutboundCall
      * If no `$from` parameter is passed, the system will use a random number
      * that is linked to the application instead.
      *
-     * @param EndpointInterface $to
-     * @param Phone|null $from
      *
      * @return void
      */

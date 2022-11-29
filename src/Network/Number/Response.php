@@ -110,9 +110,6 @@ class Response extends BaseResponse
         return $this->callbacks;
     }
 
-    /**
-     * @param Callback $callback
-     */
     public static function addCallback(Response $response, callable $callback): Response
     {
         $callbacks = $response->getCallbacks();
