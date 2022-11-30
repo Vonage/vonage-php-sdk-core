@@ -42,36 +42,26 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
 {
     use ClientAwareTrait;
 
-    /**
-     * @var APIResource
-     */
-    protected $api;
+    protected APIResource $api;
 
     /**
      * Determines if the collection will automatically go to the next page
-     *
-     * @var bool
      */
-    protected $autoAdvance = true;
+    protected bool $autoAdvance = true;
 
-    /**
-     * @var string
-     */
-    protected $baseUrl = Client::BASE_API;
+    protected string $baseUrl = Client::BASE_API;
 
     /**
      * Holds a cache of various pages we have already polled
      *
      * @var array<string, string>
      */
-    protected $cache = [];
+    protected array $cache = [];
 
     /**
      * Index of the current resource of the current page
-     *
-     * @var int
      */
-    protected $current;
+    protected int $current;
 
     /**
      * Count the items in the response instead of returning the count parameter
@@ -84,51 +74,31 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
 
     /**
      * Current page data.
-     *
-     * @var array
      */
-    protected $page;
+    protected array $page;
 
     /**
      * Last API Response
-     *
-     * @var ResponseInterface
      */
-    protected $response;
+    protected ResponseInterface $response;
 
     /**
      * User set page index.
-     *
-     * @var int
      */
-    protected $index = 1;
+    protected int $index = 1;
 
-    /**
-     * @var bool
-     */
-    protected $isHAL = true;
+    protected bool $isHAL = true;
 
     /**
      * User set pgge sixe.
-     *
-     * @var int
      */
-    protected $size;
+    protected int $size;
 
-    /**
-     * @var FilterInterface
-     */
-    protected $filter;
+    protected FilterInterface $filter;
 
-    /**
-     * @var string
-     */
-    protected $collectionName = '';
+    protected string $collectionName = '';
 
-    /**
-     * @var string
-     */
-    protected $collectionPath;
+    protected string $collectionPath;
 
     protected $hydrator;
 

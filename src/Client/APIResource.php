@@ -28,40 +28,24 @@ class APIResource implements ClientAwareInterface
 {
     use ClientAwareTrait;
 
-    /**
-     * @var HandlerInterface
-     */
-    protected $authHandler;
+    protected HandlerInterface $authHandler;
 
     /**
      * Base URL that we will hit. This can be overridden from the underlying
      * client or directly on this class.
-     *
-     * @var string
      */
-    protected $baseUrl = '';
+    protected string $baseUrl = '';
 
-    /**
-     * @var string
-     */
-    protected $baseUri;
+    protected string $baseUri;
 
-    /**
-     * @var string
-     */
-    protected $collectionName = '';
+    protected string $collectionName = '';
 
-    /**
-     * @var IterableAPICollection
-     */
-    protected $collectionPrototype;
+    protected IterableAPICollection $collectionPrototype;
 
     /**
      * Sets flag that says to check for errors even on 200 Success
-     *
-     * @var bool
      */
-    protected $errorsOn200 = false;
+    protected bool $errorsOn200 = false;
 
     /**
      * Error handler to use when reviewing API responses
@@ -70,24 +54,14 @@ class APIResource implements ClientAwareInterface
      */
     protected $exceptionErrorHandler;
 
-    /**
-     * @var bool
-     */
-    protected $isHAL = true;
+    protected bool $isHAL = true;
 
-    /**
-     * @var RequestInterface
-     */
-    protected $lastRequest;
+    protected RequestInterface $lastRequest;
 
-    /**
-     * @var ResponseInterface
-     */
-    protected $lastResponse;
+    protected ResponseInterface $lastResponse;
 
     /**
      * Adds authentication to a request
-     * @todo Use this method when Vonage\Client no longer adds authentication
      */
     public function addAuth(RequestInterface $request)
     {
