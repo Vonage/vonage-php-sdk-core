@@ -11,10 +11,6 @@ declare(strict_types=1);
 
 namespace Vonage\Client;
 
-use function is_null;
-use function json_decode;
-use function json_encode;
-use function http_build_query;
 use Laminas\Diactoros\Request;
 use Vonage\Entity\Filter\EmptyFilter;
 use Psr\Http\Message\RequestInterface;
@@ -24,11 +20,16 @@ use Vonage\Entity\Filter\FilterInterface;
 use Psr\Http\Client\ClientExceptionInterface;
 use Vonage\Client\Credentials\Handler\HandlerInterface;
 
+use function is_null;
+use function json_decode;
+use function json_encode;
+use function http_build_query;
+
 class APIResource implements ClientAwareInterface
 {
     use ClientAwareTrait;
 
-    protected HandlerInterface $authHandler;
+    protected ?HandlerInterface $authHandler = null;
 
     /**
      * Base URL that we will hit. This can be overridden from the underlying
@@ -36,11 +37,11 @@ class APIResource implements ClientAwareInterface
      */
     protected string $baseUrl = '';
 
-    protected string $baseUri;
+    protected string $baseUri = '';
 
     protected string $collectionName = '';
 
-    protected IterableAPICollection $collectionPrototype;
+    protected ?IterableAPICollection $collectionPrototype = null;
 
     /**
      * Sets flag that says to check for errors even on 200 Success
@@ -56,9 +57,9 @@ class APIResource implements ClientAwareInterface
 
     protected bool $isHAL = true;
 
-    protected RequestInterface $lastRequest;
+    protected ?RequestInterface $lastRequest = null;
 
-    protected ResponseInterface $lastResponse;
+    protected ?ResponseInterface $lastResponse = null;
 
     /**
      * Adds authentication to a request

@@ -12,9 +12,7 @@ declare(strict_types=1);
 namespace VonageTest\Account;
 
 use Laminas\Diactoros\Response;
-use Vonage\Account\ClientFactory;
 use Vonage\Client\APIResource;
-use Vonage\Client\Factory\MapFactory;
 use VonageTest\VonageTestCase;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
@@ -46,22 +44,19 @@ class ClientTest extends VonageTestCase
      */
     protected $api;
 
-    /**
-     * @var MapFactory
-     */
-    private $mapFactory;
-
     public function setUp(): void
     {
         $this->vonageClient = $this->prophesize(Client::class);
         $this->vonageClient->getRestUrl()->willReturn('https://rest.nexmo.com');
         $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
 
-        /** @noinspection PhpParamsInspection */
-        $this->mapFactory = new MapFactory([APIResource::class => APIResource::class], $this->vonageClient->reveal());
+        $this->api = new APIResource();
+        $this->api->setBaseUrl('https://rest.nexmo.com')
+            ->setIsHAL(false)
+            ->setBaseUri('/account');
 
-        $factory = new ClientFactory();
-        $this->accountClient = $factory($this->mapFactory);
+        $this->api->setClient($this->vonageClient->reveal());
+        $this->accountClient = new AccountClient($this->api);
     }
 
     /**
