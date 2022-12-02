@@ -14,8 +14,6 @@ namespace Vonage\Account;
 use Psr\Http\Client\ClientExceptionInterface;
 use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
-use Vonage\Client\ClientAwareInterface;
-use Vonage\Client\ClientAwareTrait;
 use Vonage\Client\Exception as ClientException;
 use Vonage\Client\Exception\Request as ClientRequestException;
 use Vonage\Entity\Filter\KeyValueFilter;
@@ -27,13 +25,8 @@ use function json_decode;
 /**
  * @todo Unify the exception handling to avoid duplicated code and logic (ie: getPrefixPricing())
  */
-class Client implements ClientAwareInterface, APIClient
+class Client implements APIClient
 {
-    /**
-     * @deprecated This object will be dropping support for ClientAwareInterface in the future
-     */
-    use ClientAwareTrait;
-
     public function __construct(protected ?APIResource $accountAPI = null)
     {
     }
