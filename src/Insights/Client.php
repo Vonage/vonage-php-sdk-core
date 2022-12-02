@@ -25,30 +25,14 @@ use function is_null;
 /**
  * Class Client
  */
-class Client implements ClientAwareInterface, APIClient
+class Client implements APIClient
 {
-    /**
-     * @deprecated This client no longer needs to be ClientAware
-     */
-    use ClientAwareTrait;
-
     public function __construct(protected ?APIResource $api = null)
     {
     }
 
-    /**
-     * Shim to handle older instantiations of this class
-     *
-     * @deprecated Will change in v3 to just return the required API object
-     */
     public function getApiResource(): APIResource
     {
-        if (is_null($this->api)) {
-            $api = new APIResource();
-            $api->setClient($this->getClient())
-                ->setIsHAL(false);
-            $this->api = $api;
-        }
         return clone $this->api;
     }
 
