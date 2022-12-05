@@ -125,22 +125,14 @@ class Client implements APIClient
      * @throws ClientException\Request
      * @throws ClientException\Server
      */
-    public function searchAvailable(string $country, FilterInterface $options): array
+    public function searchAvailable(string $country, FilterInterface $options = null): array
     {
-        // These are all optional parameters
-        $possibleParameters = [
-            'country' => 'string',
-            'pattern' => 'string',
-            'search_pattern' => 'integer',
-            'features' => 'array',
-            'size' => 'integer',
-            'type' => 'string',
-            'index' => 'integer'
-        ];
+        if (is_null($options)) {
+            $options = new AvailableNumbers([
+                'country' => $country
+            ]);
+        }
 
-        $options = $options->getQuery();
-        $options = $this->parseParameters($possibleParameters, $options);
-        $options = new AvailableNumbers($options);
         $api = $this->getApiResource();
         $api->setCollectionName('numbers');
 
@@ -174,17 +166,6 @@ class Client implements APIClient
                 'pattern' => $number
             ]);
         }
-
-        // These are all optional parameters
-        $possibleParameters = [
-            'country' => 'string',
-            'pattern' => 'string',
-            'search_pattern' => 'integer',
-            'size' => 'integer',
-            'index' => 'integer',
-            'has_application' => 'boolean',
-            'application_id' => 'string'
-        ];
 
         $api = $this->getApiResource();
         $api->setCollectionName('numbers');

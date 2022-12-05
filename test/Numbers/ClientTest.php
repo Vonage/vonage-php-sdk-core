@@ -331,7 +331,7 @@ class ClientTest extends VonageTestCase
             return true;
         }))->willReturn($this->getResponse('empty'));
 
-        $numbers = @$this->numberClient->searchAvailable('US', 'US');
+        $numbers = $this->numberClient->searchAvailable('US');
 
         $this->assertIsArray($numbers);
         $this->assertEmpty($numbers);

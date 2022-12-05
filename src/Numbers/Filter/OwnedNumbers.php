@@ -74,7 +74,7 @@ class OwnedNumbers implements FilterInterface
     public function __construct(array $filter = [])
     {
         foreach ($filter as $key => $value) {
-            if (!in_array($key, array_keys(self::$possibleParameters), true)) {
+            if (!array_key_exists($key, self::$possibleParameters)) {
                 throw new Request("Unknown option: '" . $key . "'");
             }
 
