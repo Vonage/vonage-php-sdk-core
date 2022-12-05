@@ -372,13 +372,16 @@ class ClientTest extends VonageTestCase
             return true;
         }))->willReturn($this->getResponse('single'));
 
-        @$this->numberClient->searchOwned([
-            'index'           => 1,
-            'size'            => '100',
-            'search_pattern'  => 0,
-            'has_application' => false,
-            'country'         => 'GB',
-        ], '1415550100');
+        $this->numberClient->searchOwned(
+            '1415550100',
+            new OwnedNumbers([
+                'index' => 1,
+                'size' => '100',
+                'search_pattern' => 0,
+                'has_application' => false,
+                'country' => 'GB',
+            ])
+        );
     }
 
     /**

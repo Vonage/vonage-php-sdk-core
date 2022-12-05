@@ -158,8 +158,10 @@ class Client implements APIClient
     /**
      * Returns a set of numbers for the specified country
      *
-     * @param $number
+     * @param null $number
+     * @param FilterInterface|null $options
      *
+     * @return array
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -168,18 +170,9 @@ class Client implements APIClient
     public function searchOwned($number = null, FilterInterface $options = null): array
     {
         if ($number !== null) {
-            if ($number instanceof FilterInterface) {
-                $options = $number->getQuery() + $options;
-            } elseif ($number instanceof Number) {
-                trigger_error(
-                    'Passing a Number object into ' . $this::class . '::searchOwned() is deprecated, ' .
-                    'please pass a FilterInterface',
-                    E_USER_DEPRECATED
-                );
-                $options['pattern'] = (string)$number->getId();
-            } else {
-                $options['pattern'] = (string)$number;
-            }
+            $options = new OwnedNumbers([
+                'pattern' => $number
+            ]);
         }
 
         // These are all optional parameters
@@ -193,8 +186,6 @@ class Client implements APIClient
             'application_id' => 'string'
         ];
 
-        $options = $this->parseParameters($possibleParameters, $options);
-        $options = new OwnedNumbers($options);
         $api = $this->getApiResource();
         $api->setCollectionName('numbers');
 

@@ -224,7 +224,7 @@ class OwnedNumbers implements FilterInterface
     /**
      * @return $this
      */
-    public function setPageSize(int $pageSize): self
+    public function setPageSize(string $pageSize): self
     {
         $this->pageSize = $pageSize;
 
