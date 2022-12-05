@@ -13,7 +13,7 @@ return static function (RectorConfig $rectorConfig): void {
     ]);
 
     // register a single rule
-    $rectorConfig->rule(\Rector\Php80\Rector\Class_\ClassPropertyAssignToConstructorPromotionRector::class);
+    $rectorConfig->rule(\Rector\Php74\Rector\Property\TypedPropertyRector::class);
 
     // define sets of rules
     //    $rectorConfig->sets([

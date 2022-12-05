@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace Vonage\Numbers\Filter;
 
 use InvalidArgumentException;
+use Vonage\Client\Exception\Request;
 use Vonage\Entity\Filter\FilterInterface;
 use Vonage\Numbers\Number;
 
@@ -25,6 +26,16 @@ class AvailableNumbers implements FilterInterface
     public const SEARCH_PATTERN_BEGIN = 0;
     public const SEARCH_PATTERN_CONTAINS = 1;
     public const SEARCH_PATTERN_ENDS = 2;
+
+    public static array $possibleParameters = [
+        'country' => 'string',
+        'pattern' => 'string',
+        'search_pattern' => 'integer',
+        'size' => 'integer',
+        'index' => 'integer',
+        'has_application' => 'boolean',
+        'application_id' => 'string'
+    ];
 
     /**
      * @var string
@@ -63,6 +74,31 @@ class AvailableNumbers implements FilterInterface
 
     public function __construct(array $filter = [])
     {
+        foreach ($filter as $key => $value) {
+            if (!in_array($key, self::$possibleParameters, true)) {
+                throw new Request("Unknown option: '" . $key . "'");
+            }
+
+            switch (self::$possibleParameters[$key]) {
+                case 'boolean':
+                    $value = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+                    if (is_null($value)) {
+                        throw new Request("Invalid value: '" . $key . "' must be a boolean value");
+                    }
+                    $value = $value ? "true" : "false";
+                    break;
+                case 'integer':
+                    $value = filter_var($value, FILTER_VALIDATE_INT);
+                    if ($value === false) {
+                        throw new Request("Invalid value: '" . $key . "' must be an integer");
+                    }
+                    break;
+                default:
+                    // No-op, take the value whatever it is
+                    break;
+            }
+        }
+
         if (array_key_exists('country', $filter)) {
             $this->setCountry($filter['country']);
         }
