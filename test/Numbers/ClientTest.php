@@ -242,7 +242,7 @@ class ClientTest extends VonageTestCase
             return true;
         }))->willReturn($this->getResponse('available-numbers'));
 
-        $this->numberClient->searchAvailable(new AvailableNumbers($options), 'US');
+        $this->numberClient->searchAvailable('US', new AvailableNumbers($options));
     }
 
     /**
@@ -257,8 +257,8 @@ class ClientTest extends VonageTestCase
             'pattern' => '1',
             'search_pattern' => 2,
             'features' => 'SMS,VOICE',
-            'size' => 100,
-            'index' => 19
+            'size' => '100',
+            'index' => '19'
         ]);
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
@@ -269,7 +269,7 @@ class ClientTest extends VonageTestCase
             return true;
         }))->willReturn($this->getResponse('available-numbers'));
 
-        $this->numberClient->searchAvailable($options, 'US');
+        $this->numberClient->searchAvailable('US', $options);
     }
 
     /**
@@ -285,7 +285,7 @@ class ClientTest extends VonageTestCase
         $this->expectException(RequestException::class);
         $this->expectExceptionMessage("Unknown option: 'foo'");
 
-        $this->numberClient->searchAvailable(new AvailableNumbers(['foo' => 'bar']), 'US');
+        $this->numberClient->searchAvailable('US', new AvailableNumbers(['foo' => 'bar']));
     }
 
     /**

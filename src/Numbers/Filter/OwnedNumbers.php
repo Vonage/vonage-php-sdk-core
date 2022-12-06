@@ -33,7 +33,8 @@ class OwnedNumbers implements FilterInterface
         'size' => 'integer',
         'index' => 'integer',
         'has_application' => 'boolean',
-        'application_id' => 'string'
+        'application_id' => 'string',
+        'features' => 'string'
     ];
 
     /**
@@ -66,7 +67,7 @@ class OwnedNumbers implements FilterInterface
      */
     protected $searchPattern = 0;
 
-    protected string $pageSize = '10';
+    protected int $pageSize = 10;
 
     public function __construct(array $filter = [])
     {
@@ -100,11 +101,11 @@ class OwnedNumbers implements FilterInterface
         }
 
         if (array_key_exists('size', $filter)) {
-            $this->setPageSize($filter['size']);
+            $this->setPageSize((int)$filter['size']);
         }
 
         if (array_key_exists('index', $filter)) {
-            $this->setPageIndex($filter['index']);
+            $this->setPageIndex((int)$filter['index']);
         }
 
         if (array_key_exists('pattern', $filter)) {
@@ -213,7 +214,7 @@ class OwnedNumbers implements FilterInterface
         return $this;
     }
 
-    public function getPageSize(): string
+    public function getPageSize(): int
     {
         return $this->pageSize;
     }
@@ -221,7 +222,7 @@ class OwnedNumbers implements FilterInterface
     /**
      * @return $this
      */
-    public function setPageSize(string $pageSize): self
+    public function setPageSize(int $pageSize): self
     {
         $this->pageSize = $pageSize;
 

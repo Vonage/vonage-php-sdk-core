@@ -34,7 +34,8 @@ class AvailableNumbers implements FilterInterface
         'size' => 'integer',
         'index' => 'integer',
         'has_application' => 'boolean',
-        'application_id' => 'string'
+        'application_id' => 'string',
+        'features' => 'string'
     ];
 
     /**
@@ -104,11 +105,11 @@ class AvailableNumbers implements FilterInterface
         }
 
         if (array_key_exists('size', $filter)) {
-            $this->setPageSize($filter['size']);
+            $this->setPageSize((int)$filter['size']);
         }
 
         if (array_key_exists('index', $filter)) {
-            $this->setPageIndex($filter['index']);
+            $this->setPageIndex((int)$filter['index']);
         }
 
         if (array_key_exists('pattern', $filter)) {
