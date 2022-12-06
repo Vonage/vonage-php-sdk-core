@@ -66,10 +66,7 @@ class OwnedNumbers implements FilterInterface
      */
     protected $searchPattern = 0;
 
-    /**
-     * @var int
-     */
-    protected $pageSize = 10;
+    protected string $pageSize = '10';
 
     public function __construct(array $filter = [])
     {
@@ -216,7 +213,7 @@ class OwnedNumbers implements FilterInterface
         return $this;
     }
 
-    public function getPageSize(): int
+    public function getPageSize(): string
     {
         return $this->pageSize;
     }

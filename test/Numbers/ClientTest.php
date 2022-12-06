@@ -304,7 +304,7 @@ class ClientTest extends VonageTestCase
             return true;
         }))->willReturn($this->getResponse('available-numbers'));
 
-        $numbers = $this->numberClient->searchAvailable('US', 'US');
+        $numbers = $this->numberClient->searchAvailable('US');
 
         $this->assertIsArray($numbers);
         $this->assertInstanceOf(Number::class, $numbers[0]);

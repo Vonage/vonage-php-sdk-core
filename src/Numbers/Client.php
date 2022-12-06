@@ -21,7 +21,6 @@ use Vonage\Entity\IterableAPICollection;
 use Vonage\Numbers\Filter\AvailableNumbers;
 use Vonage\Numbers\Filter\OwnedNumbers;
 
-use function array_key_exists;
 use function count;
 use function filter_var;
 use function is_null;
@@ -162,9 +161,13 @@ class Client implements APIClient
     public function searchOwned($number = null, FilterInterface $options = null): array
     {
         if ($number !== null) {
-            $options = new OwnedNumbers([
-                'pattern' => $number
-            ]);
+            if ($options !== null) {
+                $options->setPattern($number);
+            } else {
+                $options = new OwnedNumbers([
+                    'pattern' => $number
+                ]);
+            }
         }
 
         $api = $this->getApiResource();
