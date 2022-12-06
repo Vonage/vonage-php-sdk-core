@@ -15,7 +15,6 @@ use Laminas\Diactoros\Response;
 use Vonage\Account\ClientFactory;
 use Vonage\Client\APIResource;
 use Vonage\Client\Factory\MapFactory;
-use Vonage\Insights\Basic;
 use VonageTest\VonageTestCase;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;

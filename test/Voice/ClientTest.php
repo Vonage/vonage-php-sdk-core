@@ -54,7 +54,10 @@ class ClientTest extends VonageTestCase
         $this->vonageClient = $this->prophesize(Client::class);
         $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
         $this->vonageClient->getCredentials()->willReturn(
-            new Client\Credentials\Container(new Client\Credentials\Keypair('abc', 'def'))
+            new Client\Credentials\Container(new Client\Credentials\Keypair(
+                file_get_contents(__DIR__ . '/../Client/Credentials/test.key'),
+                'def'
+            ))
         );
 
         /** @noinspection PhpParamsInspection */
