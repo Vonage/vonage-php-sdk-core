@@ -14,6 +14,7 @@ namespace Vonage\Redact;
 use Psr\Container\ContainerInterface;
 use Vonage\Client\APIExceptionHandler;
 use Vonage\Client\APIResource;
+use Vonage\Client\Credentials\Handler\BasicHandler;
 
 /**
  * @todo Finish this Namespace
@@ -26,6 +27,7 @@ class ClientFactory
         $api = $container->make(APIResource::class);
         $api
             ->setBaseUri('/v1/redact/transaction')
+            ->setAuthHandler(new BasicHandler())
             ->setCollectionName('');
 
         // This API has a slightly different format for the error message, so override

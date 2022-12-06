@@ -53,11 +53,15 @@ class ClientTest extends VonageTestCase
     {
         $this->vonageClient = $this->prophesize(Client::class);
         $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
+        $this->vonageClient->getCredentials()->willReturn(
+            new Client\Credentials\Container(new Client\Credentials\Keypair('abc', 'def'))
+        );
 
         /** @noinspection PhpParamsInspection */
         $this->api = (new APIResource())
             ->setBaseUri('/v1/calls')
             ->setCollectionName('calls')
+            ->setAuthHandler(new Client\Credentials\Handler\KeypairHandler())
             ->setClient($this->vonageClient->reveal());
 
         $this->voiceClient = new VoiceClient($this->api);
