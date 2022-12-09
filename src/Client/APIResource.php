@@ -251,7 +251,7 @@ class APIResource implements ClientAwareInterface
         return json_decode($response->getBody()->getContents(), true);
     }
 
-    public function getAuthHandler(): ?HandlerInterface
+    public function getAuthHandler()
     {
         // If we have not set a handler, default to Basic and issue warning.
         if (!$this->authHandler) {
