@@ -10,7 +10,7 @@
   convertNoticesToExceptions="true"
   convertWarningsToExceptions="true"
   stopOnFailure="false"
-  >
+>
   <coverage processUncoveredFiles="true">
     <include>
       <directory suffix=".php">src</directory>
