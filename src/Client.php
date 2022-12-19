@@ -135,12 +135,12 @@ class Client implements LoggerAwareInterface
     /**
      * @string
      */
-    public $apiKey = self::BASE_API;
+    public $apiKey;
     
     /**
      * @string
      */
-    public $restKey = self::REST_API;
+    public $restKey;
 
     /**
      * Create a new API client using the provided credentials.
@@ -186,6 +186,11 @@ class Client implements LoggerAwareInterface
         if (isset($options['app'])) {
             $this->validateAppOptions($options['app']);
         }
+
+        // Set the default URLs. Keep the constants for
+        // backwards compatibility
+        $this->apiUrl = static::BASE_API;
+        $this->restUrl = static::BASE_REST;
 
         // If they've provided alternative URLs, use that instead
         // of the defaults
