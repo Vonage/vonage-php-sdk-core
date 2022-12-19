@@ -131,6 +131,16 @@ class Client implements LoggerAwareInterface
      * @var array
      */
     protected $options = ['show_deprecations' => false, 'debug' => false];
+    
+    /**
+     * @string
+     */
+    public $apiKey = self::BASE_API;
+    
+    /**
+     * @string
+     */
+    public $restKey = self::REST_API;
 
     /**
      * Create a new API client using the provided credentials.
@@ -176,11 +186,6 @@ class Client implements LoggerAwareInterface
         if (isset($options['app'])) {
             $this->validateAppOptions($options['app']);
         }
-
-        // Set the default URLs. Keep the constants for
-        // backwards compatibility
-        $this->apiUrl = static::BASE_API;
-        $this->restUrl = static::BASE_REST;
 
         // If they've provided alternative URLs, use that instead
         // of the defaults
