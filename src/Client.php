@@ -135,12 +135,12 @@ class Client implements LoggerAwareInterface
     /**
      * @string
      */
-    public $apiKey;
+    public $apiUrl;
     
     /**
      * @string
      */
-    public $restKey;
+    public $restUrl;
 
     /**
      * Create a new API client using the provided credentials.
