@@ -56,7 +56,7 @@ Create a client with your API key and secret:
 $client = new Vonage\Client(new Vonage\Client\Credentials\Basic(API_KEY, API_SECRET));     
 ```
 
-For testing purposes you may want to change the URL that `vonage/client` makes requests to from `api.nexmo.com` to something else. You can do this by providing an array containing `base_api_url` as the second parameter when creating a `Vonage\Client` instance.
+For testing purposes you may want to change the URL that `vonage/client` makes requests to from `api.vonage.com` to something else. You can do this by providing an array containing `base_api_url` as the second parameter when creating a `Vonage\Client` instance.
 
 ```php
 $client = new Vonage\Client(
