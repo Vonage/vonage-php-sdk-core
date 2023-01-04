@@ -131,6 +131,16 @@ class Client implements LoggerAwareInterface
      * @var array
      */
     protected $options = ['show_deprecations' => false, 'debug' => false];
+    
+    /**
+     * @string
+     */
+    public $apiUrl;
+    
+    /**
+     * @string
+     */
+    public $restUrl;
 
     /**
      * Create a new API client using the provided credentials.
