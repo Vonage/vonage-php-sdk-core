@@ -33,9 +33,7 @@ class FileObject implements ArrayHydrateInterface
         ];
 
         if ($this->caption) {
-            $returnArray[] = [
-                'caption' => $this->caption
-            ];
+            $returnArray['caption'] = $this->caption;
         }
 
         return $returnArray;
