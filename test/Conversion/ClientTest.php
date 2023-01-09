@@ -3,7 +3,7 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @copyright Copyright (c) 2016-2022 Vonage, Inc. (http://vonage.com)
  * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
 
@@ -13,6 +13,8 @@ namespace VonageTest\Conversion;
 
 use Laminas\Diactoros\Response;
 use PHPUnit\Framework\MockObject\MockObject;
+use Prophecy\Argument;
+use Vonage\Client as VonageClient;
 use VonageTest\VonageTestCase;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
@@ -49,19 +51,21 @@ class ClientTest extends VonageTestCase
 
     public function setUp(): void
     {
-        $this->vonageClient = $this->getMockBuilder('Vonage\Client')
-            ->disableOriginalConstructor()
-            ->setMethods(['send', 'getApiUrl'])
-            ->getMock();
-        $this->vonageClient->method('getApiUrl')->willReturn('https://api.nexmo.com');
+        $this->vonageClient = $this->prophesize(VonageClient::class);
+        $this->vonageClient->getRestUrl()->willReturn('https://rest.nexmo.com');
+        $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
+
+        $this->vonageClient->getCredentials()->willReturn(
+            new Client\Credentials\Basic('abc', 'def'),
+        );
 
         $this->apiResource = new APIResource();
         $this->apiResource
             ->setBaseUri('/conversions/')
-            ->setClient($this->vonageClient);
+            ->setAuthHandler(new Client\Credentials\Handler\BasicHandler())
+            ->setClient($this->vonageClient->reveal());
 
         $this->conversionClient = new ConversionClient($this->apiResource);
-        $this->conversionClient->setClient($this->vonageClient);
     }
 
     /**
@@ -72,16 +76,13 @@ class ClientTest extends VonageTestCase
      */
     public function testSmsWithTimestamp(): void
     {
-        $this->vonageClient->method('send')->willReturnCallback(function (RequestInterface $request) {
-            $this->assertEquals('/conversions/sms', $request->getUri()->getPath());
-            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('POST', $request->getMethod());
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertRequestUrl('api.nexmo.com', '/conversions/sms', 'POST', $request);
             $this->assertRequestQueryContains('message-id', 'ABC123', $request);
             $this->assertRequestQueryContains('delivered', '1', $request);
             $this->assertRequestQueryContains('timestamp', '123456', $request);
-
-            return $this->getResponse();
-        });
+            return true;
+        }))->willReturn($this->getResponse());
 
         $this->conversionClient->sms('ABC123', true, '123456');
     }
@@ -94,16 +95,13 @@ class ClientTest extends VonageTestCase
      */
     public function testSmsWithoutTimestamp(): void
     {
-        $this->vonageClient->method('send')->willReturnCallback(function (RequestInterface $request) {
-            $this->assertEquals('/conversions/sms', $request->getUri()->getPath());
-            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('POST', $request->getMethod());
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertRequestUrl('api.nexmo.com', '/conversions/sms', 'POST', $request);
             $this->assertRequestQueryContains('message-id', 'ABC123', $request);
             $this->assertRequestQueryContains('delivered', '1', $request);
             $this->assertRequestQueryNotContains('timestamp', $request);
-
-            return $this->getResponse();
-        });
+            return true;
+        }))->willReturn($this->getResponse());
 
         $this->conversionClient->sms('ABC123', true);
     }
@@ -116,16 +114,13 @@ class ClientTest extends VonageTestCase
      */
     public function testVoiceWithTimestamp(): void
     {
-        $this->vonageClient->method('send')->willReturnCallback(function (RequestInterface $request) {
-            $this->assertEquals('/conversions/voice', $request->getUri()->getPath());
-            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('POST', $request->getMethod());
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertRequestUrl('api.nexmo.com', '/conversions/voice', 'POST', $request);
             $this->assertRequestQueryContains('message-id', 'ABC123', $request);
             $this->assertRequestQueryContains('delivered', '1', $request);
             $this->assertRequestQueryContains('timestamp', '123456', $request);
-
-            return $this->getResponse();
-        });
+            return true;
+        }))->willReturn($this->getResponse());
 
         $this->conversionClient->voice('ABC123', true, '123456');
     }
@@ -138,16 +133,13 @@ class ClientTest extends VonageTestCase
      */
     public function testVoiceWithoutTimestamp(): void
     {
-        $this->vonageClient->method('send')->willReturnCallback(function (RequestInterface $request) {
-            $this->assertEquals('/conversions/voice', $request->getUri()->getPath());
-            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('POST', $request->getMethod());
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertRequestUrl('api.nexmo.com', '/conversions/voice', 'POST', $request);
             $this->assertRequestQueryContains('message-id', 'ABC123', $request);
             $this->assertRequestQueryContains('delivered', '1', $request);
             $this->assertRequestQueryNotContains('timestamp', $request);
-
-            return $this->getResponse();
-        });
+            return true;
+        }))->willReturn($this->getResponse());
 
         $this->conversionClient->voice('ABC123', true);
     }

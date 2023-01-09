@@ -3,7 +3,7 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @copyright Copyright (c) 2016-2022 Vonage, Inc. (http://vonage.com)
  * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
 
@@ -16,16 +16,6 @@ use function array_key_exists;
 class Phone implements EndpointInterface
 {
     /**
-     * @var string
-     */
-    protected $dtmfAnswer;
-
-    /**
-     * @var string
-     */
-    protected $id;
-
-    /**
      * @var ?string
      */
     protected $ringbackTone;
@@ -35,10 +25,8 @@ class Phone implements EndpointInterface
      */
     protected $url;
 
-    public function __construct(string $number, string $dtmfAnswer = null)
+    public function __construct(protected string $id, protected ?string $dtmfAnswer = null)
     {
-        $this->id = $number;
-        $this->dtmfAnswer = $dtmfAnswer;
     }
 
     public static function factory(string $number, array $data): Phone

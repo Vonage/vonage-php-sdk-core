@@ -3,7 +3,7 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @copyright Copyright (c) 2016-2022 Vonage, Inc. (http://vonage.com)
  * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
 
@@ -15,31 +15,18 @@ class SMS extends OutboundMessage
 {
     public const GSM_7_PATTERN = '/\A[\n\f\r !\"\#$%&\'()*+,-.\/0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\\\\^_abcdefghijklmnopqrstuvwxyz{\|}~ ¡£¤¥§¿ÄÅÆÇÉÑÖØÜßàäåæèéìñòöøùüΓΔΘΛΞΠΣΦΨΩ€]*\z/m';
 
-    /**
-     * @var string
-     */
-    protected $contentId;
+    protected string $contentId;
 
-    /**
-     * @var string
-     */
-    protected $entityId;
-
-    /**
-     * @var string
-     */
-    protected $message;
+    protected string $entityId;
 
     /**
      * @var string
      */
     protected $type = 'text';
 
-    public function __construct(string $to, string $from, string $message, string $type = 'text')
+    public function __construct(string $to, string $from, protected string $message, string $type = 'text')
     {
         parent::__construct($to, $from);
-
-        $this->message = $message;
         $this->setType($type);
     }
 

@@ -21,9 +21,6 @@ trait MessengerObjectTrait
         return $this->getTag() || $this->getCategory();
     }
 
-    /**
-     * @param string $category
-     */
     public function setCategory(string $category): void
     {
         $this->category = $category;
@@ -37,9 +34,6 @@ trait MessengerObjectTrait
         return $this->tag;
     }
 
-    /**
-     * @param string $tag
-     */
     public function setTag(string $tag): void
     {
         $this->tag = $tag;

@@ -3,7 +3,7 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @copyright Copyright (c) 2016-2022 Vonage, Inc. (http://vonage.com)
  * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
 
@@ -30,11 +30,6 @@ class OutboundCall
      * @var Webhook
      */
     protected $eventWebhook;
-
-    /**
-     * @var Phone
-     */
-    protected $from;
 
     /**
      * Length of seconds before Vonage hangs up after going into `in_progress` status
@@ -69,24 +64,15 @@ class OutboundCall
     protected $ringingTimer;
 
     /**
-     * @var EndpointInterface
-     */
-    protected $to;
-
-    /**
      * Creates a new Outbound Call object
      * If no `$from` parameter is passed, the system will use a random number
      * that is linked to the application instead.
      *
-     * @param EndpointInterface $to
-     * @param Phone|null $from
+     *
      * @return void
      */
-    public function __construct(EndpointInterface $to, Phone $from = null)
+    public function __construct(protected EndpointInterface $to, protected ?Phone $from = null)
     {
-        $this->to = $to;
-        $this->from = $from;
-
         if (!$from) {
             $this->randomFrom = true;
         }

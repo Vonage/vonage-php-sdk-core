@@ -3,7 +3,7 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @copyright Copyright (c) 2016-2022 Vonage, Inc. (http://vonage.com)
  * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
 
@@ -32,7 +32,6 @@ use Vonage\Client\Credentials\Basic;
 use Vonage\Client\Credentials\Container;
 use Vonage\Client\Credentials\CredentialsInterface;
 use Vonage\Client\Credentials\Handler\BasicHandler;
-use Vonage\Client\Credentials\Handler\KeypairHandler;
 use Vonage\Client\Credentials\Handler\SignatureBodyFormHandler;
 use Vonage\Client\Credentials\Handler\SignatureBodyHandler;
 use Vonage\Client\Credentials\Handler\SignatureQueryHandler;
@@ -40,7 +39,6 @@ use Vonage\Client\Credentials\Handler\TokenBodyFormHandler;
 use Vonage\Client\Credentials\Handler\TokenBodyHandler;
 use Vonage\Client\Credentials\Handler\TokenQueryHandler;
 use Vonage\Client\Credentials\Keypair;
-use Vonage\Client\Credentials\OAuth;
 use Vonage\Client\Credentials\SignatureSecret;
 use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Client\Factory\FactoryInterface;
@@ -167,15 +165,14 @@ class Client implements LoggerAwareInterface
 
         $this->setHttpClient($client);
 
-        //make sure we know how to use the credentials
+        // Make sure we know how to use the credentials
         if (
             !($credentials instanceof Container) &&
             !($credentials instanceof Basic) &&
             !($credentials instanceof SignatureSecret) &&
-            !($credentials instanceof OAuth) &&
             !($credentials instanceof Keypair)
         ) {
-            throw new RuntimeException('unknown credentials type: ' . get_class($credentials));
+            throw new RuntimeException('unknown credentials type: ' . $credentials::class);
         }
 
         $this->credentials = $credentials;
@@ -299,17 +296,11 @@ class Client implements LoggerAwareInterface
      */
     public static function signRequest(RequestInterface $request, SignatureSecret $credentials): RequestInterface
     {
-        switch ($request->getHeaderLine('content-type')) {
-            case 'application/json':
-                $handler = new SignatureBodyHandler();
-                break;
-            case 'application/x-www-form-urlencoded':
-                $handler = new SignatureBodyFormHandler();
-                break;
-            default:
-                $handler = new SignatureQueryHandler();
-                break;
-        }
+        $handler = match ($request->getHeaderLine('content-type')) {
+            'application/json' => new SignatureBodyHandler(),
+            'application/x-www-form-urlencoded' => new SignatureBodyFormHandler(),
+            default => new SignatureQueryHandler(),
+        };
 
         return $handler($request, $credentials);
     }
@@ -350,7 +341,7 @@ class Client implements LoggerAwareInterface
             return $this->credentials->generateJwt($claims);
         }
 
-        throw new ClientException(get_class($this->credentials) . ' does not support JWT generation');
+        throw new ClientException($this->credentials::class . ' does not support JWT generation');
     }
 
     /**
@@ -453,25 +444,7 @@ class Client implements LoggerAwareInterface
      */
     public function send(RequestInterface $request): ResponseInterface
     {
-        if ($this->credentials instanceof Container) {
-            if ($this->needsKeypairAuthentication($request)) {
-                $handler = new KeypairHandler();
-                $request = $handler($request, $this->getCredentials());
-            } else {
-                $request = self::authRequest($request, $this->credentials->get(Basic::class));
-            }
-        } elseif ($this->credentials instanceof Keypair) {
-            $handler = new KeypairHandler();
-            $request = $handler($request, $this->getCredentials());
-        } elseif ($this->credentials instanceof SignatureSecret) {
-            $request = self::signRequest($request, $this->credentials);
-        } elseif ($this->credentials instanceof Basic) {
-            $request = self::authRequest($request, $this->credentials);
-        }
-
-        //todo: add oauth support
-
-        //allow any part of the URI to be replaced with a simple search
+        // Allow any part of the URI to be replaced with a simple search
         if (isset($this->options['url'])) {
             foreach ($this->options['url'] as $search => $replace) {
                 $uri = (string)$request->getUri();
@@ -557,7 +530,7 @@ class Client implements LoggerAwareInterface
             return $this->verify()->serialize($entity);
         }
 
-        throw new RuntimeException('unknown class `' . get_class($entity) . '``');
+        throw new RuntimeException('unknown class `' . $entity::class . '``');
     }
 
     public function __call($name, $args)
