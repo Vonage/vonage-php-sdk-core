@@ -41,6 +41,8 @@ class ClientTest extends VonageTestCase
 
     protected $vonageClient;
 
+    protected APIResource $api;
+
     /**
      * @var NumbersClient
      */
