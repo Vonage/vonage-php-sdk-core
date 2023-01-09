@@ -3,7 +3,7 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @copyright Copyright (c) 2016-2022 Vonage, Inc. (http://vonage.com)
  * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
 
@@ -13,14 +13,8 @@ namespace Vonage\Voice\Endpoint;
 
 class App implements EndpointInterface
 {
-    /**
-     * @var string
-     */
-    protected $id;
-
-    public function __construct(string $user)
+    public function __construct(protected string $id)
     {
-        $this->id = $user;
     }
 
     public static function factory(string $user): App

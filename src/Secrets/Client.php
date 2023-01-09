@@ -9,14 +9,8 @@ use Vonage\Entity\IterableAPICollection;
 
 class Client implements APIClient
 {
-    /**
-     * @var APIResource
-     */
-    protected $api;
-
-    public function __construct(APIResource $api)
+    public function __construct(protected APIResource $api)
     {
-        $this->api = $api;
     }
 
     public function getAPIResource(): APIResource

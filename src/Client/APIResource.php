@@ -3,7 +3,7 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @copyright Copyright (c) 2016-2022 Vonage, Inc. (http://vonage.com)
  * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
 
@@ -21,8 +21,8 @@ use Vonage\Entity\IterableAPICollection;
 use Vonage\Entity\Filter\FilterInterface;
 use Psr\Http\Client\ClientExceptionInterface;
 use Vonage\Client\Credentials\Handler\HandlerInterface;
-
 use Vonage\Logger\LoggerTrait;
+
 use function is_null;
 use function json_decode;
 use function json_encode;
@@ -33,37 +33,24 @@ class APIResource implements ClientAwareInterface
     use ClientAwareTrait;
     use LoggerTrait;
 
-    protected $authHandler;
+    protected ?HandlerInterface $authHandler = null;
 
     /**
      * Base URL that we will hit. This can be overridden from the underlying
      * client or directly on this class.
-     *
-     * @var string
      */
-    protected $baseUrl = '';
+    protected string $baseUrl = '';
 
-    /**
-     * @var string
-     */
-    protected $baseUri;
+    protected string $baseUri = '';
 
-    /**
-     * @var string
-     */
-    protected $collectionName = '';
+    protected string $collectionName = '';
 
-    /**
-     * @var IterableAPICollection
-     */
-    protected $collectionPrototype;
+    protected ?IterableAPICollection $collectionPrototype = null;
 
     /**
      * Sets flag that says to check for errors even on 200 Success
-     *
-     * @var bool
      */
-    protected $errorsOn200 = false;
+    protected bool $errorsOn200 = false;
 
     /**
      * Error handler to use when reviewing API responses
@@ -72,27 +59,15 @@ class APIResource implements ClientAwareInterface
      */
     protected $exceptionErrorHandler;
 
-    /**
-     * @var bool
-     */
-    protected $isHAL = true;
+    protected bool $isHAL = true;
 
-    /**
-     * @var RequestInterface
-     */
-    protected $lastRequest;
+    protected ?RequestInterface $lastRequest = null;
 
-    /**
-     * @var ResponseInterface
-     */
-    protected $lastResponse;
+    protected ?ResponseInterface $lastResponse = null;
 
     /**
      * Adds authentication to a request
      *
-     * @param RequestInterface $request
-     *
-     * @return RequestInterface
      */
     public function addAuth(RequestInterface $request): RequestInterface
     {

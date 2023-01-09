@@ -8,16 +8,14 @@ class WhatsAppCustom extends BaseMessage
 {
     protected string $subType = BaseMessage::MESSAGES_SUBTYPE_CUSTOM;
     protected string $channel = 'whatsapp';
-    protected array $custom;
 
     public function __construct(
         string $to,
         string $from,
-        array $custom
+        protected array $custom
     ) {
         $this->to = $to;
         $this->from = $from;
-        $this->custom = $custom;
     }
 
     public function setCustom(array $custom): void

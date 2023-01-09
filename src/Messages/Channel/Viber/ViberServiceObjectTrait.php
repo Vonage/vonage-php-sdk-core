@@ -21,9 +21,6 @@ trait ViberServiceObjectTrait
         return $this->category;
     }
 
-    /**
-     * @param string|null $category
-     */
     public function setCategory(?string $category): void
     {
         $this->category = $category;

@@ -3,7 +3,7 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @copyright Copyright (c) 2016-2022 Vonage, Inc. (http://vonage.com)
  * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
 
@@ -35,11 +35,6 @@ abstract class OutboundMessage implements Message
     protected $deliveryReceiptCallback;
 
     /**
-     * @var string
-     */
-    protected $from;
-
-    /**
      * @var int
      */
     protected $messageClass;
@@ -48,11 +43,6 @@ abstract class OutboundMessage implements Message
      * @var bool
      */
     protected $requestDeliveryReceipt = true;
-
-    /**
-     * @var string
-     */
-    protected $to;
 
     /**
      * TTL of the SMS delivery, in milliseconds
@@ -68,10 +58,8 @@ abstract class OutboundMessage implements Message
      */
     protected $type;
 
-    public function __construct(string $to, string $from)
+    public function __construct(protected string $to, protected string $from)
     {
-        $this->to = $to;
-        $this->from = $from;
     }
 
     abstract public function toArray(): array;

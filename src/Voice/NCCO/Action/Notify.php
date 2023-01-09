@@ -3,7 +3,7 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @copyright Copyright (c) 2016-2022 Vonage, Inc. (http://vonage.com)
  * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
 
@@ -18,20 +18,8 @@ use function array_key_exists;
 
 class Notify implements ActionInterface
 {
-    /**
-     * @var array
-     */
-    protected $payload = [];
-
-    /**
-     * @var ?Webhook
-     */
-    protected $eventWebhook;
-
-    public function __construct(array $payload, Webhook $eventWebhook)
+    public function __construct(protected array $payload, protected ?\Vonage\Voice\Webhook $eventWebhook)
     {
-        $this->payload = $payload;
-        $this->eventWebhook = $eventWebhook;
     }
 
     /**

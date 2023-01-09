@@ -3,7 +3,7 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @copyright Copyright (c) 2016-2022 Vonage, Inc. (http://vonage.com)
  * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
 
@@ -14,15 +14,10 @@ namespace Vonage\Account;
 use Psr\Http\Client\ClientExceptionInterface;
 use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
-use Vonage\Client\ClientAwareInterface;
-use Vonage\Client\ClientAwareTrait;
 use Vonage\Client\Exception as ClientException;
 use Vonage\Client\Exception\Request as ClientRequestException;
-use Vonage\Client\Exception\Validation as ClientValidationException;
 use Vonage\Entity\Filter\KeyValueFilter;
-use Vonage\InvalidResponseException;
 
-use function array_key_exists;
 use function count;
 use function is_null;
 use function json_decode;
@@ -30,26 +25,15 @@ use function json_decode;
 /**
  * @todo Unify the exception handling to avoid duplicated code and logic (ie: getPrefixPricing())
  */
-class Client implements ClientAwareInterface, APIClient
+class Client implements APIClient
 {
-    /**
-     * @deprecated This object will be dropping support for ClientAwareInterface in the future
-     */
-    use ClientAwareTrait;
-
-    /**
-     * @var APIResource|null
-     */
-    protected ?APIResource $accountAPI;
-
-    public function __construct(?APIResource $accountAPI = null)
+    public function __construct(protected ?APIResource $accountAPI = null)
     {
-        $this->accountAPI = $accountAPI;
     }
 
     public function getAPIResource(): APIResource
     {
-        return $this->accountAPI;
+        return clone $this->accountAPI;
     }
 
     /**
@@ -128,13 +112,13 @@ class Client implements ClientAwareInterface, APIClient
         $api = $this->getAPIResource();
         $api->setBaseUri('/account/get-pricing/outbound/' . $pricingType);
         $results = $api->search(new KeyValueFilter(['country' => $country]));
-        $data = $results->getPageData();
+        $pageData = $results->getPageData();
 
-        if (is_null($data)) {
+        if (is_null($pageData)) {
             throw new ClientException\Server('No results found');
         }
 
-        return $data;
+        return $pageData;
     }
 
     /**
@@ -164,7 +148,6 @@ class Client implements ClientAwareInterface, APIClient
     public function topUp($trx): void
     {
         $api = $this->getAPIResource();
-        // @TODO why is this re-setting the base URL
         $api->setBaseUri('/account/top-up');
         $api->submit(['trx' => $trx]);
     }

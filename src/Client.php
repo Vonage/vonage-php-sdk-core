@@ -3,7 +3,7 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @copyright Copyright (c) 2016-2022 Vonage, Inc. (http://vonage.com)
  * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
 
@@ -172,7 +172,7 @@ class Client implements LoggerAwareInterface
             !($credentials instanceof SignatureSecret) &&
             !($credentials instanceof Keypair)
         ) {
-            throw new RuntimeException('unknown credentials type: ' . get_class($credentials));
+            throw new RuntimeException('unknown credentials type: ' . $credentials::class);
         }
 
         $this->credentials = $credentials;
@@ -296,17 +296,11 @@ class Client implements LoggerAwareInterface
      */
     public static function signRequest(RequestInterface $request, SignatureSecret $credentials): RequestInterface
     {
-        switch ($request->getHeaderLine('content-type')) {
-            case 'application/json':
-                $handler = new SignatureBodyHandler();
-                break;
-            case 'application/x-www-form-urlencoded':
-                $handler = new SignatureBodyFormHandler();
-                break;
-            default:
-                $handler = new SignatureQueryHandler();
-                break;
-        }
+        $handler = match ($request->getHeaderLine('content-type')) {
+            'application/json' => new SignatureBodyHandler(),
+            'application/x-www-form-urlencoded' => new SignatureBodyFormHandler(),
+            default => new SignatureQueryHandler(),
+        };
 
         return $handler($request, $credentials);
     }
@@ -347,7 +341,7 @@ class Client implements LoggerAwareInterface
             return $this->credentials->generateJwt($claims);
         }
 
-        throw new ClientException(get_class($this->credentials) . ' does not support JWT generation');
+        throw new ClientException($this->credentials::class . ' does not support JWT generation');
     }
 
     /**
@@ -536,7 +530,7 @@ class Client implements LoggerAwareInterface
             return $this->verify()->serialize($entity);
         }
 
-        throw new RuntimeException('unknown class `' . get_class($entity) . '``');
+        throw new RuntimeException('unknown class `' . $entity::class . '``');
     }
 
     public function __call($name, $args)

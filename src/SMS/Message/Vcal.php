@@ -3,7 +3,7 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @copyright Copyright (c) 2016-2022 Vonage, Inc. (http://vonage.com)
  * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
 
@@ -16,18 +16,11 @@ class Vcal extends OutboundMessage
     /**
      * @var string
      */
-    protected $event;
-
-    /**
-     * @var string
-     */
     protected $type = 'vcal';
 
-    public function __construct(string $to, string $from, string $event)
+    public function __construct(string $to, string $from, protected string $event)
     {
         parent::__construct($to, $from);
-
-        $this->event = $event;
     }
 
     /**
