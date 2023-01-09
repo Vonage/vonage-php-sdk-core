@@ -14,6 +14,7 @@ namespace VonageTest\Numbers;
 use Laminas\Diactoros\Response;
 use Vonage\Client\Credentials\Basic;
 use Vonage\Client\Credentials\Container;
+use Vonage\Numbers\Filter\OwnedNumbers;
 use VonageTest\VonageTestCase;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
@@ -36,14 +37,14 @@ class ClientTest extends VonageTestCase
     /**
      * @var APIResource
      */
-    protected $apiClient;
+    protected APIResource $apiClient;
 
     protected $vonageClient;
 
     /**
      * @var NumbersClient
      */
-    protected $numberClient;
+    protected NumbersClient $numberClient;
 
     public function setUp(): void
     {
@@ -53,8 +54,14 @@ class ClientTest extends VonageTestCase
             new Container(new Basic('abc', 'def'))
         );
 
+        $this->api = new APIResource();
+        $this->api->setBaseUrl('https://rest.nexmo.com')
+                  ->setIsHAL(false);
+
+        $this->api->setClient($this->vonageClient->reveal());
+
         /** @noinspection PhpParamsInspection */
-        $this->numberClient = (new NumbersClient())->setClient($this->vonageClient->reveal());
+        $this->numberClient = (new NumbersClient($this->api));
     }
 
     /**
