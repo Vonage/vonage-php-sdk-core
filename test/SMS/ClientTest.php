@@ -334,7 +334,7 @@ class ClientTest extends VonageTestCase
         $this->smsClient->sendTwoFactor('447700900000', 1245);
     }
 
-    public function testThrowsWarningSendingUnicodeAsText(): void
+    public function testThrowsWarningWhenSendingTextAsUnicode(): void
     {
         $this->vonageClient->send(Argument::that(function (Request $request) {
             return true;
@@ -358,6 +358,33 @@ class ClientTest extends VonageTestCase
             ->setClientRef($args['client-ref'])
             ->setAccountRef($args['account-ref'])
             ->setType('unicode');
+
+        $response = $this->smsClient->send($message);
+    }
+
+    public function testThrowsWarningWhenSendingUnicodeAsText(): void
+    {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            return true;
+        }))->willReturn($this->getResponse('send-success'));
+
+        $this->expectWarning();
+        $this->expectErrorMessage("You are sending a message as `unicode` when it could be `text` or a `text` type with
+                    unicode-only characters. This could result in encoding problems with the target device or 
+                    increased billing - See https://developer.vonage.com/messaging/sms for details, or email 
+                    support@vonage.com if you have any questions.");
+
+        $args = [
+            'to' => '447700900000',
+            'from' => '16105551212',
+            'text' => "This needs to be sent as unicode これはユニコード",
+            'account-ref' => 'customer1234',
+            'client-ref' => 'my-personal-reference'
+        ];
+
+        $message = (new SMS($args['to'], $args['from'], $args['text']))
+            ->setClientRef($args['client-ref'])
+            ->setAccountRef($args['account-ref']);
 
         $response = $this->smsClient->send($message);
     }
