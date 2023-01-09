@@ -13,6 +13,8 @@ namespace Vonage\SMS;
 
 use Psr\Container\ContainerInterface;
 use Vonage\Client\APIResource;
+use Vonage\Client\Credentials\Handler\BasicHandler;
+use Vonage\Client\Credentials\Handler\SignatureBodyHandler;
 
 class ClientFactory
 {
@@ -25,7 +27,8 @@ class ClientFactory
             ->setCollectionName('messages')
             ->setIsHAL(false)
             ->setErrorsOn200(true)
-            ->setExceptionErrorHandler(new ExceptionErrorHandler());
+            ->setExceptionErrorHandler(new ExceptionErrorHandler())
+            ->setAuthHandler([new BasicHandler(), new SignatureBodyHandler()]);
 
         return new Client($api);
     }

@@ -62,6 +62,9 @@ class ClientTest extends VonageTestCase
     {
         $this->vonageClient = $this->prophesize(Client::class);
         $this->vonageClient->getRestUrl()->willReturn('https://rest.nexmo.com');
+        $this->vonageClient->getCredentials()->willReturn(
+            new Client\Credentials\Container(new Client\Credentials\Basic('abc', 'def'))
+        );
 
         /** @noinspection PhpParamsInspection */
         $this->api = (new APIResource())
@@ -69,6 +72,7 @@ class ClientTest extends VonageTestCase
             ->setIsHAL(false)
             ->setErrorsOn200(false)
             ->setClient($this->vonageClient->reveal())
+            ->setAuthHandler(new Client\Credentials\Handler\BasicHandler())
             ->setExceptionErrorHandler(new ExceptionErrorHandler())
             ->setBaseUrl('https://rest.nexmo.com');
 

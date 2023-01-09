@@ -31,12 +31,6 @@ class Client implements APIClient
     {
     }
 
-    /**
-     * We return a clone because API Resources passed by reference will fail on Interable
-     * Collections because the baseUrl mutations.
-     *
-     * @return APIResource
-     */
     public function getAPIResource(): APIResource
     {
         return clone $this->accountAPI;

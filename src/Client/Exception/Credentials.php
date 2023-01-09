@@ -9,14 +9,8 @@
 
 declare(strict_types=1);
 
-namespace Vonage\Message\Shortcode;
+namespace Vonage\Client\Exception;
 
-use Vonage\Message\Shortcode;
-
-class Marketing extends Shortcode
+class Credentials extends \Exception
 {
-    /**
-     * @var string
-     */
-    protected $type = 'marketing';
 }

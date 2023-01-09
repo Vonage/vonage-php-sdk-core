@@ -12,6 +12,8 @@ declare(strict_types=1);
 namespace Vonage\Client;
 
 use Laminas\Diactoros\Request;
+use Psr\Log\LogLevel;
+use Vonage\Client\Credentials\Handler\BasicHandler;
 use Vonage\Entity\Filter\EmptyFilter;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -19,6 +21,7 @@ use Vonage\Entity\IterableAPICollection;
 use Vonage\Entity\Filter\FilterInterface;
 use Psr\Http\Client\ClientExceptionInterface;
 use Vonage\Client\Credentials\Handler\HandlerInterface;
+use Vonage\Logger\LoggerTrait;
 
 use function is_null;
 use function json_decode;
@@ -28,6 +31,7 @@ use function http_build_query;
 class APIResource implements ClientAwareInterface
 {
     use ClientAwareTrait;
+    use LoggerTrait;
 
     protected ?HandlerInterface $authHandler = null;
 
@@ -63,11 +67,29 @@ class APIResource implements ClientAwareInterface
 
     /**
      * Adds authentication to a request
+     *
      */
-    public function addAuth(RequestInterface $request)
+    public function addAuth(RequestInterface $request): RequestInterface
     {
-        $creds = $this->getClient()->getCredentials();
-        return $this->getAuthHandler()($request, $creds);
+        $credentials = $this->getClient()->getCredentials();
+
+        if (is_array($this->getAuthHandler())) {
+            foreach ($this->getAuthHandler() as $handler) {
+                try {
+                    $request = $handler($request, $credentials);
+                    break;
+                } catch (\RuntimeException $e) {
+                    continue; // We are OK if multiple are sent but only one match
+                }
+                throw new \RuntimeException(
+                    'Unable to set credentials, please check configuration and 
+                    supplied authentication'
+                );
+            }
+            return $request;
+        }
+
+        return $this->getAuthHandler()($request, $credentials);
     }
 
     /**
@@ -204,8 +226,19 @@ class APIResource implements ClientAwareInterface
         return json_decode($response->getBody()->getContents(), true);
     }
 
-    public function getAuthHandler(): ?HandlerInterface
+    public function getAuthHandler()
     {
+        // If we have not set a handler, default to Basic and issue warning.
+        if (!$this->authHandler) {
+            $this->log(
+                LogLevel::WARNING,
+                'Warning: no authorisation handler set for this Client. Defaulting to Basic which might not be
+                the correct authorisation for this API call'
+            );
+
+            return new BasicHandler();
+        }
+
         return $this->authHandler;
     }
 
@@ -306,6 +339,14 @@ class APIResource implements ClientAwareInterface
         return $collection;
     }
 
+    /**
+     * Set the auth handler(s). This can be a handler that extends off AbstractHandler,
+     * or an array of handlers that will attempt to resolve at runtime
+     *
+     * @param HandlerInterface|array $handler
+     *
+     * @return $this
+     */
     public function setAuthHandler($handler): self
     {
         $this->authHandler = $handler;

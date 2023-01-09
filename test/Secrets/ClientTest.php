@@ -2,7 +2,6 @@
 
 namespace VonageTest\Secrets;
 
-use DateTimeInterface;
 use Prophecy\Argument;
 use Vonage\Secrets\Client;
 use Vonage\Secrets\Secret;
@@ -31,9 +30,14 @@ class ClientTest extends VonageTestCase
         $this->vonage->getRestUrl()->willReturn('https://rest.nexmo.com');
         $this->vonage->getApiUrl()->willReturn('https://api.nexmo.com');
 
+        $this->vonage->getCredentials()->willReturn(
+            new VonageClient\Credentials\Basic('abc', 'def')
+        );
+
         $api = new APIResource();
         $api->setClient($this->vonage->reveal())
             ->setBaseUri('/accounts')
+            ->setAuthHandler(new VonageClient\Credentials\Handler\BasicHandler())
             ->setCollectionName('secrets');
 
         $this->client = new Client($api);

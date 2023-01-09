@@ -12,9 +12,8 @@ declare(strict_types=1);
 namespace VonageTest\Numbers;
 
 use Laminas\Diactoros\Response;
-use Vonage\Account\Client as AccountClient;
-use Vonage\Entity\Filter\FilterInterface;
-use Vonage\Numbers\Filter\OwnedNumbers;
+use Vonage\Client\Credentials\Basic;
+use Vonage\Client\Credentials\Container;
 use VonageTest\VonageTestCase;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
@@ -50,15 +49,12 @@ class ClientTest extends VonageTestCase
     {
         $this->vonageClient = $this->prophesize('Vonage\Client');
         $this->vonageClient->getRestUrl()->willReturn('https://rest.nexmo.com');
-
-        $this->api = new APIResource();
-        $this->api->setBaseUrl('https://rest.nexmo.com')
-                  ->setIsHAL(false);
-
-        $this->api->setClient($this->vonageClient->reveal());
+        $this->vonageClient->getCredentials()->willReturn(
+            new Container(new Basic('abc', 'def'))
+        );
 
         /** @noinspection PhpParamsInspection */
-        $this->numberClient = (new NumbersClient($this->api));
+        $this->numberClient = (new NumbersClient())->setClient($this->vonageClient->reveal());
     }
 
     /**

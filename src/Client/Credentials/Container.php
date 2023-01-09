@@ -18,7 +18,7 @@ use function is_array;
 
 class Container extends AbstractCredentials
 {
-    protected $types = [
+    protected array $types = [
         Basic::class,
         SignatureSecret::class,
         Keypair::class
