@@ -15,6 +15,9 @@ use Psr\Http\Client\ClientExceptionInterface;
 use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
 use Vonage\Client\Exception as ClientException;
+use Vonage\Client\Exception\Exception;
+use Vonage\Client\Exception\Request;
+use Vonage\Client\Exception\Server;
 use Vonage\Client\Exception\ThrottleException;
 use Vonage\Entity\Filter\FilterInterface;
 use Vonage\Entity\IterableAPICollection;
@@ -22,7 +25,6 @@ use Vonage\Numbers\Filter\AvailableNumbers;
 use Vonage\Numbers\Filter\OwnedNumbers;
 
 use function count;
-use function filter_var;
 use function is_null;
 use function sleep;
 use function trigger_error;
@@ -44,9 +46,9 @@ class Client implements APIClient
      *
      * @return Number
      * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws Exception
+     * @throws Request
+     * @throws Server
      */
     public function update(Number $number, ?string $id = null): Number
     {
@@ -178,41 +180,6 @@ class Client implements APIClient
         $response->setAutoAdvance(false); // The search results on this can be quite large
 
         return $this->handleNumberSearchResult($response, $number);
-    }
-
-    /**
-     * Checks and converts parameters into appropriate values for the API
-     *
-     * @throws ClientException\Request
-     */
-    protected function parseParameters(array $possibleParameters, array $data = []): array
-    {
-        $query = [];
-
-        foreach ($data as $param => $value) {
-            switch ($possibleParameters[$param]) {
-                case 'boolean':
-                    $value = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
-                    if (is_null($value)) {
-                        throw new ClientException\Request("Invalid value: '" . $param . "' must be a boolean value");
-                    }
-                    $value = $value ? "true" : "false";
-                    break;
-                case 'integer':
-                    $value = filter_var($value, FILTER_VALIDATE_INT);
-                    if ($value === false) {
-                        throw new ClientException\Request("Invalid value: '" . $param . "' must be an integer");
-                    }
-                    break;
-                default:
-                    // No-op, take the value whatever it is
-                    break;
-            }
-
-            $query[$param] = $value;
-        }
-
-        return $query;
     }
 
     /**
