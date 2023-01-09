@@ -129,6 +129,16 @@ class Client implements LoggerAwareInterface
      * @var array
      */
     protected $options = ['show_deprecations' => false, 'debug' => false];
+    
+    /**
+     * @string
+     */
+    public $apiUrl;
+    
+    /**
+     * @string
+     */
+    public $restUrl;
 
     /**
      * Create a new API client using the provided credentials.
@@ -219,7 +229,7 @@ class Client implements LoggerAwareInterface
         );
 
         // Disable throwing E_USER_DEPRECATED notices by default, the user can turn it on during development
-        if (array_key_exists('show_deprecations', $this->options) && !$this->options['show_deprecations']) {
+        if (array_key_exists('show_deprecations', $this->options) && ($this->options['show_deprecations'] == true)) {
             set_error_handler(
                 static function (
                     int $errno,

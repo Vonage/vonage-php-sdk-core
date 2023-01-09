@@ -44,9 +44,9 @@ class ExceptionErrorHandler
         }
 
         if ($statusCode >= 500 && $statusCode <= 599) {
-            throw new ClientException\Server($responseBody['title'] . $responseBody['detail']);
+            throw new ClientException\Server($responseBody['title'] . ': ' . $responseBody['detail']);
         }
 
-        throw new ClientException\Request($responseBody['title'] . $responseBody['detail']);
+        throw new ClientException\Request($responseBody['title'] . ': ' . $responseBody['detail']);
     }
 }

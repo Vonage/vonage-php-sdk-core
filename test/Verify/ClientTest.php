@@ -11,7 +11,6 @@ declare(strict_types=1);
 
 namespace VonageTest\Verify;
 
-use InvalidArgumentException;
 use Laminas\Diactoros\Response;
 use Vonage\Client\Credentials\Handler\BasicHandler;
 use Vonage\Verify\ExceptionErrorHandler;

@@ -341,6 +341,15 @@ class Client implements ClientAwareInterface, APIClient
             default:
                 $e = new ClientException\Request($data['error_text'], (int)$data['status']);
                 $e->setEntity($data);
+
+                if (array_key_exists('request_id', $data)) {
+                    $e->setRequestId($data['request_id']);
+                }
+
+                if (array_key_exists('network', $data)) {
+                    $e->setNetworkId($data['network']);
+                }
+
                 break;
         }
 

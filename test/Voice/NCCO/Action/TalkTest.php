@@ -21,6 +21,10 @@ class TalkTest extends VonageTestCase
         $this->assertSame([
             'action' => 'talk',
             'text' => 'Hello',
+            'bargeIn' => 'false',
+            'level' => '0',
+            'loop' => '1',
+            'premium' => 'false'
         ], (new Talk('Hello'))->jsonSerialize());
     }
 
@@ -32,6 +36,7 @@ class TalkTest extends VonageTestCase
             'bargeIn' => 'false',
             'level' => '0',
             'loop' => '1',
+            'premium' => 'false'
         ];
 
         $action = new Talk('Hello');
@@ -47,8 +52,12 @@ class TalkTest extends VonageTestCase
         $expected = [
             'action' => 'talk',
             'text' => 'Hello',
+            'bargeIn' => 'false',
+            'level' => '0',
+            'loop' => '1',
             'language' => 'en-US',
-            'style' => '0'
+            'style' => '0',
+            'premium' => 'false'
         ];
 
         $action = new Talk($expected['text']);
@@ -65,8 +74,12 @@ class TalkTest extends VonageTestCase
         $expected = [
             'action' => 'talk',
             'text' => 'Hello',
+            'bargeIn' => 'false',
+            'level' => '0',
+            'loop' => '1',
             'language' => 'en-US',
-            'style' => '3'
+            'style' => '3',
+            'premium' => 'false'
         ];
 
         $action = new Talk($expected['text']);
@@ -83,8 +96,12 @@ class TalkTest extends VonageTestCase
         $expected = [
             'action' => 'talk',
             'text' => 'Hello',
+            'bargeIn' => 'false',
+            'level' => '0',
+            'loop' => '1',
             'language' => 'en-US',
-            'style' => '0'
+            'style' => '0',
+            'premium' => 'false'
         ];
 
         $action = Talk::factory($expected['text'], $expected);
@@ -100,8 +117,12 @@ class TalkTest extends VonageTestCase
         $expected = [
             'action' => 'talk',
             'text' => 'Hello',
+            'bargeIn' => 'false',
+            'level' => '0',
+            'loop' => '1',
             'language' => 'en-US',
-            'style' => '3'
+            'style' => '3',
+            'premium' => 'false'
         ];
 
         $action = Talk::factory($expected['text'], $expected);

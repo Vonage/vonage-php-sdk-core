@@ -34,12 +34,26 @@ class Client implements APIClient
         return $this->api;
     }
 
+    public function isUnicode($message): bool
+    {
+        return strlen($message) !== strlen(mb_convert_encoding($message, 'ISO-8859-1', 'UTF-8'));
+    }
+
     /**
      * @throws ClientExceptionInterface
      * @throws ClientException
      */
     public function send(Message $message): Collection
     {
+        if (($message->getType() === 'text') && $this->isUnicode($message->getMessage())) {
+            trigger_error(
+                "Sending unicode text SMS without setting the type parameter to 'unicode'.
+                    See https://developer.vonage.com/messaging/sms for details, or email support@vonage.com 
+                    if you have any questions.",
+                E_USER_WARNING
+            );
+        }
+
         try {
             $response = $this->api->create($message->toArray(), '/sms/json');
 

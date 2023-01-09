@@ -56,7 +56,7 @@ Create a client with your API key and secret:
 $client = new Vonage\Client(new Vonage\Client\Credentials\Basic(API_KEY, API_SECRET));     
 ```
 
-For testing purposes you may want to change the URL that `vonage/client` makes requests to from `api.nexmo.com` to something else. You can do this by providing an array containing `base_api_url` as the second parameter when creating a `Vonage\Client` instance.
+For testing purposes you may want to change the URL that `vonage/client` makes requests to from `api.vonage.com` to something else. You can do this by providing an array containing `base_api_url` as the second parameter when creating a `Vonage\Client` instance.
 
 ```php
 $client = new Vonage\Client(
@@ -242,7 +242,7 @@ $response = $client->verify()->start($request);
 echo "Started verification with an id of: " . $response->getRequestId();
 ```
 
-Once the user inputs the pin code they received, call the `/check` endpoint with the request ID and the pin to confirm the pin is correct.
+Once the user inputs the pin code they received, call the `check()` method (see below) with the request ID and the PIN to confirm the PIN is correct.
 
 ### Controlling a Verification
     
@@ -256,7 +256,7 @@ $client->verify()->cancel('00e6c3377e5348cdaf567e1417c707a5');
 
 ### Checking a Verification
 
-In the same way, checking a verification requires the code the user provided, and the request ID:
+In the same way, checking a verification requires the PIN the user provided, and the request ID:
 
 ```php
 try {
@@ -320,10 +320,10 @@ $outboundCall = new \Vonage\Voice\OutboundCall(
 );
 $outboundCall
     ->setAnswerWebhook(
-        new \Vonage\Voice\Webhook('https://example.com/answer')
+        new \Vonage\Voice\Webhook('https://example.com/webhooks/answer')
     )
     ->setEventWebhook(
-        new \Vonage\Voice\Webhook('https://example.com/event')
+        new \Vonage\Voice\Webhook('https://example.com/webhooks/event')
     )
 ;
 
@@ -364,7 +364,7 @@ $outboundCall = new \Vonage\Voice\OutboundCall(
 
 $ncco = new NCCO();
 $ncco->addAction(\Vonage\Voice\NCCO\Action\Record::factory([
-    'eventUrl' => 'https://webhook.url'
+    'eventUrl' => 'https://example.com/webhooks/event'
 ]);
 $outboundCall->setNCCO($ncco);
 
@@ -416,7 +416,7 @@ $outboundCall = new \Vonage\Voice\OutboundCall(
 );
 
 $ncco = new NCCO();
-$ncco->addAction(new \Vonage\Voice\NCCO\Action\Stream('https://my-mp3.url'));
+$ncco->addAction(new \Vonage\Voice\NCCO\Action\Stream('https://example.com/sounds/my-audio.mp3'));
 $outboundCall->setNCCO($ncco);
 
 $response = $client->voice()->createOutboundCall($outboundCall);
@@ -439,7 +439,7 @@ $ncco->addAction(\Vonage\Voice\NCCO\Action\Talk::factory('Please record your nam
 ]));
 
 $ncco->addAction(\Vonage\Voice\NCCO\Action\Input::factory([
-  'eventUrl' => 'https://webhook.url',
+  'eventUrl' => 'https://example.com/webhooks/event',
   'type' => [
     'speech',
   ],
@@ -467,7 +467,7 @@ $ncco = new NCCO();
 $ncco->addAction(new \Vonage\Voice\NCCO\Action\Talk('We are just testing the notify function, you do not need to do anything.'));
 $ncco->addAction(new \Vonage\Voice\NCCO\Action\Notify([
   'foo' => 'bar',
-], new Vonage\Voice\Webhook('https://webhook.url')));
+], new Vonage\Voice\Webhook('https://example.com/webhooks/notify')));
 $outboundCall->setNCCO($ncco);
 
 $response = $client->voice()->createOutboundCall($outboundCall);
@@ -509,11 +509,11 @@ $application->fromArray([
      'voice' => [
          'webhooks' => [
              'answer_url' => [
-                 'address' => 'https://example.com/answer',
+                 'address' => 'https://example.com/webhooks/answer',
                  'http_method' => 'GET',
              ],
              'event_url' => [
-                 'address' => 'https://example.com/event',
+                 'address' => 'https://example.com/webhooks/event',
                  'http_method' => 'POST',
              ],
          ]
@@ -521,12 +521,12 @@ $application->fromArray([
      'messages' => [
          'webhooks' => [
              'inbound_url' => [
-                 'address' => 'https://example.com/inbound',
+                 'address' => 'https://example.com/webhooks/inbound',
                  'http_method' => 'POST'
 
              ],
              'status_url' => [
-                 'address' => 'https://example.com/status',
+                 'address' => 'https://example.com/webhooks/status',
                  'http_method' => 'POST'
              ]
          ]
@@ -534,7 +534,7 @@ $application->fromArray([
      'rtc' => [
          'webhooks' => [
              'event_url' => [
-                 'address' => 'https://example.com/event',
+                 'address' => 'https://example.com/webhooks/event',
                  'http_method' => 'POST',
              ],
          ]
@@ -552,11 +552,11 @@ You can also pass the client an application object:
 $a = new Vonage\Application\Application();
 
 $a->setName('PHP Client Example');
-$a->getVoiceConfig()->setWebhook('answer_url', 'https://example.com/answer', 'GET');
-$a->getVoiceConfig()->setWebhook('event_url', 'https://example.com/event', 'POST');
-$a->getMessagesConfig()->setWebhook('status_url', 'https://example.com/status', 'POST');
-$a->getMessagesConfig()->setWebhook('inbound_url', 'https://example.com/inbound', 'POST');
-$a->getRtcConfig()->setWebhook('event_url', 'https://example.com/event', 'POST');
+$a->getVoiceConfig()->setWebhook('answer_url', 'https://example.com/webhooks/answer', 'GET');
+$a->getVoiceConfig()->setWebhook('event_url', 'https://example.com/webhooks/event', 'POST');
+$a->getMessagesConfig()->setWebhook('status_url', 'https://example.com/webhooks/status', 'POST');
+$a->getMessagesConfig()->setWebhook('inbound_url', 'https://example.com/webhooks/inbound', 'POST');
+$a->getRtcConfig()->setWebhook('event_url', 'https://example.com/webhooks/event', 'POST');
 $a->disableVbc();
 
 $client->applications()->create($a);

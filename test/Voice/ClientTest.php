@@ -180,6 +180,10 @@ class ClientTest extends VonageTestCase
                 [
                     'action' => 'talk',
                     'text' => 'Thank you for trying Vonage',
+                    'bargeIn' => 'false',
+                    'level' => '0',
+                    'loop' => '1',
+                    'premium' => 'false'
                 ]
             ],
             'length_timer' => '7200',
@@ -398,6 +402,10 @@ class ClientTest extends VonageTestCase
                     [
                         'action' => 'talk',
                         'text' => 'Thank you for trying Vonage',
+                        'bargeIn' => 'false',
+                        'level' => '0',
+                        'loop' => '1',
+                        'premium' => 'false'
                     ]
                 ]
             ],
@@ -496,6 +504,10 @@ class ClientTest extends VonageTestCase
         $id = 'ssf61863-4a51-ef6b-11e1-w6edebcf93bb';
         $payload = [
             'text' => 'This is sample text',
+            'bargeIn' => 'false',
+            'level' => '0',
+            'loop' => '1',
+            'premium' => 'false'
         ];
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id, $payload) {

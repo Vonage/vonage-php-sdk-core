@@ -638,7 +638,7 @@ class ClientTest extends VonageTestCase
     public function testThrowsRequestErrorOnBadRequest(): void
     {
         $this->expectException(Client\Exception\Request::class);
-        $this->expectErrorMessage('The request body did not contain valid JSONUnexpected character (\'"\' (code 34)): was expecting comma to separate Object entries');
+        $this->expectErrorMessage('The request body did not contain valid JSON: Unexpected character (\'"\' (code 34)): was expecting comma to separate Object entries');
 
         $payload = [
             'to' => '447700900000',
