@@ -56,6 +56,9 @@ class ClientTest extends VonageTestCase
         $this->vonageClient = $this->prophesize(Client::class);
         $this->vonageClient->getRestUrl()->willReturn('https://rest.nexmo.com');
         $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
+        $this->vonageClient->getCredentials()->willReturn(
+            new Client\Credentials\Container(new Client\Credentials\Basic('abc', 'def'))
+        );
 
         /** @noinspection PhpParamsInspection */
         $this->mapFactory = new MapFactory([APIResource::class => APIResource::class], $this->vonageClient->reveal());

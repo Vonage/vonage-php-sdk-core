@@ -13,6 +13,7 @@ namespace Vonage\Account;
 
 use Psr\Container\ContainerInterface;
 use Vonage\Client\APIResource;
+use Vonage\Client\Credentials\Handler\BasicHandler;
 
 class ClientFactory
 {
@@ -24,11 +25,9 @@ class ClientFactory
             ->setBaseUrl($accountApi->getClient()->getRestUrl())
             ->setIsHAL(false)
             ->setBaseUri('/account')
+            ->setAuthHandler(new BasicHandler())
         ;
 
-        $secretsApi = $container->make(APIResource::class);
-        $secretsApi->setBaseUri('/accounts');
-
-        return new Client($accountApi, $secretsApi);
+        return new Client($accountApi);
     }
 }

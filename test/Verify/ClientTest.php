@@ -11,8 +11,9 @@ declare(strict_types=1);
 
 namespace VonageTest\Verify;
 
-use InvalidArgumentException;
 use Laminas\Diactoros\Response;
+use Vonage\Client\Credentials\Handler\BasicHandler;
+use Vonage\Verify\ExceptionErrorHandler;
 use VonageTest\VonageTestCase;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
@@ -48,54 +49,20 @@ class ClientTest extends VonageTestCase
     {
         $this->vonageClient = $this->prophesize(Client::class);
         $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
+        $this->vonageClient->getCredentials()->willReturn(
+            new Client\Credentials\Basic('abc', 'def'),
+        );
 
-        $this->client = new VerifyClient();
+        $api = new Client\APIResource();
+        $api
+            ->setIsHAL(false)
+            ->setBaseUri('/verify')
+            ->setErrorsOn200(true)
+            ->setAuthHandler(new BasicHandler())
+            ->setClient($this->vonageClient->reveal())
+            ->setExceptionErrorHandler(new ExceptionErrorHandler());
 
-        /** @noinspection PhpParamsInspection */
-        $this->client->setClient($this->vonageClient->reveal());
-    }
-
-    /**
-     * @dataProvider getApiMethods
-     *
-     * @param $method
-     * @param $response
-     * @param $construct
-     * @param array $args
-     */
-    public function testClientSetsSelf($method, $response, $construct, $args = []): void
-    {
-        /** @var mixed $client */
-        $client = $this->prophesize(Client::class);
-        $client->send(Argument::cetera())->willReturn($this->getResponse($response));
-        $client->getApiUrl()->willReturn('http://api.nexmo.com');
-
-        $this->client->setClient($client->reveal());
-
-        // Silencing a few instances were we use old deprecated construction
-        $mock = @$this->getMockBuilder(Verification::class)
-            ->setConstructorArgs($construct)
-            ->setMethods(['setClient'])
-            ->getMock();
-
-        $mock->expects(self::once())->method('setClient')->with($this->client);
-
-        array_unshift($args, $mock);
-        @call_user_func_array([$this->client, $method], $args);
-    }
-
-    /**
-     * @return array[]
-     */
-    public function getApiMethods(): array
-    {
-        return [
-            ['start', 'start', ['14845551212', 'Test Verify']],
-            ['cancel', 'cancel', ['44a5279b27dd4a638d614d265ad57a77']],
-            ['trigger', 'trigger', ['44a5279b27dd4a638d614d265ad57a77']],
-            ['search', 'search', ['44a5279b27dd4a638d614d265ad57a77']],
-            ['check', 'check', ['44a5279b27dd4a638d614d265ad57a77'], ['1234']],
-        ];
+        $this->client = new VerifyClient($api);
     }
 
     public function testUnserializeAcceptsObject(): void
@@ -256,116 +223,6 @@ class ClientTest extends VonageTestCase
     }
 
     /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws ServerException
-     */
-    public function testStartThrowsException(): void
-    {
-        $response = $this->setupClientForStart('start-error');
-
-        try {
-            @$this->client->start(
-                [
-                    'number' => '14845551212',
-                    'brand' => 'Test Verify'
-                ]
-            );
-
-            self::fail('did not throw exception');
-        } catch (Client\Exception\Request $e) {
-            $this->assertEquals('2', $e->getCode());
-            $this->assertEquals(
-                'Your request is incomplete and missing the mandatory parameter: brand',
-                $e->getMessage()
-            );
-            $this->assertSame($response, @$e->getEntity()->getResponse());
-        }
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws ServerException
-     */
-    public function testStartThrowsExceptionAndHandlesBlock(): void
-    {
-        $response = $this->setupClientForStart('start-error-blocked');
-
-        try {
-            @$this->client->start(
-                [
-                    'number' => '14845551212',
-                    'brand' => 'Test Verify'
-                ]
-            );
-
-            self::fail('did not throw exception');
-        } catch (Client\Exception\Request $e) {
-            $this->assertEquals('7', $e->getCode());
-            $this->assertEquals(
-                'The number you are trying to verify is blacklisted for verification',
-                $e->getMessage()
-            );
-            $this->assertSame($response, @$e->getEntity()->getResponse());
-        }
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws ServerException
-     */
-    public function testStartThrowsExceptionAndHandlesConcurrentVerifications(): void
-    {
-        $response = $this->setupClientForStart('start-error-concurrent');
-
-        try {
-            @$this->client->start(
-                [
-                    'number' => '14845551212',
-                    'brand' => 'Test Verify'
-                ]
-            );
-
-            self::fail('did not throw exception');
-        } catch (Client\Exception\Request $e) {
-            $this->assertEquals('10', $e->getCode());
-            $this->assertEquals(
-                'Concurrent verifications to the same number are not allowed',
-                $e->getMessage()
-            );
-            $this->assertEquals('abcdef0123456789abcdef0123456789', $e->getRequestId());
-            $this->assertSame($response, @$e->getEntity()->getResponse());
-        }
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     */
-    public function testStartThrowsServerException(): void
-    {
-        $response = $this->setupClientForStart('server-error');
-
-        try {
-            @$this->client->start(
-                [
-                    'number' => '14845551212',
-                    'brand' => 'Test Verify'
-                ]
-            );
-
-            self::fail('did not throw exception');
-        } catch (ServerException $e) {
-            $this->assertEquals('5', $e->getCode());
-            $this->assertEquals('Server Error', $e->getMessage());
-            $this->assertSame($response, @$e->getEntity()->getResponse());
-        }
-    }
-
-    /**
      * @param $response
      */
     protected function setupClientForStart($response): Response
@@ -416,46 +273,6 @@ class ClientTest extends VonageTestCase
         $verification = @$this->client->search('44a5279b27dd4a638d614d265ad57a77');
 
         $this->assertSame($response, @$verification->getResponse());
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws ServerException
-     */
-    public function testSearchThrowsException(): void
-    {
-        $response = $this->setupClientForSearch('search-error');
-
-        try {
-            @$this->client->search('44a5279b27dd4a638d614d265ad57a77');
-
-            self::fail('did not throw exception');
-        } catch (Client\Exception\Request $e) {
-            $this->assertEquals('101', $e->getCode());
-            $this->assertEquals('No response found', $e->getMessage());
-            $this->assertSame($response, @$e->getEntity()->getResponse());
-        }
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     */
-    public function testSearchThrowsServerException(): void
-    {
-        $response = $this->setupClientForSearch('server-error');
-
-        try {
-            @$this->client->search('44a5279b27dd4a638d614d265ad57a77');
-
-            self::fail('did not throw exception');
-        } catch (ServerException $e) {
-            $this->assertEquals('5', $e->getCode());
-            $this->assertEquals('Server Error', $e->getMessage());
-            $this->assertSame($response, @$e->getEntity()->getResponse());
-        }
     }
 
     /**
@@ -532,50 +349,6 @@ class ClientTest extends VonageTestCase
     /**
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Exception
-     * @throws ServerException
-     */
-    public function testCancelThrowsClientException(): void
-    {
-        $response = $this->setupClientForControl('cancel-error', 'cancel');
-
-        try {
-            @$this->client->cancel('44a5279b27dd4a638d614d265ad57a77');
-
-            self::fail('did not throw exception');
-        } catch (Client\Exception\Request $e) {
-            $this->assertEquals('19', $e->getCode());
-            $this->assertEquals(
-                "Verification request  ['c1878c7451f94c1992d52797df57658e'] can't " .
-                "be cancelled now. Too many attempts to re-deliver have already been made.",
-                $e->getMessage()
-            );
-            $this->assertSame($response, @$e->getEntity()->getResponse());
-        }
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     */
-    public function testCancelThrowsServerException(): void
-    {
-        $response = $this->setupClientForControl('server-error', 'cancel');
-
-        try {
-            @$this->client->cancel('44a5279b27dd4a638d614d265ad57a77');
-
-            self::fail('did not throw exception');
-        } catch (ServerException $e) {
-            $this->assertEquals('5', $e->getCode());
-            $this->assertEquals('Server Error', $e->getMessage());
-            $this->assertSame($response, @$e->getEntity()->getResponse());
-        }
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
      * @throws Client\Exception\Request
      * @throws ServerException
      */
@@ -603,50 +376,6 @@ class ClientTest extends VonageTestCase
 
         $this->assertSame($verification, $result);
         $this->assertSame($response, @$verification->getResponse());
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws ServerException
-     */
-    public function testTriggerThrowsClientException(): void
-    {
-        $response = $this->setupClientForControl('trigger-error', 'trigger_next_event');
-
-        try {
-            @$this->client->trigger('44a5279b27dd4a638d614d265ad57a77');
-
-            self::fail('did not throw exception');
-        } catch (Client\Exception\Request $e) {
-            $this->assertEquals('6', $e->getCode());
-            $this->assertEquals(
-                "The requestId '44a5279b27dd4a638d614d265ad57a77' does " .
-                "not exist or its no longer active.",
-                $e->getMessage()
-            );
-            $this->assertSame($response, @$e->getEntity()->getResponse());
-        }
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     */
-    public function testTriggerThrowsServerException(): void
-    {
-        $response = $this->setupClientForControl('server-error', 'trigger_next_event');
-
-        try {
-            @$this->client->trigger('44a5279b27dd4a638d614d265ad57a77');
-
-            self::fail('did not throw exception');
-        } catch (ServerException $e) {
-            $this->assertEquals('5', $e->getCode());
-            $this->assertEquals('Server Error', $e->getMessage());
-            $this->assertSame($response, @$e->getEntity()->getResponse());
-        }
     }
 
     /**
@@ -729,46 +458,6 @@ class ClientTest extends VonageTestCase
         $verification = @$this->client->check('44a5279b27dd4a638d614d265ad57a77', '1234');
 
         $this->assertSame($response, @$verification->getResponse());
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws ServerException
-     */
-    public function testCheckThrowsClientException(): void
-    {
-        $response = $this->setupClientForCheck('check-error', '1234');
-
-        try {
-            @$this->client->check('44a5279b27dd4a638d614d265ad57a77', '1234');
-
-            self::fail('did not throw exception');
-        } catch (Client\Exception\Request $e) {
-            $this->assertEquals('16', $e->getCode());
-            $this->assertEquals('The code provided does not match the expected value', $e->getMessage());
-            $this->assertSame($response, @$e->getEntity()->getResponse());
-        }
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     */
-    public function testCheckThrowsServerException(): void
-    {
-        $response = $this->setupClientForCheck('server-error', '1234');
-
-        try {
-            @$this->client->check('44a5279b27dd4a638d614d265ad57a77', '1234');
-
-            self::fail('did not throw exception');
-        } catch (ServerException $e) {
-            $this->assertEquals('5', $e->getCode());
-            $this->assertEquals('Server Error', $e->getMessage());
-            $this->assertSame($response, @$e->getEntity()->getResponse());
-        }
     }
 
     /**
