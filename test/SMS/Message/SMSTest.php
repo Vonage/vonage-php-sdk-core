@@ -20,15 +20,15 @@ class SMSTest extends VonageTestCase
     public function testCanSetUnicodeType(): void
     {
         $sms = (new SMS('447700900000', '16105551212', 'Test Message'));
-        $this->assertSame('unicode', $sms->getType());
-        $sms->setType('text');
         $this->assertSame('text', $sms->getType());
+        $sms->setType('unicode');
+        $this->assertSame('unicode', $sms->getType());
     }
 
     public function testCanSetUnicodeTypeInConstructor(): void
     {
-        $sms = (new SMS('447700900000', '16105551212', 'Test Message', 'text'));
-        $this->assertSame('text', $sms->getType());
+        $sms = (new SMS('447700900000', '16105551212', 'Test Message', 'unicode'));
+        $this->assertSame('unicode', $sms->getType());
     }
 
     public function testDeliveryCallbackCanBeSet(): void
@@ -96,7 +96,7 @@ class SMSTest extends VonageTestCase
             ->setClientRef('This is a really long client ref and should throw an exception');
     }
 
-    public function testCanSetEntityId()
+    public function testCanSetEntityId(): void
     {
         $sms = new SMS('447700900000', '16105551212', 'Test Message');
         $sms->setEntityId('abcd');
@@ -106,7 +106,7 @@ class SMSTest extends VonageTestCase
             'entity-id' => 'abcd',
             'to' => '447700900000',
             'from' => '16105551212',
-            'type' => 'unicode',
+            'type' => 'text',
             'ttl' => 259200000,
             'status-report-req' => 1,
         ];
@@ -115,7 +115,7 @@ class SMSTest extends VonageTestCase
         $this->assertSame($expected['entity-id'], $sms->getEntityId());
     }
 
-    public function testCanSetContentId()
+    public function testCanSetContentId(): void
     {
         $sms = new SMS('447700900000', '16105551212', 'Test Message');
         $sms->setContentId('1234');
@@ -125,7 +125,7 @@ class SMSTest extends VonageTestCase
             'content-id' => '1234',
             'to' => '447700900000',
             'from' => '16105551212',
-            'type' => 'unicode',
+            'type' => 'text',
             'ttl' => 259200000,
             'status-report-req' => 1,
         ];
@@ -134,7 +134,7 @@ class SMSTest extends VonageTestCase
         $this->assertSame($expected['content-id'], $sms->getContentId());
     }
 
-    public function testDLTInfoAppearsInRequest()
+    public function testDLTInfoAppearsInRequest(): void
     {
         $sms = new SMS('447700900000', '16105551212', 'Test Message');
         $sms->enableDLT('abcd', '1234');
@@ -145,7 +145,7 @@ class SMSTest extends VonageTestCase
             'content-id' => '1234',
             'to' => '447700900000',
             'from' => '16105551212',
-            'type' => 'unicode',
+            'type' => 'text',
             'ttl' => 259200000,
             'status-report-req' => 1,
         ];
@@ -153,7 +153,7 @@ class SMSTest extends VonageTestCase
         $this->assertSame($expected, $sms->toArray());
     }
 
-    public function testDLTInfoDoesNotAppearsWhenNotSet()
+    public function testDLTInfoDoesNotAppearsWhenNotSet(): void
     {
         $sms = new SMS('447700900000', '16105551212', 'Test Message');
 
@@ -161,11 +161,32 @@ class SMSTest extends VonageTestCase
             'text' => 'Test Message',
             'to' => '447700900000',
             'from' => '16105551212',
-            'type' => 'unicode',
+            'type' => 'text',
             'ttl' => 259200000,
             'status-report-req' => 1,
         ];
 
         $this->assertSame($expected, $sms->toArray());
+    }
+
+    /**
+     * @dataProvider unicodeStringDataProvider
+     * @return void
+     */
+    public function testGsm7Identification(string $message, bool $expectedGsm7)
+    {
+        $sms = new SMS('16105551212', '16105551212', $message);
+        $this->assertEquals($expectedGsm7, $sms->isGsm7());
+    }
+
+    public function unicodeStringDataProvider(): array
+    {
+        return [
+            ['this is a text', true],
+            ['This is also a GSM7 text', true],
+            ['This is a Çotcha', true],
+            ['This is also a çotcha', true],
+            ['日本語でボナージュ', false],
+        ];
     }
 }

@@ -13,6 +13,8 @@ namespace Vonage\SMS\Message;
 
 class SMS extends OutboundMessage
 {
+    public const GSM_7_PATTERN = '/\A[\n\f\r !\"\#$%&\'()*+,-.\/0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\\\\^_abcdefghijklmnopqrstuvwxyz{\|}~ ¡£¤¥§¿ÄÅÆÇÉÑÖØÜßàäåæèéìñòöøùüΓΔΘΛΞΠΣΦΨΩ€]*\z/m';
+
     /**
      * @var string
      */
@@ -31,14 +33,32 @@ class SMS extends OutboundMessage
     /**
      * @var string
      */
-    protected $type = 'unicode';
+    protected $type = 'text';
 
-    public function __construct(string $to, string $from, string $message, string $type = 'unicode')
+    public function __construct(string $to, string $from, string $message, string $type = 'text')
     {
         parent::__construct($to, $from);
 
         $this->message = $message;
         $this->setType($type);
+    }
+
+    public function encodingError(): bool
+    {
+        if ($this->getType() === 'unicode' && $this->isGsm7()) {
+            return true;
+        }
+
+        if ($this->getType() === 'text' && ! $this->isGsm7()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function isGsm7(): bool
+    {
+        return (bool)preg_match(self::GSM_7_PATTERN, $this->getMessage());
     }
 
     public function getContentId(): string

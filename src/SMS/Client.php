@@ -17,6 +17,7 @@ use Vonage\Client\APIResource;
 use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Client\Exception\ThrottleException;
 use Vonage\SMS\Message\Message;
+use Vonage\SMS\Message\SMS;
 
 use function sleep;
 
@@ -45,11 +46,12 @@ class Client implements APIClient
      */
     public function send(Message $message): Collection
     {
-        if (($message->getType() === 'text') && $this->isUnicode($message->getMessage())) {
+        if (($message instanceof SMS) && $message->encodingError()) {
             trigger_error(
-                "Sending unicode text SMS without setting the type parameter to 'unicode'.
-                    See https://developer.vonage.com/messaging/sms for details, or email support@vonage.com 
-                    if you have any questions.",
+                "You are sending a message as `unicode` when it could be `text` or a `text` type with
+                    unicode-only characters. This could result in encoding problems with the target device or 
+                    increased billing - See https://developer.vonage.com/messaging/sms for details, or email 
+                    support@vonage.com if you have any questions.",
                 E_USER_WARNING
             );
         }
