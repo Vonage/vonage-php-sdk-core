@@ -33,7 +33,7 @@ class Client implements APIClient
 
     public function isUnicode($message): bool
     {
-        return strlen($message) !== strlen(utf8_decode($message));
+        return strlen($message) !== strlen(mb_convert_encoding($message, 'ISO-8859-1', 'UTF-8'));
     }
 
     /**
