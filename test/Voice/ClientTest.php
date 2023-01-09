@@ -3,7 +3,7 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @copyright Copyright (c) 2016-2022 Vonage, Inc. (http://vonage.com)
  * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
 
@@ -53,11 +53,18 @@ class ClientTest extends VonageTestCase
     {
         $this->vonageClient = $this->prophesize(Client::class);
         $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
+        $this->vonageClient->getCredentials()->willReturn(
+            new Client\Credentials\Container(new Client\Credentials\Keypair(
+                file_get_contents(__DIR__ . '/../Client/Credentials/test.key'),
+                'def'
+            ))
+        );
 
         /** @noinspection PhpParamsInspection */
         $this->api = (new APIResource())
             ->setBaseUri('/v1/calls')
             ->setCollectionName('calls')
+            ->setAuthHandler(new Client\Credentials\Handler\KeypairHandler())
             ->setClient($this->vonageClient->reveal());
 
         $this->voiceClient = new VoiceClient($this->api);

@@ -6,13 +6,8 @@ use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 
 class VideoObject implements ArrayHydrateInterface
 {
-    private string $url;
-    private string $caption;
-
-    public function __construct(string $url, string $caption = '')
+    public function __construct(private string $url, private string $caption = '')
     {
-        $this->url = $url;
-        $this->caption = $caption;
     }
 
     public function fromArray(array $data): VideoObject
@@ -33,9 +28,7 @@ class VideoObject implements ArrayHydrateInterface
         ];
 
         if ($this->caption) {
-            $returnArray[] = [
-                'caption' => $this->caption
-            ];
+            $returnArray['caption'] = $this->caption;
         }
 
         return $returnArray;

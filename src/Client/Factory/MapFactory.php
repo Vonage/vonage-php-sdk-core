@@ -3,7 +3,7 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @copyright Copyright (c) 2016-2022 Vonage, Inc. (http://vonage.com)
  * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
 
@@ -23,13 +23,6 @@ use function sprintf;
 class MapFactory implements FactoryInterface, ContainerInterface
 {
     /**
-     * Map of api namespaces to classes.
-     *
-     * @var array
-     */
-    protected $map = [];
-
-    /**
      * Map of instances.
      *
      * @var array
@@ -37,16 +30,19 @@ class MapFactory implements FactoryInterface, ContainerInterface
     protected $cache = [];
 
     /**
-     * Vonage Client
-     *
-     * @var Client
+     * @param mixed[] $map
      */
-    protected $client;
-
-    public function __construct($map, Client $client)
+    public function __construct(
+        /**
+         * Map of api namespaces to classes.
+         */
+        protected $map,
+        /**
+         * Vonage Client
+         */
+        protected Client $client
+    )
     {
-        $this->map = $map;
-        $this->client = $client;
     }
 
     /**

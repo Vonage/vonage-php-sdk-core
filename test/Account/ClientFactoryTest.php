@@ -3,7 +3,7 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @copyright Copyright (c) 2016-2022 Vonage, Inc. (http://vonage.com)
  * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
 
@@ -41,9 +41,7 @@ class ClientFactoryTest extends VonageTestCase
         $factory = new ClientFactory();
         $client = $factory($this->mapFactory);
 
-        $this->assertSame('/accounts', $client->getSecretsAPI()->getBaseUri());
-        $this->assertSame('https://api.nexmo.com', $client->getSecretsAPI()->getBaseUrl());
-        $this->assertSame('/account', $client->getAccountAPI()->getBaseUri());
-        $this->assertSame('https://rest.nexmo.com', $client->getAccountAPI()->getBaseUrl());
+        $this->assertSame('/account', $client->getAPIResource()->getBaseUri());
+        $this->assertSame('https://rest.nexmo.com', $client->getAPIResource()->getBaseUrl());
     }
 }

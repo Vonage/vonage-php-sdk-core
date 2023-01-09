@@ -9,16 +9,14 @@ class WhatsAppFile extends BaseMessage
 {
     protected string $channel = 'whatsapp';
     protected string $subType = BaseMessage::MESSAGES_SUBTYPE_FILE;
-    protected FileObject $fileObject;
 
     public function __construct(
         string $to,
         string $from,
-        FileObject $fileObject
+        protected FileObject $fileObject
     ) {
         $this->to = $to;
         $this->from = $from;
-        $this->fileObject = $fileObject;
     }
 
     public function toArray(): array

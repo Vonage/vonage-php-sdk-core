@@ -11,18 +11,16 @@ class MessengerVideo extends BaseMessage
 
     protected string $channel = 'messenger';
     protected string $subType = BaseMessage::MESSAGES_SUBTYPE_VIDEO;
-    protected VideoObject $videoObject;
 
     public function __construct(
         string $to,
         string $from,
-        VideoObject $videoObject,
+        protected VideoObject $videoObject,
         ?string $category = null,
         ?string $tag = null
     ) {
         $this->to = $to;
         $this->from = $from;
-        $this->videoObject = $videoObject;
         $this->category = $category;
         $this->tag = $tag;
     }

@@ -3,7 +3,7 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @copyright Copyright (c) 2016-2022 Vonage, Inc. (http://vonage.com)
  * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
 
@@ -34,14 +34,8 @@ class Client implements ClientAwareInterface, APIClient
 {
     use ClientAwareTrait;
 
-    /**
-     * @var APIResource
-     */
-    protected $api;
-
-    public function __construct(APIResource $api = null)
+    public function __construct(protected ?APIResource $api = null)
     {
-        $this->api = $api;
     }
 
     /**
@@ -238,7 +232,7 @@ class Client implements ClientAwareInterface, APIClient
     public function serialize(Verification $verification): string
     {
         trigger_error(
-            get_class($this) . '::serialize() is deprecated, serialize the Verification object directly',
+            $this::class . '::serialize() is deprecated, serialize the Verification object directly',
             E_USER_DEPRECATED
         );
 
@@ -251,7 +245,7 @@ class Client implements ClientAwareInterface, APIClient
     public function unserialize($verification): Verification
     {
         trigger_error(
-            get_class($this) . '::unserialize() is deprecated, unserialize the Verification object directly',
+            $this::class . '::unserialize() is deprecated, unserialize the Verification object directly',
             E_USER_DEPRECATED
         );
 

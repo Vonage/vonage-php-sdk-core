@@ -3,7 +3,7 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @copyright Copyright (c) 2016-2022 Vonage, Inc. (http://vonage.com)
  * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
 
@@ -17,18 +17,15 @@ use Iterator;
 class Collection implements Countable, Iterator
 {
     /**
-     * @var array{message-count: int, messages: array<string, mixed>}
-     */
-    protected $data;
-
-    /**
      * @var int
      */
     protected $current = 0;
 
-    public function __construct(array $apiResponse)
+    /**
+     * @param array<string, int|array<string, mixed>> $data
+     */
+    public function __construct(protected array $data)
     {
-        $this->data = $apiResponse;
     }
 
     public function count(): int

@@ -3,7 +3,7 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @copyright Copyright (c) 2016-2022 Vonage, Inc. (http://vonage.com)
  * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
 
@@ -207,6 +207,11 @@ class DeliveryReceipt
     protected $apiKey;
 
     /**
+     * @var mixed|string
+     */
+    protected $clientRef;
+
+    /**
      * @param array<string, string> $data
      *
      * @throws Exception
@@ -229,6 +234,10 @@ class DeliveryReceipt
         $this->status = $data['status'];
         $this->to = $data['to'];
         $this->apiKey = $data['api-key'];
+
+        if (isset($data['client-ref'])) {
+            $this->clientRef = $data['client-ref'];
+        }
     }
 
     public function getErrCode(): int
@@ -279,5 +288,10 @@ class DeliveryReceipt
     public function getApiKey(): string
     {
         return $this->apiKey;
+    }
+
+    public function getClientRef(): ?string
+    {
+        return $this->clientRef ?? null;
     }
 }

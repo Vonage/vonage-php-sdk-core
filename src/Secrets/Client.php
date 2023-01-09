@@ -9,14 +9,8 @@ use Vonage\Entity\IterableAPICollection;
 
 class Client implements APIClient
 {
-    /**
-     * @var APIResource
-     */
-    protected $api;
-
-    public function __construct(APIResource $api)
+    public function __construct(protected APIResource $api)
     {
-        $this->api = $api;
     }
 
     public function getAPIResource(): APIResource
@@ -26,14 +20,14 @@ class Client implements APIClient
 
     public function get(string $accountId, string $id): Secret
     {
-        $data = $this->api->get("${accountId}/secrets/${id}");
+        $data = $this->api->get("{$accountId}/secrets/{$id}");
 
         return new Secret($data);
     }
 
     public function list(string $accountId): IterableAPICollection
     {
-        $collection = $this->api->search(null, "/accounts/${accountId}/secrets");
+        $collection = $this->api->search(null, "/accounts/{$accountId}/secrets");
         $hydrator = new ArrayHydrator();
         $hydrator->setPrototype(new Secret());
         $collection->setHydrator($hydrator);
@@ -43,12 +37,12 @@ class Client implements APIClient
 
     public function create(string $accountId, string $secret): Secret
     {
-        $response = $this->api->create(['secret' => $secret], "/${accountId}/secrets");
+        $response = $this->api->create(['secret' => $secret], "/{$accountId}/secrets");
         return new Secret($response);
     }
 
     public function revoke(string $accountId, string $id)
     {
-        $this->api->delete("${accountId}/secrets/${id}");
+        $this->api->delete("{$accountId}/secrets/{$id}");
     }
 }

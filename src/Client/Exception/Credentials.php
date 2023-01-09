@@ -9,9 +9,8 @@
 
 declare(strict_types=1);
 
-namespace Vonage\Client;
+namespace Vonage\Client\Exception;
 
-interface APIClient
+class Credentials extends \Exception
 {
-    public function getAPIResource(): APIResource;
 }

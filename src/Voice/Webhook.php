@@ -3,7 +3,7 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @copyright Copyright (c) 2016-2022 Vonage, Inc. (http://vonage.com)
  * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
 
@@ -16,20 +16,8 @@ class Webhook
     public const METHOD_GET = 'GET';
     public const METHOD_POST = 'POST';
 
-    /**
-     * @var string
-     */
-    protected $method;
-
-    /**
-     * @var Webhook::METHOD_*
-     */
-    protected $url;
-
-    public function __construct(string $url, string $method = self::METHOD_POST)
+    public function __construct(protected string $url, protected string $method = self::METHOD_POST)
     {
-        $this->url = $url;
-        $this->method = $method;
     }
 
     public function getMethod(): string

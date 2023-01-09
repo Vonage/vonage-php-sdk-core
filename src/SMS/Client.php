@@ -3,7 +3,7 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @copyright Copyright (c) 2016-2022 Vonage, Inc. (http://vonage.com)
  * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
 
@@ -22,11 +22,8 @@ use function sleep;
 
 class Client implements APIClient
 {
-    protected APIResource $api;
-
-    public function __construct(APIResource $api)
+    public function __construct(protected APIResource $api)
     {
-        $this->api = $api;
     }
 
     public function getAPIResource(): APIResource
@@ -36,7 +33,7 @@ class Client implements APIClient
 
     public function isUnicode($message): bool
     {
-        return strlen($message) !== strlen(utf8_decode($message));
+        return strlen($message) !== strlen(mb_convert_encoding($message, 'ISO-8859-1', 'UTF-8'));
     }
 
     /**

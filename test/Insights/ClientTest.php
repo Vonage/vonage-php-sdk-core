@@ -3,7 +3,7 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @copyright Copyright (c) 2016-2022 Vonage, Inc. (http://vonage.com)
  * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
 
@@ -34,12 +34,11 @@ class ClientTest extends VonageTestCase
 {
     use Psr7AssertionTrait;
 
-    /**
-     * @var APIResource
-     */
-    protected $apiClient;
+    protected APIResource $apiClient;
 
     protected $vonageClient;
+
+    protected APIResource $api;
 
     /**
      * @var InsightsClient
@@ -51,9 +50,11 @@ class ClientTest extends VonageTestCase
         $this->vonageClient = $this->prophesize(Client::class);
         $this->vonageClient->getApiUrl()->willReturn('http://api.nexmo.com');
 
-        $this->insightsClient = new InsightsClient();
-        /** @noinspection PhpParamsInspection */
-        $this->insightsClient->setClient($this->vonageClient->reveal());
+        $this->api = new APIResource();
+        $this->api->setIsHAL(false);
+        $this->api->setClient($this->vonageClient->reveal());
+
+        $this->insightsClient = new InsightsClient($this->api);
     }
 
     public function testStandardCnam(): void

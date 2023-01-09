@@ -3,7 +3,7 @@
 /**
  * Vonage Client Library for PHP
  *
- * @copyright Copyright (c) 2016-2020 Vonage, Inc. (http://vonage.com)
+ * @copyright Copyright (c) 2016-2022 Vonage, Inc. (http://vonage.com)
  * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
 
@@ -32,7 +32,7 @@ use function stripos;
 use function strpos;
 use function trigger_error;
 
-class Number implements EntityInterface, JsonSerializableInterface, JsonUnserializableInterface, ArrayHydrateInterface
+class Number implements EntityInterface, JsonSerializableInterface, JsonUnserializableInterface, ArrayHydrateInterface, \Stringable
 {
     use JsonSerializableTrait;
     use NoRequestResponseTrait;
@@ -221,7 +221,7 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
     public function jsonUnserialize($json): void
     {
         trigger_error(
-            get_class($this) . "::jsonUnserialize is deprecated, please fromArray() instead",
+            $this::class . "::jsonUnserialize is deprecated, please fromArray() instead",
             E_USER_DEPRECATED
         );
 
@@ -274,7 +274,7 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
     /**
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return (string)$this->getId();
     }
