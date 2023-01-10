@@ -384,10 +384,10 @@ class ClientTest extends VonageTestCase
         }))->willReturn($this->getResponse('send-success'));
 
         $this->expectWarning();
-        $this->expectErrorMessage("You are sending a message as `unicode` when it could be `text` or a `text` type with
-                    unicode-only characters. This could result in encoding problems with the target device or 
-                    increased billing - See https://developer.vonage.com/messaging/sms for details, or email 
-                    support@vonage.com if you have any questions.");
+        $this->expectErrorMessage("You are sending a message as `unicode` when it could be `text` or a
+            `text` type with unicode-only characters. This could result in increased billing - 
+            See https://developer.vonage.com/messaging/sms for details, or email support@vonage.com if you have any 
+            questions.");
 
         $args = [
             'to' => '447700900000',
@@ -412,10 +412,10 @@ class ClientTest extends VonageTestCase
         }))->willReturn($this->getResponse('send-success'));
 
         $this->expectWarning();
-        $this->expectErrorMessage("You are sending a message as `unicode` when it could be `text` or a `text` type with
-                    unicode-only characters. This could result in encoding problems with the target device or 
-                    increased billing - See https://developer.vonage.com/messaging/sms for details, or email 
-                    support@vonage.com if you have any questions.");
+        $this->expectErrorMessage("You are sending a message as `text` when contains unicode only 
+            characters. This could result in encoding problems with the target device or increased billing - See 
+            https://developer.vonage.com/messaging/sms for details, or email support@vonage.com if you have any 
+            questions.");
 
         $args = [
             'to' => '447700900000',

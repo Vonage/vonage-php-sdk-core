@@ -32,23 +32,15 @@ class Client implements APIClient
         return $this->api;
     }
 
-    public function isUnicode($message): bool
-    {
-        return strlen($message) !== strlen(mb_convert_encoding($message, 'ISO-8859-1', 'UTF-8'));
-    }
-
     /**
      * @throws ClientExceptionInterface
      * @throws ClientException
      */
     public function send(Message $message): Collection
     {
-        if (($message instanceof SMS) && $message->encodingError()) {
+        if ($message->getErrorMessage()) {
             trigger_error(
-                "You are sending a message as `unicode` when it could be `text` or a `text` type with
-                    unicode-only characters. This could result in encoding problems with the target device or 
-                    increased billing - See https://developer.vonage.com/messaging/sms for details, or email 
-                    support@vonage.com if you have any questions.",
+                $message->getErrorMessage(),
                 E_USER_WARNING
             );
         }
