@@ -16,7 +16,7 @@ class Binary extends OutboundMessage
     /**
      * @var string
      */
-    protected $type = 'binary';
+    protected string $type = 'binary';
 
     public function __construct(string $to, string $from, protected string $body, protected string $udh, protected ?int $protocolId = null)
     {

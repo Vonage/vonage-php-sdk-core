@@ -13,25 +13,26 @@ namespace Vonage\SMS\Message;
 
 class SMS extends OutboundMessage
 {
-    /**
-     * @var string
-     */
-    protected $contentId;
+    public const GSM_7_PATTERN = '/\A[\n\f\r !\"\#$%&\'()*+,-.\/0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\\\\^_abcdefghijklmnopqrstuvwxyz{\|}~ ¡£¤¥§¿ÄÅÆÇÉÑÖØÜßàäåæèéìñòöøùüΓΔΘΛΞΠΣΦΨΩ€]*\z/m';
+
+    protected ?string $contentId;
+
+    protected ?string $entityId;
 
     /**
      * @var string
      */
-    protected $entityId;
+    protected string $type = 'text';
 
-    /**
-     * @var string
-     */
-    protected $type = 'unicode';
-
-    public function __construct(string $to, string $from, protected string $message, string $type = 'unicode')
+    public function __construct(string $to, string $from, protected string $message, string $type = 'text')
     {
         parent::__construct($to, $from);
         $this->setType($type);
+    }
+
+    public function isGsm7(): bool
+    {
+        return (bool)preg_match(self::GSM_7_PATTERN, $this->getMessage());
     }
 
     public function getContentId(): string
@@ -54,6 +55,25 @@ class SMS extends OutboundMessage
     {
         $this->entityId = $id;
         return $this;
+    }
+
+    public function getErrorMessage(): ?string
+    {
+        if ($this->getType() === 'unicode' && $this->isGsm7()) {
+            $this->setErrorMessage("You are sending a message as `unicode` when it could be `text` or a
+            `text` type with unicode-only characters. This could result in increased billing - 
+            See https://developer.vonage.com/messaging/sms for details, or email support@vonage.com if you have any 
+            questions.");
+        }
+
+        if ($this->getType() === 'text' && ! $this->isGsm7()) {
+            $this->setErrorMessage("You are sending a message as `text` when contains unicode only 
+            characters. This could result in encoding problems with the target device or increased billing - See 
+            https://developer.vonage.com/messaging/sms for details, or email support@vonage.com if you have any 
+            questions.");
+        }
+
+        return $this->errorMessage;
     }
 
     /**

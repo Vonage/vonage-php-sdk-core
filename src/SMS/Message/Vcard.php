@@ -16,7 +16,7 @@ class Vcard extends OutboundMessage
     /**
      * @var string
      */
-    protected $type = 'vcard';
+    protected string $type = 'vcard';
 
     public function __construct(string $to, string $from, protected string $card)
     {

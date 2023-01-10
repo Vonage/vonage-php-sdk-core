@@ -16,7 +16,7 @@ class Vcal extends OutboundMessage
     /**
      * @var string
      */
-    protected $type = 'vcal';
+    protected string $type = 'vcal';
 
     public function __construct(string $to, string $from, protected string $event)
     {

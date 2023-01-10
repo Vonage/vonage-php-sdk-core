@@ -16,7 +16,7 @@ class WAPPush extends OutboundMessage
     /**
      * @var string
      */
-    protected $type = 'wappush';
+    protected string $type = 'wappush';
 
     public function __construct(string $to, string $from, protected string $title, protected string $url, protected int $validity)
     {
