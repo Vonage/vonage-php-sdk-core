@@ -41,8 +41,7 @@ class MapFactory implements FactoryInterface, ContainerInterface
          * Vonage Client
          */
         protected Client $client
-    )
-    {
+    ) {
     }
 
     /**
@@ -53,14 +52,6 @@ class MapFactory implements FactoryInterface, ContainerInterface
     public function has($id): bool
     {
         return isset($this->map[$id]);
-    }
-
-    /**
-     * @deprecated Use has() instead
-     */
-    public function hasApi(string $api): bool
-    {
-        return $this->has($api);
     }
 
     /**
@@ -83,14 +74,6 @@ class MapFactory implements FactoryInterface, ContainerInterface
     public function getClient(): Client
     {
         return $this->client;
-    }
-
-    /**
-     * @deprecated Use get() instead
-     */
-    public function getApi(string $api)
-    {
-        return $this->get($api);
     }
 
     public function make($key)

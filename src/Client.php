@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Vonage;
 
+use Composer\InstalledVersions as ComposerInstalledVersions;
 use Http\Client\HttpClient;
 use InvalidArgumentException;
 use Laminas\Diactoros\Request;
@@ -47,6 +48,7 @@ use Vonage\Conversion\ClientFactory as ConversionClientFactory;
 use Vonage\Entity\EntityInterface;
 use Vonage\Insights\ClientFactory as InsightsClientFactory;
 use Vonage\Numbers\ClientFactory as NumbersClientFactory;
+use Vonage\Meetings\ClientFactory as MeetingsClientFactory;
 use Vonage\Redact\ClientFactory as RedactClientFactory;
 use Vonage\Secrets\ClientFactory as SecretsClientFactory;
 use Vonage\SMS\ClientFactory as SMSClientFactory;
@@ -55,12 +57,10 @@ use Vonage\Verify\ClientFactory as VerifyClientFactory;
 use Vonage\Verify\Verification;
 use Vonage\Voice\ClientFactory as VoiceClientFactory;
 use Vonage\Logger\{LoggerAwareInterface, LoggerTrait};
-use Vonage\Message\Client as MessageClient;
 
 use function array_key_exists;
 use function array_merge;
 use function call_user_func_array;
-use function get_class;
 use function http_build_query;
 use function implode;
 use function is_null;
@@ -74,8 +74,8 @@ use function strpos;
  * Vonage API Client, allows access to the API from PHP.
  *
  * @method Account\Client account()
- * @method Message\Client message()
  * @method Messages\Client messages()
+ * @method Meetings\Client meetings()
  * @method Application\Client applications()
  * @method Conversion\Client conversion()
  * @method Insights\Client insights()
@@ -128,13 +128,13 @@ class Client implements LoggerAwareInterface
     /**
      * @var array
      */
-    protected $options = ['show_deprecations' => false, 'debug' => false];
-    
+    protected array $options = ['show_deprecations' => false, 'debug' => false];
+
     /**
      * @string
      */
     public $apiUrl;
-    
+
     /**
      * @string
      */
@@ -206,8 +206,6 @@ class Client implements LoggerAwareInterface
         $this->setFactory(
             new MapFactory(
                 [
-                    // Legacy namespace (used by Laravel, needs to be moved over in future
-                    'message' => MessageClient::class,
                     // Registered Services by name
                     'account' => ClientFactory::class,
                     'applications' => ApplicationClientFactory::class,
@@ -215,6 +213,7 @@ class Client implements LoggerAwareInterface
                     'insights' => InsightsClientFactory::class,
                     'numbers' => NumbersClientFactory::class,
                     'messages' => MessagesClientFactory::class,
+                    'meetings' => MeetingsClientFactory::class,
                     'redact' => RedactClientFactory::class,
                     'secrets' => SecretsClientFactory::class,
                     'sms' => SMSClientFactory::class,
@@ -269,14 +268,6 @@ class Client implements LoggerAwareInterface
     }
 
     /**
-     * Get the Http Client used to make API requests.
-     */
-    public function getHttpClient(): ClientInterface
-    {
-        return $this->client;
-    }
-
-    /**
      * Set the factory used to create API specific clients.
      */
     public function setFactory(FactoryInterface $factory): self
@@ -289,151 +280,6 @@ class Client implements LoggerAwareInterface
     public function getFactory(): ContainerInterface
     {
         return $this->factory;
-    }
-
-    /**
-     * @throws ClientException
-     */
-    public static function signRequest(RequestInterface $request, SignatureSecret $credentials): RequestInterface
-    {
-        $handler = match ($request->getHeaderLine('content-type')) {
-            'application/json' => new SignatureBodyHandler(),
-            'application/x-www-form-urlencoded' => new SignatureBodyFormHandler(),
-            default => new SignatureQueryHandler(),
-        };
-
-        return $handler($request, $credentials);
-    }
-
-    public static function authRequest(RequestInterface $request, Basic $credentials): RequestInterface
-    {
-        switch ($request->getHeaderLine('content-type')) {
-            case 'application/json':
-                if (static::requiresBasicAuth($request)) {
-                    $handler = new BasicHandler();
-                } elseif (static::requiresAuthInUrlNotBody($request)) {
-                    $handler = new TokenQueryHandler();
-                } else {
-                    $handler = new TokenBodyHandler();
-                }
-                break;
-            case 'application/x-www-form-urlencoded':
-                $handler = new TokenBodyFormHandler();
-                break;
-            default:
-                if (static::requiresBasicAuth($request)) {
-                    $handler = new BasicHandler();
-                } else {
-                    $handler = new TokenQueryHandler();
-                }
-                break;
-        }
-
-        return $handler($request, $credentials);
-    }
-
-    /**
-     * @throws ClientException
-     */
-    public function generateJwt($claims = []): Token
-    {
-        if (method_exists($this->credentials, "generateJwt")) {
-            return $this->credentials->generateJwt($claims);
-        }
-
-        throw new ClientException($this->credentials::class . ' does not support JWT generation');
-    }
-
-    /**
-     * Takes a URL and a key=>value array to generate a GET PSR-7 request object
-     *
-     * @throws ClientExceptionInterface
-     * @throws ClientException
-     */
-    public function get(string $url, array $params = []): ResponseInterface
-    {
-        $queryString = '?' . http_build_query($params);
-        $url .= $queryString;
-
-        $request = new Request($url, 'GET');
-
-        return $this->send($request);
-    }
-
-    /**
-     * Takes a URL and a key=>value array to generate a POST PSR-7 request object
-     *
-     * @throws ClientExceptionInterface
-     * @throws ClientException
-     */
-    public function post(string $url, array $params): ResponseInterface
-    {
-        $request = new Request(
-            $url,
-            'POST',
-            'php://temp',
-            ['content-type' => 'application/json']
-        );
-
-        $request->getBody()->write(json_encode($params));
-
-        return $this->send($request);
-    }
-
-    /**
-     * Takes a URL and a key=>value array to generate a POST PSR-7 request object
-     *
-     * @throws ClientExceptionInterface
-     * @throws ClientException
-     */
-    public function postUrlEncoded(string $url, array $params): ResponseInterface
-    {
-        $request = new Request(
-            $url,
-            'POST',
-            'php://temp',
-            ['content-type' => 'application/x-www-form-urlencoded']
-        );
-
-        $request->getBody()->write(http_build_query($params));
-
-        return $this->send($request);
-    }
-
-    /**
-     * Takes a URL and a key=>value array to generate a PUT PSR-7 request object
-     *
-     * @throws ClientExceptionInterface
-     * @throws ClientException
-     */
-    public function put(string $url, array $params): ResponseInterface
-    {
-        $request = new Request(
-            $url,
-            'PUT',
-            'php://temp',
-            ['content-type' => 'application/json']
-        );
-
-        $request->getBody()->write(json_encode($params));
-
-        return $this->send($request);
-    }
-
-    /**
-     * Takes a URL and a key=>value array to generate a DELETE PSR-7 request object
-     *
-     * @throws ClientExceptionInterface
-     * @throws ClientException
-     */
-    public function delete(string $url): ResponseInterface
-    {
-        $request = new Request(
-            $url,
-            'DELETE'
-        );
-
-        return $this->send($request);
     }
 
     /**
@@ -524,22 +370,13 @@ class Client implements LoggerAwareInterface
         }
     }
 
-    public function serialize(EntityInterface $entity): string
-    {
-        if ($entity instanceof Verification) {
-            return $this->verify()->serialize($entity);
-        }
-
-        throw new RuntimeException('unknown class `' . $entity::class . '``');
-    }
-
     public function __call($name, $args)
     {
-        if (!$this->factory->hasApi($name)) {
+        if (!$this->factory->has($name)) {
             throw new RuntimeException('no api namespace found: ' . $name);
         }
 
-        $collection = $this->factory->getApi($name);
+        $collection = $this->factory->get($name);
 
         if (empty($args)) {
             return $collection;
@@ -553,46 +390,16 @@ class Client implements LoggerAwareInterface
      */
     public function __get($name)
     {
-        if (!$this->factory->hasApi($name)) {
+        if (!$this->factory->has($name)) {
             throw new RuntimeException('no api namespace found: ' . $name);
         }
 
-        return $this->factory->getApi($name);
-    }
-
-    protected static function requiresBasicAuth(RequestInterface $request): bool
-    {
-        $path = $request->getUri()->getPath();
-        $isSecretManagementEndpoint = strpos($path, '/accounts') === 0 && strpos($path, '/secrets') !== false;
-        $isApplicationV2 = strpos($path, '/v2/applications') === 0;
-
-        return $isSecretManagementEndpoint || $isApplicationV2;
-    }
-
-    protected static function requiresAuthInUrlNotBody(RequestInterface $request): bool
-    {
-        $path = $request->getUri()->getPath();
-
-        $isRedact =  strpos($path, '/v1/redact') === 0;
-        $isMessages =  strpos($path, '/v1/messages') === 0;
-
-        return $isRedact || $isMessages;
-    }
-
-    protected function needsKeypairAuthentication(RequestInterface $request): bool
-    {
-        $path = $request->getUri()->getPath();
-        $isCallEndpoint = strpos($path, '/v1/calls') === 0;
-        $isRecordingUrl = strpos($path, '/v1/files') === 0;
-        $isStitchEndpoint = strpos($path, '/beta/conversation') === 0;
-        $isUserEndpoint = strpos($path, '/beta/users') === 0;
-
-        return $isCallEndpoint || $isRecordingUrl || $isStitchEndpoint || $isUserEndpoint;
+        return $this->factory->get($name);
     }
 
     protected function getVersion(): string
     {
-        return Versions::getVersion('vonage/client-core');
+        return ComposerInstalledVersions::getVersion('vonage/client-core');
     }
 
     public function getLogger(): ?LoggerInterface
