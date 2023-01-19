@@ -1,0 +1,60 @@
+{
+  "page_size": 10,
+  "total_items": 30,
+  "_embedded": {
+    "rooms": [
+      {
+        "id": "abc123",
+        "display_name": "abc123",
+        "metadata": "abc123",
+        "type": "abc123",
+        "recording_options": {
+          "auto_record": false,
+          "record_only_owner": false
+        },
+        "meeting_code": "123456789",
+        "is_available": false,
+        "theme_id": "abc123",
+        "created_at": "abc123",
+        "expires_at": "abc123",
+        "expire_after_use": false,
+        "join_approval_level": "abc123",
+        "initial_join_options": {
+          "microphone_state": "default"
+        },
+        "callback_urls": {
+          "rooms_callback_url": "https://example.com",
+          "sessions_callback_url": "https://example.com",
+          "recordings_callback_url": "https://example.com"
+        },
+        "available_features": {
+          "is_recording_available": true,
+          "is_chat_available": true,
+          "is_whiteboard_available": true
+        },
+        "_links": {
+          "guest_url": {
+            "href": "https://meetings.vonage.com/123456789"
+          },
+          "host_url": {
+            "href": "https://meetings.vonage.com/123456789?participant_token=xyz"
+          }
+        }
+      }
+    ]
+  },
+  "_links": {
+    "first": {
+      "href": "https://api.nexmo.com/v0.1/meetings/rooms?page_size=10"
+    },
+    "self": {
+      "href": "https://api.nexmo.com/v0.1/meetings/rooms?page_size=10&start_id=20"
+    },
+    "next": {
+      "href": "https://api.nexmo.com/v0.1/meetings/rooms?page_size=10&start_id=30"
+    },
+    "prev": {
+      "href": "https://api.nexmo.com/v0.1/meetings/rooms?page_size=10&end_id=20"
+    }
+  }
+}

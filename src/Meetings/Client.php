@@ -13,6 +13,8 @@ namespace Vonage\Meetings;
 
 use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
+use Vonage\Entity\Hydrator\ArrayHydrator;
+use Vonage\Entity\IterableAPICollection;
 
 class Client implements APIClient
 {
@@ -23,5 +25,24 @@ class Client implements APIClient
     public function getAPIResource(): APIResource
     {
         return $this->api;
+    }
+
+    public function createRoom(): Room
+    {
+        return new Room();
+    }
+
+    public function getAllAvailableRooms(): IterableAPICollection
+    {
+        $response = $this->api->search(null, '/rooms');
+        $response->setNaiveCount(true);
+        $response->getApiResource()->setCollectionName('rooms');
+
+        $hydrator = new ArrayHydrator();
+        $hydrator->setPrototype(new Room());
+
+        $response->setHydrator($hydrator);
+
+        return $response;
     }
 }
