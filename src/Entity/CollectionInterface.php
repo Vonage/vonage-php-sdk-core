@@ -16,7 +16,6 @@ use Iterator;
 
 interface CollectionInterface extends Countable, Iterator
 {
-
     public static function getCollectionName(): string;
 
     public static function getCollectionPath(): string;

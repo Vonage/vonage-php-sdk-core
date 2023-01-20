@@ -15,7 +15,6 @@ use JsonSerializable;
 
 interface EndpointInterface extends JsonSerializable
 {
-
     public function getId(): string;
 
     /**

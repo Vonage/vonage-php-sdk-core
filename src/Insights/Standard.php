@@ -13,7 +13,6 @@ namespace Vonage\Insights;
 
 class Standard extends Basic
 {
-
     public function getCurrentCarrier()
     {
         return $this->data['current_carrier'];

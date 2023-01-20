@@ -18,7 +18,6 @@ use Vonage\Client\Credentials\Handler\KeypairHandler;
 
 class ClientFactory
 {
-
     public function __invoke(ContainerInterface $container): Client
     {
         /** @var APIResource $api */

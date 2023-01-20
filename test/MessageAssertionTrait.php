@@ -18,7 +18,6 @@ use function count;
 
 trait MessageAssertionTrait
 {
-
     public static function assertListOfMessagesEqual(array $expected, array $actual): void
     {
         $expectedCount = count($expected);

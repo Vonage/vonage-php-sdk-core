@@ -20,7 +20,6 @@ use Vonage\Client\Credentials\Handler\BasicHandler;
  */
 class ClientFactory
 {
-
     public function __invoke(ContainerInterface $container): Client
     {
         /** @var APIResource $api */

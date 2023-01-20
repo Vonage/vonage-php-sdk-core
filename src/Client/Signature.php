@@ -41,10 +41,12 @@ class Signature implements \Stringable
      * @throws ClientException
      */
     public function __construct(/**
-     * Params to Sign
-     */
-    protected array $params, $secret, $signatureMethod)
-    {
+         * Params to Sign
+         */
+        protected array $params,
+        $secret,
+        $signatureMethod
+    ) {
         $this->signed = $params;
 
         if (!isset($this->signed['timestamp'])) {

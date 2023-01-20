@@ -13,7 +13,6 @@ namespace Vonage\Insights;
 
 trait CnamTrait
 {
-
     public function getCallerName()
     {
         return $this->data['caller_name'];

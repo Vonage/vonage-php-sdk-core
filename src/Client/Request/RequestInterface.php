@@ -13,7 +13,6 @@ namespace Vonage\Client\Request;
 
 interface RequestInterface
 {
-
     public function getParams(): array;
 
     public function getURI(): string;

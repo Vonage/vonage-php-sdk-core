@@ -27,9 +27,16 @@ class Client implements APIClient
         return $this->api;
     }
 
-    public function createRoom(): Room
+    public function createRoom(string $displayName): Room
     {
-        return new Room();
+        $response = $this->api->create([
+            'display_name' => $displayName
+        ]);
+
+        $room = new Room();
+        $room->fromArray($response);
+
+        return $room;
     }
 
     public function getAllAvailableRooms(): IterableAPICollection

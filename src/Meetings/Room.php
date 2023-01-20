@@ -17,4 +17,9 @@ class Room implements ArrayHydrateInterface
     {
         return $this->data;
     }
+
+    public function __get($name)
+    {
+        return $this->data[$name];
+    }
 }

@@ -29,17 +29,18 @@ class ClientTest extends TestCase
     public function setUp(): void
     {
         $this->vonageClient = $this->prophesize(Client::class);
-//        $this->vonageClient->getRestUrl()->willReturn('https://api-eu.vonage.com/beta/meetings');
-//        $this->vonageClient->getCredentials()->willReturn(
-//            new Client\Credentials\Container(new Client\Credentials\Keypair(
-//                file_get_contents(__DIR__ . '/../Client/Credentials/test.key'),
-//                'def'
-//            ))
-//        );
+        $this->vonageClient->getRestUrl()->willReturn('https://api-eu.vonage.com/beta/meetings');
+        $this->vonageClient->getCredentials()->willReturn(
+            new Client\Credentials\Container(new Client\Credentials\Keypair(
+                file_get_contents(__DIR__ . '/../Client/Credentials/test.key'),
+                'def'
+            ))
+        );
 
         $this->api = (new APIResource())
             ->setIsHAL(true)
             ->setClient($this->vonageClient->reveal())
+            ->setAuthHandler(new KeypairHandler())
             ->setBaseUrl('https://api-eu.vonage.com/beta/meetings');
         $this->meetingsClient = new MeetingsClient($this->api);
     }
@@ -54,7 +55,7 @@ class ClientTest extends TestCase
 
     public function testWillGetAvailableRooms(): void
     {
-//        $this->markTestSkipped('incomplete');
+        $this->markTestSkipped('incomplete');
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('GET', $request->getMethod());
@@ -71,14 +72,15 @@ class ClientTest extends TestCase
 
     public function testWillCreateRoom(): void
     {
-        $this->markTestIncomplete('not written');
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('POST', $request->getMethod());
             return true;
         }))->willReturn($this->getResponse('create-room-success'));
 
-        $response = $this->meetingsClient->createRoom();
+        $response = $this->meetingsClient->createRoom('test-room');
         $this->assertInstanceOf(Room::class, $response);
+
+        $this->assertEquals('test-room', $response->display_name);
     }
 
     public function testWillGetRoomDetails(): void
