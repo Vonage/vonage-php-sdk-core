@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Vonage;
 
+use Composer\InstalledVersions;
 use Composer\InstalledVersions as ComposerInstalledVersions;
 use Http\Client\HttpClient;
 use InvalidArgumentException;
@@ -133,7 +134,7 @@ class Client implements LoggerAwareInterface
         if (is_null($client)) {
             // Since the user did not pass a client, try and make a client
             // using the Guzzle 6 adapter or Guzzle 7 (depending on availability)
-            list($guzzleVersion) = explode('@', Versions::getVersion('guzzlehttp/guzzle'), 1);
+            list($guzzleVersion) = explode('@', InstalledVersions::getVersion('guzzlehttp/guzzle'), 1);
             $guzzleVersion = (float) $guzzleVersion;
 
             if ($guzzleVersion >= 6.0 && $guzzleVersion < 7) {
