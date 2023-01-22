@@ -74,8 +74,9 @@ class ClientTest extends TestCase
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('POST', $request->getMethod());
+            $this->assertRequestJsonBodyContains('display_name', 'test-room', $request);
             return true;
-        }))->willReturn($this->getResponse('create-room-success'));
+        }))->willReturn($this->getResponse('create-room-success', 201));
 
         $response = $this->meetingsClient->createRoom('test-room');
         $this->assertInstanceOf(Room::class, $response);
@@ -85,12 +86,40 @@ class ClientTest extends TestCase
 
     public function testWillGetRoomDetails(): void
     {
-        $this->markTestIncomplete('Not written yet');
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('GET', $request->getMethod());
+            return true;
+        }))->willReturn($this->getResponse('get-room-success'));
+
+        $response = $this->meetingsClient->getRoom('224d6219-dc05-4c09-9d42-96adce7fcb67');
+        $this->assertInstanceOf(Room::class, $response);
+        $this->assertEquals('224d6219-dc05-4c09-9d42-96adce7fcb67', $response->id);
     }
 
     public function testWillUpdateExistingRoom(): void
     {
-        $this->markTestIncomplete('Not written yet');
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('PATCH', $request->getMethod());
+            $this->assertRequestJsonBodyContains('microphone_state', 'custom', $request, true);
+            $this->assertRequestJsonBodyContains('rooms_callback_url', 'https://my-callback-url', $request, true);
+            return true;
+        }))->willReturn($this->getResponse('update-details-success'));
+
+        $payload = [
+            'update_details' => [
+                'initial_join_options' => [
+                    'microphone_state' => 'custom'
+                ],
+                'callback_urls' => [
+                    'rooms_callback_url' => 'https://my-callback-url'
+                ],
+            ]
+        ];
+
+        $response = $this->meetingsClient->updateRoom('e857c5ce-cdee-4971-ab20-208a98263282', $payload);
+        $this->assertInstanceOf(Room::class, $response);
+        $this->assertEquals('custom', $response->initial_join_options['microphone_state']);
+        $this->assertEquals('https://my-callback-url', $response->callback_urls['rooms_callback_url']);
     }
 
     public function testWillGetRecording(): void

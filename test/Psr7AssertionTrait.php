@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace VonageTest;
 
+use _PHPStan_582a9cb8b\Symfony\Component\Finder\Iterator\RecursiveDirectoryIterator;
+use PHPUnit\Framework\ExpectationFailedException;
 use Psr\Http\Message\RequestInterface;
 
 use function http_build_query;
@@ -139,8 +141,12 @@ trait Psr7AssertionTrait
      * @param $value
      * @param RequestInterface $request
      */
-    public static function assertRequestJsonBodyContains($key, $value, RequestInterface $request): void
-    {
+    public static function assertRequestJsonBodyContains(
+        $key,
+        $value,
+        RequestInterface $request,
+        bool $nested = false
+    ): void {
         self::assertEquals(
             'application/json',
             $request->getHeaderLine('content-type'),
@@ -150,8 +156,34 @@ trait Psr7AssertionTrait
         $request->getBody()->rewind();
         $params = json_decode($request->getBody()->getContents(), true);
 
-        self::assertArrayHasKey($key, $params, 'body does not have key: ' . $key);
-        self::assertSame($value, $params[$key]);
+        if (!$nested) {
+            self::assertArrayHasKey($key, $params, 'body does not have key: ' . $key);
+            self::assertSame($value, $params[$key]);
+
+            return;
+        }
+
+        try {
+            $keyValue = self::findNestedKey($params, $key, $value);
+            self::assertSame($value, $keyValue);
+        } catch (\OutOfBoundsException $e) {
+            throw new ExpectationFailedException('Body does not nested have key: ' . $key);
+        }
+    }
+
+    protected static function findNestedKey(array $params, string $searchKey, mixed $searchValue)
+    {
+        $iterator = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($params));
+
+        while ($iterator->valid()) {
+            if ($iterator->key() === $searchKey && $iterator->current() === $searchValue) {
+                return $iterator->current();
+            }
+
+            $iterator->next();
+        }
+
+        throw new \OutOfBoundsException('Cannot find given Key');
     }
 
     /**

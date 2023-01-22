@@ -448,6 +448,12 @@ class APIResource implements ClientAwareInterface
         return $this->updateEntity('PUT', $id, $body, $headers);
     }
 
+
+    public function patch(string $id, array $body, array $headers = []): ?array
+    {
+        return $this->updateEntity('PATCH', $id, $body, $headers);
+    }
+
     /**
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
