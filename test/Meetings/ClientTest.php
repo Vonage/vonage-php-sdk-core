@@ -12,6 +12,7 @@ use Vonage\Client\APIResource;
 use Vonage\Client\Credentials\Handler\KeypairHandler;
 use Vonage\Meetings\Client as MeetingsClient;
 use PHPUnit\Framework\TestCase;
+use Vonage\Meetings\Recording;
 use Vonage\Meetings\Room;
 use VonageTest\Psr7AssertionTrait;
 
@@ -75,6 +76,7 @@ class ClientTest extends TestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('POST', $request->getMethod());
             $this->assertRequestJsonBodyContains('display_name', 'test-room', $request);
+            //TODO make the path correct
             return true;
         }))->willReturn($this->getResponse('create-room-success', 201));
 
@@ -88,6 +90,7 @@ class ClientTest extends TestCase
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('GET', $request->getMethod());
+            //TODO make the path correct
             return true;
         }))->willReturn($this->getResponse('get-room-success'));
 
@@ -102,6 +105,7 @@ class ClientTest extends TestCase
             $this->assertEquals('PATCH', $request->getMethod());
             $this->assertRequestJsonBodyContains('microphone_state', 'custom', $request, true);
             $this->assertRequestJsonBodyContains('rooms_callback_url', 'https://my-callback-url', $request, true);
+            //TODO make the path correct
             return true;
         }))->willReturn($this->getResponse('update-details-success'));
 
@@ -124,17 +128,39 @@ class ClientTest extends TestCase
 
     public function testWillGetRecording(): void
     {
-        $this->markTestIncomplete('Not written yet');
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('GET', $request->getMethod());
+            //TODO make the path correct
+            return true;
+        }))->willReturn($this->getResponse('get-recording-success'));
+
+        $response = $this->meetingsClient->getRecording('2dbd1cf7-afbb-45d8-9fb6-9e95ce2f8885');
+        $this->assertInstanceOf(Recording::class, $response);
+        $this->assertEquals('2dbd1cf7-afbb-45d8-9fb6-9e95ce2f8885', $response->id);
     }
 
     public function testWillDeleteRecording(): void
     {
-        $this->markTestIncomplete('Not written yet');
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('DELETE', $request->getMethod());
+            //TODO make the path correct
+            return true;
+        }))->willReturn($this->getResponse('empty', 204));
+
+        $response = $this->meetingsClient->deleteRecording('2dbd1cf7-afbb-45d8-9fb6-9e95ce2f8885');
+        $this->assertTrue($response);
     }
 
     public function testWillGetRecordingsFromSession(): void
     {
-        $this->markTestIncomplete('Not written yet');
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('DELETE', $request->getMethod());
+            //TODO make the path correct
+            return true;
+        }))->willReturn($this->getResponse('empty', 204));
+
+        $response = $this->meetingsClient->deleteRecording('2dbd1cf7-afbb-45d8-9fb6-9e95ce2f8885');
+        $this->assertTrue($response);
     }
 
     public function testWillGetMeetingDialNumbers(): void

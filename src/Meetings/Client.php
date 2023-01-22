@@ -40,6 +40,8 @@ class Client implements APIClient
 
     public function createRoom(string $displayName): Room
     {
+        $this->api->setBaseUri('/rooms/');
+
         $response = $this->api->create([
             'display_name' => $displayName
         ]);
@@ -72,5 +74,24 @@ class Client implements APIClient
         $response->setHydrator($hydrator);
 
         return $response;
+    }
+
+    public function getRecording(string $id): ?Recording
+    {
+        $this->api->setBaseUri('/recordings/');
+        $response = $this->api->get($id);
+
+        $recording = new Recording();
+        $recording->fromArray($response);
+
+        return $recording;
+    }
+
+    public function deleteRecording(string $id): bool
+    {
+        $this->api->setBaseUri('/recordings/');
+        $this->api->delete($id);
+
+        return true;
     }
 }
