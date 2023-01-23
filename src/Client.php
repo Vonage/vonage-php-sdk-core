@@ -11,12 +11,12 @@ declare(strict_types=1);
 
 namespace Vonage;
 
+use Composer\InstalledVersions;
 use Http\Client\HttpClient;
 use InvalidArgumentException;
 use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Uri;
 use Lcobucci\JWT\Token;
-use PackageVersions\Versions;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
@@ -55,12 +55,10 @@ use Vonage\Verify\ClientFactory as VerifyClientFactory;
 use Vonage\Verify\Verification;
 use Vonage\Voice\ClientFactory as VoiceClientFactory;
 use Vonage\Logger\{LoggerAwareInterface, LoggerTrait};
-use Vonage\Message\Client as MessageClient;
 
 use function array_key_exists;
 use function array_merge;
 use function call_user_func_array;
-use function get_class;
 use function http_build_query;
 use function implode;
 use function is_null;
@@ -129,12 +127,12 @@ class Client implements LoggerAwareInterface
      * @var array
      */
     protected $options = ['show_deprecations' => false, 'debug' => false];
-    
+
     /**
      * @string
      */
     public $apiUrl;
-    
+
     /**
      * @string
      */
@@ -148,7 +146,7 @@ class Client implements LoggerAwareInterface
         if (is_null($client)) {
             // Since the user did not pass a client, try and make a client
             // using the Guzzle 6 adapter or Guzzle 7 (depending on availability)
-            list($guzzleVersion) = explode('@', Versions::getVersion('guzzlehttp/guzzle'), 1);
+            list($guzzleVersion) = explode('@', InstalledVersions::getVersion('guzzlehttp/guzzle'), 1);
             $guzzleVersion = (float) $guzzleVersion;
 
             if ($guzzleVersion >= 6.0 && $guzzleVersion < 7) {
@@ -206,8 +204,6 @@ class Client implements LoggerAwareInterface
         $this->setFactory(
             new MapFactory(
                 [
-                    // Legacy namespace (used by Laravel, needs to be moved over in future
-                    'message' => MessageClient::class,
                     // Registered Services by name
                     'account' => ClientFactory::class,
                     'applications' => ApplicationClientFactory::class,
