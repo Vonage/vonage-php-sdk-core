@@ -94,4 +94,31 @@ class Client implements APIClient
 
         return true;
     }
+
+    public function getRecordingsFromSession(string $sessionId): IterableAPICollection
+    {
+        $response = $this->api->search(null, '/sessions/' . $sessionId . '/recordings');
+        $response->setNaiveCount(true);
+        $response->getApiResource()->setCollectionName('recordings');
+
+        $hydrator = new ArrayHydrator();
+        $hydrator->setPrototype(new Recording());
+
+        $response->setHydrator($hydrator);
+
+        return $response;
+    }
+
+    public function getDialInNumbers(): IterableAPICollection
+    {
+        $this->api->setBaseUri('/dial-in-numbers');
+        $this->api->setIsHAL(false);
+
+        $hydrator = new ArrayHydrator();
+        $hydrator->setPrototype(new DialInNumber());
+
+        $response->setHydrator($hydrator);
+
+        return $response;
+    }
 }

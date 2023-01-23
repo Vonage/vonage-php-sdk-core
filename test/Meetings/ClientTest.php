@@ -154,18 +154,31 @@ class ClientTest extends TestCase
     public function testWillGetRecordingsFromSession(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            $this->assertEquals('DELETE', $request->getMethod());
+            $this->assertEquals('GET', $request->getMethod());
             //TODO make the path correct
             return true;
-        }))->willReturn($this->getResponse('empty', 204));
+        }))->willReturn($this->getResponse('get-recordings-success'));
 
-        $response = $this->meetingsClient->deleteRecording('2dbd1cf7-afbb-45d8-9fb6-9e95ce2f8885');
-        $this->assertTrue($response);
+        $response = $this->meetingsClient->getRecordingsFromSession('2_MX40NjMwODczMn5-MTU3NTgyODEwNzQ2MH5OZDJrVmdBRUNDbG5MUzNqNXgya20yQ1Z-fg');
+
+        foreach ($response as $recording) {
+            $this->assertInstanceOf(Recording::class, $recording);
+        }
     }
 
     public function testWillGetMeetingDialNumbers(): void
     {
-        $this->markTestIncomplete('Not written yet');
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('GET', $request->getMethod());
+            //TODO make the path correct
+            return true;
+        }))->willReturn($this->getResponse('get-dial-in-numbers-success'));
+
+        $response = $this->meetingsClient->getDialInNumbers();
+
+        foreach ($response as $dialInNumber) {
+            $this->assertInstanceOf(DialInNumber::class, $dialInNumber);
+        }
     }
 
     public function testWillGetApplicationThemes(): void

@@ -1,0 +1,30 @@
+{
+  "_embedded": {
+    "recordings": [
+      {
+        "id": "33b9759f-6677-41f1-b942-6f8d1bdc15da",
+        "session_id": "2_MX40NjMwODczMn5-MTU3NTgyODEwNzQ2MH5OZDJrVmdBRUNDbG5MUzNqNXgya20yQ1Z-fg",
+        "started_at": "abc123",
+        "ended_at": "abc123",
+        "status": "abc123",
+        "_links": {
+          "url": {
+            "href": "abc123"
+          }
+        }
+      },
+      {
+        "id": "95662314-9937-4fcd-a141-1bedd16e89db",
+        "session_id": "2_MX40NjMwODczMn5-MTU3NTgyODEwNzQ2MH5OZDJrVmdBRUNDbG5MUzNqNXgya20yQ1Z-fg",
+        "started_at": "abc123",
+        "ended_at": "abc123",
+        "status": "abc123",
+        "_links": {
+          "url": {
+            "href": "abc123"
+          }
+        }
+      }
+    ]
+  }
+}
