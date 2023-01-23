@@ -12,8 +12,7 @@
     }
   ],
   "require": {
-    "php": "~8.0 || ~8.1 || ~8.2",
-    "ext-json": "*",
+    "php": "~8.0 || ~8.1 || ~8.2", 
     "ext-mbstring": "*",
     "laminas/laminas-diactoros": "^2.21",
     "lcobucci/jwt": "^3.4|^4.0",
@@ -22,8 +21,7 @@
     "vonage/nexmo-bridge": "^0.1.0",
     "psr/log": "^1.1|^2.0|^3.0"
   },
-  "require-dev": {
-    "php": "~8.0 || ~8.1 || ~8.2",
+  "require-dev": {  
     "guzzlehttp/guzzle": ">=6",
     "helmich/phpunit-json-assert": "^3.3",
     "php-http/mock-client": "^1.4",
