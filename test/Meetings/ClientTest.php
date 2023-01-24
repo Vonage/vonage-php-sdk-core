@@ -10,8 +10,10 @@ use Psr\Http\Message\RequestInterface;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Client\Credentials\Handler\KeypairHandler;
+use Vonage\Meetings\ApplicationTheme;
 use Vonage\Meetings\Client as MeetingsClient;
 use PHPUnit\Framework\TestCase;
+use Vonage\Meetings\DialInNumber;
 use Vonage\Meetings\Recording;
 use Vonage\Meetings\Room;
 use VonageTest\Psr7AssertionTrait;
@@ -172,7 +174,7 @@ class ClientTest extends TestCase
             $this->assertEquals('GET', $request->getMethod());
             //TODO make the path correct
             return true;
-        }))->willReturn($this->getResponse('get-dial-in-numbers-success'));
+        }))->willReturn($this->getResponse('get-dialin-success'));
 
         $response = $this->meetingsClient->getDialInNumbers();
 
@@ -183,27 +185,80 @@ class ClientTest extends TestCase
 
     public function testWillGetApplicationThemes(): void
     {
-        $this->markTestIncomplete('Not written yet');
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('GET', $request->getMethod());
+            //TODO make the path correct
+            return true;
+        }))->willReturn($this->getResponse('get-application-themes-success'));
+
+        $response = $this->meetingsClient->getApplicationThemes();
+
+        foreach ($response as $applicationThemes) {
+            $this->assertInstanceOf(ApplicationTheme::class, $applicationThemes);
+        }
     }
 
     public function testWillCreateTheme(): void
     {
-        $this->markTestIncomplete('Not written yet');
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('POST', $request->getMethod());
+            $this->assertRequestJsonBodyContains('theme_name', 'My-Theme', $request);
+            //TODO make the path correct
+            return true;
+        }))->willReturn($this->getResponse('create-theme-success', 201));
+
+        $response = $this->meetingsClient->createApplicationTheme('My-Theme');
+        $this->assertInstanceOf(ApplicationTheme::class, $response);
+
+        $this->assertEquals('My-Theme', $response->theme_name);
     }
 
     public function testWillGetThemeById(): void
     {
-        $this->markTestIncomplete('Not written yet');
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('GET', $request->getMethod());
+            //TODO make the path correct
+            return true;
+        }))->willReturn($this->getResponse('get-theme-success'));
+
+        $response = $this->meetingsClient->getThemeById('afb5b1f2-fe83-4b14-83ff-f23f5630c160');
+        $this->assertInstanceOf(ApplicationTheme::class, $response);
+        $this->assertEquals('afb5b1f2-fe83-4b14-83ff-f23f5630c160', $response->theme_id);
     }
 
     public function testWillDeleteTheme(): void
     {
-        $this->markTestIncomplete('Not written yet');
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('DELETE', $request->getMethod());
+            //TODO make the path correct
+            return true;
+        }))->willReturn($this->getResponse('empty', 204));
+
+        $response = $this->meetingsClient->deleteTheme('2dbd1cf7-afbb-45d8-9fb6-9e95ce2f8885');
+        $this->assertTrue($response);
     }
 
     public function testWillUpdateThemeById(): void
     {
-        $this->markTestIncomplete('Not written yet');
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('PATCH', $request->getMethod());
+            $this->assertRequestJsonBodyContains('theme_name', 'Updated Theme', $request, true);
+            $this->assertRequestJsonBodyContains('brand_text', 'Updated Branding', $request, true);
+            //TODO make the path correct
+            return true;
+        }))->willReturn($this->getResponse('update-theme-success'));
+
+        $payload = [
+            'update_details' => [
+                'theme_name' => 'Updated Theme',
+                'brand_text' => 'Updated Branding'
+            ]
+        ];
+
+        $response = $this->meetingsClient->updateTheme('afb5b1f2-fe83-4b14-83ff-f23f5630c160', $payload);
+        $this->assertInstanceOf(ApplicationTheme::class, $response);
+        $this->assertEquals('Updated Theme', $response->theme_name);
+        $this->assertEquals('Updated Branding', $response->brand_text);
     }
 
     public function testWillChangeLogo(): void

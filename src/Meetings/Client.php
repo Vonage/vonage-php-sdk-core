@@ -54,6 +54,8 @@ class Client implements APIClient
 
     public function updateRoom(string $id, array $payload): Room
     {
+        $this->api->setBaseUri('/rooms/');
+
         $response = $this->api->patch($id, $payload);
 
         $room = new Room();
@@ -111,8 +113,8 @@ class Client implements APIClient
 
     public function getDialInNumbers(): IterableAPICollection
     {
-        $this->api->setBaseUri('/dial-in-numbers');
         $this->api->setIsHAL(false);
+        $response = $this->api->search(null, '/dial-in-numbers');
 
         $hydrator = new ArrayHydrator();
         $hydrator->setPrototype(new DialInNumber());
@@ -120,5 +122,62 @@ class Client implements APIClient
         $response->setHydrator($hydrator);
 
         return $response;
+    }
+
+    public function getApplicationThemes(): IterableAPICollection
+    {
+        $this->api->setIsHAL(false);
+        $response = $this->api->search(null, '/themes');
+
+        $hydrator = new ArrayHydrator();
+        $hydrator->setPrototype(new ApplicationTheme());
+
+        $response->setHydrator($hydrator);
+
+        return $response;
+    }
+
+    public function createApplicationTheme(string $name): ?ApplicationTheme
+    {
+        $this->api->setBaseUri('/themes');
+
+        $response = $this->api->create([
+            'theme_name' => $name
+        ]);
+
+        $applicationTheme = new ApplicationTheme();
+        $applicationTheme->fromArray($response);
+
+        return $applicationTheme;
+    }
+
+    public function getThemeById(string $id): ?ApplicationTheme
+    {
+        $this->api->setBaseUri('/themes/');
+        $response = $this->api->get($id);
+
+        $applicationTheme = new ApplicationTheme();
+        $applicationTheme->fromArray($response);
+
+        return $applicationTheme;
+    }
+
+    public function deleteTheme(string $id): bool
+    {
+        $this->api->setBaseUri('/themes/');
+        $this->api->delete($id);
+
+        return true;
+    }
+
+    public function updateTheme(string $id, array $payload): ?ApplicationTheme
+    {
+        $this->api->setBaseUri('/themes/');
+        $response = $this->api->patch($id, $payload);
+
+        $applicationTheme = new ApplicationTheme();
+        $applicationTheme->fromArray($response);
+
+        return $applicationTheme;
     }
 }
