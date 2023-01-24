@@ -125,17 +125,18 @@ class Client implements APIClient
         return $numbers;
     }
 
-    public function getApplicationThemes(): IterableAPICollection
+    public function getApplicationThemes(): array
     {
-        $this->api->setIsHAL(false);
-        $response = $this->api->search(null, '/themes');
+        $response = $this->api->get('themes');
 
-        $hydrator = new ArrayHydrator();
-        $hydrator->setPrototype(new ApplicationTheme());
+        $themes = [];
 
-        $response->setHydrator($hydrator);
-
-        return $response;
+        foreach ($response as $applicationTheme) {
+            $themeEntity = new ApplicationTheme();
+            $themeEntity->fromArray($applicationTheme);
+            $themes[] = $themeEntity;
+        }
+        return $themes;
     }
 
     public function createApplicationTheme(string $name): ?ApplicationTheme
@@ -154,7 +155,7 @@ class Client implements APIClient
 
     public function getThemeById(string $id): ?ApplicationTheme
     {
-        $this->api->setBaseUri('/themes/');
+        $this->api->setBaseUri('/themes');
         $response = $this->api->get($id);
 
         $applicationTheme = new ApplicationTheme();
@@ -165,7 +166,7 @@ class Client implements APIClient
 
     public function deleteTheme(string $id): bool
     {
-        $this->api->setBaseUri('/themes/');
+        $this->api->setBaseUri('/themes');
         $this->api->delete($id);
 
         return true;

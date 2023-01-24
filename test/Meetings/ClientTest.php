@@ -77,9 +77,11 @@ class ClientTest extends TestCase
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('POST', $request->getMethod());
+
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals('https://api-eu.vonage.com/beta/meetings/rooms', $uriString);
+
             $this->assertRequestJsonBodyContains('display_name', 'test-room', $request);
             return true;
         }))->willReturn($this->getResponse('create-room-success', 201));
@@ -229,7 +231,14 @@ class ClientTest extends TestCase
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('GET', $request->getMethod());
-            //TODO make the path correct
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api-eu.vonage.com/beta/meetings/themes',
+                $uriString
+            );
+
             return true;
         }))->willReturn($this->getResponse('get-application-themes-success'));
 
@@ -244,8 +253,13 @@ class ClientTest extends TestCase
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('POST', $request->getMethod());
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals('https://api-eu.vonage.com/beta/meetings/themes', $uriString);
+
             $this->assertRequestJsonBodyContains('theme_name', 'My-Theme', $request);
-            //TODO make the path correct
+
             return true;
         }))->willReturn($this->getResponse('create-theme-success', 201));
 
@@ -259,7 +273,11 @@ class ClientTest extends TestCase
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('GET', $request->getMethod());
-            //TODO make the path correct
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals('https://api-eu.vonage.com/beta/meetings/themes/afb5b1f2-fe83-4b14-83ff-f23f5630c160', $uriString);
+
             return true;
         }))->willReturn($this->getResponse('get-theme-success'));
 
@@ -272,7 +290,12 @@ class ClientTest extends TestCase
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('DELETE', $request->getMethod());
-            //TODO make the path correct
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals('https://api-eu.vonage.com/beta/meetings/themes/2dbd1cf7-afbb-45d8-9fb6-9e95ce2f8885', $uriString);
+
+
             return true;
         }))->willReturn($this->getResponse('empty', 204));
 
