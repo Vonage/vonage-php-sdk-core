@@ -29,7 +29,7 @@ class Client implements APIClient
 
     public function getRoom(string $id): Room
     {
-        $this->api->setBaseUri('/rooms/');
+        $this->api->setBaseUri('/rooms');
         $response = $this->api->get($id);
 
         $room = new Room();
@@ -40,7 +40,7 @@ class Client implements APIClient
 
     public function createRoom(string $displayName): Room
     {
-        $this->api->setBaseUri('/rooms/');
+        $this->api->setBaseUri('/rooms');
 
         $response = $this->api->create([
             'display_name' => $displayName
@@ -54,7 +54,7 @@ class Client implements APIClient
 
     public function updateRoom(string $id, array $payload): Room
     {
-        $this->api->setBaseUri('/rooms/');
+        $this->api->setBaseUri('/rooms');
 
         $response = $this->api->patch($id, $payload);
 
@@ -80,7 +80,7 @@ class Client implements APIClient
 
     public function getRecording(string $id): ?Recording
     {
-        $this->api->setBaseUri('/recordings/');
+        $this->api->setBaseUri('/recordings');
         $response = $this->api->get($id);
 
         $recording = new Recording();
@@ -91,37 +91,38 @@ class Client implements APIClient
 
     public function deleteRecording(string $id): bool
     {
-        $this->api->setBaseUri('/recordings/');
+        $this->api->setBaseUri('/recordings');
         $this->api->delete($id);
 
         return true;
     }
 
-    public function getRecordingsFromSession(string $sessionId): IterableAPICollection
+    public function getRecordingsFromSession(string $sessionId): array
     {
-        $response = $this->api->search(null, '/sessions/' . $sessionId . '/recordings');
-        $response->setNaiveCount(true);
-        $response->getApiResource()->setCollectionName('recordings');
+        $response = $this->api->get('sessions/' . $sessionId . '/recordings');
+        $recordings = [];
 
-        $hydrator = new ArrayHydrator();
-        $hydrator->setPrototype(new Recording());
+        foreach ($response as $recording) {
+            $recordingEntity = new Recording();
+            $recordingEntity->fromArray($recording);
+            $recordings[] = $recordingEntity;
+        }
 
-        $response->setHydrator($hydrator);
-
-        return $response;
+        return $recordings;
     }
 
-    public function getDialInNumbers(): IterableAPICollection
+    public function getDialInNumbers(): array
     {
-        $this->api->setIsHAL(false);
-        $response = $this->api->search(null, '/dial-in-numbers');
+        $response = $this->api->get('dial-in-numbers');
+        $numbers = [];
 
-        $hydrator = new ArrayHydrator();
-        $hydrator->setPrototype(new DialInNumber());
+        foreach ($response as $dialInNumber) {
+            $dialInEntity = new DialInNumber();
+            $dialInEntity->fromArray($dialInNumber);
+            $numbers[] = $dialInEntity;
+        }
 
-        $response->setHydrator($hydrator);
-
-        return $response;
+        return $numbers;
     }
 
     public function getApplicationThemes(): IterableAPICollection
@@ -179,5 +180,19 @@ class Client implements APIClient
         $applicationTheme->fromArray($response);
 
         return $applicationTheme;
+    }
+
+    public function getRoomsByThemeId(string $themeId): IterableAPICollection
+    {
+        $this->api->setIsHAL(true);
+        $this->api->setCollectionName('rooms');
+        $response = $this->api->search(null, '/themes/' . $themeId . '/rooms');
+
+        $hydrator = new ArrayHydrator();
+        $hydrator->setPrototype(new Room());
+
+        $response->setHydrator($hydrator);
+
+        return $response;
     }
 }

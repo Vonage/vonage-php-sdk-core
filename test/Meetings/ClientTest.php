@@ -58,7 +58,7 @@ class ClientTest extends TestCase
 
     public function testWillGetAvailableRooms(): void
     {
-        $this->markTestSkipped('incomplete');
+        $this->markTestSkipped('Issue with Iterable Collection class.');
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('GET', $request->getMethod());
@@ -77,8 +77,10 @@ class ClientTest extends TestCase
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('POST', $request->getMethod());
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals('https://api-eu.vonage.com/beta/meetings/rooms', $uriString);
             $this->assertRequestJsonBodyContains('display_name', 'test-room', $request);
-            //TODO make the path correct
             return true;
         }))->willReturn($this->getResponse('create-room-success', 201));
 
@@ -92,7 +94,12 @@ class ClientTest extends TestCase
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('GET', $request->getMethod());
-            //TODO make the path correct
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api-eu.vonage.com/beta/meetings/rooms/224d6219-dc05-4c09-9d42-96adce7fcb67',
+                $uriString
+            );
             return true;
         }))->willReturn($this->getResponse('get-room-success'));
 
@@ -107,7 +114,14 @@ class ClientTest extends TestCase
             $this->assertEquals('PATCH', $request->getMethod());
             $this->assertRequestJsonBodyContains('microphone_state', 'custom', $request, true);
             $this->assertRequestJsonBodyContains('rooms_callback_url', 'https://my-callback-url', $request, true);
-            //TODO make the path correct
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api-eu.vonage.com/beta/meetings/rooms/e857c5ce-cdee-4971-ab20-208a98263282',
+                $uriString
+            );
+
             return true;
         }))->willReturn($this->getResponse('update-details-success'));
 
@@ -132,7 +146,14 @@ class ClientTest extends TestCase
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('GET', $request->getMethod());
-            //TODO make the path correct
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api-eu.vonage.com/beta/meetings/recordings/2dbd1cf7-afbb-45d8-9fb6-9e95ce2f8885',
+                $uriString
+            );
+
             return true;
         }))->willReturn($this->getResponse('get-recording-success'));
 
@@ -145,7 +166,14 @@ class ClientTest extends TestCase
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('DELETE', $request->getMethod());
-            //TODO make the path correct
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api-eu.vonage.com/beta/meetings/recordings/2dbd1cf7-afbb-45d8-9fb6-9e95ce2f8885',
+                $uriString
+            );
+
             return true;
         }))->willReturn($this->getResponse('empty', 204));
 
@@ -157,7 +185,14 @@ class ClientTest extends TestCase
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('GET', $request->getMethod());
-            //TODO make the path correct
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api-eu.vonage.com/beta/meetings/sessions/2_MX40NjMwODczMn5-MTU3NTgyODEwNzQ2MH5OZDJrVmdBRUNDbG5MUzNqNXgya20yQ1Z-fg/recordings',
+                $uriString
+            );
+
             return true;
         }))->willReturn($this->getResponse('get-recordings-success'));
 
@@ -172,7 +207,14 @@ class ClientTest extends TestCase
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('GET', $request->getMethod());
-            //TODO make the path correct
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api-eu.vonage.com/beta/meetings/dial-in-numbers',
+                $uriString
+            );
+
             return true;
         }))->willReturn($this->getResponse('get-dialin-success'));
 
@@ -263,22 +305,54 @@ class ClientTest extends TestCase
 
     public function testWillChangeLogo(): void
     {
-        $this->markTestIncomplete('Not written yet');
+        $this->markTestSkipped('Security issue: To be reimplemented by engineering.');
     }
 
     public function testCanGetUploadUrlsForThemeLogo(): void
     {
-        $this->markTestIncomplete('Not written yet');
+        $this->markTestSkipped('Security issue: To be reimplemented by engineering.');
     }
 
     public function testWillGetRoomsAssociatedWithTheme(): void
     {
-        $this->markTestIncomplete('Not written yet');
+        $this->markTestSkipped('Issue with Iterable Collection');
+
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('GET', $request->getMethod());
+            //TODO make the path correct
+            return true;
+        }))->willReturn($this->getResponse('get-rooms-by-theme-id-success'));
+
+        $response = $this->meetingsClient->getRoomsByThemeId('323867d7-8c4b-4dce-8c11-48f14425d888');
+
+        foreach ($response as $room) {
+            $this->assertInstanceOf(Room::class, $room);
+        }
+    }
+
+    public function testCanFilterRoomsAssociatedWithTheme(): void
+    {
+        $this->markTestSkipped('Cannot write this as the Query Parameters are not implemented correctly');
     }
 
     public function testWillUpdateExistingApplication(): void
     {
-        $this->markTestIncomplete('Not written yet');
+        $this->markTestSkipped('This endpoint makes no sense. We need engineering to fix it.');
+
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('PATCH', $request->getMethod());
+            $this->assertRequestJsonBodyContains('default_theme_id', '323867d7-8c4b-4dce-8c11-48f14425d888', $request);
+            //TODO make the path correct
+            return true;
+        }))->willReturn($this->getResponse('update-application-success'));
+
+        $payload = [
+            'default_theme_id' => '323867d7-8c4b-4dce-8c11-48f14425d888',
+        ];
+
+        $response = $this->meetingsClient->updateApplication('afb5b1f2-fe83-4b14-83ff-f23f5630c160', $payload);
+        $this->assertInstanceOf(Application::class, $response);
+        $this->assertEquals('Updated Theme', $response->default_theme_id);
     }
 
     /**
