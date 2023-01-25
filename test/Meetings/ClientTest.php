@@ -10,6 +10,7 @@ use Psr\Http\Message\RequestInterface;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Client\Credentials\Handler\KeypairHandler;
+use Vonage\Meetings\Application;
 use Vonage\Meetings\ApplicationTheme;
 use Vonage\Meetings\Client as MeetingsClient;
 use PHPUnit\Framework\TestCase;
@@ -58,15 +59,13 @@ class ClientTest extends TestCase
 
     public function testWillGetAvailableRooms(): void
     {
-        $this->markTestSkipped('Issue with Iterable Collection class.');
-
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('GET', $request->getMethod());
             return true;
         }))->willReturn($this->getResponse('get-rooms-success'));
 
         $response = $this->meetingsClient->getAllAvailableRooms();
-        $this->assertCount(1, $response);
+        $this->assertCount(2, $response);
 
         foreach ($response as $room) {
             $this->assertInstanceOf(Room::class, $room);
@@ -371,8 +370,6 @@ class ClientTest extends TestCase
 
     public function testWillGetRoomsAssociatedWithTheme(): void
     {
-        $this->markTestSkipped('Issue with Iterable Collection');
-
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('GET', $request->getMethod());
             //TODO make the path correct
@@ -388,12 +385,14 @@ class ClientTest extends TestCase
 
     public function testWillUpdateExistingApplication(): void
     {
-        $this->markTestSkipped('This endpoint makes no sense. We need engineering to fix it.');
-
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('PATCH', $request->getMethod());
             $this->assertRequestJsonBodyContains('default_theme_id', '323867d7-8c4b-4dce-8c11-48f14425d888', $request);
-            //TODO make the path correct
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals('https://api-eu.vonage.com/beta/meetings/applications', $uriString);
+
             return true;
         }))->willReturn($this->getResponse('update-application-success'));
 
@@ -401,9 +400,10 @@ class ClientTest extends TestCase
             'default_theme_id' => '323867d7-8c4b-4dce-8c11-48f14425d888',
         ];
 
-        $response = $this->meetingsClient->updateApplication('afb5b1f2-fe83-4b14-83ff-f23f5630c160', $payload);
+        $response = $this->meetingsClient->updateApplication($payload);
         $this->assertInstanceOf(Application::class, $response);
-        $this->assertEquals('Updated Theme', $response->default_theme_id);
+        $this->assertEquals('f4d5a07b-260c-4458-b16c-e5a68553bc85', $response->application_id);
+        $this->assertEquals('323867d7-8c4b-4dce-8c11-48f14425d888', $response->default_theme_id);
     }
 
     /**

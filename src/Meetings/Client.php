@@ -64,10 +64,11 @@ class Client implements APIClient
         return $room;
     }
 
-    public function getAllAvailableRooms(): IterableAPICollection
+    public function getAllAvailableRooms(): array
     {
         $response = $this->api->search(null, '/rooms');
-        $response->setNaiveCount(true);
+        $response->setNaiveCount(false);
+        $response->setAutoAdvance(false);
         $response->getApiResource()->setCollectionName('rooms');
 
         $hydrator = new ArrayHydrator();
@@ -75,7 +76,12 @@ class Client implements APIClient
 
         $response->setHydrator($hydrator);
 
-        return $response;
+        $roomPayload = [];
+        foreach ($response as $room) {
+            $roomPayload[] = $room;
+        }
+
+        return $roomPayload;
     }
 
     public function getRecording(string $id): ?Recording
@@ -188,6 +194,7 @@ class Client implements APIClient
         $this->api->setIsHAL(true);
         $this->api->setCollectionName('rooms');
         $response = $this->api->search(null, '/themes/' . $themeId . '/rooms');
+        $response->setAutoAdvance(false);
 
         $hydrator = new ArrayHydrator();
         $hydrator->setPrototype(new Room());
@@ -209,5 +216,15 @@ class Client implements APIClient
     public function getUploadUrls(): array
     {
         return $this->api->get('themes/logos-upload-urls');
+    }
+
+    public function updateApplication(array $payload): ?Application
+    {
+        $response = $this->api->patch('applications', $payload);
+
+        $application = new Application();
+        $application->fromArray($response);
+
+        return $application;
     }
 }
