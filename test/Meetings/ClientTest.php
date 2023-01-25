@@ -295,7 +295,6 @@ class ClientTest extends TestCase
             $uriString = $uri->__toString();
             $this->assertEquals('https://api-eu.vonage.com/beta/meetings/themes/2dbd1cf7-afbb-45d8-9fb6-9e95ce2f8885', $uriString);
 
-
             return true;
         }))->willReturn($this->getResponse('empty', 204));
 
@@ -309,7 +308,11 @@ class ClientTest extends TestCase
             $this->assertEquals('PATCH', $request->getMethod());
             $this->assertRequestJsonBodyContains('theme_name', 'Updated Theme', $request, true);
             $this->assertRequestJsonBodyContains('brand_text', 'Updated Branding', $request, true);
-            //TODO make the path correct
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals('https://api-eu.vonage.com/beta/meetings/themes/afb5b1f2-fe83-4b14-83ff-f23f5630c160', $uriString);
+
             return true;
         }))->willReturn($this->getResponse('update-theme-success'));
 
@@ -328,12 +331,42 @@ class ClientTest extends TestCase
 
     public function testWillChangeLogo(): void
     {
-        $this->markTestSkipped('Security issue: To be reimplemented by engineering.');
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('PUT', $request->getMethod());
+            $this->assertRequestJsonBodyContains('keys', ['this-is-a-logo-key'], $request);
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals('https://api-eu.vonage.com/beta/meetings/themes/afb5b1f2-fe83-4b14-83ff-f23f5630c160/finalizeLogos', $uriString);
+
+            return true;
+        }))->willReturn($this->getResponse('empty'));
+
+        $payload = [
+            'keys' => [
+                'this-is-a-logo-key'
+            ]
+        ];
+
+        $response = $this->meetingsClient->finalizeLogosForTheme('afb5b1f2-fe83-4b14-83ff-f23f5630c160', $payload);
+        $this->assertTrue($response);
     }
 
     public function testCanGetUploadUrlsForThemeLogo(): void
     {
-        $this->markTestSkipped('Security issue: To be reimplemented by engineering.');
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('GET', $request->getMethod());
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals('https://api-eu.vonage.com/beta/meetings/themes/logos-upload-urls', $uriString);
+
+            return true;
+        }))->willReturn($this->getResponse('get-upload-urls-success'));
+
+        $response = $this->meetingsClient->getUploadUrls();
+        $this->assertEquals('auto-expiring-temp/logos/white/ca63a155-d5f0-4131-9903-c59907e53df0', $response[0]['fields']['key']);
+        $this->assertEquals('auto-expiring-temp/logos/white/93a9c23d-ce10-4193-8d01-7994e5ac8dcc', $response[1]['fields']['key']);
     }
 
     public function testWillGetRoomsAssociatedWithTheme(): void
@@ -351,11 +384,6 @@ class ClientTest extends TestCase
         foreach ($response as $room) {
             $this->assertInstanceOf(Room::class, $room);
         }
-    }
-
-    public function testCanFilterRoomsAssociatedWithTheme(): void
-    {
-        $this->markTestSkipped('Cannot write this as the Query Parameters are not implemented correctly');
     }
 
     public function testWillUpdateExistingApplication(): void

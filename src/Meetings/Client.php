@@ -174,7 +174,7 @@ class Client implements APIClient
 
     public function updateTheme(string $id, array $payload): ?ApplicationTheme
     {
-        $this->api->setBaseUri('/themes/');
+        $this->api->setBaseUri('/themes');
         $response = $this->api->patch($id, $payload);
 
         $applicationTheme = new ApplicationTheme();
@@ -195,5 +195,19 @@ class Client implements APIClient
         $response->setHydrator($hydrator);
 
         return $response;
+    }
+
+    public function finalizeLogosForTheme(string $themeId, array $payload): bool
+    {
+        $path = $themeId . '/finalizeLogos';
+        $this->api->setBaseUri('/themes');
+        $this->api->update($path, $payload);
+
+        return true;
+    }
+
+    public function getUploadUrls(): array
+    {
+        return $this->api->get('themes/logos-upload-urls');
     }
 }
