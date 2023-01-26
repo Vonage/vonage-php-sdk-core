@@ -13,6 +13,7 @@ namespace Vonage\Meetings;
 
 use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
+use Vonage\Entity\Filter\KeyValueFilter;
 use Vonage\Entity\Hydrator\ArrayHydrator;
 use Vonage\Entity\IterableAPICollection;
 
@@ -64,9 +65,20 @@ class Client implements APIClient
         return $room;
     }
 
-    public function getAllAvailableRooms(): array
+    public function getAllAvailableRooms(string $start_id = null, string $end_id = null): array
     {
-        $response = $this->api->search(null, '/rooms');
+        if ($start_id || $end_id) {
+            $filterParams = [];
+            $start_id ? $filterParams['start_id'] = $start_id : null;
+            $end_id ? $filterParams['end_id'] = $end_id : null;
+
+            if ($filterParams) {
+                $response = $this->api->search(new KeyValueFilter($filterParams), '/rooms');
+            }
+        } else {
+            $response = $this->api->search(null, '/rooms');
+        }
+
         $response->setNaiveCount(false);
         $response->setAutoAdvance(false);
         $response->getApiResource()->setCollectionName('rooms');
@@ -76,7 +88,9 @@ class Client implements APIClient
 
         $response->setHydrator($hydrator);
 
+        // Currently have to do this until we can extend off the Iterator to handle Meetings data structures
         $roomPayload = [];
+
         foreach ($response as $room) {
             $roomPayload[] = $room;
         }
@@ -170,9 +184,14 @@ class Client implements APIClient
         return $applicationTheme;
     }
 
-    public function deleteTheme(string $id): bool
+    public function deleteTheme(string $id, bool $force = false): bool
     {
         $this->api->setBaseUri('/themes');
+
+        if ($force) {
+            $id .= '?force=true';
+        }
+
         $this->api->delete($id);
 
         return true;
@@ -189,11 +208,23 @@ class Client implements APIClient
         return $applicationTheme;
     }
 
-    public function getRoomsByThemeId(string $themeId): IterableAPICollection
+    public function getRoomsByThemeId(string $themeId, string $startId = null, string $endId = null): array
     {
         $this->api->setIsHAL(true);
         $this->api->setCollectionName('rooms');
-        $response = $this->api->search(null, '/themes/' . $themeId . '/rooms');
+
+        if ($startId || $endId) {
+            $filterParams = [];
+            $startId ? $filterParams['start_id'] = $startId : null;
+            $endId ? $filterParams['end_id'] = $endId : null;
+
+            if ($filterParams) {
+                $response = $this->api->search(new KeyValueFilter($filterParams), '/themes/' . $themeId . '/rooms');
+            }
+        } else {
+            $response = $this->api->search(null, '/themes/' . $themeId . '/rooms');
+        }
+
         $response->setAutoAdvance(false);
 
         $hydrator = new ArrayHydrator();
@@ -201,7 +232,14 @@ class Client implements APIClient
 
         $response->setHydrator($hydrator);
 
-        return $response;
+        // Currently have to do this until we can extend off the Iterator to handle Meetings data structures
+        $roomPayload = [];
+
+        foreach ($response as $room) {
+            $roomPayload[] = $room;
+        }
+
+        return $roomPayload;
     }
 
     public function finalizeLogosForTheme(string $themeId, array $payload): bool

@@ -23,6 +23,7 @@ class ClientFactory
         $api = $container->make(APIResource::class);
         $api
             ->setBaseUrl('https://api-eu.vonage.com/beta/meetings/')
+            ->setExceptionErrorHandler(new ExceptionErrorHandler())
             ->setAuthHandler(new KeypairHandler());
 
         return new Client($api);

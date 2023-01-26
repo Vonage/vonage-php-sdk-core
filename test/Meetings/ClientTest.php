@@ -2,19 +2,25 @@
 
 namespace VonageTest\Meetings;
 
+use Cassandra\Exception\UnauthorizedException;
 use Laminas\Diactoros\Response;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Http\Message\RequestInterface;
+use Vonage\AuthenticationException;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Client\Credentials\Handler\KeypairHandler;
+use Vonage\Client\Exception\Conflict;
+use Vonage\Client\Exception\NotFound;
+use Vonage\Client\Exception\Validation;
 use Vonage\Meetings\Application;
 use Vonage\Meetings\ApplicationTheme;
 use Vonage\Meetings\Client as MeetingsClient;
 use PHPUnit\Framework\TestCase;
 use Vonage\Meetings\DialInNumber;
+use Vonage\Meetings\ExceptionErrorHandler;
 use Vonage\Meetings\Recording;
 use Vonage\Meetings\Room;
 use VonageTest\Psr7AssertionTrait;
@@ -43,6 +49,7 @@ class ClientTest extends TestCase
 
         $this->api = (new APIResource())
             ->setIsHAL(true)
+            ->setExceptionErrorHandler(new ExceptionErrorHandler())
             ->setClient($this->vonageClient->reveal())
             ->setAuthHandler(new KeypairHandler())
             ->setBaseUrl('https://api-eu.vonage.com/beta/meetings');
@@ -61,10 +68,36 @@ class ClientTest extends TestCase
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('GET', $request->getMethod());
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            // @TODO Pagination isn't actually being handled in a HAL way
+            $this->assertEquals('https://api-eu.vonage.com/beta/meetings/rooms?page_index=1', $uriString);
+
             return true;
         }))->willReturn($this->getResponse('get-rooms-success'));
 
         $response = $this->meetingsClient->getAllAvailableRooms();
+        $this->assertCount(2, $response);
+
+        foreach ($response as $room) {
+            $this->assertInstanceOf(Room::class, $room);
+        }
+    }
+
+    public function testWillGetAvailableRoomsWithFilter(): void
+    {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('GET', $request->getMethod());
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals('https://api-eu.vonage.com/beta/meetings/rooms?start_id=999&end_id=234&page_index=1', $uriString);
+
+            return true;
+        }))->willReturn($this->getResponse('get-rooms-success'));
+
+        $response = $this->meetingsClient->getAllAvailableRooms('999', '234');
         $this->assertCount(2, $response);
 
         foreach ($response as $room) {
@@ -89,6 +122,59 @@ class ClientTest extends TestCase
         $this->assertInstanceOf(Room::class, $response);
 
         $this->assertEquals('test-room', $response->display_name);
+    }
+
+    public function testClientWillHandleUnauthorizedRequests(): void
+    {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('POST', $request->getMethod());
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals('https://api-eu.vonage.com/beta/meetings/rooms', $uriString);
+
+            $this->assertRequestJsonBodyContains('display_name', 'test-room', $request);
+            return true;
+        }))->willReturn($this->getResponse('empty', 403));
+
+        $this->expectException(Client\Exception\Credentials::class);
+        $this->expectErrorMessage('You are not authorised to perform this request');
+        $response = $this->meetingsClient->createRoom('test-room');
+    }
+
+    public function testClientWillHandleNotFoundResponse(): void
+    {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('GET', $request->getMethod());
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api-eu.vonage.com/beta/meetings/rooms/224d6219-dc05-4c09-9d42-96adce7fcb67',
+                $uriString
+            );
+            return true;
+        }))->willReturn($this->getResponse('empty', 404));
+        $this->expectException(NotFound::class);
+        $this->expectErrorMessage('No resource found');
+        $response = $this->meetingsClient->getRoom('224d6219-dc05-4c09-9d42-96adce7fcb67');
+    }
+
+    public function testClientWillHandleValidationError(): void
+    {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('POST', $request->getMethod());
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals('https://api-eu.vonage.com/beta/meetings/rooms', $uriString);
+
+            return true;
+        }))->willReturn($this->getResponse('empty', 400));
+
+        $this->expectException(Validation::class);
+        $this->expectErrorMessage('The request data was invalid');
+
+        $response = $this->meetingsClient->createRoom('test-room');
     }
 
     public function testWillGetRoomDetails(): void
@@ -268,6 +354,25 @@ class ClientTest extends TestCase
         $this->assertEquals('My-Theme', $response->theme_name);
     }
 
+    public function testWillHandleConflictErrorOnThemeCreation(): void
+    {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('POST', $request->getMethod());
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals('https://api-eu.vonage.com/beta/meetings/themes', $uriString);
+
+            $this->assertRequestJsonBodyContains('theme_name', 'My-Theme', $request);
+
+            return true;
+        }))->willReturn($this->getResponse('empty', 409));
+
+        $this->expectException(Conflict::class);
+        $this->expectErrorMessage('Entity conflict');
+        $response = $this->meetingsClient->createApplicationTheme('My-Theme');
+    }
+
     public function testWillGetThemeById(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
@@ -298,6 +403,22 @@ class ClientTest extends TestCase
         }))->willReturn($this->getResponse('empty', 204));
 
         $response = $this->meetingsClient->deleteTheme('2dbd1cf7-afbb-45d8-9fb6-9e95ce2f8885');
+        $this->assertTrue($response);
+    }
+
+    public function testWillForceDeleteTheme(): void
+    {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('DELETE', $request->getMethod());
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals('https://api-eu.vonage.com/beta/meetings/themes/2dbd1cf7-afbb-45d8-9fb6-9e95ce2f8885?force=true', $uriString);
+
+            return true;
+        }))->willReturn($this->getResponse('empty', 204));
+
+        $response = $this->meetingsClient->deleteTheme('2dbd1cf7-afbb-45d8-9fb6-9e95ce2f8885', true);
         $this->assertTrue($response);
     }
 
@@ -372,11 +493,34 @@ class ClientTest extends TestCase
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('GET', $request->getMethod());
-            //TODO make the path correct
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals('https://api-eu.vonage.com/beta/meetings/themes/323867d7-8c4b-4dce-8c11-48f14425d888/rooms?page_index=1', $uriString);
+
             return true;
         }))->willReturn($this->getResponse('get-rooms-by-theme-id-success'));
 
         $response = $this->meetingsClient->getRoomsByThemeId('323867d7-8c4b-4dce-8c11-48f14425d888');
+
+        foreach ($response as $room) {
+            $this->assertInstanceOf(Room::class, $room);
+        }
+    }
+
+    public function testWillGetRoomsAssociatedWithThemeUsingFilter(): void
+    {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('GET', $request->getMethod());
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals('https://api-eu.vonage.com/beta/meetings/themes/323867d7-8c4b-4dce-8c11-48f14425d888/rooms?start_id=245&end_id=765&page_index=1', $uriString);
+
+            return true;
+        }))->willReturn($this->getResponse('get-rooms-by-theme-id-success'));
+
+        $response = $this->meetingsClient->getRoomsByThemeId('323867d7-8c4b-4dce-8c11-48f14425d888', startId: '245', endId: '765');
 
         foreach ($response as $room) {
             $this->assertInstanceOf(Room::class, $room);
