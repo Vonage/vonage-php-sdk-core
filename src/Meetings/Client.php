@@ -79,7 +79,6 @@ class Client implements APIClient
             $response = $this->api->search(null, '/rooms');
         }
 
-        $response->setNaiveCount(false);
         $response->setAutoAdvance(false);
         $response->getApiResource()->setCollectionName('rooms');
 

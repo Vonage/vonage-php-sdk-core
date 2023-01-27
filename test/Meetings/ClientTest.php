@@ -2,13 +2,11 @@
 
 namespace VonageTest\Meetings;
 
-use Cassandra\Exception\UnauthorizedException;
 use Laminas\Diactoros\Response;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Http\Message\RequestInterface;
-use Vonage\AuthenticationException;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Client\Credentials\Handler\KeypairHandler;

@@ -797,25 +797,26 @@ Check out the [documentation](https://developer.nexmo.com/number-insight/code-sn
 
 ## Supported APIs
 
-| API   | API Release Status |  Supported?
-|----------|:---------:|:-------------:|
-| Account API | General Availability |✅|
-| Alerts API | General Availability |✅|
-| Application API | General Availability |✅|
-| Audit API | Beta |❌|
-| Conversation API | Beta |❌|
-| Dispatch API | Beta |❌|
-| External Accounts API | Beta |❌|
-| Media API | Beta | ❌|
-| Messages API | General Availability |✅|
-| Number Insight API | General Availability |✅|
-| Number Management API | General Availability |✅|
-| Pricing API | General Availability |✅|
-| Redact API | General Availability |✅|
-| Reports API | Beta |❌|
-| SMS API | General Availability |✅|
-| Verify API | General Availability |✅|
-| Voice API | General Availability |✅|
+| API                   |  API Release Status  | Supported? |
+|-----------------------|:--------------------:|:----------:|
+| Account API           | General Availability |     ✅      |
+| Alerts API            | General Availability |     ✅      |
+| Application API       | General Availability |     ✅      |
+| Audit API             |         Beta         |     ❌      |
+| Conversation API      |         Beta         |     ❌      |
+| Dispatch API          |         Beta         |     ❌      |
+| External Accounts API |         Beta         |     ❌      |
+| Media API             |         Beta         |     ❌      |
+| Meetings API          | General Availability |     ✅      |
+| Messages API          | General Availability |     ✅      |
+| Number Insight API    | General Availability |     ✅      |
+| Number Management API | General Availability |     ✅      |
+| Pricing API           | General Availability |     ✅      |
+| Redact API            | General Availability |     ✅      |
+| Reports API           |         Beta         |     ❌      |
+| SMS API               | General Availability |     ✅      |
+| Verify API            | General Availability |     ✅      |
+| Voice API             | General Availability |     ✅      |
 
 ## Troubleshooting
 
