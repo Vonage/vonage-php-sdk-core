@@ -173,10 +173,9 @@ class SMSTest extends VonageTestCase
      * @dataProvider unicodeStringDataProvider
      * @return void
      */
-    public function testGsm7Identification(string $message, bool $expectedGsm7)
+    public function testGsm7Identification(string $message, bool $expectedGsm7): void
     {
-        $sms = new SMS('16105551212', '16105551212', $message);
-        $this->assertEquals($expectedGsm7, $sms->isGsm7());
+        $this->assertEquals($expectedGsm7, SMS::isGsm7($message));
     }
 
     public function unicodeStringDataProvider(): array
