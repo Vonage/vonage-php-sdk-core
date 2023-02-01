@@ -30,9 +30,9 @@ class SMS extends OutboundMessage
         $this->setType($type);
     }
 
-    public function isGsm7(): bool
+    public static function isGsm7(string $message): bool
     {
-        return (bool)preg_match(self::GSM_7_PATTERN, $this->getMessage());
+        return (bool)preg_match(self::GSM_7_PATTERN, $message);
     }
 
     public function getContentId(): string
@@ -59,14 +59,14 @@ class SMS extends OutboundMessage
 
     public function getErrorMessage(): ?string
     {
-        if ($this->getType() === 'unicode' && $this->isGsm7()) {
+        if ($this->getType() === 'unicode' && self::isGsm7($this->getMessage())) {
             $this->setErrorMessage("You are sending a message as `unicode` when it could be `text` or a
             `text` type with unicode-only characters. This could result in increased billing - 
             See https://developer.vonage.com/messaging/sms for details, or email support@vonage.com if you have any 
             questions.");
         }
 
-        if ($this->getType() === 'text' && ! $this->isGsm7()) {
+        if ($this->getType() === 'text' && ! self::isGsm7($this->getMessage())) {
             $this->setErrorMessage("You are sending a message as `text` when contains unicode only 
             characters. This could result in encoding problems with the target device or increased billing - See 
             https://developer.vonage.com/messaging/sms for details, or email support@vonage.com if you have any 
