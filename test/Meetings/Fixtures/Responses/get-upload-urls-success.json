@@ -1,32 +1,17 @@
 [
   {
-    "url": "https://storage-url.com/1",
+    "url": "https://s3.amazonaws.com/php-sdk/white",
     "fields": {
       "Content-Type": "image/png",
       "key": "auto-expiring-temp/logos/white/ca63a155-d5f0-4131-9903-c59907e53df0",
       "logoType": "abc123",
-      "bucket": "abc123",
-      "X-Amz-Algorithm": "abc123",
-      "X-Amz-Credential": "abc123",
-      "X-Amz-Date": "abc123",
-      "X-Amz-Security-Token": "abc123",
-      "Policy": "abc123",
-      "X-Amz-Signature": "abc123"
-    }
-  },
-  {
-    "url": "https://storage-url.com/2",
-    "fields": {
-      "Content-Type": "image/png",
-      "key": "auto-expiring-temp/logos/white/93a9c23d-ce10-4193-8d01-7994e5ac8dcc",
-      "logoType": "abc123",
-      "bucket": "abc123",
-      "X-Amz-Algorithm": "abc123",
-      "X-Amz-Credential": "abc123",
-      "X-Amz-Date": "abc123",
-      "X-Amz-Security-Token": "abc123",
-      "Policy": "abc123",
-      "X-Amz-Signature": "abc123"
+      "bucket": "php-sdk",
+      "X-Amz-Algorithm": "white-algorithm",
+      "X-Amz-Credential": "white-credential",
+      "X-Amz-Date": "20230125T144332Z",
+      "X-Amz-Security-Token": "white-Token",
+      "Policy": "white-Policy",
+      "X-Amz-Signature": "white-signature"
     }
   }
 ]

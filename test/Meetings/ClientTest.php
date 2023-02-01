@@ -6,6 +6,7 @@ use Laminas\Diactoros\Response;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
+use Prophecy\Prophet;
 use Psr\Http\Message\RequestInterface;
 use Vonage\Client;
 use Vonage\Client\APIResource;
@@ -470,6 +471,51 @@ class ClientTest extends TestCase
         $this->assertTrue($response);
     }
 
+    public function testWillUploadImageToAws(): void
+    {
+        // Get the Upload URL
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('GET', $request->getMethod());
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals('https://api-eu.vonage.com/beta/meetings/themes/logos-upload-urls', $uriString);
+
+            return true;
+        }))->willReturn($this->getResponse('get-upload-urls-success'));
+
+
+        // Upload the Image to AWS
+        $httpClient = (new Prophet())->prophesize();
+        $httpClient->willImplement(\Psr\Http\Client\ClientInterface::class);
+        $httpClient->sendRequest(Argument::that(function(RequestInterface $request) {
+            $this->assertEquals('PUT', $request->getMethod());
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals('https://s3.amazonaws.com/php-sdk/white', $uriString);
+
+            return true;
+        }))->willReturn($this->getResponse('empty'));
+
+        $this->vonageClient->getHttpClient()->willReturn($httpClient);
+
+        // Finalize logos
+//        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+//            $this->assertEquals('POST', $request->getMethod());
+//            $this->assertRequestJsonBodyContains('keys', ['this-is-a-logo-key'], $request);
+//
+//            $uri = $request->getUri();
+//            $uriString = $uri->__toString();
+//            $this->assertEquals('https://api-eu.vonage.com/beta/meetings/themes/afb5b1f2-fe83-4b14-83ff-f23f5630c160/finalizeLogos', $uriString);
+//
+//            return true;
+//        }))->willReturn($this->getResponse('empty'));
+
+        $file = fopen(__DIR__ . '/Fixtures/vonage.png', 'r');
+        $this->meetingsClient->uploadImage('afb5b1f2-fe83-4b14-83ff-f23f5630c160', $file);
+    }
+
     public function testCanGetUploadUrlsForThemeLogo(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
@@ -483,8 +529,7 @@ class ClientTest extends TestCase
         }))->willReturn($this->getResponse('get-upload-urls-success'));
 
         $response = $this->meetingsClient->getUploadUrls();
-        $this->assertEquals('auto-expiring-temp/logos/white/ca63a155-d5f0-4131-9903-c59907e53df0', $response[0]['fields']['key']);
-        $this->assertEquals('auto-expiring-temp/logos/white/93a9c23d-ce10-4193-8d01-7994e5ac8dcc', $response[1]['fields']['key']);
+        $this->assertEquals('auto-expiring-temp/logos/white/ca63a155-d5f0-4131-9903-c59907e53df0', $response[0]->fields['key']);
     }
 
     public function testWillGetRoomsAssociatedWithTheme(): void

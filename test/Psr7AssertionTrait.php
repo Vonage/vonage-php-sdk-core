@@ -11,7 +11,6 @@ declare(strict_types=1);
 
 namespace VonageTest;
 
-use _PHPStan_582a9cb8b\Symfony\Component\Finder\Iterator\RecursiveDirectoryIterator;
 use PHPUnit\Framework\ExpectationFailedException;
 use Psr\Http\Message\RequestInterface;
 

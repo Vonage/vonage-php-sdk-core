@@ -11,11 +11,11 @@ declare(strict_types=1);
 
 namespace Vonage\Meetings;
 
+use Laminas\Diactoros\Request;
 use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
 use Vonage\Entity\Filter\KeyValueFilter;
 use Vonage\Entity\Hydrator\ArrayHydrator;
-use Vonage\Entity\IterableAPICollection;
 
 class Client implements APIClient
 {
@@ -252,7 +252,17 @@ class Client implements APIClient
 
     public function getUploadUrls(): array
     {
-        return $this->api->get('themes/logos-upload-urls');
+        $response = [];
+
+        $awsUploadObjects = $this->api->get('themes/logos-upload-urls');
+
+        foreach ($awsUploadObjects as $routeObject) {
+            $returnObject = new UrlObject();
+            $returnObject->fromArray($routeObject);
+            $response[] = $returnObject;
+        }
+
+        return $response;
     }
 
     public function updateApplication(array $payload): ?Application
@@ -263,5 +273,38 @@ class Client implements APIClient
         $application->fromArray($response);
 
         return $application;
+    }
+
+    public function uploadImage(string $themeId, $file): bool
+    {
+        $getUrlsResponse = $this->getUploadUrls();
+
+        // We get the first entry, at this point not clear what the correct behaviour is
+        $urlEntity = $getUrlsResponse[0];
+
+        // Then we upload it to AWS
+        $this->uploadToAws($urlEntity, $file);
+
+        // Then we hit finalize logos
+
+        $payload = [
+            'keys' => [
+                $urlEntity->fields->key
+            ]
+        ];
+
+        $this->finalizeLogosForTheme($themeId);
+
+        return true;
+    }
+
+    public function uploadToAws(UrlObject $awsUrlObject, $file): bool
+    {
+        $request = new Request($awsUrlObject->url, 'PUT');
+
+        $httpClient = $this->api->getClient()->getHttpClient();
+        $httpClient->sendRequest($request);
+
+        return true;
     }
 }

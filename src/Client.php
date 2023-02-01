@@ -253,6 +253,11 @@ class Client implements LoggerAwareInterface
         return $this;
     }
 
+    public function getHttpClient(): ClientInterface
+    {
+        return $this->client;
+    }
+
     /**
      * Set the factory used to create API specific clients.
      */
