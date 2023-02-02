@@ -14,6 +14,8 @@ namespace VonageTest\Client;
 use VonageTest\VonageTestCase;
 use Vonage\Client;
 use Vonage\Client\APIResource;
+use Vonage\Client\Credentials\Handler\BasicHandler;
+use Vonage\Client\Credentials\Handler\SignatureBodyHandler;
 
 class APIResourceTest extends VonageTestCase
 {
@@ -41,5 +43,21 @@ class APIResourceTest extends VonageTestCase
     {
         $resource = new APIResource();
         $this->assertSame('', $resource->getBaseUrl());
+    }
+
+    public function testCanSetMultipleAuthHandlers(): void
+    {
+        $resource = new APIResource();
+        $resource->setAuthHandler([new BasicHandler(), new SignatureBodyHandler()]);
+
+        $this->assertIsArray($resource->getAuthHandler());
+    }
+
+    public function testSingleAuthHanlderConvertedToArray(): void
+    {
+        $resource = new APIResource();
+        $resource->setAuthHandler(new BasicHandler());
+
+        $this->assertIsArray($resource->getAuthHandler());
     }
 }

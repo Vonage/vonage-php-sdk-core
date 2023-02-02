@@ -33,7 +33,10 @@ class APIResource implements ClientAwareInterface
     use ClientAwareTrait;
     use LoggerTrait;
 
-    protected ?HandlerInterface $authHandler = null;
+    /**
+     * @var HandlerInterface[]
+     */
+    protected array $authHandler = [];
 
     /**
      * Base URL that we will hit. This can be overridden from the underlying
@@ -349,6 +352,9 @@ class APIResource implements ClientAwareInterface
      */
     public function setAuthHandler($handler): self
     {
+        if (!is_array($handler)) {
+            $handler = [$handler];
+        }
         $this->authHandler = $handler;
 
         return $this;
