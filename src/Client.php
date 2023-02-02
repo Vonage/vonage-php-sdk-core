@@ -588,7 +588,7 @@ class Client implements LoggerAwareInterface
 
     protected function getVersion(): string
     {
-        return Versions::getVersion('vonage/client-core');
+        return InstalledVersions::getVersion('vonage/client-core');
     }
 
     public function getLogger(): ?LoggerInterface
