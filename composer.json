@@ -2,7 +2,7 @@
   "name": "vonage/client-core",
   "type": "library",
   "description": "PHP Client for using Vonage's API.",
-  "homepage": "https://developer.nexmo.com",
+  "homepage": "https://developer.vonage.com",
   "license": "Apache-2.0",
   "authors": [
     {
