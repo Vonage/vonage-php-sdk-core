@@ -245,7 +245,7 @@ class Client implements APIClient
     {
         $path = $themeId . '/finalizeLogos';
         $this->api->setBaseUri('/themes');
-        $this->api->update($path, $payload);
+        $response = $this->api->update($path, $payload);
 
         return true;
     }
@@ -289,11 +289,11 @@ class Client implements APIClient
 
         $payload = [
             'keys' => [
-                $urlEntity->fields->key
+                $urlEntity->fields['key']
             ]
         ];
 
-        $this->finalizeLogosForTheme($themeId);
+        $this->finalizeLogosForTheme($themeId, $payload);
 
         return true;
     }
@@ -303,7 +303,7 @@ class Client implements APIClient
         $request = new Request($awsUrlObject->url, 'PUT');
 
         $httpClient = $this->api->getClient()->getHttpClient();
-        $httpClient->sendRequest($request);
+        $response = $httpClient->sendRequest($request);
 
         return true;
     }

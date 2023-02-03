@@ -448,61 +448,10 @@ class ClientTest extends TestCase
         $this->assertEquals('Updated Branding', $response->brand_text);
     }
 
-    public function testWillChangeLogo(): void
-    {
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            $this->assertEquals('PUT', $request->getMethod());
-            $this->assertRequestJsonBodyContains('keys', ['this-is-a-logo-key'], $request);
-
-            $uri = $request->getUri();
-            $uriString = $uri->__toString();
-            $this->assertEquals('https://api-eu.vonage.com/beta/meetings/themes/afb5b1f2-fe83-4b14-83ff-f23f5630c160/finalizeLogos', $uriString);
-
-            return true;
-        }))->willReturn($this->getResponse('empty'));
-
-        $payload = [
-            'keys' => [
-                'this-is-a-logo-key'
-            ]
-        ];
-
-        $response = $this->meetingsClient->finalizeLogosForTheme('afb5b1f2-fe83-4b14-83ff-f23f5630c160', $payload);
-        $this->assertTrue($response);
-    }
-
-    public function testWillUploadImageToAws(): void
-    {
-        // Get the Upload URL
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            $this->assertEquals('GET', $request->getMethod());
-
-            $uri = $request->getUri();
-            $uriString = $uri->__toString();
-            $this->assertEquals('https://api-eu.vonage.com/beta/meetings/themes/logos-upload-urls', $uriString);
-
-            return true;
-        }))->willReturn($this->getResponse('get-upload-urls-success'));
-
-
-        // Upload the Image to AWS
-        $httpClient = (new Prophet())->prophesize();
-        $httpClient->willImplement(\Psr\Http\Client\ClientInterface::class);
-        $httpClient->sendRequest(Argument::that(function(RequestInterface $request) {
-            $this->assertEquals('PUT', $request->getMethod());
-
-            $uri = $request->getUri();
-            $uriString = $uri->__toString();
-            $this->assertEquals('https://s3.amazonaws.com/php-sdk/white', $uriString);
-
-            return true;
-        }))->willReturn($this->getResponse('empty'));
-
-        $this->vonageClient->getHttpClient()->willReturn($httpClient);
-
-        // Finalize logos
+//    public function testWillChangeLogo(): void
+//    {
 //        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-//            $this->assertEquals('POST', $request->getMethod());
+//            $this->assertEquals('PUT', $request->getMethod());
 //            $this->assertRequestJsonBodyContains('keys', ['this-is-a-logo-key'], $request);
 //
 //            $uri = $request->getUri();
@@ -511,6 +460,54 @@ class ClientTest extends TestCase
 //
 //            return true;
 //        }))->willReturn($this->getResponse('empty'));
+//
+//        $payload = [
+//            'keys' => [
+//                'this-is-a-logo-key'
+//            ]
+//        ];
+//
+//        $response = $this->meetingsClient->finalizeLogosForTheme('afb5b1f2-fe83-4b14-83ff-f23f5630c160', $payload);
+//        $this->assertTrue($response);
+//    }
+
+    public function testWillUploadImageToAws(): void
+    {
+        // Get the Upload URL
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+            if ($request->getMethod() === 'GET') {
+                $uri = $request->getUri();
+                $uriString = $uri->__toString();
+                $this->assertEquals('https://api-eu.vonage.com/beta/meetings/themes/logos-upload-urls', $uriString);
+
+                return true;
+            }
+
+            if ($request->getMethod() === 'PUT') {
+                $this->assertRequestJsonBodyContains('keys', ['auto-expiring-temp/logos/white/ca63a155-d5f0-4131-9903-c59907e53df0'], $request);
+
+                $uri = $request->getUri();
+                $uriString = $uri->__toString();
+                $this->assertEquals('https://api-eu.vonage.com/beta/meetings/themes/afb5b1f2-fe83-4b14-83ff-f23f5630c160/finalizeLogos', $uriString);
+
+                return true;
+            }
+        }))->willReturn($this->getResponse('get-upload-urls-success'), $this->getResponse('empty'));
+
+
+        // Upload the Image to AWS
+        $httpClient = (new Prophet())->prophesize();
+        $httpClient->willImplement(\Psr\Http\Client\ClientInterface::class);
+        $httpClient->sendRequest(Argument::that(function(RequestInterface $request) {
+            $this->assertEquals('PUT', $request->getMethod());
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals('https://s3.amazonaws.com/php-sdk/white', $uriString);
+
+            return true;
+        }))->willReturn($this->getResponse('empty'));
+
+        $this->vonageClient->getHttpClient()->willReturn($httpClient);
 
         $file = fopen(__DIR__ . '/Fixtures/vonage.png', 'r');
         $this->meetingsClient->uploadImage('afb5b1f2-fe83-4b14-83ff-f23f5630c160', $file);
