@@ -64,17 +64,16 @@ class Client implements APIClient
 
     public function getAllAvailableRooms(string $start_id = null, string $end_id = null): array
     {
+        $filterParams = [];
+
         if ($start_id || $end_id) {
-            $filterParams = [];
             $start_id ? $filterParams['start_id'] = $start_id : null;
             $end_id ? $filterParams['end_id'] = $end_id : null;
-
-            if ($filterParams) {
-                $response = $this->api->search(new KeyValueFilter($filterParams), '/rooms');
-            }
-        } else {
-            $response = $this->api->search(null, '/rooms');
         }
+        $response = $this->api->search(
+            $filterParams ? new KeyValueFilter($filterParams) : null,
+            '/themes',
+        );
 
         $response->setAutoAdvance(false);
         $response->getApiResource()->setCollectionName('rooms');

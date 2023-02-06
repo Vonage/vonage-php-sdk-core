@@ -33,9 +33,7 @@ class Signature implements \Stringable
      *
      * @throws ClientException
      */
-    public function __construct(/**
-         * Params to Sign
-         */
+    public function __construct(
         protected array $params,
         $secret,
         $signatureMethod

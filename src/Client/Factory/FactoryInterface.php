@@ -7,7 +7,7 @@ namespace Vonage\Client\Factory;
 /**
  * Interface FactoryInterface
  *
- * Factor create API clients (clients specific to single API, that leverages Vonage\Client for
+ * Factory to create API clients (clients specific to a single API, that leverages Vonage\Client for
  * common functionality).
  */
 interface FactoryInterface
