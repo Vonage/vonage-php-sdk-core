@@ -29,7 +29,10 @@ class Factory extends WebhookFactory
      */
     public static function createFromArray(array $data)
     {
-        if (array_key_exists('scts', $data)) {
+        // We are dealing with only two webhooks here. One has the text field, one does not.
+        // A sort of if/else style block here smells a bit, ideally the backend needs to change.
+
+        if (!array_key_exists('text', $data)) {
             return new DeliveryReceipt($data);
         }
 

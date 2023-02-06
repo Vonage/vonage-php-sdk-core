@@ -270,7 +270,7 @@ class DeliveryReceipt
         return $this->price;
     }
 
-    public function getScts(): string
+    public function getScts(): ?string
     {
         return $this->scts;
     }
