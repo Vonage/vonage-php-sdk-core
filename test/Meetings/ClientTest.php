@@ -7,6 +7,7 @@ use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 use Prophecy\Prophet;
+use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
 use Vonage\Client;
 use Vonage\Client\APIResource;
@@ -448,32 +449,37 @@ class ClientTest extends TestCase
         $this->assertEquals('Updated Branding', $response->brand_text);
     }
 
-//    public function testWillChangeLogo(): void
-//    {
-//        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-//            $this->assertEquals('PUT', $request->getMethod());
-//            $this->assertRequestJsonBodyContains('keys', ['this-is-a-logo-key'], $request);
-//
-//            $uri = $request->getUri();
-//            $uriString = $uri->__toString();
-//            $this->assertEquals('https://api-eu.vonage.com/beta/meetings/themes/afb5b1f2-fe83-4b14-83ff-f23f5630c160/finalizeLogos', $uriString);
-//
-//            return true;
-//        }))->willReturn($this->getResponse('empty'));
-//
-//        $payload = [
-//            'keys' => [
-//                'this-is-a-logo-key'
-//            ]
-//        ];
-//
-//        $response = $this->meetingsClient->finalizeLogosForTheme('afb5b1f2-fe83-4b14-83ff-f23f5630c160', $payload);
-//        $this->assertTrue($response);
-//    }
+    /**
+     * @dataProvider logoTypeDataProvider
+     */
+    public function testWillExtractCorrectImageKey($logoType, $validCall): void
+    {
+        if (!$validCall) {
+            $this->expectException(NotFound::class);
+        }
+
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+            if ($request->getMethod() === 'GET') {
+                $uri = $request->getUri();
+                $uriString = $uri->__toString();
+                $this->assertEquals('https://api-eu.vonage.com/beta/meetings/themes/logos-upload-urls', $uriString);
+
+                return true;
+            }
+        }))->willReturn($this->getResponse('get-upload-urls-success'));
+
+        $uploadUrls = $this->meetingsClient->getUploadUrls();
+
+        $entity = $this->meetingsClient->returnCorrectUrlEntityFromType($uploadUrls, $logoType);
+
+        if ($validCall) {
+            $this->assertEquals($logoType, $entity->fields['logoType']);
+        }
+    }
 
     public function testWillUploadImageToAws(): void
     {
-        // Get the Upload URL
+        // Two calls to predict, one is the getUploadUrls, the other finalize
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             if ($request->getMethod() === 'GET') {
                 $uri = $request->getUri();
@@ -494,23 +500,26 @@ class ClientTest extends TestCase
             }
         }))->willReturn($this->getResponse('get-upload-urls-success'), $this->getResponse('empty'));
 
-
-        // Upload the Image to AWS
+        // Testing the AWS upload request
         $httpClient = (new Prophet())->prophesize();
-        $httpClient->willImplement(\Psr\Http\Client\ClientInterface::class);
-        $httpClient->sendRequest(Argument::that(function(RequestInterface $request) {
+        $httpClient->willImplement(ClientInterface::class);
+        $httpClient->sendRequest(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('PUT', $request->getMethod());
+
+            $headers = $request->getHeaders();
+            $this->assertEquals('multipart/form-data', $headers['Content-Type'][0]);
+
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals('https://s3.amazonaws.com/php-sdk/white', $uriString);
 
             return true;
-        }))->willReturn($this->getResponse('empty'));
+        }))->willReturn($this->getResponse('empty', 204));
 
         $this->vonageClient->getHttpClient()->willReturn($httpClient);
 
-        $file = fopen(__DIR__ . '/Fixtures/vonage.png', 'r');
-        $this->meetingsClient->uploadImage('afb5b1f2-fe83-4b14-83ff-f23f5630c160', $file);
+        $file = __DIR__ . '/Fixtures/vonage.png';
+        $this->meetingsClient->uploadImage('afb5b1f2-fe83-4b14-83ff-f23f5630c160', 'white', $file);
     }
 
     public function testCanGetUploadUrlsForThemeLogo(): void
@@ -596,5 +605,15 @@ class ClientTest extends TestCase
     protected function getResponse(string $identifier, int $status = 200): Response
     {
         return new Response(fopen(__DIR__ . '/Fixtures/Responses/' . $identifier . '.json', 'rb'), $status);
+    }
+
+    public function logoTypeDataProvider(): array
+    {
+        return [
+            ['white', true],
+            ['colored', true],
+            ['favicon', true],
+            ['png', false]
+        ];
     }
 }

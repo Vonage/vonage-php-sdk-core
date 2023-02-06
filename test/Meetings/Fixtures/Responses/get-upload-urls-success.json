@@ -4,7 +4,7 @@
     "fields": {
       "Content-Type": "image/png",
       "key": "auto-expiring-temp/logos/white/ca63a155-d5f0-4131-9903-c59907e53df0",
-      "logoType": "abc123",
+      "logoType": "white",
       "bucket": "php-sdk",
       "X-Amz-Algorithm": "white-algorithm",
       "X-Amz-Credential": "white-credential",
@@ -12,6 +12,36 @@
       "X-Amz-Security-Token": "white-Token",
       "Policy": "white-Policy",
       "X-Amz-Signature": "white-signature"
+    }
+  },
+  {
+    "url": "https://s3.amazonaws.com/php-sdk/colored",
+    "fields": {
+      "Content-Type": "image/png",
+      "key": "auto-expiring-temp/logos/colored/ca63a155-d5f0-4131-9903-c59907e53df0",
+      "logoType": "colored",
+      "bucket": "php-sdk",
+      "X-Amz-Algorithm": "colored-algorithm",
+      "X-Amz-Credential": "colored-credential",
+      "X-Amz-Date": "20230125T144332Z",
+      "X-Amz-Security-Token": "colored-Token",
+      "Policy": "colored-Policy",
+      "X-Amz-Signature": "colored-signature"
+    }
+  },
+  {
+    "url": "https://s3.amazonaws.com/php-sdk/favicon",
+    "fields": {
+      "Content-Type": "image/png",
+      "key": "auto-expiring-temp/logos/white/ca63a155-d5f0-4131-9903-c59907e53df0",
+      "logoType": "favicon",
+      "bucket": "php-sdk",
+      "X-Amz-Algorithm": "white-algorithm",
+      "X-Amz-Credential": "white-credential",
+      "X-Amz-Date": "20230125T144332Z",
+      "X-Amz-Security-Token": "white-Token",
+      "Policy": "white-Policy",
+      "X-Amz-Signature": "favicon-signature"
     }
   }
 ]

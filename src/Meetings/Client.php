@@ -11,14 +11,18 @@ declare(strict_types=1);
 
 namespace Vonage\Meetings;
 
+use GuzzleHttp\Psr7\MultipartStream;
 use Laminas\Diactoros\Request;
 use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
+use Vonage\Client\Exception\NotFound;
 use Vonage\Entity\Filter\KeyValueFilter;
 use Vonage\Entity\Hydrator\ArrayHydrator;
 
 class Client implements APIClient
 {
+    public const IMAGE_TYPES = ['white', 'colored', 'favicon'];
+
     public function __construct(protected APIResource $api)
     {
     }
@@ -245,7 +249,7 @@ class Client implements APIClient
     {
         $path = $themeId . '/finalizeLogos';
         $this->api->setBaseUri('/themes');
-        $response = $this->api->update($path, $payload);
+        $this->api->update($path, $payload);
 
         return true;
     }
@@ -275,17 +279,31 @@ class Client implements APIClient
         return $application;
     }
 
-    public function uploadImage(string $themeId, $file): bool
+    /**
+     * @throws NotFound
+     */
+    public function returnCorrectUrlEntityFromType(array $uploadUrls, string $type): UrlObject
     {
-        $getUrlsResponse = $this->getUploadUrls();
+        foreach ($uploadUrls as $urlObject) {
+            if ($urlObject->fields['logoType'] === $type) {
+                return $urlObject;
+            }
+        }
 
-        // We get the first entry, at this point not clear what the correct behaviour is
-        $urlEntity = $getUrlsResponse[0];
+        throw new NotFound('Could not find correct image type');
+    }
 
-        // Then we upload it to AWS
+    /**
+     * @throws NotFound
+     */
+    public function uploadImage(string $themeId, string $type, string $file): bool
+    {
+        if (!in_array($type, self::IMAGE_TYPES)) {
+            throw new \InvalidArgumentException('Image type not recognised');
+        }
+
+        $urlEntity = $this->returnCorrectUrlEntityFromType($this->getUploadUrls(), $type);
         $this->uploadToAws($urlEntity, $file);
-
-        // Then we hit finalize logos
 
         $payload = [
             'keys' => [
@@ -298,12 +316,60 @@ class Client implements APIClient
         return true;
     }
 
-    public function uploadToAws(UrlObject $awsUrlObject, $file): bool
+    public function uploadToAws(UrlObject $awsUrlObject, string $file): bool
     {
-        $request = new Request($awsUrlObject->url, 'PUT');
+        $stream = new MultipartStream([
+            [
+                'name' => 'Content-Type',
+                'contents' => $awsUrlObject->fields['Content-Type']
+            ],
+            [
+                'name' => 'key',
+                'contents' => $awsUrlObject->fields['key']
+            ],
+            [
+                'name' => 'logoType',
+                'contents' => $awsUrlObject->fields['logoType']
+            ],
+            [
+                'name' => 'bucket',
+                'contents' => $awsUrlObject->fields['bucket']
+            ],
+            [
+                'name' => 'X-Amz-Algorithm',
+                'contents' => $awsUrlObject->fields['X-Amz-Algorithm']
+            ],
+            [
+                'name' => 'X-Amz-Credential',
+                'contents' => $awsUrlObject->fields['X-Amz-Credential']
+            ],
+            [
+                'name' => 'X-Amz-Date',
+                'contents' => $awsUrlObject->fields['X-Amz-Date']
+            ],
+            [
+                'name' => 'X-Amz-Security-Token',
+                'contents' => $awsUrlObject->fields['X-Amz-Security-Token']
+            ],
+            [
+                'name' => 'Policy',
+                'contents' => $awsUrlObject->fields['Policy']
+            ],
+            [
+                'name' => 'X-Amz-Signature',
+                'contents' => $awsUrlObject->fields['X-Amz-Signature']
+            ],
+            [
+                'name' => 'file',
+                'contents' => $file
+            ]
+        ]);
+
+        $awsRequest = new Request($awsUrlObject->url, 'PUT', $stream);
+        $awsRequest = $awsRequest->withHeader('Content-Type', 'multipart/form-data');
 
         $httpClient = $this->api->getClient()->getHttpClient();
-        $response = $httpClient->sendRequest($request);
+        $httpClient->sendRequest($awsRequest);
 
         return true;
     }
