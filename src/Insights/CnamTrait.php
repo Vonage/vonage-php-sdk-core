@@ -14,23 +14,23 @@ namespace Vonage\Insights;
 trait CnamTrait
 {
 
-    public function getCallerName()
+    public function getCallerName(): ?string
     {
-        return $this->data['caller_name'];
+        return $this->data['caller_name'] ?? null;
     }
 
-    public function getFirstName()
+    public function getFirstName(): ?string
     {
-        return $this->data['first_name'];
+        return $this->data['first_name'] ?? null;
     }
 
-    public function getLastName()
+    public function getLastName(): ?string
     {
-        return $this->data['last_name'];
+        return $this->data['last_name'] ?? null;
     }
 
-    public function getCallerType()
+    public function getCallerType(): ?string
     {
-        return $this->data['caller_type'];
+        return $this->data['caller_type'] ?? null;
     }
 }
