@@ -98,6 +98,10 @@ class ClientTest extends VonageTestCase
         $message = new SMSText($payload['to'], $payload['from'], $payload['text']);
 
         $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertEquals(
+                'Bearer ',
+                mb_substr($request->getHeaders()['Authorization'][0], 0, 7)
+            );
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('text', $payload['text'], $request);
