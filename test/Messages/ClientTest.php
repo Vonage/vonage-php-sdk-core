@@ -63,7 +63,10 @@ class ClientTest extends VonageTestCase
         $this->vonageClient = $this->prophesize(Client::class);
         $this->vonageClient->getRestUrl()->willReturn('https://rest.nexmo.com');
         $this->vonageClient->getCredentials()->willReturn(
-            new Client\Credentials\Container(new Client\Credentials\Basic('abc', 'def'))
+            new Client\Credentials\Container(new Client\Credentials\Keypair(
+                file_get_contents(__DIR__ . '/../Client/Credentials/test.key'),
+                'def'
+            ))
         );
 
         /** @noinspection PhpParamsInspection */
@@ -72,7 +75,7 @@ class ClientTest extends VonageTestCase
             ->setIsHAL(false)
             ->setErrorsOn200(false)
             ->setClient($this->vonageClient->reveal())
-            ->setAuthHandler(new Client\Credentials\Handler\BasicHandler())
+            ->setAuthHandler([new Client\Credentials\Handler\KeypairHandler(), new Client\Credentials\Handler\BasicHandler()])
             ->setExceptionErrorHandler(new ExceptionErrorHandler())
             ->setBaseUrl('https://rest.nexmo.com');
 
@@ -95,6 +98,10 @@ class ClientTest extends VonageTestCase
         $message = new SMSText($payload['to'], $payload['from'], $payload['text']);
 
         $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertEquals(
+                'Bearer ',
+                mb_substr($request->getHeaders()['Authorization'][0], 0, 7)
+            );
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('text', $payload['text'], $request);
