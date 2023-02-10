@@ -13,7 +13,7 @@ namespace Vonage\SMS\Message;
 
 class SMS extends OutboundMessage
 {
-    public const GSM_7_PATTERN = '/\A[\n\f\r !\"\#$%&\'()*+,-.\/0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ\][\\\\\^_abcdefghijklmnopqrstuvwxyz{\|}~ ¡£¤¥§¿ÄÅÆÇÉÑÖØÜßàäåæèéìñòöøùüΓΔΘΛΞΠΣΦΨΩ€]*\z/m';
+    public const GSM_7_CHARSET = "\n\f\r !\"\#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrstuvwxyz{|}~ ¡£¤¥§¿ÄÅÆÇÉÑÖØÜßàäåæèéìñòöøùüΓΔΘΛΞΠΣΦΨΩ€";
 
     protected ?string $contentId;
 
@@ -32,7 +32,8 @@ class SMS extends OutboundMessage
 
     public static function isGsm7(string $message): bool
     {
-        return (bool)preg_match(self::GSM_7_PATTERN, $message);
+        $fullPattern = "/\A[" . preg_quote(self::GSM_7_CHARSET, '/') . "]*\z/";
+        return (bool)preg_match($fullPattern, $message);
     }
 
     public function getContentId(): string
