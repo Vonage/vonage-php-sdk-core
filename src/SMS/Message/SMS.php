@@ -13,7 +13,7 @@ namespace Vonage\SMS\Message;
 
 class SMS extends OutboundMessage
 {
-    public const GSM_7_PATTERN = '/\A[\n\f\r !\"\#$%&\'()*+,-.\/0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\\\\^_abcdefghijklmnopqrstuvwxyz{\|}~ ¡£¤¥§¿ÄÅÆÇÉÑÖØÜßàäåæèéìñòöøùüΓΔΘΛΞΠΣΦΨΩ€]*\z/m';
+    public const GSM_7_PATTERN = '/\A[\n\f\r !\"\#$%&\'()*+,-.\/0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ\][\\\\\^_abcdefghijklmnopqrstuvwxyz{\|}~ ¡£¤¥§¿ÄÅÆÇÉÑÖØÜßàäåæèéìñòöøùüΓΔΘΛΞΠΣΦΨΩ€]*\z/m';
 
     protected ?string $contentId;
 
@@ -68,7 +68,7 @@ class SMS extends OutboundMessage
 
         if ($this->getType() === 'text' && ! self::isGsm7($this->getMessage())) {
             $this->setErrorMessage("You are sending a message as `text` when contains unicode only 
-            characters. This could result in encoding problems with the target device or increased billing - See 
+            characters. This could result in encoding problems with the target device - See 
             https://developer.vonage.com/messaging/sms for details, or email support@vonage.com if you have any 
             questions.");
         }

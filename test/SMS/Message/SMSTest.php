@@ -182,6 +182,7 @@ class SMSTest extends VonageTestCase
     {
         return [
             ['this is a text', true],
+            ['This is a text with some tasty characters: [test]', true],
             ['This is also a GSM7 text', true],
             ['This is a Çotcha', true],
             ['This is also a çotcha', true],
