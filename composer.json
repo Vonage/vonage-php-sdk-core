@@ -35,7 +35,10 @@
   },
   "config": {
     "optimize-autoloader": true,
-    "preferred-install": "dist"
+    "preferred-install": "dist",
+    "allow-plugins": {
+      "php-http/discovery": true
+    }
   },
   "autoload": {
     "psr-4": {
