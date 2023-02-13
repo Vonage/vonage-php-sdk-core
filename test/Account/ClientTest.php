@@ -56,6 +56,7 @@ class ClientTest extends VonageTestCase
         $this->api = new APIResource();
         $this->api->setBaseUrl('https://rest.nexmo.com')
             ->setIsHAL(false)
+            ->setAuthHandler(new Client\Credentials\Handler\BasicQueryHandler())
             ->setBaseUri('/account');
 
         $this->api->setClient($this->vonageClient->reveal());
@@ -162,6 +163,10 @@ class ClientTest extends VonageTestCase
             $this->assertEquals('/account/get-balance', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('GET', $request->getMethod());
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals('https://rest.nexmo.com/account/get-balance?api_key=abc&api_secret=def', $uriString);
 
             return true;
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('get-balance'));
