@@ -6,6 +6,9 @@ namespace Vonage\Voice\NCCO\Action;
 
 use InvalidArgumentException;
 
+/**
+ * @deprecated This will be removed in the next major version as it is being removed from the API
+ */
 class Pay implements ActionInterface
 {
     protected const PERMITTED_VOICE_KEYS = ['language', 'style'];
