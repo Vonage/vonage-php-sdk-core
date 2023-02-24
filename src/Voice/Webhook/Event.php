@@ -31,7 +31,7 @@ class Event
     public const STATUS_HUMAN = 'human';
     public const STATUS_MACHINE = 'machine';
     public const STATUS_TIMEOUT = 'timeout';
-    public const STATUS_COMPLETED = 'timeout';
+    public const STATUS_COMPLETED = 'completed';
 
     /**
      * @var string
