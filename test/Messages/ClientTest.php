@@ -645,7 +645,7 @@ class ClientTest extends VonageTestCase
     public function testThrowsRequestErrorOnBadRequest(): void
     {
         $this->expectException(Client\Exception\Request::class);
-        $this->expectErrorMessage('The request body did not contain valid JSON: Unexpected character (\'"\' (code 34)): was expecting comma to separate Object entries');
+        $this->expectExceptionMessage('The request body did not contain valid JSON: Unexpected character (\'"\' (code 34)): was expecting comma to separate Object entries');
 
         $payload = [
             'to' => '447700900000',
@@ -671,7 +671,7 @@ class ClientTest extends VonageTestCase
     public function testThrowsRateLimit(): void
     {
         $this->expectException(Client\Exception\ThrottleException::class);
-        $this->expectErrorMessage('Rate Limit Hit: Please wait, then retry your request');
+        $this->expectExceptionMessage('Rate Limit Hit: Please wait, then retry your request');
 
         $payload = [
             'to' => '447700900000',

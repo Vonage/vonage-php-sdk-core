@@ -475,7 +475,10 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
 
         $request = new Request($requestUri, 'GET');
 
-        // @TODO WARNING: isn't this a bug with the SDK? We're bypassing auth and using the client.
+        if ($this->getApiResource()->getAuthHandler()) {
+            $this->getApiResource()->addAuth($request);
+        }
+
         $response = $this->client->send($request);
 
         $this->getApiResource()->setLastRequest($request);

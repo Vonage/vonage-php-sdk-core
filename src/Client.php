@@ -141,8 +141,11 @@ class Client implements LoggerAwareInterface
     /**
      * Create a new API client using the provided credentials.
      */
-    public function __construct(CredentialsInterface $credentials, $options = [], ?ClientInterface $client = null)
-    {
+    public function __construct(
+        CredentialsInterface $credentials,
+        $options = [],
+        ?ClientInterface $client = null
+    ) {
         if (is_null($client)) {
             // Since the user did not pass a client, try and make a client
             // using the Guzzle 6 adapter or Guzzle 7 (depending on availability)
