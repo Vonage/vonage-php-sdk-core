@@ -290,6 +290,52 @@ class Client implements LoggerAwareInterface
     }
 
     /**
+     * @deprecated Use a configured APIResource with a HandlerInterface
+     * Request business logic is being removed from the User Client Layer.
+     */
+    public static function signRequest(RequestInterface $request, SignatureSecret $credentials): RequestInterface
+    {
+        $handler = match ($request->getHeaderLine('content-type')) {
+            'application/json' => new SignatureBodyHandler(),
+            'application/x-www-form-urlencoded' => new SignatureBodyFormHandler(),
+            default => new SignatureQueryHandler(),
+        };
+
+        return $handler($request, $credentials);
+    }
+
+    /**
+     * @deprecated Use a configured APIResource with a HandlerInterface
+     * Request business logic is being removed from the User Client Layer.
+     */
+    public static function authRequest(RequestInterface $request, Basic $credentials): RequestInterface
+    {
+        switch ($request->getHeaderLine('content-type')) {
+            case 'application/json':
+                if (static::requiresBasicAuth($request)) {
+                    $handler = new BasicHandler();
+                } elseif (static::requiresAuthInUrlNotBody($request)) {
+                    $handler = new TokenQueryHandler();
+                } else {
+                    $handler = new TokenBodyHandler();
+                }
+                break;
+            case 'application/x-www-form-urlencoded':
+                $handler = new TokenBodyFormHandler();
+                break;
+            default:
+                if (static::requiresBasicAuth($request)) {
+                    $handler = new BasicHandler();
+                } else {
+                    $handler = new TokenQueryHandler();
+                }
+                break;
+        }
+
+        return $handler($request, $credentials);
+    }
+
+    /**
      * @throws ClientException
      */
     public function generateJwt($claims = []): Token
@@ -302,10 +348,8 @@ class Client implements LoggerAwareInterface
     }
 
     /**
-     * Takes a URL and a key=>value array to generate a GET PSR-7 request object
-     *
-     * @throws ClientExceptionInterface
-     * @throws ClientException
+     * @deprecated Use a configured APIResource with a HandlerInterface
+     * Request business logic is being removed from the User Client Layer.
      */
     public function get(string $url, array $params = []): ResponseInterface
     {
@@ -318,10 +362,8 @@ class Client implements LoggerAwareInterface
     }
 
     /**
-     * Takes a URL and a key=>value array to generate a POST PSR-7 request object
-     *
-     * @throws ClientExceptionInterface
-     * @throws ClientException
+     * @deprecated Use a configured APIResource with a HandlerInterface
+     * Request business logic is being removed from the User Client Layer.
      */
     public function post(string $url, array $params): ResponseInterface
     {
@@ -338,10 +380,41 @@ class Client implements LoggerAwareInterface
     }
 
     /**
+     * @deprecated Use a configured APIResource with a HandlerInterface
+     * Request business logic is being removed from the User Client Layer.
+     */
+    public function put(string $url, array $params): ResponseInterface
+    {
+        $request = new Request(
+            $url,
+            'PUT',
+            'php://temp',
+            ['content-type' => 'application/json']
+        );
+
+        $request->getBody()->write(json_encode($params));
+
+        return $this->send($request);
+    }
+
+    /**
+     * @deprecated Use a configured APIResource with a HandlerInterface
+     * Request business logic is being removed from the User Client Layer.
+     */
+    public function delete(string $url): ResponseInterface
+    {
+        $request = new Request(
+            $url,
+            'DELETE'
+        );
+
+        return $this->send($request);
+    }
+
+    /**
      * Wraps the HTTP Client, creates a new PSR-7 request adding authentication, signatures, etc.
      *
      * @throws ClientExceptionInterface
-     * @throws ClientException
      */
     public function send(RequestInterface $request): ResponseInterface
     {
@@ -452,6 +525,18 @@ class Client implements LoggerAwareInterface
         return $this->factory->get($name);
     }
 
+    /**
+     * @deprecated Use the Verify Client, this shouldn't be here and will be removed.
+     */
+    public function serialize(EntityInterface $entity): string
+    {
+        if ($entity instanceof Verification) {
+            return $this->verify()->serialize($entity);
+        }
+
+        throw new RuntimeException('unknown class `' . $entity::class . '``');
+    }
+
     protected function getVersion(): string
     {
         return InstalledVersions::getVersion('vonage/client-core');
@@ -469,5 +554,47 @@ class Client implements LoggerAwareInterface
     public function getCredentials(): CredentialsInterface
     {
         return $this->credentials;
+    }
+
+    /**
+     * @deprecated Use a configured APIResource with a HandlerInterface
+     * Request business logic is being removed from the User Client Layer.
+     */
+    protected static function requiresBasicAuth(RequestInterface $request): bool
+    {
+        $path = $request->getUri()->getPath();
+        $isSecretManagementEndpoint = strpos($path, '/accounts') === 0 && strpos($path, '/secrets') !== false;
+        $isApplicationV2 = strpos($path, '/v2/applications') === 0;
+
+        return $isSecretManagementEndpoint || $isApplicationV2;
+    }
+
+    /**
+     * @deprecated Use a configured APIResource with a HandlerInterface
+     * Request business logic is being removed from the User Client Layer.
+     */
+    protected static function requiresAuthInUrlNotBody(RequestInterface $request): bool
+    {
+        $path = $request->getUri()->getPath();
+
+        $isRedact =  strpos($path, '/v1/redact') === 0;
+        $isMessages =  strpos($path, '/v1/messages') === 0;
+
+        return $isRedact || $isMessages;
+    }
+
+    /**
+     * @deprecated Use a configured APIResource with a HandlerInterface
+     * Request business logic is being removed from the User Client Layer.
+     */
+    protected function needsKeypairAuthentication(RequestInterface $request): bool
+    {
+        $path = $request->getUri()->getPath();
+        $isCallEndpoint = strpos($path, '/v1/calls') === 0;
+        $isRecordingUrl = strpos($path, '/v1/files') === 0;
+        $isStitchEndpoint = strpos($path, '/beta/conversation') === 0;
+        $isUserEndpoint = strpos($path, '/beta/users') === 0;
+
+        return $isCallEndpoint || $isRecordingUrl || $isStitchEndpoint || $isUserEndpoint;
     }
 }

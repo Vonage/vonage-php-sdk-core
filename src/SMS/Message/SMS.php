@@ -58,6 +58,16 @@ class SMS extends OutboundMessage
         return $this;
     }
 
+    /**
+     * @deprecated We don't throw errors, only warnings. This will be removed.
+     *
+     * @return string|null
+     */
+    public function getErrorMessage(): ?string
+    {
+        return $this->getWarningMessage();
+    }
+
     public function getWarningMessage(): ?string
     {
         if ($this->getType() === 'text' && ! self::isGsm7($this->getMessage())) {
