@@ -50,12 +50,4 @@ class WAPPush extends OutboundMessage
     {
         return $this->validity;
     }
-
-    /**
-     * @deprecated This will be removed once it comes out of the interface
-     */
-    public function getErrorMessage(): ?string
-    {
-        return $this->getWarningMessage();
-    }
 }
