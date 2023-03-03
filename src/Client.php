@@ -72,7 +72,6 @@ use function strpos;
  * Vonage API Client, allows access to the API from PHP.
  *
  * @method Account\Client account()
- * @method Message\Client message()
  * @method Messages\Client messages()
  * @method Application\Client applications()
  * @method Conversion\Client conversion()
@@ -291,7 +290,8 @@ class Client implements LoggerAwareInterface
     }
 
     /**
-     * @throws ClientException
+     * @deprecated Use a configured APIResource with a HandlerInterface
+     * Request business logic is being removed from the User Client Layer.
      */
     public static function signRequest(RequestInterface $request, SignatureSecret $credentials): RequestInterface
     {
@@ -304,6 +304,10 @@ class Client implements LoggerAwareInterface
         return $handler($request, $credentials);
     }
 
+    /**
+     * @deprecated Use a configured APIResource with a HandlerInterface
+     * Request business logic is being removed from the User Client Layer.
+     */
     public static function authRequest(RequestInterface $request, Basic $credentials): RequestInterface
     {
         switch ($request->getHeaderLine('content-type')) {
@@ -344,10 +348,8 @@ class Client implements LoggerAwareInterface
     }
 
     /**
-     * Takes a URL and a key=>value array to generate a GET PSR-7 request object
-     *
-     * @throws ClientExceptionInterface
-     * @throws ClientException
+     * @deprecated Use a configured APIResource with a HandlerInterface
+     * Request business logic is being removed from the User Client Layer.
      */
     public function get(string $url, array $params = []): ResponseInterface
     {
@@ -360,10 +362,8 @@ class Client implements LoggerAwareInterface
     }
 
     /**
-     * Takes a URL and a key=>value array to generate a POST PSR-7 request object
-     *
-     * @throws ClientExceptionInterface
-     * @throws ClientException
+     * @deprecated Use a configured APIResource with a HandlerInterface
+     * Request business logic is being removed from the User Client Layer.
      */
     public function post(string $url, array $params): ResponseInterface
     {
@@ -380,10 +380,8 @@ class Client implements LoggerAwareInterface
     }
 
     /**
-     * Takes a URL and a key=>value array to generate a POST PSR-7 request object
-     *
-     * @throws ClientExceptionInterface
-     * @throws ClientException
+     * @deprecated Use a configured APIResource with a HandlerInterface
+     * Request business logic is being removed from the User Client Layer.
      */
     public function postUrlEncoded(string $url, array $params): ResponseInterface
     {
@@ -399,11 +397,10 @@ class Client implements LoggerAwareInterface
         return $this->send($request);
     }
 
+
     /**
-     * Takes a URL and a key=>value array to generate a PUT PSR-7 request object
-     *
-     * @throws ClientExceptionInterface
-     * @throws ClientException
+     * @deprecated Use a configured APIResource with a HandlerInterface
+     * Request business logic is being removed from the User Client Layer.
      */
     public function put(string $url, array $params): ResponseInterface
     {
@@ -420,10 +417,8 @@ class Client implements LoggerAwareInterface
     }
 
     /**
-     * Takes a URL and a key=>value array to generate a DELETE PSR-7 request object
-     *
-     * @throws ClientExceptionInterface
-     * @throws ClientException
+     * @deprecated Use a configured APIResource with a HandlerInterface
+     * Request business logic is being removed from the User Client Layer.
      */
     public function delete(string $url): ResponseInterface
     {
@@ -439,7 +434,6 @@ class Client implements LoggerAwareInterface
      * Wraps the HTTP Client, creates a new PSR-7 request adding authentication, signatures, etc.
      *
      * @throws ClientExceptionInterface
-     * @throws ClientException
      */
     public function send(RequestInterface $request): ResponseInterface
     {
@@ -523,22 +517,13 @@ class Client implements LoggerAwareInterface
         }
     }
 
-    public function serialize(EntityInterface $entity): string
-    {
-        if ($entity instanceof Verification) {
-            return $this->verify()->serialize($entity);
-        }
-
-        throw new RuntimeException('unknown class `' . $entity::class . '``');
-    }
-
     public function __call($name, $args)
     {
-        if (!$this->factory->hasApi($name)) {
+        if (!$this->factory->has($name)) {
             throw new RuntimeException('no api namespace found: ' . $name);
         }
 
-        $collection = $this->factory->getApi($name);
+        $collection = $this->factory->get($name);
 
         if (empty($args)) {
             return $collection;
@@ -552,41 +537,23 @@ class Client implements LoggerAwareInterface
      */
     public function __get($name)
     {
-        if (!$this->factory->hasApi($name)) {
+        if (!$this->factory->has($name)) {
             throw new RuntimeException('no api namespace found: ' . $name);
         }
 
-        return $this->factory->getApi($name);
+        return $this->factory->get($name);
     }
 
-    protected static function requiresBasicAuth(RequestInterface $request): bool
+    /**
+     * @deprecated Use the Verify Client, this shouldn't be here and will be removed.
+     */
+    public function serialize(EntityInterface $entity): string
     {
-        $path = $request->getUri()->getPath();
-        $isSecretManagementEndpoint = strpos($path, '/accounts') === 0 && strpos($path, '/secrets') !== false;
-        $isApplicationV2 = strpos($path, '/v2/applications') === 0;
+        if ($entity instanceof Verification) {
+            return $this->verify()->serialize($entity);
+        }
 
-        return $isSecretManagementEndpoint || $isApplicationV2;
-    }
-
-    protected static function requiresAuthInUrlNotBody(RequestInterface $request): bool
-    {
-        $path = $request->getUri()->getPath();
-
-        $isRedact =  strpos($path, '/v1/redact') === 0;
-        $isMessages =  strpos($path, '/v1/messages') === 0;
-
-        return $isRedact || $isMessages;
-    }
-
-    protected function needsKeypairAuthentication(RequestInterface $request): bool
-    {
-        $path = $request->getUri()->getPath();
-        $isCallEndpoint = strpos($path, '/v1/calls') === 0;
-        $isRecordingUrl = strpos($path, '/v1/files') === 0;
-        $isStitchEndpoint = strpos($path, '/beta/conversation') === 0;
-        $isUserEndpoint = strpos($path, '/beta/users') === 0;
-
-        return $isCallEndpoint || $isRecordingUrl || $isStitchEndpoint || $isUserEndpoint;
+        throw new RuntimeException('unknown class `' . $entity::class . '``');
     }
 
     protected function getVersion(): string
@@ -606,5 +573,47 @@ class Client implements LoggerAwareInterface
     public function getCredentials(): CredentialsInterface
     {
         return $this->credentials;
+    }
+
+    /**
+     * @deprecated Use a configured APIResource with a HandlerInterface
+     * Request business logic is being removed from the User Client Layer.
+     */
+    protected static function requiresBasicAuth(RequestInterface $request): bool
+    {
+        $path = $request->getUri()->getPath();
+        $isSecretManagementEndpoint = strpos($path, '/accounts') === 0 && strpos($path, '/secrets') !== false;
+        $isApplicationV2 = strpos($path, '/v2/applications') === 0;
+
+        return $isSecretManagementEndpoint || $isApplicationV2;
+    }
+
+    /**
+     * @deprecated Use a configured APIResource with a HandlerInterface
+     * Request business logic is being removed from the User Client Layer.
+     */
+    protected static function requiresAuthInUrlNotBody(RequestInterface $request): bool
+    {
+        $path = $request->getUri()->getPath();
+
+        $isRedact =  strpos($path, '/v1/redact') === 0;
+        $isMessages =  strpos($path, '/v1/messages') === 0;
+
+        return $isRedact || $isMessages;
+    }
+
+    /**
+     * @deprecated Use a configured APIResource with a HandlerInterface
+     * Request business logic is being removed from the User Client Layer.
+     */
+    protected function needsKeypairAuthentication(RequestInterface $request): bool
+    {
+        $path = $request->getUri()->getPath();
+        $isCallEndpoint = strpos($path, '/v1/calls') === 0;
+        $isRecordingUrl = strpos($path, '/v1/files') === 0;
+        $isStitchEndpoint = strpos($path, '/beta/conversation') === 0;
+        $isUserEndpoint = strpos($path, '/beta/users') === 0;
+
+        return $isCallEndpoint || $isRecordingUrl || $isStitchEndpoint || $isUserEndpoint;
     }
 }

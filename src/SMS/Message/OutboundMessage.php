@@ -36,7 +36,7 @@ abstract class OutboundMessage implements Message
      */
     protected $ttl = 259200000;
 
-    protected ?string $errorMessage = null;
+    protected ?string $warningMessage = null;
 
     /**
      * Type of message, set by the child class
@@ -49,14 +49,22 @@ abstract class OutboundMessage implements Message
     {
     }
 
+    /**
+     * @deprecated Shim when correcting naming conventions, will be removed when it comes out the interface
+     */
     public function getErrorMessage(): ?string
     {
-        return $this->errorMessage;
+        return $this->getWarningMessage();
     }
 
-    public function setErrorMessage(?string $errorMessage): void
+    public function getWarningMessage(): ?string
     {
-        $this->errorMessage = $errorMessage;
+        return $this->warningMessage;
+    }
+
+    public function setWarningMessage(?string $errorMessage): void
+    {
+        $this->warningMessage = $errorMessage;
     }
 
     abstract public function toArray(): array;

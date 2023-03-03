@@ -12,17 +12,20 @@ declare(strict_types=1);
 namespace Vonage\SMS;
 
 use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Log\LogLevel;
 use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
 use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Client\Exception\ThrottleException;
+use Vonage\Logger\LoggerTrait;
 use Vonage\SMS\Message\Message;
-use Vonage\SMS\Message\SMS;
 
 use function sleep;
 
 class Client implements APIClient
 {
+    use LoggerTrait;
+
     public function __construct(protected APIResource $api)
     {
     }
@@ -38,11 +41,8 @@ class Client implements APIClient
      */
     public function send(Message $message): Collection
     {
-        if ($message->getErrorMessage()) {
-            trigger_error(
-                $message->getErrorMessage(),
-                E_USER_WARNING
-            );
+        if ($warningMessage = $message->getWarningMessage()) {
+            $this->log(LogLevel::WARNING, $warningMessage);
         }
 
         try {

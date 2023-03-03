@@ -58,23 +58,16 @@ class SMS extends OutboundMessage
         return $this;
     }
 
-    public function getErrorMessage(): ?string
+    public function getWarningMessage(): ?string
     {
-        if ($this->getType() === 'unicode' && self::isGsm7($this->getMessage())) {
-            $this->setErrorMessage("You are sending a message as `unicode` when it could be `text` or a
-            `text` type with unicode-only characters. This could result in increased billing - 
-            See https://developer.vonage.com/messaging/sms for details, or email support@vonage.com if you have any 
-            questions.");
-        }
-
         if ($this->getType() === 'text' && ! self::isGsm7($this->getMessage())) {
-            $this->setErrorMessage("You are sending a message as `text` when contains unicode only 
+            $this->setWarningMessage("You are sending a message as `text` which contains non-GSM7 
             characters. This could result in encoding problems with the target device - See 
             https://developer.vonage.com/messaging/sms for details, or email support@vonage.com if you have any 
             questions.");
         }
 
-        return $this->errorMessage;
+        return $this->warningMessage;
     }
 
     /**
