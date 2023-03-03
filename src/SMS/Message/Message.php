@@ -14,6 +14,6 @@ namespace Vonage\SMS\Message;
 interface Message
 {
     public function toArray(): array;
-    public function getErrorMessage(): ?string;
-    public function setErrorMessage(?string $errorMessage): void;
+    public function getWarningMessage(): ?string;
+    public function setWarningMessage(?string $errorMessage): void;
 }

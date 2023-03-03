@@ -13,6 +13,7 @@ namespace VonageTest\SMS;
 
 use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
+use Psr\Log\LoggerInterface;
 use VonageTest\VonageTestCase;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
@@ -377,45 +378,17 @@ class ClientTest extends VonageTestCase
         $this->smsClient->sendTwoFactor('447700900000', 1245);
     }
 
-    public function testThrowsWarningWhenSendingTextAsUnicode(): void
+    public function testLogsWarningWhenSendingUnicodeAsText(): void
     {
         $this->vonageClient->send(Argument::that(function (Request $request) {
             return true;
         }))->willReturn($this->getResponse('send-success'));
 
-        $this->expectWarning();
-        $this->expectErrorMessage("You are sending a message as `unicode` when it could be `text` or a
-            `text` type with unicode-only characters. This could result in increased billing - 
-            See https://developer.vonage.com/messaging/sms for details, or email support@vonage.com if you have any 
-            questions.");
-
-        $args = [
-            'to' => '447700900000',
-            'from' => '16105551212',
-            'text' => "This Can Be Sent As GSM7",
-            'account-ref' => 'customer1234',
-            'client-ref' => 'my-personal-reference'
-        ];
-
-        $message = (new SMS($args['to'], $args['from'], $args['text']))
-            ->setClientRef($args['client-ref'])
-            ->setAccountRef($args['account-ref'])
-            ->setType('unicode');
-
-        $response = $this->smsClient->send($message);
-    }
-
-    public function testThrowsWarningWhenSendingUnicodeAsText(): void
-    {
-        $this->vonageClient->send(Argument::that(function (Request $request) {
-            return true;
-        }))->willReturn($this->getResponse('send-success'));
-
-        $this->expectWarning();
-        $this->expectErrorMessage("You are sending a message as `text` when contains unicode only 
-            characters. This could result in encoding problems with the target device - See 
-            https://developer.vonage.com/messaging/sms for details, or email support@vonage.com if you have any 
-            questions.");
+//        $this->expectWarning();
+//        $this->expectErrorMessage("You are sending a message as `text` when contains unicode only
+//            characters. This could result in encoding problems with the target device - See
+//            https://developer.vonage.com/messaging/sms for details, or email support@vonage.com if you have any
+//            questions.");
 
         $args = [
             'to' => '447700900000',
@@ -428,6 +401,25 @@ class ClientTest extends VonageTestCase
         $message = (new SMS($args['to'], $args['from'], $args['text']))
             ->setClientRef($args['client-ref'])
             ->setAccountRef($args['account-ref']);
+
+        $logger = $this->prophesize(LoggerInterface::class);
+
+        $logger->log(
+            Argument::that(function ($level) {
+                $this->assertEquals('warning', $level);
+                return true;
+            }),
+            Argument::that(function ($message) {
+                $this->assertEquals('You are sending a message as `text` when contains unicode only 
+            characters. This could result in encoding problems with the target device - See 
+            https://developer.vonage.com/messaging/sms for details, or email support@vonage.com if you have any 
+            questions.', $message);
+                return true;
+            }),
+            Argument::any()
+        );
+
+        $this->smsClient->setLogger($logger->reveal());
 
         $response = $this->smsClient->send($message);
     }
