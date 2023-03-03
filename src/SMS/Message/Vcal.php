@@ -38,4 +38,12 @@ class Vcal extends OutboundMessage
     {
         return $this->event;
     }
+
+    /**
+     * @deprecated This will be removed once it comes out of the interface
+     */
+    public function getErrorMessage(): ?string
+    {
+        return $this->getWarningMessage();
+    }
 }
