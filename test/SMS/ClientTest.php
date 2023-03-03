@@ -384,12 +384,6 @@ class ClientTest extends VonageTestCase
             return true;
         }))->willReturn($this->getResponse('send-success'));
 
-//        $this->expectWarning();
-//        $this->expectErrorMessage("You are sending a message as `text` when contains unicode only
-//            characters. This could result in encoding problems with the target device - See
-//            https://developer.vonage.com/messaging/sms for details, or email support@vonage.com if you have any
-//            questions.");
-
         $args = [
             'to' => '447700900000',
             'from' => '16105551212',
