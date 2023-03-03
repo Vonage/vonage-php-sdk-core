@@ -383,6 +383,25 @@ class Client implements LoggerAwareInterface
      * @deprecated Use a configured APIResource with a HandlerInterface
      * Request business logic is being removed from the User Client Layer.
      */
+    public function postUrlEncoded(string $url, array $params): ResponseInterface
+    {
+        $request = new Request(
+            $url,
+            'POST',
+            'php://temp',
+            ['content-type' => 'application/x-www-form-urlencoded']
+        );
+
+        $request->getBody()->write(http_build_query($params));
+
+        return $this->send($request);
+    }
+
+
+    /**
+     * @deprecated Use a configured APIResource with a HandlerInterface
+     * Request business logic is being removed from the User Client Layer.
+     */
     public function put(string $url, array $params): ResponseInterface
     {
         $request = new Request(
