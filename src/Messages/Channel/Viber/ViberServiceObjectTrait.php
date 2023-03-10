@@ -13,9 +13,6 @@ trait ViberServiceObjectTrait
         return $this->getCategory() || $this->getTtl() || $this->getType();
     }
 
-    /**
-     * @return string|null
-     */
     public function getCategory(): ?string
     {
         return $this->category;
@@ -26,33 +23,21 @@ trait ViberServiceObjectTrait
         $this->category = $category;
     }
 
-    /**
-     * @return int|null
-     */
     public function getTtl(): ?int
     {
         return $this->ttl;
     }
 
-    /**
-     * @param int|null $ttl
-     */
     public function setTtl(int $ttl): void
     {
         $this->ttl = $ttl;
     }
 
-    /**
-     * @return string|null
-     */
     public function getType(): ?string
     {
         return $this->type;
     }
 
-    /**
-     * @param string|null $type
-     */
     public function setType(string $type): void
     {
         $this->type = $type;
