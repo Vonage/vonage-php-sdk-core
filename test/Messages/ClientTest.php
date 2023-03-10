@@ -16,6 +16,8 @@ use Laminas\Diactoros\Response;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
 use Vonage\Client\APIResource;
+use Vonage\Messages\Channel\Viber\MessageObjects\ViberActionObject;
+use Vonage\Messages\Channel\Viber\ViberFile;
 use Vonage\Messages\ExceptionErrorHandler;
 use Vonage\Messages\MessageObjects\AudioObject;
 use Vonage\Messages\MessageObjects\FileObject;
@@ -719,6 +721,7 @@ class ClientTest extends VonageTestCase
 
             return true;
         }))->willReturn($this->getResponse('sms-success', 202));
+
         $result = $this->messageClient->send($message);
         $this->assertIsArray($result);
         $this->assertArrayHasKey('message_uuid', $result);
@@ -758,6 +761,43 @@ class ClientTest extends VonageTestCase
 
             return true;
         }))->willReturn($this->getResponse('sms-success', 202));
+
+        $result = $this->messageClient->send($message);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('message_uuid', $result);
+    }
+
+    public function testCanSendViberFile(): void
+    {
+        $fileObject = new FileObject(
+            'https://file-examples.com/wp-content/uploads/2017/04/file_example_MP4_480_1_5MG.mp4',
+            'some file'
+        );
+
+        $payload = [
+            'to' => '447700900000',
+            'from' => '16105551212',
+            'file' => $fileObject
+        ];
+
+        $message = new ViberFile(
+            $payload['to'],
+            $payload['from'],
+            $payload['file']
+        );
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
+            $this->assertRequestJsonBodyContains('file', $payload['file']->toArray(), $request);
+            $this->assertRequestJsonBodyContains('channel', 'viber_service', $request);
+            $this->assertRequestJsonBodyContains('message_type', 'file', $request);
+
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('sms-success', 202));
+
         $result = $this->messageClient->send($message);
         $this->assertIsArray($result);
         $this->assertArrayHasKey('message_uuid', $result);
