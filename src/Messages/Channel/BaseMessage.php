@@ -17,6 +17,7 @@ abstract class BaseMessage implements Message
     public const MESSAGES_SUBTYPE_VIDEO = 'video';
     public const MESSAGES_SUBTYPE_FILE = 'file';
     public const MESSAGES_SUBTYPE_TEMPLATE = 'template';
+    public const MESSAGES_SUBTYPE_STICKER = 'sticker';
     public const MESSAGES_SUBTYPE_CUSTOM = 'custom';
 
     public function getClientRef(): ?string
