@@ -5,41 +5,14 @@ declare(strict_types=1);
 namespace VonageTest\Verify2;
 
 use Laminas\Diactoros\Request;
-use Laminas\Diactoros\Response;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
 use Vonage\Client\APIResource;
-use Vonage\Messages\ExceptionErrorHandler;
-use Vonage\Messages\MessageObjects\AudioObject;
-use Vonage\Messages\MessageObjects\FileObject;
-use Vonage\Messages\MessageObjects\ImageObject;
-use Vonage\Messages\MessageObjects\TemplateObject;
-use Vonage\Messages\MessageObjects\VCardObject;
-use Vonage\Messages\MessageObjects\VideoObject;
-use Vonage\Messages\Channel\Messenger\MessengerAudio;
-use Vonage\Messages\Channel\Messenger\MessengerFile;
-use Vonage\Messages\Channel\Messenger\MessengerImage;
-use Vonage\Messages\Channel\Messenger\MessengerText;
-use Vonage\Messages\Channel\Messenger\MessengerVideo;
-use Vonage\Messages\Channel\MMS\MMSAudio;
-use Vonage\Messages\Channel\MMS\MMSImage;
-use Vonage\Messages\Channel\MMS\MMSvCard;
-use Vonage\Messages\Channel\MMS\MMSVideo;
 use Vonage\Messages\Channel\SMS\SMSText;
-use Vonage\Messages\Channel\Viber\ViberImage;
-use Vonage\Messages\Channel\Viber\ViberText;
-use Vonage\Messages\Channel\WhatsApp\WhatsAppAudio;
-use Vonage\Messages\Channel\WhatsApp\WhatsAppCustom;
-use Vonage\Messages\Channel\WhatsApp\WhatsAppFile;
-use Vonage\Messages\Channel\WhatsApp\WhatsAppImage;
-use Vonage\Messages\Channel\WhatsApp\WhatsAppTemplate;
-use Vonage\Messages\Channel\WhatsApp\WhatsAppText;
-use Vonage\Messages\Channel\WhatsApp\WhatsAppVideo;
 use VonageTest\Psr7AssertionTrait;
 use VonageTest\VonageTestCase;
 use Vonage\Client;
-use Vonage\Messages\Client as MessagesClient;
-use function VonageTest\Messages\mb_substr;
+use Vonage\Verify2\Client as Verify2Client;
 
 class ClientTest extends VonageTestCase
 {
@@ -67,11 +40,140 @@ class ClientTest extends VonageTestCase
             ->setAuthHandler([new Client\Credentials\Handler\BasicHandler(), new Client\Credentials\Handler\KeypairHandler()])
             ->setBaseUrl('https://rest.nexmo.com');
 
-        $this->messageClient = new Verify2Client($this->api);
+        $this->verify2Client = new Verify2Client($this->api);
     }
 
     public function testHasSetupClientCorrectly(): void
     {
-        $this->assertInstanceOf(Verify2Client::class, $this->messageClient);
+        $this->assertInstanceOf(Verify2Client::class, $this->verify2Client);
+    }
+
+    public function testSetsRequestAuthCorrectly(): void
+    {
+
+    }
+
+    public function testCanRequestSMS(): void
+    {
+        $payload = [
+            'locale' => new VerificationLocale(),
+            'client_ref' => 'my-verification',
+            'brand' => 'my-brand',
+        ];
+
+        $smsVerification = new SMSVerification();
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertEquals(
+                'Bearer ',
+                mb_substr($request->getHeaders()['Authorization'][0], 0, 7)
+            );
+
+            return true;
+        }))->willReturn($this->getResponse('sms-success', 202));
+
+        $result = $this->verify2Client->send($smsVerification);
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('request_id', $result);
+    }
+
+    /**
+     * @dataProvider LocaleProvider
+     */
+    public function testCannotRequestSMSWithInvalidLocale(): void
+    {
+
+    }
+
+    /**
+     * @dataProvider TimeoutProvider
+     */
+    public function testTimeoutParsesCorrectly(): void
+    {
+
+    }
+
+    /**
+     * @dataProvider PINLengthProvider
+     */
+    public function testCannotRequestSMSWithInvalidCodeLength(): void
+    {
+
+    }
+
+    public function testCanRequestWhatsApp(): void
+    {
+
+    }
+
+    public function testCanRequestWhatsAppInteractive(): void
+    {
+
+    }
+
+    public function testCanRequestVoice(): void
+    {
+
+    }
+
+    public function testCanRequestEmail(): void
+    {
+
+    }
+
+    public function testCanRequestSilentAuth(): void
+    {
+
+    }
+
+    public function testCannotSendConcurrentVerifications(): void
+    {
+
+    }
+
+    public function testCannotSendWithoutBrand(): void
+    {
+
+    }
+
+    public function testCanHandleThrottle(): void
+    {
+
+    }
+
+    public function testCheckValidIdAndPIN(): void
+    {
+
+    }
+
+    public function testCheckHandlesInvalidPIN(): void
+    {
+
+    }
+
+    public function testCheckHandlesInvalidRequestId(): void
+    {
+
+    }
+
+    public function testCheckHandlesConflict(): void
+    {
+
+    }
+
+    public function testCheckHandlesLockedCodeSubmission(): void
+    {
+
+    }
+
+    public function testCheckHandlesThrottle(): void
+    {
+
+    }
+
+    public function testSilentAuthDoesNotAcceptPin(): void
+    {
+
     }
 }
