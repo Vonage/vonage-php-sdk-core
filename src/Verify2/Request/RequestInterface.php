@@ -13,10 +13,11 @@ interface RequestInterface
     public function setLength(int $length): static;
     public function setBrand(string $brand): static;
     public function addWorkflow(VerificationWorkflow $verificationWorkflow): static;
-    public function getLocale(): string;
+    public function getLocale(): ?VerificationLocale;
     public function getTimeout(): int;
     public function getClientRef(): ?string;
     public function getLength(): int;
     public function getBrand(): string;
     public function getWorkflows(): array;
+    public function getBaseVerifyUniversalOutputArray(): array;
 }
