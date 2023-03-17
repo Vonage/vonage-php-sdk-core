@@ -10,7 +10,12 @@ use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
 use Vonage\Client\APIResource;
 use Vonage\Messages\Channel\SMS\SMSText;
+use Vonage\Verify2\Request\EmailRequest;
+use Vonage\Verify2\Request\SilentAuthRequest;
 use Vonage\Verify2\Request\SMSRequest;
+use Vonage\Verify2\Request\VoiceRequest;
+use Vonage\Verify2\Request\WhatsAppInteractiveRequest;
+use Vonage\Verify2\Request\WhatsAppRequest;
 use Vonage\Verify2\VerifyObjects\VerificationLocale;
 use VonageTest\Psr7AssertionTrait;
 use VonageTest\VonageTestCase;
@@ -67,7 +72,7 @@ class ClientTest extends VonageTestCase
                 mb_substr($request->getHeaders()['Authorization'][0], 0, 6)
             );
             return true;
-        }))->willReturn($this->getResponse('sms-success', 202));
+        }))->willReturn($this->getResponse('verify-request-success', 202));
 
         $result = $this->verify2Client->send($smsVerification);
     }
@@ -98,7 +103,7 @@ class ClientTest extends VonageTestCase
             $this->assertEquals('POST', $request->getMethod());
 
             return true;
-        }))->willReturn($this->getResponse('sms-success', 202));
+        }))->willReturn($this->getResponse('verify-request-success', 202));
 
         $result = $this->verify2Client->send($smsVerification);
 
@@ -136,7 +141,7 @@ class ClientTest extends VonageTestCase
             $this->assertEquals('POST', $request->getMethod());
 
             return true;
-        }))->willReturn($this->getResponse('sms-success', 202));
+        }))->willReturn($this->getResponse('verify-request-success', 202));
 
         $result = $this->verify2Client->send($smsVerification);
 
@@ -172,7 +177,7 @@ class ClientTest extends VonageTestCase
             $this->assertRequestJsonBodyContains('channel_timeout', $payload['timeout'], $request);
 
             return true;
-        }))->willReturn($this->getResponse('sms-success', 202));
+        }))->willReturn($this->getResponse('verify-request-success', 202));
 
         $result = $this->verify2Client->send($smsVerification);
 
@@ -181,36 +186,171 @@ class ClientTest extends VonageTestCase
     }
 
     /**
-     * @dataProvider PinLengthProvider
+     * @dataProvider pinLengthProvider
      */
-    public function testCannotRequestSMSWithInvalidCodeLength(): void
+    public function testCannotRequestSMSWithInvalidCodeLength($length, $valid): void
     {
+        if (!$valid) {
+            $this->expectException(\OutOfBoundsException::class);
+        }
 
+        $payload = [
+            'to' => '07785254785',
+            'client_ref' => 'my-verification',
+            'brand' => 'my-brand',
+            'length' => $length
+        ];
+
+        $smsVerification = new SMSRequest($payload['to'], $payload['brand'], $payload['client_ref']);
+        $smsVerification->setLength($payload['length']);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertRequestJsonBodyContains('code_length', $payload['length'], $request);
+            return true;
+        }))->willReturn($this->getResponse('verify-request-success', 202));
+
+        $result = $this->verify2Client->send($smsVerification);
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('request_id', $result);
     }
 
     public function testCanRequestWhatsApp(): void
     {
+        $payload = [
+            'to' => '07785254785',
+            'client_ref' => 'my-verification',
+            'brand' => 'my-brand',
+        ];
 
+        $whatsAppVerification = new WhatsAppRequest($payload['to'], $payload['brand'],null, $payload['client_ref']);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertRequestJsonBodyContains('locale', 'en-us', $request);
+            $this->assertRequestJsonBodyContains('channel_timeout', 300, $request);
+            $this->assertRequestJsonBodyContains('client_ref', $payload['client_ref'], $request);
+            $this->assertRequestJsonBodyContains('code_length', 4, $request);
+            $this->assertRequestJsonBodyContains('brand', $payload['brand'], $request);
+            $this->assertRequestJsonBodyContains('to', $payload['to'], $request, true);
+            $this->assertRequestJsonBodyContains('channel', 'whatsapp', $request, true);
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('verify-request-success', 202));
+
+        $result = $this->verify2Client->send($whatsAppVerification);
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('request_id', $result);
     }
 
     public function testCanRequestWhatsAppInteractive(): void
     {
+        $payload = [
+            'to' => '07785254785',
+            'client_ref' => 'my-verification',
+            'brand' => 'my-brand',
+        ];
 
+        $whatsAppInteractiveRequest = new WhatsAppInteractiveRequest($payload['to'], $payload['brand'], $payload['client_ref']);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertRequestJsonBodyContains('locale', 'en-us', $request);
+            $this->assertRequestJsonBodyContains('channel_timeout', 300, $request);
+            $this->assertRequestJsonBodyContains('client_ref', $payload['client_ref'], $request);
+            $this->assertRequestJsonBodyContains('code_length', 4, $request);
+            $this->assertRequestJsonBodyContains('brand', $payload['brand'], $request);
+            $this->assertRequestJsonBodyContains('to', $payload['to'], $request, true);
+            $this->assertRequestJsonBodyContains('channel', 'whatsapp_interactive', $request, true);
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('verify-request-success', 202));
+
+        $result = $this->verify2Client->send($whatsAppInteractiveRequest);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('request_id', $result);
     }
 
     public function testCanRequestVoice(): void
     {
+        $payload = [
+            'to' => '07785254785',
+            'client_ref' => 'my-verification',
+            'brand' => 'my-brand',
+        ];
 
+        $voiceRequest = new VoiceRequest($payload['to'], $payload['brand'], $payload['client_ref']);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertRequestJsonBodyContains('locale', 'en-us', $request);
+            $this->assertRequestJsonBodyContains('channel_timeout', 300, $request);
+            $this->assertRequestJsonBodyContains('client_ref', $payload['client_ref'], $request);
+            $this->assertRequestJsonBodyContains('code_length', 4, $request);
+            $this->assertRequestJsonBodyContains('brand', $payload['brand'], $request);
+            $this->assertRequestJsonBodyContains('to', $payload['to'], $request, true);
+            $this->assertRequestJsonBodyContains('channel', 'voice', $request, true);
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('verify-request-success', 202));
+
+        $result = $this->verify2Client->send($voiceRequest);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('request_id', $result);
     }
 
     public function testCanRequestEmail(): void
     {
+        $payload = [
+            'to' => 'alice@company.com',
+            'from' => 'bob@company.com',
+            'client_ref' => 'my-verification',
+            'brand' => 'my-brand',
+        ];
 
+        $emailRequest = new EmailRequest($payload['to'], $payload['brand'], $payload['from'], $payload['client_ref']);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertRequestJsonBodyContains('locale', 'en-us', $request);
+            $this->assertRequestJsonBodyContains('channel_timeout', 300, $request);
+            $this->assertRequestJsonBodyContains('client_ref', $payload['client_ref'], $request);
+            $this->assertRequestJsonBodyContains('code_length', 4, $request);
+            $this->assertRequestJsonBodyContains('brand', $payload['brand'], $request);
+            $this->assertRequestJsonBodyContains('to', $payload['to'], $request, true);
+            $this->assertRequestJsonBodyContains('from', $payload['from'], $request, true);
+            $this->assertRequestJsonBodyContains('channel', 'email', $request, true);
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('verify-request-success', 202));
+
+        $result = $this->verify2Client->send($emailRequest);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('request_id', $result);
     }
 
     public function testCanRequestSilentAuth(): void
     {
+        $payload = [
+            'to' => '07784587411',
+            'brand' => 'my-brand',
+        ];
 
+        $silentAuthRequest = new SilentAuthRequest($payload['to'], $payload['brand']);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertRequestJsonBodyContains('brand', $payload['brand'], $request);
+            $this->assertRequestJsonBodyContains('to', $payload['to'], $request, true);
+            $this->assertRequestJsonBodyContains('channel', 'silent_auth', $request, true);
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('verify-request-success', 202));
+
+        $result = $this->verify2Client->send($silentAuthRequest);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('request_id', $result);
     }
 
     public function testCannotSendConcurrentVerifications(): void
@@ -295,7 +435,19 @@ class ClientTest extends VonageTestCase
 
     public function pinLengthProvider(): array
     {
-        return [];
+        return [
+            [2, false],
+            [3, false],
+            [4, true],
+            [5, true],
+            [6, true],
+            [7, true],
+            [8, true],
+            [9, true],
+            [10, true],
+            [11, false],
+            [01, false]
+        ];
     }
 
     public function timeoutProvider(): array

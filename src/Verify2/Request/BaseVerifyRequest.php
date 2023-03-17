@@ -9,6 +9,8 @@ abstract class BaseVerifyRequest implements RequestInterface
 {
     private const TIMEOUT_MIN = 60;
     private const TIMEOUT_MAX = 900;
+    private const LENGTH_MIN = 4;
+    private const LENGTH_MAX = 10;
 
     protected ?VerificationLocale $locale = null;
 
@@ -47,7 +49,7 @@ abstract class BaseVerifyRequest implements RequestInterface
         ];
 
         if (!filter_var($timeout, FILTER_VALIDATE_INT, $range)) {
-            throw new \OutOfBoundsException('Timeout ' . $timeout . ' is not a valid integer');
+            throw new \OutOfBoundsException('Timeout ' . $timeout . ' is not valid');
         }
 
         $this->timeout = $timeout;
@@ -74,6 +76,17 @@ abstract class BaseVerifyRequest implements RequestInterface
 
     public function setLength(int $length): static
     {
+        $range = [
+            'options' => [
+                'min_range' => self::LENGTH_MIN,
+                'max_range' => self::LENGTH_MAX
+            ]
+        ];
+
+        if (!filter_var($length, FILTER_VALIDATE_INT, $range)) {
+            throw new \OutOfBoundsException('PIN Length ' . $length . ' is not valid');
+        }
+
         $this->length = $length;
 
         return $this;
