@@ -20,6 +20,9 @@
     <testsuite name="default">
       <directory>test</directory>
     </testsuite>
+    <testsuite name="verify2">
+      <directory>test/Verify2</directory>
+    </testsuite>
   </testsuites>
   <php>
         <ini name='error_reporting' value='E_ALL' />

@@ -10,7 +10,7 @@ class SMSRequest extends BaseVerifyRequest
     public function __construct(
         protected string $to,
         protected string $brand,
-        protected ?string $clientRef,
+        protected ?string $clientRef = null,
         protected ?VerificationLocale $locale = null
     ) {
         if (!$this->locale) {
@@ -20,10 +20,9 @@ class SMSRequest extends BaseVerifyRequest
         $workflow = new VerificationWorkflow('sms', $to);
         $this->addWorkflow($workflow);
     }
+
     public function toArray(): array
     {
-        $return = $this->getBaseVerifyUniversalOutputArray();
-
-        return $return;
+        return $this->getBaseVerifyUniversalOutputArray();
     }
 }

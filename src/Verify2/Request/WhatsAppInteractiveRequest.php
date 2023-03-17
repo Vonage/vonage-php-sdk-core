@@ -2,7 +2,27 @@
 
 namespace Vonage\Verify2\Request;
 
-class WhatsAppInteractiveRequest
-{
+use Vonage\Verify2\VerifyObjects\VerificationLocale;
+use Vonage\Verify2\VerifyObjects\VerificationWorkflow;
 
+class WhatsAppInteractiveRequest extends BaseVerifyRequest
+{
+    public function __construct(
+        protected string $to,
+        protected string $brand,
+        protected ?string $clientRef,
+        protected ?VerificationLocale $locale = null
+    ) {
+        if (!$this->locale) {
+            $this->locale = new VerificationLocale();
+        }
+
+        $workflow = new VerificationWorkflow('whatsapp_interactive', $to);
+        $this->addWorkflow($workflow);
+    }
+
+    public function toArray(): array
+    {
+        return $this->getBaseVerifyUniversalOutputArray();
+    }
 }
