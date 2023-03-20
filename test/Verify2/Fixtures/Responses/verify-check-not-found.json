@@ -1,0 +1,6 @@
+{
+  "title": "Not Found",
+  "type": "https://developer.vonage.com/api-errors#not-found",
+  "detail": "Request c11236f4-00bf-4b89-84ba-88b25df97315 was not found or it has been verified already.",
+  "instance": "bf0ca0bf927b3b52e3cb03217e1a1ddf"
+}

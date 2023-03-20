@@ -1,0 +1,10 @@
+{
+  "title": "Invalid params",
+  "type": "https://www.developer.vonage.com/api-errors#invalid-params",
+  "detail": "The value of one or more parameters is invalid",
+  "instance": "06032957-99ce-41ee-978b-9a390cd5a89b",
+  "invalid_parameters": {
+    "name": "brand",
+    "reason": "Brand is required"
+  }
+}
