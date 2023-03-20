@@ -10,7 +10,7 @@ class SilentAuthRequest extends BaseVerifyRequest
         protected string $to,
         protected string $brand,
     ) {
-        $workflow = new VerificationWorkflow('silent_auth', $to);
+        $workflow = new VerificationWorkflow(VerificationWorkflow::WORKFLOW_SILENT_AUTH, $to);
         $this->addWorkflow($workflow);
     }
 

@@ -228,6 +228,8 @@ $viberImage = new Vonage\Messages\Channel\Viber\ViberImage(
 $client->messages()->send($viberImage);
 ```
 
+## Verify Examples (v1)
+
 ### Starting a Verification
 
 Vonage's [Verify API][doc_verify] makes it easy to prove that a user has provided their own phone number during signup,
@@ -294,6 +296,54 @@ echo "Started verification with an id of: " . $response['request_id'];
 ```
 
 Once the user inputs the pin code they received, call the `/check` endpoint with the request ID and the pin to confirm the pin is correct.
+
+## Verify Examples (v2)
+
+### Starting a Verification
+
+Vonage's Verify v2 relies more on asynchronous workflows via. webhooks, and more customisable Verification
+workflows to the developer. To start a verification, you'll need the API client, which is under the namespace
+`verify2`.
+
+Making a Verify request needs a 'base' channel of communication to deliver the mode of verification. You can
+customise these interactions by adding different 'workflows'. For each type of workflow, there is a Verify2 class
+you can create that will handle the initial workflow for you. For example:
+
+```php
+$client = new Vonage\Client(
+    new Vonage\Client\Credentials\Basic(API_KEY, API_SECRET),
+);
+
+$smsRequest = new \Vonage\Verify2\Request\SMSRequest('TO_NUMBER');
+$client->verify2()->startVerification($smsRequest);
+```
+
+The `SMSRequest` object will resolve defaults for you, and will create a default `workflow` object to use SMS.
+You can, however, add multiple workflows that operate with 'fall back' logic. For example, if you wanted to create
+a Verification that tries to get a PIN code off the user via. SMS, but in case there is a problem with SMS delivery
+you wish to add a Voice fallback: you can add it.
+
+```php
+$client = new Vonage\Client(
+    new Vonage\Client\Credentials\Basic(API_KEY, API_SECRET),
+);
+
+$smsRequest = new \Vonage\Verify2\Request\SMSRequest('TO_NUMBER', 'my-verification');
+$voiceWorkflow = new \Vonage\Verify2\VerifyObjects\VerificationWorkflow(\Vonage\Verify2\VerifyObjects\VerificationWorkflow::WORKFLOW_VOICE, 'TO_NUMBER');
+$smsRequest->addWorkflow($voiceWorkflow);
+$client->verify2()->startVerification($smsRequest);
+```
+This adds the voice workflow to the original SMS request. The verification request will try and resolve the process in
+the order that it is given (starting with the default for the type of request).
+
+The base request types are as follows:
+
+* `SMSRequest`
+* `WhatsAppRequest`
+* `WhatsAppInterativeRequest`
+* `EmailRequest`
+* `VoiceRequest`
+* `SilentAuthRequest`
 
 ### Making a Call 
 
@@ -797,25 +847,26 @@ Check out the [documentation](https://developer.nexmo.com/number-insight/code-sn
 
 ## Supported APIs
 
-| API   | API Release Status |  Supported?
-|----------|:---------:|:-------------:|
-| Account API | General Availability |✅|
-| Alerts API | General Availability |✅|
-| Application API | General Availability |✅|
-| Audit API | Beta |❌|
-| Conversation API | Beta |❌|
-| Dispatch API | Beta |❌|
-| External Accounts API | Beta |❌|
-| Media API | Beta | ❌|
-| Messages API | General Availability |✅|
-| Number Insight API | General Availability |✅|
-| Number Management API | General Availability |✅|
-| Pricing API | General Availability |✅|
-| Redact API | General Availability |✅|
-| Reports API | Beta |❌|
-| SMS API | General Availability |✅|
-| Verify API | General Availability |✅|
-| Voice API | General Availability |✅|
+| API                    |  API Release Status  |  Supported?
+|------------------------|:--------------------:|:-------------:|
+| Account API            | General Availability |✅|
+| Alerts API             | General Availability |✅|
+| Application API        | General Availability |✅|
+| Audit API              |         Beta         |❌|
+| Conversation API       |         Beta         |❌|
+| Dispatch API           |         Beta         |❌|
+| External Accounts API  |         Beta         |❌|
+| Media API              |         Beta         | ❌|
+| Messages API           | General Availability |✅|
+| Number Insight API     | General Availability |✅|
+| Number Management API  | General Availability |✅|
+| Pricing API            | General Availability |✅|
+| Redact API             | General Availability |✅|
+| Reports API            |         Beta         |❌|
+| SMS API                | General Availability |✅|
+| Verify API             | General Availability |✅|
+| Verify API (Version 2) |         Beta         |❌|
+| Voice API              | General Availability |✅|
 
 ## Troubleshooting
 
