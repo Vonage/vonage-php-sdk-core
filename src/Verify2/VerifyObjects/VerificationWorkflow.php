@@ -6,8 +6,27 @@ use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 
 class VerificationWorkflow implements ArrayHydrateInterface
 {
+    protected const WORKFLOW_SMS = 'sms';
+    protected const WORKFLOW_WHATSAPP = 'whatsapp';
+    protected const WORKFLOW_WHATSAPP_INTERACTIVE = 'whatsapp_interactive';
+    protected const WORKFLOW_VOICE = 'voice';
+    protected const WORKFLOW_EMAIL = 'email';
+    protected const WORKFLOW_SILENT_AUTH = 'silent_auth';
+
+    protected array $allowedWorkflows = [
+        self::WORKFLOW_SMS,
+        self::WORKFLOW_WHATSAPP,
+        self::WORKFLOW_WHATSAPP_INTERACTIVE,
+        self::WORKFLOW_VOICE,
+        self::WORKFLOW_EMAIL,
+        self::WORKFLOW_SILENT_AUTH
+    ];
+
     public function __construct(protected string $channel, protected string $to, protected string $from = '')
     {
+        if (! in_array($channel, $this->allowedWorkflows, true)) {
+            throw new \InvalidArgumentException($this->channel . ' is not a valid workflow');
+        }
     }
 
     public function getChannel(): string

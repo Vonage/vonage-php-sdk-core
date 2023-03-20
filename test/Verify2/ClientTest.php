@@ -9,7 +9,6 @@ use Laminas\Diactoros\Response;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
 use Vonage\Client\APIResource;
-use Vonage\Messages\Channel\SMS\SMSText;
 use Vonage\Verify2\Request\EmailRequest;
 use Vonage\Verify2\Request\SilentAuthRequest;
 use Vonage\Verify2\Request\SMSRequest;
@@ -17,6 +16,7 @@ use Vonage\Verify2\Request\VoiceRequest;
 use Vonage\Verify2\Request\WhatsAppInteractiveRequest;
 use Vonage\Verify2\Request\WhatsAppRequest;
 use Vonage\Verify2\VerifyObjects\VerificationLocale;
+use Vonage\Verify2\VerifyObjects\VerificationWorkflow;
 use VonageTest\Psr7AssertionTrait;
 use VonageTest\VonageTestCase;
 use Vonage\Client;
@@ -33,7 +33,7 @@ class ClientTest extends VonageTestCase
     public function setUp(): void
     {
         $this->vonageClient = $this->prophesize(Client::class);
-        $this->vonageClient->getRestUrl()->willReturn('https://rest.nexmo.com');
+        $this->vonageClient->getRestUrl()->willReturn('https://api.nexmo.com');
         $this->vonageClient->getCredentials()->willReturn(
             new Client\Credentials\Container(
                 new Client\Credentials\Basic('abc', 'def'),
@@ -46,7 +46,7 @@ class ClientTest extends VonageTestCase
             ->setErrorsOn200(false)
             ->setClient($this->vonageClient->reveal())
             ->setAuthHandler([new Client\Credentials\Handler\BasicHandler(), new Client\Credentials\Handler\KeypairHandler()])
-            ->setBaseUrl('https://rest.nexmo.com');
+            ->setBaseUrl('https://api.nexmo.com/v2/verify/');
 
         $this->verify2Client = new Verify2Client($this->api);
     }
@@ -74,7 +74,7 @@ class ClientTest extends VonageTestCase
             return true;
         }))->willReturn($this->getResponse('verify-request-success', 202));
 
-        $result = $this->verify2Client->send($smsVerification);
+        $result = $this->verify2Client->startVerification($smsVerification);
     }
 
     public function testCanRequestSMS(): void
@@ -88,9 +88,11 @@ class ClientTest extends VonageTestCase
         $smsVerification = new SMSRequest($payload['to'], $payload['brand'], $payload['client_ref']);
 
         $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
             $this->assertEquals(
-                'Basic ',
-                mb_substr($request->getHeaders()['Authorization'][0], 0, 6)
+                'https://api.nexmo.com/v2/verify/',
+                $uriString
             );
 
             $this->assertRequestJsonBodyContains('locale', 'en-us', $request);
@@ -105,7 +107,7 @@ class ClientTest extends VonageTestCase
             return true;
         }))->willReturn($this->getResponse('verify-request-success', 202));
 
-        $result = $this->verify2Client->send($smsVerification);
+        $result = $this->verify2Client->startVerification($smsVerification);
 
         $this->assertIsArray($result);
         $this->assertArrayHasKey('request_id', $result);
@@ -143,7 +145,7 @@ class ClientTest extends VonageTestCase
             return true;
         }))->willReturn($this->getResponse('verify-request-success', 202));
 
-        $result = $this->verify2Client->send($smsVerification);
+        $result = $this->verify2Client->startVerification($smsVerification);
 
         $this->assertIsArray($result);
         $this->assertArrayHasKey('request_id', $result);
@@ -179,7 +181,7 @@ class ClientTest extends VonageTestCase
             return true;
         }))->willReturn($this->getResponse('verify-request-success', 202));
 
-        $result = $this->verify2Client->send($smsVerification);
+        $result = $this->verify2Client->startVerification($smsVerification);
 
         $this->assertIsArray($result);
         $this->assertArrayHasKey('request_id', $result);
@@ -209,7 +211,7 @@ class ClientTest extends VonageTestCase
             return true;
         }))->willReturn($this->getResponse('verify-request-success', 202));
 
-        $result = $this->verify2Client->send($smsVerification);
+        $result = $this->verify2Client->startVerification($smsVerification);
 
         $this->assertIsArray($result);
         $this->assertArrayHasKey('request_id', $result);
@@ -238,7 +240,7 @@ class ClientTest extends VonageTestCase
             return true;
         }))->willReturn($this->getResponse('verify-request-success', 202));
 
-        $result = $this->verify2Client->send($whatsAppVerification);
+        $result = $this->verify2Client->startVerification($whatsAppVerification);
 
         $this->assertIsArray($result);
         $this->assertArrayHasKey('request_id', $result);
@@ -267,7 +269,7 @@ class ClientTest extends VonageTestCase
             return true;
         }))->willReturn($this->getResponse('verify-request-success', 202));
 
-        $result = $this->verify2Client->send($whatsAppInteractiveRequest);
+        $result = $this->verify2Client->startVerification($whatsAppInteractiveRequest);
         $this->assertIsArray($result);
         $this->assertArrayHasKey('request_id', $result);
     }
@@ -295,7 +297,7 @@ class ClientTest extends VonageTestCase
             return true;
         }))->willReturn($this->getResponse('verify-request-success', 202));
 
-        $result = $this->verify2Client->send($voiceRequest);
+        $result = $this->verify2Client->startVerification($voiceRequest);
         $this->assertIsArray($result);
         $this->assertArrayHasKey('request_id', $result);
     }
@@ -325,9 +327,32 @@ class ClientTest extends VonageTestCase
             return true;
         }))->willReturn($this->getResponse('verify-request-success', 202));
 
-        $result = $this->verify2Client->send($emailRequest);
+        $result = $this->verify2Client->startVerification($emailRequest);
         $this->assertIsArray($result);
         $this->assertArrayHasKey('request_id', $result);
+    }
+
+    public function testCanHandleMultipleWorkflows(): void
+    {
+        $payload = [
+            'to' => '07785254785',
+            'client_ref' => 'my-verification',
+            'brand' => 'my-brand',
+        ];
+
+        $smsVerification = new SMSRequest($payload['to'], $payload['brand'], $payload['client_ref']);
+        $voiceWorkflow = new VerificationWorkflow('voice', '07785254785');
+        $smsVerification->addWorkflow($voiceWorkflow);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertRequestJsonBodyContains('channel', 'sms', $request, true);
+            $this->assertRequestJsonBodyContains('channel', 'voice', $request, true);
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('verify-request-success', 202));
+
+        $result = $this->verify2Client->startVerification($smsVerification);
     }
 
     public function testCanRequestSilentAuth(): void
@@ -348,59 +373,190 @@ class ClientTest extends VonageTestCase
             return true;
         }))->willReturn($this->getResponse('verify-request-success', 202));
 
-        $result = $this->verify2Client->send($silentAuthRequest);
+        $result = $this->verify2Client->startVerification($silentAuthRequest);
         $this->assertIsArray($result);
         $this->assertArrayHasKey('request_id', $result);
     }
 
     public function testCannotSendConcurrentVerifications(): void
     {
+        $this->expectException(Client\Exception\Request::class);
+        $this->expectExceptionMessage('Conflict: Concurrent verifications to the same number are not allowed.. See https://www.developer.vonage.com/api-errors/verify#conflict for more information');
 
+        $payload = [
+            'to' => '07785254785',
+            'client_ref' => 'my-verification',
+            'brand' => 'my-brand',
+        ];
+
+        $smsVerification = new SMSRequest($payload['to'], $payload['brand'], $payload['client_ref']);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $this->assertEquals('POST', $request->getMethod());
+            return true;
+        }))->willReturn(
+            $this->getResponse('verify-request-success', 202),
+            $this->getResponse('verify-request-conflict', 409)
+        );
+
+        $result = $this->verify2Client->startVerification($smsVerification);
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('request_id', $result);
+
+        $result = $this->verify2Client->startVerification($smsVerification);
     }
 
     public function testCannotSendWithoutBrand(): void
     {
+        $this->expectException(Client\Exception\Request::class);
+        $this->expectExceptionMessage('Invalid params: The value of one or more parameters is invalid. See https://www.developer.vonage.com/api-errors#invalid-params for more information');
 
+        $payload = [
+            'to' => '07785254785',
+            'client_ref' => 'my-verification',
+            'brand' => '',
+        ];
+
+        $voiceRequest = new VoiceRequest($payload['to'], $payload['brand'], $payload['client_ref']);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $this->assertEquals('POST', $request->getMethod());
+            return true;
+        }))->willReturn($this->getResponse('verify-request-invalid', 422));
+
+        $result = $this->verify2Client->startVerification($voiceRequest);
     }
 
     public function testCanHandleThrottle(): void
     {
+        $this->expectException(Client\Exception\Request::class);
+        $this->expectExceptionMessage('Rate Limit Hit: Please wait, then retry your request. See https://www.developer.vonage.com/api-errors#throttled for more information');
 
+        $payload = [
+            'to' => '07785254785',
+            'client_ref' => 'my-verification',
+            'brand' => 'my-brand',
+        ];
+
+        $voiceRequest = new VoiceRequest($payload['to'], $payload['brand'], $payload['client_ref']);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $this->assertEquals('POST', $request->getMethod());
+            return true;
+        }))->willReturn($this->getResponse('verify-request-throttle', 429));
+
+        $result = $this->verify2Client->startVerification($voiceRequest);
     }
 
     public function testCheckValidIdAndPIN(): void
     {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $this->assertRequestJsonBodyContains('code', '24525', $request);
+            $this->assertEquals('POST', $request->getMethod());
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api.nexmo.com/v2/verify/c11236f4-00bf-4b89-84ba-88b25df97315',
+                $uriString
+            );
+            return true;
+        }))->willReturn($this->getResponse('verify-check-success'));
 
+        $result = $this->verify2Client->check('c11236f4-00bf-4b89-84ba-88b25df97315', '24525');
+        $this->assertTrue($result);
     }
 
     public function testCheckHandlesInvalidPIN(): void
     {
+        $this->expectException(Client\Exception\Request::class);
+        $this->expectExceptionMessage('Invalid Code: The code you provided does not match the expected value.. See https://www.developer.vonage.com/api-errors/verify#invalid-code for more information');
 
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $this->assertRequestJsonBodyContains('code', '24525', $request);
+            $this->assertEquals('POST', $request->getMethod());
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api.nexmo.com/v2/verify/c11236f4-00bf-4b89-84ba-88b25df97315',
+                $uriString
+            );
+            return true;
+        }))->willReturn($this->getResponse('verify-check-invalid', 400));
+
+        $result = $this->verify2Client->check('c11236f4-00bf-4b89-84ba-88b25df97315', '24525');
     }
 
     public function testCheckHandlesInvalidRequestId(): void
     {
+        $this->expectException(Client\Exception\Request::class);
+        $this->expectExceptionMessage('Not Found: Request c11236f4-00bf-4b89-84ba-88b25df97315 was not found or it has been verified already.. See https://developer.vonage.com/api-errors#not-found for more information');
 
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $this->assertRequestJsonBodyContains('code', '24525', $request);
+            $this->assertEquals('POST', $request->getMethod());
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api.nexmo.com/v2/verify/c11236f4-00bf-4b89-84ba-88b25df97315',
+                $uriString
+            );
+            return true;
+        }))->willReturn($this->getResponse('verify-check-not-found', 404));
+
+        $result = $this->verify2Client->check('c11236f4-00bf-4b89-84ba-88b25df97315', '24525');
     }
 
     public function testCheckHandlesConflict(): void
     {
+        $this->expectException(Client\Exception\Request::class);
+        $this->expectExceptionMessage('Conflict: The current Verify workflow step does not support a code.');
 
+        $payload = [
+            'to' => '07784587411',
+            'brand' => 'my-brand',
+        ];
+
+        $silentAuthRequest = new SilentAuthRequest($payload['to'], $payload['brand']);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn(
+            $this->getResponse('verify-request-success', 202),
+            $this->getResponse('verify-check-conflict', 409)
+        );
+
+        $result = $this->verify2Client->startVerification($silentAuthRequest);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('request_id', $result);
+
+        $result = $this->verify2Client->check('c11236f4-00bf-4b89-84ba-88b25df97315', 'silent-auth-key?');
     }
 
     public function testCheckHandlesLockedCodeSubmission(): void
     {
+        $this->expectException(Client\Exception\Request::class);
+        $this->expectExceptionMessage('Invalid Code: An incorrect code has been provided too many times. Workflow terminated.. See https://www.developer.vonage.com/api-errors/verify#expired for more information');
 
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            return true;
+        }))->willReturn($this->getResponse('verify-check-locked', 410));
+
+        $result = $this->verify2Client->check('c11236f4-00bf-4b89-84ba-88b25df97315', '24525');
     }
 
     public function testCheckHandlesThrottle(): void
     {
+        $this->expectException(Client\Exception\Request::class);
+        $this->expectExceptionMessage('Rate Limit Hit: Please wait, then retry your request. See https://www.developer.vonage.com/api-errors#throttled for more information');
 
-    }
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            return true;
+        }))->willReturn($this->getResponse('verify-check-throttle', 429));
 
-    public function testSilentAuthDoesNotAcceptPin(): void
-    {
-
+        $result = $this->verify2Client->check('c11236f4-00bf-4b89-84ba-88b25df97315', '24525');
     }
 
     /**

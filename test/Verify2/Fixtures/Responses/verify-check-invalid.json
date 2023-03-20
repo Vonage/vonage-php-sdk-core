@@ -1,0 +1,6 @@
+{
+  "title": "Invalid Code",
+  "type": "https://www.developer.vonage.com/api-errors/verify#invalid-code",
+  "detail": "The code you provided does not match the expected value.",
+  "instance": "bf0ca0bf927b3b52e3cb03217e1a1ddf"
+}

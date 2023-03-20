@@ -1,0 +1,7 @@
+{
+  "title": "Conflict",
+  "type": "https://www.developer.vonage.com/api-errors/verify#conflict",
+  "detail": "Concurrent verifications to the same number are not allowed.",
+  "instance": "738f9313-418a-4259-9b0d-6670f06fa82d",
+  "request_id": "575a2054-aaaf-4405-994e-290be7b9a91f"
+}

@@ -1,0 +1,6 @@
+{
+  "title": "Invalid Code",
+  "type": "https://www.developer.vonage.com/api-errors/verify#expired",
+  "detail": "An incorrect code has been provided too many times. Workflow terminated.",
+  "instance": "bf0ca0bf927b3b52e3cb03217e1a1ddf"
+}

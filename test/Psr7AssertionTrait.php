@@ -161,7 +161,7 @@ trait Psr7AssertionTrait
             $keyValue = self::findNestedKey($params, $key, $value);
             self::assertSame($value, $keyValue);
         } catch (\OutOfBoundsException $e) {
-            throw new ExpectationFailedException('Body does not nested have key: ' . $key);
+            throw new ExpectationFailedException('Body does not have nested key: ' . $key);
         }
     }
 
