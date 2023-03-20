@@ -13,4 +13,4 @@
 # Ignore all differences in line endings for requests
 /test/SMS/requests/* text eol=crlf
 /test/Voice/requests/* text eol=crlf
-/test/Verify2/Requests/* text eol=crlf
+/test/Verify2/Fixtures/Requests/* text eol=crlf
