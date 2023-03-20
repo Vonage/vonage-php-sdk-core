@@ -17,7 +17,7 @@ class VoiceRequest extends BaseVerifyRequest
             $this->locale = new VerificationLocale();
         }
 
-        $workflow = new VerificationWorkflow('voice', $to);
+        $workflow = new VerificationWorkflow(VerificationWorkflow::WORKFLOW_VOICE, $to);
         $this->addWorkflow($workflow);
     }
 

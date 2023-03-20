@@ -17,7 +17,7 @@ class SMSRequest extends BaseVerifyRequest
             $this->locale = new VerificationLocale();
         }
 
-        $workflow = new VerificationWorkflow('sms', $to);
+        $workflow = new VerificationWorkflow(VerificationWorkflow::WORKFLOW_SMS, $to);
         $this->addWorkflow($workflow);
     }
 

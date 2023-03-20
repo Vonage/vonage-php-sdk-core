@@ -18,7 +18,7 @@ class EmailRequest extends BaseVerifyRequest
             $this->locale = new VerificationLocale();
         }
 
-        $workflow = new VerificationWorkflow('email', $to, $from);
+        $workflow = new VerificationWorkflow(VerificationWorkflow::WORKFLOW_EMAIL, $to, $from);
         $this->addWorkflow($workflow);
     }
 

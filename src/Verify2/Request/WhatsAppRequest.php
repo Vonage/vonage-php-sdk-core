@@ -18,7 +18,7 @@ class WhatsAppRequest extends BaseVerifyRequest
             $this->locale = new VerificationLocale();
         }
 
-        $workflow = new VerificationWorkflow('whatsapp', $to);
+        $workflow = new VerificationWorkflow(VerificationWorkflow::WORKFLOW_WHATSAPP, $to);
         $this->addWorkflow($workflow);
     }
 

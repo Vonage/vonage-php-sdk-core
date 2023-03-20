@@ -6,12 +6,12 @@ use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 
 class VerificationWorkflow implements ArrayHydrateInterface
 {
-    protected const WORKFLOW_SMS = 'sms';
-    protected const WORKFLOW_WHATSAPP = 'whatsapp';
-    protected const WORKFLOW_WHATSAPP_INTERACTIVE = 'whatsapp_interactive';
-    protected const WORKFLOW_VOICE = 'voice';
-    protected const WORKFLOW_EMAIL = 'email';
-    protected const WORKFLOW_SILENT_AUTH = 'silent_auth';
+    public const WORKFLOW_SMS = 'sms';
+    public const WORKFLOW_WHATSAPP = 'whatsapp';
+    public const WORKFLOW_WHATSAPP_INTERACTIVE = 'whatsapp_interactive';
+    public const WORKFLOW_VOICE = 'voice';
+    public const WORKFLOW_EMAIL = 'email';
+    public const WORKFLOW_SILENT_AUTH = 'silent_auth';
 
     protected array $allowedWorkflows = [
         self::WORKFLOW_SMS,
