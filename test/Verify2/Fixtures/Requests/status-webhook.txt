@@ -1,0 +1,9 @@
+POST /api/verify HTTP/1.1
+Accept: */*
+User-Agent: PostmanRuntime/7.31.1
+Host: 8948-82-30-208-179.ngrok.io
+Content-Length: 273
+Content-Type: application/json
+X-Forwarded-For: 82.30.208.179
+
+{"request_id":"c11236f4-00bf-4b89-84ba-88b25df97315","submitted_at":"2020-01-01T14:00:00.000Z","status":"completed","type":"summary","channel_timeout":300,"workflow":[{"channel":"sms","initiated_at":"2020-01-01T14:00:00.000Z","status":"expired"},{"channel":"whatsapp","initiated_at":"2020-01-01T14:02:00.000Z","status":"completed"},{"channel":"voice","initiated_at":"2020-01-01T15:05:00.000Z","status":"unused"}],"price":"2020-01-01T14:00:00.000Z","client_ref":"my-personal-ref"}

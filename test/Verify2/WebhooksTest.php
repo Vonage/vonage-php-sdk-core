@@ -6,16 +6,29 @@ namespace VonageTest\Verify2;
 
 use Laminas\Diactoros\Request\Serializer;
 use Laminas\Diactoros\ServerRequest;
+use Vonage\Verify2\VerifyObjects\VerifyEvent;
+use Vonage\Verify2\VerifyObjects\VerifySilentAuthUpdate;
+use Vonage\Verify2\VerifyObjects\VerifyStatusUpdate;
 use VonageTest\VonageTestCase;
 
 class WebhooksTest extends VonageTestCase
 {
-    public function testCanHydrateWebhook(): void
+    public function testCanHydrateStatusUpdate(): void
     {
-        $expected = $this->getBodyFromRequest('valid-webhook');
-        $request = $this->getServerRequest('valid-webhook');
+        $expected = $this->getBodyFromRequest('status-webhook');
+        $request = $this->getServerRequest('status-webhook');
         $incomingWebhook = \Vonage\Verify2\Webhook\Factory::createFromRequest($request);
 
+        $this->assertInstanceOf(VerifyStatusUpdate::class, $incomingWebhook);
+    }
+
+    public function testCanHydrateEvent(): void
+    {
+        $expected = $this->getBodyFromRequest('event-webhook');
+        $request = $this->getServerRequest('event-webhook');
+        $incomingWebhook = \Vonage\Verify2\Webhook\Factory::createFromRequest($request);
+
+        $this->assertInstanceOf(VerifyEvent::class, $incomingWebhook);
         $this->assertSame($expected['request_id'], $incomingWebhook->getRequestId());
         $this->assertSame($expected['triggered_at'], $incomingWebhook->getTriggeredAt());
         $this->assertSame($expected['type'], $incomingWebhook->getType());
@@ -23,6 +36,37 @@ class WebhooksTest extends VonageTestCase
         $this->assertSame($expected['status'], $incomingWebhook->getStatus());
         $this->assertSame($expected['finalized_at'], $incomingWebhook->getFinalizedAt());
         $this->assertSame($expected['client_ref'], $incomingWebhook->getClientRef());
+    }
+
+    public function getCanHydrateStatusUpdate(): void
+    {
+        $expected = $this->getBodyFromRequest('status-webhook');
+        $request = $this->getServerRequest('status-webhook');
+        $incomingWebhook = \Vonage\Verify2\Webhook\Factory::createFromRequest($request);
+
+        $this->assertInstanceOf(VerifyStatusUpdate::class, $incomingWebhook);
+        $this->assertSame($expected['request_id'], $incomingWebhook->getRequestId());
+        $this->assertSame($expected['submitted_at'], $incomingWebhook->getSubmittedAt());
+        $this->assertSame($expected['status'], $incomingWebhook->getStatus());
+        $this->assertSame($expected['type'], $incomingWebhook->getType());
+        $this->assertSame($expected['channel_timeout'], $incomingWebhook->getChannelTimeout());
+        $this->assertSame($expected['price'], $incomingWebhook->getPrice());
+        $this->assertSame($expected['workflow'], $incomingWebhook->getWorkflow());
+    }
+
+    public function getCanHydrateSilentAuthUpdate(): void
+    {
+        $expected = $this->getBodyFromRequest('silent-auth-webhook');
+        $request = $this->getServerRequest('silent-auth-webhook');
+        $incomingWebhook = \Vonage\Verify2\Webhook\Factory::createFromRequest($request);
+
+        $this->assertInstanceOf(VerifySilentAuthUpdate::class, $incomingWebhook);
+        $this->assertSame($expected['request_id'], $incomingWebhook->getRequestId());
+        $this->assertSame($expected['triggered_at'], $incomingWebhook->getTriggeredAt());
+        $this->assertSame($expected['type'], $incomingWebhook->getType());
+        $this->assertSame($expected['channel'], $incomingWebhook->getChannel());
+        $this->assertSame($expected['status'], $incomingWebhook->getStatus());
+        $this->assertSame($expected['action'], $incomingWebhook->getAction());
     }
 
     protected function getQueryStringFromRequest(string $requestName): array
