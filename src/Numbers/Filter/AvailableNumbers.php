@@ -35,7 +35,8 @@ class AvailableNumbers implements FilterInterface
         'index' => 'integer',
         'has_application' => 'boolean',
         'application_id' => 'string',
-        'features' => 'string'
+        'features' => 'string',
+        'type' => 'string',
     ];
 
     /**
