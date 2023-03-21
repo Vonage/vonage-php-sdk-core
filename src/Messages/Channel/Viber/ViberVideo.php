@@ -17,16 +17,20 @@ class ViberVideo extends BaseMessage
     public function __construct(
         string $to,
         string $from,
+        string $thumbUrl,
         protected VideoObject $videoObject
     ) {
         $this->to = $to;
         $this->from = $from;
+        $this->thumbUrl = $thumbUrl;
     }
 
     public function toArray(): array
     {
         $returnArray = $this->getBaseMessageUniversalOutputArray();
-        $returnArray['video'] = $this->videoObject->toArray();
+        $videoArray = $this->videoObject->toArray();
+        $videoArray['thumb_url'] = $this->thumbUrl;
+        $returnArray['video'] = $videoArray;
 
         return $returnArray;
     }
