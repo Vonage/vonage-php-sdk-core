@@ -319,7 +319,7 @@ $client->verify2()->startVerification($smsRequest);
 ```
 
 The `SMSRequest` object will resolve defaults for you, and will create a default `workflow` object to use SMS.
-You can, however, add multiple workflows that operate with 'fall back' logic. For example, if you wanted to create
+You can, however, add multiple workflows that operate with fall-back logic. For example, if you wanted to create
 a Verification that tries to get a PIN code off the user via. SMS, but in case there is a problem with SMS delivery
 you wish to add a Voice fallback: you can add it.
 
@@ -344,6 +344,45 @@ The base request types are as follows:
 * `EmailRequest`
 * `VoiceRequest`
 * `SilentAuthRequest`
+
+For adding workflows, you can see the available valid workflows as constants within the `VerificationWorkflow` object.
+For a better developer experience, you can't create an invalid workflow due to the validation that happens on the object.
+
+### Check a submitted code
+
+To submit a code, you'll need to surround the method in a try/catch due to the nature of the API. If the code is correct,
+the method will return a `true` boolean. If it fails, it will throw the relevant Exception from the API that will need to
+be caught.
+
+```php
+$code = '1234';
+try {
+    $client->verify2()->check($code);
+} catch (\Exception $e) {
+    var_dump($e->getMessage())
+}
+```
+
+### Webhooks
+
+As events happen during a verification workflow, events and updates will fired as webhooks. Incoming server requests that conform to
+PSR-7 standards can be hydrated into a webhook value object for nicer interactions. You can also hydrate
+them from a raw array. If successful, you will receive a value object back for the type of event/update. Possible webhooks are:
+
+* `VerifyEvent`
+* `VerifyStatusUpdate`
+* `VerifySilentAuthUpdate`
+
+```php
+// From a request object
+$verificationEvent = \Vonage\Verify2\Webhook\Factory::createFromRequest($request);
+var_dump($verificationEvent->getStatus());
+// From an array
+$payload = $request->getBody()->getContents()
+$verificationEvent = \Vonage\Verify2\Webhook\Factory::createFromArray($payload);
+var_dump($verificationEvent->getStatus());
+```
+
 
 ### Making a Call 
 

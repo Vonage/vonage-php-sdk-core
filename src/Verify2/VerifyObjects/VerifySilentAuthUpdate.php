@@ -4,7 +4,7 @@ namespace Vonage\Verify2\VerifyObjects;
 
 use InvalidArgumentException;
 
-class VerifyEvent
+class VerifySilentAuthUpdate
 {
     private static array $mandatoryFields = [
         'request_id',
@@ -12,22 +12,21 @@ class VerifyEvent
         'type',
         'channel',
         'status',
-        'finalized_at',
-        'client_ref'
+        'action'
     ];
+
     private string $requestId;
     private string $triggeredAt;
     private string $type;
     private string $channel;
     private string $status;
-    private string $finalizedAt;
-    private string $clientRef;
+    private array $action;
 
     public function __construct(array $data)
     {
         foreach (static::$mandatoryFields as $key) {
             if (!array_key_exists($key, $data)) {
-                throw new InvalidArgumentException('Verify Event missing required data `' . $key . '`');
+                throw new InvalidArgumentException('Verify SilentAuth Update missing required data `' . $key . '`');
             }
         }
 
@@ -36,8 +35,7 @@ class VerifyEvent
         $this->type = $data['type'];
         $this->channel = $data['channel'];
         $this->status = $data['status'];
-        $this->finalizedAt = $data['finalized_at'];
-        $this->clientRef = $data['client_ref'];
+        $this->action = $data['action'];
     }
 
     public function getRequestId(): string
@@ -45,7 +43,7 @@ class VerifyEvent
         return $this->requestId;
     }
 
-    public function setRequestId(string $requestId): VerifyEvent
+    public function setRequestId(string $requestId): VerifySilentAuthUpdate
     {
         $this->requestId = $requestId;
 
@@ -57,7 +55,7 @@ class VerifyEvent
         return $this->triggeredAt;
     }
 
-    public function setTriggeredAt(string $triggeredAt): VerifyEvent
+    public function setTriggeredAt(string $triggeredAt): VerifySilentAuthUpdate
     {
         $this->triggeredAt = $triggeredAt;
 
@@ -69,7 +67,7 @@ class VerifyEvent
         return $this->type;
     }
 
-    public function setType(string $type): VerifyEvent
+    public function setType(string $type): VerifySilentAuthUpdate
     {
         $this->type = $type;
 
@@ -81,7 +79,7 @@ class VerifyEvent
         return $this->channel;
     }
 
-    public function setChannel(string $channel): VerifyEvent
+    public function setChannel(string $channel): VerifySilentAuthUpdate
     {
         $this->channel = $channel;
 
@@ -93,33 +91,21 @@ class VerifyEvent
         return $this->status;
     }
 
-    public function setStatus(string $status): VerifyEvent
+    public function setStatus(string $status): VerifySilentAuthUpdate
     {
         $this->status = $status;
 
         return $this;
     }
 
-    public function getFinalizedAt(): string
+    public function getAction(): array
     {
-        return $this->finalizedAt;
+        return $this->action;
     }
 
-    public function setFinalizedAt(string $finalizedAt): VerifyEvent
+    public function setAction(array $action): VerifySilentAuthUpdate
     {
-        $this->finalizedAt = $finalizedAt;
-
-        return $this;
-    }
-
-    public function getClientRef(): string
-    {
-        return $this->clientRef;
-    }
-
-    public function setClientRef(string $clientRef): VerifyEvent
-    {
-        $this->clientRef = $clientRef;
+        $this->action = $action;
 
         return $this;
     }
