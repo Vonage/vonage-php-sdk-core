@@ -13,6 +13,7 @@ class ViberVideo extends BaseMessage
 
     protected string $subType = BaseMessage::MESSAGES_SUBTYPE_VIDEO;
     protected string $channel = 'viber_service';
+    protected string $thumbUrl = "";
 
     public function __construct(
         string $to,
