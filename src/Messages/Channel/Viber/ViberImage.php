@@ -2,6 +2,7 @@
 
 namespace Vonage\Messages\Channel\Viber;
 
+use Vonage\Messages\Channel\Viber\MessageObjects\ViberActionObject;
 use Vonage\Messages\MessageObjects\ImageObject;
 use Vonage\Messages\Channel\BaseMessage;
 
@@ -18,13 +19,15 @@ class ViberImage extends BaseMessage
         protected ImageObject $image,
         ?string $category = null,
         ?int $ttl = null,
-        ?string $type = null
+        ?string $type = null,
+        ?ViberActionObject $viberActionObject = null
     ) {
         $this->to = $to;
         $this->from = $from;
         $this->category = $category;
         $this->ttl = $ttl;
         $this->type = $type;
+        $this->action = $viberActionObject;
     }
 
     public function toArray(): array
@@ -33,9 +36,10 @@ class ViberImage extends BaseMessage
         $returnArray['image'] = $this->image->toArray();
 
         if ($this->requiresViberServiceObject()) {
-            $returnArray['viber_service']['category'] = $this->getCategory();
-            $returnArray['viber_service']['ttl'] = $this->getTtl();
-            $returnArray['viber_service']['type'] = $this->getType();
+            $this->getCategory() ? $returnArray['viber_service']['category'] = $this->getCategory(): null;
+            $this->getTtl() ? $returnArray['viber_service']['ttl'] = $this->getTtl(): null;
+            $this->getType() ? $returnArray['viber_service']['type'] = $this->getType(): null;
+            $this->getAction() ? $returnArray['viber_service']['action'] = $this->getAction()->toArray(): null;
         }
 
         return array_filter($returnArray);

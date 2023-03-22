@@ -16,6 +16,12 @@ use Laminas\Diactoros\Response;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
 use Vonage\Client\APIResource;
+use Vonage\Messages\Channel\BaseMessage;
+use Vonage\Messages\Channel\Viber\MessageObjects\ViberActionObject;
+use Vonage\Messages\Channel\Viber\ViberFile;
+use Vonage\Messages\Channel\Viber\ViberVideo;
+use Vonage\Messages\Channel\WhatsApp\MessageObjects\StickerObject;
+use Vonage\Messages\Channel\WhatsApp\WhatsAppSticker;
 use Vonage\Messages\ExceptionErrorHandler;
 use Vonage\Messages\MessageObjects\AudioObject;
 use Vonage\Messages\MessageObjects\FileObject;
@@ -405,6 +411,43 @@ class ClientTest extends VonageTestCase
         $this->assertArrayHasKey('message_uuid', $result);
     }
 
+    /**
+     * @dataProvider stickerTypeProvider
+     */
+    public function testCanSendWhatsAppSticker($type, $value, $valid): void
+    {
+        if (!$valid) {
+            $this->expectException(\InvalidArgumentException::class);
+        }
+
+        $stickerObject = new StickerObject(
+            $type,
+            $value
+        );
+
+        $payload = [
+            'to' => '447700900000',
+            'from' => '16105551212',
+            'sticker' => $stickerObject
+        ];
+
+        $message = new WhatsAppSticker($payload['to'], $payload['from'], $stickerObject);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload, $type) {
+            $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
+            $this->assertRequestJsonBodyContains('channel', 'whatsapp', $request);
+            $this->assertRequestJsonBodyContains('message_type', BaseMessage::MESSAGES_SUBTYPE_STICKER, $request);
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('sms-success', 202));
+
+        $result = $this->messageClient->send($message);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('message_uuid', $result);
+    }
+
     public function testCanSendWhatsAppCustom(): void
     {
         $payload = [
@@ -637,6 +680,7 @@ class ClientTest extends VonageTestCase
 
             return true;
         }))->willReturn($this->getResponse('sms-success', 202));
+
         $result = $this->messageClient->send($message);
         $this->assertIsArray($result);
         $this->assertArrayHasKey('message_uuid', $result);
@@ -719,6 +763,7 @@ class ClientTest extends VonageTestCase
 
             return true;
         }))->willReturn($this->getResponse('sms-success', 202));
+
         $result = $this->messageClient->send($message);
         $this->assertIsArray($result);
         $this->assertArrayHasKey('message_uuid', $result);
@@ -758,6 +803,84 @@ class ClientTest extends VonageTestCase
 
             return true;
         }))->willReturn($this->getResponse('sms-success', 202));
+
+        $result = $this->messageClient->send($message);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('message_uuid', $result);
+    }
+
+    public function testCanSendViberFile(): void
+    {
+        $fileObject = new FileObject(
+            'https://file-examples.com/wp-content/uploads/2017/04/file_example_MP4_480_1_5MG.mp4',
+            'some file'
+        );
+
+        $payload = [
+            'to' => '447700900000',
+            'from' => '16105551212',
+            'file' => $fileObject
+        ];
+
+        $message = new ViberFile(
+            $payload['to'],
+            $payload['from'],
+            $payload['file']
+        );
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
+            $this->assertRequestJsonBodyContains('file', $payload['file']->toArray(), $request);
+            $this->assertRequestJsonBodyContains('channel', 'viber_service', $request);
+            $this->assertRequestJsonBodyContains('message_type', 'file', $request);
+
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('sms-success', 202));
+
+        $result = $this->messageClient->send($message);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('message_uuid', $result);
+    }
+
+    public function testCanSendViberVideo(): void
+    {
+        $videoObject = new VideoObject(
+            'https://file-examples.com/wp-content/uploads/2017/04/file_example_MP4_480_1_5MG.mp4',
+            'some video'
+        );
+
+        $payload = [
+            'to' => '447700900000',
+            'from' => '16105551212',
+            'video' => $videoObject,
+            'thumb' => 'https://file-examples.com/wp-content/uploads/2017/04/preview.jpg'
+        ];
+
+        $message = new ViberVideo(
+            $payload['to'],
+            $payload['from'],
+            $payload['thumb'],
+            $payload['video']
+        );
+
+        $videoMatch = $videoObject->toArray();
+        $videoMatch['thumb_url'] = $payload['thumb'];
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload, $videoMatch) {
+            $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
+            $this->assertRequestJsonBodyContains('video', $videoMatch, $request);
+            $this->assertRequestJsonBodyContains('channel', 'viber_service', $request);
+            $this->assertRequestJsonBodyContains('message_type', 'video', $request);
+
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('sms-success', 202));
+
         $result = $this->messageClient->send($message);
         $this->assertIsArray($result);
         $this->assertArrayHasKey('message_uuid', $result);
@@ -769,5 +892,14 @@ class ClientTest extends VonageTestCase
     protected function getResponse(string $identifier, int $status = 200): Response
     {
         return new Response(fopen(__DIR__ . '/Fixtures/Responses/' . $identifier . '.json', 'rb'), $status);
+    }
+
+    public function stickerTypeProvider(): array
+    {
+        return [
+            ['url', 'https://example.com', true],
+            ['id', 'ds87g8-ds9g8s098-asdhj8-dsifug8', true],
+            ['caption', 'this is not valid', false]
+        ];
     }
 }
