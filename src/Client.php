@@ -52,6 +52,7 @@ use Vonage\Secrets\ClientFactory as SecretsClientFactory;
 use Vonage\SMS\ClientFactory as SMSClientFactory;
 use Vonage\Messages\ClientFactory as MessagesClientFactory;
 use Vonage\Verify\ClientFactory as VerifyClientFactory;
+use Vonage\Verify2\ClientFactory as Verify2ClientFactory;
 use Vonage\Verify\Verification;
 use Vonage\Voice\ClientFactory as VoiceClientFactory;
 use Vonage\Logger\{LoggerAwareInterface, LoggerTrait};
@@ -81,6 +82,7 @@ use function strpos;
  * @method Secrets\Client secrets()
  * @method SMS\Client sms()
  * @method Verify\Client  verify()
+ * @method Verify2\Client  verify2()
  * @method Voice\Client voice()
  *
  * @property string restUrl
@@ -217,6 +219,7 @@ class Client implements LoggerAwareInterface
                     'secrets' => SecretsClientFactory::class,
                     'sms' => SMSClientFactory::class,
                     'verify' => VerifyClientFactory::class,
+                    'verify2' => Verify2ClientFactory::class,
                     'voice' => VoiceClientFactory::class,
 
                     // Additional utility classes

@@ -1,0 +1,6 @@
+{
+  "title": "Rate Limit Hit",
+  "type": "https://www.developer.vonage.com/api-errors#throttled",
+  "detail": "Please wait, then retry your request",
+  "instance": "bf0ca0bf927b3b52e3cb03217e1a1ddf"
+}
