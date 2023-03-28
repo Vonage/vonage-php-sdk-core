@@ -2,111 +2,43 @@
 
 namespace Vonage\Verify2\VerifyObjects;
 
-use InvalidArgumentException;
+use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 
-class VerifySilentAuthUpdate
+class VerifySilentAuthUpdate implements ArrayHydrateInterface
 {
-    private static array $mandatoryFields = [
-        'request_id',
-        'triggered_at',
-        'type',
-        'channel',
-        'status',
-        'action'
-    ];
-
-    private string $requestId;
-    private string $triggeredAt;
-    private string $type;
-    private string $channel;
-    private string $status;
-    private array $action;
+    private array $data;
 
     public function __construct(array $data)
     {
-        foreach (static::$mandatoryFields as $key) {
-            if (!array_key_exists($key, $data)) {
-                throw new InvalidArgumentException('Verify SilentAuth Update missing required data `' . $key . '`');
-            }
-        }
-
-        $this->requestId = $data['request_id'];
-        $this->triggeredAt = $data['triggered_at'];
-        $this->type = $data['type'];
-        $this->channel = $data['channel'];
-        $this->status = $data['status'];
-        $this->action = $data['action'];
+        $this->data = $data;
     }
 
-    public function getRequestId(): string
+    public function __get($property)
     {
-        return $this->requestId;
+        return $this->data[$property] ?? null;
     }
 
-    public function setRequestId(string $requestId): VerifySilentAuthUpdate
+    public function __set($property, $value)
     {
-        $this->requestId = $requestId;
+        $this->data[$property] = $value;
 
         return $this;
     }
 
-    public function getTriggeredAt(): string
+    public function __isset(string $name): bool
     {
-        return $this->triggeredAt;
+        return isset($this->data[$name]);
     }
 
-    public function setTriggeredAt(string $triggeredAt): VerifySilentAuthUpdate
+    public function fromArray(array $data): static
     {
-        $this->triggeredAt = $triggeredAt;
+        $this->data = $data;
 
         return $this;
     }
 
-    public function getType(): string
+    public function toArray(): array
     {
-        return $this->type;
-    }
-
-    public function setType(string $type): VerifySilentAuthUpdate
-    {
-        $this->type = $type;
-
-        return $this;
-    }
-
-    public function getChannel(): string
-    {
-        return $this->channel;
-    }
-
-    public function setChannel(string $channel): VerifySilentAuthUpdate
-    {
-        $this->channel = $channel;
-
-        return $this;
-    }
-
-    public function getStatus(): string
-    {
-        return $this->status;
-    }
-
-    public function setStatus(string $status): VerifySilentAuthUpdate
-    {
-        $this->status = $status;
-
-        return $this;
-    }
-
-    public function getAction(): array
-    {
-        return $this->action;
-    }
-
-    public function setAction(array $action): VerifySilentAuthUpdate
-    {
-        $this->action = $action;
-
-        return $this;
+        return $this->data;
     }
 }
