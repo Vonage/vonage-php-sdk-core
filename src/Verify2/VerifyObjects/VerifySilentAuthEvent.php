@@ -4,7 +4,7 @@ namespace Vonage\Verify2\VerifyObjects;
 
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 
-class VerifySilentAuthUpdate implements ArrayHydrateInterface
+class VerifySilentAuthEvent implements ArrayHydrateInterface
 {
     private array $data;
 

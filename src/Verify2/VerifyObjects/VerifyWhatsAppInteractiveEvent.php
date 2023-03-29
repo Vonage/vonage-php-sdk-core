@@ -4,7 +4,7 @@ namespace Vonage\Verify2\VerifyObjects;
 
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 
-class VerifyWhatsAppInteractiveUpdate implements ArrayHydrateInterface
+class VerifyWhatsAppInteractiveEvent implements ArrayHydrateInterface
 {
     private array $data;
 

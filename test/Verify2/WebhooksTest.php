@@ -7,8 +7,9 @@ namespace VonageTest\Verify2;
 use Laminas\Diactoros\Request\Serializer;
 use Laminas\Diactoros\ServerRequest;
 use Vonage\Verify2\VerifyObjects\VerifyEvent;
-use Vonage\Verify2\VerifyObjects\VerifySilentAuthUpdate;
+use Vonage\Verify2\VerifyObjects\VerifySilentAuthEvent;
 use Vonage\Verify2\VerifyObjects\VerifyStatusUpdate;
+use Vonage\Verify2\VerifyObjects\VerifyWhatsAppInteractiveEvent;
 use Vonage\Verify2\Webhook\Factory;
 use VonageTest\VonageTestCase;
 
@@ -28,6 +29,14 @@ class WebhooksTest extends VonageTestCase
         $this->assertSame($expected['status'], $incomingWebhook->status);
         $this->assertSame($expected['finalized_at'], $incomingWebhook->finalized_at);
         $this->assertSame($expected['client_ref'], $incomingWebhook->client_ref);
+    }
+
+    public function testCanHydrateWhatsAppEvent(): void
+    {
+        $request = $this->getServerRequest('event-whatsapp-webhook');
+        $incomingWebhook = Factory::createFromRequest($request);
+
+        $this->assertInstanceOf(VerifyWhatsAppInteractiveEvent::class, $incomingWebhook);
     }
 
     public function testCanHydrateStatusUpdate(): void
@@ -51,7 +60,7 @@ class WebhooksTest extends VonageTestCase
         $request = $this->getServerRequest('silent-auth-webhook');
         $incomingWebhook = Factory::createFromRequest($request);
 
-        $this->assertInstanceOf(VerifySilentAuthUpdate::class, $incomingWebhook);
+        $this->assertInstanceOf(VerifySilentAuthEvent::class, $incomingWebhook);
         $this->assertSame($expected['request_id'], $incomingWebhook->request_id);
         $this->assertSame($expected['triggered_at'], $incomingWebhook->triggered_at);
         $this->assertSame($expected['type'], $incomingWebhook->type);
