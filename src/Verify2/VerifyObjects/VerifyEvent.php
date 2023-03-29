@@ -2,8 +2,6 @@
 
 namespace Vonage\Verify2\VerifyObjects;
 
-use InvalidArgumentException;
-
 class VerifyEvent
 {
     private array $data;
