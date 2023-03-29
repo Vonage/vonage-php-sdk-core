@@ -6,4 +6,4 @@ Content-Length: 273
 Content-Type: application/json
 X-Forwarded-For: 82.30.208.179
 
-{"request_id": "c11236f4-00bf-4b89-84ba-88b25df97315","triggered_at": "2020-01-01T14:00:00.000Z","type": "event","channel": "whatsapp_interactive","status": "completed","finalized_at": "2020-01-01T14:00:00.000Z","client_ref": "my-personal-ref"}
+{"request_id": "c11236f4-00bf-4b89-84ba-88b25df97315","triggered_at": "2020-01-01T14:00:00.000Z","type": "event","channel": "voice","status": "completed","finalized_at": "2020-01-01T14:00:00.000Z","client_ref": "my-personal-ref"}
