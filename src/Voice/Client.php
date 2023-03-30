@@ -15,6 +15,7 @@ use DateTimeImmutable;
 use DateTimeZone;
 use Exception;
 use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Http\Message\StreamInterface;
 use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
 use Vonage\Entity\Filter\FilterInterface;
@@ -265,5 +266,10 @@ class Client implements APIClient
     public function unmuteCall(string $callId): void
     {
         $this->modifyCall($callId, CallAction::UNMUTE);
+    }
+
+    public function getRecording(string $url): StreamInterface
+    {
+        return $this->getAPIResource()->get($url, [], [], false);
     }
 }
