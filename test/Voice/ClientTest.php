@@ -12,6 +12,8 @@ declare(strict_types=1);
 namespace VonageTest\Voice;
 
 use Laminas\Diactoros\Response;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
 use VonageTest\VonageTestCase;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
@@ -598,11 +600,44 @@ class ClientTest extends VonageTestCase
         $this->assertEquals($data['_embedded']['calls'][0]['uuid'], $call->getUuid());
     }
 
+    public function testCanDownloadRecording(): void
+    {
+        $fixturePath = __DIR__ . '/Fixtures/mp3fixture.mp3';
+        $url = 'recordings/mp3fixture.mp3';
+
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals(
+                'Bearer ',
+                mb_substr($request->getHeaders()['Authorization'][0], 0, 7)
+            );
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api.nexmo.com/v1/calls/recordings/mp3fixture.mp3',
+                $uriString
+            );
+            return true;
+        }))->willReturn($this->getResponseStream($fixturePath));
+
+        $result = $this->voiceClient->getRecording($url);
+
+        $this->assertStringEqualsFile($fixturePath, $result->getContents());
+    }
+
     /**
      * Get the API response we'd expect for a call to the API.
      */
     protected function getResponse(string $type = 'success', int $status = 200): Response
     {
         return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'rb'), $status);
+    }
+
+    /**
+     * Get the API response we'd expect for a call to the API.
+     */
+    protected function getResponseStream(string $streamPath, int $status = 200): Response
+    {
+        return new Response(fopen($streamPath, 'rb'), $status);
     }
 }
