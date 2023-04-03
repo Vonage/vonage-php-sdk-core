@@ -112,11 +112,12 @@ class APIResource implements ClientAwareInterface
             $headers
         );
 
+        $request->getBody()->write(json_encode($body));
+
         if ($this->getAuthHandler()) {
             $request = $this->addAuth($request);
         }
 
-        $request->getBody()->write(json_encode($body));
         $this->lastRequest = $request;
 
         $response = $this->getClient()->send($request);
