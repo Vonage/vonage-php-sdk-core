@@ -11,19 +11,17 @@ class TokenBodyHandler extends AbstractHandler
     public function __invoke(RequestInterface $request, CredentialsInterface $credentials): RequestInterface
     {
         $credentials = $this->extract(Basic::class, $credentials);
-        $body = $request->getBody();
-        $body->rewind();
-        $content = $body->getContents();
-        $params = json_decode($content, true);
 
-        if (!$params) {
-            $params = [];
-        }
+        // We have to do some clunky body pointer rewinding here
+        $existingBody = $request->getBody();
+        $existingBody->rewind();
+        $existingBodyContent = $existingBody->getContents();
+        $existingBody->rewind();
+        $existingBodyArray = json_decode($existingBodyContent, true);
 
-        $params = array_merge($params, $credentials->asArray());
-        $body->rewind();
-        $body->write(json_encode($params));
+        // The request body will now be the existing body plus the basic creds
+        $mergedBodyArray = array_merge($existingBodyArray, $credentials->asArray());
 
-        return $request;
+        return $request->withBody(\GuzzleHttp\Psr7\Utils::streamFor(json_encode($mergedBodyArray)));
     }
 }
