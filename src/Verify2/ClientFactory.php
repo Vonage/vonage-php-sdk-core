@@ -14,7 +14,6 @@ class ClientFactory
         $api = $container->make(APIResource::class);
         $api->setIsHAL(false)
             ->setErrorsOn200(false)
-            ->setClient($this->vonageClient->reveal())
             ->setAuthHandler([new BasicHandler(), new KeypairHandler()])
             ->setBaseUrl('https://api.nexmo.com/v2/verify/');
 
