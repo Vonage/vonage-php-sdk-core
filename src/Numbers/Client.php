@@ -225,14 +225,13 @@ class Client implements APIClient
                     "You must supply a country in addition to a number to purchase a number"
                 );
             }
-
+            $number = new Number($number, $country);
+        } else {
             trigger_error(
                 'Passing a Number object to Vonage\Number\Client::purchase() is being deprecated, ' .
                 'please pass a string MSISDN instead',
                 E_USER_DEPRECATED
             );
-
-            $number = new Number($number, $country);
         }
 
         $body = [
