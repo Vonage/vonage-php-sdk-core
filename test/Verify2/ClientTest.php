@@ -332,6 +332,96 @@ class ClientTest extends VonageTestCase
         $this->assertArrayHasKey('request_id', $result);
     }
 
+    public function testSMSCanRenderOptionalCode(): void
+    {
+        $payload = [
+            'to' => '07785648870',
+            'brand' => 'my-brand',
+        ];
+
+        $smsRequest = new SMSRequest($payload['to'], $payload['brand'], null, null, '123456789');
+
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $this->assertRequestJsonBodyContains('code', '123456789', $request, true);
+
+            return true;
+        }))->willReturn($this->getResponse('verify-request-success', 202));
+
+        $result = $this->verify2Client->startVerification($smsRequest);
+    }
+
+    public function testSMSWillRenderOptionalCodep(): void
+    {
+        $payload = [
+            'to' => '07785648870',
+            'brand' => 'my-brand',
+        ];
+
+        $smsRequest = new SMSRequest($payload['to'], $payload['brand'], null, null, '123456789');
+
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $this->assertRequestJsonBodyContains('code', '123456789', $request, true);
+
+            return true;
+        }))->willReturn($this->getResponse('verify-request-success', 202));
+
+        $this->verify2Client->startVerification($smsRequest);
+    }
+
+    public function testVoiceWillRenderOptionalCode(): void
+    {
+        $payload = [
+            'to' => '07785648870',
+            'brand' => 'my-brand',
+        ];
+
+        $voiceRequest = new VoiceRequest($payload['to'], $payload['brand'], null, null, '123456789');
+
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $this->assertRequestJsonBodyContains('code', '123456789', $request, true);
+
+            return true;
+        }))->willReturn($this->getResponse('verify-request-success', 202));
+
+        $this->verify2Client->startVerification($voiceRequest);
+    }
+
+    public function testWhatsAppWillRenderOptionalCode(): void
+    {
+        $payload = [
+            'to' => '07785648870',
+            'brand' => 'my-brand',
+        ];
+
+        $voiceRequest = new WhatsAppRequest($payload['to'], $payload['brand'], null, null, null, '123456789');
+
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $this->assertRequestJsonBodyContains('code', '123456789', $request, true);
+
+            return true;
+        }))->willReturn($this->getResponse('verify-request-success', 202));
+
+        $this->verify2Client->startVerification($voiceRequest);
+    }
+
+    public function testEmailWillRenderOptionalCode(): void
+    {
+        $payload = [
+            'to' => 'jim@jim.com',
+            'brand' => 'my-brand',
+        ];
+
+        $voiceRequest = new EmailRequest($payload['to'], $payload['brand'], 'test@test.com', null, null, '123456789');
+
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $this->assertRequestJsonBodyContains('code', '123456789', $request, true);
+
+            return true;
+        }))->willReturn($this->getResponse('verify-request-success', 202));
+
+        $this->verify2Client->startVerification($voiceRequest);
+    }
+
     public function testCanHandleMultipleWorkflows(): void
     {
         $payload = [

@@ -22,11 +22,36 @@ class VerificationWorkflow implements ArrayHydrateInterface
         self::WORKFLOW_SILENT_AUTH
     ];
 
-    public function __construct(protected string $channel, protected string $to, protected string $from = '')
-    {
+    protected ?string $code = null;
+
+    public function __construct(
+        protected string $channel,
+        protected string $to,
+        protected string $from = ''
+    ) {
         if (! in_array($channel, $this->allowedWorkflows, true)) {
             throw new \InvalidArgumentException($this->channel . ' is not a valid workflow');
         }
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCode(): ?string
+    {
+        return $this->code;
+    }
+
+    /**
+     * @param string|null $code
+     *
+     * @return VerificationWorkflow
+     */
+    public function setCode(?string $code): VerificationWorkflow
+    {
+        $this->code = $code;
+
+        return $this;
     }
 
     public function getChannel(): string
@@ -88,7 +113,10 @@ class VerificationWorkflow implements ArrayHydrateInterface
             $returnArray['from'] = $this->getFrom();
         }
 
-        return $returnArray;
+        if ($this->getCode()) {
+            $returnArray['code'] = $this->getCode();
+        }
 
+        return $returnArray;
     }
 }

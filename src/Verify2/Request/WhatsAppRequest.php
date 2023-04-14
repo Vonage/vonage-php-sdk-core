@@ -12,13 +12,19 @@ class WhatsAppRequest extends BaseVerifyRequest
         protected string $brand,
         protected ?string $from = null,
         protected ?string $clientRef = null,
-        protected ?VerificationLocale $locale = null
+        protected ?VerificationLocale $locale = null,
+        protected ?string $code = null
     ) {
         if (!$this->locale) {
             $this->locale = new VerificationLocale();
         }
 
         $workflow = new VerificationWorkflow(VerificationWorkflow::WORKFLOW_WHATSAPP, $to);
+
+        if ($this->code) {
+            $workflow->setCode($this->code);
+        }
+
         $this->addWorkflow($workflow);
     }
 
