@@ -14,7 +14,7 @@ class ClientFactory
         $api = $container->make(APIResource::class);
         $api->setIsHAL(false)
             ->setErrorsOn200(false)
-            ->setAuthHandler([new BasicHandler(), new KeypairHandler()])
+            ->setAuthHandler([new KeypairHandler(), new BasicHandler()])
             ->setBaseUrl('https://api.nexmo.com/v2/verify/');
 
         return new Client($api);
