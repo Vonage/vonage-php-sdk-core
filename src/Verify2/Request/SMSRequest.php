@@ -10,14 +10,14 @@ class SMSRequest extends BaseVerifyRequest
     public function __construct(
         protected string $to,
         protected string $brand,
-        protected ?string $clientRef = null,
-        protected ?VerificationLocale $locale = null
+        protected ?VerificationLocale $locale = null,
     ) {
         if (!$this->locale) {
             $this->locale = new VerificationLocale();
         }
 
         $workflow = new VerificationWorkflow(VerificationWorkflow::WORKFLOW_SMS, $to);
+
         $this->addWorkflow($workflow);
     }
 

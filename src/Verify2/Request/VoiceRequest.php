@@ -10,14 +10,18 @@ class VoiceRequest extends BaseVerifyRequest
     public function __construct(
         protected string $to,
         protected string $brand,
-        protected ?string $clientRef,
-        protected ?VerificationLocale $locale = null
+        protected ?VerificationLocale $locale = null,
     ) {
         if (!$this->locale) {
             $this->locale = new VerificationLocale();
         }
 
         $workflow = new VerificationWorkflow(VerificationWorkflow::WORKFLOW_VOICE, $to);
+
+        if ($this->code) {
+            $workflow->setCode($this->code);
+        }
+
         $this->addWorkflow($workflow);
     }
 

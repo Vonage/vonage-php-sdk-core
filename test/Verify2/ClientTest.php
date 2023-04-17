@@ -64,7 +64,8 @@ class ClientTest extends VonageTestCase
             'brand' => 'my-brand',
         ];
 
-        $smsVerification = new SMSRequest($payload['to'], $payload['brand'], $payload['client_ref']);
+        $smsVerification = new SMSRequest($payload['to'], $payload['brand']);
+        $smsVerification->setClientRef($payload['client_ref']);
 
         $this->vonageClient->send(Argument::that(function (Request $request) {
             $this->assertEquals(
@@ -85,7 +86,8 @@ class ClientTest extends VonageTestCase
             'brand' => 'my-brand',
         ];
 
-        $smsVerification = new SMSRequest($payload['to'], $payload['brand'], $payload['client_ref']);
+        $smsVerification = new SMSRequest($payload['to'], $payload['brand']);
+        $smsVerification->setClientRef($payload['client_ref']);
 
         $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
             $uri = $request->getUri();
@@ -131,7 +133,8 @@ class ClientTest extends VonageTestCase
             'locale' => $verificationLocale,
         ];
 
-        $smsVerification = new SMSRequest($payload['to'], $payload['brand'], $payload['client_ref'], $payload['locale']);
+        $smsVerification = new SMSRequest($payload['to'], $payload['brand'], $payload['locale']);
+        $smsVerification->setClientRef($payload['client_ref']);
 
         $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
             $this->assertEquals(
@@ -167,7 +170,8 @@ class ClientTest extends VonageTestCase
             'timeout' => $timeout
         ];
 
-        $smsVerification = new SMSRequest($payload['to'], $payload['brand'], $payload['client_ref']);
+        $smsVerification = new SMSRequest($payload['to'], $payload['brand']);
+        $smsVerification->setClientRef($payload['client_ref']);
         $smsVerification->setTimeout($timeout);
 
         $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
@@ -203,7 +207,8 @@ class ClientTest extends VonageTestCase
             'length' => $length
         ];
 
-        $smsVerification = new SMSRequest($payload['to'], $payload['brand'], $payload['client_ref']);
+        $smsVerification = new SMSRequest($payload['to'], $payload['brand']);
+        $smsVerification->setClientRef($payload['client_ref']);
         $smsVerification->setLength($payload['length']);
 
         $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
@@ -225,7 +230,8 @@ class ClientTest extends VonageTestCase
             'brand' => 'my-brand',
         ];
 
-        $whatsAppVerification = new WhatsAppRequest($payload['to'], $payload['brand'],null, $payload['client_ref']);
+        $whatsAppVerification = new WhatsAppRequest($payload['to'], $payload['brand']);
+        $whatsAppVerification->setClientRef($payload['client_ref']);
 
         $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('locale', 'en-us', $request);
@@ -254,7 +260,8 @@ class ClientTest extends VonageTestCase
             'brand' => 'my-brand',
         ];
 
-        $whatsAppInteractiveRequest = new WhatsAppInteractiveRequest($payload['to'], $payload['brand'], $payload['client_ref']);
+        $whatsAppInteractiveRequest = new WhatsAppInteractiveRequest($payload['to'], $payload['brand']);
+        $whatsAppInteractiveRequest->setClientRef($payload['client_ref']);
 
         $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('locale', 'en-us', $request);
@@ -282,7 +289,8 @@ class ClientTest extends VonageTestCase
             'brand' => 'my-brand',
         ];
 
-        $voiceRequest = new VoiceRequest($payload['to'], $payload['brand'], $payload['client_ref']);
+        $voiceRequest = new VoiceRequest($payload['to'], $payload['brand']);
+        $voiceRequest->setClientRef($payload['client_ref']);
 
         $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('locale', 'en-us', $request);
@@ -311,7 +319,8 @@ class ClientTest extends VonageTestCase
             'brand' => 'my-brand',
         ];
 
-        $emailRequest = new EmailRequest($payload['to'], $payload['brand'], $payload['from'], $payload['client_ref']);
+        $emailRequest = new EmailRequest($payload['to'], $payload['brand'], $payload['from']);
+        $emailRequest->setClientRef($payload['client_ref']);
 
         $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('locale', 'en-us', $request);
@@ -332,6 +341,25 @@ class ClientTest extends VonageTestCase
         $this->assertArrayHasKey('request_id', $result);
     }
 
+    public function testCanRenderOptionalCode(): void
+    {
+        $payload = [
+            'to' => '07785648870',
+            'brand' => 'my-brand',
+        ];
+
+        $smsRequest = new SMSRequest($payload['to'], $payload['brand']);
+        $smsRequest->setCode('123456789');
+
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $this->assertRequestJsonBodyContains('code', '123456789', $request, true);
+
+            return true;
+        }))->willReturn($this->getResponse('verify-request-success', 202));
+
+        $result = $this->verify2Client->startVerification($smsRequest);
+    }
+
     public function testCanHandleMultipleWorkflows(): void
     {
         $payload = [
@@ -340,7 +368,8 @@ class ClientTest extends VonageTestCase
             'brand' => 'my-brand',
         ];
 
-        $smsVerification = new SMSRequest($payload['to'], $payload['brand'], $payload['client_ref']);
+        $smsVerification = new SMSRequest($payload['to'], $payload['brand']);
+        $smsVerification->setClientRef($payload['client_ref']);
         $voiceWorkflow = new VerificationWorkflow('voice', '07785254785');
         $smsVerification->addWorkflow($voiceWorkflow);
 
@@ -389,7 +418,8 @@ class ClientTest extends VonageTestCase
             'brand' => 'my-brand',
         ];
 
-        $smsVerification = new SMSRequest($payload['to'], $payload['brand'], $payload['client_ref']);
+        $smsVerification = new SMSRequest($payload['to'], $payload['brand']);
+        $smsVerification->setClientRef( $payload['client_ref']);
 
         $this->vonageClient->send(Argument::that(function (Request $request) {
             $this->assertEquals('POST', $request->getMethod());
@@ -418,7 +448,8 @@ class ClientTest extends VonageTestCase
             'brand' => '',
         ];
 
-        $voiceRequest = new VoiceRequest($payload['to'], $payload['brand'], $payload['client_ref']);
+        $voiceRequest = new VoiceRequest($payload['to'], $payload['brand']);
+        $voiceRequest->setClientRef($payload['client_ref']);
 
         $this->vonageClient->send(Argument::that(function (Request $request) {
             $this->assertEquals('POST', $request->getMethod());
@@ -439,7 +470,8 @@ class ClientTest extends VonageTestCase
             'brand' => 'my-brand',
         ];
 
-        $voiceRequest = new VoiceRequest($payload['to'], $payload['brand'], $payload['client_ref']);
+        $voiceRequest = new VoiceRequest($payload['to'], $payload['brand']);
+        $voiceRequest->setClientRef($payload['client_ref']);
 
         $this->vonageClient->send(Argument::that(function (Request $request) {
             $this->assertEquals('POST', $request->getMethod());

@@ -20,4 +20,6 @@ interface RequestInterface
     public function getBrand(): string;
     public function getWorkflows(): array;
     public function getBaseVerifyUniversalOutputArray(): array;
+    public function setCode(string $code): static;
+    public function getCode(): ?string;
 }

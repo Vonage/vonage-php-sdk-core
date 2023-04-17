@@ -24,6 +24,8 @@ abstract class BaseVerifyRequest implements RequestInterface
 
     protected array $workflows = [];
 
+    protected ?string $code = null;
+
     public function getLocale(): ?VerificationLocale
     {
         return $this->locale;
@@ -53,6 +55,18 @@ abstract class BaseVerifyRequest implements RequestInterface
         }
 
         $this->timeout = $timeout;
+
+        return $this;
+    }
+
+    public function getCode(): ?string
+    {
+        return $this->code;
+    }
+
+    public function setCode(string $code): static
+    {
+        $this->code = $code;
 
         return $this;
     }
@@ -106,7 +120,7 @@ abstract class BaseVerifyRequest implements RequestInterface
 
     public function getWorkflows(): array
     {
-        return array_map(static function($workflow) {
+        return array_map(static function ($workflow) {
             return $workflow->toArray();
         }, $this->workflows);
     }
@@ -130,6 +144,10 @@ abstract class BaseVerifyRequest implements RequestInterface
 
         if ($this->getClientRef()) {
             $returnArray['client_ref'] = $this->getClientRef();
+        }
+
+        if ($this->getCode()) {
+            $returnArray['code'] = $this->getCode();
         }
 
         return $returnArray;
