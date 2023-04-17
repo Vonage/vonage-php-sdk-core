@@ -11,19 +11,17 @@ class EmailRequest extends BaseVerifyRequest
         protected string $to,
         protected string $brand,
         protected string $from,
-        protected ?string $clientRef = null,
         protected ?VerificationLocale $locale = null,
-        protected ?string $code = null
     ) {
         if (!$this->locale) {
             $this->locale = new VerificationLocale();
         }
 
-        $workflow = new VerificationWorkflow(VerificationWorkflow::WORKFLOW_EMAIL, $to, $from);
-
         if ($this->code) {
-            $workflow->setCode($this->code);
+            $this->setCode($this->code);
         }
+
+        $workflow = new VerificationWorkflow(VerificationWorkflow::WORKFLOW_EMAIL, $to, $from);
 
         $this->addWorkflow($workflow);
     }
