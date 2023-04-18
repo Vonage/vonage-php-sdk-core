@@ -426,11 +426,10 @@ class ClientTest extends VonageTestCase
             return true;
         }))->willReturn($this->getResponse('post'));
 
+        $this->expectException(\PHPUnit\Framework\Error\Deprecated::class);
+        $this->expectExceptionMessage('Passing a Number object to Vonage\Number\Client::purchase() is being deprecated, please pass a string MSISDN instead');
         $number = new Number('1415550100', 'US');
         $this->numberClient->purchase($number);
-
-        // There's nothing to assert here as we don't do anything with the response.
-        // If there's no exception thrown, everything is fine!
     }
 
     /**
