@@ -2,7 +2,6 @@
 
 namespace Vonage\Verify2;
 
-use Laminas\Diactoros\Request;
 use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
 use Vonage\Client\Exception\Exception;
