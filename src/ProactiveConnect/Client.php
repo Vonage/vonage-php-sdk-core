@@ -5,8 +5,8 @@ namespace Vonage\ProactiveConnect;
 use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
 use Vonage\Entity\IterableAPICollection;
-use Vonage\ProactiveConnect\Request\CreateListRequest;
-use Vonage\ProactiveConnect\Request\CreateManualListRequest;
+use Vonage\ProactiveConnect\Request\ListBaseObject;
+use Vonage\ProactiveConnect\Request\ManualList;
 
 class Client implements APIClient
 {
@@ -40,7 +40,7 @@ class Client implements APIClient
         return $lists;
     }
 
-    public function createList(CreateListRequest $request): ?array
+    public function createList(ListBaseObject $request): ?array
     {
         return $this->api->create($request->toArray(), '/lists');
     }
@@ -48,5 +48,25 @@ class Client implements APIClient
     public function getListById(string $id)
     {
         return $this->api->get('lists/' . $id);
+    }
+
+    public function updateList(string $id, ListBaseObject $request): ?array
+    {
+        return $this->api->update('lists/' . $id, $request->toArray());
+    }
+
+    public function deleteList(string $id): ?array
+    {
+        return $this->api->delete('lists/' . $id);
+    }
+
+    public function clearListItemsById(string $id): ?array
+    {
+        return $this->api->create([], '/lists/' . $id . '/clear');
+    }
+
+    public function fetchListItemsById(string $id): ?array
+    {
+        return $this->api->create([], '/lists/' . $id . '/fetch');
     }
 }

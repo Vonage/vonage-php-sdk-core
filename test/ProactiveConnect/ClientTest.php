@@ -10,8 +10,8 @@ use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
 use Vonage\Client\APIResource;
 use Vonage\Entity\IterableAPICollection;
-use Vonage\ProactiveConnect\Request\CreateManualListRequest;
-use Vonage\ProactiveConnect\Request\CreateSalesforceListRequest;
+use Vonage\ProactiveConnect\Request\ManualList;
+use Vonage\ProactiveConnect\Request\SalesforceList;
 use VonageTest\Psr7AssertionTrait;
 use VonageTest\VonageTestCase;
 use Vonage\Client;
@@ -181,7 +181,7 @@ class ClientTest extends VonageTestCase
             return true;
         }))->willReturn($this->getResponse('list-create-success', 201));
 
-        $newListRequest = new CreateManualListRequest('my-list');
+        $newListRequest = new ManualList('my-list');
 
         $response = $this->proactiveConnectClient->createList(
             $newListRequest
@@ -204,7 +204,7 @@ class ClientTest extends VonageTestCase
             return true;
         }))->willReturn($this->getResponse('list-create-success', 201));
 
-        $newListRequest = new CreateManualListRequest('my-list');
+        $newListRequest = new ManualList('my-list');
         $newListRequest->setDescription('my-description')
             ->setTags(['tag1', 'tag2'])
             ->setAttributes([
@@ -239,7 +239,7 @@ class ClientTest extends VonageTestCase
             return true;
         }))->willReturn($this->getResponse('list-create-success', 201));
 
-        $createSalesforceListRequest = new CreateSalesforceListRequest('my-list');
+        $createSalesforceListRequest = new SalesforceList('my-list');
         $createSalesforceListRequest->setDescription('my-description')
            ->setTags(['tag1', 'tag2'])
            ->setSalesforceIntegrationId('salesforce_credentials')
@@ -268,7 +268,7 @@ class ClientTest extends VonageTestCase
             return true;
         }))->willReturn($this->getResponse('list-create-success'));
 
-        $createSalesforceListRequest = new CreateSalesforceListRequest('my-list');
+        $createSalesforceListRequest = new SalesforceList('my-list');
         $createSalesforceListRequest->setDescription('my-description')
             ->setSalesforceSoql('select Id, LastName, FirstName, Phone, Email FROM Contact')
             ->setAttributes([
@@ -293,7 +293,7 @@ class ClientTest extends VonageTestCase
             return true;
         }))->willReturn($this->getResponse('list-create-success'));
 
-        $createSalesforceListRequest = new CreateSalesforceListRequest('my-list');
+        $createSalesforceListRequest = new SalesforceList('my-list');
         $createSalesforceListRequest->setDescription('my-description')
             ->setSalesforceIntegrationId('test-string')
             ->setAttributes([
@@ -308,11 +308,11 @@ class ClientTest extends VonageTestCase
             $createSalesforceListRequest
         );
     }
-    
+
     public function testCanGetListById(): void
     {
         $id = '29192c4a-4058-49da-86c2-3e349d1065b7';
-        
+
         $this->vonageClient->send(Argument::that(function (Request $request) use ($id) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
@@ -333,9 +333,146 @@ class ClientTest extends VonageTestCase
         $this->assertEquals('list description', $response['description']);
     }
 
-    public function testCanUpdateList(): void
+    public function testCanUpdateSalesforceList(): void
     {
-        $this->markTestIncomplete();
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $this->assertEquals('PUT', $request->getMethod());
+            $this->assertRequestJsonBodyContains('name', 'my name', $request);
+            $this->assertRequestJsonBodyContains('description', 'my description', $request);
+            $this->assertRequestJsonBodyContains('tags', ['tag1', 'tag2'], $request);
+            $this->assertRequestJsonBodyContains('name', 'phone_number', $request, true);
+            $this->assertRequestJsonBodyContains('alias', 'phone', $request, true);
+            $this->assertRequestJsonBodyContains('key', false, $request, true);
+            $this->assertRequestJsonBodyContains('type', 'salesforce', $request, true);
+            $this->assertRequestJsonBodyContains('integration_id', 'salesforce_credentials', $request, true);
+            $this->assertRequestJsonBodyContains('soql', 'select Id, LastName, FirstName, Phone, Email FROM Contact', $request, true);
+
+            return true;
+        }))->willReturn($this->getResponse('list-update-success'));
+
+        $id = '29192c4a-4058-49da-86c2-3e349d1065b7';
+
+        $salesforceList = new SalesforceList('my name');
+        $salesforceList->setDescription('my description')
+            ->setTags(['tag1', 'tag2'])
+            ->setSalesforceIntegrationId('salesforce_credentials')
+            ->setSalesforceSoql('select Id, LastName, FirstName, Phone, Email FROM Contact')
+            ->setAttributes([
+                [
+                    'name' => 'phone_number',
+                    'alias' => 'phone',
+                    'key' => false
+                ]
+            ]);
+
+        $response = $this->proactiveConnectClient->updateList(
+            $id,
+            $salesforceList
+        );
+
+        $this->assertEquals('my name', $response['name']);
+        $this->assertEquals($id, $response['id']);
+    }
+
+    public function testCanUpdateManualList(): void
+    {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $this->assertEquals('PUT', $request->getMethod());
+            $this->assertRequestJsonBodyContains('name', 'my name', $request);
+            $this->assertRequestJsonBodyContains('description', 'my description', $request);
+            $this->assertRequestJsonBodyContains('tags', ['tag1', 'tag2'], $request);
+            $this->assertRequestJsonBodyContains('name', 'phone_number', $request, true);
+            $this->assertRequestJsonBodyContains('alias', 'phone', $request, true);
+            $this->assertRequestJsonBodyContains('key', false, $request, true);
+
+            return true;
+        }))->willReturn($this->getResponse('list-update-success'));
+
+        $id = '29192c4a-4058-49da-86c2-3e349d1065b7';
+        $manualList = new ManualList('my name');
+        $manualList->setDescription('my description')
+                       ->setTags(['tag1', 'tag2'])
+                       ->setAttributes([
+                           [
+                               'name' => 'phone_number',
+                               'alias' => 'phone',
+                               'key' => false
+                           ]
+                       ]);
+
+        $response = $this->proactiveConnectClient->updateList(
+            $id,
+            $manualList
+        );
+
+        $this->assertEquals('my name', $response['name']);
+        $this->assertEquals($id, $response['id']);
+    }
+
+    public function testCanDeleteList(): void
+    {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $this->assertEquals('DELETE', $request->getMethod());
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api-eu.vonage.com/v0.1/bulk/lists/29192c4a-4058-49da-86c2-3e349d1065b7',
+                $uriString
+            );
+
+            return true;
+        }))->willReturn($this->getResponse('list-delete-success'));
+
+        $id = '29192c4a-4058-49da-86c2-3e349d1065b7';
+
+        $response = $this->proactiveConnectClient->deleteList(
+            $id,
+        );
+    }
+
+    public function testWillClearListItemsById()
+    {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $this->assertEquals('POST', $request->getMethod());
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api-eu.vonage.com/v0.1/bulk/lists/29192c4a-4058-49da-86c2-3e349d1065b7/clear',
+                $uriString
+            );
+
+            return true;
+        }))->willReturn($this->getResponse('list-clear-success', 202));
+
+        $id = '29192c4a-4058-49da-86c2-3e349d1065b7';
+
+        $response = $this->proactiveConnectClient->clearListItemsById(
+            $id,
+        );
+    }
+
+    public function testWillReplaceFetchItemsFromDataSource()
+    {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $this->assertEquals('POST', $request->getMethod());
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api-eu.vonage.com/v0.1/bulk/lists/29192c4a-4058-49da-86c2-3e349d1065b7/fetch',
+                $uriString
+            );
+
+            return true;
+        }))->willReturn($this->getResponse('list-fetch-success', 202));
+
+        $id = '29192c4a-4058-49da-86c2-3e349d1065b7';
+
+        $response = $this->proactiveConnectClient->fetchListItemsById(
+            $id,
+        );
     }
 
     /**

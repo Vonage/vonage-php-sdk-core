@@ -4,7 +4,7 @@ namespace Vonage\ProactiveConnect\Request;
 
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 
-class CreateManualListRequest extends CreateListRequest implements ArrayHydrateInterface
+class ManualList extends ListBaseObject implements ArrayHydrateInterface
 {
     protected ?string $description = null;
     protected ?array $tags = null;
@@ -20,7 +20,7 @@ class CreateManualListRequest extends CreateListRequest implements ArrayHydrateI
         return $this->description;
     }
 
-    public function setDescription(?string $description): CreateManualListRequest
+    public function setDescription(?string $description): ManualList
     {
         $this->description = $description;
 
@@ -32,7 +32,7 @@ class CreateManualListRequest extends CreateListRequest implements ArrayHydrateI
         return $this->tags;
     }
 
-    public function setTags(?array $tags): CreateManualListRequest
+    public function setTags(?array $tags): ManualList
     {
         $this->tags = $tags;
 
@@ -44,7 +44,7 @@ class CreateManualListRequest extends CreateListRequest implements ArrayHydrateI
         return $this->attributes;
     }
 
-    public function setAttributes(?array $attributes): CreateManualListRequest
+    public function setAttributes(?array $attributes): ManualList
     {
         $this->attributes = $attributes;
 
@@ -69,7 +69,7 @@ class CreateManualListRequest extends CreateListRequest implements ArrayHydrateI
         return $this->name;
     }
 
-    public function setName(string $name): CreateManualListRequest
+    public function setName(string $name): ManualList
     {
         $this->name = $name;
 

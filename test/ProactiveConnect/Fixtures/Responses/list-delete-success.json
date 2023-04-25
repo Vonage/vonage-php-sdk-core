@@ -1,0 +1,29 @@
+{
+  "name": "my name",
+  "description": "my description",
+  "tags": [
+    "vip",
+    "sport"
+  ],
+  "attributes": [
+    {
+      "name": "phone_number",
+      "alias": "phone",
+      "key": false
+    }
+  ],
+  "datasource": {
+    "type": "manual"
+  },
+  "id": "29192c4a-4058-49da-86c2-3e349d1065b7",
+  "created_at": "2022-06-19T17:59:28.085Z",
+  "updated_at": "2022-06-19T17:59:28.085Z",
+  "sync_status": {
+    "value": "configured",
+    "details": "Not found",
+    "metadata_modified": false,
+    "data_modified": true,
+    "dirty": true
+  },
+  "items_count": 500
+}

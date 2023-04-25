@@ -2,6 +2,6 @@
 
 namespace Vonage\ProactiveConnect\Request;
 
-abstract class CreateListRequest
+abstract class ListBaseObject
 {
 }

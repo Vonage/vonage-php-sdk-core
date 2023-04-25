@@ -4,7 +4,7 @@ namespace Vonage\ProactiveConnect\Request;
 
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 
-class CreateSalesforceListRequest extends CreateListRequest implements ArrayHydrateInterface
+class SalesforceList extends ListBaseObject implements ArrayHydrateInterface
 {
     protected ?string $description = null;
     protected ?array $tags = null;
@@ -24,7 +24,7 @@ class CreateSalesforceListRequest extends CreateListRequest implements ArrayHydr
         return $this->description;
     }
 
-    public function setDescription(?string $description): CreateSalesforceListRequest
+    public function setDescription(?string $description): SalesforceList
     {
         $this->description = $description;
 
@@ -36,7 +36,7 @@ class CreateSalesforceListRequest extends CreateListRequest implements ArrayHydr
         return $this->tags;
     }
 
-    public function setTags(?array $tags): CreateSalesforceListRequest
+    public function setTags(?array $tags): SalesforceList
     {
         $this->tags = $tags;
 
@@ -48,7 +48,7 @@ class CreateSalesforceListRequest extends CreateListRequest implements ArrayHydr
         return $this->attributes;
     }
 
-    public function setAttributes(?array $attributes): CreateSalesforceListRequest
+    public function setAttributes(?array $attributes): SalesforceList
     {
         $this->attributes = $attributes;
 
@@ -73,21 +73,21 @@ class CreateSalesforceListRequest extends CreateListRequest implements ArrayHydr
         return $this->name;
     }
 
-    public function setName(string $name): CreateSalesforceListRequest
+    public function setName(string $name): SalesforceList
     {
         $this->name = $name;
 
         return $this;
     }
 
-    public function setSalesforceIntegrationId(string $integrationId): CreateSalesforceListRequest
+    public function setSalesforceIntegrationId(string $integrationId): SalesforceList
     {
         $this->datasource['integration_id'] = $integrationId;
 
         return $this;
     }
 
-    public function setSalesforceSoql(string $query): CreateSalesforceListRequest
+    public function setSalesforceSoql(string $query): SalesforceList
     {
         $this->datasource['soql'] = $query;
 
