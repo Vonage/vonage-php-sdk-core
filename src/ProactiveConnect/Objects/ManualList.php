@@ -1,19 +1,15 @@
 <?php
 
-namespace Vonage\ProactiveConnect\Request;
+namespace Vonage\ProactiveConnect\Objects;
 
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 
-class SalesforceList extends ListBaseObject implements ArrayHydrateInterface
+class ManualList extends ListBaseObject implements ArrayHydrateInterface
 {
     protected ?string $description = null;
     protected ?array $tags = null;
     protected ?array $attributes = null;
-    protected array $datasource = [
-        'type' => 'salesforce',
-        'integration_id' => '',
-        'soql' => ''
-    ];
+    protected array $datasource = ['type' => 'manual'];
 
     public function __construct(protected string $name)
     {
@@ -24,7 +20,7 @@ class SalesforceList extends ListBaseObject implements ArrayHydrateInterface
         return $this->description;
     }
 
-    public function setDescription(?string $description): SalesforceList
+    public function setDescription(?string $description): ManualList
     {
         $this->description = $description;
 
@@ -36,7 +32,7 @@ class SalesforceList extends ListBaseObject implements ArrayHydrateInterface
         return $this->tags;
     }
 
-    public function setTags(?array $tags): SalesforceList
+    public function setTags(?array $tags): ManualList
     {
         $this->tags = $tags;
 
@@ -48,7 +44,7 @@ class SalesforceList extends ListBaseObject implements ArrayHydrateInterface
         return $this->attributes;
     }
 
-    public function setAttributes(?array $attributes): SalesforceList
+    public function setAttributes(?array $attributes): ManualList
     {
         $this->attributes = $attributes;
 
@@ -73,37 +69,15 @@ class SalesforceList extends ListBaseObject implements ArrayHydrateInterface
         return $this->name;
     }
 
-    public function setName(string $name): SalesforceList
+    public function setName(string $name): ManualList
     {
         $this->name = $name;
 
         return $this;
     }
 
-    public function setSalesforceIntegrationId(string $integrationId): SalesforceList
-    {
-        $this->datasource['integration_id'] = $integrationId;
-
-        return $this;
-    }
-
-    public function setSalesforceSoql(string $query): SalesforceList
-    {
-        $this->datasource['soql'] = $query;
-
-        return $this;
-    }
-
     public function toArray(): array
     {
-        if (empty($this->getDatasource()['integration_id'])) {
-            throw new \InvalidArgumentException('integration_id needs to be set on datasource on a Salesforce list');
-        }
-
-        if (empty($this->getDatasource()['soql'])) {
-            throw new \InvalidArgumentException('soql needs to be set on datasource on a Salesforce list');
-        }
-
         $returnArray = [
             'name' => $this->getName(),
             'datasource' => $this->getDatasource(),

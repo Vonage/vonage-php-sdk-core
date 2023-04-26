@@ -6,12 +6,14 @@ namespace VonageTest\ProactiveConnect;
 
 use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
+use Laminas\Diactoros\Stream;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
 use Vonage\Client\APIResource;
 use Vonage\Entity\IterableAPICollection;
-use Vonage\ProactiveConnect\Request\ManualList;
-use Vonage\ProactiveConnect\Request\SalesforceList;
+use Vonage\ProactiveConnect\Objects\ListItem;
+use Vonage\ProactiveConnect\Objects\ManualList;
+use Vonage\ProactiveConnect\Objects\SalesforceList;
 use VonageTest\Psr7AssertionTrait;
 use VonageTest\VonageTestCase;
 use Vonage\Client;
@@ -41,7 +43,6 @@ class ClientTest extends VonageTestCase
         /** @noinspection PhpParamsInspection */
         $this->api = (new APIResource())
             ->setIsHAL(true)
-            ->setCollectionName('lists')
             ->setErrorsOn200(false)
             ->setClient($this->vonageClient->reveal())
             ->setAuthHandler(new Client\Credentials\Handler\KeypairHandler())
@@ -475,11 +476,216 @@ class ClientTest extends VonageTestCase
         );
     }
 
+    public function testWillGetListItems(): void
+    {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $this->assertEquals('GET', $request->getMethod());
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api-eu.vonage.com/v0.1/bulk/lists/29192c4a-4058-49da-86c2-3e349d1065b7/items?page=1',
+                $uriString
+            );
+
+            return true;
+        }))->willReturn($this->getResponse('item-list-success'));
+
+        $id = '29192c4a-4058-49da-86c2-3e349d1065b7';
+
+        $response = $this->proactiveConnectClient->getItemsByListId(
+            $id,
+        );
+
+        $testPayload = [];
+
+        foreach ($response as $item) {
+            $testPayload[] = $item;
+        }
+
+        $this->assertEquals('6e26d247-e074-4f68-b72b-dd92aa02c7e0', $testPayload[0]['id']);
+        $this->assertEquals('f7c029ad-93c3-469c-9267-73c3c6864161', $testPayload[1]['id']);
+    }
+
+    public function testWillCreateListItem(): void
+    {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $this->assertEquals('POST', $request->getMethod());
+            $this->assertRequestJsonBodyContains('firstName', 'Adrianna', $request, true);
+            $this->assertRequestJsonBodyContains('lastName', 'Campbell', $request, true);
+            $this->assertRequestJsonBodyContains('phone', '155550067383', $request, true);
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api-eu.vonage.com/v0.1/bulk/lists/6e26d247-e074-4f68-b72b-dd92aa02c7e0/items',
+                $uriString
+            );
+
+            return true;
+        }))->willReturn($this->getResponse('item-create-success', 201));
+
+        $id = '6e26d247-e074-4f68-b72b-dd92aa02c7e0';
+
+        $listItem = new ListItem([
+            'firstName' => 'Adrianna',
+            'lastName' => 'Campbell',
+            'phone' => '155550067383'
+        ]);
+
+        $response = $this->proactiveConnectClient->createItemOnListId(
+            $id,
+            $listItem
+        );
+
+        $this->assertEquals('29192c4a-4058-49da-86c2-3e349d1065b7', $response['id']);
+        $this->assertEquals('Adrianna', $response['data']['firstName']);
+    }
+
+    public function testWillDownloadItemCsv(): void
+    {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $this->assertEquals('GET', $request->getMethod());
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api-eu.vonage.com/v0.1/bulk/lists/6e26d247-e074-4f68-b72b-dd92aa02c7e0/items/download',
+                $uriString
+            );
+
+            return true;
+        }))->willReturn($this->getCSVResponse());
+
+        $id = '6e26d247-e074-4f68-b72b-dd92aa02c7e0';
+
+        $response = $this->proactiveConnectClient->getListCsvFileByListId($id);
+
+        $response->rewind();
+
+        $csvArray = [];
+        $header = null;
+
+        $handle = tmpfile();
+        fwrite($handle, $response->getContents());
+        fseek($handle, 0);
+
+        while (($row = fgetcsv($handle)) !== false) {
+            if (!$header) {
+                $header = $row;
+            } else {
+                $csvArray[] = array_combine($header, $row);
+            }
+        }
+
+        fclose($handle);
+
+        $this->assertIsArray($csvArray);
+        $this->assertEquals('551546578', $csvArray[0]['phone']);
+        $this->assertEquals('Campbell', $csvArray[1]['lastName']);
+        $this->assertEquals('Jane', $csvArray[2]['firstName']);
+        $this->assertInstanceOf(Stream::class, $response);
+    }
+
+    public function testWillGetItemById(): void
+    {
+        $listId = '29192c4a-4058-49da-86c2-3e349d1065b7';
+        $itemId = '4cb98f71-a879-49f7-b5cf-2314353eb52c';
+
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $this->assertEquals('GET', $request->getMethod());
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api-eu.vonage.com/v0.1/bulk/lists/29192c4a-4058-49da-86c2-3e349d1065b7/items/4cb98f71-a879-49f7-b5cf-2314353eb52c',
+                $uriString
+            );
+
+            return true;
+        }))->willReturn($this->getResponse('item-success'));
+
+        $response = $this->proactiveConnectClient->getItemByIdandListId(
+            $itemId,
+            $listId
+        );
+
+        $this->assertEquals($itemId, $response['id']);
+        $this->assertEquals($listId, $response['list_id']);
+    }
+
+    public function testWillUpdateItem(): void
+    {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $this->assertEquals('PUT', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('item-update-success'));
+
+        $itemId = '29192c4a-4058-49da-86c2-3e349d1065b7';
+        $listId = '4cb98f71-a879-49f7-b5cf-2314353eb52c';
+
+        $listItem = new ListItem([
+            'firstName' => 'Linda',
+            'lastName' => 'Smith',
+            'phone' => '2365236235'
+        ]);
+
+        $listItem->set('phone', '876484843');
+
+        $response = $this->proactiveConnectClient->updateItemByIdAndListId(
+            $itemId,
+            $listId,
+            $listItem
+        );
+    }
+
+    public function testWillDeleteItemOffList(): void
+    {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $this->assertEquals('DELETE', $request->getMethod());
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api-eu.vonage.com/v0.1/bulk/lists/4cb98f71-a879-49f7-b5cf-2314353eb52c/items/29192c4a-4058-49da-86c2-3e349d1065b7',
+                $uriString
+            );
+
+            return true;
+        }))->willReturn($this->getResponse('list-delete-success'));
+
+        $itemId = '29192c4a-4058-49da-86c2-3e349d1065b7';
+        $listId = '4cb98f71-a879-49f7-b5cf-2314353eb52c';
+
+        $response = $this->proactiveConnectClient->deleteItemByIdAndListId(
+            $itemId,
+            $listId,
+        );
+    }
+
+    public function testWillImportItemsFromCsv(): void
+    {
+    }
+
     /**
      * This method gets the fixtures and wraps them in a Response object to mock the API
      */
     protected function getResponse(string $identifier, int $status = 200): Response
     {
         return new Response(fopen(__DIR__ . '/Fixtures/Responses/' . $identifier . '.json', 'rb'), $status);
+    }
+
+    protected function getCSVResponse(): Response
+    {
+        $csvContent = "firstName,lastName,phone\nJames,Smith,551546578\nAdrianna,Campbell,551545778\nJane,Doe,551457578";
+        $stream = new Stream('php://temp', 'wb+');
+        $stream->write($csvContent);
+        $stream->rewind();
+
+        return new Response(
+            $stream,
+            200,
+            ['Content-Type' => 'text/csv; charset=utf-8']
+        );
     }
 }
