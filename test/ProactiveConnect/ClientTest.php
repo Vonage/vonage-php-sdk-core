@@ -687,6 +687,60 @@ class ClientTest extends VonageTestCase
         );
     }
 
+    public function testWillFindEvents(): void
+    {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api-eu.vonage.com/v0.1/bulk/events?page=1',
+                $uriString
+            );
+            return true;
+        }))->willReturn($this->getResponse('events-get-success'));
+
+        $events = $this->proactiveConnectClient->getEvents();
+        $this->assertInstanceOf(IterableAPICollection::class, $events);
+
+        $payload = [];
+
+        foreach ($events as $event) {
+            $payload[] = $event;
+        }
+
+        $this->assertCount(2, $payload);
+//        $this->assertEquals('Recipients for demo', $payload[0]['name']);
+//        $this->assertEquals('Salesforce contacts', $payload[1]['name']);
+    }
+
+    public function testWillFindEventsByPageAndPageSize(): void
+    {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api-eu.vonage.com/v0.1/bulk/events?page_size=40&page=2',
+                $uriString
+            );
+            return true;
+        }))->willReturn($this->getResponse('events-filter-get-success'));
+
+        $events = $this->proactiveConnectClient->getEvents(2, 40);
+
+        $payload = [];
+
+        foreach ($events as $event) {
+            $payload[] = $event;
+        }
+
+        $this->assertCount(3, $payload);
+
+        $pageMeta = $events->getPageData();
+        $this->assertEquals(2, $pageMeta['page']);
+        $this->assertEquals(3, $pageMeta['total_items']);
+        $this->assertEquals(40, $pageMeta['page_size']);
+    }
+
     /**
      * This method gets the fixtures and wraps them in a Response object to mock the API
      */

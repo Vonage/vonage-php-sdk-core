@@ -136,4 +136,26 @@ class Client implements APIClient
             ['Content-Type' => 'multipart/form-data']
         );
     }
+
+    public function getEvents(?int $page = null, ?int $pageSize = null)
+    {
+        $this->api->setCollectionName('events');
+        $lists = $this->api->search(null, '/events');
+
+        $lists->setPageIndexKey('page');
+
+        if ($page) {
+            $lists->setPage($page);
+        }
+
+        if ($pageSize) {
+            $lists->setSize($pageSize);
+        }
+
+        // This API has the potential to have a lot of data. Defaulting to
+        // Auto advance off, you can override in the return object
+        $lists->setAutoAdvance(false);
+
+        return $lists;
+    }
 }
