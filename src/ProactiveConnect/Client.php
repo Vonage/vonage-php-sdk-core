@@ -2,6 +2,7 @@
 
 namespace Vonage\ProactiveConnect;
 
+use Laminas\Diactoros\Stream;
 use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
 use Vonage\Entity\IterableAPICollection;
@@ -115,5 +116,24 @@ class Client implements APIClient
     public function deleteItemByIdAndListId(string $itemId, string $listId): ?array
     {
         return $this->api->delete('lists/' . $listId . '/items/' . $itemId);
+    }
+
+    public function uploadCsvToList(string $filename, string $listId)
+    {
+        $stream = new Stream(fopen($filename, 'r'));
+
+        $multipart = [
+            [
+                'name' => 'file',
+                'contents' => $stream,
+                'filename' => basename($filename)
+            ]
+        ];
+
+        return $this->api->create(
+            [$multipart],
+            '/lists/' . $listId . '/items/import',
+            ['Content-Type' => 'multipart/form-data']
+        );
     }
 }

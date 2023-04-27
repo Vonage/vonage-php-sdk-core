@@ -602,7 +602,7 @@ class ClientTest extends VonageTestCase
             );
 
             return true;
-        }))->willReturn($this->getResponse('item-success'));
+        }))->willReturn($this->getResponse('item-get-success'));
 
         $response = $this->proactiveConnectClient->getItemByIdandListId(
             $itemId,
@@ -652,7 +652,7 @@ class ClientTest extends VonageTestCase
             );
 
             return true;
-        }))->willReturn($this->getResponse('list-delete-success'));
+        }))->willReturn($this->getResponse('item-delete-success', 204));
 
         $itemId = '29192c4a-4058-49da-86c2-3e349d1065b7';
         $listId = '4cb98f71-a879-49f7-b5cf-2314353eb52c';
@@ -665,6 +665,26 @@ class ClientTest extends VonageTestCase
 
     public function testWillImportItemsFromCsv(): void
     {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $this->assertEquals('POST', $request->getMethod());
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api-eu.vonage.com/v0.1/bulk/lists/4cb98f71-a879-49f7-b5cf-2314353eb52c/items/import',
+                $uriString
+            );
+
+            return true;
+        }))->willReturn($this->getResponse('item-upload-success'));
+
+        $listId = '4cb98f71-a879-49f7-b5cf-2314353eb52c';
+        $filename = __DIR__ . '/Fixtures/Payload/testUpload.csv';
+
+        $response = $this->proactiveConnectClient->uploadCsvToList(
+            $filename,
+            $listId,
+        );
     }
 
     /**
