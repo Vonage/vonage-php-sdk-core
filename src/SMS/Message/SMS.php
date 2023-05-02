@@ -32,7 +32,7 @@ class SMS extends OutboundMessage
 
     public static function isGsm7(string $message): bool
     {
-        $fullPattern = "/\A[" . preg_quote(self::GSM_7_CHARSET, '/') . "]*\z/";
+        $fullPattern = "/\A[" . preg_quote(self::GSM_7_CHARSET, '/') . "]*\z/u";
         return (bool)preg_match($fullPattern, $message);
     }
 
