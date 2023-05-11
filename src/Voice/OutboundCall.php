@@ -20,56 +20,35 @@ class OutboundCall
 {
     public const MACHINE_CONTINUE = 'continue';
     public const MACHINE_HANGUP = 'hangup';
-
-    /**
-     * @var Webhook
-     */
-    protected $answerWebhook;
-
-    /**
-     * @var Webhook
-     */
-    protected $eventWebhook;
+    protected Webhook $answerWebhook;
+    protected Webhook $eventWebhook;
 
     /**
      * Length of seconds before Vonage hangs up after going into `in_progress` status
-     *
-     * @var int
      */
-    protected $lengthTimer;
+    protected int $lengthTimer;
 
     /**
      * What to do when Vonage detects an answering machine.
-     *
-     * @var ?string
      */
-    protected $machineDetection;
-    /**
-     * @var NCCO
-     */
-    protected $ncco;
+    protected ?string $machineDetection;
+
+    protected NCCO $ncco;
 
     /**
-     * Whether or not to use random numbers linked on the application
-     *
-     * @var bool
+     * Whether to use random numbers linked on the application
      */
-    protected $randomFrom = false;
+    protected bool $randomFrom = false;
 
     /**
      * Length of time Vonage will allow a phone number to ring before hanging up
-     *
-     * @var int
      */
-    protected $ringingTimer;
+    protected int $ringingTimer;
 
     /**
      * Creates a new Outbound Call object
      * If no `$from` parameter is passed, the system will use a random number
      * that is linked to the application instead.
-     *
-     *
-     * @return void
      */
     public function __construct(protected EndpointInterface $to, protected ?Phone $from = null)
     {
@@ -118,9 +97,6 @@ class OutboundCall
         return $this->to;
     }
 
-    /**
-     * @return $this
-     */
     public function setAnswerWebhook(Webhook $webhook): self
     {
         $this->answerWebhook = $webhook;
@@ -128,9 +104,6 @@ class OutboundCall
         return $this;
     }
 
-    /**
-     * @return $this
-     */
     public function setEventWebhook(Webhook $webhook): self
     {
         $this->eventWebhook = $webhook;
@@ -138,9 +111,6 @@ class OutboundCall
         return $this;
     }
 
-    /**
-     * @return $this
-     */
     public function setLengthTimer(int $timer): self
     {
         $this->lengthTimer = $timer;
@@ -148,9 +118,6 @@ class OutboundCall
         return $this;
     }
 
-    /**
-     * @return $this
-     */
     public function setMachineDetection(string $action): self
     {
         if ($action === self::MACHINE_CONTINUE || $action === self::MACHINE_HANGUP) {
@@ -162,9 +129,6 @@ class OutboundCall
         throw new InvalidArgumentException('Unknown machine detection action');
     }
 
-    /**
-     * @return $this
-     */
     public function setNCCO(NCCO $ncco): self
     {
         $this->ncco = $ncco;
@@ -172,9 +136,6 @@ class OutboundCall
         return $this;
     }
 
-    /**
-     * @return $this
-     */
     public function setRingingTimer(int $timer): self
     {
         $this->ringingTimer = $timer;
