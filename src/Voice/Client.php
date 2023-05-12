@@ -84,6 +84,10 @@ class Client implements APIClient
             $json['ringing_timer'] = (string)$call->getRingingTimer();
         }
 
+        if (!is_null($call->getAdvancedMachineDetection())) {
+            $json['advanced_machine_detection'] = $call->getAdvancedMachineDetection()->toArray();
+        }
+
         $event = $this->api->create($json);
         $event['to'] = $call->getTo()->getId();
         if ($call->getFrom()) {

@@ -26,4 +26,16 @@ class OutboundCallTest extends VonageTestCase
         (new OutboundCall(new Phone('15555555555'), new Phone('16666666666')))
             ->setMachineDetection('bob');
     }
+
+    public function testAdvancedMachineDetectionThrowsExceptionOnBadBehaviour(): void
+    {
+    }
+
+    public function testAdvancedMachineDetectionThrowsExceptionOnBadMode(): void
+    {
+    }
+
+    public function testAdvancedMachineDetectionThrowsExceptionOnBadTimeout(): void
+    {
+    }
 }

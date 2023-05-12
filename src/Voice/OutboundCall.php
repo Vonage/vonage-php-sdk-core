@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Vonage\Voice;
 
+use AdvancedMachineDetection;
 use InvalidArgumentException;
 use Vonage\Voice\Endpoint\EndpointInterface;
 use Vonage\Voice\Endpoint\Phone;
@@ -20,20 +21,25 @@ class OutboundCall
 {
     public const MACHINE_CONTINUE = 'continue';
     public const MACHINE_HANGUP = 'hangup';
-    protected Webhook $answerWebhook;
-    protected Webhook $eventWebhook;
+    protected ?Webhook $answerWebhook = null;
+    protected ?Webhook $eventWebhook = null;
 
     /**
      * Length of seconds before Vonage hangs up after going into `in_progress` status
      */
-    protected int $lengthTimer;
+    protected int $lengthTimer = 7200;
 
     /**
      * What to do when Vonage detects an answering machine.
      */
-    protected ?string $machineDetection;
+    protected ?string $machineDetection = '';
 
-    protected NCCO $ncco;
+    /**
+     * Overrides machine detection if used for more configuration options
+     */
+    protected ?AdvancedMachineDetection $advancedMachineDetection = null;
+
+    protected ?NCCO $ncco = null;
 
     /**
      * Whether to use random numbers linked on the application
@@ -43,7 +49,7 @@ class OutboundCall
     /**
      * Length of time Vonage will allow a phone number to ring before hanging up
      */
-    protected int $ringingTimer;
+    protected int $ringingTimer = 60;
 
     /**
      * Creates a new Outbound Call object
@@ -146,5 +152,17 @@ class OutboundCall
     public function getRandomFrom(): bool
     {
         return $this->randomFrom;
+    }
+
+    public function getAdvancedMachineDetection(): ?AdvancedMachineDetection
+    {
+        return $this->advancedMachineDetection;
+    }
+
+    public function setAdvancedMachineDetection(?AdvancedMachineDetection $advancedMachineDetection): static
+    {
+        $this->advancedMachineDetection = $advancedMachineDetection;
+
+        return $this;
     }
 }
