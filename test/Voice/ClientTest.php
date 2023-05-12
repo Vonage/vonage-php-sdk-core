@@ -11,10 +11,8 @@ declare(strict_types=1);
 
 namespace VonageTest\Voice;
 
-use AdvancedMachineDetection;
 use Laminas\Diactoros\Response;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\StreamInterface;
+use Vonage\Voice\VoiceObjects\AdvancedMachineDetection;
 use VonageTest\VonageTestCase;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
@@ -151,8 +149,7 @@ class ClientTest extends VonageTestCase
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
-            $this->assertRequestJsonBodyContains($payload['advanced_machine_detection']->toArray(), );
-            $this->assertRequestBodyIsJson(json_encode($payload), $request);
+            $this->assertRequestJsonBodyContains('advanced_machine_detection', $payload['advanced_machine_detection']->toArray(), $request);
 
             return true;
         }))->willReturn($this->getResponse('create-outbound-call-success', 201));

@@ -1,6 +1,10 @@
 <?php
 
-class AdvancedMachineDetection implements \Vonage\Entity\Hydrator\ArrayHydrateInterface
+namespace Vonage\Voice\VoiceObjects;
+
+use Vonage\Entity\Hydrator\ArrayHydrateInterface;
+
+class AdvancedMachineDetection implements ArrayHydrateInterface
 {
     public const MACHINE_BEHAVIOUR_CONTINUE = 'continue';
     public const MACHINE_BEHAVIOUR_HANGUP = 'hangup';
@@ -11,14 +15,17 @@ class AdvancedMachineDetection implements \Vonage\Entity\Hydrator\ArrayHydrateIn
     protected array $permittedBehaviour = [self::MACHINE_BEHAVIOUR_CONTINUE, self::MACHINE_BEHAVIOUR_HANGUP];
     protected array $permittedModes = [self::MACHINE_MODE_DETECT, self::MACHINE_MODE_DETECT_BEEP];
 
-    public function __construct(protected string $behaviour, protected int $beepTimeout, protected string $mode = 'detect')
-    {
+    public function __construct(
+        protected string $behaviour,
+        protected int $beepTimeout,
+        protected string $mode = 'detect'
+    ) {
         if (!$this->isValidBehaviour($behaviour)) {
-            throw new InvalidArgumentException($behaviour . ' is not a valid behavior string');
+            throw new \InvalidArgumentException($behaviour . ' is not a valid behavior string');
         }
 
         if (!$this->isValidMode($mode)) {
-            throw new InvalidArgumentException($mode . ' is not a valid mode string');
+            throw new \InvalidArgumentException($mode . ' is not a valid mode string');
         }
 
         if (!$this->isValidTimeout($beepTimeout)) {

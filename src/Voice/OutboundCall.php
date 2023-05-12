@@ -11,11 +11,11 @@ declare(strict_types=1);
 
 namespace Vonage\Voice;
 
-use AdvancedMachineDetection;
 use InvalidArgumentException;
 use Vonage\Voice\Endpoint\EndpointInterface;
 use Vonage\Voice\Endpoint\Phone;
 use Vonage\Voice\NCCO\NCCO;
+use Vonage\Voice\VoiceObjects\AdvancedMachineDetection;
 
 class OutboundCall
 {
