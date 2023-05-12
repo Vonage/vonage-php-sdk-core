@@ -185,7 +185,7 @@ class SMSTest extends VonageTestCase
             ['This is a text with some tasty characters: [test]', true],
             ['This is also a GSM7 text', true],
             ['This is a Çotcha', true],
-            ['This is also a çotcha', true],
+            ['This is also a çotcha', false],
             ['日本語でボナージュ', false],
         ];
     }

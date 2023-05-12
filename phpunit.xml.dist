@@ -26,6 +26,9 @@
     <testsuite name="voice">
       <directory>test/Voice</directory>
     </testsuite>
+    <testsuite name="messages">
+      <directory>test/Messages</directory>
+    </testsuite>
   </testsuites>
   <php>
         <ini name='error_reporting' value='E_ALL' />
