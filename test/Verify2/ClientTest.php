@@ -46,7 +46,7 @@ class ClientTest extends VonageTestCase
             ->setErrorsOn200(false)
             ->setClient($this->vonageClient->reveal())
             ->setAuthHandler([new Client\Credentials\Handler\BasicHandler(), new Client\Credentials\Handler\KeypairHandler()])
-            ->setBaseUrl('https://api.nexmo.com/v2/verify/');
+            ->setBaseUrl('https://api.nexmo.com/v2/verify');
 
         $this->verify2Client = new Verify2Client($this->api);
     }
@@ -93,7 +93,7 @@ class ClientTest extends VonageTestCase
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
-                'https://api.nexmo.com/v2/verify/',
+                'https://api.nexmo.com/v2/verify',
                 $uriString
             );
 
@@ -589,6 +589,28 @@ class ClientTest extends VonageTestCase
         }))->willReturn($this->getResponse('verify-check-throttle', 429));
 
         $result = $this->verify2Client->check('c11236f4-00bf-4b89-84ba-88b25df97315', '24525');
+    }
+
+    public function testWillCancelVerification(): void
+    {
+        $requestId = 'c11236f4-00bf-4b89-84ba-88b25df97315';
+
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api.nexmo.com/v2/verify/c11236f4-00bf-4b89-84ba-88b25df97315',
+                $uriString
+            );
+
+            $this->assertEquals('DELETE', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('verify-cancel-success', 204));
+
+        $result = $this->verify2Client->cancelRequest($requestId);
+
+        $this->assertTrue($result);
     }
 
     /**
