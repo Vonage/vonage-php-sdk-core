@@ -23,6 +23,9 @@
     <testsuite name="verify2">
       <directory>test/Verify2</directory>
     </testsuite>
+    <testsuite name="voice">
+      <directory>test/Voice</directory>
+    </testsuite>
     <testsuite name="messages">
       <directory>test/Messages</directory>
     </testsuite>

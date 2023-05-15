@@ -13,6 +13,7 @@ namespace Vonage\Voice\NCCO\Action;
 
 use InvalidArgumentException;
 use Vonage\Voice\Endpoint\EndpointInterface;
+use Vonage\Voice\VoiceObjects\AdvancedMachineDetection;
 use Vonage\Voice\Webhook;
 
 class Connect implements ActionInterface
@@ -21,40 +22,15 @@ class Connect implements ActionInterface
     public const MACHINE_CONTINUE = 'continue';
     public const MACHINE_HANGUP = 'hangup';
 
-    /**
-     * @var ?string
-     */
-    protected $from;
+    protected ?string $from = '';
+    protected ?string $eventType = '';
 
-    /**
-     * @var ?string
-     */
-    protected $eventType;
-
-    /**
-     * @var int
-     */
-    protected $timeout;
-
-    /**
-     * @var int
-     */
-    protected $limit;
-
-    /**
-     * @var string
-     */
-    protected $machineDetection;
-
-    /**
-     * @var ?Webhook
-     */
-    protected $eventWebhook;
-
-    /**
-     * @var ?string
-     */
-    protected $ringbackTone;
+    protected int $timeout = 0;
+    protected int $limit = 0;
+    protected $machineDetection = '';
+    protected ?Webhook $eventWebhook = null;
+    protected ?string $ringbackTone = '';
+    protected ?AdvancedMachineDetection $advancedMachineDetection = null;
 
     public function __construct(protected EndpointInterface $endpoint)
     {
@@ -91,6 +67,10 @@ class Connect implements ActionInterface
 
         if ($this->getMachineDetection()) {
             $data['machineDetection'] = $this->getMachineDetection();
+        }
+
+        if ($this->getAdvancedMachineDetection()) {
+            $data['advancedMachineDetection'] = $this->getAdvancedMachineDetection()->toArray();
         }
 
         $from = $this->getFrom();
@@ -233,6 +213,18 @@ class Connect implements ActionInterface
     public function setRingbackTone(string $ringbackTone): self
     {
         $this->ringbackTone = $ringbackTone;
+
+        return $this;
+    }
+
+    public function getAdvancedMachineDetection(): ?AdvancedMachineDetection
+    {
+        return $this->advancedMachineDetection;
+    }
+
+    public function setAdvancedMachineDetection(AdvancedMachineDetection $advancedMachineDetection): static
+    {
+        $this->advancedMachineDetection = $advancedMachineDetection;
 
         return $this;
     }
