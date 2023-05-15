@@ -98,6 +98,7 @@ class ClientTest extends VonageTestCase
             );
 
             $this->assertRequestJsonBodyContains('locale', 'en-us', $request);
+            $this->assertRequestJsonBodyContains('fraud_check', true, $request);
             $this->assertRequestJsonBodyContains('channel_timeout', 300, $request);
             $this->assertRequestJsonBodyContains('client_ref', $payload['client_ref'], $request);
             $this->assertRequestJsonBodyContains('code_length', 4, $request);
@@ -105,6 +106,29 @@ class ClientTest extends VonageTestCase
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request, true);
             $this->assertRequestJsonBodyContains('channel', 'sms', $request, true);
             $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('verify-request-success', 202));
+
+        $result = $this->verify2Client->startVerification($smsVerification);
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('request_id', $result);
+    }
+
+    public function testCanBypassFraudCheck(): void
+    {
+        $payload = [
+            'to' => '07785254785',
+            'client_ref' => 'my-verification',
+            'brand' => 'my-brand',
+        ];
+
+        $smsVerification = new SMSRequest($payload['to'], $payload['brand']);
+        $smsVerification->setFraudCheck(false);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertRequestJsonBodyContains('fraud_check', false, $request);
 
             return true;
         }))->willReturn($this->getResponse('verify-request-success', 202));
