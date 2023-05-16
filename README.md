@@ -383,6 +383,14 @@ $verificationEvent = \Vonage\Verify2\Webhook\Factory::createFromArray($payload);
 var_dump($verificationEvent->getStatus());
 ```
 
+### Cancelling a request in-flight
+
+You can cancel a request should you need to, before the end user has taken any action.
+
+```php
+$requestId = 'c11236f4-00bf-4b89-84ba-88b25df97315';
+$client->verify2()->cancel($requestId);
+```
 
 ### Making a Call 
 
