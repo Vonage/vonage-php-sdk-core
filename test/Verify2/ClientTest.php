@@ -46,7 +46,7 @@ class ClientTest extends VonageTestCase
             ->setErrorsOn200(false)
             ->setClient($this->vonageClient->reveal())
             ->setAuthHandler([new Client\Credentials\Handler\BasicHandler(), new Client\Credentials\Handler\KeypairHandler()])
-            ->setBaseUrl('https://api.nexmo.com/v2/verify/');
+            ->setBaseUrl('https://api.nexmo.com/v2/verify');
 
         $this->verify2Client = new Verify2Client($this->api);
     }
@@ -93,11 +93,12 @@ class ClientTest extends VonageTestCase
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
-                'https://api.nexmo.com/v2/verify/',
+                'https://api.nexmo.com/v2/verify',
                 $uriString
             );
 
             $this->assertRequestJsonBodyContains('locale', 'en-us', $request);
+            $this->assertRequestJsonBodyContains('fraud_check', true, $request);
             $this->assertRequestJsonBodyContains('channel_timeout', 300, $request);
             $this->assertRequestJsonBodyContains('client_ref', $payload['client_ref'], $request);
             $this->assertRequestJsonBodyContains('code_length', 4, $request);
@@ -105,6 +106,29 @@ class ClientTest extends VonageTestCase
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request, true);
             $this->assertRequestJsonBodyContains('channel', 'sms', $request, true);
             $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('verify-request-success', 202));
+
+        $result = $this->verify2Client->startVerification($smsVerification);
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('request_id', $result);
+    }
+
+    public function testCanBypassFraudCheck(): void
+    {
+        $payload = [
+            'to' => '07785254785',
+            'client_ref' => 'my-verification',
+            'brand' => 'my-brand',
+        ];
+
+        $smsVerification = new SMSRequest($payload['to'], $payload['brand']);
+        $smsVerification->setFraudCheck(false);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertRequestJsonBodyContains('fraud_check', false, $request);
 
             return true;
         }))->willReturn($this->getResponse('verify-request-success', 202));
@@ -589,6 +613,28 @@ class ClientTest extends VonageTestCase
         }))->willReturn($this->getResponse('verify-check-throttle', 429));
 
         $result = $this->verify2Client->check('c11236f4-00bf-4b89-84ba-88b25df97315', '24525');
+    }
+
+    public function testWillCancelVerification(): void
+    {
+        $requestId = 'c11236f4-00bf-4b89-84ba-88b25df97315';
+
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api.nexmo.com/v2/verify/c11236f4-00bf-4b89-84ba-88b25df97315',
+                $uriString
+            );
+
+            $this->assertEquals('DELETE', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('verify-cancel-success', 204));
+
+        $result = $this->verify2Client->cancelRequest($requestId);
+
+        $this->assertTrue($result);
     }
 
     /**
