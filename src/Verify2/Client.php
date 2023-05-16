@@ -2,7 +2,6 @@
 
 namespace Vonage\Verify2;
 
-use Laminas\Diactoros\Request;
 use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
 use Vonage\Client\Exception\Exception;
@@ -27,7 +26,7 @@ class Client implements APIClient
     public function check(string $requestId, $code): bool
     {
         try {
-            $response = $this->getAPIResource()->create(['code' => $code], $requestId);
+            $response = $this->getAPIResource()->create(['code' => $code], '/' . $requestId);
         } catch (Exception $e) {
             // For horrible reasons in the API Error Handler, throw the error unless it's a 409.
             if ($e->getCode() === 409) {
@@ -36,6 +35,13 @@ class Client implements APIClient
 
             throw $e;
         }
+
+        return true;
+    }
+
+    public function cancelRequest(string $requestId): bool
+    {
+        $this->api->delete($requestId);
 
         return true;
     }
