@@ -16,7 +16,7 @@ abstract class BaseVerifyRequest implements RequestInterface
 
     protected int $timeout = 300;
 
-    protected bool $fraudCheck = true;
+    protected ?bool $fraudCheck = null;
 
     protected ?string $clientRef = null;
 
@@ -134,9 +134,9 @@ abstract class BaseVerifyRequest implements RequestInterface
         return $this;
     }
 
-    public function getFraudCheck(): bool
+    public function getFraudCheck(): ?bool
     {
-        return $this->fraudCheck;
+        return $this->fraudCheck ?? null;
     }
 
     public function setFraudCheck(bool $fraudCheck): BaseVerifyRequest
@@ -149,13 +149,16 @@ abstract class BaseVerifyRequest implements RequestInterface
     public function getBaseVerifyUniversalOutputArray(): array
     {
         $returnArray = [
-            'fraud_check' => $this->getFraudCheck(),
             'locale' => $this->getLocale()->getCode(),
             'channel_timeout' => $this->getTimeout(),
             'code_length' => $this->getLength(),
             'brand' => $this->getBrand(),
             'workflow' => $this->getWorkflows()
         ];
+
+        if ($this->getFraudCheck() === false) {
+            $returnArray['fraud_check'] = $this->getFraudCheck();
+        }
 
         if ($this->getClientRef()) {
             $returnArray['client_ref'] = $this->getClientRef();
