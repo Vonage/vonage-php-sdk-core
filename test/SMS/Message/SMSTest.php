@@ -170,7 +170,7 @@ class SMSTest extends VonageTestCase
     }
 
     /**
-     * @dataProvider unicodeStringDataProvider
+     * @dataProvider entireGsm7CharSetProvider
      * @return void
      */
     public function testGsm7Identification(string $message, bool $expectedGsm7): void
@@ -178,15 +178,31 @@ class SMSTest extends VonageTestCase
         $this->assertEquals($expectedGsm7, SMS::isGsm7($message));
     }
 
-    public function unicodeStringDataProvider(): array
+    public function entireGsm7CharSetProvider(): array
     {
-        return [
-            ['this is a text', true],
-            ['This is a text with some tasty characters: [test]', true],
-            ['This is also a GSM7 text', true],
-            ['This is a Çotcha', true],
-            ['This is also a çotcha', false],
-            ['日本語でボナージュ', false],
+        $gsm7Characters = [
+            "@", "£", "$", "¥", "è", "é", "ù", "ì", "ò", "Ç", "\n", "Ø", "ø", "\r", "Å",
+            "å", "\u0394", "_", "\u03a6", "\u0393", "\u039b", "\u03a9", "\u03a0", "\u03a8",
+            "\u03a3", "\u0398", "\u039e", "\u00a0", "Æ", "æ", "ß", "É", " ", "!", "\"", "#",
+            "¤", "%", "&", "'", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3",
+            "4", "5", "6", "7", "8", "9", ":", ";", "<", "=", ">", "?", "¡", "A", "B", "C",
+            "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S",
+            "T", "U", "V", "W", "X", "Y", "Z", "Ä", "Ö", "Ñ", "Ü", "§", "¿", "a", "b", "c",
+            "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s",
+            "t", "u", "v", "w", "x", "y", "z", "ä", "ö", "ñ", "ü", "à",
         ];
+
+        $return = [];
+
+        foreach ($gsm7Characters as $character) {
+            $return[] = [$character, true];
+        }
+
+        $return[] = ['This is a text with some tasty characters: [test]', true];
+        $return[] = ['This is a Çotcha', true];
+        $return[] = ['This is also a çotcha', false];
+        $return[] = ['日本語でボナージュ', false];
+
+        return $return;
     }
 }

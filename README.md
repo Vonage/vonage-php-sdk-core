@@ -112,6 +112,21 @@ foreach($response as $index => $data){
 
 The [send example][send_example] also has full working examples.
 
+### Detecting Encoding Type
+
+You can use a static `isGsm7()` method within the SMS Client code to determine whether to send the message using
+GSM-7 encoding or Unicode. Here is an example:
+
+```php
+$sms = new \Vonage\SMS\Message\SMS('123', '456', 'is this gsm7?');
+
+if (Vonage\SMS\Message\SMS::isGsm7($text)) {
+    $sms->setType('text');
+} else {
+    $sms->setType('unicode');
+}
+```
+
 ### Receiving a Message
 
 Inbound messages are [sent to your application as a webhook][doc_inbound]. The Client library provides a way to 
