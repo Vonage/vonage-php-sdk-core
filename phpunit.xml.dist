@@ -29,6 +29,9 @@
     <testsuite name="messages">
       <directory>test/Messages</directory>
     </testsuite>
+    <testsuite name="sms">
+      <directory>test/SMS</directory>
+    </testsuite>
   </testsuites>
   <php>
         <ini name='error_reporting' value='E_ALL' />
