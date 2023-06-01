@@ -646,7 +646,7 @@ class ClientTest extends VonageTestCase
     public function testCanDownloadRecording(): void
     {
         $fixturePath = __DIR__ . '/Fixtures/mp3fixture.mp3';
-        $url = 'recordings/mp3fixture.mp3';
+        $url = 'https://api-us.nexmo.com/v1/files/999f999-526d-4013-87fc-c824f7a443b3';
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals(
@@ -657,7 +657,7 @@ class ClientTest extends VonageTestCase
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
-                'https://api.nexmo.com/v1/calls/recordings/mp3fixture.mp3',
+                'https://api-us.nexmo.com/v1/files/999f999-526d-4013-87fc-c824f7a443b3',
                 $uriString
             );
             return true;
