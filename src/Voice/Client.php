@@ -274,6 +274,6 @@ class Client implements APIClient
 
     public function getRecording(string $url): StreamInterface
     {
-        return $this->getAPIResource()->get($url, [], [], false);
+        return $this->getAPIResource()->get($url, [], [], false, true);
     }
 }

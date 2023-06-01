@@ -188,9 +188,14 @@ class APIResource implements ClientAwareInterface
      * @throws ClientExceptionInterface
      * @throws Exception\Exception
      */
-    public function get($id, array $query = [], array $headers = [], bool $jsonResponse = true)
+    public function get($id, array $query = [], array $headers = [], bool $jsonResponse = true, bool $uriOverride = false)
     {
         $uri = $this->getBaseUrl() . $this->baseUri . '/' . $id;
+
+        // This is a necessary hack if you want to fetch a totally different URL but use Vonage Auth
+        if ($uriOverride) {
+            $uri = $id;
+        }
 
         if (!empty($query)) {
             $uri .= '?' . http_build_query($query);
