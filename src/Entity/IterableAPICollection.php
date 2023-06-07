@@ -90,6 +90,12 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
     protected bool $isHAL = true;
 
     /**
+     * Used if there are HAL elements, but entities are all in one request
+     * Specifically removes automatic pagination that adds request parameters
+     */
+    protected bool $noQueryParameters = false;
+
+    /**
      * User set pgge sixe.
      */
     protected ?int $size = null;
@@ -443,6 +449,8 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
     {
         //use filter if no query provided
         if (false === strpos($absoluteUri, '?')) {
+            $originalUri = $absoluteUri;
+
             $query = [];
 
             if (isset($this->size)) {
@@ -458,6 +466,11 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
             }
 
             $absoluteUri .= '?' . http_build_query($query);
+
+            // This is an override to completely remove request parameters for single requests
+            if ($this->getNoQueryParameters()) {
+                $absoluteUri = $originalUri;
+            }
         }
 
         $requestUri = $absoluteUri;
@@ -553,5 +566,17 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
         $this->naiveCount = $naiveCount;
 
         return $this;
+    }
+
+    public function setNoQueryParameters(bool $noQueryParameters): self
+    {
+        $this->noQueryParameters = $noQueryParameters;
+
+        return $this;
+    }
+
+    public function getNoQueryParameters(): bool
+    {
+        return $this->noQueryParameters;
     }
 }
