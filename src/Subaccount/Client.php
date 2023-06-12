@@ -28,6 +28,12 @@ class Client implements APIClient
         return (new Account())->fromArray($response['_embedded'][self::PRIMARY_ACCOUNT_ARRAY_KEY]);
     }
 
+    public function getSubaccount(string $apiKey, string $subaccountApiKey): Account
+    {
+        $response = $this->api->get($apiKey . '/subaccounts/' . $subaccountApiKey);
+        return (new Account())->fromArray($response);
+    }
+
     public function getSubaccounts(string $apiKey): array
     {
         $api = clone $this->api;
@@ -42,5 +48,15 @@ class Client implements APIClient
         return array_map(function ($item) use ($hydrator) {
             return $hydrator->hydrate($item);
         }, $subaccounts);
+    }
+
+    public function createSubaccount(string $apiKey, array $payload)
+    {
+        return $this->api->create($payload, '/' . $apiKey . '/subaccounts');
+    }
+
+    public function updateSubaccount(string $apiKey, string $subaccountApiKey, array $update): ?array
+    {
+        return $this->api->partiallyUpdate($apiKey . '/subaccounts/' . $subaccountApiKey, $update);
     }
 }
