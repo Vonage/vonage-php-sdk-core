@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Vonage\Subaccount;
+namespace Vonage\Subaccount\Hydrators;
 
 use Vonage\Entity\Hydrator\HydratorInterface;
 use Vonage\Subaccount\SubaccountObjects\Account;
 
-class Hydrator implements HydratorInterface
+class AccountHydrator implements HydratorInterface
 {
     public function hydrate(array $data)
     {
@@ -21,3 +21,4 @@ class Hydrator implements HydratorInterface
         return $object;
     }
 }
+

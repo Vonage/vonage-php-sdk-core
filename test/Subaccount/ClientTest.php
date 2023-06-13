@@ -11,7 +11,12 @@ use Psr\Http\Message\RequestInterface;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Subaccount\Client as SubaccountClient;
+use Vonage\Subaccount\Filter\Subaccount;
+use Vonage\Subaccount\Request\NumberTransferRequest;
+use Vonage\Subaccount\Request\TransferRequest;
 use Vonage\Subaccount\SubaccountObjects\Account;
+use Vonage\Subaccount\SubaccountObjects\BalanceTransfer;
+use Vonage\Subaccount\SubaccountObjects\CreditTransfer;
 use VonageTest\Psr7AssertionTrait;
 use VonageTest\VonageTestCase;
 
@@ -189,6 +194,13 @@ class ClientTest extends VonageTestCase
     {
         $apiKey = 'acc6111f';
 
+        $payload = [
+            'from' => 'acc6111f',
+            'to' => 's5r3fds',
+            'amount' => '123.45',
+            'reference' => 'this is a credit transfer'
+        ];
+
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
@@ -197,20 +209,22 @@ class ClientTest extends VonageTestCase
                 $uriString
             );
             $this->assertRequestMethod('POST', $request);
-            $this->assertRequestQueryContains('start_date', '2022-01-01', $request);
-            $this->assertRequestQueryContains('end_date', '2022-01-05', $request);
-            $this->assertRequestQueryContains('subaccount', 's5r3fds', $request);
+            $this->assertRequestJsonBodyContains('from', 'acc6111f', $request);
+            $this->assertRequestJsonBodyContains('to', 's5r3fds', $request);
+            $this->assertRequestJsonBodyContains('amount', '123.45', $request);
+            $this->assertRequestJsonBodyContains('reference', 'this is a credit transfer', $request);
 
             return true;
-        }))->willReturn($this->getResponse('credit-transfer-success'));
+        }))->willReturn($this->getResponse('make-credit-transfer-success'));
 
         $transferRequest = (new TransferRequest($apiKey))
             ->setFrom($payload['from'])
             ->setTo($payload['to'])
             ->setAmount($payload['amount'])
-            ->setReference($payload['reference'];
+            ->setReference($payload['reference']);
 
-        $response = $this->subaccountClient->transferCredit($transferRequest);
+        $response = $this->subaccountClient->makeCreditTransfer($transferRequest);
+        $this->assertInstanceOf(CreditTransfer::class, $response);
     }
 
     public function testWillListCreditTransfers(): void
@@ -221,17 +235,22 @@ class ClientTest extends VonageTestCase
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
-                'https://api.nexmo.com/accounts/acc6111f/credit-transfers',
+                'https://api.nexmo.com/accounts/acc6111f/credit-transfers?start_date=2022-01-01&end_date=2022-01-05&subaccount=s5r3fds',
                 $uriString
             );
             $this->assertRequestMethod('GET', $request);
-            $this->assertRequestJsonBodyContains('from', 'acc6111f', $request);
-            $this->assertRequestJsonBodyContains('to', 's5r3fds', $request);
-            $this->assertRequestJsonBodyContains('amount', '123.45', $request);
-            $this->assertRequestJsonBodyContains('reference', 'this is a credit transfer', $request);
+            $this->assertRequestQueryContains('start_date', '2022-01-01', $request);
+            $this->assertRequestQueryContains('end_date', '2022-01-05', $request);
+            $this->assertRequestQueryContains('subaccount', 's5r3fds', $request);
 
             return true;
         }))->willReturn($this->getResponse('get-credit-transfers-success'));
+
+        $filter = new Subaccount([
+            'start_date' => '2022-01-01',
+            'end_date'=> '2022-01-05',
+            'subaccount' => 's5r3fds'
+        ]);
 
         $response = $this->subaccountClient->getCreditTransfers($apiKey, $filter);
 
@@ -250,7 +269,7 @@ class ClientTest extends VonageTestCase
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
-                'https://api.nexmo.com/accounts/acc6111f/balance-transfers',
+                'https://api.nexmo.com/accounts/acc6111f/balance-transfers?start_date=2022-01-01&end_date=2022-01-05&subaccount=s5r3fds',
                 $uriString
             );
             $this->assertRequestMethod('GET', $request);
@@ -260,6 +279,12 @@ class ClientTest extends VonageTestCase
 
             return true;
         }))->willReturn($this->getResponse('get-balance-transfers-success'));
+
+        $filter = new Subaccount([
+            'start_date' => '2022-01-01',
+            'end_date'=> '2022-01-05',
+            'subaccount' => 's5r3fds'
+        ]);
 
         $response = $this->subaccountClient->getBalanceTransfers($apiKey, $filter);
 
@@ -289,17 +314,49 @@ class ClientTest extends VonageTestCase
             $this->assertRequestJsonBodyContains('reference', 'this is a balance transfer', $request);
 
             return true;
-        }))->willReturn($this->getResponse('make-balance-transfers-success'));
+        }))->willReturn($this->getResponse('make-balance-transfer-success'));
 
-        $balanceTransferRequest = (new BalanceTransferRequest($apiKey))
+        $balanceTransferRequest = (new TransferRequest($apiKey))
             ->setTo('s5r3fds')
             ->setFrom('acc6111f')
             ->setAmount('123.45')
-            ->setReference('this is a balance transfer request');
+            ->setReference('this is a balance transfer');
 
         $response = $this->subaccountClient->makeBalanceTransfer($balanceTransferRequest);
 
         $this->assertInstanceOf(BalanceTransfer::class, $response);
+    }
+
+    public function testWillTransferNumber(): void
+    {
+        $apiKey = 'acc6111f';
+
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api.nexmo.com/accounts/acc6111f/transfer-number',
+                $uriString
+            );
+            $this->assertRequestMethod('POST', $request);
+
+            $this->assertRequestJsonBodyContains('from', 'acc6111f', $request);
+            $this->assertRequestJsonBodyContains('to', 's5r3fds', $request);
+            $this->assertRequestJsonBodyContains('number', '4477705478484', $request);
+            $this->assertRequestJsonBodyContains('country', 'GB', $request);
+
+            return true;
+        }))->willReturn($this->getResponse('number-transfer-success'));
+
+        $numberTransferRequest = (new NumberTransferRequest($apiKey))
+            ->setFrom('acc6111f')
+            ->setTo('s5r3fds')
+            ->setNumber('4477705478484')
+            ->setCountry('GB');
+
+        $response = $this->subaccountClient->makeNumberTransfer($numberTransferRequest);
+        $this->assertIsArray($response);
+        $this->assertEquals('acc6111f', $response['from']);
     }
 
     /**
