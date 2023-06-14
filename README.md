@@ -243,9 +243,9 @@ $viberImage = new Vonage\Messages\Channel\Viber\ViberImage(
 $client->messages()->send($viberImage);
 ```
 
-## Verify Examples (v1)
+### Verify Examples (v1)
 
-### Starting a Verification
+#### Starting a Verification
 
 Vonage's [Verify API][doc_verify] makes it easy to prove that a user has provided their own phone number during signup,
 or implement second factor authentication during sign in.
@@ -260,7 +260,7 @@ echo "Started verification with an id of: " . $response->getRequestId();
 
 Once the user inputs the pin code they received, call the `check()` method (see below) with the request ID and the PIN to confirm the PIN is correct.
 
-### Controlling a Verification
+#### Controlling a Verification
     
 To cancel an in-progress verification, or to trigger the next attempt to send the confirmation code, you can pass 
 either an existing verification object to the client library, or simply use a request ID:
@@ -270,7 +270,7 @@ $client->verify()->trigger('00e6c3377e5348cdaf567e1417c707a5');
 $client->verify()->cancel('00e6c3377e5348cdaf567e1417c707a5');
 ```
 
-### Checking a Verification
+#### Checking a Verification
 
 In the same way, checking a verification requires the PIN the user provided, and the request ID:
 
@@ -284,7 +284,7 @@ try {
 }
 ```
 
-### Searching For a Verification
+#### Searching For a Verification
 
 You can check the status of a verification, or access the results of past verifications using a request ID. 
 The verification object will then provide a rich interface:
@@ -298,7 +298,7 @@ foreach($verification->getChecks() as $check){
 }
 ```
 
-### Payment Verification
+#### Payment Verification
 
 Vonage's [Verify API][doc_verify] has SCA (Secure Customer Authentication) support, required by the PSD2 (Payment Services Directive) and used by applications that need to get confirmation from customers for payments. It includes the payee and the amount in the message.
 
@@ -312,9 +312,9 @@ echo "Started verification with an id of: " . $response['request_id'];
 
 Once the user inputs the pin code they received, call the `/check` endpoint with the request ID and the pin to confirm the pin is correct.
 
-## Verify Examples (v2)
+### Verify Examples (v2)
 
-### Starting a Verification
+#### Starting a Verification
 
 Vonage's Verify v2 relies more on asynchronous workflows via. webhooks, and more customisable Verification
 workflows to the developer. To start a verification, you'll need the API client, which is under the namespace
@@ -363,7 +363,7 @@ The base request types are as follows:
 For adding workflows, you can see the available valid workflows as constants within the `VerificationWorkflow` object.
 For a better developer experience, you can't create an invalid workflow due to the validation that happens on the object.
 
-### Check a submitted code
+#### Check a submitted code
 
 To submit a code, you'll need to surround the method in a try/catch due to the nature of the API. If the code is correct,
 the method will return a `true` boolean. If it fails, it will throw the relevant Exception from the API that will need to
@@ -378,7 +378,7 @@ try {
 }
 ```
 
-### Webhooks
+#### Webhooks
 
 As events happen during a verification workflow, events and updates will fired as webhooks. Incoming server requests that conform to
 PSR-7 standards can be hydrated into a webhook value object for nicer interactions. You can also hydrate
@@ -398,7 +398,7 @@ $verificationEvent = \Vonage\Verify2\Webhook\Factory::createFromArray($payload);
 var_dump($verificationEvent->getStatus());
 ```
 
-### Cancelling a request in-flight
+#### Cancelling a request in-flight
 
 You can cancel a request should you need to, before the end user has taken any action.
 
@@ -407,7 +407,7 @@ $requestId = 'c11236f4-00bf-4b89-84ba-88b25df97315';
 $client->verify2()->cancel($requestId);
 ```
 
-### Making a Call 
+#### Making a Call 
 
 All `$client->voice()` methods require the client to be constructed with a `Vonage\Client\Credentials\Keypair`, or a 
 `Vonage\Client\Credentials\Container` that includes the `Keypair` credentials:
@@ -907,28 +907,160 @@ try {
 
 Check out the [documentation](https://developer.nexmo.com/number-insight/code-snippets/number-insight-advanced-async-callback) for what to expect in the incoming webhook containing the data you requested.
 
+### Subaccount Examples
+
+This API is used to create and configure subaccounts related to your primary account and transfer credit, balances and bought numbers between accounts.
+The subaccounts API is disabled by default. If you want to use subaccounts, [contact support](https://api.support.vonage.com) to have the API enabled on your account.
+
+#### Get a list of Subaccounts
+
+```php
+$client = new \Vonage\Client(new \Vonage\Client\Credentials\Basic(API_KEY, API_SECRET));
+$apiKey = '34kokdf';
+$subaccounts = $client->subaccount()->getSubaccounts($apiKey);
+var_dump($subaccounts);
+```
+
+#### Create a Subaccount
+
+```php
+$client = new \Vonage\Client(new \Vonage\Client\Credentials\Basic(API_KEY, API_SECRET));
+
+$apiKey = 'acc6111f';
+
+$payload = [
+    'name' => 'sub name',
+    'secret' => 's5r3fds',
+    'use_primary_account_balance' => false
+];
+
+$response = $client->subaccount()->createSubaccount($apiKey, $payload);
+var_dump($response);
+```
+
+#### Get a Subaccount
+
+```php
+$client = new \Vonage\Client(new \Vonage\Client\Credentials\Basic(API_KEY, API_SECRET));
+
+$apiKey = 'acc6111f';
+$subaccountKey = 'bbe6222f';
+
+$response = $client->subaccount()->getSubaccount($apiKey, $subaccountKey);
+var_dump($response);
+```
+
+#### Update a Subaccount
+
+```php
+$client = new \Vonage\Client(new \Vonage\Client\Credentials\Basic(API_KEY, API_SECRET));
+
+$apiKey = 'acc6111f';
+$subaccountKey = 'bbe6222f';
+
+$payload = [
+    'suspended' => true,
+    'use_primary_account_balance' => false,
+    'name' => 'Subaccount department B'
+];
+
+$response = $client->subaccount()->updateSubaccount($apiKey, $subaccountKey, $payload)
+var_dump($response);
+```
+
+#### Get a list of Credit Transfers
+
+```php
+$client = new \Vonage\Client(new \Vonage\Client\Credentials\Basic(API_KEY, API_SECRET));
+
+$apiKey = 'acc6111f';
+$filter = new Vonage\Subaccount\Filter\Subaccount(['subaccount' => '35wsf5'])
+$transfers = $client->subaccount()->getCreditTransfers($apiKey);
+var_dump($transfers);
+```
+
+#### Transfer Credit between accounts
+
+```php
+$client = new \Vonage\Client(new \Vonage\Client\Credentials\Basic(API_KEY, API_SECRET));
+
+$apiKey = 'acc6111f';
+
+$transferRequest = (new TransferRequest($apiKey))
+    ->setFrom('acc6111f')
+    ->setTo('s5r3fds')
+    ->setAmount('123.45')
+    ->setReference('this is a credit transfer');
+
+$response = $this->subaccountClient->makeCreditTransfer($transferRequest);
+```
+
+#### Get a list of Balance Transfers
+
+```php
+$client = new \Vonage\Client(new \Vonage\Client\Credentials\Basic(API_KEY, API_SECRET));
+$apiKey = 'acc6111f';
+
+$filter = new \Vonage\Subaccount\Filter\Subaccount(['end_date' => '2022-10-02']);
+$transfers = $client->subaccount()->getBalanceTransfers($apiKey, $filter);
+```
+
+#### Transfer Balance between accounts
+
+```php
+$client = new \Vonage\Client(new \Vonage\Client\Credentials\Basic(API_KEY, API_SECRET));
+
+$apiKey = 'acc6111f';
+
+$transferRequest = (new TransferRequest($apiKey))
+    ->setFrom('acc6111f')
+    ->setTo('s5r3fds')
+    ->setAmount('123.45')
+    ->setReference('this is a credit transfer');
+
+$response = $client->subaccount()->makeBalanceTransfer($transferRequest);
+var_dump($response);
+```
+
+#### Transfer a Phone Number between accounts
+
+```php
+$client = new \Vonage\Client(new \Vonage\Client\Credentials\Basic(API_KEY, API_SECRET));
+$apiKey = 'acc6111f';
+
+$numberTransferRequest = (new NumberTransferRequest($apiKey))
+    ->setFrom('acc6111f')
+    ->setTo('s5r3fds')
+    ->setNumber('4477705478484')
+    ->setCountry('GB');
+
+$response = $client->subaccount()->makeNumberTransfer($numberTransferRequest);
+var_dump($response);
+```
+
 ## Supported APIs
 
-| API                    |  API Release Status  |  Supported?
-|------------------------|:--------------------:|:-------------:|
-| Account API            | General Availability |✅|
-| Alerts API             | General Availability |✅|
-| Application API        | General Availability |✅|
-| Audit API              |         Beta         |❌|
-| Conversation API       |         Beta         |❌|
-| Dispatch API           |         Beta         |❌|
-| External Accounts API  |         Beta         |❌|
-| Media API              |         Beta         | ❌|
-| Messages API           | General Availability |✅|
-| Number Insight API     | General Availability |✅|
-| Number Management API  | General Availability |✅|
-| Pricing API            | General Availability |✅|
-| Redact API             | General Availability |✅|
-| Reports API            |         Beta         |❌|
-| SMS API                | General Availability |✅|
-| Verify API             | General Availability |✅|
-| Verify API (Version 2) |         Beta         |❌|
-| Voice API              | General Availability |✅|
+| API                    |  API Release Status  | Supported? 
+|------------------------|:--------------------:|:----------:|
+| Account API            | General Availability |     ✅      |
+| Alerts API             | General Availability |     ✅      |
+| Application API        | General Availability |     ✅      |
+| Audit API              |         Beta         |     ❌      |
+| Conversation API       |         Beta         |     ❌      |
+| Dispatch API           |         Beta         |     ❌      |
+| External Accounts API  |         Beta         |     ❌      |
+| Media API              |         Beta         |     ❌      |
+| Messages API           | General Availability |     ✅      |
+| Number Insight API     | General Availability |     ✅      |
+| Number Management API  | General Availability |     ✅      |
+| Pricing API            | General Availability |     ✅      |
+| Redact API             | General Availability |     ✅      |
+| Reports API            |         Beta         |     ❌      |
+| SMS API                | General Availability |     ✅      |
+| Subaccounts API        | General Availability |     ✅      |
+| Verify API             | General Availability |     ✅      |
+| Verify API (Version 2) |         Beta         |     ❌      |
+| Voice API              | General Availability |     ✅      |
 
 ## Troubleshooting
 

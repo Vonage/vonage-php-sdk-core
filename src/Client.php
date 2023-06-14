@@ -50,6 +50,7 @@ use Vonage\Numbers\ClientFactory as NumbersClientFactory;
 use Vonage\Redact\ClientFactory as RedactClientFactory;
 use Vonage\Secrets\ClientFactory as SecretsClientFactory;
 use Vonage\SMS\ClientFactory as SMSClientFactory;
+use Vonage\Subaccount\ClientFactory as SubaccountClientFactory;
 use Vonage\Messages\ClientFactory as MessagesClientFactory;
 use Vonage\Verify\ClientFactory as VerifyClientFactory;
 use Vonage\Verify2\ClientFactory as Verify2ClientFactory;
@@ -81,6 +82,7 @@ use function strpos;
  * @method Redact\Client redact()
  * @method Secrets\Client secrets()
  * @method SMS\Client sms()
+ * @method Subaccount\Client subaccount()
  * @method Verify\Client  verify()
  * @method Verify2\Client  verify2()
  * @method Voice\Client voice()
@@ -218,6 +220,7 @@ class Client implements LoggerAwareInterface
                     'redact' => RedactClientFactory::class,
                     'secrets' => SecretsClientFactory::class,
                     'sms' => SMSClientFactory::class,
+                    'subaccount' => SubaccountClientFactory::class,
                     'verify' => VerifyClientFactory::class,
                     'verify2' => Verify2ClientFactory::class,
                     'voice' => VoiceClientFactory::class,
@@ -475,7 +478,7 @@ class Client implements LoggerAwareInterface
         $response = $this->client->sendRequest($request);
 
         if ($this->debug) {
-            $id = uniqid();
+            $id = uniqid('', true);
             $request->getBody()->rewind();
             $response->getBody()->rewind();
             $this->log(
