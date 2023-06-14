@@ -81,7 +81,7 @@ class AdvancedMachineDetection implements ArrayHydrateInterface
     public function toArray(): array
     {
         return [
-            'behaviour' => $this->behaviour,
+            'behavior' => $this->behaviour,
             'mode' => $this->mode,
             'beep_timeout' => $this->beepTimeout
         ];
