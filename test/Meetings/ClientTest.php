@@ -71,7 +71,6 @@ class ClientTest extends TestCase
 
             $uri = $request->getUri();
             $uriString = $uri->__toString();
-            // @TODO Pagination isn't actually being handled in a HAL way
             $this->assertEquals('https://api-eu.vonage.com/beta/meetings/rooms?page_index=1', $uriString);
 
             return true;

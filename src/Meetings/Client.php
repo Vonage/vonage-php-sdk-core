@@ -54,7 +54,7 @@ class Client implements APIClient
     {
         $this->api->setBaseUri('/rooms');
 
-        $response = $this->api->patch($id, $payload);
+        $response = $this->api->partiallyUpdate($id, $payload);
 
         $room = new Room();
         $room->fromArray($response);
@@ -72,7 +72,7 @@ class Client implements APIClient
         }
         $response = $this->api->search(
             $filterParams ? new KeyValueFilter($filterParams) : null,
-            '/themes',
+            '/rooms',
         );
 
         $response->setAutoAdvance(false);
@@ -195,7 +195,7 @@ class Client implements APIClient
     public function updateTheme(string $id, array $payload): ?ApplicationTheme
     {
         $this->api->setBaseUri('/themes');
-        $response = $this->api->patch($id, $payload);
+        $response = $this->api->partiallyUpdate($id, $payload);
 
         $applicationTheme = new ApplicationTheme();
         $applicationTheme->fromArray($response);
@@ -263,7 +263,7 @@ class Client implements APIClient
 
     public function updateApplication(array $payload): ?Application
     {
-        $response = $this->api->patch('applications', $payload);
+        $response = $this->api->partiallyUpdate('applications', $payload);
 
         $application = new Application();
         $application->fromArray($response);
