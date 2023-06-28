@@ -1,0 +1,10 @@
+{
+  "api_key": "bbe6222f",
+  "name": "Get Subaccount",
+  "primary_account_api_key": "acc6111f",
+  "use_primary_account_balance": true,
+  "created_at": "2018-03-02T16:34:49Z",
+  "suspended": false,
+  "balance": 100.25,
+  "credit_limit": -100.25
+}
