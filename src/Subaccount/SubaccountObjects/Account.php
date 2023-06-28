@@ -16,6 +16,7 @@ class Account implements ArrayHydrateInterface
     protected ?bool $suspended = null;
     protected ?float $balance = null;
     protected ?float $creditLimit = null;
+    protected ?string $secret = null;
 
     public function getApiKey(): ?string
     {
@@ -149,6 +150,10 @@ class Account implements ArrayHydrateInterface
             $data['credit_limit'] = $this->getCreditLimit();
         }
 
+        if ($this->secret !== null) {
+            $data['secret'] = $this->getSecret();
+        }
+
         return $data;
     }
 
@@ -186,6 +191,20 @@ class Account implements ArrayHydrateInterface
             $this->creditLimit = $data['credit_limit'];
         }
 
+        if (isset($data['secret'])) {
+            $this->secret = $data['secret'];
+        }
+
         return $this;
+    }
+
+    public function getSecret(): ?string
+    {
+        return $this->secret;
+    }
+
+    public function setSecret(?string $secret): void
+    {
+        $this->secret = $secret;
     }
 }

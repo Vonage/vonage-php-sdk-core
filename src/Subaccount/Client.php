@@ -58,9 +58,9 @@ class Client implements APIClient
         }, $subaccounts);
     }
 
-    public function createSubaccount(string $apiKey, array $payload): ?array
+    public function createSubaccount(string $apiKey, Account $account): ?array
     {
-        return $this->api->create($payload, '/' . $apiKey . '/subaccounts');
+        return $this->api->create($account->toArray(), '/' . $apiKey . '/subaccounts');
     }
 
     public function makeBalanceTransfer(TransferCreditRequest $transferRequest): BalanceTransfer

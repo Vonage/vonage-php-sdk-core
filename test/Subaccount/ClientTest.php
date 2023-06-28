@@ -125,6 +125,8 @@ class ClientTest extends VonageTestCase
             'use_primary_account_balance' => false
         ];
 
+        $account = (new Account())->fromArray($payload);
+
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
@@ -140,7 +142,7 @@ class ClientTest extends VonageTestCase
             return true;
         }))->willReturn($this->getResponse('create-success'));
 
-        $response = $this->subaccountClient->createSubaccount($apiKey, $payload);
+        $response = $this->subaccountClient->createSubaccount($apiKey, $account);
         $this->assertEquals('sub name', $response['name']);
         $this->assertEquals('s5r3fds', $response['secret']);
         $this->assertEquals(false, $response['use_primary_account_balance']);
