@@ -25,6 +25,7 @@
     </testsuite>
     <testsuite name="proactive_connect">
       <directory>test/ProactiveConnect</directory>
+    </testsuite>
     <testsuite name="voice">
       <directory>test/Voice</directory>
     </testsuite>
