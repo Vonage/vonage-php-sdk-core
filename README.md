@@ -934,7 +934,10 @@ $payload = [
     'use_primary_account_balance' => false
 ];
 
-$response = $client->subaccount()->createSubaccount($apiKey, $payload);
+$account = new Account();
+$account->fromArray($payload);
+
+$response = $client->subaccount()->createSubaccount($apiKey, $account);
 var_dump($response);
 ```
 
@@ -964,7 +967,10 @@ $payload = [
     'name' => 'Subaccount department B'
 ];
 
-$response = $client->subaccount()->updateSubaccount($apiKey, $subaccountKey, $payload)
+$account = new Account();
+$account->fromArray($payload);
+
+$response = $client->subaccount()->updateSubaccount($apiKey, $subaccountKey, $account)
 var_dump($response);
 ```
 
@@ -986,7 +992,7 @@ $client = new \Vonage\Client(new \Vonage\Client\Credentials\Basic(API_KEY, API_S
 
 $apiKey = 'acc6111f';
 
-$transferRequest = (new TransferRequest($apiKey))
+$transferRequest = (new TransferCreditRequest($apiKey))
     ->setFrom('acc6111f')
     ->setTo('s5r3fds')
     ->setAmount('123.45')
@@ -1012,7 +1018,7 @@ $client = new \Vonage\Client(new \Vonage\Client\Credentials\Basic(API_KEY, API_S
 
 $apiKey = 'acc6111f';
 
-$transferRequest = (new TransferRequest($apiKey))
+$transferRequest = (new TransferBalanceRequest($apiKey))
     ->setFrom('acc6111f')
     ->setTo('s5r3fds')
     ->setAmount('123.45')
