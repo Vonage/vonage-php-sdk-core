@@ -62,7 +62,7 @@ class Client implements APIClient
         return $room;
     }
 
-    public function getAllAvailableRooms(string $start_id = null, string $end_id = null): array
+    public function getAllListedRooms(string $start_id = null, string $end_id = null, int $size = 20): array
     {
         $filterParams = [];
 
@@ -77,6 +77,8 @@ class Client implements APIClient
 
         $response->setAutoAdvance(false);
         $response->getApiResource()->setCollectionName('rooms');
+        $response->setSize($size);
+        $response->setIndex(null);
 
         $hydrator = new ArrayHydrator();
         $hydrator->setPrototype(new Room());
@@ -203,7 +205,7 @@ class Client implements APIClient
         return $applicationTheme;
     }
 
-    public function getRoomsByThemeId(string $themeId, string $startId = null, string $endId = null): array
+    public function getRoomsByThemeId(string $themeId, string $startId = null, string $endId = null, int $size = 20): array
     {
         $this->api->setIsHAL(true);
         $this->api->setCollectionName('rooms');
@@ -221,6 +223,8 @@ class Client implements APIClient
         }
 
         $response->setAutoAdvance(false);
+        $response->setIndex(null);
+        $response->setSize($size);
 
         $hydrator = new ArrayHydrator();
         $hydrator->setPrototype(new Room());

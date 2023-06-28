@@ -71,12 +71,12 @@ class ClientTest extends TestCase
 
             $uri = $request->getUri();
             $uriString = $uri->__toString();
-            $this->assertEquals('https://api-eu.vonage.com/beta/meetings/rooms?page_index=1', $uriString);
+            $this->assertEquals('https://api-eu.vonage.com/beta/meetings/rooms?page_size=20', $uriString);
 
             return true;
         }))->willReturn($this->getResponse('get-rooms-success'));
 
-        $response = $this->meetingsClient->getAllAvailableRooms();
+        $response = $this->meetingsClient->getAllListedRooms();
         $this->assertCount(2, $response);
 
         foreach ($response as $room) {
@@ -96,7 +96,7 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('get-rooms-success'));
 
-        $response = $this->meetingsClient->getAllAvailableRooms('999', '234');
+        $response = $this->meetingsClient->getAllListedRooms('999', '234');
         $this->assertCount(2, $response);
 
         foreach ($response as $room) {
@@ -563,7 +563,7 @@ class ClientTest extends TestCase
 
             $uri = $request->getUri();
             $uriString = $uri->__toString();
-            $this->assertEquals('https://api-eu.vonage.com/beta/meetings/themes/323867d7-8c4b-4dce-8c11-48f14425d888/rooms?start_id=245&end_id=765&page_index=1', $uriString);
+            $this->assertEquals('https://api-eu.vonage.com/beta/meetings/themes/323867d7-8c4b-4dce-8c11-48f14425d888/rooms?start_id=245&end_id=765&page_size=20', $uriString);
 
             return true;
         }))->willReturn($this->getResponse('get-rooms-by-theme-id-success'));
