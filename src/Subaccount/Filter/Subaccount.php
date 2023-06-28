@@ -5,7 +5,7 @@ namespace Vonage\Subaccount\Filter;
 use Vonage\Client\Exception\Request;
 use Vonage\Entity\Filter\FilterInterface;
 
-class Subaccount implements FilterInterface
+class SubaccountFilter implements FilterInterface
 {
     public string $startDate = '';
     public ?string $endDate = null;
