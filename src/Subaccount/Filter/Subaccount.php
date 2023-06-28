@@ -7,7 +7,7 @@ use Vonage\Entity\Filter\FilterInterface;
 
 class Subaccount implements FilterInterface
 {
-    public ?string $startDate = null;
+    public string $startDate = '';
     public ?string $endDate = null;
     public ?string $subaccount = null;
 
@@ -31,6 +31,10 @@ class Subaccount implements FilterInterface
 
         if (array_key_exists('start_date', $filterValues)) {
             $this->setStartDate($filterValues['start_date']);
+        }
+
+        if ($this->startDate === '') {
+            $this->startDate = date('Y-m-d');
         }
 
         if (array_key_exists('end_date', $filterValues)) {

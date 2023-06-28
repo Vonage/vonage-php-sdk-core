@@ -211,7 +211,7 @@ class ClientTest extends VonageTestCase
             $this->assertRequestMethod('POST', $request);
             $this->assertRequestJsonBodyContains('from', 'acc6111f', $request);
             $this->assertRequestJsonBodyContains('to', 's5r3fds', $request);
-            $this->assertRequestJsonBodyContains('amount', '123.45', $request);
+            $this->assertRequestJsonBodyContains('amount', 123.45, $request);
             $this->assertRequestJsonBodyContains('reference', 'this is a credit transfer', $request);
 
             return true;
@@ -310,7 +310,7 @@ class ClientTest extends VonageTestCase
 
             $this->assertRequestJsonBodyContains('from', 'acc6111f', $request);
             $this->assertRequestJsonBodyContains('to', 's5r3fds', $request);
-            $this->assertRequestJsonBodyContains('amount', '123.45', $request);
+            $this->assertRequestJsonBodyContains('amount', 123.45, $request);
             $this->assertRequestJsonBodyContains('reference', 'this is a balance transfer', $request);
 
             return true;

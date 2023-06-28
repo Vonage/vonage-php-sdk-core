@@ -26,6 +26,13 @@ class SubaccountTest extends TestCase
         $this->assertEquals($expectedQuery, $subaccountFilter->getQuery());
     }
 
+    public function testWillDefaultStartDate(): void
+    {
+        $subaccountFilter = new Subaccount([]);
+        $today = date('Y-m-d');
+        $this->assertEquals($today, $subaccountFilter->getStartDate());
+    }
+
     public function testGetStartDate(): void
     {
         $filterValues = [

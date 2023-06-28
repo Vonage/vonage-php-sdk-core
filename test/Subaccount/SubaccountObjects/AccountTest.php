@@ -14,7 +14,7 @@ class AccountTest extends VonageTestCase
                  ->setName('John Doe')
                  ->setPrimaryAccountApiKey('def456')
                  ->setUsePrimaryAccountBalance(true)
-                 ->setCreatedAt('2023-06-06')
+                 ->setCreatedAt('2023-06-26T10:23:59Z')
                  ->setSuspended(false)
                  ->setBalance(100.0)
                  ->setCreditLimit(500.0);
@@ -24,7 +24,7 @@ class AccountTest extends VonageTestCase
             'name' => 'John Doe',
             'primary_account_api_key' => 'def456',
             'use_primary_account_balance' => true,
-            'created_at' => '2023-06-06',
+            'created_at' => '2023-06-26T10:23:59Z',
             'suspended' => false,
             'balance' => 100.0,
             'credit_limit' => 500.0
@@ -49,8 +49,8 @@ class AccountTest extends VonageTestCase
         $instance->setUsePrimaryAccountBalance(true);
         $this->assertTrue($instance->getUsePrimaryAccountBalance());
 
-        $instance->setCreatedAt('2023-06-06');
-        $this->assertEquals('2023-06-06', $instance->getCreatedAt());
+        $instance->setCreatedAt('2023-06-26T10:23:59Z');
+        $this->assertEquals('2023-06-26T10:23:59Z', $instance->getCreatedAt());
 
         $instance->setSuspended(false);
         $this->assertFalse($instance->getSuspended());

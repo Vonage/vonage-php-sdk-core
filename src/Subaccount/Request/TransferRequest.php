@@ -76,7 +76,6 @@ class TransferRequest implements ArrayHydrateInterface
 
     public function fromArray(array $data): static
     {
-        // TODO: Add array key checks for required properties
         $this->from = $data['from'];
         $this->to = $data['to'];
         $this->amount = $data['amount'];
@@ -87,11 +86,10 @@ class TransferRequest implements ArrayHydrateInterface
 
     public function toArray(): array
     {
-        // TODO harden me with array key checks pls
         return [
             'from' => $this->getFrom(),
             'to' => $this->getTo(),
-            'amount' => $this->getAmount(),
+            'amount' => (float)$this->getAmount(),
             'reference' => $this->getReference()
         ];
     }

@@ -8,6 +8,7 @@ use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
 use Vonage\Entity\Filter\EmptyFilter;
 use Vonage\Entity\Filter\FilterInterface;
+use Vonage\Entity\Hydrator\ArrayHydrator;
 use Vonage\Subaccount\Hydrators\AccountHydrator;
 use Vonage\Subaccount\Hydrators\BalanceTransferHydrator;
 use Vonage\Subaccount\Hydrators\CreditTransferHydrator;
@@ -51,7 +52,8 @@ class Client implements APIClient
         $collection = $this->api->search(null, '/' . $apiKey . '/subaccounts');
         $collection->setNoQueryParameters(true);
 
-        $hydrator = new AccountHydrator();
+        $hydrator = new ArrayHydrator();
+        $hydrator->setPrototype(new Account());
         $subaccounts = $collection->getPageData()['_embedded'][$api->getCollectionName()];
 
         return array_map(function ($item) use ($hydrator) {
@@ -90,7 +92,8 @@ class Client implements APIClient
 
         $response = $this->api->get($apiKey . '/credit-transfers', $filter->getQuery());
 
-        $hydrator = new CreditTransferHydrator();
+        $hydrator = new ArrayHydrator();
+        $hydrator->setPrototype(new CreditTransfer());
         $transfers = $response['_embedded']['credit_transfers'];
 
         return array_map(function ($item) use ($hydrator) {
@@ -106,7 +109,8 @@ class Client implements APIClient
 
         $response = $this->api->get($apiKey . '/balance-transfers', $filter->getQuery());
 
-        $hydrator = new BalanceTransferHydrator();
+        $hydrator = new ArrayHydrator();
+        $hydrator->setPrototype(new BalanceTransfer());
         $transfers = $response['_embedded']['balance_transfers'];
 
         return array_map(function ($item) use ($hydrator) {

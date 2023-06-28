@@ -113,7 +113,7 @@ class CreditTransfer implements ArrayHydrateInterface
     public function toArray(): array
     {
         return [
-            'credit_transfer_id' => $this->getCreditTransferId(),
+            'id' => $this->getCreditTransferId(),
             'amount' => $this->getAmount(),
             'from' => $this->getFrom(),
             'to' => $this->getTo(),

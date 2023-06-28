@@ -119,7 +119,7 @@ class BalanceTransfer implements ArrayHydrateInterface
     public function toArray(): array
     {
         return [
-            'balance_transfer_id' => $this->getBalanceTransferId(),
+            'id' => $this->getBalanceTransferId(),
             'amount' => $this->getAmount(),
             'from' => $this->getFrom(),
             'to' => $this->getTo(),
