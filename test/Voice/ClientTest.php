@@ -12,8 +12,7 @@ declare(strict_types=1);
 namespace VonageTest\Voice;
 
 use Laminas\Diactoros\Response;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\StreamInterface;
+use Vonage\Voice\VoiceObjects\AdvancedMachineDetection;
 use VonageTest\VonageTestCase;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
@@ -117,6 +116,50 @@ class ClientTest extends VonageTestCase
         $this->assertEquals('started', $callData->getStatus());
         $this->assertEquals('outbound', $callData->getDirection());
         $this->assertEquals('2541d01c-253e-48be-a8e0-da4bbe4c3722', $callData->getConversationUuid());
+    }
+
+    public function testAdvancedMachineDetectionRenders(): void
+    {
+        $advancedMachineDetection = new AdvancedMachineDetection(
+            AdvancedMachineDetection::MACHINE_BEHAVIOUR_CONTINUE,
+            50,
+            AdvancedMachineDetection::MACHINE_MODE_DETECT_BEEP
+        );
+
+        $payload = [
+            'to' => [
+                [
+                    'type' => 'phone',
+                    'number' => '15555555555'
+                ]
+            ],
+            'from' => [
+                'type' => 'phone',
+                'number' => '16666666666'
+            ],
+            'answer_url' => ['http://domain.test/answer'],
+            'answer_method' => 'POST',
+            'event_url' => ['http://domain.test/event'],
+            'event_method' => 'POST',
+            'machine_detection' => 'hangup',
+            'length_timer' => '7200',
+            'ringing_timer' => '60',
+            'advanced_machine_detection' => $advancedMachineDetection
+        ];
+
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
+            $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
+            $this->assertRequestJsonBodyContains('advanced_machine_detection', $payload['advanced_machine_detection']->toArray(), $request);
+
+            return true;
+        }))->willReturn($this->getResponse('create-outbound-call-success', 201));
+
+        $outboundCall = (new OutboundCall(new Phone('15555555555'), new Phone('16666666666')))
+            ->setEventWebhook(new Webhook('http://domain.test/event'))
+            ->setAnswerWebhook(new Webhook('http://domain.test/answer'))
+            ->setAdvancedMachineDetection($advancedMachineDetection);
+
+        $callData = $this->voiceClient->createOutboundCall($outboundCall);
     }
 
     public function testCanCreateOutboundCallWithRandomFromNumber(): void
@@ -603,7 +646,7 @@ class ClientTest extends VonageTestCase
     public function testCanDownloadRecording(): void
     {
         $fixturePath = __DIR__ . '/Fixtures/mp3fixture.mp3';
-        $url = 'recordings/mp3fixture.mp3';
+        $url = 'https://api-us.nexmo.com/v1/files/999f999-526d-4013-87fc-c824f7a443b3';
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals(
@@ -614,7 +657,7 @@ class ClientTest extends VonageTestCase
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
-                'https://api.nexmo.com/v1/calls/recordings/mp3fixture.mp3',
+                'https://api-us.nexmo.com/v1/files/999f999-526d-4013-87fc-c824f7a443b3',
                 $uriString
             );
             return true;

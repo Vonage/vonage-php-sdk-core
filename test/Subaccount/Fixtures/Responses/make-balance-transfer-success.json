@@ -1,0 +1,8 @@
+{
+  "balance_transfer_id": "07b5-46e1-a527-85530e625800",
+  "amount": 123.45,
+  "from": "acc6111f",
+  "to": "s5r3fds",
+  "reference": "this is a balance transfer",
+  "created_at": "2019-03-02T16:34:49Z"
+}

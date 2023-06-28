@@ -25,6 +25,17 @@
     </testsuite>
     <testsuite name="proactive_connect">
       <directory>test/ProactiveConnect</directory>
+    <testsuite name="voice">
+      <directory>test/Voice</directory>
+    </testsuite>
+    <testsuite name="messages">
+      <directory>test/Messages</directory>
+    </testsuite>
+    <testsuite name="sms">
+      <directory>test/SMS</directory>
+    </testsuite>
+    <testsuite name="subaccount">
+      <directory>test/Subaccount</directory>
     </testsuite>
   </testsuites>
   <php>

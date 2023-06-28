@@ -14,7 +14,7 @@
   "require": {
     "php": "~8.0 || ~8.1 || ~8.2", 
     "ext-mbstring": "*",
-    "laminas/laminas-diactoros": "^2.21",
+    "laminas/laminas-diactoros": "^3.0",
     "lcobucci/jwt": "^3.4|^4.0",
     "psr/container": "^1.0 | ^2.0",
     "psr/http-client-implementation": "^1.0",

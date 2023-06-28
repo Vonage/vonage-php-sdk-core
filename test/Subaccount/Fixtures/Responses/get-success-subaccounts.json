@@ -1,0 +1,36 @@
+{
+  "_embedded": {
+    "primary_account": {
+      "api_key": "bbe6222f",
+      "name": "Subaccount department A",
+      "primary_account_api_key": "acc6111f",
+      "use_primary_account_balance": true,
+      "created_at": "2018-03-02T16:34:49Z",
+      "suspended": false,
+      "balance": 100.25,
+      "credit_limit": -100.25
+    },
+    "subaccounts": [
+      {
+        "api_key": "df4rtyr8",
+        "name": "Subaccount department B",
+        "primary_account_api_key": "acc6111f",
+        "use_primary_account_balance": true,
+        "created_at": "2018-03-02T16:34:49Z",
+        "suspended": false,
+        "balance": 100.25,
+        "credit_limit": -100.25
+      },
+      {
+        "api_key": "887de4r",
+        "name": "Subaccount department C",
+        "primary_account_api_key": "acc6111f",
+        "use_primary_account_balance": true,
+        "created_at": "2018-03-02T16:34:49Z",
+        "suspended": false,
+        "balance": 100.25,
+        "credit_limit": -100.25
+      }
+    ]
+  }
+}

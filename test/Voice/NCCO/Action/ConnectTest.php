@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace VonageTest\Voice\NCCO\Action;
 
 use InvalidArgumentException;
+use Vonage\Voice\VoiceObjects\AdvancedMachineDetection;
 use VonageTest\VonageTestCase;
 use Vonage\Voice\Endpoint\EndpointInterface;
 use Vonage\Voice\Endpoint\Phone;
@@ -45,10 +46,16 @@ class ConnectTest extends VonageTestCase
 
     public function testCanSetAdditionalInformation(): void
     {
+        $advancedMachineDetection = new AdvancedMachineDetection(
+            AdvancedMachineDetection::MACHINE_BEHAVIOUR_CONTINUE,
+            50
+        );
+
         $webhook = new Webhook('https://test.domain/events');
         $action = (new Connect($this->endpoint))
             ->setFrom('15553216547')
             ->setMachineDetection(Connect::MACHINE_CONTINUE)
+            ->setAdvancedMachineDetection($advancedMachineDetection)
             ->setEventType(Connect::EVENT_TYPE_SYNCHRONOUS)
             ->setLimit(6000)
             ->setRingbackTone('https://test.domain/ringback.mp3')
@@ -58,6 +65,7 @@ class ConnectTest extends VonageTestCase
         $this->assertSame('15553216547', $action->getFrom());
         $this->assertSame(Connect::MACHINE_CONTINUE, $action->getMachineDetection());
         $this->assertSame(Connect::EVENT_TYPE_SYNCHRONOUS, $action->getEventType());
+        $this->assertSame($advancedMachineDetection, $action->getAdvancedMachineDetection());
         $this->assertSame(6000, $action->getLimit());
         $this->assertSame('https://test.domain/ringback.mp3', $action->getRingbackTone());
         $this->assertSame(10, $action->getTimeout());
@@ -66,10 +74,16 @@ class ConnectTest extends VonageTestCase
 
     public function testGeneratesCorrectNCCOArray(): void
     {
+        $advancedMachineDetection = new AdvancedMachineDetection(
+            AdvancedMachineDetection::MACHINE_BEHAVIOUR_CONTINUE,
+            50
+        );
+
         $webhook = new Webhook('https://test.domain/events');
         $ncco = (new Connect($this->endpoint))
             ->setFrom('15553216547')
             ->setMachineDetection(Connect::MACHINE_CONTINUE)
+            ->setAdvancedMachineDetection($advancedMachineDetection)
             ->setEventType(Connect::EVENT_TYPE_SYNCHRONOUS)
             ->setLimit(6000)
             ->setRingbackTone('https://test.domain/ringback.mp3')
@@ -79,6 +93,7 @@ class ConnectTest extends VonageTestCase
 
         $this->assertSame('15553216547', $ncco['from']);
         $this->assertSame(Connect::MACHINE_CONTINUE, $ncco['machineDetection']);
+        $this->assertSame($advancedMachineDetection->toArray(), $ncco['advancedMachineDetection']);
         $this->assertSame(Connect::EVENT_TYPE_SYNCHRONOUS, $ncco['eventType']);
         $this->assertSame(6000, $ncco['limit']);
         $this->assertSame('https://test.domain/ringback.mp3', $ncco['ringbackTone']);
