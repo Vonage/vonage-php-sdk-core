@@ -65,7 +65,7 @@ class ClientTest extends VonageTestCase
         $response = $this->subaccountClient->getPrimaryAccount($apiKey);
     }
 
-    public function testWillPatchSubaccount(): void
+    public function testWillUpdateSubaccount(): void
     {
         $apiKey = 'acc6111f';
         $subaccountKey = 'bbe6222f';
