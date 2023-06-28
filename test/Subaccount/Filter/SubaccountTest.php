@@ -4,7 +4,7 @@ namespace VonageTest\Subaccount\Filter;
 
 use PHPUnit\Framework\TestCase;
 use Vonage\Client\Exception\Request;
-use Vonage\Subaccount\Filter\Subaccount;
+use Vonage\Subaccount\Filter\SubaccountFilter;
 
 class SubaccountTest extends TestCase
 {
@@ -16,7 +16,7 @@ class SubaccountTest extends TestCase
             'subaccount' => 'my_subaccount'
         ];
 
-        $subaccountFilter = new Subaccount($filterValues);
+        $subaccountFilter = new SubaccountFilter($filterValues);
         $expectedQuery = [
             'start_date' => '2023-01-01',
             'end_date' => '2023-06-30',
@@ -28,7 +28,7 @@ class SubaccountTest extends TestCase
 
     public function testWillDefaultStartDate(): void
     {
-        $subaccountFilter = new Subaccount([]);
+        $subaccountFilter = new SubaccountFilter([]);
         $today = date('Y-m-d');
         $this->assertEquals($today, $subaccountFilter->getStartDate());
     }
@@ -39,13 +39,13 @@ class SubaccountTest extends TestCase
             'start_date' => '2023-01-01'
         ];
 
-        $subaccountFilter = new Subaccount($filterValues);
+        $subaccountFilter = new SubaccountFilter($filterValues);
         $this->assertEquals('2023-01-01', $subaccountFilter->getStartDate());
     }
 
     public function testSetStartDate(): void
     {
-        $subaccountFilter = new Subaccount([]);
+        $subaccountFilter = new SubaccountFilter([]);
         $subaccountFilter->setStartDate('2023-01-01');
         $this->assertEquals('2023-01-01', $subaccountFilter->getStartDate());
     }
@@ -56,13 +56,13 @@ class SubaccountTest extends TestCase
             'end_date' => '2023-06-30'
         ];
 
-        $subaccountFilter = new Subaccount($filterValues);
+        $subaccountFilter = new SubaccountFilter($filterValues);
         $this->assertEquals('2023-06-30', $subaccountFilter->getEndDate());
     }
 
     public function testSetEndDate(): void
     {
-        $subaccountFilter = new Subaccount([]);
+        $subaccountFilter = new SubaccountFilter([]);
         $subaccountFilter->setEndDate('2023-06-30');
         $this->assertEquals('2023-06-30', $subaccountFilter->getEndDate());
     }
@@ -73,13 +73,13 @@ class SubaccountTest extends TestCase
             'subaccount' => 'my_subaccount'
         ];
 
-        $subaccountFilter = new Subaccount($filterValues);
+        $subaccountFilter = new SubaccountFilter($filterValues);
         $this->assertEquals('my_subaccount', $subaccountFilter->getSubaccount());
     }
 
     public function testSetSubaccount(): void
     {
-        $subaccountFilter = new Subaccount([]);
+        $subaccountFilter = new SubaccountFilter([]);
         $subaccountFilter->setSubaccount('my_subaccount');
         $this->assertEquals('my_subaccount', $subaccountFilter->getSubaccount());
     }
@@ -92,9 +92,9 @@ class SubaccountTest extends TestCase
             'subaccount' => 'my_subaccount'
         ];
 
-        $subaccountFilter = new Subaccount($filterValues);
+        $subaccountFilter = new SubaccountFilter($filterValues);
 
-        $this->assertInstanceOf(Subaccount::class, $subaccountFilter);
+        $this->assertInstanceOf(SubaccountFilter::class, $subaccountFilter);
     }
 
     public function testConstructionWithInvalidKeyThrowsException(): void
@@ -107,7 +107,7 @@ class SubaccountTest extends TestCase
             'invalid_key' => 'value'
         ];
 
-        new Subaccount($filterValues);
+        new SubaccountFilter($filterValues);
     }
 
     public function testConstructionWithNonStringValueThrowsException(): void
@@ -120,6 +120,6 @@ class SubaccountTest extends TestCase
             'subaccount' => 12345
         ];
 
-        new Subaccount($filterValues);
+        new SubaccountFilter($filterValues);
     }
 }

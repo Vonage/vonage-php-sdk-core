@@ -11,7 +11,7 @@ use Psr\Http\Message\RequestInterface;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Subaccount\Client as SubaccountClient;
-use Vonage\Subaccount\Filter\Subaccount;
+use Vonage\Subaccount\Filter\SubaccountFilter;
 use Vonage\Subaccount\Request\NumberTransferRequest;
 use Vonage\Subaccount\Request\TransferRequest;
 use Vonage\Subaccount\SubaccountObjects\Account;
@@ -246,7 +246,7 @@ class ClientTest extends VonageTestCase
             return true;
         }))->willReturn($this->getResponse('get-credit-transfers-success'));
 
-        $filter = new Subaccount([
+        $filter = new SubaccountFilter([
             'start_date' => '2022-01-01',
             'end_date'=> '2022-01-05',
             'subaccount' => 's5r3fds'
@@ -280,7 +280,7 @@ class ClientTest extends VonageTestCase
             return true;
         }))->willReturn($this->getResponse('get-balance-transfers-success'));
 
-        $filter = new Subaccount([
+        $filter = new SubaccountFilter([
             'start_date' => '2022-01-01',
             'end_date'=> '2022-01-05',
             'subaccount' => 's5r3fds'
