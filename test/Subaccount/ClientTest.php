@@ -76,6 +76,8 @@ class ClientTest extends VonageTestCase
             'name' => 'Subaccount department B'
         ];
 
+        $account = (new Account())->fromArray($payload);
+
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
@@ -88,7 +90,7 @@ class ClientTest extends VonageTestCase
             return true;
         }))->willReturn($this->getResponse('patch-success'));
 
-        $response = $this->subaccountClient->updateSubaccount($apiKey, $subaccountKey, $payload);
+        $response = $this->subaccountClient->updateSubaccount($apiKey, $subaccountKey, $account);
         $this->assertIsArray($response);
     }
 
@@ -348,11 +350,13 @@ class ClientTest extends VonageTestCase
             return true;
         }))->willReturn($this->getResponse('number-transfer-success'));
 
-        $numberTransferRequest = (new NumberTransferRequest($apiKey))
-            ->setFrom('acc6111f')
-            ->setTo('s5r3fds')
-            ->setNumber('4477705478484')
-            ->setCountry('GB');
+        $numberTransferRequest = (new NumberTransferRequest(
+            $apiKey,
+            'acc6111f',
+            's5r3fds',
+            '4477705478484',
+            'GB'
+        ));
 
         $response = $this->subaccountClient->makeNumberTransfer($numberTransferRequest);
         $this->assertIsArray($response);

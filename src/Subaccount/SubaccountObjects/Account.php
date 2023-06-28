@@ -8,105 +8,105 @@ use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 
 class Account implements ArrayHydrateInterface
 {
-    protected string $apiKey;
-    protected string $name;
-    protected string $primaryAccountApiKey;
-    protected bool $usePrimaryAccountBalance;
-    protected string $createdAt;
-    protected bool $suspended;
-    protected float $balance;
-    protected float $creditLimit;
+    protected ?string $apiKey = null;
+    protected ?string $name = null;
+    protected ?string $primaryAccountApiKey = null;
+    protected ?bool $usePrimaryAccountBalance = null;
+    protected ?string $createdAt = null;
+    protected ?bool $suspended = null;
+    protected ?float $balance = null;
+    protected ?float $creditLimit = null;
 
-    public function getApiKey(): string
+    public function getApiKey(): ?string
     {
         return $this->apiKey;
     }
 
-    public function setApiKey($apiKey): static
+    public function setApiKey(?string $apiKey): static
     {
         $this->apiKey = $apiKey;
 
         return $this;
     }
 
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    public function setName($name): static
+    public function setName(?string $name): static
     {
         $this->name = $name;
 
         return $this;
     }
 
-    public function getPrimaryAccountApiKey(): string
+    public function getPrimaryAccountApiKey(): ?string
     {
         return $this->primaryAccountApiKey;
     }
 
-    public function setPrimaryAccountApiKey($primaryAccountApiKey): static
+    public function setPrimaryAccountApiKey(?string $primaryAccountApiKey): static
     {
         $this->primaryAccountApiKey = $primaryAccountApiKey;
 
         return $this;
     }
 
-    public function getUsePrimaryAccountBalance(): bool
+    public function getUsePrimaryAccountBalance(): ?bool
     {
         return $this->usePrimaryAccountBalance;
     }
 
-    public function setUsePrimaryAccountBalance($usePrimaryAccountBalance): static
+    public function setUsePrimaryAccountBalance(?bool $usePrimaryAccountBalance): static
     {
         $this->usePrimaryAccountBalance = $usePrimaryAccountBalance;
 
         return $this;
     }
 
-    public function getCreatedAt(): string
+    public function getCreatedAt(): ?string
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt($createdAt): static
+    public function setCreatedAt(?string $createdAt): static
     {
         $this->createdAt = $createdAt;
 
         return $this;
     }
 
-    public function getSuspended(): bool
+    public function getSuspended(): ?bool
     {
         return $this->suspended;
     }
 
-    public function setSuspended($suspended): static
+    public function setSuspended(?bool $suspended): static
     {
         $this->suspended = $suspended;
 
         return $this;
     }
 
-    public function getBalance(): float
+    public function getBalance(): ?float
     {
         return $this->balance;
     }
 
-    public function setBalance($balance): static
+    public function setBalance(?float $balance): static
     {
         $this->balance = $balance;
 
         return $this;
     }
 
-    public function getCreditLimit(): float
+    public function getCreditLimit(): ?float
     {
         return $this->creditLimit;
     }
 
-    public function setCreditLimit($creditLimit): static
+    public function setCreditLimit(?float $creditLimit): static
     {
         $this->creditLimit = $creditLimit;
 
@@ -115,28 +115,76 @@ class Account implements ArrayHydrateInterface
 
     public function toArray(): array
     {
-        return [
-            'api_key' => $this->getApiKey(),
-            'name' => $this->getName(),
-            'primary_account_api_key' => $this->getPrimaryAccountApiKey(),
-            'use_primary_account_balance' => $this->getUsePrimaryAccountBalance(),
-            'created_at' => $this->getCreatedAt(),
-            'suspended' => $this->getSuspended(),
-            'balance' => $this->getBalance(),
-            'credit_limit' => $this->getCreditLimit()
-        ];
+        $data = [];
+
+        if ($this->apiKey !== null) {
+            $data['api_key'] = $this->getApiKey();
+        }
+
+        if ($this->name !== null) {
+            $data['name'] = $this->getName();
+        }
+
+        if ($this->primaryAccountApiKey !== null) {
+            $data['primary_account_api_key'] = $this->getPrimaryAccountApiKey();
+        }
+
+        if ($this->usePrimaryAccountBalance !== null) {
+            $data['use_primary_account_balance'] = $this->getUsePrimaryAccountBalance();
+        }
+
+        if ($this->createdAt !== null) {
+            $data['created_at'] = $this->getCreatedAt();
+        }
+
+        if ($this->suspended !== null) {
+            $data['suspended'] = $this->getSuspended();
+        }
+
+        if ($this->balance !== null) {
+            $data['balance'] = $this->getBalance();
+        }
+
+        if ($this->creditLimit !== null) {
+            $data['credit_limit'] = $this->getCreditLimit();
+        }
+
+        return $data;
     }
 
     public function fromArray(array $data): static
     {
-        $this->apiKey = $data['api_key'];
-        $this->name = $data['name'];
-        $this->primaryAccountApiKey = $data['primary_account_api_key'];
-        $this->usePrimaryAccountBalance = $data['use_primary_account_balance'];
-        $this->createdAt = $data['created_at'];
-        $this->suspended = $data['suspended'];
-        $this->balance = $data['balance'];
-        $this->creditLimit = $data['credit_limit'];
+        if (isset($data['api_key'])) {
+            $this->apiKey = $data['api_key'];
+        }
+
+        if (isset($data['name'])) {
+            $this->name = $data['name'];
+        }
+
+        if (isset($data['primary_account_api_key'])) {
+            $this->primaryAccountApiKey = $data['primary_account_api_key'];
+        }
+
+        if (isset($data['use_primary_account_balance'])) {
+            $this->usePrimaryAccountBalance = $data['use_primary_account_balance'];
+        }
+
+        if (isset($data['created_at'])) {
+            $this->createdAt = $data['created_at'];
+        }
+
+        if (isset($data['suspended'])) {
+            $this->suspended = $data['suspended'];
+        }
+
+        if (isset($data['balance'])) {
+            $this->balance = $data['balance'];
+        }
+
+        if (isset($data['credit_limit'])) {
+            $this->creditLimit = $data['credit_limit'];
+        }
 
         return $this;
     }

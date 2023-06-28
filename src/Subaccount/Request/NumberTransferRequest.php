@@ -6,16 +6,13 @@ use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 
 class NumberTransferRequest implements ArrayHydrateInterface
 {
-    private string $from;
-    private string $to;
-    private string $number;
-    private string $country;
-    protected string $apiKey;
-
-    public function __construct(string $apiKey)
-    {
-        $this->apiKey = $apiKey;
-    }
+    public function __construct(
+        protected string $apiKey,
+        protected string $from,
+        protected string $to,
+        protected string $number,
+        protected string $country
+    ) {}
 
     public function setFrom(string $from): self
     {

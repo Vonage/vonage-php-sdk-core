@@ -76,9 +76,9 @@ class Client implements APIClient
         return (new CreditTransfer())->fromArray($response);
     }
 
-    public function updateSubaccount(string $apiKey, string $subaccountApiKey, array $update): ?array
+    public function updateSubaccount(string $apiKey, string $subaccountApiKey, Account $account): ?array
     {
-        return $this->api->partiallyUpdate($apiKey . '/subaccounts/' . $subaccountApiKey, $update);
+        return $this->api->partiallyUpdate($apiKey . '/subaccounts/' . $subaccountApiKey, $account->toArray());
     }
 
     public function getCreditTransfers(string $apiKey, FilterInterface $filter = null): mixed

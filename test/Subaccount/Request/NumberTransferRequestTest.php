@@ -7,57 +7,57 @@ use VonageTest\VonageTestCase;
 
 class NumberTransferRequestTest extends VonageTestCase
 {
-    public function testGetApiKey(): void
+    public function testGettersAndSetters(): void
     {
-        $apiKey = 'testApiKey';
-        $request = new NumberTransferRequest($apiKey);
+        $apiKey = 'YOUR_API_KEY';
+        $from = '1234567890';
+        $to = '0987654321';
+        $number = '9876543210';
+        $country = 'US';
+
+        $request = new NumberTransferRequest($apiKey, $from, $to, $number, $country);
 
         $this->assertEquals($apiKey, $request->getApiKey());
+        $this->assertEquals($from, $request->getFrom());
+        $this->assertEquals($to, $request->getTo());
+        $this->assertEquals($number, $request->getNumber());
+        $this->assertEquals($country, $request->getCountry());
+
+        $newFrom = '0987654321';
+        $newTo = '1234567890';
+        $newNumber = '1234567890';
+        $newCountry = 'GB';
+
+        $request->setFrom($newFrom);
+        $request->setTo($newTo);
+        $request->setNumber($newNumber);
+        $request->setCountry($newCountry);
+
+        $this->assertEquals($newFrom, $request->getFrom());
+        $this->assertEquals($newTo, $request->getTo());
+        $this->assertEquals($newNumber, $request->getNumber());
+        $this->assertEquals($newCountry, $request->getCountry());
     }
 
-    public function testSetApiKey(): void
-    {
-        $apiKey = 'testApiKey';
-        $request = new NumberTransferRequest('');
-
-        $request->setApiKey($apiKey);
-
-        $this->assertEquals($apiKey, $request->getApiKey());
-    }
-
-    public function testFromArray(): void
+    public function testArrayHydration(): void
     {
         $data = [
-            'from' => '123456789',
-            'to' => '987654321',
-            'number' => '5555555555',
+            'from' => '1234567890',
+            'to' => '0987654321',
+            'number' => '9876543210',
             'country' => 'US',
         ];
 
-        $request = new NumberTransferRequest('');
+        $request = new NumberTransferRequest('', '', '', '', '');
         $request->fromArray($data);
 
         $this->assertEquals($data['from'], $request->getFrom());
         $this->assertEquals($data['to'], $request->getTo());
         $this->assertEquals($data['number'], $request->getNumber());
         $this->assertEquals($data['country'], $request->getCountry());
-    }
 
-    public function testToArray(): void
-    {
-        $data = [
-            'from' => '123456789',
-            'to' => '987654321',
-            'number' => '5555555555',
-            'country' => 'US',
-        ];
+        $arrayData = $request->toArray();
 
-        $request = new NumberTransferRequest('');
-        $request->setFrom($data['from'])
-                ->setTo($data['to'])
-                ->setNumber($data['number'])
-                ->setCountry($data['country']);
-
-        $this->assertEquals($data, $request->toArray());
+        $this->assertEquals($data, $arrayData);
     }
 }
