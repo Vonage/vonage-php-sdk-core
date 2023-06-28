@@ -198,13 +198,6 @@ class ClientTest extends VonageTestCase
     {
         $apiKey = 'acc6111f';
 
-        $payload = [
-            'from' => 'acc6111f',
-            'to' => 's5r3fds',
-            'amount' => '123.45',
-            'reference' => 'this is a credit transfer'
-        ];
-
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
@@ -222,10 +215,10 @@ class ClientTest extends VonageTestCase
         }))->willReturn($this->getResponse('make-credit-transfer-success'));
 
         $transferRequest = (new TransferCreditRequest($apiKey))
-            ->setFrom($payload['from'])
-            ->setTo($payload['to'])
-            ->setAmount($payload['amount'])
-            ->setReference($payload['reference']);
+            ->setFrom('acc6111f')
+            ->setTo('s5r3fds')
+            ->setAmount('123.45')
+            ->setReference('this is a credit transfer');
 
         $response = $this->subaccountClient->makeCreditTransfer($transferRequest);
         $this->assertInstanceOf(CreditTransfer::class, $response);
