@@ -13,7 +13,7 @@ use Vonage\Client\APIResource;
 use Vonage\Subaccount\Client as SubaccountClient;
 use Vonage\Subaccount\Filter\SubaccountFilter;
 use Vonage\Subaccount\Request\NumberTransferRequest;
-use Vonage\Subaccount\Request\TransferRequest;
+use Vonage\Subaccount\Request\TransferCreditRequest;
 use Vonage\Subaccount\SubaccountObjects\Account;
 use Vonage\Subaccount\SubaccountObjects\BalanceTransfer;
 use Vonage\Subaccount\SubaccountObjects\CreditTransfer;
@@ -217,7 +217,7 @@ class ClientTest extends VonageTestCase
             return true;
         }))->willReturn($this->getResponse('make-credit-transfer-success'));
 
-        $transferRequest = (new TransferRequest($apiKey))
+        $transferRequest = (new TransferCreditRequest($apiKey))
             ->setFrom($payload['from'])
             ->setTo($payload['to'])
             ->setAmount($payload['amount'])
@@ -316,7 +316,7 @@ class ClientTest extends VonageTestCase
             return true;
         }))->willReturn($this->getResponse('make-balance-transfer-success'));
 
-        $balanceTransferRequest = (new TransferRequest($apiKey))
+        $balanceTransferRequest = (new TransferCreditRequest($apiKey))
             ->setTo('s5r3fds')
             ->setFrom('acc6111f')
             ->setAmount('123.45')

@@ -4,7 +4,7 @@ namespace Vonage\Subaccount\Request;
 
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 
-class TransferRequest implements ArrayHydrateInterface
+class TransferCreditRequest implements ArrayHydrateInterface
 {
     private string $from;
     private string $to;

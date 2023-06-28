@@ -10,7 +10,7 @@ use Vonage\Entity\Filter\EmptyFilter;
 use Vonage\Entity\Filter\FilterInterface;
 use Vonage\Entity\Hydrator\ArrayHydrator;
 use Vonage\Subaccount\Request\NumberTransferRequest;
-use Vonage\Subaccount\Request\TransferRequest;
+use Vonage\Subaccount\Request\TransferCreditRequest;
 use Vonage\Subaccount\SubaccountObjects\Account;
 use Vonage\Subaccount\SubaccountObjects\BalanceTransfer;
 use Vonage\Subaccount\SubaccountObjects\CreditTransfer;
@@ -63,14 +63,14 @@ class Client implements APIClient
         return $this->api->create($payload, '/' . $apiKey . '/subaccounts');
     }
 
-    public function makeBalanceTransfer(TransferRequest $transferRequest): BalanceTransfer
+    public function makeBalanceTransfer(TransferCreditRequest $transferRequest): BalanceTransfer
     {
         $response = $this->api->create($transferRequest->toArray(), '/' . $transferRequest->getApiKey() . '/balance-transfers');
 
         return (new BalanceTransfer())->fromArray($response);
     }
 
-    public function makeCreditTransfer(TransferRequest $transferRequest): CreditTransfer
+    public function makeCreditTransfer(TransferCreditRequest $transferRequest): CreditTransfer
     {
         $response = $this->api->create($transferRequest->toArray(), '/' . $transferRequest->getApiKey() . '/credit-transfers');
         return (new CreditTransfer())->fromArray($response);
