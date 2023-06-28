@@ -46,6 +46,7 @@ use Vonage\Client\Factory\MapFactory;
 use Vonage\Conversion\ClientFactory as ConversionClientFactory;
 use Vonage\Entity\EntityInterface;
 use Vonage\Insights\ClientFactory as InsightsClientFactory;
+use Vonage\Meetings\ClientFactory as MeetingsClientFactory;
 use Vonage\Numbers\ClientFactory as NumbersClientFactory;
 use Vonage\Redact\ClientFactory as RedactClientFactory;
 use Vonage\Secrets\ClientFactory as SecretsClientFactory;
@@ -74,6 +75,7 @@ use function strpos;
  * Vonage API Client, allows access to the API from PHP.
  *
  * @method Account\Client account()
+ * @method Meetings\Client meetings()
  * @method Messages\Client messages()
  * @method Application\Client applications()
  * @method Conversion\Client conversion()
@@ -216,6 +218,7 @@ class Client implements LoggerAwareInterface
                     'conversion' => ConversionClientFactory::class,
                     'insights' => InsightsClientFactory::class,
                     'numbers' => NumbersClientFactory::class,
+                    'meetings' => MeetingsClientFactory::class,
                     'messages' => MessagesClientFactory::class,
                     'redact' => RedactClientFactory::class,
                     'secrets' => SecretsClientFactory::class,

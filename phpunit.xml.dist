@@ -35,6 +35,9 @@
     <testsuite name="subaccount">
       <directory>test/Subaccount</directory>
     </testsuite>
+    <testsuite name="meetings">
+      <directory>test/Meetings</directory>
+    </testsuite>
   </testsuites>
   <php>
         <ini name='error_reporting' value='E_ALL' />
