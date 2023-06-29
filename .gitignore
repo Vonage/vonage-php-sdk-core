@@ -5,3 +5,4 @@ logs
 .php_cs.cache
 .phpunit.result.cache
 coverage.xml
+**/.DS_Store
