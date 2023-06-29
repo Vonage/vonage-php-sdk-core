@@ -45,6 +45,16 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
     protected APIResource $api;
 
     /**
+     * This allows for override if the endpoint API uses a different query key
+     */
+    protected string $pageIndexKey = 'page_index';
+
+    /**
+     * This allows for override if the endpoint API uses a different query key
+     */
+    protected string $pageSizeKey = 'page_size';
+
+    /**
      * Determines if the collection will automatically go to the next page
      */
     protected bool $autoAdvance = true;
@@ -122,6 +132,30 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
     protected string $collectionPath = '';
 
     protected $hydrator;
+
+    public function getPageIndexKey(): string
+    {
+        return $this->pageIndexKey;
+    }
+
+    public function setPageIndexKey(string $pageIndexKey): IterableAPICollection
+    {
+        $this->pageIndexKey = $pageIndexKey;
+
+        return $this;
+    }
+
+    public function getPageSizeKey(): string
+    {
+        return $this->pageSizeKey;
+    }
+
+    public function setPageSizeKey(string $pageSizeKey): IterableAPICollection
+    {
+        $this->pageSizeKey = $pageSizeKey;
+
+        return $this;
+    }
 
     /**
      * @param $hydrator
