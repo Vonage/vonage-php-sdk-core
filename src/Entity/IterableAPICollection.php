@@ -74,16 +74,6 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
     protected int $current = 0;
 
     /**
-     * This allows for override if the endpoint API uses a different query key
-     */
-    protected string $pageIndexKey = 'page_index';
-
-    /**
-     * This allows for override if the endpoint API uses a different query key
-     */
-    protected string $pageSizeKey = 'page_size';
-
-    /**
      * Count the items in the response instead of returning the count parameter
      *
      * @deprected This exists for legacy reasons, will be removed in v3
@@ -179,30 +169,6 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
         }
 
         return $data;
-    }
-
-    public function getPageIndexKey(): string
-    {
-        return $this->pageIndexKey;
-    }
-
-    public function setPageIndexKey(string $pageIndexKey): IterableAPICollection
-    {
-        $this->pageIndexKey = $pageIndexKey;
-
-        return $this;
-    }
-
-    public function getPageSizeKey(): string
-    {
-        return $this->pageSizeKey;
-    }
-
-    public function setPageSizeKey(string $pageSizeKey): IterableAPICollection
-    {
-        $this->pageSizeKey = $pageSizeKey;
-
-        return $this;
     }
 
     public function getResourceRoot(): array

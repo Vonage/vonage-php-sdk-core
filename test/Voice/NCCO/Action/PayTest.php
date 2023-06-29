@@ -42,7 +42,7 @@ class PayTest extends VonageTestCase
     public function testThrowsErrorWithNoAmount(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectErrorMessage('Amount is required for this action.');
+        $this->expectExceptionMessage('Amount is required for this action.');
         $payAction = Pay::factory(['currency' => 'eur']);
     }
 
@@ -76,7 +76,7 @@ class PayTest extends VonageTestCase
     public function testCannotAddInvalidVoiceSetting()
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectErrorMessage('type did not fall under permitted voice settings');
+        $this->expectExceptionMessage('type did not fall under permitted voice settings');
 
         $payAction = Pay::factory([
             'amount' => 9.99,
@@ -131,7 +131,7 @@ class PayTest extends VonageTestCase
     public function testCannotAddPromptsWithWrongType(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectErrorMessage('invalid prompt type');
+        $this->expectExceptionMessage('invalid prompt type');
 
         $payAction = Pay::factory([
             'amount' => 9.99,
@@ -151,7 +151,7 @@ class PayTest extends VonageTestCase
     public function testCannotAddPromptWithoutText(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectErrorMessage('text is required when setting error text prompts.');
+        $this->expectExceptionMessage('text is required when setting error text prompts.');
 
         $payAction = Pay::factory([
             'amount' => 9.99,

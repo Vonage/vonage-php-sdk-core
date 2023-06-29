@@ -137,7 +137,7 @@ class ClientTest extends TestCase
         }))->willReturn($this->getResponse('empty', 403));
 
         $this->expectException(Client\Exception\Credentials::class);
-        $this->expectErrorMessage('You are not authorised to perform this request');
+        $this->expectExceptionMessage('You are not authorised to perform this request');
         $response = $this->meetingsClient->createRoom('test-room');
     }
 
@@ -154,7 +154,7 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('empty', 404));
         $this->expectException(NotFound::class);
-        $this->expectErrorMessage('No resource found');
+        $this->expectExceptionMessage('No resource found');
         $response = $this->meetingsClient->getRoom('224d6219-dc05-4c09-9d42-96adce7fcb67');
     }
 
@@ -171,7 +171,7 @@ class ClientTest extends TestCase
         }))->willReturn($this->getResponse('empty', 400));
 
         $this->expectException(Validation::class);
-        $this->expectErrorMessage('The request data was invalid');
+        $this->expectExceptionMessage('The request data was invalid');
 
         $response = $this->meetingsClient->createRoom('test-room');
     }
@@ -368,7 +368,7 @@ class ClientTest extends TestCase
         }))->willReturn($this->getResponse('empty', 409));
 
         $this->expectException(Conflict::class);
-        $this->expectErrorMessage('Entity conflict');
+        $this->expectExceptionMessage('Entity conflict');
         $response = $this->meetingsClient->createApplicationTheme('My-Theme');
     }
 
