@@ -1056,10 +1056,12 @@ var_dump($response);
 | Dispatch API           |         Beta         |     ❌      |
 | External Accounts API  |         Beta         |     ❌      |
 | Media API              |         Beta         |     ❌      |
+| Meetings API           | General Availability |     ✅      |
 | Messages API           | General Availability |     ✅      |
 | Number Insight API     | General Availability |     ✅      |
 | Number Management API  | General Availability |     ✅      |
 | Pricing API            | General Availability |     ✅      |
+| ProActive Connect API  |         Beta         |     ❌      |
 | Redact API             | General Availability |     ✅      |
 | Reports API            |         Beta         |     ❌      |
 | SMS API                | General Availability |     ✅      |
