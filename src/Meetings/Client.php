@@ -6,8 +6,10 @@ namespace Vonage\Meetings;
 
 use GuzzleHttp\Psr7\MultipartStream;
 use Laminas\Diactoros\Request;
+use Psr\Http\Client\ClientExceptionInterface;
 use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
+use Vonage\Client\Exception\Exception;
 use Vonage\Client\Exception\NotFound;
 use Vonage\Entity\Filter\KeyValueFilter;
 use Vonage\Entity\Hydrator\ArrayHydrator;
@@ -36,8 +38,29 @@ class Client implements APIClient
         return $room;
     }
 
-    public function createRoom(Room $room): Room
+    /**
+     *
+     * Creates a room. Originally this was a string with the display name
+     * So there is backwards compatibility cases to cover
+     *
+     * @param $room string|Room
+     *
+     * @return Room
+     * @throws ClientExceptionInterface
+     * @throws Exception
+     */
+    public function createRoom(Room|string $room): Room
     {
+        if (is_string($room)) {
+            trigger_error(
+                'Passing a display name string to createRoom is deprecated, please use a Room object',
+                E_USER_DEPRECATED
+            );
+            $roomEntity = new Room();
+            $roomEntity->fromArray(['display_name' => $room]);
+            $room = $roomEntity;
+        }
+
         $this->api->setBaseUri('/rooms');
 
         $response = $this->api->create($room->toArray());
