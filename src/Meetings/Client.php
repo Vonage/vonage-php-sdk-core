@@ -36,13 +36,11 @@ class Client implements APIClient
         return $room;
     }
 
-    public function createRoom(string $displayName): Room
+    public function createRoom(Room $room): Room
     {
         $this->api->setBaseUri('/rooms');
 
-        $response = $this->api->create([
-            'display_name' => $displayName
-        ]);
+        $response = $this->api->create($room->toArray());
 
         $room = new Room();
         $room->fromArray($response);
