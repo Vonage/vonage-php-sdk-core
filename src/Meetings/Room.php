@@ -6,20 +6,28 @@ use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 
 class Room implements ArrayHydrateInterface
 {
-    private array $data;
+    protected array $data;
 
-    public function fromArray(array $data): void
+    public function fromArray(array $data): static
     {
+        if (!isset($data['display_name'])) {
+            throw new \InvalidArgumentException('A room object must contain a display_name');
+        }
+
         $this->data = $data;
+
+        return $this;
     }
 
     public function toArray(): array
     {
-        return $this->data;
+        return array_filter($this->data, static function ($value) {
+            return $value !== '';
+        });
     }
 
-    public function __get($name)
+    public function __get($value)
     {
-        return $this->data[$name];
+        return $this->data[$value];
     }
 }

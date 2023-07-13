@@ -117,10 +117,41 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('create-room-success', 201));
 
-        $response = $this->meetingsClient->createRoom('test-room');
+        $room = new Room();
+        $room->fromArray(['display_name' => 'test-room']);
+
+        $response = $this->meetingsClient->createRoom($room);
         $this->assertInstanceOf(Room::class, $response);
 
         $this->assertEquals('test-room', $response->display_name);
+        $this->assertEquals('instant', $response->type);
+    }
+
+    public function testWillCreateLongTermRoom(): void
+    {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+            $this->assertEquals('POST', $request->getMethod());
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals('https://api-eu.vonage.com/meetings/rooms', $uriString);
+
+            $this->assertRequestJsonBodyContains('display_name', 'test-room', $request);
+            return true;
+        }))->willReturn($this->getResponse('create-long-term-room-success', 201));
+
+        $room = new Room();
+        $room->fromArray([
+            'display_name' => 'test-room',
+            'type' => 'long_term',
+            'expires_at' => '2023-01-30T00:47:04+0000'
+        ]);
+
+        $response = $this->meetingsClient->createRoom($room);
+        $this->assertInstanceOf(Room::class, $response);
+
+        $this->assertEquals('test-room', $response->display_name);
+        $this->assertEquals('long_term', $response->type);
     }
 
     public function testClientWillHandleUnauthorizedRequests(): void
@@ -132,13 +163,17 @@ class ClientTest extends TestCase
             $uriString = $uri->__toString();
             $this->assertEquals('https://api-eu.vonage.com/meetings/rooms', $uriString);
 
-            $this->assertRequestJsonBodyContains('display_name', 'test-room', $request);
+            $this->assertRequestJsonBodyContains('display_name', 'something', $request);
             return true;
         }))->willReturn($this->getResponse('empty', 403));
 
         $this->expectException(Client\Exception\Credentials::class);
         $this->expectExceptionMessage('You are not authorised to perform this request');
-        $response = $this->meetingsClient->createRoom('test-room');
+
+        $room = new Room();
+        $room->fromArray(['display_name' => 'something']);
+
+        $response = $this->meetingsClient->createRoom($room);
     }
 
     public function testClientWillHandleNotFoundResponse(): void
@@ -173,7 +208,10 @@ class ClientTest extends TestCase
         $this->expectException(Validation::class);
         $this->expectExceptionMessage('The request data was invalid');
 
-        $response = $this->meetingsClient->createRoom('test-room');
+        $room = new Room();
+        $room->fromArray(['display_name' => 'test-room']);
+
+        $response = $this->meetingsClient->createRoom($room);
     }
 
     public function testWillGetRoomDetails(): void
