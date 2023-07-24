@@ -14,24 +14,24 @@ namespace VonageTest\Application;
 use Exception;
 use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
-use Vonage\Application\Hydrator;
-use Vonage\Application\User;
-use Vonage\Application\Webhook;
-use Vonage\Application\Webhook as ApplicationWebhook;
-use VonageTest\VonageTestCase;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
 use Vonage\Application\Application;
 use Vonage\Application\Client as ApplicationClient;
+use Vonage\Application\Hydrator;
 use Vonage\Application\MessagesConfig;
 use Vonage\Application\RtcConfig;
 use Vonage\Application\VoiceConfig;
+use Vonage\Application\Webhook;
+use Vonage\Application\Webhook as ApplicationWebhook;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Client\Exception\Server as ServerException;
+use Vonage\Users\User;
 use VonageTest\Psr7AssertionTrait;
+use VonageTest\VonageTestCase;
 
 use function fopen;
 use function json_decode;
@@ -584,208 +584,6 @@ class ClientTest extends VonageTestCase
         return [
             'createApplication' => [clone $application, 'create'],
         ];
-    }
-
-    public function testWillListUsers(): void
-    {
-        $this->vonageClient->send(Argument::that(function (Request $request) {
-            $uri = $request->getUri();
-            $uriString = $uri->__toString();
-            $this->assertEquals(
-                'https://api.nexmo.com/v2/applications/users?order=asc&page_size=10',
-                $uriString
-            );
-
-            $this->assertEquals('GET', $request->getMethod());
-
-            return true;
-        }))->willReturn($this->getResponse('list-user-success'));
-
-        $response = $this->applicationClient->getUsers(10, 'asc');
-
-        foreach ($response as $user) {
-            $this->assertInstanceOf(User::class, $user);
-        }
-    }
-
-    public function testWillCreateUser(): void
-    {
-        $this->vonageClient->send(Argument::that(function (Request $request) {
-            $uri = $request->getUri();
-            $uriString = $uri->__toString();
-            $this->assertEquals(
-                'https://api.nexmo.com/v2/applications/users',
-                $uriString
-            );
-
-            $this->assertEquals('POST', $request->getMethod());
-
-            return true;
-        }))->willReturn($this->getResponse('create-user-success'));
-
-        $user = new User();
-
-        $userData = [
-            "name" => "my_user_name",
-            "display_name" => "My User Name",
-            "image_url" => "https://example.com/image.png",
-            "channels" => [
-                "pstn" => [
-                    [
-                        "property1" => "string",
-                        "property2" => "string"
-                    ]
-                ],
-                "sip" => [
-                    [
-                        "property1" => "string",
-                        "property2" => "string"
-                    ]
-                ],
-                "vbc" => [
-                    [
-                        "property1" => "string",
-                        "property2" => "string"
-                    ]
-                ],
-                "websocket" => [
-                    [
-                        "property1" => "string",
-                        "property2" => "string"
-                    ]
-                ],
-                "sms" => [
-                    [
-                        "number" => "447700900000",
-                        "property1" => "string",
-                        "property2" => "string"
-                    ]
-                ],
-                "mms" => [
-                    [
-                        "number" => "447700900000",
-                        "property1" => "string",
-                        "property2" => "string"
-                    ]
-                ],
-                "whatsapp" => [
-                    [
-                        "number" => "447700900000",
-                        "property1" => "string",
-                        "property2" => "string"
-                    ]
-                ],
-                "viber" => [
-                    [
-                        "number" => "447700900000",
-                        "property1" => "string",
-                        "property2" => "string"
-                    ]
-                ],
-                "messenger" => [
-                    [
-                        "id" => "0",
-                        "property1" => "string",
-                        "property2" => "string"
-                    ]
-                ]
-            ]
-        ];
-
-        $user->fromArray($userData);
-
-        $response = $this->applicationClient->createUser($user);
-        $this->assertInstanceOf(User::class, $response);
-        $this->assertEquals('my_user_name', $user->name);
-    }
-
-    public function testWillGetUser(): void
-    {
-        $this->vonageClient->send(Argument::that(function (Request $request) {
-            $uri = $request->getUri();
-            $uriString = $uri->__toString();
-            $this->assertEquals(
-                'https://api.nexmo.com/v2/applications/users/USR-82e028d9-5201-4f1e-8188-604b2d3471ec',
-                $uriString
-            );
-
-            $this->assertEquals('GET', $request->getMethod());
-
-            return true;
-        }))->willReturn($this->getResponse('get-user-success'));
-
-        $response = $this->applicationClient->getUserById('USR-82e028d9-5201-4f1e-8188-604b2d3471ec');
-        $this->assertInstanceOf(User::class, $response);
-        $this->assertEquals('USR-82e028d9-5201-4f1e-8188-604b2d3471ec', $response->id);
-    }
-
-    public function testWillUpdateUser(): void
-    {
-        $this->vonageClient->send(Argument::that(function (Request $request) {
-            $uri = $request->getUri();
-            $uriString = $uri->__toString();
-            $this->assertEquals(
-                'https://api.nexmo.com/v2/applications/users/USR-82e028d9-5201-4f1e-8188-604b2d3471ec',
-                $uriString
-            );
-
-            $this->assertEquals('PATCH', $request->getMethod());
-
-            return true;
-        }))->willReturn($this->getResponse('update-user-success'));
-
-        $data  = [
-            "name" => "my_patched_user_name",
-            "display_name" => "My Patched User Name",
-            "image_url" => "https://example.com/image.png",
-            "channels" => [
-                "pstn" => [
-                    [
-                        "property1" => "string",
-                        "property2" => "string"
-                    ]
-                ],
-            ],
-        ];
-
-        $user = new User();
-        $user->fromArray($data);
-
-        $response = $this->applicationClient->updateUser($user, 'USR-82e028d9-5201-4f1e-8188-604b2d3471ec');
-        $this->assertInstanceOf(User::class, $response);
-        $this->assertEquals('my_patched_user_name', $user->name);
-        $this->assertEquals('My Patched User Name', $user->display_name);
-    }
-
-    public function testWillDeleteUser(): void
-    {
-        $this->vonageClient->send(Argument::that(function (Request $request) {
-            $uri = $request->getUri();
-            $uriString = $uri->__toString();
-            $this->assertEquals(
-                'https://api.nexmo.com/v2/applications/users/USR-82e028d9-5201-4f1e-8188-604b2d3471ec',
-                $uriString
-            );
-
-            $this->assertEquals('DELETE', $request->getMethod());
-
-            return true;
-        }))->willReturn($this->getResponse('delete-user-success', 204));
-
-        $user = 'USR-82e028d9-5201-4f1e-8188-604b2d3471ec';
-
-        $response = $this->applicationClient->deleteUserById($user);
-        $this->assertTrue($response);
-    }
-
-    public function testWillListUserConversations(): void
-    {
-        $this->markTestIncomplete('not written');
-    }
-
-    public function testWillListUserSessions(): void
-    {
-        $this->markTestIncomplete('not written');
     }
 
     /**

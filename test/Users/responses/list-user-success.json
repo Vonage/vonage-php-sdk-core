@@ -21,9 +21,6 @@
     "self": {
       "href": "https://api.nexmo.com/v0.3/users?order=desc&page_size=10&cursor=7EjDNQrAcipmOnc0HCzpQRkhBULzY44ljGUX4lXKyUIVfiZay5pv9wg%3D"
     },
-    "next": {
-      "href": "https://api.nexmo.com/v0.3/users?order=desc&page_size=10&cursor=7EjDNQrAcipmOnc0HCzpQRkhBULzY44ljGUX4lXKyUIVfiZay5pv9wg%3D"
-    },
     "prev": {
       "href": "https://api.nexmo.com/v0.3/users?order=desc&page_size=10&cursor=7EjDNQrAcipmOnc0HCzpQRkhBULzY44ljGUX4lXKyUIVfiZay5pv9wg%3D"
     }
