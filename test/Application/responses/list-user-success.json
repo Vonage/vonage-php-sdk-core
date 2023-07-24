@@ -1,0 +1,31 @@
+{
+  "page_size": 10,
+  "_embedded": {
+    "users": [
+      {
+        "id": "USR-82e028d9-5201-4f1e-8188-604b2d3471ec",
+        "name": "my_user_name",
+        "display_name": "My User Name",
+        "_links": {
+          "self": {
+            "href": "https://api.nexmo.com/v0.3/users/USR-82e028d9-5201-4f1e-8188-604b2d3471ec"
+          }
+        }
+      }
+    ]
+  },
+  "_links": {
+    "first": {
+      "href": "https://api.nexmo.com/v0.3/users?order=desc&page_size=10"
+    },
+    "self": {
+      "href": "https://api.nexmo.com/v0.3/users?order=desc&page_size=10&cursor=7EjDNQrAcipmOnc0HCzpQRkhBULzY44ljGUX4lXKyUIVfiZay5pv9wg%3D"
+    },
+    "next": {
+      "href": "https://api.nexmo.com/v0.3/users?order=desc&page_size=10&cursor=7EjDNQrAcipmOnc0HCzpQRkhBULzY44ljGUX4lXKyUIVfiZay5pv9wg%3D"
+    },
+    "prev": {
+      "href": "https://api.nexmo.com/v0.3/users?order=desc&page_size=10&cursor=7EjDNQrAcipmOnc0HCzpQRkhBULzY44ljGUX4lXKyUIVfiZay5pv9wg%3D"
+    }
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "id": "USR-82e028d9-5201-4f1e-8188-604b2d3471ec",
+  "name": "my_user_name",
+  "display_name": "My User Name",
+  "image_url": "https://example.com/image.png",
+  "properties": {
+    "custom_data": {}
+  },
+  "channels": {
+    "pstn": [
+      {
+        "property1": "string",
+        "property2": "string"
+      }
+    ],
+    "sip": [
+      {
+        "property1": "string",
+        "property2": "string"
+      }
+    ],
+    "vbc": [
+      {
+        "property1": "string",
+        "property2": "string"
+      }
+    ],
+    "websocket": [
+      {
+        "property1": "string",
+        "property2": "string"
+      }
+    ],
+    "sms": [
+      {
+        "number": "447700900000",
+        "property1": "string",
+        "property2": "string"
+      }
+    ],
+    "mms": [
+      {
+        "number": "447700900000",
+        "property1": "string",
+        "property2": "string"
+      }
+    ],
+    "whatsapp": [
+      {
+        "number": "447700900000",
+        "property1": "string",
+        "property2": "string"
+      }
+    ],
+    "viber": [
+      {
+        "number": "447700900000",
+        "property1": "string",
+        "property2": "string"
+      }
+    ],
+    "messenger": [
+      {
+        "id": "0",
+        "property1": "string",
+        "property2": "string"
+      }
+    ]
+  },
+  "_links": {
+    "self": {
+      "href": "https://api.nexmo.com/v0.3/users/USR-82e028d9-5201-4f1e-8188-604b2d3471ec"
+    }
+  },
+  "timestamp": {
+    "created": "2020-01-01T14:00:00.00Z",
+    "updated": "2020-01-01T14:05:00.00Z",
+    "destroyed": "2020-01-01T14:20:00.00Z"
+  }
+}

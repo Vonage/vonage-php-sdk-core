@@ -111,7 +111,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
     protected bool $noQueryParameters = false;
 
     /**
-     * User set pgge sixe.
+     * User set pgge size.
      */
     protected ?int $size = null;
 
@@ -122,6 +122,12 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
     protected string $collectionPath = '';
 
     protected $hydrator;
+
+    /**
+     * Used to override pagination to remove it from the URL page query
+     * but differs from noQueryParameters when you want to use other filters
+     */
+    protected bool $hasPagination = true;
 
     public function getPageIndexKey(): string
     {
@@ -496,7 +502,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
                 $query[$this->pageSizeKey] = $this->size;
             }
 
-            if (isset($this->index)) {
+            if (isset($this->index) && $this->hasPagination()) {
                 $query[$this->pageIndexKey] = $this->index;
             }
 
@@ -625,4 +631,19 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
 
         return $this;
 }
+
+    /**
+     * @return bool
+     */
+    public function hasPagination(): bool
+    {
+        return $this->hasPagination;
+    }
+
+    public function setHasPagination(bool $hasPagination): static
+    {
+        $this->hasPagination = $hasPagination;
+
+        return $this;
+    }
 }

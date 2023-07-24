@@ -18,6 +18,8 @@ use Vonage\Client\APIResource;
 use Vonage\Client\ClientAwareInterface;
 use Vonage\Client\ClientAwareTrait;
 use Vonage\Client\Exception\Exception as ClientException;
+use Vonage\Entity\Filter\EmptyFilter;
+use Vonage\Entity\Filter\KeyValueFilter;
 use Vonage\Entity\Hydrator\ArrayHydrator;
 use Vonage\Entity\Hydrator\HydratorInterface;
 use Vonage\Entity\IterableAPICollection;
@@ -134,5 +136,83 @@ class Client implements ClientAwareInterface, APIClient
         $this->getApiResource()->delete($application);
 
         return true;
+    }
+
+    public function getUsers($pageSize = null, $order = null, $cursor = null): IterableAPICollection
+    {
+        $api = clone $this->api;
+        $api->setBaseUri('/v2/applications/users');
+        $api->setIsHAL(true);
+
+        $hydrator = new ArrayHydrator();
+        $hydrator->setPrototype(new User());
+
+        if (is_null($pageSize) && is_null($order) && is_null($cursor)) {
+            $filter = new EmptyFilter();
+        }
+
+        if ($pageSize || $order || $cursor) {
+            $filter = new KeyValueFilter([
+                'order' => $order,
+                'cursor' => $cursor
+            ]);
+        }
+
+        $response = $api->search($filter);
+        $response->setHydrator($hydrator);
+        $response->setSize($pageSize);
+        $response->setPageSizeKey('page_size');
+        $response->setHasPagination(false);
+
+        return $response;
+    }
+
+    public function createUser(User $user): User
+    {
+        $api = clone $this->api;
+        $api->setBaseUri('/v2/applications/users');
+
+        $response = $api->create($user->toArray());
+        $userObject = new User();
+        $userObject->fromArray($response);
+
+        return $userObject;
+    }
+
+    public function getUserById(string $id): User
+    {
+        $api = clone $this->api;
+        $api->setBaseUri('/v2/applications/users');
+
+        $response = $api->get($id);
+        $returnUser = new User();
+        $returnUser->fromArray($response);
+
+        return $returnUser;
+    }
+
+    public function updateUser(User $user, string $id): User
+    {
+        $api = clone $this->api;
+        $api->setBaseUri('/v2/applications/users');
+
+        $response = $api->partiallyUpdate($id, $user->toArray());
+        $returnUser = new User();
+        $returnUser->fromArray($response);
+
+        return $returnUser;
+    }
+
+    public function deleteUserById(string $id): bool
+    {
+        $api = clone $this->api;
+        $api->setBaseUri('/v2/applications/users');
+
+        try {
+            $api->delete($id);
+            return true;
+        } catch (ClientException $exception) {
+            return false;
+        }
     }
 }

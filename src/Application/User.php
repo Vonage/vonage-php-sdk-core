@@ -1,17 +1,12 @@
 <?php
 
-namespace Vonage\Verify2\VerifyObjects;
+namespace Vonage\Application;
 
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 
-class VerifyStatusUpdate implements ArrayHydrateInterface
+class User implements ArrayHydrateInterface
 {
     private array $data;
-
-    public function __construct(array $data)
-    {
-        $this->data = $data;
-    }
 
     public function __get($property)
     {

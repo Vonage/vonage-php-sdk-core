@@ -1,0 +1,66 @@
+{
+  "name": "my_patched_user_name",
+  "display_name": "My Patched User Name",
+  "image_url": "https://example.com/image.png",
+  "channels": {
+    "pstn": [
+      {
+        "property1": "string",
+        "property2": "string"
+      }
+    ],
+    "sip": [
+      {
+        "property1": "string",
+        "property2": "string"
+      }
+    ],
+    "vbc": [
+      {
+        "property1": "string",
+        "property2": "string"
+      }
+    ],
+    "websocket": [
+      {
+        "property1": "string",
+        "property2": "string"
+      }
+    ],
+    "sms": [
+      {
+        "number": "447700900000",
+        "property1": "string",
+        "property2": "string"
+      }
+    ],
+    "mms": [
+      {
+        "number": "447700900000",
+        "property1": "string",
+        "property2": "string"
+      }
+    ],
+    "whatsapp": [
+      {
+        "number": "447700900000",
+        "property1": "string",
+        "property2": "string"
+      }
+    ],
+    "viber": [
+      {
+        "number": "447700900000",
+        "property1": "string",
+        "property2": "string"
+      }
+    ],
+    "messenger": [
+      {
+        "id": "0",
+        "property1": "string",
+        "property2": "string"
+      }
+    ]
+  }
+}
