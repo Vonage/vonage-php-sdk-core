@@ -34,14 +34,6 @@ class Client implements ClientAwareInterface, APIClient
 
     public function getApiResource(): APIResource
     {
-        if (is_null($this->api)) {
-            $api = new APIResource();
-            $api->setClient($this->getClient())
-                ->setBaseUri('/v1/users')
-                ->setCollectionName('users');
-            $this->api = $api;
-        }
-
         return $this->api;
     }
 
