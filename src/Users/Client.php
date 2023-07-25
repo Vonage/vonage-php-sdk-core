@@ -12,6 +12,7 @@ use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Entity\Filter\EmptyFilter;
 use Vonage\Entity\Hydrator\HydratorInterface;
 use Vonage\Entity\IterableAPICollection;
+use Vonage\Entity\Filter\FilterInterface;
 
 use Vonage\Users\Filter\UserFilter;
 use function is_null;
