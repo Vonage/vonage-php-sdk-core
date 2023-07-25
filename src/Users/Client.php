@@ -54,8 +54,7 @@ class Client implements ClientAwareInterface, APIClient
     public function getUser(string $id): User
     {
         $response = $this->api->get($id);
-        $returnUser = new User();
-        $returnUser->fromArray($response);
+        return $this->hydrator->hydrate($response);
 
         return $returnUser;
     }
