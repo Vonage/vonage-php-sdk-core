@@ -29,7 +29,6 @@ use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Client\Exception\Server as ServerException;
-use Vonage\Users\User;
 use VonageTest\Psr7AssertionTrait;
 use VonageTest\VonageTestCase;
 

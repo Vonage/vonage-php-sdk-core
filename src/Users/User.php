@@ -6,37 +6,37 @@ use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 
 class User implements ArrayHydrateInterface
 {
-    private ?string $id = null;
-    private ?string $name = null;
-    private ?string $displayName = null;
-    private ?string $imageUrl = null;
-    private ?array $properties = null;
-    private ?array $channels = null;
-    private ?string $selfLink = null;
+    protected ?string $id = null;
+    protected ?string $name = null;
+    protected ?string $displayName = null;
+    protected ?string $imageUrl = null;
+    protected ?array $properties = null;
+    protected ?array $channels = null;
+    protected ?string $selfLink = null;
 
-    public function getId(): string
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function setId(string $id): self
+    public function setId(string $id): static
     {
         $this->id = $id;
         return $this;
     }
 
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    public function setName(string $name): self
+    public function setName(string $name): static
     {
         $this->name = $name;
         return $this;
     }
 
-    public function getDisplayName(): string
+    public function getDisplayName(): ?string
     {
         return $this->displayName;
     }
@@ -47,7 +47,7 @@ class User implements ArrayHydrateInterface
         return $this;
     }
 
-    public function getImageUrl(): string
+    public function getImageUrl(): ?string
     {
         return $this->imageUrl;
     }
@@ -58,7 +58,7 @@ class User implements ArrayHydrateInterface
         return $this;
     }
 
-    public function getProperties(): array
+    public function getProperties(): ?array
     {
         return $this->properties;
     }
@@ -81,7 +81,7 @@ class User implements ArrayHydrateInterface
         return $this;
     }
 
-    public function getSelfLink(): string
+    public function getSelfLink(): ?string
     {
         return $this->selfLink;
     }

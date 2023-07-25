@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Vonage Client Library for PHP
- *
- * @copyright Copyright (c) 2016-2022 Vonage, Inc. (http://vonage.com)
- * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
- */
-
 declare(strict_types=1);
 
 namespace Vonage\Users;
@@ -17,7 +10,6 @@ use Vonage\Client\ClientAwareInterface;
 use Vonage\Client\ClientAwareTrait;
 use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Entity\Filter\EmptyFilter;
-use Vonage\Entity\Hydrator\ArrayHydrator;
 use Vonage\Entity\Hydrator\HydratorInterface;
 use Vonage\Entity\IterableAPICollection;
 
@@ -75,7 +67,7 @@ class Client implements ClientAwareInterface, APIClient
 
     public function updateUser(User $user): User
     {
-        if (!$user->getId()) {
+        if (is_null($user->getId())) {
             throw new \InvalidArgumentException('User must have an ID set');
         }
 

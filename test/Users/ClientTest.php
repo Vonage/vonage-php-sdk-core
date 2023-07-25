@@ -1,18 +1,12 @@
 <?php
 
-/**
- * Vonage Client Library for PHP
- *
- * @copyright Copyright (c) 2016-2022 Vonage, Inc. (http://vonage.com)
- * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
- */
-
 declare(strict_types=1);
 
 namespace VonageTest\Users;
 
 use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
+use Laminas\Diactoros\ResponseFactory;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
 use Vonage\Users\Client as UsersClient;
@@ -40,18 +34,38 @@ class ClientTest extends VonageTestCase
         $this->vonageClient = $this->prophesize(Client::class);
         $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
         $this->vonageClient->getCredentials()->willReturn(
-            new Client\Credentials\Container(new Client\Credentials\Basic('abc', 'def'))
+            new Client\Credentials\Container(new Client\Credentials\Keypair(
+                file_get_contents(__DIR__ . '/../Client/Credentials/test.key'),
+                'def'
+            ))
         );
 
         $apiResource = new APIResource();
         $apiResource->setClient($this->vonageClient->reveal())
             ->setBaseUri('/v1/users')
-            ->setCollectionName('users');
+            ->setCollectionName('users')
+            ->setAuthHandler(new Client\Credentials\Handler\KeypairHandler());
 
         $this->usersClient = new UsersClient($apiResource, new Hydrator());
 
         /** @noinspection PhpParamsInspection */
         $this->usersClient->setClient($this->vonageClient->reveal());
+    }
+
+    public function testClientWillUseJwtAuth(): void
+    {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $this->assertEquals(
+                'Bearer ',
+                mb_substr($request->getHeaders()['Authorization'][0], 0, 7)
+            );
+
+            $this->assertEquals('GET', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('list-user-success'));
+
+        $response = $this->usersClient->getUser('USR-82e028d9-5201-4f1e-8188-604b2d3471ec');
     }
 
     public function testWillListUsers(): void
@@ -187,6 +201,28 @@ class ClientTest extends VonageTestCase
         $this->assertEquals('USR-82e028d9-5201-4f1e-8188-604b2d3471ec', $response->getId());
     }
 
+    public function testWillNotUpdateUserWithoutId(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $testData = [
+            'name' => 'Test User',
+            'display_name' => 'Test Display Name',
+            'image_url' => 'https://test.com/image.jpg',
+            'properties' => ['prop1' => 'value1', 'prop2' => 'value2'],
+            'channels' => ['channel1', 'channel2'],
+            '_links' => [
+                'self' => [
+                    'href' => 'https://test.com/user/1'
+                ]
+            ]
+        ];
+
+        $user = new User();
+        $user->fromArray($testData);
+        $response = $this->usersClient->updateUser($user);
+    }
+
     public function testWillUpdateUser(): void
     {
         $this->vonageClient->send(Argument::that(function (Request $request) {
@@ -220,7 +256,7 @@ class ClientTest extends VonageTestCase
         $user = new User();
         $user->fromArray($data);
 
-        $response = $this->usersClient->updateUser($user, 'USR-82e028d9-5201-4f1e-8188-604b2d3471ec');
+        $response = $this->usersClient->updateUser($user);
         $this->assertInstanceOf(User::class, $response);
         $this->assertEquals('my_patched_user_name', $user->getName());
         $this->assertEquals('My Patched User Name', $user->getDisplayName());
@@ -228,6 +264,11 @@ class ClientTest extends VonageTestCase
 
     public function testWillDeleteUser(): void
     {
+        // We're getting a null body back from here, so use the factory to create one
+        $responseFactory = new ResponseFactory();
+        $response = $responseFactory->createResponse()
+                                    ->withStatus(204);
+
         $this->vonageClient->send(Argument::that(function (Request $request) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
@@ -239,7 +280,7 @@ class ClientTest extends VonageTestCase
             $this->assertEquals('DELETE', $request->getMethod());
 
             return true;
-        }))->willReturn($this->getResponse('delete-user-success', 204));
+        }))->willReturn($response);
 
         $user = 'USR-82e028d9-5201-4f1e-8188-604b2d3471ec';
 
