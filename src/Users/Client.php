@@ -75,11 +75,11 @@ class Client implements ClientAwareInterface, APIClient
 
     public function updateUser(User $user): User
     {
-        if (!isset($user->id)) {
+        if (!$user->getId()) {
             throw new \InvalidArgumentException('User must have an ID set');
         }
 
-        $response = $this->api->partiallyUpdate($user->id, $user->toArray());
+        $response = $this->api->partiallyUpdate($user->getId(), $user->toArray());
 
         return $this->hydrator->hydrate($response);
     }

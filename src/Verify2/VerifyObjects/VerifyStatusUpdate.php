@@ -2,9 +2,7 @@
 
 namespace Vonage\Verify2\VerifyObjects;
 
-use Vonage\Entity\Hydrator\ArrayHydrateInterface;
-
-class VerifyStatusUpdate implements ArrayHydrateInterface
+class VerifyStatusUpdate
 {
     private array $data;
 

@@ -164,7 +164,7 @@ class ClientTest extends VonageTestCase
 
         $response = $this->usersClient->createUser($user);
         $this->assertInstanceOf(User::class, $response);
-        $this->assertEquals('my_user_name', $user->name);
+        $this->assertEquals('my_user_name', $user->getName());
     }
 
     public function testWillGetUser(): void
@@ -184,7 +184,7 @@ class ClientTest extends VonageTestCase
 
         $response = $this->usersClient->getUser('USR-82e028d9-5201-4f1e-8188-604b2d3471ec');
         $this->assertInstanceOf(User::class, $response);
-        $this->assertEquals('USR-82e028d9-5201-4f1e-8188-604b2d3471ec', $response->id);
+        $this->assertEquals('USR-82e028d9-5201-4f1e-8188-604b2d3471ec', $response->getId());
     }
 
     public function testWillUpdateUser(): void
@@ -222,8 +222,8 @@ class ClientTest extends VonageTestCase
 
         $response = $this->usersClient->updateUser($user, 'USR-82e028d9-5201-4f1e-8188-604b2d3471ec');
         $this->assertInstanceOf(User::class, $response);
-        $this->assertEquals('my_patched_user_name', $user->name);
-        $this->assertEquals('My Patched User Name', $user->display_name);
+        $this->assertEquals('my_patched_user_name', $user->getName());
+        $this->assertEquals('My Patched User Name', $user->getDisplayName());
     }
 
     public function testWillDeleteUser(): void

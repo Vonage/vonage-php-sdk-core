@@ -2,9 +2,7 @@
 
 namespace Vonage\Verify2\VerifyObjects;
 
-use Vonage\Entity\Hydrator\ArrayHydrateInterface;
-
-class VerifyEvent implements ArrayHydrateInterface
+class VerifyEvent
 {
     private array $data;
 
