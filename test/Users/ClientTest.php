@@ -18,6 +18,7 @@ use Prophecy\Prophecy\ObjectProphecy;
 use Vonage\Users\Client as UsersClient;
 use Vonage\Client;
 use Vonage\Client\APIResource;
+use Vonage\Users\Hydrator;
 use Vonage\Users\User;
 use VonageTest\Psr7AssertionTrait;
 use VonageTest\VonageTestCase;
@@ -47,7 +48,7 @@ class ClientTest extends VonageTestCase
             ->setBaseUri('/v1/users')
             ->setCollectionName('users');
 
-        $this->usersClient = new UsersClient($apiResource);
+        $this->usersClient = new UsersClient($apiResource, new Hydrator());
 
         /** @noinspection PhpParamsInspection */
         $this->usersClient->setClient($this->vonageClient->reveal());
@@ -59,7 +60,7 @@ class ClientTest extends VonageTestCase
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
-                'https://api.nexmo.com/v1/users?order=asc&page_size=10',
+                'https://api.nexmo.com/v1/users?page_size=10&order=asc',
                 $uriString
             );
 
@@ -202,6 +203,7 @@ class ClientTest extends VonageTestCase
         }))->willReturn($this->getResponse('update-user-success'));
 
         $data  = [
+            "id" => "USR-82e028d9-5201-4f1e-8188-604b2d3471ec",
             "name" => "my_patched_user_name",
             "display_name" => "My Patched User Name",
             "image_url" => "https://example.com/image.png",

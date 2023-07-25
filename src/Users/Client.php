@@ -17,11 +17,11 @@ use Vonage\Client\ClientAwareInterface;
 use Vonage\Client\ClientAwareTrait;
 use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Entity\Filter\EmptyFilter;
-use Vonage\Entity\Filter\KeyValueFilter;
 use Vonage\Entity\Hydrator\ArrayHydrator;
 use Vonage\Entity\Hydrator\HydratorInterface;
 use Vonage\Entity\IterableAPICollection;
 
+use Vonage\Users\Filter\UserFilter;
 use function is_null;
 
 class Client implements ClientAwareInterface, APIClient
@@ -41,20 +41,15 @@ class Client implements ClientAwareInterface, APIClient
     {
         if (is_null($pageSize) && is_null($order) && is_null($cursor)) {
             $filter = new EmptyFilter();
+        } else {
+            $filter = new UserFilter();
+            $filter->setPageSize($pageSize);
+            $filter->setOrder($order);
+            $filter->setCursor($cursor);
         }
-
-        if ($pageSize || $order || $cursor) {
-            $filter = new KeyValueFilter([
-                'order' => $order,
-                'cursor' => $cursor
-            ]);
-        }
-
-        $hydrator = new ArrayHydrator();
-        $hydrator->setPrototype(new User());
 
         $response = $this->api->search($filter);
-        $response->setHydrator($hydrator);
+        $response->setHydrator($this->hydrator);
         $response->setSize($pageSize);
         $response->setPageSizeKey('page_size');
         $response->setHasPagination(false);
@@ -65,10 +60,8 @@ class Client implements ClientAwareInterface, APIClient
     public function createUser(User $user): User
     {
         $response = $this->api->create($user->toArray());
-        $userObject = new User();
-        $userObject->fromArray($response);
 
-        return $userObject;
+        return $this->hydrator->hydrate($response);
     }
 
     public function getUser(string $id): User
@@ -87,10 +80,8 @@ class Client implements ClientAwareInterface, APIClient
         }
 
         $response = $this->api->partiallyUpdate($user->id, $user->toArray());
-        $returnUser = new User();
-        $returnUser->fromArray($response);
 
-        return $returnUser;
+        return $this->hydrator->hydrate($response);
     }
 
     public function deleteUser(string $id): bool
