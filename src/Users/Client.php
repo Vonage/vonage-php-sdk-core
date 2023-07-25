@@ -31,14 +31,9 @@ class Client implements ClientAwareInterface, APIClient
 
     public function listUsers(FilterInterface $filter = null): IterableAPICollection
     {
-        if (is_null($pageSize) && is_null($order) && is_null($cursor)) {
+        if (is_null($filter)) {
             $filter = new EmptyFilter();
-        } else {
-            $filter = new UserFilter();
-            $filter->setPageSize($pageSize);
-            $filter->setOrder($order);
-            $filter->setCursor($cursor);
-        }
+        } 
 
         $response = $this->api->search($filter);
         $response->setHydrator($this->hydrator);
