@@ -19,7 +19,9 @@ class ClientFactory
             ->setCollectionName('users')
             ->setAuthHandler(new KeypairHandler());
 
-        $hydrator = (new ArrayHydrator())->setPrototype(new User());
+        $hydrator = new ArrayHydrator();
+        $hydrator->setPrototype(new User());
+
         return new Client($api, $hydrator);
     }
 }

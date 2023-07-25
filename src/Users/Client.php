@@ -38,7 +38,6 @@ class Client implements ClientAwareInterface, APIClient
 
         $response = $this->api->search($filter);
         $response->setHydrator($this->hydrator);
-        $response->setSize($pageSize);
         $response->setPageSizeKey('page_size');
         $response->setHasPagination(false);
 

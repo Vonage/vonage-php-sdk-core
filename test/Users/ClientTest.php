@@ -9,9 +9,11 @@ use Laminas\Diactoros\Response;
 use Laminas\Diactoros\ResponseFactory;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
+use Vonage\Entity\Hydrator\ArrayHydrator;
 use Vonage\Users\Client as UsersClient;
 use Vonage\Client;
 use Vonage\Client\APIResource;
+use Vonage\Users\Filter\UserFilter;
 use Vonage\Users\Hydrator;
 use Vonage\Users\User;
 use VonageTest\Psr7AssertionTrait;
@@ -46,7 +48,10 @@ class ClientTest extends VonageTestCase
             ->setCollectionName('users')
             ->setAuthHandler(new Client\Credentials\Handler\KeypairHandler());
 
-        $this->usersClient = new UsersClient($apiResource, new Hydrator());
+        $hydrator = new ArrayHydrator();
+        $hydrator->setPrototype(new User());
+
+        $this->usersClient = new UsersClient($apiResource, $hydrator);
 
         /** @noinspection PhpParamsInspection */
         $this->usersClient->setClient($this->vonageClient->reveal());
@@ -83,7 +88,11 @@ class ClientTest extends VonageTestCase
             return true;
         }))->willReturn($this->getResponse('list-user-success'));
 
-        $response = $this->usersClient->listUsers(10, 'asc');
+        $filter = new UserFilter();
+        $filter->setPageSize(10)
+            ->setOrder('asc');
+
+        $response = $this->usersClient->listUsers($filter);
 
         foreach ($response as $user) {
             $this->assertInstanceOf(User::class, $user);
