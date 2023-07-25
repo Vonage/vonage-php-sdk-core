@@ -14,23 +14,23 @@ namespace VonageTest\Application;
 use Exception;
 use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
-use Vonage\Application\Hydrator;
-use Vonage\Application\Webhook;
-use Vonage\Application\Webhook as ApplicationWebhook;
-use VonageTest\VonageTestCase;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
 use Vonage\Application\Application;
 use Vonage\Application\Client as ApplicationClient;
+use Vonage\Application\Hydrator;
 use Vonage\Application\MessagesConfig;
 use Vonage\Application\RtcConfig;
 use Vonage\Application\VoiceConfig;
+use Vonage\Application\Webhook;
+use Vonage\Application\Webhook as ApplicationWebhook;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Client\Exception\Server as ServerException;
 use VonageTest\Psr7AssertionTrait;
+use VonageTest\VonageTestCase;
 
 use function fopen;
 use function json_decode;
@@ -40,7 +40,7 @@ class ClientTest extends VonageTestCase
 {
     use Psr7AssertionTrait;
 
-    protected $vonageClient;
+    protected Client|\Prophecy\Prophecy\ObjectProphecy $vonageClient;
 
     /**
      * @var APIResource
@@ -55,7 +55,7 @@ class ClientTest extends VonageTestCase
     public function setUp(): void
     {
         $this->vonageClient = $this->prophesize(Client::class);
-        $this->vonageClient->getApiUrl()->willReturn('http://api.nexmo.com');
+        $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
         $this->vonageClient->getCredentials()->willReturn(
             new Client\Credentials\Container(new Client\Credentials\Basic('abc', 'def'))
         );

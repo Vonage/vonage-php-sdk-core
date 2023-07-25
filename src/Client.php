@@ -53,6 +53,7 @@ use Vonage\Secrets\ClientFactory as SecretsClientFactory;
 use Vonage\SMS\ClientFactory as SMSClientFactory;
 use Vonage\Subaccount\ClientFactory as SubaccountClientFactory;
 use Vonage\Messages\ClientFactory as MessagesClientFactory;
+use Vonage\Users\ClientFactory as UsersClientFactory;
 use Vonage\Verify\ClientFactory as VerifyClientFactory;
 use Vonage\Verify2\ClientFactory as Verify2ClientFactory;
 use Vonage\Verify\Verification;
@@ -85,6 +86,7 @@ use function strpos;
  * @method Secrets\Client secrets()
  * @method SMS\Client sms()
  * @method Subaccount\Client subaccount()
+ * @method Users\Client users()
  * @method Verify\Client  verify()
  * @method Verify2\Client  verify2()
  * @method Voice\Client voice()
@@ -224,6 +226,7 @@ class Client implements LoggerAwareInterface
                     'secrets' => SecretsClientFactory::class,
                     'sms' => SMSClientFactory::class,
                     'subaccount' => SubaccountClientFactory::class,
+                    'users' => UsersClientFactory::class,
                     'verify' => VerifyClientFactory::class,
                     'verify2' => Verify2ClientFactory::class,
                     'voice' => VoiceClientFactory::class,

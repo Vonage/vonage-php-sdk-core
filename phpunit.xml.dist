@@ -41,6 +41,12 @@
     <testsuite name="meetings">
       <directory>test/Meetings</directory>
     </testsuite>
+    <testsuite name="application">
+      <directory>test/Application</directory>
+    </testsuite>
+    <testsuite name="users">
+      <directory>test/Users</directory>
+    </testsuite>
   </testsuites>
   <php>
         <ini name='error_reporting' value='E_ALL' />
