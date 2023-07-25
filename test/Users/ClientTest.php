@@ -68,7 +68,7 @@ class ClientTest extends VonageTestCase
             return true;
         }))->willReturn($this->getResponse('list-user-success'));
 
-        $response = $this->usersClient->getUsers(10, 'asc');
+        $response = $this->usersClient->listUsers(10, 'asc');
 
         foreach ($response as $user) {
             $this->assertInstanceOf(User::class, $user);
@@ -181,7 +181,7 @@ class ClientTest extends VonageTestCase
             return true;
         }))->willReturn($this->getResponse('get-user-success'));
 
-        $response = $this->usersClient->getUserById('USR-82e028d9-5201-4f1e-8188-604b2d3471ec');
+        $response = $this->usersClient->getUser('USR-82e028d9-5201-4f1e-8188-604b2d3471ec');
         $this->assertInstanceOf(User::class, $response);
         $this->assertEquals('USR-82e028d9-5201-4f1e-8188-604b2d3471ec', $response->id);
     }
@@ -241,7 +241,7 @@ class ClientTest extends VonageTestCase
 
         $user = 'USR-82e028d9-5201-4f1e-8188-604b2d3471ec';
 
-        $response = $this->usersClient->deleteUserById($user);
+        $response = $this->usersClient->deleteUser($user);
         $this->assertTrue($response);
     }
 

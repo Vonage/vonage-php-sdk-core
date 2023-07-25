@@ -37,7 +37,7 @@ class Client implements ClientAwareInterface, APIClient
         return $this->api;
     }
 
-    public function getUsers($pageSize = null, $order = null, $cursor = null): IterableAPICollection
+    public function listUsers($pageSize = null, $order = null, $cursor = null): IterableAPICollection
     {
         if (is_null($pageSize) && is_null($order) && is_null($cursor)) {
             $filter = new EmptyFilter();
@@ -71,7 +71,7 @@ class Client implements ClientAwareInterface, APIClient
         return $userObject;
     }
 
-    public function getUserById(string $id): User
+    public function getUser(string $id): User
     {
         $response = $this->api->get($id);
         $returnUser = new User();
@@ -80,16 +80,20 @@ class Client implements ClientAwareInterface, APIClient
         return $returnUser;
     }
 
-    public function updateUser(User $user, string $id): User
+    public function updateUser(User $user): User
     {
-        $response = $this->api->partiallyUpdate($id, $user->toArray());
+        if (!isset($user->id)) {
+            throw new \InvalidArgumentException('User must have an ID set');
+        }
+
+        $response = $this->api->partiallyUpdate($user->id, $user->toArray());
         $returnUser = new User();
         $returnUser->fromArray($response);
 
         return $returnUser;
     }
 
-    public function deleteUserById(string $id): bool
+    public function deleteUser(string $id): bool
     {
         try {
             $this->api->delete($id);
