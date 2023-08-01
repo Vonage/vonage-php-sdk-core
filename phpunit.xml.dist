@@ -29,6 +29,9 @@
     <testsuite name="voice">
       <directory>test/Voice</directory>
     </testsuite>
+    <testsuite name="numbers">
+      <directory>test/Numbers</directory>
+    </testsuite>
     <testsuite name="messages">
       <directory>test/Messages</directory>
     </testsuite>

@@ -217,14 +217,13 @@ class Client implements APIClient
      */
     public function purchase($number, ?string $country = null): void
     {
-        // We cheat here and fetch a number using the API so that we have the country code which is required
-        // to make a purchase request
-        if (!$number instanceof Number) {
-            if (!$country) {
-                throw new ClientException\Exception(
-                    "You must supply a country in addition to a number to purchase a number"
-                );
-            }
+        if (!$country) {
+            throw new ClientException\Exception(
+                "You must supply a country in addition to a number to purchase a number"
+            );
+        }
+
+        if ($number instanceof Number) {
 
             trigger_error(
                 'Passing a Number object to Vonage\Number\Client::purchase() is being deprecated, ' .
@@ -232,13 +231,18 @@ class Client implements APIClient
                 E_USER_DEPRECATED
             );
 
-            $number = new Number($number, $country);
-        }
+            $body = [
+                'msisdn' => $number->getMsisdn(),
+                'country' => $number->getCountry()
+            ];
+        // Evil else that will be removed in the next major version.
+        } else {
 
-        $body = [
-            'msisdn' => $number->getMsisdn(),
-            'country' => $number->getCountry()
-        ];
+            $body = [
+                'msisdn' => $number,
+                'country' => $country
+            ];
+        }
 
         $api = $this->getApiResource();
         $api->setBaseUri('/number/buy');

@@ -426,9 +426,7 @@ class ClientTest extends VonageTestCase
             return true;
         }))->willReturn($this->getResponse('post'));
 
-        $number = new Number('1415550100', 'US');
-        $this->numberClient->purchase($number);
-
+        $this->numberClient->purchase('1415550100', 'US');
         // There's nothing to assert here as we don't do anything with the response.
         // If there's no exception thrown, everything is fine!
     }
@@ -454,7 +452,8 @@ class ClientTest extends VonageTestCase
             }
             return false;
         }))->willReturn($this->getResponse('post'));
-        @$this->numberClient->purchase('1415550100', 'US');
+
+        $this->numberClient->purchase('1415550100', 'US');
 
         // There's nothing to assert here as we don't do anything with the response.
         // If there's no exception thrown, everything is fine!
@@ -491,8 +490,7 @@ class ClientTest extends VonageTestCase
         $this->expectException($expectedException);
         $this->expectExceptionMessage($expectedExceptionMessage);
 
-        $num = new Number($number, $country);
-        @$this->numberClient->purchase($num);
+        $this->numberClient->purchase($number, $country);
     }
 
     public function purchaseNumberErrorProvider(): array
