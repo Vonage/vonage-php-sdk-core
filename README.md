@@ -754,7 +754,7 @@ To purchase a number, you can pass in a value returned from number search:
 
 ```php
 $numbers = $client->numbers()->searchAvailable('US');
-$number = $numbers->current();
+$number = array_shift($numbers);
 $client->numbers()->purchase($number->getMsisdn(), $number->getCountry());
 ```
 
