@@ -151,7 +151,6 @@ class DeliveryReceipt
         'msisdn',
         'network-code',
         'price',
-        'scts',
         'status',
         'to'
     ];
@@ -230,13 +229,16 @@ class DeliveryReceipt
         $this->msisdn = $data['msisdn'];
         $this->networkCode = $data['network-code'];
         $this->price = $data['price'];
-        $this->scts = $data['scts'];
         $this->status = $data['status'];
         $this->to = $data['to'];
         $this->apiKey = $data['api-key'];
 
         if (isset($data['client-ref'])) {
             $this->clientRef = $data['client-ref'];
+        }
+
+        if (isset($data['scts'])) {
+            $this->scts = $data['scts'];
         }
     }
 
