@@ -108,6 +108,44 @@ class ClientTest extends VonageTestCase
         $this->assertSame("my-personal-reference", $sentData->getClientRef());
     }
 
+    public function testCanGetSmsRawResponse(): void
+    {
+        $args = [
+            'to' => '447700900000',
+            'from' => '16105551212',
+            'text' => "Go To Gino's",
+            'account-ref' => 'customer1234',
+            'client-ref' => 'my-personal-reference'
+        ];
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
+            $this->assertRequestJsonBodyContains('to', $args['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $args['from'], $request);
+            $this->assertRequestJsonBodyContains('text', $args['text'], $request);
+            $this->assertRequestJsonBodyContains('account-ref', $args['account-ref'], $request);
+            $this->assertRequestJsonBodyContains('client-ref', $args['client-ref'], $request);
+
+            return true;
+        }))->willReturn($this->getResponse('send-success'));
+
+        $message = (new SMS($args['to'], $args['from'], $args['text']))
+            ->setClientRef($args['client-ref'])
+            ->setAccountRef($args['account-ref']);
+        $response = $this->smsClient->send($message);
+        $rawResponse = $response->getAllMessagesRaw();
+
+        $this->assertCount(2, $rawResponse);
+        $this->assertSame('1', $rawResponse['message-count']);
+        $this->assertCount(1, $rawResponse['messages']);
+        $this->assertSame($args['to'], $rawResponse['messages'][0]['to']);
+        $this->assertSame('0A0000000123ABCD1', $rawResponse['messages'][0]['message-id']);
+        $this->assertSame("0.03330000", $rawResponse['messages'][0]['message-price']);
+        $this->assertSame("12345", $rawResponse['messages'][0]['network']);
+        $this->assertSame("3.14159265", $rawResponse['messages'][0]['remaining-balance']);
+        $this->assertSame("customer1234", $rawResponse['messages'][0]['account-ref']);
+        $this->assertSame("my-personal-reference", $rawResponse['messages'][0]['client-ref']);
+    }
+
     /**
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Exception

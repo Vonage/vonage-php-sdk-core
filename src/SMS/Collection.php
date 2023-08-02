@@ -61,4 +61,9 @@ class Collection implements Countable, Iterator
     {
         return isset($this->data['messages'][$this->current]);
     }
+
+    public function getAllMessagesRaw(): array
+    {
+        return $this->data;
+    }
 }
