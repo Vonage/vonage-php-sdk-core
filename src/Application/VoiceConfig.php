@@ -17,6 +17,18 @@ class VoiceConfig
 {
     public const EVENT = 'event_url';
     public const ANSWER = 'answer_url';
+    protected ?bool $signedCallbacks = null;
+    protected ?int $conversationsTtl = null;
+    protected ?string $region = null;
+
+    protected const ALLOWED_REGIONS = [
+        'na-east',
+        'na-west',
+        'eu-west',
+        'eu-east',
+        'apac-sng',
+        'apac-australia'
+    ];
 
     /**
      * @var array
@@ -42,5 +54,45 @@ class VoiceConfig
     public function getWebhook($type)
     {
         return $this->webhooks[$type] ?? null;
+    }
+
+    public function getSignedCallbacks(): ?bool
+    {
+        return $this->signedCallbacks;
+    }
+
+    public function setSignedCallbacks(?bool $signedCallbacks): static
+    {
+        $this->signedCallbacks = $signedCallbacks;
+
+        return $this;
+    }
+
+    public function getConversationsTtl(): ?int
+    {
+        return $this->conversationsTtl;
+    }
+
+    public function setConversationsTtl(?int $conversationsTtl): static
+    {
+        $this->conversationsTtl = $conversationsTtl;
+
+        return $this;
+    }
+
+    public function getRegion(): ?string
+    {
+        return $this->region;
+    }
+
+    public function setRegion(?string $region): static
+    {
+        if (!in_array($region, self::ALLOWED_REGIONS, true)) {
+            throw new \InvalidArgumentException('Unrecognised Region: ' . $region);
+        }
+
+        $this->region = $region;
+
+        return $this;
     }
 }
