@@ -36,6 +36,8 @@ abstract class BaseVerifyRequest implements RequestInterface
     public function setLocale(?VerificationLocale $verificationLocale): static
     {
         $this->locale = $verificationLocale;
+
+        return $this;
     }
 
     public function getTimeout(): int
