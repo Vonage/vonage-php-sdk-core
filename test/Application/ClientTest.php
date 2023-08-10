@@ -151,7 +151,6 @@ class ClientTest extends VonageTestCase
     {
         return [
             ['78d335fa323d01149c3dd6f0d48968cf', '78d335fa323d01149c3dd6f0d48968cf', false],
-//            [new Application('78d335fa323d01149c3dd6f0d48968cf'), '78d335fa323d01149c3dd6f0d48968cf', true]
         ];
     }
 
@@ -519,70 +518,47 @@ class ClientTest extends VonageTestCase
             "NhPx2LhuLmgwWSRS4L5W851Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n");
         $application->getVbcConfig()->enable();
 
-        $rawV1 = [
-            'name' => 'My Application',
-            'answer_url' => 'https://example.com/webhooks/answer',
-            'answer_method' => 'GET',
-            'event_url' => 'https://example.com/webhooks/event',
-            'event_method' => 'POST',
-            'status_url' => 'https://example.com/webhooks/status',
-            'status_method' => 'POST',
-            'inbound_url' => 'https://example.com/webhooks/inbound',
-            'inbound_method' => 'POST',
-            'vbc' => true,
-            'public_key' => "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSLcjxu33G" .
-                "\nd/vynKnlw9SENi+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xsO\nOUNhP" .
-                "x2LhuLmgwWSRS4L5W851Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n"
-        ];
-
-        $rawV2 = [
-            'name' => 'My Application',
-            'keys' => [
-                'public_key' => "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSLcjx" .
-                    "u33G\nd/vynKnlw9SENi+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xs" .
-                    "O\nOUNhPx2LhuLmgwWSRS4L5W851Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n"
-            ],
-            'capabilities' => [
-                'voice' => [
-                    'webhooks' => [
-                        'answer_url' => [
-                            'address' => 'https://example.com/webhooks/answer',
-                            'http_method' => 'GET',
-                        ],
-                        'event_url' => [
-                            'address' => 'https://example.com/webhooks/event',
-                            'http_method' => 'POST',
-                        ],
-                    ]
-                ],
-                'messages' => [
-                    'webhooks' => [
-                        'inbound_url' => [
-                            'address' => 'https://example.com/webhooks/inbound',
-                            'http_method' => 'POST'
-
-                        ],
-                        'status_url' => [
-                            'address' => 'https://example.com/webhooks/status',
-                            'http_method' => 'POST'
-                        ]
-                    ]
-                ],
-                'rtc' => [
-                    'webhooks' => [
-                        'event_url' => [
-                            'address' => 'https://example.com/webhooks/event',
-                            'http_method' => 'POST',
-                        ],
-                    ]
-                ],
-                'vbc' => []
-            ]
-        ];
-
         return [
             'createApplication' => [clone $application, 'create'],
         ];
+    }
+
+    public function testCreateApplicationWithRegion(): void
+    {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $this->assertEquals('/v2/applications', $request->getUri()->getPath());
+            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
+            $this->assertEquals('POST', $request->getMethod());
+
+            $this->assertRequestJsonBodyContains('name', 'my application', $request);
+            $this->assertRequestJsonBodyContains('region', 'eu-west', $request, true);
+            $this->assertRequestJsonBodyContains('signed_callbacks', true, $request, true);
+            $this->assertRequestJsonBodyContains('conversations_ttl', 50, $request, true);
+            return true;
+        }))->willReturn($this->getResponse('success', 201));
+
+        $application = new Application();
+        $application->setName('my application');
+        $application->getVoiceConfig()->setRegion('eu-west');
+        $application->getVoiceConfig()->setConversationsTtl(50);
+        $application->getVoiceConfig()->setSignedCallbacks(true);
+
+
+        $application->setPublicKey("-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSL" .
+                                   "cjxu33G\nd/vynKnlw9SENi+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xsO\nOU" .
+                                   "NhPx2LhuLmgwWSRS4L5W851Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n");
+
+
+        $response = $this->applicationClient->create($application);
+    }
+
+    public function testCannotSetUnknownRegion(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Unrecognised Region: eu-west-1');
+        $application = new Application();
+        $application->setName('my application');
+        $application->getVoiceConfig()->setRegion('eu-west-1');
     }
 
     /**
