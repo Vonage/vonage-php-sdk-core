@@ -1,0 +1,76 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Access to an undefined property Vonage\\\\Account\\\\Price\\:\\:\\$priceMethod\\.$#"
+			count: 1
+			path: src/Account/Price.php
+
+		-
+			message: "#^Result of method Vonage\\\\Account\\\\Price\\:\\:getResponse\\(\\) \\(void\\) is used\\.$#"
+			count: 1
+			path: src/Account/Price.php
+
+		-
+			message: "#^Access to an undefined property Vonage\\\\Application\\\\Application\\:\\:\\$data\\.$#"
+			count: 1
+			path: src/Application/Application.php
+
+		-
+			message: "#^Call to an undefined method Vonage\\\\Application\\\\Client\\:\\:fromArray\\(\\)\\.$#"
+			count: 1
+			path: src/Application/Client.php
+
+		-
+			message: "#^Instantiated class Http\\\\Adapter\\\\Guzzle6\\\\Client not found\\.$#"
+			count: 1
+			path: src/Client.php
+
+		-
+			message: "#^Method Vonage\\\\Client\\:\\:setLogger\\(\\) should return Vonage\\\\Logger\\\\LoggerAwareInterface but return statement is missing\\.$#"
+			count: 1
+			path: src/Client.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/Client/Callback/Callback.php
+
+		-
+			message: "#^Access to an undefined property Vonage\\\\Client\\\\Exception\\\\Request\\:\\:\\$data\\.$#"
+			count: 1
+			path: src/Client/Exception/Request.php
+
+		-
+			message: "#^Call to an undefined method \\$this\\(Vonage\\\\Client\\\\Exception\\\\Request\\)&Vonage\\\\Entity\\\\Hydrator\\\\ArrayHydrateInterface\\:\\:getResponseData\\(\\)\\.$#"
+			count: 1
+			path: src/Client/Exception/Request.php
+
+		-
+			message: "#^Access to an undefined property Vonage\\\\Client\\\\Exception\\\\Server\\:\\:\\$data\\.$#"
+			count: 1
+			path: src/Client/Exception/Server.php
+
+		-
+			message: "#^Call to an undefined method \\$this\\(Vonage\\\\Client\\\\Exception\\\\Server\\)&Vonage\\\\Entity\\\\Hydrator\\\\ArrayHydrateInterface\\:\\:getResponseData\\(\\)\\.$#"
+			count: 1
+			path: src/Client/Exception/Server.php
+
+		-
+			message: "#^Result of method Vonage\\\\Network\\:\\:getResponse\\(\\) \\(void\\) is used\\.$#"
+			count: 1
+			path: src/Network.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/Network/Number/Response.php
+
+		-
+			message: "#^Result of method Vonage\\\\Numbers\\\\Number\\:\\:getResponse\\(\\) \\(void\\) is used\\.$#"
+			count: 1
+			path: src/Numbers/Number.php
+
+		-
+			message: "#^Access to an undefined property Vonage\\\\Verify\\\\Verification\\:\\:\\$data\\.$#"
+			count: 1
+			path: src/Verify/Verification.php

@@ -30,8 +30,8 @@
     "squizlabs/php_codesniffer": "^3.5",
     "softcreatr/jsonpath": "^0.7 || ^0.8",
     "phpspec/prophecy-phpunit": "^2.0",
-    "phpstan/phpstan": "^1.9",
-    "rector/rector": "^0.14.8"
+    "rector/rector": "^0.14.8",
+    "phpstan/phpstan": "^1.10"
   },
   "config": {
     "optimize-autoloader": true,
