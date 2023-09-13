@@ -1,0 +1,4 @@
+{
+  "request_id": "c11236f4-00bf-4b89-84ba-88b25df97315",
+  "check_url": "https://api.nexmo.com/v2/verify/c11236f4-00bf-4b89-84ba-88b25df97315/silent-auth/redirect"
+}

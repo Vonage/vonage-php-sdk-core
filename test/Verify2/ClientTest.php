@@ -423,11 +423,13 @@ class ClientTest extends VonageTestCase
             $this->assertEquals('POST', $request->getMethod());
 
             return true;
-        }))->willReturn($this->getResponse('verify-request-success', 202));
+        }))->willReturn($this->getResponse('verify-silent-auth-request-success', 202));
 
         $result = $this->verify2Client->startVerification($silentAuthRequest);
         $this->assertIsArray($result);
         $this->assertArrayHasKey('request_id', $result);
+        $this->assertArrayHasKey('check_url', $result);
+        $this->assertEquals('https://api.nexmo.com/v2/verify/c11236f4-00bf-4b89-84ba-88b25df97315/silent-auth/redirect', $result['check_url']);
     }
 
     public function testCannotSendConcurrentVerifications(): void
