@@ -149,7 +149,6 @@ class DeliveryReceipt
         'message-timestamp',
         'messageId',
         'msisdn',
-        'network-code',
         'price',
         'status',
         'to'
@@ -227,11 +226,14 @@ class DeliveryReceipt
         $this->messageTimestamp = new DateTimeImmutable($data['message-timestamp']);
         $this->messageId = $data['messageId'];
         $this->msisdn = $data['msisdn'];
-        $this->networkCode = $data['network-code'];
         $this->price = $data['price'];
         $this->status = $data['status'];
         $this->to = $data['to'];
         $this->apiKey = $data['api-key'];
+
+        if (isset($data['network-code'])) {
+            $this->networkCode = $data['network-code'];
+        }
 
         if (isset($data['client-ref'])) {
             $this->clientRef = $data['client-ref'];
