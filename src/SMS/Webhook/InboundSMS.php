@@ -25,7 +25,6 @@ class InboundSMS
         'messageId',
         'text',
         'type',
-        'keyword',
         'message-timestamp'
     ];
 
@@ -60,7 +59,7 @@ class InboundSMS
     protected $data;
 
     /**
-     * @var string
+     * @var ?string
      */
     protected $keyword;
 
@@ -126,7 +125,6 @@ class InboundSMS
         }
 
         $this->apiKey = $data['api-key'] ?? null;
-        $this->keyword = $data['keyword'];
         $this->messageId = $data['messageId'];
         $this->messageTimestamp = new DateTimeImmutable($data['message-timestamp']);
         $this->msisdn = $data['msisdn'];
@@ -146,6 +144,10 @@ class InboundSMS
         if ($this->type === 'binary' && array_key_exists('data', $data)) {
             $this->data = $data['data'];
             $this->udh = $data['udh'];
+        }
+
+        if (array_key_exists('keyword', $data)) {
+            $this->keyword = $data['keyword'];
         }
 
         if (array_key_exists('timestamp', $data)) {
@@ -183,7 +185,7 @@ class InboundSMS
         return $this->data;
     }
 
-    public function getKeyword(): string
+    public function getKeyword(): ?string
     {
         return $this->keyword;
     }
