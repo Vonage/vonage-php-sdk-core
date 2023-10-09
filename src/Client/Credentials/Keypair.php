@@ -12,11 +12,14 @@ declare(strict_types=1);
 namespace Vonage\Client\Credentials;
 
 use Lcobucci\JWT\Configuration;
+use Lcobucci\JWT\Encoding\JoseEncoder;
 use Lcobucci\JWT\Signer\Key;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Lcobucci\JWT\Token;
 use Vonage\Application\Application;
+use Vonage\Client\Exception\Validation;
+use Vonage\JWT\TokenGenerator;
 
 use function base64_encode;
 use function mt_rand;
@@ -27,14 +30,9 @@ use function time;
  */
 class Keypair extends AbstractCredentials
 {
-    /**
-     * @var Key
-     */
-    protected $key;
-
-    public function __construct($privateKey, $application = null)
+    public function __construct(protected string $key, $application = null)
     {
-        $this->credentials['key'] = $privateKey;
+        $this->credentials['key'] = $key;
 
         if ($application) {
             if ($application instanceof Application) {
@@ -43,71 +41,62 @@ class Keypair extends AbstractCredentials
 
             $this->credentials['application'] = $application;
         }
-
-        $this->key = InMemory::plainText($privateKey);
     }
 
     /**
-     * @return Key
+     * @deprecated Old public signature using Lcobucci/Jwt directly
      */
     public function getKey(): Key
+    {
+        return InMemory::plainText($this->key);
+    }
+
+    public function getKeyRaw(): string
     {
         return $this->key;
     }
 
     public function generateJwt(array $claims = []): Token
     {
-        $config = Configuration::forSymmetricSigner(new Sha256(), $this->key);
-
-        $exp = time() + 60;
-        $iat = time();
-        $jti = base64_encode((string)mt_rand());
+        $generator = new TokenGenerator($this->application, $this->getKeyRaw());
 
         if (isset($claims['exp'])) {
-            $exp = $claims['exp'];
-
+            trigger_error('Expiry date is automatically generated from now and TTL, so cannot be passed in
+            as an argument in claims', E_USER_WARNING);
             unset($claims['exp']);
         }
 
-        if (isset($claims['iat'])) {
-            $iat = $claims['iat'];
-
-            unset($claims['iat']);
+        if (isset($claims['ttl'])) {
+            $generator->setTTL($claims['ttl']);
+            unset($claims['ttl']);
         }
 
         if (isset($claims['jti'])) {
-            $jti = $claims['jti'];
-
+            $generator->setJTI($claims['jti']);
             unset($claims['jti']);
         }
 
-        $builder = $config->builder();
-        $builder->issuedAt((new \DateTimeImmutable())->setTimestamp($iat))
-            ->expiresAt((new \DateTimeImmutable())->setTimestamp($exp))
-            ->identifiedBy($jti);
-
         if (isset($claims['nbf'])) {
-            $builder->canOnlyBeUsedAfter((new \DateTimeImmutable())->setTimestamp($claims['nbf']));
-
-            unset($claims['nbf']);
-        }
-
-        if (isset($this->credentials['application'])) {
-            $builder->withClaim('application_id', $this->credentials['application']);
+            // Due to older versions of lcobucci/jwt, this claim has
+            // historic fraction conversation issues. For now, nbf is not supported.
+            throw new Validation('NotBefore Claim is not supported in Vonage JWT');
         }
 
         if (isset($claims['sub'])) {
-            $builder->relatedTo($claims['sub']);
-
+            $generator->setSubject($claims['sub']);
             unset($claims['sub']);
         }
 
         if (!empty($claims)) {
             foreach ($claims as $claim => $value) {
-                $builder->withClaim($claim, $value);
+                $generator->addClaim($claim, $value);
             }
         }
 
-        return $builder->getToken($config->signer(), $config->signingKey());
+        $jwt = $generator->generate();
+        $parser = new Token\Parser(new JoseEncoder());
+
+        // Backwards compatible for signature. In 5.0 this will return a string value
+        return $parser->parse($jwt);
     }
 }

@@ -71,8 +71,7 @@ class KeypairTest extends VonageTestCase
                 'nested' => [
                     'data' => "something"
                 ]
-            ],
-            'nbf' => 900
+            ]
         ];
 
         $jwt = $credentials->generateJwt($claims);
@@ -80,18 +79,15 @@ class KeypairTest extends VonageTestCase
 
         $this->assertArrayHasKey('arbitrary', $payload);
         $this->assertEquals($claims['arbitrary'], $payload['arbitrary']);
-        $this->assertArrayHasKey('nbf', $payload);
-        $this->assertEquals(900, $payload['nbf']);
     }
 
     /**
      * @link https://github.com/Vonage/vonage-php-sdk-core/issues/276
      */
-    public function testExampleConversationJWTWorks()
+    public function testExampleConversationJWTWorks(): void
     {
         $credentials = new Keypair($this->key, $this->application);
         $claims = [
-            'exp' => strtotime(date('Y-m-d', strtotime('+24 Hours'))),
             'sub' => 'apg-cs',
             'acl' => [
                 'paths' => [
@@ -113,7 +109,6 @@ class KeypairTest extends VonageTestCase
         [, $payload] = $this->decodeJWT($jwt->toString());
 
         $this->assertArrayHasKey('exp', $payload);
-        $this->assertEquals($claims['exp'], $payload['exp']);
         $this->assertEquals($claims['sub'], $payload['sub']);
     }
 
