@@ -9,6 +9,7 @@
 
 namespace VonageTest\Client\Credentials;
 
+use Lcobucci\JWT\Signer\Key\InMemory;
 use Vonage\Client\Exception\Validation;
 use VonageTest\VonageTestCase;
 use Vonage\Client\Credentials\Keypair;
@@ -35,6 +36,14 @@ class KeypairTest extends VonageTestCase
         $array = $credentials->asArray();
         $this->assertEquals($this->key, $array['key']);
         $this->assertEquals($this->application, $array['application']);
+    }
+
+    public function testGetKey(): void
+    {
+        $credentials = new Keypair($this->key, $this->application);
+
+        $key = $credentials->getKey();
+        $this->assertInstanceOf(InMemory::class, $key);
     }
 
     public function testProperties(): void
@@ -79,6 +88,36 @@ class KeypairTest extends VonageTestCase
 
         $this->assertArrayHasKey('arbitrary', $payload);
         $this->assertEquals($claims['arbitrary'], $payload['arbitrary']);
+    }
+
+    public function testJtiClaim(): void
+    {
+        $credentials = new Keypair($this->key, $this->application);
+
+        $claims = [
+            'jti' => '9a1b8ca6-4406-4530-9940-3cde9d41de3f'
+        ];
+
+        $jwt = $credentials->generateJwt($claims);
+        [, $payload] = $this->decodeJWT($jwt->toString());
+
+        $this->assertArrayHasKey('jti', $payload);
+        $this->assertEquals($claims['jti'], $payload['jti']);
+    }
+
+    public function testTtlClaim(): void
+    {
+        $credentials = new Keypair($this->key, $this->application);
+
+        $claims = [
+            'ttl' => 900
+        ];
+
+        $jwt = $credentials->generateJwt($claims);
+        [, $payload] = $this->decodeJWT($jwt->toString());
+
+        $this->assertArrayHasKey('exp', $payload);
+        $this->assertEquals(time() + 900, $payload['exp']);
     }
 
     public function testNbfNotSupported(): void
