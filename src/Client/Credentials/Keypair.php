@@ -61,9 +61,10 @@ class Keypair extends AbstractCredentials
         $generator = new TokenGenerator($this->application, $this->getKeyRaw());
 
         if (isset($claims['exp'])) {
+            // This will change to an Exception in 5.0
             trigger_error('Expiry date is automatically generated from now and TTL, so cannot be passed in
             as an argument in claims', E_USER_WARNING);
-            unset($claims['exp']);
+            unset($claims['nbf']);
         }
 
         if (isset($claims['ttl'])) {
@@ -79,7 +80,9 @@ class Keypair extends AbstractCredentials
         if (isset($claims['nbf'])) {
             // Due to older versions of lcobucci/jwt, this claim has
             // historic fraction conversation issues. For now, nbf is not supported.
-            throw new Validation('NotBefore Claim is not supported in Vonage JWT');
+            // This will change to an Exception in 5.0
+            trigger_error('NotBefore Claim is not supported in Vonage JWT', E_USER_WARNING);
+            unset($claims['nbf']);
         }
 
         if (isset($claims['sub'])) {
