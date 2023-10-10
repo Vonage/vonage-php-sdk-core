@@ -97,7 +97,7 @@ class Keypair extends AbstractCredentials
         }
 
         if (isset($claims['sub'])) {
-            $builder =$builder->relatedTo($claims['sub']);
+            $builder = $builder->relatedTo($claims['sub']);
 
             unset($claims['sub']);
         }
