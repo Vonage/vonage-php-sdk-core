@@ -81,30 +81,30 @@ class Keypair extends AbstractCredentials
             unset($claims['jti']);
         }
 
-        $builder = $config->builder();
-        $builder->issuedAt((new \DateTimeImmutable())->setTimestamp($iat))
+        $builder = $config->builder()
+            ->issuedAt((new \DateTimeImmutable())->setTimestamp($iat))
             ->expiresAt((new \DateTimeImmutable())->setTimestamp($exp))
             ->identifiedBy($jti);
 
         if (isset($claims['nbf'])) {
-            $builder->canOnlyBeUsedAfter((new \DateTimeImmutable())->setTimestamp($claims['nbf']));
+            $builder = $builder->canOnlyBeUsedAfter((new \DateTimeImmutable())->setTimestamp($claims['nbf']));
 
             unset($claims['nbf']);
         }
 
         if (isset($this->credentials['application'])) {
-            $builder->withClaim('application_id', $this->credentials['application']);
+            $builder = $builder->withClaim('application_id', $this->credentials['application']);
         }
 
         if (isset($claims['sub'])) {
-            $builder->relatedTo($claims['sub']);
+            $builder =$builder->relatedTo($claims['sub']);
 
             unset($claims['sub']);
         }
 
         if (!empty($claims)) {
             foreach ($claims as $claim => $value) {
-                $builder->withClaim($claim, $value);
+                $builder = $builder->withClaim($claim, $value);
             }
         }
 
