@@ -29,6 +29,11 @@ class KeypairTest extends VonageTestCase
         $this->key = file_get_contents(__DIR__ . '/test.key');
     }
 
+    public function time(): int
+    {
+        return 1697209080;
+    }
+
     public function testAsArray(): void
     {
         $credentials = new Keypair($this->key, $this->application);
