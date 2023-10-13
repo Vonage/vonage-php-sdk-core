@@ -296,6 +296,6 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
     public function getAppId(): ?string
     {
         // These should never be different, but might not both be set
-        return $this->data['voiceCallbackValue'] ?? $this->data['messagesCallbackValue'];
+        return $this->data['voiceCallbackValue'] ?? $this->data['messagesCallbackValue'] ?? null;
     }
 }
