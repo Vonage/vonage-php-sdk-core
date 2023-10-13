@@ -9,6 +9,8 @@
 
 namespace VonageTest\Client\Credentials;
 
+use Lcobucci\JWT\Signer\Key\InMemory;
+use Vonage\Client\Exception\Validation;
 use VonageTest\VonageTestCase;
 use Vonage\Client\Credentials\Keypair;
 
@@ -19,8 +21,8 @@ use function json_decode;
 
 class KeypairTest extends VonageTestCase
 {
-    protected $key;
-    protected $application = 'c90ddd99-9a5d-455f-8ade-dde4859e590e';
+    protected string $key;
+    protected string $application = 'c90ddd99-9a5d-455f-8ade-dde4859e590e';
 
     public function setUp(): void
     {
@@ -36,6 +38,14 @@ class KeypairTest extends VonageTestCase
         $this->assertEquals($this->application, $array['application']);
     }
 
+    public function testGetKey(): void
+    {
+        $credentials = new Keypair($this->key, $this->application);
+
+        $key = $credentials->getKey();
+        $this->assertInstanceOf(InMemory::class, $key);
+    }
+
     public function testProperties(): void
     {
         $credentials = new Keypair($this->key, $this->application);
@@ -48,7 +58,6 @@ class KeypairTest extends VonageTestCase
     {
         $credentials = new Keypair($this->key, $this->application);
 
-        //could use the JWT object, but hope to remove as a dependency
         $jwt = (string)$credentials->generateJwt()->toString();
 
         [$header, $payload] = $this->decodeJWT($jwt);
@@ -71,8 +80,7 @@ class KeypairTest extends VonageTestCase
                 'nested' => [
                     'data' => "something"
                 ]
-            ],
-            'nbf' => 900
+            ]
         ];
 
         $jwt = $credentials->generateJwt($claims);
@@ -80,18 +88,92 @@ class KeypairTest extends VonageTestCase
 
         $this->assertArrayHasKey('arbitrary', $payload);
         $this->assertEquals($claims['arbitrary'], $payload['arbitrary']);
-        $this->assertArrayHasKey('nbf', $payload);
-        $this->assertEquals(900, $payload['nbf']);
+    }
+
+    public function testJtiClaim(): void
+    {
+        $credentials = new Keypair($this->key, $this->application);
+
+        $claims = [
+            'jti' => '9a1b8ca6-4406-4530-9940-3cde9d41de3f'
+        ];
+
+        $jwt = $credentials->generateJwt($claims);
+        [, $payload] = $this->decodeJWT($jwt->toString());
+
+        $this->assertArrayHasKey('jti', $payload);
+        $this->assertEquals($claims['jti'], $payload['jti']);
+    }
+
+    public function testTtlClaim(): void
+    {
+        $credentials = new Keypair($this->key, $this->application);
+
+        $claims = [
+            'ttl' => 900
+        ];
+
+        $jwt = $credentials->generateJwt($claims);
+        [, $payload] = $this->decodeJWT($jwt->toString());
+
+        $this->assertArrayHasKey('exp', $payload);
+        $this->assertEquals(time() + 900, $payload['exp']);
+    }
+
+    public function testNbfNotSupported(): void
+    {
+        set_error_handler(static function (int $errno, string $errstr) {
+            throw new \Exception($errstr, $errno);
+        }, E_USER_WARNING);
+
+        $this->expectExceptionMessage('NotBefore Claim is not supported in Vonage JWT');
+
+        $credentials = new Keypair($this->key, $this->application);
+
+        $claims = [
+            'nbf' => time() + 900
+        ];
+
+        $jwt = $credentials->generateJwt($claims);
+        [, $payload] = $this->decodeJWT($jwt->toString());
+
+        $this->assertArrayHasKey('arbitrary', $payload);
+        $this->assertEquals($claims['arbitrary'], $payload['arbitrary']);
+
+        restore_error_handler();
+    }
+
+    public function testExpNotSupported(): void
+    {
+        set_error_handler(static function (int $errno, string $errstr) {
+            throw new \Exception($errstr, $errno);
+        }, E_USER_WARNING);
+
+        $this->expectExceptionMessage('Expiry date is automatically generated from now and TTL, so cannot be passed in
+            as an argument in claims');
+
+        $credentials = new Keypair($this->key, $this->application);
+
+        $claims = [
+            'exp' => time() + 900
+        ];
+
+        $jwt = $credentials->generateJwt($claims);
+        [, $payload] = $this->decodeJWT($jwt->toString());
+
+        $this->assertArrayHasKey('arbitrary', $payload);
+        $this->assertEquals($claims['arbitrary'], $payload['arbitrary']);
+
+        restore_error_handler();
     }
 
     /**
      * @link https://github.com/Vonage/vonage-php-sdk-core/issues/276
      */
-    public function testExampleConversationJWTWorks()
+    public function testExampleConversationJWTWorks(): void
     {
         $credentials = new Keypair($this->key, $this->application);
         $claims = [
-            'exp' => strtotime(date('Y-m-d', strtotime('+24 Hours'))),
             'sub' => 'apg-cs',
             'acl' => [
                 'paths' => [
@@ -113,7 +195,6 @@ class KeypairTest extends VonageTestCase
         [, $payload] = $this->decodeJWT($jwt->toString());
 
         $this->assertArrayHasKey('exp', $payload);
-        $this->assertEquals($claims['exp'], $payload['exp']);
         $this->assertEquals($claims['sub'], $payload['sub']);
     }
 
