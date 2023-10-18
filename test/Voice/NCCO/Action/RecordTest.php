@@ -30,12 +30,20 @@ class RecordTest extends VonageTestCase
 
     public function testJsonSerializeLooksCorrect(): void
     {
+        $record = new Record();
         $this->assertSame([
             'action' => 'record',
             'format' => 'mp3',
-            'timeOut' => '7200',
             'beepStart' => 'false'
-        ], (new Record())->jsonSerialize());
+        ], $record->jsonSerialize());
+
+        $record->setTimeout(1234);
+        $this->assertSame([
+            'action' => 'record',
+            'format' => 'mp3',
+            'beepStart' => 'false',
+            'timeOut' => '1234'
+        ], $record->jsonSerialize());
     }
 
     public function testSettingChannelBackToOneResetsValues(): void
