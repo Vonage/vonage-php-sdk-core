@@ -9,7 +9,7 @@
       "X-Amz-Algorithm": "white-algorithm",
       "X-Amz-Credential": "white-credential",
       "X-Amz-Date": "20230125T144332Z",
-      "X-Amz-Security-Token": "white-Token",
+      "X-Amz-Security-Token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
       "Policy": "white-Policy",
       "X-Amz-Signature": "white-signature"
     }
@@ -24,7 +24,7 @@
       "X-Amz-Algorithm": "colored-algorithm",
       "X-Amz-Credential": "colored-credential",
       "X-Amz-Date": "20230125T144332Z",
-      "X-Amz-Security-Token": "colored-Token",
+      "X-Amz-Security-Token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
       "Policy": "colored-Policy",
       "X-Amz-Signature": "colored-signature"
     }
@@ -39,7 +39,7 @@
       "X-Amz-Algorithm": "white-algorithm",
       "X-Amz-Credential": "white-credential",
       "X-Amz-Date": "20230125T144332Z",
-      "X-Amz-Security-Token": "white-Token",
+      "X-Amz-Security-Token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
       "Policy": "white-Policy",
       "X-Amz-Signature": "favicon-signature"
     }
