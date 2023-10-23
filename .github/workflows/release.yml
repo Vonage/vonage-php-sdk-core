@@ -19,15 +19,49 @@ permissions:
   statuses: write
 
 jobs:
-  add-changelog:
-    name: Add Changelog
+  build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: [ '8.0', '8.1', '8.2' ]
+
+    name: PHP ${{ matrix.php }} Test
 
     steps:
-      - name: Add Changelog
-        uses: nexmo/github-actions/nexmo-changelog@main
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: json, mbstring
+          coverage: pcov
         env:
-          CHANGELOG_AUTH_TOKEN: ${{ secrets.CHANGELOG_AUTH_TOKEN }}
-          CHANGELOG_CATEGORY: Server SDK
-          CHANGELOG_RELEASE_TITLE: vonage-php-sdk-core
-          CHANGELOG_SUBCATEGORY: php
+          COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup problem matchers for PHPUnit
+        run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+
+      - name: Get Composer cache directory
+        id: composercache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.composercache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer update --prefer-dist --no-interaction
+
+      - name: Analyze & test
+        run: composer test -- -v --coverage-clover=coverage.xml
+
+      - name: Run PHPStan
+        run: ./vendor/bin/phpstan
+
+      - name: Run codecov
+        uses: codecov/codecov-action@v1
