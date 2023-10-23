@@ -74,6 +74,10 @@ class AvailableNumbers implements FilterInterface
      */
     protected $type;
 
+    protected ?bool $hasApplication = null;
+
+    protected ?string $applicationId = null;
+
     public function __construct(array $filter = [])
     {
         foreach ($filter as $key => $value) {
@@ -132,6 +136,14 @@ class AvailableNumbers implements FilterInterface
 
             $this->setFeatures($filter['features']);
         }
+
+        if (array_key_exists('has_application', $filter)) {
+            $this->setHasApplication((bool)$filter['has_application']);
+        }
+
+        if (array_key_exists('application_id', $filter)) {
+            $this->setApplicationId($filter['application_id']);
+        }
     }
 
     /**
@@ -159,6 +171,14 @@ class AvailableNumbers implements FilterInterface
 
         if ($this->getFeatures()) {
             $data['features'] = $this->getFeatures();
+        }
+
+        if ($this->getHasApplication() !== null) {
+            $data['has_application'] = $this->getHasApplication();
+        }
+
+        if ($this->getApplicationId() !== null) {
+            $data['application_id'] = $this->getApplicationId();
         }
 
         return $data;
@@ -279,6 +299,36 @@ class AvailableNumbers implements FilterInterface
     public function setPageSize(int $pageSize): self
     {
         $this->pageSize = $pageSize;
+
+        return $this;
+    }
+
+    public function getHasApplication(): ?bool
+    {
+        return $this->hasApplication;
+    }
+
+    /**
+     * @return $this
+     */
+    public function setHasApplication(bool $hasApplication): self
+    {
+        $this->hasApplication = $hasApplication;
+
+        return $this;
+    }
+
+    public function getApplicationId(): ?string
+    {
+        return $this->applicationId;
+    }
+
+    /**
+     * @return $this
+     */
+    public function setApplicationId(string $applicationId): self
+    {
+        $this->applicationId = $applicationId;
 
         return $this;
     }
