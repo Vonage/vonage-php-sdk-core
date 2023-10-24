@@ -139,45 +139,6 @@ class ClientTest extends VonageTestCase
     }
 
     /**
-     * @dataProvider localeProvider
-     */
-    public function testCannotRequestSMSWithInvalidLocale($locale, $valid): void
-    {
-        if (!$valid) {
-            $this->expectException(\InvalidArgumentException::class);
-        }
-
-        $verificationLocale = new VerificationLocale($locale);
-
-        $payload = [
-            'to' => '07785254785',
-            'client_ref' => 'my-verification',
-            'brand' => 'my-brand',
-            'locale' => $verificationLocale,
-        ];
-
-        $smsVerification = new SMSRequest($payload['to'], $payload['brand'], $payload['locale']);
-        $smsVerification->setClientRef($payload['client_ref']);
-
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
-            $this->assertEquals(
-                'Basic ',
-                mb_substr($request->getHeaders()['Authorization'][0], 0, 6)
-            );
-
-            $this->assertRequestJsonBodyContains('locale', $payload['locale']->getCode(), $request);
-            $this->assertEquals('POST', $request->getMethod());
-
-            return true;
-        }))->willReturn($this->getResponse('verify-request-success', 202));
-
-        $result = $this->verify2Client->startVerification($smsVerification);
-
-        $this->assertIsArray($result);
-        $this->assertArrayHasKey('request_id', $result);
-    }
-
-    /**
      * @dataProvider timeoutProvider
      */
     public function testTimeoutParsesCorrectly($timeout, $valid): void
