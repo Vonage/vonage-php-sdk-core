@@ -42,4 +42,26 @@ class AvailableNumbersTest extends VonageTestCase
         $filter = new AvailableNumbers();
         $filter->setType('foo-bar');
     }
+
+    public function testCanSetHasApplication(): void
+    {
+        $filter = new AvailableNumbers();
+        $filter->setHasApplication(true);
+
+        $this->assertTrue($filter->getHasApplication());
+        $query = $filter->getQuery();
+        $this->assertArrayHasKey('has_application', $query);
+        $this->assertTrue($query['has_application']);
+    }
+
+    public function testCanSetApplicationId(): void
+    {
+        $filter = new AvailableNumbers();
+        $filter->setApplicationId('xxxxxxxx');
+
+        $this->assertSame('xxxxxxxx', $filter->getApplicationId());
+        $query = $filter->getQuery();
+        $this->assertArrayHasKey('application_id', $query);
+        $this->assertSame('xxxxxxxx', $query['application_id']);
+    }
 }
