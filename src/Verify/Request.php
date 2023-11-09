@@ -21,7 +21,6 @@ class Request implements ArrayHydrateInterface
 {
     public const PIN_LENGTH_4 = 4;
     public const PIN_LENGTH_6 = 6;
-
     public const WORKFLOW_SMS_TTS_TSS = 1;
     public const WORKFLOW_SMS_SMS_TSS = 2;
     public const WORKFLOW_TTS_TSS = 3;
@@ -30,40 +29,14 @@ class Request implements ArrayHydrateInterface
     public const WORKFLOW_SMS = 6;
     public const WORKFLOW_TTS = 7;
 
-    /**
-     * @var string
-     */
-    protected $country;
+    protected string $country = '';
+    protected string $senderId = 'VONAGE';
+    protected int $codeLength = 4;
 
-    /**
-     * @var string
-     */
-    protected $senderId = 'VERIFY';
-
-    /**
-     * @var int
-     */
-    protected $codeLength = 4;
-
-    /**
-     * @var string
-     */
-    protected $locale;
-
-    /**
-     * @var int
-     */
-    protected $pinExpiry = 300;
-
-    /**
-     * @var int
-     */
-    protected $nextEventWait = 300;
-
-    /**
-     * @var int
-     */
-    protected $workflowId = 1;
+    protected string $locale = '';
+    protected int $pinExpiry = 300;
+    protected int $nextEventWait = 300;
+    protected int $workflowId = 1;
 
     public function __construct(protected string $number, protected string $brand, int $workflowId = 1)
     {
@@ -75,9 +48,6 @@ class Request implements ArrayHydrateInterface
         return $this->country;
     }
 
-    /**
-     * @return $this
-     */
     public function setCountry(string $country): self
     {
         if (strlen($country) !== 2) {
@@ -94,9 +64,6 @@ class Request implements ArrayHydrateInterface
         return $this->senderId;
     }
 
-    /**
-     * @return $this
-     */
     public function setSenderId(string $senderId): self
     {
         $this->senderId = $senderId;
@@ -109,9 +76,6 @@ class Request implements ArrayHydrateInterface
         return $this->codeLength;
     }
 
-    /**
-     * @return $this
-     */
     public function setCodeLength(int $codeLength): self
     {
         if ($codeLength !== self::PIN_LENGTH_4 && $codeLength !== self::PIN_LENGTH_6) {
@@ -130,9 +94,6 @@ class Request implements ArrayHydrateInterface
         return $this->locale;
     }
 
-    /**
-     * @return $this
-     */
     public function setLocale(string $locale): self
     {
         $this->locale = $locale;
@@ -145,9 +106,6 @@ class Request implements ArrayHydrateInterface
         return $this->pinExpiry;
     }
 
-    /**
-     * @return $this
-     */
     public function setPinExpiry(int $pinExpiry): self
     {
         if ($pinExpiry < 60 || $pinExpiry > 3600) {
@@ -164,9 +122,6 @@ class Request implements ArrayHydrateInterface
         return $this->nextEventWait;
     }
 
-    /**
-     * @return $this
-     */
     public function setNextEventWait(int $nextEventWait): self
     {
         if ($nextEventWait < 60 || $nextEventWait > 3600) {
@@ -183,9 +138,6 @@ class Request implements ArrayHydrateInterface
         return $this->workflowId;
     }
 
-    /**
-     * @return $this
-     */
     public function setWorkflowId(int $workflowId): self
     {
         if ($workflowId < 1 || $workflowId > 7) {
