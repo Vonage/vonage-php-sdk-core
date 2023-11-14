@@ -393,6 +393,33 @@ class ClientTest extends VonageTestCase
         $this->assertEquals('https://api.nexmo.com/v2/verify/c11236f4-00bf-4b89-84ba-88b25df97315/silent-auth/redirect', $result['check_url']);
     }
 
+    public function testCanRequestSilentAuthWithRedirectUrl(): void
+    {
+        $payload = [
+            'to' => '07784587411',
+            'brand' => 'my-brand',
+            'redirect_url' => 'https://my-app-endpoint/webhook'
+        ];
+
+        $silentAuthRequest = new SilentAuthRequest($payload['to'], $payload['brand'], $payload['redirect_url']);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertRequestJsonBodyContains('brand', $payload['brand'], $request);
+            $this->assertRequestJsonBodyContains('to', $payload['to'], $request, true);
+            $this->assertRequestJsonBodyContains('channel', 'silent_auth', $request, true);
+            $this->assertRequestJsonBodyContains('redirect_url', 'https://my-app-endpoint/webhook', $request, true);
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('verify-silent-auth-request-success', 202));
+
+        $result = $this->verify2Client->startVerification($silentAuthRequest);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('request_id', $result);
+        $this->assertArrayHasKey('check_url', $result);
+        $this->assertEquals('https://api.nexmo.com/v2/verify/c11236f4-00bf-4b89-84ba-88b25df97315/silent-auth/redirect', $result['check_url']);
+    }
+
     public function testCannotSendConcurrentVerifications(): void
     {
         $this->expectException(Client\Exception\Request::class);

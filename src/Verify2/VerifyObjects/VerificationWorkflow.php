@@ -25,7 +25,8 @@ class VerificationWorkflow implements ArrayHydrateInterface
     public function __construct(
         protected string $channel,
         protected string $to,
-        protected string $from = ''
+        protected string $from = '',
+        protected array $customKeys = []
     ) {
         if (! in_array($channel, $this->allowedWorkflows, true)) {
             throw new \InvalidArgumentException($this->channel . ' is not a valid workflow');
@@ -91,6 +92,24 @@ class VerificationWorkflow implements ArrayHydrateInterface
             $returnArray['from'] = $this->getFrom();
         }
 
+        if (!empty($this->customKeys)) {
+            foreach ($this->customKeys as $key => $value) {
+                $returnArray[$key] = $value;
+            }
+        }
+
         return $returnArray;
+    }
+
+    public function getCustomKeys(): array
+    {
+        return $this->customKeys;
+    }
+
+    public function setCustomKeys(array $customKeys): self
+    {
+        $this->customKeys = $customKeys;
+
+        return $this;
     }
 }
