@@ -9,8 +9,14 @@ class SilentAuthRequest extends BaseVerifyRequest
     public function __construct(
         protected string $to,
         protected string $brand,
+        protected ?string $redirectUrl = null
     ) {
         $workflow = new VerificationWorkflow(VerificationWorkflow::WORKFLOW_SILENT_AUTH, $to);
+
+        if ($this->redirectUrl) {
+            $workflow->setCustomKeys(['redirect_url' => $this->redirectUrl]);
+        }
+
         $this->addWorkflow($workflow);
     }
 
