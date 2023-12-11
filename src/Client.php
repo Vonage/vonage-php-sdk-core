@@ -90,6 +90,7 @@ use function strpos;
  * @method Verify\Client  verify()
  * @method Verify2\Client  verify2()
  * @method Voice\Client voice()
+ * @method Vonage\Video\Client video()
  *
  * @property string restUrl
  * @property string apiUrl
@@ -211,29 +212,39 @@ class Client implements LoggerAwareInterface
             $this->debug = $options['debug'];
         }
 
+        $services = [
+            // Registered Services by name
+            'account' => ClientFactory::class,
+            'applications' => ApplicationClientFactory::class,
+            'conversion' => ConversionClientFactory::class,
+            'insights' => InsightsClientFactory::class,
+            'numbers' => NumbersClientFactory::class,
+            'meetings' => MeetingsClientFactory::class,
+            'messages' => MessagesClientFactory::class,
+            'redact' => RedactClientFactory::class,
+            'secrets' => SecretsClientFactory::class,
+            'sms' => SMSClientFactory::class,
+            'subaccount' => SubaccountClientFactory::class,
+            'users' => UsersClientFactory::class,
+            'verify' => VerifyClientFactory::class,
+            'verify2' => Verify2ClientFactory::class,
+            'voice' => VoiceClientFactory::class,
+
+            // Additional utility classes
+            APIResource::class => APIResource::class,
+        ];
+
+        if (class_exists('Vonage\Video\ClientFactory')) {
+            $services['video'] = 'Vonage\Video\ClientFactory';
+        } else {
+            $services['video'] = function() {
+                throw new \RuntimeException('Please install @vonage/video to use the Video API');
+            };
+        }
+
         $this->setFactory(
             new MapFactory(
-                [
-                    // Registered Services by name
-                    'account' => ClientFactory::class,
-                    'applications' => ApplicationClientFactory::class,
-                    'conversion' => ConversionClientFactory::class,
-                    'insights' => InsightsClientFactory::class,
-                    'numbers' => NumbersClientFactory::class,
-                    'meetings' => MeetingsClientFactory::class,
-                    'messages' => MessagesClientFactory::class,
-                    'redact' => RedactClientFactory::class,
-                    'secrets' => SecretsClientFactory::class,
-                    'sms' => SMSClientFactory::class,
-                    'subaccount' => SubaccountClientFactory::class,
-                    'users' => UsersClientFactory::class,
-                    'verify' => VerifyClientFactory::class,
-                    'verify2' => Verify2ClientFactory::class,
-                    'voice' => VoiceClientFactory::class,
-
-                    // Additional utility classes
-                    APIResource::class => APIResource::class,
-                ],
+                $services,
                 $this
             )
         );
