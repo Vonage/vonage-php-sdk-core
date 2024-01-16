@@ -118,6 +118,49 @@ class ClientTest extends VonageTestCase
         $this->assertArrayHasKey('request_id', $result);
     }
 
+    public function testWillPopulateEntityIdAndContentId(): void
+    {
+        $payload = [
+            'to' => '07785254785',
+            'client_ref' => 'my-verification',
+            'brand' => 'my-brand',
+            'from' => 'vonage',
+            'entity_id' => '1101407360000017170',
+            'content_id' => '1107158078772563946'
+        ];
+
+        $smsVerification = new SMSRequest(
+            $payload['to'],
+            $payload['brand'],
+            null,
+            $payload['from'],
+            $payload['entity_id'],
+            $payload['content_id']
+        );
+
+        $smsVerification->setClientRef($payload['client_ref']);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api.nexmo.com/v2/verify',
+                $uriString
+            );
+
+            $this->assertRequestJsonBodyContains('entity_id', '1101407360000017170', $request, true);
+            $this->assertRequestJsonBodyContains('content_id', '1107158078772563946', $request, true);
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('verify-request-success', 202));
+
+        $result = $this->verify2Client->startVerification($smsVerification);
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('request_id', $result);
+    }
+
     public function testCanBypassFraudCheck(): void
     {
         $payload = [
@@ -434,7 +477,7 @@ class ClientTest extends VonageTestCase
         ];
 
         $smsVerification = new SMSRequest($payload['to'], $payload['brand']);
-        $smsVerification->setClientRef( $payload['client_ref']);
+        $smsVerification->setClientRef($payload['client_ref']);
 
         $this->vonageClient->send(Argument::that(function (Request $request) {
             $this->assertEquals('POST', $request->getMethod());
