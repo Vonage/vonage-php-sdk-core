@@ -196,7 +196,7 @@ class ClientTest extends VonageTestCase
     public function testCanSendMMSvCard(): void
     {
         $vCardUrl = 'https://github.com/nuovo/vCard-parser/blob/master/Example.vcf';
-        $vCardObject = new VCardObject($vCardUrl);
+        $vCardObject = new VCardObject($vCardUrl, 'this is a picture');
 
         $payload = [
             'to' => '447700900000',
@@ -398,7 +398,8 @@ class ClientTest extends VonageTestCase
     {
         $fileObject = new FileObject(
             'https://file-examples.com/wp-content/uploads/2017/04/file_example_MP4_480_1_5MG.mp4',
-            'some file'
+            'some file',
+            'reticulating splines'
         );
 
         $payload = [
@@ -899,25 +900,35 @@ class ClientTest extends VonageTestCase
             'to' => '447700900000',
             'from' => '16105551212',
             'video' => $videoObject,
-            'thumb' => 'https://file-examples.com/wp-content/uploads/2017/04/preview.jpg'
+            'thumb' => 'https://file-examples.com/wp-content/uploads/2017/04/preview.jpg',
+            'duration' => '30',
+            'file_size' => '5'
         ];
 
         $message = new ViberVideo(
             $payload['to'],
             $payload['from'],
             $payload['thumb'],
-            $payload['video']
+            $payload['video'],
+            $payload['duration'],
+            $payload['file_size']
         );
 
         $videoMatch = $videoObject->toArray();
         $videoMatch['thumb_url'] = $payload['thumb'];
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload, $videoMatch) {
+        $serviceObject = [
+            'duration' => $payload['duration'],
+            'file_size' => $payload['file_size']
+        ];
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload, $videoMatch, $serviceObject) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('video', $videoMatch, $request);
             $this->assertRequestJsonBodyContains('channel', 'viber_service', $request);
             $this->assertRequestJsonBodyContains('message_type', 'video', $request);
+            $this->assertRequestJsonBodyContains('viber_service', $serviceObject, $request);
 
             $this->assertEquals('POST', $request->getMethod());
 

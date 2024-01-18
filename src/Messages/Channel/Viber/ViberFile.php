@@ -4,6 +4,7 @@ namespace Vonage\Messages\Channel\Viber;
 
 use Vonage\Messages\MessageObjects\FileObject;
 use Vonage\Messages\Channel\BaseMessage;
+
 class ViberFile extends BaseMessage
 {
     use ViberServiceObjectTrait;
@@ -26,9 +27,9 @@ class ViberFile extends BaseMessage
         $returnArray['file'] = $this->fileObject->toArray();
 
         if ($this->requiresViberServiceObject()) {
-            $this->getCategory() ? $returnArray['viber_service']['category'] = $this->getCategory(): null;
-            $this->getTtl() ? $returnArray['viber_service']['ttl'] = $this->getTtl(): null;
-            $this->getType() ? $returnArray['viber_service']['type'] = $this->getType(): null;
+            $this->getCategory() ? $returnArray['viber_service']['category'] = $this->getCategory() : null;
+            $this->getTtl() ? $returnArray['viber_service']['ttl'] = $this->getTtl() : null;
+            $this->getType() ? $returnArray['viber_service']['type'] = $this->getType() : null;
         }
 
         return $returnArray;
