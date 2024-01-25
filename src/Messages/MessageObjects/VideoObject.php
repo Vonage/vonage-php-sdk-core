@@ -27,8 +27,8 @@ class VideoObject implements ArrayHydrateInterface
             'url' => $this->url
         ];
 
-        if ($this->caption) {
-            $returnArray['caption'] = $this->caption;
+        if ($this->getCaption()) {
+            $returnArray['caption'] = $this->getCaption();
         }
 
         return $returnArray;

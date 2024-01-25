@@ -19,8 +19,12 @@ class ViberVideo extends BaseMessage
         string $to,
         string $from,
         string $thumbUrl,
-        protected VideoObject $videoObject
+        protected VideoObject $videoObject,
+        string $duration,
+        string $fileSize
     ) {
+        $this->fileSize = $fileSize;
+        $this->duration = $duration;
         $this->to = $to;
         $this->from = $from;
         $this->thumbUrl = $thumbUrl;
@@ -32,6 +36,14 @@ class ViberVideo extends BaseMessage
         $videoArray = $this->videoObject->toArray();
         $videoArray['thumb_url'] = $this->thumbUrl;
         $returnArray['video'] = $videoArray;
+
+        $returnArray['viber_service']['duration'] = $this->getDuration();
+        $returnArray['viber_service']['file_size'] = $this->getFileSize();
+
+        $this->getCategory() ? $returnArray['viber_service']['category'] = $this->getCategory() : null;
+        $this->getTtl() ? $returnArray['viber_service']['ttl'] = $this->getTtl() : null;
+        $this->getType() ? $returnArray['viber_service']['type'] = $this->getType() : null;
+        $this->getAction() ? $returnArray['viber_service']['action'] = $this->getAction()->toArray() : null;
 
         return $returnArray;
     }

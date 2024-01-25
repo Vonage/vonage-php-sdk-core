@@ -10,6 +10,8 @@ trait ViberServiceObjectTrait
     private ?int $ttl = null;
     private ?string $type = null;
     private ?ViberActionObject $action = null;
+    private string $duration;
+    private string $fileSize;
 
     public function requiresViberServiceObject(): bool
     {
@@ -62,5 +64,25 @@ trait ViberServiceObjectTrait
         $this->action = $viberActionObject;
 
         return $this;
+    }
+
+    public function getDuration(): string
+    {
+        return $this->duration;
+    }
+
+    public function setDuration(string $duration): void
+    {
+        $this->duration = $duration;
+    }
+
+    public function getFileSize(): string
+    {
+        return $this->fileSize;
+    }
+
+    public function setFileSize(string $fileSize): void
+    {
+        $this->fileSize = $fileSize;
     }
 }

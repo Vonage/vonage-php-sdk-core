@@ -6,8 +6,10 @@ use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 
 class ImageObject implements ArrayHydrateInterface
 {
-    public function __construct(private string $url, private string $caption = '')
-    {
+    public function __construct(
+        private string $url,
+        private string $caption = '',
+    ) {
     }
 
     public function fromArray(array $data): ImageObject
@@ -27,8 +29,8 @@ class ImageObject implements ArrayHydrateInterface
             'url' => $this->url
         ];
 
-        if ($this->caption) {
-            $returnArray['caption'] = $this->caption;
+        if ($this->getCaption()) {
+            $returnArray['caption'] = $this->getCaption();
         }
 
         return $returnArray;

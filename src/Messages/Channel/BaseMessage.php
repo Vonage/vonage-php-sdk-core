@@ -9,6 +9,13 @@ abstract class BaseMessage implements Message
     protected string $from;
     protected string $channel;
     protected ?string $clientRef = null;
+    protected ?string $webhookUrl = null;
+    protected ?string $webhookVersion = null;
+
+    protected array $permittedVersions = [
+        'v0.1',
+        'v1'
+    ];
 
     public const MESSAGES_SUBTYPE_TEXT = 'text';
     public const MESSAGES_SUBTYPE_IMAGE = 'image';
@@ -60,6 +67,30 @@ abstract class BaseMessage implements Message
         $this->to = $to;
     }
 
+    public function setWebhookUrl(string $url): void
+    {
+        $this->webhookUrl = $url;
+    }
+
+    public function getWebhookUrl(): ?string
+    {
+        return $this->webhookUrl;
+    }
+
+    public function setWebhookVersion(string $version): void
+    {
+        if (! in_array($version, $this->permittedVersions, true)) {
+            throw new \InvalidArgumentException($version . ' is not a valid webhook version');
+        }
+
+        $this->webhookVersion = $version;
+    }
+
+    public function getWebhookVersion(): ?string
+    {
+        return $this->webhookVersion;
+    }
+
     public function getBaseMessageUniversalOutputArray(): array
     {
         $returnArray = [
@@ -71,6 +102,14 @@ abstract class BaseMessage implements Message
 
         if ($this->getClientRef()) {
             $returnArray['client_ref'] = $this->getClientRef();
+        }
+
+        if ($this->getWebhookUrl()) {
+            $returnArray['webhook_url'] = $this->getWebhookUrl();
+        }
+
+        if ($this->getWebhookVersion()) {
+            $returnArray['webhook_version'] = $this->getWebhookVersion();
         }
 
         return $returnArray;
