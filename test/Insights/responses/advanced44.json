@@ -1,0 +1,32 @@
+{
+  "status": 43,
+  "status_message": "Lookup Handler unable to handle request",
+  "lookup_outcome": 1,
+  "lookup_outcome_message": "Partial success - some fields populated",
+  "request_id": "XXc89636-3714-42be-a731-9d8f52d7baXX",
+  "international_format_number": "18104967XXX",
+  "national_format_number": "(XXX) 496-7360",
+  "country_code": "US",
+  "country_code_iso3": "USA",
+  "country_name": "United States of America",
+  "country_prefix": "1",
+  "request_price": "0.03000000",
+  "remaining_balance": "98.24739334",
+  "current_carrier": {
+    "network_code": "US-FIXED",
+    "name": "United States of America Landline",
+    "country": "US",
+    "network_type": "landline"
+  },
+  "original_carrier": {
+    "network_code": "US-FIXED",
+    "name": "United States of America Landline",
+    "country": "US",
+    "network_type": "landline"
+  },
+  "valid_number": "valid",
+  "reachable": "unknown",
+  "ported": "unknown",
+  "roaming": "unknown",
+  "ip_warnings": "unknown"
+}
