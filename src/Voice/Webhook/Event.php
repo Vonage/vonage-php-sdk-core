@@ -131,7 +131,7 @@ class Event
         $this->detail = $event['detail'] ?? null;
     }
 
-    public function getConversationUuid(): string
+    public function getConversationUuid(): ?string
     {
         return $this->conversationUuid;
     }
