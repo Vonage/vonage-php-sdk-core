@@ -255,11 +255,12 @@ class ClientTest extends VonageTestCase
     {
         $payload = [
             'to' => '07785254785',
+            'from' => '07785254785',
             'client_ref' => 'my-verification',
             'brand' => 'my-brand',
         ];
 
-        $whatsAppVerification = new WhatsAppRequest($payload['to'], $payload['brand']);
+        $whatsAppVerification = new WhatsAppRequest($payload['to'], $payload['brand'], $payload['from']);
         $whatsAppVerification->setClientRef($payload['client_ref']);
 
         $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
@@ -269,6 +270,7 @@ class ClientTest extends VonageTestCase
             $this->assertRequestJsonBodyContains('code_length', 4, $request);
             $this->assertRequestJsonBodyContains('brand', $payload['brand'], $request);
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request, true);
+            $this->assertRequestJsonBodyContains('from', $payload['from'], $request, true);
             $this->assertRequestJsonBodyContains('channel', 'whatsapp', $request, true);
             $this->assertEquals('POST', $request->getMethod());
 
