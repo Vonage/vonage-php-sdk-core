@@ -53,7 +53,7 @@ class Record implements ActionInterface
     /**
      * @var int
      */
-    protected $timeOut = 7200;
+    protected $timeOut = 0;
 
     /**
      * @var bool
@@ -133,9 +133,12 @@ class Record implements ActionInterface
         $data = [
             'action' => 'record',
             'format' => $this->getFormat(),
-            'timeOut' => (string)$this->getTimeout(),
             'beepStart' => $this->getBeepStart() ? 'true' : 'false',
         ];
+
+        if ($this->getTimeout() !== 0) {
+            $data['timeOut'] = (string)$this->getTimeout();
+        }
 
         if ($this->getEndOnSilence()) {
             $data['endOnSilence'] = (string)$this->getEndOnSilence();
