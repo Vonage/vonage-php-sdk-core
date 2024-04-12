@@ -1046,7 +1046,7 @@ var_dump($response);
 
 ## Supported APIs
 
-| API                    |  API Release Status  | Supported? 
+| API                    |  API Release Status  | Supported? |
 |------------------------|:--------------------:|:----------:|
 | Account API            | General Availability |     ✅      |
 | Alerts API             | General Availability |     ✅      |
@@ -1067,7 +1067,7 @@ var_dump($response);
 | SMS API                | General Availability |     ✅      |
 | Subaccounts API        | General Availability |     ✅      |
 | Verify API             | General Availability |     ✅      |
-| Verify API (Version 2) |         Beta         |     ❌      |
+| Verify API (Version 2) | General Availability |     ✅      |
 | Voice API              | General Availability |     ✅      |
 
 ## Troubleshooting
@@ -1151,7 +1151,7 @@ $logger->pushHandler(new \Monolog\Handler\StreamHandler(__DIR__ . '/log.txt', \M
 $client->getFactory()->set(\PSR\Log\LoggerInterface::class, $logger);
 ```
 
-**ENABLING DEBUGING LOGGING HAS THE POTENTIAL FOR LOGGING SENSITIVE INFORMATION, DO NOT ENABLE IN PRODUCTION**
+**ENABLING DEBUGGING LOGGING HAS THE POTENTIAL FOR LOGGING SENSITIVE INFORMATION, DO NOT ENABLE IN PRODUCTION**
 
 ## Test Suite
 
