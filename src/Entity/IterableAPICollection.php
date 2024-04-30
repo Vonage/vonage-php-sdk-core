@@ -45,7 +45,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
     protected APIResource $api;
 
     /**
-     * This allows for override if the endpoint API uses a different query key
+     * This allows for override if the endpoint API uÏses a different query key
      */
     protected string $pageIndexKey = 'page_index';
 
