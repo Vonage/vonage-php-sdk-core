@@ -12,6 +12,9 @@ use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Conversation\Client as ConversationClient;
 use Vonage\Conversation\ConversationObjects\Conversation;
+use Vonage\Conversation\ConversationObjects\ConversationCallback;
+use Vonage\Conversation\ConversationObjects\ConversationNumber;
+use Vonage\Conversation\ConversationObjects\NewConversationRequest;
 use Vonage\Conversation\Filter\ListConversationFilter;
 use Vonage\Entity\IterableAPICollection;
 use VonageTest\VonageTestCase;
@@ -129,7 +132,7 @@ class ClientTest extends VonageTestCase
             $uri = $request->getUri();
             $uriString = $uri->__toString();
 
-            $this->assertEquals('https://api.nexmo.com/v1/conversations?order=desc&page_size=10&cursor=7EjDNQrAcipmOnc0HCzpQRkhBULzY44ljGUX4lXKyUIVfiZay5pv9wg=', $uriString);
+            $this->assertEquals('https://api.nexmo.com/v1/conversations?date_start=2018-01-01+10%3A00%3A00&date_end=2018-01-01+12%3A00%3A00&page_size=5&order=asc', $uriString);
 
             return true;
         }))->willReturn($this->getResponse('list-conversations'));
@@ -154,7 +157,31 @@ class ClientTest extends VonageTestCase
 
     public function testWillCreateConversation(): void
     {
-        $this->markTestIncomplete();
+        $this->vonageClient->send(Argument::that(function (Request $request) use (&$requestIndex) {
+            $this->assertEquals('POST', $request->getMethod());
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+
+            $this->assertEquals('https://api.nexmo.com/v1/conversations', $uriString);
+
+            return true;
+        }))->willReturn($this->getResponse('create-conversation'));
+
+        $conversation = new NewConversationRequest('customer_chat', 'Customer Chat', 'https://example.com/image.png');
+        $conversation->setTtl(60);
+
+        $conversationNumber = new ConversationNumber('447700900000');
+
+        $conversationCallback = new ConversationCallback('https://example.com/eventcallback');
+        $conversationCallback->setEventMask('member:invited, member:joined');
+        $conversationCallback->setApplicationId('afa393df-2c46-475b-b2d6-92da4ea05481');
+        $conversationCallback->setNccoUrl('https://example.com/ncco');
+
+        $conversation->setNumber($conversationNumber);
+        $conversation->setConversationCallback($conversationCallback);
+
+        $this->conversationsClient->createConversation($conversation);
     }
 
     public function testWillRetrieveConversation(): void

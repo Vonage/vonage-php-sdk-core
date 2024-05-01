@@ -5,6 +5,7 @@ namespace Vonage\Conversation;
 use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
 use Vonage\Conversation\ConversationObjects\Conversation;
+use Vonage\Conversation\ConversationObjects\NewConversationRequest;
 use Vonage\Conversation\Filter\ListConversationFilter;
 use Vonage\Entity\Hydrator\ArrayHydrator;
 use Vonage\Entity\IterableAPICollection;
@@ -25,6 +26,7 @@ class Client implements APIClient
         if (!$conversationFilter) {
             $conversationFilter = new ListConversationFilter();
         }
+
         $response = $this->api->search($conversationFilter);
         $response->setHasPagination(false);
         $response->setNaiveCount(true);
@@ -34,5 +36,10 @@ class Client implements APIClient
         $response->setHydrator($hydrator);
 
         return $response;
+    }
+
+    public function createConversation(NewConversationRequest $createConversation): ?array
+    {
+        return $this->api->create($createConversation->toArray());
     }
 }
