@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Vonage\Conversation\Filter;
 
-use http\Exception\InvalidArgumentException;
 use Vonage\Entity\Filter\FilterInterface;
 
 class ListConversationFilter implements FilterInterface

@@ -6,7 +6,7 @@ namespace Vonage\Conversation\ConversationObjects;
 
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 
-class NewConversationRequest implements ArrayHydrateInterface
+class CreateConversationRequest implements ArrayHydrateInterface
 {
     protected ?int $ttl = null;
     protected ?array $customData = null;
@@ -15,9 +15,9 @@ class NewConversationRequest implements ArrayHydrateInterface
     protected ?ConversationCallback $conversationCallback = null;
 
     public function __construct(
-        protected ?string $name,
-        protected ?string $displayName,
-        protected ?string $imageUrl
+        protected ?string $name = null,
+        protected ?string $displayName = null,
+        protected ?string $imageUrl = null
     ) {
     }
 
@@ -26,7 +26,7 @@ class NewConversationRequest implements ArrayHydrateInterface
         return $this->ttl;
     }
 
-    public function setTtl(?int $ttl): NewConversationRequest
+    public function setTtl(?int $ttl): CreateConversationRequest
     {
         $this->ttl = $ttl;
 
@@ -38,7 +38,7 @@ class NewConversationRequest implements ArrayHydrateInterface
         return $this->customData;
     }
 
-    public function setCustomData(?array $customData): NewConversationRequest
+    public function setCustomData(?array $customData): CreateConversationRequest
     {
         $this->customData = $customData;
 
@@ -50,7 +50,7 @@ class NewConversationRequest implements ArrayHydrateInterface
         return $this->number;
     }
 
-    public function setNumber(ConversationNumber $number): NewConversationRequest
+    public function setNumber(ConversationNumber $number): CreateConversationRequest
     {
         $this->number = $number;
 
@@ -62,7 +62,7 @@ class NewConversationRequest implements ArrayHydrateInterface
         return $this->conversationCallback;
     }
 
-    public function setConversationCallback(?ConversationCallback $conversationCallback): NewConversationRequest
+    public function setConversationCallback(?ConversationCallback $conversationCallback): CreateConversationRequest
     {
         $this->conversationCallback = $conversationCallback;
 
@@ -74,7 +74,7 @@ class NewConversationRequest implements ArrayHydrateInterface
         return $this->name;
     }
 
-    public function setName(?string $name): NewConversationRequest
+    public function setName(?string $name): CreateConversationRequest
     {
         $this->name = $name;
 
@@ -86,7 +86,7 @@ class NewConversationRequest implements ArrayHydrateInterface
         return $this->displayName;
     }
 
-    public function setDisplayName(?string $displayName): NewConversationRequest
+    public function setDisplayName(?string $displayName): CreateConversationRequest
     {
         $this->displayName = $displayName;
 
@@ -98,7 +98,7 @@ class NewConversationRequest implements ArrayHydrateInterface
         return $this->imageUrl;
     }
 
-    public function setImageUrl(?string $imageUrl): NewConversationRequest
+    public function setImageUrl(?string $imageUrl): CreateConversationRequest
     {
         $this->imageUrl = $imageUrl;
 
