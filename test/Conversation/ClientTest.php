@@ -11,12 +11,17 @@ use Prophecy\Prophecy\ObjectProphecy;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Conversation\Client as ConversationClient;
+use Vonage\Conversation\ConversationObjects\Channel;
 use Vonage\Conversation\ConversationObjects\Conversation;
 use Vonage\Conversation\ConversationObjects\ConversationCallback;
 use Vonage\Conversation\ConversationObjects\ConversationNumber;
 use Vonage\Conversation\ConversationObjects\CreateConversationRequest;
+use Vonage\Conversation\ConversationObjects\CreateMemberRequest;
+use Vonage\Conversation\ConversationObjects\Member;
 use Vonage\Conversation\ConversationObjects\UpdateConversationRequest;
+use Vonage\Conversation\ConversationObjects\UpdateMemberRequest;
 use Vonage\Conversation\Filter\ListConversationFilter;
+use Vonage\Conversation\Filter\ListMembersFilter;
 use Vonage\Conversation\Filter\ListUserConversationsFilter;
 use Vonage\Entity\IterableAPICollection;
 use VonageTest\Psr7AssertionTrait;
@@ -429,12 +434,12 @@ class ClientTest extends VonageTestCase
             $uri = $request->getUri();
             $uriString = $uri->__toString();
 
-            if ($requestIndex == 1) {
-                $this->assertEquals('https://api.nexmo.com/v1/users/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a/conversations?page_size=sausages', $uriString);
+            if ($this->requestIndex == 1) {
+                $this->assertEquals('https://api.nexmo.com/v1/users/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a/conversations?state=INVITED&order_by=created&include_custom_data=1&date_start=2018-01-01+10%3A00%3A00&date_end=2018-01-01+12%3A00%3A00&page_size=5&order=asc&page_index=1', $uriString);
             }
 
-            if ($requestIndex == 2) {
-                $this->assertEquals('https://api.nexmo.com/v1/conversations?order=desc&page_size=10&cursor=7EjDNQrAcipmOnc0HCzpQRkhBULzY44ljGUX4lXKyUIVfiZay5pv9wg=');
+            if ($this->requestIndex == 2) {
+                $this->assertEquals('https://api.nexmo.com/v1/users/USR-82e028d9-5201-4f1e-8188-604b2d3471ec/conversations?order=desc&page_size=10&cursor=7EjDNQrAcipmOnc0HCzpQRkhBULzY44ljGUX4lXKyUIVfiZay5pv9wg=', $uriString);
             }
 
             return true;
@@ -451,31 +456,235 @@ class ClientTest extends VonageTestCase
 
         $response = $this->conversationsClient->listUserConversationsByUserId('CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a', $filter);
 
+        $conversations = [];
+
         foreach ($response as $conversation) {
             $conversations[] = $conversation;
         }
+
+        $this->assertCount(2, $conversations);
+
+        $this->requestIndex = 0;
+    }
+
+    public function testWillListMembersInConversation(): void
+    {
+        $this->vonageClient->send(Argument::that(function (Request $request) use (&$requestIndex) {
+            $this->requestIndex++;
+            $this->assertEquals('GET', $request->getMethod());
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+
+            if ($this->requestIndex == 1) {
+                $this->assertEquals('https://api.nexmo.com/v1/usersCON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a/members?page_index=1', $uriString);
+            }
+
+            if ($this->requestIndex == 2) {
+                $this->assertEquals('https://api.nexmo.com/v1/conversations/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a/members?order=desc&page_size=10&cursor=88b395c167da4d94e929705cbd63b829a650e69a39197bfd4c949f4243f60dc4babb696afa404d2f44e7775e32b967f2a1a0bb8fb259c0999ba5a4e501eaab55', $uriString);
+            }
+
+            return true;
+        }))->willReturn($this->getResponse('list-members'), $this->getResponse('list-members-2'));
+
+        $response = $this->conversationsClient->listMembersByConversationId('CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a');
+
+        $conversations = [];
+
+        foreach ($response as $conversation) {
+            $conversations[] = $conversation;
+        }
+
+        $this->assertCount(2, $conversations);
+
+        $this->requestIndex = 0;
+    }
+
+    public function testWillListMembersWithQuery(): void
+    {
+        $this->vonageClient->send(Argument::that(function (Request $request) use (&$requestIndex) {
+            $this->requestIndex++;
+            $this->assertEquals('GET', $request->getMethod());
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+
+            if ($this->requestIndex == 1) {
+                $this->assertEquals('https://api.nexmo.com/v1/usersCON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a/members?page_size=50&order=DESC&page_index=1', $uriString);
+            }
+
+            return true;
+        }))->willReturn($this->getResponse('list-members'), $this->getResponse('list-members-2'));
+
+        $filter = new ListMembersFilter();
+        $filter->setOrder('DESC');
+        $filter->setPageSize(50);
+
+        $response = $this->conversationsClient->listMembersByConversationId('CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a', $filter);
+
+        $conversations = [];
+
+        foreach ($response as $conversation) {
+            $conversations[] = $conversation;
+        }
+
+        $this->assertCount(2, $conversations);
 
         $this->requestIndex = 0;
     }
 
     public function testWillCreateMemberInConversation(): void
     {
-        $this->markTestIncomplete();
+        $this->vonageClient->send(Argument::that(function (Request $request) use (&$requestIndex) {
+            $this->assertEquals('POST', $request->getMethod());
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+
+            $this->assertEquals('https://api.nexmo.com/v1/conversations/CON-63f61863-4a51-4f6b-86e1-46edebio0391/members', $uriString);
+            $this->assertRequestJsonBodyContains('state', 'invited', $request);
+            $this->assertRequestJsonBodyContains('knocking_id', '4f1e-8188', $request);
+            $this->assertRequestJsonBodyContains('member_id_inviting', 'MEM-63f61863-4a51-4f6b-86e1-46edebio0391', $request);
+            $this->assertRequestJsonBodyContains('from', 'value', $request);
+            $this->assertRequestJsonBodyContains(
+                'channel',
+                [
+                    'type' => 'app',
+                    'from' => [
+                        'type' => 'sms,phone'
+                    ],
+                    'to' => [
+                        'type' => 'app',
+                        'user' => 'USR-82e028d9-9999-4f1e-8188-604b2d3471ec'
+                    ]
+                ],
+                $request
+            );
+
+            $this->assertRequestJsonBodyContains(
+                'media',
+                [
+                    'audio_settings' => [
+                        'enabled' => true,
+                        'earmuffed' => false,
+                        'muted' => false
+                    ],
+                    'audio' => true
+                ],
+                $request
+            );
+
+            $this->assertRequestJsonBodyContains(
+                'user',
+                [
+                    'id' => 'USR-82e028d9-5201-4f1e-8188-604b2d3471ec',
+                    'name' => 'my_user_name'
+                ],
+                $request
+            );
+
+            return true;
+        }))->willReturn($this->getResponse('create-member'));
+
+        $channel = Channel::createChannel(Channel::CHANNEL_TYPE_APP);
+        $channel->addUserFromTypes([
+            'sms',
+            'phone'
+        ]);
+
+        $channel->addUserToField('USR-82e028d9-9999-4f1e-8188-604b2d3471ec');
+
+        $createMemberRequest = new CreateMemberRequest(
+            'invited',
+            $channel,
+            'USR-82e028d9-5201-4f1e-8188-604b2d3471ec',
+            'my_user_name',
+        );
+
+        $createMemberRequest->setAudioPossible(true);
+        $createMemberRequest->setAudioEnabled(true);
+        $createMemberRequest->setAudioEarmuffed(false);
+        $createMemberRequest->setAudioMuted(false);
+        $createMemberRequest->setKnockingId('4f1e-8188');
+        $createMemberRequest->setMemberIdInviting('MEM-63f61863-4a51-4f6b-86e1-46edebio0391');
+        $createMemberRequest->setFrom('value');
+
+        $response = $this->conversationsClient->createMember(
+            $createMemberRequest,
+            'CON-63f61863-4a51-4f6b-86e1-46edebio0391'
+        );
+
+        $this->assertIsArray($response);
     }
 
     public function testWillGetMeAsMemberInConversation(): void
     {
-        $this->markTestIncomplete();
+        $this->vonageClient->send(Argument::that(function (Request $request) use (&$requestIndex) {
+            $this->assertEquals('GET', $request->getMethod());
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+
+            $this->assertEquals('https://api.nexmo.com/v1/conversations/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a/members/me', $uriString);
+
+            return true;
+        }))->willReturn($this->getResponse('get-member'));
+
+        $response = $this->conversationsClient->getMyMemberByConversationId('CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a');
+        $this->assertInstanceOf(Member::class, $response);
     }
 
     public function testWillGetMemberInConversation(): void
     {
-        $this->markTestIncomplete();
+        $this->vonageClient->send(Argument::that(function (Request $request) use (&$requestIndex) {
+            $this->assertEquals('GET', $request->getMethod());
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+
+            $this->assertEquals('https://api.nexmo.com/v1/conversations/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a/members/MEM-63f61863-4a51-4f6b-86e1-46edebio0391', $uriString);
+
+            return true;
+        }))->willReturn($this->getResponse('get-member'));
+
+        $response = $this->conversationsClient->getMemberByConversationId(
+            'MEM-63f61863-4a51-4f6b-86e1-46edebio0391',
+            'CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a'
+        );
+
+        $this->assertInstanceOf(Member::class, $response);
     }
 
     public function testWillUpdateMemberInConversation(): void
     {
-        $this->markTestIncomplete();
+        $this->vonageClient->send(Argument::that(function (Request $request) use (&$requestIndex) {
+            $this->assertEquals('PUT', $request->getMethod());
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+
+            $this->assertEquals('https://api.nexmo.com/v1/conversations/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a/members/MEM-63f61863-4a51-4f6b-86e1-46edebio0391', $uriString);
+            $this->assertRequestJsonBodyContains('state', 'left', $request);
+            $this->assertRequestJsonBodyContains('from', 'value', $request);
+            $this->assertRequestJsonBodyContains('reason', ['code' => '400', 'text' => 'user got bored'], $request);
+
+            return true;
+        }))->willReturn($this->getResponse('update-member'));
+
+        $updateMemberRequest = new UpdateMemberRequest(
+            'MEM-63f61863-4a51-4f6b-86e1-46edebio0391',
+            'CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a',
+            'left'
+        );
+        $updateMemberRequest->setFrom('value');
+
+        $updateMemberRequest->setLeavingReason(['code' => '400', 'text' => 'user got bored']);
+
+        $response = $this->conversationsClient->updateMember(
+            $updateMemberRequest
+        );
+
+        $this->assertInstanceOf(Member::class, $response);
     }
 
     public function testWillCreateEventInConversation(): void
@@ -494,16 +703,6 @@ class ClientTest extends VonageTestCase
     }
 
     public function testWillDeleteEventFromConversation(): void
-    {
-        $this->markTestIncomplete();
-    }
-
-    public function testWillGetUserConversations(): void
-    {
-        $this->markTestIncomplete();
-    }
-
-    public function testWillListUserSessions(): void
     {
         $this->markTestIncomplete();
     }

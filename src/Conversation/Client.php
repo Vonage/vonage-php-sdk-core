@@ -6,8 +6,12 @@ use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
 use Vonage\Conversation\ConversationObjects\Conversation;
 use Vonage\Conversation\ConversationObjects\CreateConversationRequest;
+use Vonage\Conversation\ConversationObjects\CreateMemberRequest;
+use Vonage\Conversation\ConversationObjects\Member;
 use Vonage\Conversation\ConversationObjects\UpdateConversationRequest;
+use Vonage\Conversation\ConversationObjects\UpdateMemberRequest;
 use Vonage\Conversation\Filter\ListConversationFilter;
+use Vonage\Conversation\Filter\ListMembersFilter;
 use Vonage\Conversation\Filter\ListUserConversationsFilter;
 use Vonage\Entity\Hydrator\ArrayHydrator;
 use Vonage\Entity\IterableAPICollection;
@@ -89,5 +93,59 @@ class Client implements APIClient
         $response->setHydrator($hydrator);
 
         return $response;
+    }
+
+    public function listMembersByConversationId(
+        string $conversationId,
+        ?ListMembersFilter $filter = null
+    ): IterableAPICollection {
+        $api = clone $this->getAPIResource();
+        $api->setBaseUrl('https://api.nexmo.com/v1/users');
+        $api->setCollectionName('members');
+        $response = $api->search($filter, $conversationId . '/members');
+        $response->setHasPagination(true);
+        $response->setNaiveCount(true);
+
+        $hydrator = new ArrayHydrator();
+        $hydrator->setPrototype(new Member());
+        $response->setHydrator($hydrator);
+
+        return $response;
+    }
+
+    public function createMember(CreateMemberRequest $createMemberRequest, string $conversationId): ?array
+    {
+        return $this->getApiResource()->create($createMemberRequest->toArray(), '/' . $conversationId . '/members');
+    }
+
+    public function getMyMemberByConversationId(string $id): Member
+    {
+        $response = $this->getApiResource()->get($id . '/members/me');
+        $member = new Member();
+        $member->fromArray($response);
+
+        return $member;
+    }
+
+    public function getMemberByConversationId(string $memberId, string $conversationId): Member
+    {
+        $response = $this->getApiResource()->get($conversationId . '/members/' . $memberId);
+        $member = new Member();
+        $member->fromArray($response);
+
+        return $member;
+    }
+
+    public function updateMember(UpdateMemberRequest $updateMemberRequest): Member
+    {
+        $response = $this->getAPIResource()->update(
+            $updateMemberRequest->getConversationId() . '/members/' . $updateMemberRequest->getMemberId(),
+            $updateMemberRequest->toArray()
+        );
+
+        $member = new Member();
+        $member->fromArray($response);
+
+        return $member;
     }
 }

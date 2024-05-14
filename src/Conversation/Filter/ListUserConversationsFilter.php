@@ -31,7 +31,12 @@ class ListUserConversationsFilter implements FilterInterface
     protected int $pageSize = 10;
     protected string $order = 'asc';
     private const VALID_ORDERS = ['asc', 'ASC', 'desc', 'DESC'];
-    protected ?string $cursor = null;
+
+    /**
+     * @var string|null
+     * Private as you should only follow cursors provided, not set them
+     */
+    private ?string $cursor = null;
 
     public function __construct()
     {
@@ -85,13 +90,6 @@ class ListUserConversationsFilter implements FilterInterface
         }
 
         $this->order = $order;
-
-        return $this;
-    }
-
-    public function setCursor(?string $cursor): ListUserConversationsFilter
-    {
-        $this->cursor = $cursor;
 
         return $this;
     }

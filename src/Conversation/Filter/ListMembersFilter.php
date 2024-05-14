@@ -6,10 +6,8 @@ namespace Vonage\Conversation\Filter;
 
 use Vonage\Entity\Filter\FilterInterface;
 
-class ListConversationFilter implements FilterInterface
+class ListMembersFilter implements FilterInterface
 {
-    protected ?string $startDate = null;
-    protected ?string $endDate = null;
     protected int $pageSize = 10;
     protected string $order = 'asc';
     private const VALID_ORDERS = ['asc', 'ASC', 'desc', 'DESC'];
@@ -24,36 +22,12 @@ class ListConversationFilter implements FilterInterface
     {
     }
 
-    public function getStartDate(): ?string
-    {
-        return $this->startDate;
-    }
-
-    public function setStartDate(?string $startDate): ListConversationFilter
-    {
-        $this->startDate = $startDate;
-
-        return $this;
-    }
-
-    public function getEndDate(): ?string
-    {
-        return $this->endDate;
-    }
-
-    public function setEndDate(?string $endDate): ListConversationFilter
-    {
-        $this->endDate = $endDate;
-
-        return $this;
-    }
-
     public function getPageSize(): ?int
     {
         return $this->pageSize;
     }
 
-    public function setPageSize(?int $pageSize): ListConversationFilter
+    public function setPageSize(?int $pageSize): ListMembersFilter
     {
         $this->pageSize = $pageSize;
 
@@ -65,7 +39,7 @@ class ListConversationFilter implements FilterInterface
         return $this->order;
     }
 
-    public function setOrder(string $order): ListConversationFilter
+    public function setOrder(string $order): ListMembersFilter
     {
         if (!in_array($order, self::VALID_ORDERS)) {
             throw new \InvalidArgumentException($order . ' is an invalid order value');
@@ -76,7 +50,7 @@ class ListConversationFilter implements FilterInterface
         return $this;
     }
 
-    public function setCursor(?string $cursor): ListConversationFilter
+    public function setCursor(?string $cursor): ListMembersFilter
     {
         $this->cursor = $cursor;
 
@@ -86,14 +60,6 @@ class ListConversationFilter implements FilterInterface
     public function getQuery(): array
     {
         $query = [];
-
-        if ($this->getStartDate()) {
-            $query['date_start'] = $this->getStartDate();
-        }
-
-        if ($this->getEndDate()) {
-            $query['date_end'] = $this->getEndDate();
-        }
 
         if ($this->getPageSize()) {
             $query['page_size'] = $this->getPageSize();
