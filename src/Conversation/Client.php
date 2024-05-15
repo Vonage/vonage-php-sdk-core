@@ -7,6 +7,8 @@ use Vonage\Client\APIResource;
 use Vonage\Conversation\ConversationObjects\Conversation;
 use Vonage\Conversation\ConversationObjects\CreateConversationRequest;
 use Vonage\Conversation\ConversationObjects\CreateMemberRequest;
+use Vonage\Conversation\ConversationObjects\Event;
+use Vonage\Conversation\ConversationObjects\Events\BaseEvent;
 use Vonage\Conversation\ConversationObjects\Member;
 use Vonage\Conversation\ConversationObjects\UpdateConversationRequest;
 use Vonage\Conversation\ConversationObjects\UpdateMemberRequest;
@@ -144,6 +146,16 @@ class Client implements APIClient
         );
 
         $member = new Member();
+        $member->fromArray($response);
+
+        return $member;
+    }
+
+    public function createEvent(BaseEvent $event): Event
+    {
+        $response = $this->getAPIResource()->create($event->toArray(), '/' . $event->getConversationId() . '/events');
+
+        $member = new Event();
         $member->fromArray($response);
 
         return $member;

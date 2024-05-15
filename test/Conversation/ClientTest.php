@@ -17,6 +17,9 @@ use Vonage\Conversation\ConversationObjects\ConversationCallback;
 use Vonage\Conversation\ConversationObjects\ConversationNumber;
 use Vonage\Conversation\ConversationObjects\CreateConversationRequest;
 use Vonage\Conversation\ConversationObjects\CreateMemberRequest;
+use Vonage\Conversation\ConversationObjects\Events\Message\MessageAudioEvent;
+use Vonage\Conversation\ConversationObjects\Events\Message\MessageImageEvent;
+use Vonage\Conversation\ConversationObjects\Events\Message\MessageTextEvent;
 use Vonage\Conversation\ConversationObjects\Member;
 use Vonage\Conversation\ConversationObjects\UpdateConversationRequest;
 use Vonage\Conversation\ConversationObjects\UpdateMemberRequest;
@@ -687,24 +690,104 @@ class ClientTest extends VonageTestCase
         $this->assertInstanceOf(Member::class, $response);
     }
 
-    public function testWillCreateEventInConversation(): void
+    public function testWillCreateMessageTextEvent(): void
     {
-        $this->markTestIncomplete();
+        $messageText = new MessageTextEvent(
+            'CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a',
+            'from-value',
+            'new message'
+        );
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use (&$requestIndex) {
+            $this->assertEquals('POST', $request->getMethod());
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+
+            $this->assertEquals('https://api.nexmo.com/v1/conversations/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a/events', $uriString);
+            $this->assertRequestJsonBodyContains('type', 'message', $request);
+            $this->assertRequestJsonBodyContains('from', 'from-value', $request);
+            $this->assertRequestJsonBodyContains('body', ['message_type' => 'text', 'text' => 'new message'], $request);
+
+            return true;
+        }))->willReturn($this->getResponse('create-event'));
+
+        $this->conversationsClient->createEvent($messageText);
     }
 
-    public function testWillGetEventsFromConversation(): void
+    public function testWillCreateMessageImageEvent(): void
     {
-        $this->markTestIncomplete();
+        $imageEvent = new MessageImageEvent(
+            'CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a',
+            'from-value',
+            'https://example.org/image.png'
+        );
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use (&$requestIndex) {
+            $this->assertEquals('POST', $request->getMethod());
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+
+            $this->assertEquals('https://api.nexmo.com/v1/conversations/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a/events', $uriString);
+            $this->assertRequestJsonBodyContains('type', 'message', $request);
+            $this->assertRequestJsonBodyContains('from', 'from-value', $request);
+            $this->assertRequestJsonBodyContains('body', ['message_type' => 'image', 'image' => ['url' => 'https://example.org/image.png']], $request);
+
+            return true;
+        }))->willReturn($this->getResponse('create-event'));
+
+        $this->conversationsClient->createEvent($imageEvent);
     }
 
-    public function testWillGetEventFromConversation(): void
+    public function testWillCreateMessageAudioEvent(): void
     {
-        $this->markTestIncomplete();
+        $audioEvent = new MessageAudioEvent(
+            'CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a',
+            'from-value',
+            'https://example.org/audio.mp3'
+        );
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use (&$requestIndex) {
+            $this->assertEquals('POST', $request->getMethod());
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+
+            $this->assertEquals('https://api.nexmo.com/v1/conversations/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a/events', $uriString);
+            $this->assertRequestJsonBodyContains('type', 'message', $request);
+            $this->assertRequestJsonBodyContains('from', 'from-value', $request);
+            $this->assertRequestJsonBodyContains('body', ['message_type' => 'audio', 'audio' => ['url' => 'https://example.org/audio.mp3']], $request);
+
+            return true;
+        }))->willReturn($this->getResponse('create-event'));
+
+        $this->conversationsClient->createEvent($audioEvent);
     }
 
-    public function testWillDeleteEventFromConversation(): void
+    public function testWillCreateMessageVideoEvent(): void
     {
-        $this->markTestIncomplete();
+        $videoEvent = new MessageAudioEvent(
+            'CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a',
+            'from-value',
+            'https://example.org/video.mp4'
+        );
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use (&$requestIndex) {
+            $this->assertEquals('POST', $request->getMethod());
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+
+            $this->assertEquals('https://api.nexmo.com/v1/conversations/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a/events', $uriString);
+            $this->assertRequestJsonBodyContains('type', 'message', $request);
+            $this->assertRequestJsonBodyContains('from', 'from-value', $request);
+            $this->assertRequestJsonBodyContains('body', ['message_type' => 'video', 'video' => ['url' => 'https://example.org/video.mp4']], $request);
+
+            return true;
+        }))->willReturn($this->getResponse('create-event'));
+
+        $this->conversationsClient->createEvent($videoEvent);
     }
 
     protected function getResponse(string $identifier, int $status = 200): Response
