@@ -51,7 +51,7 @@ class ClientTest extends TestCase
             ->setIsHAL(true)
             ->setExceptionErrorHandler(new ExceptionErrorHandler())
             ->setClient($this->vonageClient->reveal())
-            ->setAuthHandler(new KeypairHandler())
+            ->setAuthHandlers(new KeypairHandler())
             ->setBaseUrl('https://api-eu.vonage.com/v1/meetings');
         $this->meetingsClient = new MeetingsClient($this->api);
     }
@@ -67,7 +67,7 @@ class ClientTest extends TestCase
     public function testWillGetAvailableRooms(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            $this->assertEquals('GET', $request->getMethod());
+           $this->assertRequestMethod('GET', $request);
 
             $uri = $request->getUri();
             $uriString = $uri->__toString();
@@ -87,7 +87,7 @@ class ClientTest extends TestCase
     public function testWillGetAvailableRoomsWithFilter(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            $this->assertEquals('GET', $request->getMethod());
+           $this->assertRequestMethod('GET', $request);
 
             $uri = $request->getUri();
             $uriString = $uri->__toString();
@@ -179,7 +179,7 @@ class ClientTest extends TestCase
     public function testClientWillHandleNotFoundResponse(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            $this->assertEquals('GET', $request->getMethod());
+           $this->assertRequestMethod('GET', $request);
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
@@ -217,7 +217,7 @@ class ClientTest extends TestCase
     public function testWillGetRoomDetails(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            $this->assertEquals('GET', $request->getMethod());
+           $this->assertRequestMethod('GET', $request);
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
@@ -269,7 +269,7 @@ class ClientTest extends TestCase
     public function testWillGetRecording(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            $this->assertEquals('GET', $request->getMethod());
+           $this->assertRequestMethod('GET', $request);
 
             $uri = $request->getUri();
             $uriString = $uri->__toString();
@@ -308,7 +308,7 @@ class ClientTest extends TestCase
     public function testWillGetRecordingsFromSession(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            $this->assertEquals('GET', $request->getMethod());
+           $this->assertRequestMethod('GET', $request);
 
             $uri = $request->getUri();
             $uriString = $uri->__toString();
@@ -330,7 +330,7 @@ class ClientTest extends TestCase
     public function testWillGetMeetingDialNumbers(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            $this->assertEquals('GET', $request->getMethod());
+           $this->assertRequestMethod('GET', $request);
 
             $uri = $request->getUri();
             $uriString = $uri->__toString();
@@ -352,7 +352,7 @@ class ClientTest extends TestCase
     public function testWillGetApplicationThemes(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            $this->assertEquals('GET', $request->getMethod());
+           $this->assertRequestMethod('GET', $request);
 
             $uri = $request->getUri();
             $uriString = $uri->__toString();
@@ -413,7 +413,7 @@ class ClientTest extends TestCase
     public function testWillGetThemeById(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            $this->assertEquals('GET', $request->getMethod());
+           $this->assertRequestMethod('GET', $request);
 
             $uri = $request->getUri();
             $uriString = $uri->__toString();
@@ -562,7 +562,7 @@ class ClientTest extends TestCase
     public function testCanGetUploadUrlsForThemeLogo(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            $this->assertEquals('GET', $request->getMethod());
+           $this->assertRequestMethod('GET', $request);
 
             $uri = $request->getUri();
             $uriString = $uri->__toString();
@@ -578,7 +578,7 @@ class ClientTest extends TestCase
     public function testWillGetRoomsAssociatedWithTheme(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            $this->assertEquals('GET', $request->getMethod());
+           $this->assertRequestMethod('GET', $request);
 
             $uri = $request->getUri();
             $uriString = $uri->__toString();
@@ -597,7 +597,7 @@ class ClientTest extends TestCase
     public function testWillGetRoomsAssociatedWithThemeUsingFilter(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            $this->assertEquals('GET', $request->getMethod());
+           $this->assertRequestMethod('GET', $request);
 
             $uri = $request->getUri();
             $uriString = $uri->__toString();

@@ -41,16 +41,16 @@ class APIResourceTest extends VonageTestCase
     public function testCanSetMultipleAuthHandlers(): void
     {
         $resource = new APIResource();
-        $resource->setAuthHandler([new BasicHandler(), new SignatureBodyHandler()]);
+        $resource->setAuthHandlers([new BasicHandler(), new SignatureBodyHandler()]);
 
-        $this->assertIsArray($resource->getAuthHandler());
+        $this->assertIsArray($resource->getAuthHandlers());
     }
 
     public function testSingleAuthHanlderConvertedToArray(): void
     {
         $resource = new APIResource();
-        $resource->setAuthHandler(new BasicHandler());
+        $resource->setAuthHandlers(new BasicHandler());
 
-        $this->assertIsArray($resource->getAuthHandler());
+        $this->assertIsArray($resource->getAuthHandlers());
     }
 }

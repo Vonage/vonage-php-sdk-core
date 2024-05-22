@@ -15,7 +15,7 @@ class ClientFactory
         /** @var APIResource $api */
         $api = $container->make(APIResource::class);
         $api->setIsHAL(false);
-        $api->setAuthHandler(new BasicQueryHandler());
+        $api->setAuthHandlers(new BasicQueryHandler());
 
         return new Client($api);
     }

@@ -45,7 +45,7 @@ class ClientTest extends VonageTestCase
             ->setIsHAL(false)
             ->setErrorsOn200(false)
             ->setClient($this->vonageClient->reveal())
-            ->setAuthHandler([new Client\Credentials\Handler\BasicHandler(), new Client\Credentials\Handler\KeypairHandler()])
+            ->setAuthHandlers([new Client\Credentials\Handler\BasicHandler(), new Client\Credentials\Handler\KeypairHandler()])
             ->setBaseUrl('https://api.nexmo.com/v2/verify');
 
         $this->verify2Client = new Verify2Client($this->api);

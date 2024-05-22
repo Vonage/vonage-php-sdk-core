@@ -43,6 +43,7 @@ use Vonage\Meetings\ClientFactory as MeetingsClientFactory;
 use Vonage\Numbers\ClientFactory as NumbersClientFactory;
 use Vonage\Redact\ClientFactory as RedactClientFactory;
 use Vonage\Secrets\ClientFactory as SecretsClientFactory;
+use Vonage\SimSwap\ClientFactory as SimSwapClientFactory;
 use Vonage\SMS\ClientFactory as SMSClientFactory;
 use Vonage\Subaccount\ClientFactory as SubaccountClientFactory;
 use Vonage\Messages\ClientFactory as MessagesClientFactory;
@@ -77,6 +78,7 @@ use function strpos;
  * @method Numbers\Client numbers()
  * @method Redact\Client redact()
  * @method Secrets\Client secrets()
+ * @method SimSwap\Client simswap()
  * @method SMS\Client sms()
  * @method Subaccount\Client subaccount()
  * @method Users\Client users()
@@ -216,6 +218,7 @@ class Client implements LoggerAwareInterface
             'messages' => MessagesClientFactory::class,
             'redact' => RedactClientFactory::class,
             'secrets' => SecretsClientFactory::class,
+            'simswap' => SimSwapClientFactory::class,
             'sms' => SMSClientFactory::class,
             'subaccount' => SubaccountClientFactory::class,
             'users' => UsersClientFactory::class,
@@ -225,6 +228,7 @@ class Client implements LoggerAwareInterface
 
             // Additional utility classes
             APIResource::class => APIResource::class,
+            Client::class => function() { return $this; }
         ];
 
         if (class_exists('Vonage\Video\ClientFactory')) {

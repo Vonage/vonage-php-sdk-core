@@ -74,7 +74,7 @@ class ClientTest extends VonageTestCase
             ->setIsHAL(false)
             ->setErrorsOn200(false)
             ->setClient($this->vonageClient->reveal())
-            ->setAuthHandler([new Client\Credentials\Handler\KeypairHandler(), new Client\Credentials\Handler\BasicHandler()])
+            ->setAuthHandlers([new Client\Credentials\Handler\KeypairHandler(), new Client\Credentials\Handler\BasicHandler()])
             ->setExceptionErrorHandler(new ExceptionErrorHandler())
             ->setBaseUrl('https://rest.nexmo.com');
 

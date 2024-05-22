@@ -45,7 +45,7 @@ class ClientTest extends VonageTestCase
             ->setIsHAL(true)
             ->setErrorsOn200(false)
             ->setClient($this->vonageClient->reveal())
-            ->setAuthHandler(new Client\Credentials\Handler\KeypairHandler())
+            ->setAuthHandlers(new Client\Credentials\Handler\KeypairHandler())
             ->setBaseUrl('https://api-eu.vonage.com/v0.1/bulk');
 
         $this->proactiveConnectClient = new ProactiveConnectClient($this->api);
@@ -322,7 +322,7 @@ class ClientTest extends VonageTestCase
                 $uriString
             );
 
-            $this->assertEquals('GET', $request->getMethod());
+           $this->assertRequestMethod('GET', $request);
             return true;
         }))->willReturn($this->getResponse('list-get-success'));
 
@@ -479,7 +479,7 @@ class ClientTest extends VonageTestCase
     public function testWillGetListItems(): void
     {
         $this->vonageClient->send(Argument::that(function (Request $request) {
-            $this->assertEquals('GET', $request->getMethod());
+           $this->assertRequestMethod('GET', $request);
 
             $uri = $request->getUri();
             $uriString = $uri->__toString();
@@ -545,7 +545,7 @@ class ClientTest extends VonageTestCase
     public function testWillDownloadItemCsv(): void
     {
         $this->vonageClient->send(Argument::that(function (Request $request) {
-            $this->assertEquals('GET', $request->getMethod());
+           $this->assertRequestMethod('GET', $request);
 
             $uri = $request->getUri();
             $uriString = $uri->__toString();
@@ -593,7 +593,7 @@ class ClientTest extends VonageTestCase
         $itemId = '4cb98f71-a879-49f7-b5cf-2314353eb52c';
 
         $this->vonageClient->send(Argument::that(function (Request $request) {
-            $this->assertEquals('GET', $request->getMethod());
+           $this->assertRequestMethod('GET', $request);
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(

@@ -17,7 +17,7 @@ class ClientFactory
         $api
             ->setBaseUrl('https://api-eu.vonage.com/v1/meetings/')
             ->setExceptionErrorHandler(new ExceptionErrorHandler())
-            ->setAuthHandler(new KeypairHandler());
+            ->setAuthHandlers(new KeypairHandler());
 
         return new Client($api);
     }

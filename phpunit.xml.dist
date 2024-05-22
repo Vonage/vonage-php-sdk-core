@@ -23,6 +23,9 @@
     <testsuite name="verify2">
       <directory>test/Verify2</directory>
     </testsuite>
+    <testsuite name="client">
+      <directory>test/Client</directory>
+    </testsuite>
     <testsuite name="proactive_connect">
       <directory>test/ProactiveConnect</directory>
     </testsuite>
@@ -37,6 +40,9 @@
     </testsuite>
     <testsuite name="sms">
       <directory>test/SMS</directory>
+    </testsuite>
+    <testsuite name="simswap">
+      <directory>test/SimSwap</directory>
     </testsuite>
     <testsuite name="subaccount">
       <directory>test/Subaccount</directory>

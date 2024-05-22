@@ -49,7 +49,7 @@ class ClientTest extends VonageTestCase
         $this->api = new APIResource();
         $this->api->setBaseUrl('https://rest.nexmo.com')
             ->setIsHAL(false)
-            ->setAuthHandler(new Client\Credentials\Handler\BasicQueryHandler())
+            ->setAuthHandlers(new Client\Credentials\Handler\BasicQueryHandler())
             ->setBaseUri('/account');
 
         $this->api->setClient($this->vonageClient->reveal());
@@ -155,7 +155,7 @@ class ClientTest extends VonageTestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/get-balance', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('GET', $request->getMethod());
+           $this->assertRequestMethod('GET', $request);
 
             $uri = $request->getUri();
             $uriString = $uri->__toString();
@@ -185,7 +185,7 @@ class ClientTest extends VonageTestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/get-balance', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('GET', $request->getMethod());
+           $this->assertRequestMethod('GET', $request);
 
             return true;
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('empty'));
@@ -314,7 +314,7 @@ class ClientTest extends VonageTestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/get-pricing/outbound/sms', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('GET', $request->getMethod());
+           $this->assertRequestMethod('GET', $request);
             $this->assertRequestQueryContains('country', 'US', $request);
 
             return true;
@@ -339,7 +339,7 @@ class ClientTest extends VonageTestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/get-pricing/outbound/sms', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('GET', $request->getMethod());
+           $this->assertRequestMethod('GET', $request);
             $this->assertRequestQueryContains('country', 'XX', $request);
 
             return true;
@@ -359,7 +359,7 @@ class ClientTest extends VonageTestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/get-pricing/outbound/voice', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('GET', $request->getMethod());
+           $this->assertRequestMethod('GET', $request);
             $this->assertRequestQueryContains('country', 'US', $request);
 
             return true;
@@ -380,7 +380,7 @@ class ClientTest extends VonageTestCase
 
             $this->assertEquals('/account/get-prefix-pricing/outbound', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('GET', $request->getMethod());
+           $this->assertRequestMethod('GET', $request);
             $this->assertRequestQueryContains('prefix', '263', $request);
 
             if ($hasRun) {
@@ -402,7 +402,7 @@ class ClientTest extends VonageTestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/get-prefix-pricing/outbound', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('GET', $request->getMethod());
+           $this->assertRequestMethod('GET', $request);
             $this->assertRequestQueryContains('prefix', '263', $request);
 
             return true;
@@ -420,7 +420,7 @@ class ClientTest extends VonageTestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/get-prefix-pricing/outbound', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('GET', $request->getMethod());
+           $this->assertRequestMethod('GET', $request);
             $this->assertRequestQueryContains('prefix', '263', $request);
 
             return true;
@@ -437,7 +437,7 @@ class ClientTest extends VonageTestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/get-prefix-pricing/outbound', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('GET', $request->getMethod());
+           $this->assertRequestMethod('GET', $request);
             $this->assertRequestQueryContains('prefix', '263', $request);
 
             return true;

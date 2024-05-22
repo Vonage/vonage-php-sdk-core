@@ -1,24 +1,26 @@
 <?php
 
-namespace Vonage\Messages;
+namespace Vonage\SimSwap;
 
 use Psr\Container\ContainerInterface;
 use Vonage\Client\APIResource;
-use Vonage\Client\Credentials\Handler\BasicHandler;
-use Vonage\Client\Credentials\Handler\KeypairHandler;
+use Vonage\Client\Credentials\Handler\GnpHandler;
 
 class ClientFactory
 {
     public function __invoke(ContainerInterface $container): Client
     {
+        $handler = new GnpHandler();
+        $client = $container->get(\Vonage\Client::class);
+        $handler->setClient($client);
+
         /** @var APIResource $api */
         $api = $container->make(APIResource::class);
         $api
-            ->setBaseUrl($api->getClient()->getApiUrl() . '/v1/messages')
+            ->setBaseUrl('https://api-eu.vonage.com/camara/sim-swap/v040')
             ->setIsHAL(false)
             ->setErrorsOn200(false)
-            ->setAuthHandlers([new KeypairHandler(), new BasicHandler()])
-            ->setExceptionErrorHandler(new ExceptionErrorHandler());
+            ->setAuthHandlers($handler);
 
         return new Client($api);
     }

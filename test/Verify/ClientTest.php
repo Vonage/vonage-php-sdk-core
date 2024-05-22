@@ -51,7 +51,7 @@ class ClientTest extends VonageTestCase
             ->setIsHAL(false)
             ->setBaseUri('/verify')
             ->setErrorsOn200(true)
-            ->setAuthHandler(new Client\Credentials\Handler\TokenBodyHandler())
+            ->setAuthHandlers(new Client\Credentials\Handler\TokenBodyHandler())
             ->setClient($this->vonageClient->reveal())
             ->setExceptionErrorHandler(new ExceptionErrorHandler());
 

@@ -8,7 +8,7 @@ use Vonage\Client\Credentials\CredentialsInterface;
 
 abstract class AbstractHandler implements HandlerInterface
 {
-    abstract function __invoke(RequestInterface $request, CredentialsInterface $credentials): RequestInterface;
+    abstract public function __invoke(RequestInterface $request, CredentialsInterface $credentials): RequestInterface;
 
     protected function extract(string $class, CredentialsInterface $credentials): CredentialsInterface
     {

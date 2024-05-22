@@ -19,7 +19,7 @@ class ClientFactory
         /** @var APIResource $api */
         $api = $container->make(APIResource::class);
         $api->setBaseUri('/conversions/');
-        $api->setAuthHandler(new BasicHandler());
+        $api->setAuthHandlers(new BasicHandler());
 
         return new Client($api);
     }

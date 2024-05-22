@@ -34,7 +34,7 @@ class AdvancedTest extends VonageTestCase
         $this->api = (new APIResource())
             ->setClient($this->vonageClient->reveal())
             ->setIsHAL(false)
-            ->setAuthHandler(new BasicQueryHandler())
+            ->setAuthHandlers(new BasicQueryHandler())
             ->setBaseUrl('https://api.nexmo.com/ni/advanced');
 
         $this->insightClient = new InsightClient($this->api);

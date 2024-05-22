@@ -21,7 +21,7 @@ class ClientFactory
             ->setIsHAL(false)
             ->setBaseUri('/verify')
             ->setErrorsOn200(true)
-            ->setAuthHandler(new TokenBodyHandler())
+            ->setAuthHandlers(new TokenBodyHandler())
             ->setExceptionErrorHandler(new ExceptionErrorHandler());
 
         return new Client($api);
