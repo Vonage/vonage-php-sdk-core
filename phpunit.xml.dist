@@ -29,6 +29,9 @@
     <testsuite name="conversations">
       <directory>test/Conversation</directory>
     </testsuite>
+    <testsuite name="client">
+      <directory>test/Client</directory>
+    </testsuite>
     <testsuite name="proactive_connect">
       <directory>test/ProactiveConnect</directory>
     </testsuite>
