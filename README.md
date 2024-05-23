@@ -872,6 +872,52 @@ $response = $client->account()->updateConfig([
 print_r($response->toArray());
 ```
 
+### Use SimSwap to Check the Status and Date of a SIM in a handset
+
+In order to use Vonage's Network APIs you'll need to be enabled within
+the [Vonage Network Registry](https://developer.vonage.com/en/getting-started-network/registration?source=sim-swap)
+
+Once you have a registered MSNDIN, you will be able to use SimSwap.
+
+SimSwap uses the Global Network Platform authentication mechanism, so the
+authorisation flow looks a little different from other API Clients. Under
+the hood, the SDK will handle multiple calls for you to configure a
+CAMARA standard access token.
+
+Here's an example of checking if a SIM has been recently been swapped:
+
+```php
+$credentials = new \Vonage\Client\Credentials\Gnp(
+    'tel:+447700900000',
+    fopen('./my-private-key'),
+    'my-application-id'
+);
+
+$client = new \Vonage\Client($credentials);
+
+if ($client->simswap()->checkSimSwap('07700009999', 240)) {
+    echo 'Warning: SIM Swap Check Failed'
+} else {
+    echo 'SIM Swap Check Pass'
+}
+```
+
+And here is how you retrieve the swap date:
+
+```php
+$credentials = new \Vonage\Client\Credentials\Gnp(
+    'tel:+447700900000',
+    fopen('./my-private-key'),
+    'my-application-id'
+);
+
+$client = new \Vonage\Client($credentials);
+$date = $client->simswap()->checkSimSwapDate('07700009999')
+
+echo $date;
+```
+
+
 ### Get Information About a Number
 
 The [Number Insights API](https://developer.nexmo.com/api/number-insight) allows a user to check that a number is valid and to find out more about how to use it.
