@@ -673,6 +673,28 @@ class ClientTest extends VonageTestCase
         $this->assertTrue($result);
     }
 
+    public function testWillHandleNextWorkflow(): void
+    {
+        $requestId = 'c11236f4-00bf-4b89-84ba-88b25df97315';
+
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api.nexmo.com/v2/verify/c11236f4-00bf-4b89-84ba-88b25df97315/next_workflow',
+                $uriString
+            );
+
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('verify-next-workflow-success'));
+
+        $result = $this->verify2Client->nextWorkflow($requestId);
+
+        $this->assertTrue($result);
+    }
+
     /**
      * This method gets the fixtures and wraps them in a Response object to mock the API
      */
