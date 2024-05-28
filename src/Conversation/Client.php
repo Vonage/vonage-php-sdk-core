@@ -4,15 +4,16 @@ namespace Vonage\Conversation;
 
 use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
+use Vonage\Conversation\ConversationObjects\EventRequest;
 use Vonage\Conversation\ConversationObjects\Conversation;
 use Vonage\Conversation\ConversationObjects\CreateConversationRequest;
 use Vonage\Conversation\ConversationObjects\CreateMemberRequest;
 use Vonage\Conversation\ConversationObjects\Event;
-use Vonage\Conversation\ConversationObjects\Events\BaseEvent;
 use Vonage\Conversation\ConversationObjects\Member;
 use Vonage\Conversation\ConversationObjects\UpdateConversationRequest;
 use Vonage\Conversation\ConversationObjects\UpdateMemberRequest;
 use Vonage\Conversation\Filter\ListConversationFilter;
+use Vonage\Conversation\Filter\ListEventsFilter;
 use Vonage\Conversation\Filter\ListMembersFilter;
 use Vonage\Conversation\Filter\ListUserConversationsFilter;
 use Vonage\Entity\Hydrator\ArrayHydrator;
@@ -151,7 +152,7 @@ class Client implements APIClient
         return $member;
     }
 
-    public function createEvent(BaseEvent $event): Event
+    public function createEvent(EventRequest $event): Event
     {
         $response = $this->getAPIResource()->create($event->toArray(), '/' . $event->getConversationId() . '/events');
 
@@ -159,5 +160,31 @@ class Client implements APIClient
         $member->fromArray($response);
 
         return $member;
+    }
+
+    public function listEvents(string $conversationId, ListEventsFilter $filter): IterableAPICollection
+    {
+        $response = $this->getAPIResource()->search($filter, '/' . $conversationId . '/events');
+        $response->setHasPagination(false);
+        $response->setNaiveCount(true);
+        $response->setHalNoCollection(true);
+
+        return $response;
+    }
+
+    public function getEventById(string $eventId, string $conversationId): Event
+    {
+        $response = $this->getApiResource()->get($conversationId . '/events/' . $eventId);
+        $member = new Event();
+        $member->fromArray($response);
+
+        return $member;
+    }
+
+    public function deleteEventById(string $eventId, $conversationId): bool
+    {
+        $this->getApiResource()->delete($conversationId . '/events/' . $eventId);
+
+        return true;
     }
 }

@@ -2,16 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Vonage\Conversation\ConversationObjects\Events;
+namespace Vonage\Conversation\ConversationObjects;
 
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 
-abstract class BaseEvent implements ArrayHydrateInterface
+class EventRequest implements ArrayHydrateInterface
 {
-    protected string $conversationId;
-
-    public function __construct(protected string $eventType, protected string $from, protected array $body)
-    {
+    public function __construct(
+        protected string $conversationId,
+        protected string $eventType,
+        protected string $from,
+        protected array $body
+    ) {
     }
 
     public function toArray(): array
@@ -23,7 +25,7 @@ abstract class BaseEvent implements ArrayHydrateInterface
         ];
     }
 
-    public function fromArray(array $data): BaseEvent
+    public function fromArray(array $data): EventRequest
     {
         $this->from = $data['from'];
         $this->eventType = $data['type'];
@@ -37,7 +39,7 @@ abstract class BaseEvent implements ArrayHydrateInterface
         return $this->eventType;
     }
 
-    public function setEventType(string $eventType): BaseEvent
+    public function setEventType(string $eventType): EventRequest
     {
         $this->eventType = $eventType;
 
@@ -49,7 +51,7 @@ abstract class BaseEvent implements ArrayHydrateInterface
         return $this->from;
     }
 
-    public function setFrom(string $from): BaseEvent
+    public function setFrom(string $from): EventRequest
     {
         $this->from = $from;
 
@@ -61,7 +63,7 @@ abstract class BaseEvent implements ArrayHydrateInterface
         return $this->body;
     }
 
-    public function setBody(array $body): BaseEvent
+    public function setBody(array $body): EventRequest
     {
         $this->body = $body;
 
@@ -73,12 +75,10 @@ abstract class BaseEvent implements ArrayHydrateInterface
         return $this->conversationId;
     }
 
-    public function setConversationId(string $conversationId): BaseEvent
+    public function setConversationId(string $conversationId): EventRequest
     {
         $this->conversationId = $conversationId;
 
         return $this;
     }
-
-
 }
