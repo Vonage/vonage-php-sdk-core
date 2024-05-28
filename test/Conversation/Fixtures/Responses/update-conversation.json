@@ -1,0 +1,25 @@
+{
+  "id": "CON-d66d47de-5bcb-4300-94f0-0c9d4b948e99",
+  "name": "customer_sausages",
+  "display_name": "Customer Sausages",
+  "image_url": "https://example.com/image.png",
+  "state": "ACTIVE",
+  "sequence_number": 0,
+  "timestamp": {
+    "created": "2019-09-03T18:40:24.324Z",
+    "updated": "2019-09-03T18:50:24.324Z",
+    "destroyed": "2019-09-05T18:40:24.324Z"
+  },
+  "properties": {
+    "ttl": 60,
+    "custom_data": {
+      "property1": "string",
+      "property2": "string"
+    }
+  },
+  "_links": {
+    "self": {
+      "href": "https://api.nexmo.com/v1/conversations/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e99"
+    }
+  }
+}

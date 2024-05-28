@@ -1,0 +1,49 @@
+{
+  "page_size": 10,
+  "_embedded": {
+    "conversations": [
+      {
+        "id": "CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a",
+        "name": "customer_chat",
+        "display_name": "Customer Chat",
+        "image_url": "https://example.com/image.png",
+        "sequence_number": 0,
+        "properties": {
+          "ttl": 60,
+          "custom_data": {
+            "property1": "list-user-conversations",
+            "property2": "string"
+          }
+        },
+        "timestamp": {
+          "created": "2019-09-03T18:40:24.324Z",
+          "updated": "2019-09-03T18:50:24.324Z",
+          "destroyed": "2019-09-05T18:40:24.324Z"
+        },
+        "_links": {
+          "self": {
+            "href": "https://api.nexmo.com/v1/conversations/CON-7f977ca5-6e86-46a8-bdc9-67b9d8c8dfa9"
+          }
+        },
+        "_embedded": {
+          "id": "MEM-63f61863-4a51-4f6b-86e1-46edebio0391",
+          "state": "JOINED"
+        }
+      }
+    ]
+  },
+  "_links": {
+    "first": {
+      "href": "https://api.nexmo.com/v1/users/USR-82e028d9-5201-4f1e-8188-604b2d3471ec/conversations?order=desc&page_size=10"
+    },
+    "self": {
+      "href": "https://api.nexmo.com/v1/users/USR-82e028d9-5201-4f1e-8188-604b2d3471ec/conversations?order=desc&page_size=10&cursor=7EjDNQrAcipmOnc0HCzpQRkhBULzY44ljGUX4lXKyUIVfiZay5pv9wg="
+    },
+    "next": {
+      "href": "https://api.nexmo.com/v1/users/USR-82e028d9-5201-4f1e-8188-604b2d3471ec/conversations?order=desc&page_size=10&cursor=7EjDNQrAcipmOnc0HCzpQRkhBULzY44ljGUX4lXKyUIVfiZay5pv9wg="
+    },
+    "prev": {
+      "href": "https://api.nexmo.com/v1/users/USR-82e028d9-5201-4f1e-8188-604b2d3471ec/conversations?order=desc&page_size=10&cursor=7EjDNQrAcipmOnc0HCzpQRkhBULzY44ljGUX4lXKyUIVfiZay5pv9wg="
+    }
+  }
+}
