@@ -445,7 +445,115 @@ If you would like to have the system randomly pick a FROM number from the number
 leave off the second parameter to `\Vonage\Voice\OutboundCall`'s constructor, and the system will select a number
 at random for you.
 
+## Using the Conversations API
+
+This API is used for in-app messaging and is contains a wide range of features and
+concepts. For more information, take a look at the [API Documentation]()
+
+### Retrieve a list of Conversations with Filter
+
+```php
+$credentials = new \Vonage\Client\Credentials\Keypair(file_get_contents('./path-to-my-key.key', 'my-app-id'));
+$client = new \Vonage\Client($credentials);
+$filter = new \Vonage\Conversation\Filter\ListConversationFilter();
+$filter->setStartDate('2018-01-01 10:00:00');
+$filter->setEndDate('2019-01-01 10:00:00')
+
+$conversations = $client->conversations()->listConversations($filter)
+
+var_dump($conversations);
+```
+
+### Create a Conversation
+
+```php
+
+$credentials = new \Vonage\Client\Credentials\Keypair(file_get_contents('./path-to-my-key.key', 'my-app-id'));
+$client = new \Vonage\Client($credentials);
+
+$conversation = new CreateConversationRequest('customer_chat', 'Customer Chat', 'https://example.com/image.png');
+$conversation->setTtl(60);
+
+$conversationNumber = new ConversationNumber('447700900000');
+
+$conversationCallback = new ConversationCallback('https://example.com/eventcallback');
+$conversationCallback->setEventMask('member:invited, member:joined');
+$conversationCallback->setApplicationId('afa393df-2c46-475b-b2d6-92da4ea05481');
+$conversationCallback->setNccoUrl('https://example.com/ncco');
+
+$conversation->setNumber($conversationNumber);
+$conversation->setConversationCallback($conversationCallback);
+
+$response = $this->conversationsClient->createConversation($conversation);
+
+var_dump($response);
+
+```
+
+### List Members in a Conversation
+
+```php
+
+$credentials = new \Vonage\Client\Credentials\Keypair(file_get_contents('./path-to-my-key.key', 'my-app-id'));
+$client = new \Vonage\Client($credentials);
+
+$filter = new ListUserConversationsFilter();
+$filter->setState('INVITED');
+$filter->setIncludeCustomData(true);
+$filter->setOrderBy('created');
+$filter->setStartDate('2018-01-01 10:00:00');
+$filter->setEndDate('2018-01-01 12:00:00');
+$filter->setPageSize(5);
+$filter->setOrder('asc');
+
+$response = $this->conversationsClient->listUserConversationsByUserId('CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a');
+
+foreach ($response as $member) {
+    $members[] = $member;
+}
+
+var_dump($members);
+
+```
+
+### Create a Member in a Conversation
+
+```php
+
+$channel = Channel::createChannel(Channel::CHANNEL_TYPE_APP);
+$channel->addUserFromTypes([
+    'sms',
+    'phone'
+]);
+
+$channel->addUserToField('USR-82e028d9-9999-4f1e-8188-604b2d3471ec');
+
+$createMemberRequest = new CreateMemberRequest(
+    'invited',
+    $channel,
+    'USR-82e028d9-5201-4f1e-8188-604b2d3471ec',
+    'my_user_name',
+);
+
+$createMemberRequest->setAudioPossible(true);
+$createMemberRequest->setAudioEnabled(true);
+$createMemberRequest->setAudioEarmuffed(false);
+$createMemberRequest->setAudioMuted(false);
+$createMemberRequest->setKnockingId('4f1e-8188');
+$createMemberRequest->setMemberIdInviting('MEM-63f61863-4a51-4f6b-86e1-46edebio0391');
+$createMemberRequest->setFrom('value');
+
+$response = $this->conversationsClient->createMember(
+    $createMemberRequest,
+    'CON-63f61863-4a51-4f6b-86e1-46edebio0391'
+);
+
+var_dump($response);
+````
+
 ### Building a call with NCCO Actions
+
+### Create an Event
 
 Full parameter lists for NCCO Actions can be found in the [Voice API Docs](https://developer.nexmo.com/voice/voice-api/ncco-reference).
 

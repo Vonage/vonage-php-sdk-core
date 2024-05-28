@@ -10,7 +10,6 @@ use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
 use Vonage\Client\APIResource;
 use Vonage\Messages\Channel\BaseMessage;
-use Vonage\Messages\Channel\Viber\MessageObjects\ViberActionObject;
 use Vonage\Messages\Channel\Viber\ViberFile;
 use Vonage\Messages\Channel\Viber\ViberVideo;
 use Vonage\Messages\Channel\WhatsApp\MessageObjects\StickerObject;
