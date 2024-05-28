@@ -128,13 +128,13 @@ class CreateConversationRequest implements ArrayHydrateInterface
         }
 
         if (isset($data['numbers'])) {
-            $numbers = new ConversationNumber(null);
-            $numbers->fromArray($data['numbers']);
-            $this->setNumbers($numbers);
+            $number = new ConversationNumber(null);
+            $number->fromArray($data['numbers']);
+            $this->setNumber($number);
         }
 
         if (isset($data['callback'])) {
-            $callback = new Callback();
+            $callback = new ConversationCallback();
             $callback->fromArray($data['callback']);
             $this->setConversationCallback($callback);
         }
