@@ -8,7 +8,7 @@ Client Library for PHP
 
 ![The Vonage logo](./vonage_logo.png)
 
-*This library requires a minimum PHP version of 8.0*
+*This library requires a minimum PHP version of 8.1*
 
 This is the PHP client library for use Vonage's API. To use this, you'll need a Vonage account. [Sign up for free here](https://ui.idp.vonage.com/ui/auth/registration).
 
