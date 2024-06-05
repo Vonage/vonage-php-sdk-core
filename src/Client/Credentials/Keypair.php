@@ -4,19 +4,12 @@ declare(strict_types=1);
 
 namespace Vonage\Client\Credentials;
 
-use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Encoding\JoseEncoder;
 use Lcobucci\JWT\Signer\Key;
 use Lcobucci\JWT\Signer\Key\InMemory;
-use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Lcobucci\JWT\Token;
 use Vonage\Application\Application;
-use Vonage\Client\Exception\Validation;
 use Vonage\JWT\TokenGenerator;
-
-use function base64_encode;
-use function mt_rand;
-use function time;
 
 /**
  * @property mixed application

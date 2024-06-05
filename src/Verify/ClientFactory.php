@@ -6,8 +6,6 @@ namespace Vonage\Verify;
 
 use Psr\Container\ContainerInterface;
 use Vonage\Client\APIResource;
-use Vonage\Client\Credentials\Handler\BasicHandler;
-use Vonage\Client\Credentials\Handler\KeypairHandler;
 use Vonage\Client\Credentials\Handler\TokenBodyHandler;
 
 class ClientFactory
