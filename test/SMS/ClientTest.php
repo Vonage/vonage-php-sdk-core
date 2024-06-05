@@ -6,19 +6,18 @@ namespace VonageTest\SMS;
 
 use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
-use Psr\Log\LoggerInterface;
-use VonageTest\VonageTestCase;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
+use Psr\Log\LoggerInterface;
+use VonageTest\Traits\Psr7AssertionTrait;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Client\Exception\Server as ServerException;
 use Vonage\SMS\Client as SMSClient;
 use Vonage\SMS\ExceptionErrorHandler;
 use Vonage\SMS\Message\SMS;
-use VonageTest\Psr7AssertionTrait;
-
+use VonageTest\VonageTestCase;
 use function fopen;
 use function json_decode;
 use function str_repeat;

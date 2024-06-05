@@ -8,12 +8,12 @@ use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\ExpectationFailedException;
 use Prophecy\Prophecy\ObjectProphecy;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
+use VonageTest\Traits\Psr7AssertionTrait;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Client\Factory\MapFactory;
 use Vonage\Subaccount\Client as SubaccountClient;
 use Vonage\Subaccount\ClientFactory;
-use VonageTest\Psr7AssertionTrait;
 use VonageTest\VonageTestCase;
 
 class ClientFactoryTest extends VonageTestCase

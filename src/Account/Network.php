@@ -1,19 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace Vonage;
+namespace Vonage\Account;
 
 use Vonage\Entity\EntityInterface;
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 use Vonage\Entity\JsonResponseTrait;
 use Vonage\Entity\JsonSerializableTrait;
 use Vonage\Entity\NoRequestResponseTrait;
-
-use function get_class;
 use function ltrim;
 use function preg_replace;
 use function strtolower;
-use function trigger_error;
 
 class Network implements
     EntityInterface,
