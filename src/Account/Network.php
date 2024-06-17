@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Vonage\Account;
@@ -8,6 +9,7 @@ use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 use Vonage\Entity\JsonResponseTrait;
 use Vonage\Entity\JsonSerializableTrait;
 use Vonage\Entity\NoRequestResponseTrait;
+
 use function ltrim;
 use function preg_replace;
 use function strtolower;

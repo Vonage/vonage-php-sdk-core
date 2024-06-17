@@ -356,6 +356,7 @@ class Client implements LoggerAwareInterface
 
     /**
      * @throws ClientException
+     * @deprecated Use the Vonage/JWT library if you need to generate a token
      */
     public function generateJwt($claims = []): Token
     {
