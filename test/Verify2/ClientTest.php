@@ -8,19 +8,18 @@ use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
+use VonageTest\Traits\Psr7AssertionTrait;
+use Vonage\Client;
 use Vonage\Client\APIResource;
+use Vonage\Verify2\Client as Verify2Client;
 use Vonage\Verify2\Request\EmailRequest;
 use Vonage\Verify2\Request\SilentAuthRequest;
 use Vonage\Verify2\Request\SMSRequest;
 use Vonage\Verify2\Request\VoiceRequest;
 use Vonage\Verify2\Request\WhatsAppInteractiveRequest;
 use Vonage\Verify2\Request\WhatsAppRequest;
-use Vonage\Verify2\VerifyObjects\VerificationLocale;
 use Vonage\Verify2\VerifyObjects\VerificationWorkflow;
-use VonageTest\Psr7AssertionTrait;
 use VonageTest\VonageTestCase;
-use Vonage\Client;
-use Vonage\Verify2\Client as Verify2Client;
 
 class ClientTest extends VonageTestCase
 {
@@ -228,6 +227,8 @@ class ClientTest extends VonageTestCase
         if (!$valid) {
             $this->expectException(\OutOfBoundsException::class);
         }
+
+        $message = 'You have request a PIN which is ${code}. ${customer-name}';
 
         $payload = [
             'to' => '07785254785',

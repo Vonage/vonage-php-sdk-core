@@ -7,7 +7,6 @@ namespace Vonage\Verify;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Vonage\Client\Exception\Request;
-use Vonage\Client\Exception\Server;
 
 use function json_decode;
 

@@ -3,6 +3,7 @@
 namespace VonageTest;
 
 use Laminas\Diactoros\Response;
+use VonageTest\Traits\Psr7AssertionTrait;
 
 trait HTTPTestTrait
 {

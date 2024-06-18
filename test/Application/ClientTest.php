@@ -10,6 +10,7 @@ use Laminas\Diactoros\Response;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
+use VonageTest\Traits\Psr7AssertionTrait;
 use Vonage\Application\Application;
 use Vonage\Application\Client as ApplicationClient;
 use Vonage\Application\Hydrator;
@@ -22,9 +23,7 @@ use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Client\Exception\Server as ServerException;
-use VonageTest\Psr7AssertionTrait;
 use VonageTest\VonageTestCase;
-
 use function fopen;
 use function json_decode;
 use function substr;

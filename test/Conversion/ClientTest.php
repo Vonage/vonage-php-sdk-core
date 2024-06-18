@@ -7,18 +7,17 @@ namespace VonageTest\Conversion;
 use Laminas\Diactoros\Response;
 use PHPUnit\Framework\MockObject\MockObject;
 use Prophecy\Argument;
-use Vonage\Client as VonageClient;
-use VonageTest\VonageTestCase;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
+use VonageTest\Traits\Psr7AssertionTrait;
 use Vonage\Client;
+use Vonage\Client as VonageClient;
 use Vonage\Client\APIResource;
 use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Client\Exception\Request as RequestException;
 use Vonage\Client\Exception\Server as ServerException;
 use Vonage\Conversion\Client as ConversionClient;
-use VonageTest\Psr7AssertionTrait;
-
+use VonageTest\VonageTestCase;
 use function fopen;
 
 class ClientTest extends VonageTestCase

@@ -3,12 +3,14 @@
 namespace VonageTest\Meetings;
 
 use Laminas\Diactoros\Response;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 use Prophecy\Prophet;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
+use VonageTest\Traits\Psr7AssertionTrait;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Client\Credentials\Handler\KeypairHandler;
@@ -18,12 +20,10 @@ use Vonage\Client\Exception\Validation;
 use Vonage\Meetings\Application;
 use Vonage\Meetings\ApplicationTheme;
 use Vonage\Meetings\Client as MeetingsClient;
-use PHPUnit\Framework\TestCase;
 use Vonage\Meetings\DialInNumber;
 use Vonage\Meetings\ExceptionErrorHandler;
 use Vonage\Meetings\Recording;
 use Vonage\Meetings\Room;
-use VonageTest\Psr7AssertionTrait;
 
 class ClientTest extends TestCase
 {

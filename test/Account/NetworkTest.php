@@ -1,16 +1,9 @@
 <?php
 
-/**
- * Vonage Client Library for PHP
- *
- * @copyright Copyright (c) 2016 Vonage, Inc. (http://vonage.com)
- * @license   https://github.com/vonage/vonage-php/blob/master/LICENSE MIT License
- */
+namespace Account;
 
-namespace VonageTest;
-
+use Vonage\Account\Network;
 use VonageTest\VonageTestCase;
-use Vonage\Network;
 
 class NetworkTest extends VonageTestCase
 {

@@ -9,16 +9,15 @@ use Laminas\Diactoros\Response;
 use Laminas\Diactoros\ResponseFactory;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
-use Vonage\Entity\Hydrator\ArrayHydrator;
-use Vonage\Users\Client as UsersClient;
+use VonageTest\Traits\Psr7AssertionTrait;
 use Vonage\Client;
 use Vonage\Client\APIResource;
+use Vonage\Entity\Hydrator\ArrayHydrator;
+use Vonage\Users\Client as UsersClient;
 use Vonage\Users\Filter\UserFilter;
 use Vonage\Users\Hydrator;
 use Vonage\Users\User;
-use VonageTest\Psr7AssertionTrait;
 use VonageTest\VonageTestCase;
-
 use function fopen;
 
 class ClientTest extends VonageTestCase

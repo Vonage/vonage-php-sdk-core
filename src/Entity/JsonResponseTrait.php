@@ -35,6 +35,7 @@ trait JsonResponseTrait
             );
         }
 
+        /** @phpstan-ignore-next-line */
         if (($response = @$this->getResponse()) && ($response instanceof ResponseInterface)) {
             if ($response->getBody()->isSeekable()) {
                 $response->getBody()->rewind();

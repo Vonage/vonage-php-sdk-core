@@ -6,11 +6,6 @@ parameters:
 			path: src/Account/Price.php
 
 		-
-			message: "#^Result of method Vonage\\\\Account\\\\Price\\:\\:getResponse\\(\\) \\(void\\) is used\\.$#"
-			count: 1
-			path: src/Account/Price.php
-
-		-
 			message: "#^Access to an undefined property Vonage\\\\Application\\\\Application\\:\\:\\$data\\.$#"
 			count: 1
 			path: src/Application/Application.php
@@ -56,19 +51,9 @@ parameters:
 			path: src/Client/Exception/Server.php
 
 		-
-			message: "#^Result of method Vonage\\\\Network\\:\\:getResponse\\(\\) \\(void\\) is used\\.$#"
-			count: 1
-			path: src/Network.php
-
-		-
 			message: "#^Unsafe usage of new static\\(\\)\\.$#"
 			count: 1
 			path: src/Network/Number/Response.php
-
-		-
-			message: "#^Result of method Vonage\\\\Numbers\\\\Number\\:\\:getResponse\\(\\) \\(void\\) is used\\.$#"
-			count: 1
-			path: src/Numbers/Number.php
 
 		-
 			message: "#^Access to an undefined property Vonage\\\\Verify\\\\Verification\\:\\:\\$data\\.$#"

@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace VonageTest\Insights;
 
 use Laminas\Diactoros\Response;
-use VonageTest\VonageTestCase;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
+use VonageTest\Traits\Psr7AssertionTrait;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Client\Exception\Request as RequestException;
@@ -19,8 +19,7 @@ use Vonage\Insights\Basic;
 use Vonage\Insights\Client as InsightsClient;
 use Vonage\Insights\Standard;
 use Vonage\Insights\StandardCnam;
-use VonageTest\Psr7AssertionTrait;
-
+use VonageTest\VonageTestCase;
 use function fopen;
 
 class ClientTest extends VonageTestCase

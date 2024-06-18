@@ -5,20 +5,19 @@ declare(strict_types=1);
 namespace VonageTest\Account;
 
 use Laminas\Diactoros\Response;
-use Vonage\Client\APIResource;
-use VonageTest\VonageTestCase;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
+use VonageTest\Traits\Psr7AssertionTrait;
 use Vonage\Account\Client as AccountClient;
+use Vonage\Account\Network;
 use Vonage\Account\PrefixPrice;
 use Vonage\Client;
+use Vonage\Client\APIResource;
 use Vonage\Client\Exception as ClientException;
 use Vonage\Client\Exception\Request as RequestException;
 use Vonage\Client\Exception\Server as ServerException;
-use Vonage\Network;
-use VonageTest\Psr7AssertionTrait;
-
+use VonageTest\VonageTestCase;
 use function fopen;
 
 class ClientTest extends VonageTestCase
