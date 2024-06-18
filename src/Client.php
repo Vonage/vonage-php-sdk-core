@@ -75,7 +75,7 @@ use function strpos;
  * @method Messages\Client messages()
  * @method Application\Client applications()
  * @method Conversion\Client conversion()
- * @method Conversation\Client conversations()
+ * @method Conversation\Client conversation()
  * @method Insights\Client insights()
  * @method Numbers\Client numbers()
  * @method Redact\Client redact()
