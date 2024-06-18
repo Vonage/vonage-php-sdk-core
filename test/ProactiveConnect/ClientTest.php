@@ -9,15 +9,15 @@ use Laminas\Diactoros\Response;
 use Laminas\Diactoros\Stream;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
+use VonageTest\Traits\Psr7AssertionTrait;
+use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Entity\IterableAPICollection;
+use Vonage\ProactiveConnect\Client as ProactiveConnectClient;
 use Vonage\ProactiveConnect\Objects\ListItem;
 use Vonage\ProactiveConnect\Objects\ManualList;
 use Vonage\ProactiveConnect\Objects\SalesforceList;
-use VonageTest\Psr7AssertionTrait;
 use VonageTest\VonageTestCase;
-use Vonage\Client;
-use Vonage\ProactiveConnect\Client as ProactiveConnectClient;
 
 class ClientTest extends VonageTestCase
 {

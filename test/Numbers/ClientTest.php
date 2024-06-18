@@ -5,21 +5,20 @@ declare(strict_types=1);
 namespace VonageTest\Numbers;
 
 use Laminas\Diactoros\Response;
-use Vonage\Client\Credentials\Basic;
-use Vonage\Client\Credentials\Container;
-use Vonage\Numbers\Filter\OwnedNumbers;
-use VonageTest\VonageTestCase;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
+use VonageTest\Traits\Psr7AssertionTrait;
 use Vonage\Client\APIResource;
+use Vonage\Client\Credentials\Basic;
+use Vonage\Client\Credentials\Container;
 use Vonage\Client\Exception as ClientException;
 use Vonage\Client\Exception\Request as RequestException;
 use Vonage\Numbers\Client as NumbersClient;
 use Vonage\Numbers\Filter\AvailableNumbers;
+use Vonage\Numbers\Filter\OwnedNumbers;
 use Vonage\Numbers\Number;
-use VonageTest\Psr7AssertionTrait;
-
+use VonageTest\VonageTestCase;
 use function fopen;
 use function is_null;
 

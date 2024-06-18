@@ -5,22 +5,18 @@ declare(strict_types=1);
 namespace VonageTest\Verify;
 
 use Laminas\Diactoros\Response;
-use Vonage\Client\Credentials\Handler\BasicHandler;
-use Vonage\Verify\ExceptionErrorHandler;
-use VonageTest\VonageTestCase;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
+use VonageTest\Traits\Psr7AssertionTrait;
 use Vonage\Client;
 use Vonage\Client\Exception\Server as ServerException;
 use Vonage\Verify\Client as VerifyClient;
+use Vonage\Verify\ExceptionErrorHandler;
 use Vonage\Verify\Request;
 use Vonage\Verify\RequestPSD2;
 use Vonage\Verify\Verification;
-use VonageTest\Psr7AssertionTrait;
-
-use function array_unshift;
-use function call_user_func_array;
+use VonageTest\VonageTestCase;
 use function fopen;
 use function serialize;
 

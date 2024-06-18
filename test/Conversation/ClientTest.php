@@ -8,6 +8,7 @@ use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
+use VonageTest\Traits\Psr7AssertionTrait;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Conversation\Client as ConversationClient;
@@ -26,7 +27,6 @@ use Vonage\Conversation\Filter\ListEventsFilter;
 use Vonage\Conversation\Filter\ListMembersFilter;
 use Vonage\Conversation\Filter\ListUserConversationsFilter;
 use Vonage\Entity\IterableAPICollection;
-use VonageTest\Psr7AssertionTrait;
 use VonageTest\VonageTestCase;
 
 class ClientTest extends VonageTestCase

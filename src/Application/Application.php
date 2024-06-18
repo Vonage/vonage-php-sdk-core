@@ -11,7 +11,6 @@ use Vonage\Entity\EntityInterface;
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 use Vonage\Entity\JsonResponseTrait;
 use Vonage\Entity\JsonSerializableTrait;
-use Vonage\Entity\JsonUnserializableInterface;
 use Vonage\Entity\Psr7Trait;
 
 use function count;

@@ -8,6 +8,7 @@ use Laminas\Diactoros\Response;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Http\Message\RequestInterface;
+use VonageTest\Traits\Psr7AssertionTrait;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Subaccount\Client as SubaccountClient;
@@ -18,7 +19,6 @@ use Vonage\Subaccount\Request\TransferCreditRequest;
 use Vonage\Subaccount\SubaccountObjects\Account;
 use Vonage\Subaccount\SubaccountObjects\BalanceTransfer;
 use Vonage\Subaccount\SubaccountObjects\CreditTransfer;
-use VonageTest\Psr7AssertionTrait;
 use VonageTest\VonageTestCase;
 
 class ClientTest extends VonageTestCase

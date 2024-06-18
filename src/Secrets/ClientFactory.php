@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Vonage\Secrets;
 
 use Vonage\Client\APIResource;
-use Vonage\Client\Credentials\Basic;
 use Vonage\Client\Credentials\Handler\BasicHandler;
 use Vonage\Client\Factory\FactoryInterface;
 

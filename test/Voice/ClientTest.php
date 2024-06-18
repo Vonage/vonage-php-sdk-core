@@ -5,15 +5,13 @@ declare(strict_types=1);
 namespace VonageTest\Voice;
 
 use Laminas\Diactoros\Response;
-use Vonage\Voice\VoiceObjects\AdvancedMachineDetection;
-use VonageTest\VonageTestCase;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
+use VonageTest\Traits\Psr7AssertionTrait;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Client\Exception\Request as RequestException;
-use VonageTest\Psr7AssertionTrait;
 use Vonage\Voice\CallAction;
 use Vonage\Voice\Client as VoiceClient;
 use Vonage\Voice\Endpoint\Phone;
@@ -21,8 +19,9 @@ use Vonage\Voice\Filter\VoiceFilter;
 use Vonage\Voice\NCCO\Action\Talk;
 use Vonage\Voice\NCCO\NCCO;
 use Vonage\Voice\OutboundCall;
+use Vonage\Voice\VoiceObjects\AdvancedMachineDetection;
 use Vonage\Voice\Webhook;
-
+use VonageTest\VonageTestCase;
 use function fopen;
 use function json_decode;
 use function json_encode;
