@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Vonage\Client;
 
 use Composer\InstalledVersions;
-use Laminas\Diactoros\Uri;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -16,15 +15,10 @@ class HttpClient
 {
     use LoggerTrait;
 
-    public string $apiUrl = 'https://api.nexmo.com';
-
-    public string $restUrl = 'https://rest.nexmo.com';
-
-    protected bool $debug = false;
-
     public function __construct(
+        protected bool $debug = false,
+        protected ?string $app = null,
         protected ?ClientInterface $httpClientLibrary = null,
-        protected array $options = ['show_deprecations' => false, 'debug' => false]
     ) {
         if (is_null($httpClientLibrary)) {
             // Since the user did not pass a client, try and make a client
@@ -35,39 +29,39 @@ class HttpClient
             if ($guzzleVersion >= 6.0 && $guzzleVersion < 7) {
                 /** @noinspection PhpUndefinedNamespaceInspection */
                 /** @noinspection PhpUndefinedClassInspection */
-                $client = new \Http\Adapter\Guzzle6\Client();
+                $httpClientLibrary = new \Http\Adapter\Guzzle6\Client();
             }
 
             if ($guzzleVersion >= 7.0 && $guzzleVersion < 8.0) {
-                $client = new \GuzzleHttp\Client();
+                $httpClientLibrary = new \GuzzleHttp\Client();
             }
         }
 
-        $this->setHttpClientLibrary($client);
-
-        // If they've provided alternative URLs, use that instead
-        // of the defaults
-        if (isset($options['base_rest_url'])) {
-            $this->restUrl = $options['base_rest_url'];
-        }
-
-        if (isset($options['base_api_url'])) {
-            $this->apiUrl = $options['base_api_url'];
-        }
-
-        if (isset($options['debug'])) {
-            $this->debug = $options['debug'];
-        }
+        $this->setHttpClientLibrary($httpClientLibrary);
     }
 
-    public function getRestUrl(): string
+    public function isDebug(): bool
     {
-        return $this->restUrl;
+        return $this->debug;
     }
 
-    public function getApiUrl(): string
+    public function setDebug(bool $debug): HttpClient
     {
-        return $this->apiUrl;
+        $this->debug = $debug;
+
+        return $this;
+    }
+
+    public function getApp(): ?string
+    {
+        return $this->app;
+    }
+
+    public function setApp(?string $app): HttpClient
+    {
+        $this->app = $app;
+
+        return $this;
     }
 
     /**
@@ -93,18 +87,6 @@ class HttpClient
 
     public function send(RequestInterface $request): ResponseInterface
     {
-        // Allow any part of the URI to be replaced with a simple search
-        if (isset($this->options['url'])) {
-            foreach ($this->options['url'] as $search => $replace) {
-                $uri = (string)$request->getUri();
-                $new = str_replace($search, $replace, $uri);
-
-                if ($uri !== $new) {
-                    $request = $request->withUri(new Uri($new));
-                }
-            }
-        }
-
         // The user agent must be in the following format:
         // LIBRARY-NAME/LIBRARY-VERSION LANGUAGE-NAME/LANGUAGE-VERSION [APP-NAME/APP-VERSION]
         // See https://github.com/Vonage/client-library-specification/blob/master/SPECIFICATION.md#reporting
@@ -117,9 +99,8 @@ class HttpClient
         $userAgent[] = 'php/' . PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION;
 
         // If we have an app set, add that to the UA
-        if (isset($this->options['app'])) {
-            $app = $this->options['app'];
-            $userAgent[] = $app['name'] . '/' . $app['version'];
+        if (!is_null($this->getApp())) {
+            $userAgent[] = $this->getApp()['name'] . '/' . $this->getApp()['version'];
         }
 
         // Set the header. Build by joining all the parts we have with a space
@@ -127,7 +108,7 @@ class HttpClient
         /** @noinspection PhpUnnecessaryLocalVariableInspection */
         $response = $this->httpClientLibrary->sendRequest($request);
 
-        if ($this->debug) {
+        if ($this->isDebug()) {
             $id = uniqid('', true);
             $request->getBody()->rewind();
             $response->getBody()->rewind();
