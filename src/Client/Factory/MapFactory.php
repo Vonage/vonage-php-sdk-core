@@ -30,12 +30,12 @@ class MapFactory implements FactoryInterface, ContainerInterface
          * Map of api namespaces to classes.
          */
         protected $map,
+
         /**
          * Vonage Client
          */
         protected Client $client
-    )
-    {
+    ) {
     }
 
     /**
@@ -105,10 +105,6 @@ class MapFactory implements FactoryInterface, ContainerInterface
             if (is_callable($instance)) {
                 $instance = $instance($this);
             }
-        }
-
-        if ($instance instanceof Client\ClientAwareInterface) {
-            $instance->setClient($this->client);
         }
 
         if ($instance instanceof LoggerAwareInterface && $this->has(LoggerInterface::class)) {

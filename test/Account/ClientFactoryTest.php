@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace VonageTest\Account;
 
+use Hoa\Iterator\Map;
 use VonageTest\VonageTestCase;
 use Vonage\Account\ClientFactory;
 use Vonage\Client;
@@ -21,12 +22,14 @@ class ClientFactoryTest extends VonageTestCase
 
     public function setUp(): void
     {
-        $this->vonageClient = $this->prophesize(Client::class);
-        $this->vonageClient->getRestUrl()->willReturn('https://rest.nexmo.com');
-        $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
+        // Configure a base HTTPClient Object
+        $httpClient = new \Vonage\Client\HttpClient();
 
-        /** @noinspection PhpParamsInspection */
-        $this->mapFactory = new MapFactory([APIResource::class => APIResource::class], $this->vonageClient->reveal());
+        $this->mapFactory = new MapFactory([
+            APIResource::class => APIResource::class,
+            'credentials' => new Client\Credentials\Basic('xxx', 'yyy'),
+            \Vonage\Client\HttpClient::class => $httpClient,
+        ], $this->prophesize(Client::class)->reveal());
     }
 
     public function testURIsAreCorrect(): void
