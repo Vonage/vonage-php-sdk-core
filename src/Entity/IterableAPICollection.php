@@ -38,7 +38,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
     protected APIResource $api;
 
     /**
-     * This allows for override if the endpoint API uses a different query key
+     * This allows for override if the endpoint API uÏses a different query key
      */
     protected string $pageIndexKey = 'page_index';
 
@@ -110,9 +110,10 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
 
     protected ?FilterInterface $filter = null;
 
-    protected string $collectionName = '';
-
-    protected string $collectionPath = '';
+    /**
+     * Used when HAL convention is used, but there is no collection name in the result
+     */
+    protected bool $halNoCollection = false;
 
     protected $hydrator;
 
@@ -121,6 +122,18 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
      * but differs from noQueryParameters when you want to use other filters
      */
     protected bool $hasPagination = true;
+
+    public function isHalNoCollection(): bool
+    {
+        return $this->halNoCollection;
+    }
+
+    public function setHalNoCollection(bool $halNoCollection): IterableAPICollection
+    {
+        $this->halNoCollection = $halNoCollection;
+
+        return $this;
+    }
 
     public function getPageIndexKey(): string
     {
@@ -181,6 +194,10 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
         $collectionName = $this->getApiResource()->getCollectionName();
 
         if ($this->getApiResource()->isHAL()) {
+            if ($this->isHalNoCollection() === true) {
+                return $this->pageData['_embedded'];
+            }
+
             return $this->pageData['_embedded'][$collectionName];
         }
 
@@ -248,6 +265,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
 
         //all hal collections have an `_embedded` object, we expect there to be a property matching the collection name
         if (
+            $this->isHalNoCollection() === false &&
             $this->getApiResource()->isHAL() &&
             !isset($this->pageData['_embedded'][$this->getApiResource()->getCollectionName()])
         ) {
@@ -623,7 +641,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
         $this->index = $index;
 
         return $this;
-}
+    }
 
     /**
      * @return bool

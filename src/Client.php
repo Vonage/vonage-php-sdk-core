@@ -50,6 +50,7 @@ use Vonage\Messages\ClientFactory as MessagesClientFactory;
 use Vonage\Users\ClientFactory as UsersClientFactory;
 use Vonage\Verify\ClientFactory as VerifyClientFactory;
 use Vonage\Verify2\ClientFactory as Verify2ClientFactory;
+use Vonage\Conversation\ClientFactory as ConversationClientFactory;
 use Vonage\Verify\Verification;
 use Vonage\Voice\ClientFactory as VoiceClientFactory;
 use Vonage\Logger\{LoggerAwareInterface, LoggerTrait};
@@ -74,6 +75,7 @@ use function strpos;
  * @method Messages\Client messages()
  * @method Application\Client applications()
  * @method Conversion\Client conversion()
+ * @method Conversation\Client conversation()
  * @method Insights\Client insights()
  * @method Numbers\Client numbers()
  * @method Redact\Client redact()
@@ -212,6 +214,7 @@ class Client implements LoggerAwareInterface
             'account' => ClientFactory::class,
             'applications' => ApplicationClientFactory::class,
             'conversion' => ConversionClientFactory::class,
+            'conversation' => ConversationClientFactory::class,
             'insights' => InsightsClientFactory::class,
             'numbers' => NumbersClientFactory::class,
             'meetings' => MeetingsClientFactory::class,
@@ -357,6 +360,7 @@ class Client implements LoggerAwareInterface
 
     /**
      * @throws ClientException
+     * @deprecated Use the Vonage/JWT library if you need to generate a token
      */
     public function generateJwt($claims = []): Token
     {

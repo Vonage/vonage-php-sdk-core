@@ -1,0 +1,34 @@
+{
+  "page_size": 10,
+  "_embedded": {
+    "conversations": [
+      {
+        "id": "CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a",
+        "name": "customer_chat",
+        "display_name": "Customer Chat",
+        "image_url": "https://example.com/image.png",
+        "timestamp": {
+          "created": "2019-09-03T18:40:24.324Z",
+          "updated": "2019-09-03T18:40:24.324Z",
+          "destroyed": "2019-09-03T18:40:24.324Z"
+        },
+        "_links": {
+          "self": {
+            "href": "https://api.nexmo.com/v1/conversations/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a"
+          }
+        }
+      }
+    ]
+  },
+  "_links": {
+    "first": {
+      "href": "https://api.nexmo.com/v1/conversations?order=desc&page_size=10"
+    },
+    "self": {
+      "href": "https://api.nexmo.com/v1/conversations?order=desc&page_size=10&cursor=7EjDNQrAcipmOnc0HCzpQRkhBULzY44ljGUX4lXKyUIVfiZay5pv9wg="
+    },
+    "prev": {
+      "href": "https://api.nexmo.com/v1/conversations?order=desc&page_size=10&cursor=7EjDNQrAcipmOnc0HCzpQRkhBULzY44ljGUX4lXKyUIVfiZay5pv9wg="
+    }
+  }
+}
