@@ -228,13 +228,15 @@ class Client implements LoggerAwareInterface
 
             // Additional utility classes
             APIResource::class => APIResource::class,
-            Client::class => function() { return $this; }
+            Client::class => function () {
+                return $this;
+            }
         ];
 
         if (class_exists('Vonage\Video\ClientFactory')) {
             $services['video'] = 'Vonage\Video\ClientFactory';
         } else {
-            $services['video'] = function() {
+            $services['video'] = function () {
                 throw new \RuntimeException('Please install @vonage/video to use the Video API');
             };
         }
