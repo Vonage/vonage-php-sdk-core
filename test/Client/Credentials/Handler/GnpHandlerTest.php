@@ -8,13 +8,9 @@ use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 use Vonage\Client;
-use Vonage\Client\Credentials\Basic;
 use Vonage\Client\Credentials\Gnp;
-use Vonage\Client\Credentials\Handler\BasicQueryHandler;
 use PHPUnit\Framework\TestCase;
 use Vonage\Client\Credentials\Handler\GnpHandler;
-use Vonage\Client\Credentials\Handler\KeypairHandler;
-use Vonage\Client\Credentials\Keypair;
 use VonageTest\Psr7AssertionTrait;
 
 class GnpHandlerTest extends TestCase
