@@ -16,7 +16,7 @@ class ClientFactory
         $api = $container->make(APIResource::class);
         $api
             ->setBaseUri('/v1/calls')
-            ->setAuthHandler(new KeypairHandler())
+            ->setAuthHandlers(new KeypairHandler())
             ->setCollectionName('calls');
 
         return new Client($api);

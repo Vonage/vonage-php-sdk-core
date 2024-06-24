@@ -75,7 +75,7 @@ class ClientTest extends VonageTestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/ni/advanced/async/json', $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('GET', $request->getMethod());
+           $this->assertRequestMethod('GET', $request);
             $this->assertRequestQueryContains("number", "14155550100", $request);
             $this->assertRequestQueryContains("callback", "example.com/hook", $request);
 
@@ -156,7 +156,7 @@ class ClientTest extends VonageTestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($expectedPath) {
             $this->assertEquals($expectedPath, $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('GET', $request->getMethod());
+           $this->assertRequestMethod('GET', $request);
 
             $this->assertRequestQueryContains("number", "14155550100", $request);
             return true;
@@ -172,7 +172,7 @@ class ClientTest extends VonageTestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($expectedPath) {
             $this->assertEquals($expectedPath, $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('GET', $request->getMethod());
+           $this->assertRequestMethod('GET', $request);
 
             $this->assertRequestQueryContains("number", "14155550100", $request);
             $this->assertRequestQueryContains("cnam", "true", $request);

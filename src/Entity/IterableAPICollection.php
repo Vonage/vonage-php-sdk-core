@@ -544,7 +544,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
 
         $request = new Request($requestUri, 'GET');
 
-        if ($this->getApiResource()->getAuthHandler()) {
+        if ($this->getApiResource()->getAuthHandlers()) {
             $request = $this->getApiResource()->addAuth($request);
         }
 

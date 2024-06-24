@@ -88,7 +88,7 @@ class ClientTest extends VonageTestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id) {
             $this->assertEquals('/v2/applications/' . $id, $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('GET', $request->getMethod());
+           $this->assertRequestMethod('GET', $request);
             return true;
         }))->willReturn($this->getResponse());
 

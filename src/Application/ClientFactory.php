@@ -17,7 +17,7 @@ class ClientFactory
         $api
             ->setBaseUri('/v2/applications')
             ->setCollectionName('applications')
-            ->setAuthHandler(new BasicHandler());
+            ->setAuthHandlers(new BasicHandler());
 
         return new Client($api, new Hydrator());
     }

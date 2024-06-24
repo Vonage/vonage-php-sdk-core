@@ -17,7 +17,7 @@ class ClientFactory
             ->setBaseUrl($accountApi->getClient()->getRestUrl())
             ->setIsHAL(false)
             ->setBaseUri('/account')
-            ->setAuthHandler(new BasicQueryHandler())
+            ->setAuthHandlers(new BasicQueryHandler())
         ;
 
         return new Client($accountApi);

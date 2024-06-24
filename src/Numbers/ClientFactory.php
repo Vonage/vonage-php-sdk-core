@@ -17,7 +17,7 @@ class ClientFactory
         $api
             ->setBaseUrl($api->getClient()->getRestUrl())
             ->setIsHAL(false)
-            ->setAuthHandler(new BasicHandler());
+            ->setAuthHandlers(new BasicHandler());
 
         return new Client($api);
     }

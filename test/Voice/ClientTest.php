@@ -57,7 +57,7 @@ class ClientTest extends VonageTestCase
         $this->api = (new APIResource())
             ->setBaseUri('/v1/calls')
             ->setCollectionName('calls')
-            ->setAuthHandler(new Client\Credentials\Handler\KeypairHandler())
+            ->setAuthHandlers(new Client\Credentials\Handler\KeypairHandler())
             ->setClient($this->vonageClient->reveal());
 
         $this->voiceClient = new VoiceClient($this->api);

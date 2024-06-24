@@ -20,7 +20,7 @@ class ClientFactory
         $api = $container->make(APIResource::class);
         $api
             ->setBaseUri('/v1/redact/transaction')
-            ->setAuthHandler(new BasicHandler())
+            ->setAuthHandlers(new BasicHandler())
             ->setCollectionName('');
 
         // This API has a slightly different format for the error message, so override

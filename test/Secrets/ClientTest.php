@@ -37,7 +37,7 @@ class ClientTest extends VonageTestCase
         $api = new APIResource();
         $api->setClient($this->vonage->reveal())
             ->setBaseUri('/accounts')
-            ->setAuthHandler(new VonageClient\Credentials\Handler\BasicHandler())
+            ->setAuthHandlers(new VonageClient\Credentials\Handler\BasicHandler())
             ->setCollectionName('secrets');
 
         $this->client = new Client($api);

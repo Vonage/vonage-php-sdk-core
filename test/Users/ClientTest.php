@@ -45,7 +45,7 @@ class ClientTest extends VonageTestCase
         $apiResource->setClient($this->vonageClient->reveal())
             ->setBaseUri('/v1/users')
             ->setCollectionName('users')
-            ->setAuthHandler(new Client\Credentials\Handler\KeypairHandler());
+            ->setAuthHandlers(new Client\Credentials\Handler\KeypairHandler());
 
         $hydrator = new ArrayHydrator();
         $hydrator->setPrototype(new User());
@@ -64,7 +64,7 @@ class ClientTest extends VonageTestCase
                 mb_substr($request->getHeaders()['Authorization'][0], 0, 7)
             );
 
-            $this->assertEquals('GET', $request->getMethod());
+           $this->assertRequestMethod('GET', $request);
 
             return true;
         }))->willReturn($this->getResponse('list-user-success'));
@@ -82,7 +82,7 @@ class ClientTest extends VonageTestCase
                 $uriString
             );
 
-            $this->assertEquals('GET', $request->getMethod());
+           $this->assertRequestMethod('GET', $request);
 
             return true;
         }))->willReturn($this->getResponse('list-user-success'));
@@ -199,7 +199,7 @@ class ClientTest extends VonageTestCase
                 $uriString
             );
 
-            $this->assertEquals('GET', $request->getMethod());
+           $this->assertRequestMethod('GET', $request);
 
             return true;
         }))->willReturn($this->getResponse('get-user-success'));

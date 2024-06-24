@@ -21,6 +21,6 @@ class Client implements APIClient
 
     public function send(BaseMessage $message): ?array
     {
-        return $this->api->create($message->toArray());
+        return $this->getAPIResource()->create($message->toArray());
     }
 }

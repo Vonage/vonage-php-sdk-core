@@ -21,7 +21,7 @@ class ClientFactory
             ->setIsHAL(false)
             ->setErrorsOn200(true)
             ->setExceptionErrorHandler(new ExceptionErrorHandler())
-            ->setAuthHandler([new BasicHandler(), new SignatureBodyHandler()]);
+            ->setAuthHandlers([new BasicHandler(), new SignatureBodyHandler()]);
 
         return new Client($api);
     }
