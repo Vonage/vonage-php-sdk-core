@@ -55,7 +55,7 @@ class ClientTest extends VonageTestCase
             ->setCollectionName('conversations')
             ->setErrorsOn200(false)
             ->setClient($this->vonageClient->reveal())
-            ->setAuthHandler(new Client\Credentials\Handler\KeypairHandler())
+            ->setAuthHandlers(new Client\Credentials\Handler\KeypairHandler())
             ->setBaseUrl('https://api.nexmo.com/v1/conversations');
 
         $this->conversationsClient = new ConversationClient($this->api);
