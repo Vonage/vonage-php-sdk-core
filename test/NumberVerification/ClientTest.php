@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace VonageTest\SimSwap;
+namespace VonageTest\NumberVerification;
 
 use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
@@ -63,7 +63,7 @@ class ClientTest extends VonageTestCase
         $this->assertInstanceOf(SimSwapClient::class, $this->simSwapClient);
     }
 
-    public function testWillCheckSimSwap(): void
+    public function testWillCheckNumberSuccessfully(): void
     {
         $this->handlerClient->send(Argument::that(function (Request $request) {
         }))->willReturn(
@@ -85,14 +85,14 @@ class ClientTest extends VonageTestCase
             $this->assertRequestJsonBodyContains('maxAge', 240, $request);
 
             return true;
-        }))->willReturn($this->getResponse('simswap-check-success'));
+        }))->willReturn($this->getResponse('ni-check-success'));
 
         $response = $this->simSwapClient->checkSimSwap('+346661113334', 240);
 
         $this->assertTrue($response);
     }
 
-    public function testWillRetrieveSimSwapDate(): void
+    public function testWillCheckNumberThatFails(): void
     {
         $this->handlerClient->send(Argument::that(function (Request $request) {
         }))->willReturn(
@@ -106,18 +106,19 @@ class ClientTest extends VonageTestCase
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
-                'https://api-eu.vonage.com/camara/sim-swap/v040/retrieve-date',
+                'https://api-eu.vonage.com/camara/sim-swap/v040/check',
                 $uriString
             );
 
             $this->assertRequestJsonBodyContains('phoneNumber', '+346661113334', $request);
+            $this->assertRequestJsonBodyContains('maxAge', 240, $request);
 
             return true;
-        }))->willReturn($this->getResponse('simswap-date-success'));
+        }))->willReturn($this->getResponse('ni-check-failed'));
 
-        $response = $this->simSwapClient->checkSimSwapDate('+346661113334');
+        $response = $this->simSwapClient->checkSimSwap('+346661113334', 240);
 
-        $this->assertEquals('2019-08-24T14:15:22Z', $response);
+        $this->assertFalse($response);
     }
 
     /**

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace VonageTest\SimSwap;
+namespace VonageTest\NumberVerification;
 
 use VonageTest\VonageTestCase;
 use Vonage\Client;
