@@ -26,6 +26,12 @@
     <testsuite name="client">
       <directory>test/Client</directory>
     </testsuite>
+    <testsuite name="sim_swap">
+      <directory>test/SimSwap</directory>
+    </testsuite>
+    <testsuite name="number_verification">
+      <directory>test/NumberVerification</directory>
+    </testsuite>
     <testsuite name="conversations">
       <directory>test/Conversation</directory>
     </testsuite>

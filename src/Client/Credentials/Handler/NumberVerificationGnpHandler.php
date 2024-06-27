@@ -48,19 +48,19 @@ class NumberVerificationGnpHandler extends SimSwapGnpHandler
 
         // submit the code to CAMARA endpoint
         $api = new APIResource();
-        $api->setAuthHandlers(new KeypairHandler());
+        $api->setAuthHandlers(new GnpKeypairHandler());
         $api->setClient($this->getClient());
         $api->setBaseUrl('https://api-eu.vonage.com/oauth2/token');
 
-        $tokenRequest = $api->submit([
+        $tokenResponse = $api->submit([
             'grant_type' => 'authorization_code',
             'code' => $credentials->getCode(),
             'redirect_uri' => $credentials->getRedirectUri()
         ]);
 
-        $token = $tokenRequest['access_token'];
+        $payload = json_decode($tokenResponse, true);
 
         // Add CAMARA Access Token to request and return to make API call
-        return $request->withHeader('Authorization', 'Bearer ' . $token);
+        return $request->withHeader('Authorization', 'Bearer ' . $payload['access_token']);
     }
 }

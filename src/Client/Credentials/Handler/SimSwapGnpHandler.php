@@ -41,20 +41,19 @@ class SimSwapGnpHandler extends AbstractHandler
         return $this;
     }
 
+    public string $token;
+
     public function __invoke(RequestInterface $request, CredentialsInterface $credentials): RequestInterface
     {
         /** @var Gnp $credentials  */
         $credentials = $this->extract(Gnp::class, $credentials);
         $msisdn = $credentials->getMsisdn();
 
-        // Request OIDC, returns Auth Request ID
-        // Reconfigure new client for GNP Auth
         $api = new APIResource();
-        $api->setAuthHandlers(new KeypairHandler());
+        $api->setAuthHandlers(new GnpKeypairHandler());
         $api->setClient($this->getClient());
         $api->setBaseUrl($this->getBaseUrl());
 
-        // This handler requires an injected client configured with a Gnp credentials object and a configured scope
         $response = $api->submit([
             'login_hint' => $msisdn,
             'scope' => $this->getScope()

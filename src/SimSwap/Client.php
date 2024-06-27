@@ -19,7 +19,6 @@ class Client implements APIClient
         return $this->api;
     }
 
-
     public function checkSimSwap(string $number, ?int $maxAge = null)
     {
         /** @var SimSwapGnpHandler $handler */
@@ -28,8 +27,6 @@ class Client implements APIClient
         if (!$handler instanceof SimSwapGnpHandler) {
             throw new \RuntimeException('SimSwap Client has been misconfigured. Only a GNP Handler can be used');
         }
-
-        $handler->setScope('dpv:FraudPreventionAndDetection#check-sim-swap');
 
         $payload = [
             'phoneNumber' => $number
@@ -53,7 +50,7 @@ class Client implements APIClient
             throw new \RuntimeException('SimSwap Client has been misconfigured. Only a GNP Handler can be used');
         }
 
-        $handler->setScope('dpv:FraudPreventionAndDetection#retrieve-sim-swap');
+        $handler->setScope('dpv:FraudPreventionAndDetection#retrieve-sim-swap-date');
 
         $response = $this->getAPIResource()->create(['phoneNumber' => $number], 'retrieve-date');
 

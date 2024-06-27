@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Vonage\NumberVerification;
 
-use GuzzleHttp\Psr7\Request;
 use Psr\Http\Client\ClientExceptionInterface;
 use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
+use Vonage\Client\Credentials\Container;
 use Vonage\Client\Credentials\CredentialsInterface;
 use Vonage\Client\Credentials\Gnp;
 use Vonage\Client\Exception\Credentials;
@@ -34,18 +34,16 @@ class Client implements APIClient
      * @throws ClientExceptionInterface
      * @throws Exception
      */
-    public function verifyNumber(string $phoneNumber): bool
+    public function verifyNumber(string $phoneNumber, string $code, string $state): bool
     {
-        $webhook = Factory::createFromGlobals();
-
-        if (!isset($webhook['code'])) {
-            throw new Exception('Required field code not found in webhook');
-        };
-
         /** @var Gnp $credentials */
         $credentials = $this->getAPIResource()->getClient()->getCredentials();
-        $credentials->setCode($webhook['code']);
-        $credentials->setState($webhook['state']);
+
+        if ($credentials instanceof Container) {
+            $credentials = $credentials->get(Gnp::class);
+        }
+
+        $credentials->setCode($code);
 
         $phoneNumberKey = 'phoneNumber';
 
@@ -53,17 +51,19 @@ class Client implements APIClient
             $phoneNumberKey = 'hashedPhoneNumber';
         }
 
-        // This request will now contain a valid CAMARA token
-        $response = $this->getAPIResource()->create([
-            $phoneNumberKey => $phoneNumber
-        ]);
+        // By the time this hits Number Verification, the handler will have
+        // completed the OAuth flow
+        $response = $this->getAPIResource()->create(
+            [$phoneNumberKey => $phoneNumber],
+            'verify'
+        );
 
         return $response['devicePhoneNumberVerified'];
     }
 
     public function isHashedPhoneNumber(string $phoneNumber): bool
     {
-        return (strlen($phoneNumber) >= 13);
+        return (strlen($phoneNumber) >= 15);
     }
 
     /**
@@ -80,6 +80,11 @@ class Client implements APIClient
     {
         /** @var Gnp $credentials */
         $credentials = $this->getAPIResource()->getClient()->getCredentials();
+
+        if ($credentials instanceof Container) {
+            $credentials = $credentials->get(Gnp::class);
+        }
+
         $this->enforceCredentials($credentials);
 
         $applicationId = $credentials->getApplication();

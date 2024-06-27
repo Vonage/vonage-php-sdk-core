@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Verify2\VerifyObjects;
+namespace VonageTest\Verify2\VerifyObjects;
 
 use InvalidArgumentException;
 use Vonage\Verify2\VerifyObjects\VerificationWorkflow;
