@@ -75,7 +75,6 @@ class APIResource implements ClientAwareInterface
                     $request = $handler($request, $credentials);
                     break;
                 } catch (\RuntimeException $e) {
-                    die($e->getMessage());
                     continue; // We are OK if multiple are sent but only one match
                 }
                 throw new \RuntimeException(

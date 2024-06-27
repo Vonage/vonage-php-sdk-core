@@ -23,6 +23,7 @@ class Client implements APIClient
     {
         /** @var SimSwapGnpHandler $handler */
         $handler = $this->getAPIResource()->getAuthHandlers()[0];
+        $handler->setScope('dpv:FraudPreventionAndDetection#check-sim-swap');
 
         if (!$handler instanceof SimSwapGnpHandler) {
             throw new \RuntimeException('SimSwap Client has been misconfigured. Only a GNP Handler can be used');
@@ -45,12 +46,11 @@ class Client implements APIClient
     {
         /** @var SimSwapGnpHandler $handler */
         $handler = $this->getAPIResource()->getAuthHandlers()[0];
+        $handler->setScope('dpv:FraudPreventionAndDetection#retrieve-sim-swap-date');
 
         if (!$handler instanceof SimSwapGnpHandler) {
             throw new \RuntimeException('SimSwap Client has been misconfigured. Only a GNP Handler can be used');
         }
-
-        $handler->setScope('dpv:FraudPreventionAndDetection#retrieve-sim-swap-date');
 
         $response = $this->getAPIResource()->create(['phoneNumber' => $number], 'retrieve-date');
 

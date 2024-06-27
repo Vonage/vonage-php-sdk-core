@@ -43,7 +43,7 @@ class ClientTest extends VonageTestCase
         $handler = new Client\Credentials\Handler\SimSwapGnpHandler();
         $handler->setBaseUrl('https://api-eu.vonage.com/oauth2/bc-authorize');
         $handler->setTokenUrl('https://api-eu.vonage.com/oauth2/token');
-        $handler->setScope('dpv:FraudPreventionAndDetection#check-sim-swap');
+//        $handler->setScope('dpv:FraudPreventionAndDetection#check-sim-swap');
         $handler->setClient($revealedClient);
 
         $this->api = (new APIResource())
