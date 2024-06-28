@@ -42,6 +42,7 @@ use Vonage\Entity\EntityInterface;
 use Vonage\Insights\ClientFactory as InsightsClientFactory;
 use Vonage\Meetings\ClientFactory as MeetingsClientFactory;
 use Vonage\Numbers\ClientFactory as NumbersClientFactory;
+use Vonage\NumberVerification\ClientFactory as NumberVerificationClientFactory;
 use Vonage\Redact\ClientFactory as RedactClientFactory;
 use Vonage\Secrets\ClientFactory as SecretsClientFactory;
 use Vonage\SimSwap\ClientFactory as SimSwapClientFactory;
@@ -79,6 +80,7 @@ use function strpos;
  * @method Conversation\Client conversation()
  * @method Insights\Client insights()
  * @method Numbers\Client numbers()
+ * @method NumberVerification\Client numberVerification()
  * @method Redact\Client redact()
  * @method Secrets\Client secrets()
  * @method SimSwap\Client simswap()
@@ -218,6 +220,7 @@ class Client implements LoggerAwareInterface
             'conversation' => ConversationClientFactory::class,
             'insights' => InsightsClientFactory::class,
             'numbers' => NumbersClientFactory::class,
+            'numberVerification' => NumberVerificationClientFactory::class,
             'meetings' => MeetingsClientFactory::class,
             'messages' => MessagesClientFactory::class,
             'redact' => RedactClientFactory::class,

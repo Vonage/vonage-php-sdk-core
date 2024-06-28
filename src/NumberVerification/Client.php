@@ -51,8 +51,8 @@ class Client implements APIClient
             $phoneNumberKey = 'hashedPhoneNumber';
         }
 
-        // By the time this hits Number Verification, the handler will have
-        // completed the OAuth flow
+        // By the time this hits the Number Verification API, the handler will have
+        // completed the CAMARA OAuth flow
         $response = $this->getAPIResource()->create(
             [$phoneNumberKey => $phoneNumber],
             'verify'

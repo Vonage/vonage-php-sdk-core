@@ -445,12 +445,81 @@ If you would like to have the system randomly pick a FROM number from the number
 leave off the second parameter to `\Vonage\Voice\OutboundCall`'s constructor, and the system will select a number
 at random for you.
 
-## Using the Conversations API
+### Using the SimSwap API
+
+SimSwap uses CAMARA standards in order to determine how long a SIM has been inside a cellular device. This
+means the auth mechanism is slightly more complex than other APIs. You will need:
+
+> To have your own *Subscriber Number* that has been registered with the Vonage Global Network Platform.
+> Your Dashboard Application ID
+> Your Private Key
+
+### Using the Number Verification API
+
+Number Verification uses CAMARA API standards and is used to determine whether a request is valid. Unlike other SDKs,
+the SDK is split between the start of the process and the end of the process.
+
+You will need:
+
+> To have your own *Subscriber Number* that has been registered with the Vonage Global Network Platform.
+> Your Dashboard Application ID
+> Your Private Key, downloaded from the Vonage Dashboard
+
+#### Usage
+
+1. Your backend needs to serve a custom URL that will be used to fire off the verification request. To do
+this, use the `buildFrontEndUrl()` method on the client. When calling this, you'll need to supply the route
+your application is expected to receive a callback from containing a unique `code`. You will need to have an
+authorised phone number in an authorised territory for this to work. Here is dummy example:
+
+```php
+class VerificationController extends MyFrameworkAbsractController
+{
+    $credentials = new \Vonage\Client\Credentials\Gnp(
+        '077380777111',
+        file_get_contents('../private.key'),
+        '0dadaeb4-7c79-4d39-b4b0-5a6cc08bf537'
+    )
+    
+    $client = new \Vonage\Client($credentials);
+    
+    $verifyUrl = $client->numberVerification()->buildFrontEndUrl(
+        '07777777777',
+        'https://myapp.com/auth/numberVerify'
+    );
+    
+    return $this->render('verify.html.twig', [
+        'verifyLink' => $verifyUrl
+    ]);
+}
+```
+
+2. Your backend then needs to be able to configured to consume the incoming webhook. The SDK will take care
+care of handling the Auth methods required to do this, once you have extracted the `code`. 
+The method returns a boolean from the API. Here is an example:
+
+```php
+$code = $request->get('code');
+
+$result = $client->numberVerification()->verifyNumber(
+    '09947777777',
+    $code
+);
+
+if ($result) {
+    Auth::login($request->user())
+}
+
+return redirect('login');
+}
+```
+
+### Using the Conversations API
 
 This API is used for in-app messaging and is contains a wide range of features and
-concepts. For more information, take a look at the [API Documentation]()
+concepts. For more information, take a look at the [API Documentation](https://developer.vonage.com/en/api/conversation?source=conversation)
 
-### Retrieve a list of Conversations with Filter
+#### Retrieve a list of Conversations with Filter
 
 ```php
 $credentials = new \Vonage\Client\Credentials\Keypair(file_get_contents('./path-to-my-key.key', 'my-app-id'));
@@ -464,7 +533,7 @@ $conversations = $client->conversations()->listConversations($filter)
 var_dump($conversations);
 ```
 
-### Create a Conversation
+#### Create a Conversation
 
 ```php
 
@@ -490,7 +559,7 @@ var_dump($response);
 
 ```
 
-### List Members in a Conversation
+#### List Members in a Conversation
 
 ```php
 
@@ -516,7 +585,7 @@ var_dump($members);
 
 ```
 
-### Create a Member in a Conversation
+#### Create a Member in a Conversation
 
 ```php
 
@@ -1200,29 +1269,29 @@ var_dump($response);
 
 ## Supported APIs
 
-| API                    |  API Release Status  | Supported? |
-|------------------------|:--------------------:|:----------:|
-| Account API            | General Availability |     ✅      |
-| Alerts API             | General Availability |     ✅      |
-| Application API        | General Availability |     ✅      |
-| Audit API              |         Beta         |     ❌      |
-| Conversation API       |         Beta         |     ❌      |
-| Dispatch API           |         Beta         |     ❌      |
-| External Accounts API  |         Beta         |     ❌      |
-| Media API              |         Beta         |     ❌      |
-| Meetings API           | General Availability |     ✅      |
-| Messages API           | General Availability |     ✅      |
-| Number Insight API     | General Availability |     ✅      |
-| Number Management API  | General Availability |     ✅      |
-| Pricing API            | General Availability |     ✅      |
-| ProActive Connect API  |         Beta         |     ❌      |
-| Redact API             | General Availability |     ✅      |
-| Reports API            |         Beta         |     ❌      |
-| SMS API                | General Availability |     ✅      |
-| Subaccounts API        | General Availability |     ✅      |
-| Verify API             | General Availability |     ✅      |
-| Verify API (Version 2) | General Availability |     ✅      |
-| Voice API              | General Availability |     ✅      |
+| API                     |  API Release Status  | Supported? |
+|-------------------------|:--------------------:|:----------:|
+| Account API             | General Availability |     ✅      |
+| Alerts API              | General Availability |     ✅      |
+| Application API         | General Availability |     ✅      |
+| Audit API               |         Beta         |     ❌      |
+| Conversation API        |         Beta         |     ❌      |
+| Dispatch API            |         Beta         |     ❌      |
+| External Accounts API   |         Beta         |     ❌      |
+| Media API               |         Beta         |     ❌      |
+| Meetings API            | General Availability |     ✅      |
+| Messages API            | General Availability |     ✅      |
+| Number Insight API      | General Availability |     ✅      |
+| Number Management API   | General Availability |     ✅      |
+| Pricing API             | General Availability |     ✅      |
+| ProActive Connect API   |         Beta         |     ❌      |
+| Redact API              | General Availability |     ✅      |
+| Reports API             |         Beta         |     ❌      |
+| SMS API                 | General Availability |     ✅      |
+| Subaccounts API         | General Availability |     ✅      |
+| Verify API              | General Availability |     ✅      |
+| Verify API (Version 2)  | General Availability |     ✅      |
+| Voice API               | General Availability |     ✅      |
 
 ## Troubleshooting
 
