@@ -13,7 +13,6 @@ class ClientFactory
         $handler = new SimSwapGnpHandler();
         $handler->setBaseUrl('https://api-eu.vonage.com/oauth2/bc-authorize');
         $handler->setTokenUrl('https://api-eu.vonage.com/oauth2/token');
-        $handler->setScope('openid dpv:FraudPreventionAndDetection#check-sim-swap');
 
         $client = $container->get(\Vonage\Client::class);
         $handler->setClient($client);
@@ -23,6 +22,7 @@ class ClientFactory
         $api
             ->setBaseUrl('https://api-eu.vonage.com/camara/sim-swap/v040')
             ->setIsHAL(false)
+            ->setClient($client)
             ->setErrorsOn200(false)
             ->setAuthHandlers($handler);
 

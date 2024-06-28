@@ -76,6 +76,7 @@ class APIResource implements ClientAwareInterface
                     break;
                 } catch (\RuntimeException $e) {
                     continue; // We are OK if multiple are sent but only one match
+                    // This has a really nasty side effect for complex handlers where we never see the error
                 }
                 throw new \RuntimeException(
                     'Unable to set credentials, please check configuration and 
