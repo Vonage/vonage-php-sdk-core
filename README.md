@@ -454,6 +454,35 @@ means the auth mechanism is slightly more complex than other APIs. You will need
 > Your Dashboard Application ID
 > Your Private Key
 
+#### Usage
+
+There are two available methods for this API: `checkSimSwap` and `checkSimSwapDate`.
+
+Here is an example of using both:
+
+```php
+
+$credentials = new \Vonage\Client\Credentials\Gnp(
+    '0777888888',
+    file_get_contents('./private.key'),
+    '0dadaeb4-7c79-4d39-b4b0-5a6cc08bf537'
+);
+
+$client = new \Vonage\Client($credentials);
+
+$swapResult = $client->simswap()->checkSimSwap('07999999999', 500);
+
+if ($swapResult) {
+    echo "Warning: SIM Swapped recently"
+} else {
+    echo "SIM OK"
+};
+
+// Finding the swap date
+echo $client->simswap()->checkSimSwapDate('07999999999');
+
+```
+
 ### Using the Number Verification API
 
 Number Verification uses CAMARA API standards and is used to determine whether a request is valid. Unlike other SDKs,
