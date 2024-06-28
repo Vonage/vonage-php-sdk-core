@@ -70,8 +70,8 @@ class Callback extends BaseCallback
      */
     public function __call($name, $args)
     {
-        $type = substr($name, 0, 3);
-        $property = substr($name, 3);
+        $type = substr((string) $name, 0, 3);
+        $property = substr((string) $name, 3);
 
         if (!isset($this->optional[$property])) {
             throw new BadMethodCallException('property does not exist: ' . $property);

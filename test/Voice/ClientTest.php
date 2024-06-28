@@ -275,9 +275,7 @@ class ClientTest extends VonageTestCase
         $this->expectException(RequestException::class);
         $this->expectExceptionMessage("Unexpected error");
 
-        $this->vonageClient->send(Argument::that(function () {
-            return true;
-        }))->willReturn($this->getResponse('error_unknown_format', 400));
+        $this->vonageClient->send(Argument::that(fn() => true))->willReturn($this->getResponse('error_unknown_format', 400));
 
         $outboundCall = new OutboundCall(new Phone('15555555555'), new Phone('16666666666'));
         $this->voiceClient->createOutboundCall($outboundCall);

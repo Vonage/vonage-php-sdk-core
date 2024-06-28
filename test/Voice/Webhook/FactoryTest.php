@@ -196,7 +196,7 @@ class FactoryTest extends VonageTestCase
 
         $this->assertInstanceOf(Notification::class, $notification);
         $this->assertSame($expected['conversation_uuid'], $notification->getConversationUuid());
-        $this->assertSame(json_decode($expected['payload'], true), $notification->getPayload());
+        $this->assertSame(json_decode((string) $expected['payload'], true), $notification->getPayload());
         $this->assertEquals(new DateTimeImmutable($expected['timestamp']), $notification->getTimestamp());
     }
 
@@ -229,8 +229,8 @@ class FactoryTest extends VonageTestCase
         $input = Factory::createFromRequest($request);
 
         $this->assertInstanceOf(Input::class, $input);
-        $this->assertSame(json_decode($expected['speech'], true), $input->getSpeech());
-        $this->assertSame(json_decode($expected['dtmf'], true), $input->getDtmf());
+        $this->assertSame(json_decode((string) $expected['speech'], true), $input->getSpeech());
+        $this->assertSame(json_decode((string) $expected['dtmf'], true), $input->getDtmf());
         $this->assertSame($expected['from'], $input->getFrom());
         $this->assertSame($expected['to'], $input->getTo());
         $this->assertSame($expected['uuid'], $input->getUuid());

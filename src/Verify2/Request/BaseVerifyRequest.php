@@ -124,9 +124,7 @@ abstract class BaseVerifyRequest implements RequestInterface
 
     public function getWorkflows(): array
     {
-        return array_map(static function ($workflow) {
-            return $workflow->toArray();
-        }, $this->workflows);
+        return array_map(static fn($workflow) => $workflow->toArray(), $this->workflows);
     }
 
     public function addWorkflow(VerificationWorkflow $verificationWorkflow): static

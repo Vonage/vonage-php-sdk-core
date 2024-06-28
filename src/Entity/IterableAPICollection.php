@@ -504,7 +504,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
     protected function fetchPage($absoluteUri): void
     {
         //use filter if no query provided
-        if (false === strpos($absoluteUri, '?')) {
+        if (!str_contains((string) $absoluteUri, '?')) {
             $originalUri = $absoluteUri;
 
             $query = [];
@@ -535,7 +535,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
             $requestUri = $this->getApiResource()->getBaseUrl() . $absoluteUri;
         }
 
-        $cacheKey = md5($requestUri);
+        $cacheKey = md5((string) $requestUri);
         if (array_key_exists($cacheKey, $this->cache)) {
             $this->pageData = $this->cache[$cacheKey];
 
@@ -556,7 +556,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
 
         $body = $this->response->getBody()->getContents();
         $json = json_decode($body, true);
-        $this->cache[md5($requestUri)] = $json;
+        $this->cache[md5((string) $requestUri)] = $json;
         $this->pageData = $json;
 
         if ((int)$response->getStatusCode() !== 200) {

@@ -633,9 +633,7 @@ class ClientTest extends VonageTestCase
         $this->expectException(Client\Exception\Request::class);
         $this->expectExceptionMessage('Invalid Code: An incorrect code has been provided too many times. Workflow terminated.. See https://www.developer.vonage.com/api-errors/verify#expired for more information');
 
-        $this->vonageClient->send(Argument::that(function (Request $request) {
-            return true;
-        }))->willReturn($this->getResponse('verify-check-locked', 410));
+        $this->vonageClient->send(Argument::that(fn(Request $request) => true))->willReturn($this->getResponse('verify-check-locked', 410));
 
         $result = $this->verify2Client->check('c11236f4-00bf-4b89-84ba-88b25df97315', '24525');
     }
@@ -645,9 +643,7 @@ class ClientTest extends VonageTestCase
         $this->expectException(Client\Exception\Request::class);
         $this->expectExceptionMessage('Rate Limit Hit: Please wait, then retry your request. See https://www.developer.vonage.com/api-errors#throttled for more information');
 
-        $this->vonageClient->send(Argument::that(function (Request $request) {
-            return true;
-        }))->willReturn($this->getResponse('verify-check-throttle', 429));
+        $this->vonageClient->send(Argument::that(fn(Request $request) => true))->willReturn($this->getResponse('verify-check-throttle', 429));
 
         $result = $this->verify2Client->check('c11236f4-00bf-4b89-84ba-88b25df97315', '24525');
     }

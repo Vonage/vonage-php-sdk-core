@@ -410,9 +410,7 @@ class ClientTest extends VonageTestCase
 
     public function testLogsWarningWhenSendingUnicodeAsText(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) {
-            return true;
-        }))->willReturn($this->getResponse('send-success'));
+        $this->vonageClient->send(Argument::that(fn(Request $request) => true))->willReturn($this->getResponse('send-success'));
 
         $args = [
             'to' => '447700900000',

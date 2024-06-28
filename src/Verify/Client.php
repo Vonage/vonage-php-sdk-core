@@ -224,7 +224,7 @@ class Client implements ClientAwareInterface, APIClient
     public function serialize(Verification $verification): string
     {
         trigger_error(
-            $this::class . '::serialize() is deprecated, serialize the Verification object directly',
+            static::class . '::serialize() is deprecated, serialize the Verification object directly',
             E_USER_DEPRECATED
         );
 
@@ -237,7 +237,7 @@ class Client implements ClientAwareInterface, APIClient
     public function unserialize($verification): Verification
     {
         trigger_error(
-            $this::class . '::unserialize() is deprecated, unserialize the Verification object directly',
+            static::class . '::unserialize() is deprecated, unserialize the Verification object directly',
             E_USER_DEPRECATED
         );
 

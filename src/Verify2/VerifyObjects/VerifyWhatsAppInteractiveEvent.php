@@ -6,11 +6,8 @@ use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 
 class VerifyWhatsAppInteractiveEvent implements ArrayHydrateInterface
 {
-    private array $data;
-
-    public function __construct(array $data)
+    public function __construct(private array $data)
     {
-        $this->data = $data;
     }
 
     public function __get($property)

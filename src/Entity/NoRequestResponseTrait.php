@@ -22,7 +22,7 @@ trait NoRequestResponseTrait
      */
     public function setResponse(ResponseInterface $response): void
     {
-        throw new RuntimeException(__CLASS__ . ' does not support request / response');
+        throw new RuntimeException(self::class . ' does not support request / response');
     }
 
     /**
@@ -30,7 +30,7 @@ trait NoRequestResponseTrait
      */
     public function setRequest(RequestInterface $request): void
     {
-        throw new RuntimeException(__CLASS__ . ' does not support request / response');
+        throw new RuntimeException(self::class . ' does not support request / response');
     }
 
     public function getRequest(): void
