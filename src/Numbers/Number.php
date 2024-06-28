@@ -168,15 +168,15 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
             return self::ENDPOINT_APP;
         }
 
-        if (false !== strpos($endpoint, '@')) {
+        if (str_contains((string) $endpoint, '@')) {
             return self::ENDPOINT_SIP;
         }
 
-        if (0 === stripos($endpoint, 'http')) {
+        if (0 === stripos((string) $endpoint, 'http')) {
             return self::ENDPOINT_VXML;
         }
 
-        if (preg_match('#[a-z]+#', $endpoint)) {
+        if (preg_match('#[a-z]+#', (string) $endpoint)) {
             return self::ENDPOINT_APP;
         }
 
@@ -214,7 +214,7 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
     public function jsonUnserialize($json): void
     {
         trigger_error(
-            $this::class . "::jsonUnserialize is deprecated, please fromArray() instead",
+            static::class . "::jsonUnserialize is deprecated, please fromArray() instead",
             E_USER_DEPRECATED
         );
 

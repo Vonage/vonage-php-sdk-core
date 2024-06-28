@@ -8,9 +8,9 @@ class SMS extends OutboundMessage
 {
     public const GSM_7_CHARSET = "\n\f\r !\"\#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrstuvwxyz{|}~ ¡£¤¥§¿ÄÅÆÇÉÑÖØÜßàäåæèéìñòöøùüΓΔΘΛΞΠΣΦΨΩ€";
 
-    protected ?string $contentId;
+    protected ?string $contentId = null;
 
-    protected ?string $entityId;
+    protected ?string $entityId = null;
 
     /**
      * @var string

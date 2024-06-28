@@ -265,9 +265,7 @@ class ClientTest extends VonageTestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('integration_id needs to be set on datasource on a Salesforce list');
 
-        $this->vonageClient->send(Argument::that(function (Request $request) {
-            return true;
-        }))->willReturn($this->getResponse('list-create-success'));
+        $this->vonageClient->send(Argument::that(fn(Request $request) => true))->willReturn($this->getResponse('list-create-success'));
 
         $createSalesforceListRequest = new SalesforceList('my-list');
         $createSalesforceListRequest->setDescription('my-description')
@@ -290,9 +288,7 @@ class ClientTest extends VonageTestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('soql needs to be set on datasource on a Salesforce list');
 
-        $this->vonageClient->send(Argument::that(function (Request $request) {
-            return true;
-        }))->willReturn($this->getResponse('list-create-success'));
+        $this->vonageClient->send(Argument::that(fn(Request $request) => true))->willReturn($this->getResponse('list-create-success'));
 
         $createSalesforceListRequest = new SalesforceList('my-list');
         $createSalesforceListRequest->setDescription('my-description')
@@ -567,7 +563,7 @@ class ClientTest extends VonageTestCase
         $header = null;
 
         $handle = tmpfile();
-        fwrite($handle, $response->getContents());
+        fwrite($handle, (string) $response->getContents());
         fseek($handle, 0);
 
         while (($row = fgetcsv($handle)) !== false) {

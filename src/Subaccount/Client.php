@@ -54,9 +54,7 @@ class Client implements APIClient
         $hydrator->setPrototype(new Account());
         $subaccounts = $collection->getPageData()['_embedded'][$api->getCollectionName()];
 
-        return array_map(function ($item) use ($hydrator) {
-            return $hydrator->hydrate($item);
-        }, $subaccounts);
+        return array_map(fn($item) => $hydrator->hydrate($item), $subaccounts);
     }
 
     public function createSubaccount(string $apiKey, Account $account): ?array
@@ -94,9 +92,7 @@ class Client implements APIClient
         $hydrator->setPrototype(new CreditTransfer());
         $transfers = $response['_embedded']['credit_transfers'];
 
-        return array_map(function ($item) use ($hydrator) {
-            return $hydrator->hydrate($item);
-        }, $transfers);
+        return array_map(fn($item) => $hydrator->hydrate($item), $transfers);
     }
 
     public function getBalanceTransfers(string $apiKey, FilterInterface $filter = null): mixed
@@ -111,9 +107,7 @@ class Client implements APIClient
         $hydrator->setPrototype(new BalanceTransfer());
         $transfers = $response['_embedded']['balance_transfers'];
 
-        return array_map(function ($item) use ($hydrator) {
-            return $hydrator->hydrate($item);
-        }, $transfers);
+        return array_map(fn($item) => $hydrator->hydrate($item), $transfers);
     }
 
     public function makeNumberTransfer(NumberTransferRequest $request): ?array

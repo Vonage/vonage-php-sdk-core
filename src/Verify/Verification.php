@@ -74,7 +74,7 @@ class Verification implements VerificationInterface, Serializable, ArrayHydrateI
             $this->requestData['request_id'] = $idOrNumber;
         } else {
             trigger_error(
-                'Using ' . $this::class . ' for starting a verification is deprecated, ' .
+                'Using ' . static::class . ' for starting a verification is deprecated, ' .
                 'please use Vonage\Verify\Request instead',
                 E_USER_DEPRECATED
             );

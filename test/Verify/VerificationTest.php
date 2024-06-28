@@ -336,7 +336,7 @@ class VerificationTest extends VonageTestCase
         $serialized = serialize($this->existing);
         $unserialized = unserialize($serialized, [Verification::class]);
 
-        $this->assertInstanceOf(get_class($this->existing), $unserialized);
+        $this->assertInstanceOf($this->existing::class, $unserialized);
         $this->assertEquals(@$this->existing->getAccountId(), @$unserialized->getAccountId());
         $this->assertEquals(@$this->existing->getStatus(), @$unserialized->getStatus());
         $this->assertEquals(@$this->existing->getResponseData(), @$unserialized->getResponseData());

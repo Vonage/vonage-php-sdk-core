@@ -9,7 +9,7 @@ use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 class ConversationCallback implements ArrayHydrateInterface
 {
     protected string $method = 'POST';
-    protected ?array $params;
+    protected ?array $params = null;
 
     public function __construct(
         protected ?string $url = null,

@@ -46,6 +46,6 @@ trait ResponseTrait
     {
         $body = $this->getResponseBody($type);
 
-        return json_decode($body, true);
+        return json_decode((string) $body, true);
     }
 }

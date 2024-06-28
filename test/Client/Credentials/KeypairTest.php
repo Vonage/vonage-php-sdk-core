@@ -120,7 +120,7 @@ class KeypairTest extends VonageTestCase
 
     public function testNbfNotSupported(): void
     {
-        set_error_handler(static function (int $errno, string $errstr) {
+        set_error_handler(static function (int $errno, string $errstr): never {
             throw new \Exception($errstr, $errno);
         }, E_USER_WARNING);
 
@@ -143,7 +143,7 @@ class KeypairTest extends VonageTestCase
 
     public function testExpNotSupported(): void
     {
-        set_error_handler(static function (int $errno, string $errstr) {
+        set_error_handler(static function (int $errno, string $errstr): never {
             throw new \Exception($errstr, $errno);
         }, E_USER_WARNING);
 
@@ -201,7 +201,7 @@ class KeypairTest extends VonageTestCase
      */
     protected function decodeJWT($jwt): array
     {
-        $parts = explode('.', $jwt);
+        $parts = explode('.', (string) $jwt);
 
         $this->assertCount(3, $parts);
 

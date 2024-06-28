@@ -21,7 +21,7 @@ class ConstructorHydrator implements HydratorInterface
     /**
      * @param $object
      */
-    public function hydrateObject(array $data, $object)
+    public function hydrateObject(array $data, $object): never
     {
         throw new \RuntimeException('Constructor Hydration can not happen on an existing object');
     }

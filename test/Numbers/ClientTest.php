@@ -42,7 +42,7 @@ class ClientTest extends VonageTestCase
 
     public function setUp(): void
     {
-        $this->vonageClient = $this->prophesize('Vonage\Client');
+        $this->vonageClient = $this->prophesize(\Vonage\Client::class);
         $this->vonageClient->getRestUrl()->willReturn('https://rest.nexmo.com');
         $this->vonageClient->getCredentials()->willReturn(
             new Container(new Basic('abc', 'def'))
@@ -430,9 +430,7 @@ class ClientTest extends VonageTestCase
     public function testPurchaseNumberWithNumberAndCountry(): void
     {
         // When providing a number string, the first thing that happens is a GET request to fetch number details
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            return $request->getUri()->getPath() === '/account/numbers';
-        }))->willReturn($this->getResponse('single'));
+        $this->vonageClient->send(Argument::that(fn(RequestInterface $request) => $request->getUri()->getPath() === '/account/numbers'))->willReturn($this->getResponse('single'));
 
         // Then we purchase the number
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
@@ -528,9 +526,7 @@ class ClientTest extends VonageTestCase
     public function testCancelNumberWithNumberString(): void
     {
         // When providing a number string, the first thing that happens is a GET request to fetch number details
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            return $request->getUri()->getPath() === '/account/numbers';
-        }))->willReturn($this->getResponse('single'));
+        $this->vonageClient->send(Argument::that(fn(RequestInterface $request) => $request->getUri()->getPath() === '/account/numbers'))->willReturn($this->getResponse('single'));
 
     // Then we get a POST request to cancel
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
@@ -555,9 +551,7 @@ class ClientTest extends VonageTestCase
     public function testCancelNumberWithNumberAndCountryString(): void
     {
         // When providing a number string, the first thing that happens is a GET request to fetch number details
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            return $request->getUri()->getPath() === '/account/numbers';
-        }))->willReturn($this->getResponse('single'));
+        $this->vonageClient->send(Argument::that(fn(RequestInterface $request) => $request->getUri()->getPath() === '/account/numbers'))->willReturn($this->getResponse('single'));
 
         // Then we get a POST request to cancel
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {

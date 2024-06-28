@@ -13,12 +13,11 @@ class ViberVideo extends BaseMessage
 
     protected string $subType = BaseMessage::MESSAGES_SUBTYPE_VIDEO;
     protected string $channel = 'viber_service';
-    protected string $thumbUrl = "";
 
     public function __construct(
         string $to,
         string $from,
-        string $thumbUrl,
+        protected string $thumbUrl,
         protected VideoObject $videoObject,
         string $duration,
         string $fileSize
@@ -27,7 +26,6 @@ class ViberVideo extends BaseMessage
         $this->duration = $duration;
         $this->to = $to;
         $this->from = $from;
-        $this->thumbUrl = $thumbUrl;
     }
 
     public function toArray(): array

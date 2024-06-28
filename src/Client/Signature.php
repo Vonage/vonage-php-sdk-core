@@ -81,7 +81,7 @@ class Signature implements \Stringable
             case 'sha1':
             case 'sha256':
             case 'sha512':
-                return strtoupper(hash_hmac($signatureMethod, $data, $secret));
+                return strtoupper(hash_hmac((string) $signatureMethod, (string) $data, (string) $secret));
             default:
                 throw new ClientException(
                     'Unknown signature algorithm: ' . $signatureMethod .
@@ -135,7 +135,7 @@ class Signature implements \Stringable
             throw new InvalidArgumentException('signature must be string, or present in array or parameters');
         }
 
-        return strtolower($signature) === strtolower($this->signed['sig']);
+        return strtolower($signature) === strtolower((string) $this->signed['sig']);
     }
 
     /**

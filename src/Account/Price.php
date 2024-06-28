@@ -89,7 +89,7 @@ abstract class Price implements
         $storage = [];
 
         foreach ($data as $k => $v) {
-            $k = strtolower(ltrim(preg_replace('/[A-Z]([A-Z](?![a-z]))*/', '_$0', $k), '_'));
+            $k = strtolower(ltrim((string) preg_replace('/[A-Z]([A-Z](?![a-z]))*/', '_$0', $k), '_'));
 
             // PrefixPrice fixes
             switch ($k) {

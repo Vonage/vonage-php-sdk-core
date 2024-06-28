@@ -157,7 +157,7 @@ class Client implements LoggerAwareInterface
         if (is_null($client)) {
             // Since the user did not pass a client, try and make a client
             // using the Guzzle 6 adapter or Guzzle 7 (depending on availability)
-            list($guzzleVersion) = explode('@', InstalledVersions::getVersion('guzzlehttp/guzzle'), 1);
+            [$guzzleVersion] = explode('@', (string) InstalledVersions::getVersion('guzzlehttp/guzzle'), 1);
             $guzzleVersion = (float) $guzzleVersion;
 
             if ($guzzleVersion >= 6.0 && $guzzleVersion < 7) {
@@ -235,15 +235,13 @@ class Client implements LoggerAwareInterface
 
             // Additional utility classes
             APIResource::class => APIResource::class,
-            Client::class => function () {
-                return $this;
-            }
+            Client::class => fn() => $this
         ];
 
         if (class_exists('Vonage\Video\ClientFactory')) {
             $services['video'] = 'Vonage\Video\ClientFactory';
         } else {
-            $services['video'] = function () {
+            $services['video'] = function (): never {
                 throw new \RuntimeException('Please install @vonage/video to use the Video API');
             };
         }
@@ -258,15 +256,7 @@ class Client implements LoggerAwareInterface
         // Disable throwing E_USER_DEPRECATED notices by default, the user can turn it on during development
         if (array_key_exists('show_deprecations', $this->options) && ($this->options['show_deprecations'] == true)) {
             set_error_handler(
-                static function (
-                    int $errno,
-                    string $errstr,
-                    string $errfile = null,
-                    int $errline = null,
-                    array $errorcontext = null
-                ) {
-                    return true;
-                },
+                static fn(int $errno, string $errstr, string $errfile = null, int $errline = null, array $errorcontext = null) => true,
                 E_USER_DEPRECATED
             );
         }
@@ -539,7 +529,7 @@ class Client implements LoggerAwareInterface
             }
 
             foreach ($disallowedCharacters as $char) {
-                if (strpos($app[$key], $char) !== false) {
+                if (str_contains((string) $app[$key], $char)) {
                     throw new InvalidArgumentException('app.' . $key . ' cannot contain the ' . $char . ' character');
                 }
             }
@@ -611,8 +601,8 @@ class Client implements LoggerAwareInterface
     protected static function requiresBasicAuth(RequestInterface $request): bool
     {
         $path = $request->getUri()->getPath();
-        $isSecretManagementEndpoint = strpos($path, '/accounts') === 0 && strpos($path, '/secrets') !== false;
-        $isApplicationV2 = strpos($path, '/v2/applications') === 0;
+        $isSecretManagementEndpoint = str_starts_with($path, '/accounts') && str_contains($path, '/secrets');
+        $isApplicationV2 = str_starts_with($path, '/v2/applications');
 
         return $isSecretManagementEndpoint || $isApplicationV2;
     }
@@ -625,8 +615,8 @@ class Client implements LoggerAwareInterface
     {
         $path = $request->getUri()->getPath();
 
-        $isRedact =  strpos($path, '/v1/redact') === 0;
-        $isMessages =  strpos($path, '/v1/messages') === 0;
+        $isRedact =  str_starts_with($path, '/v1/redact');
+        $isMessages =  str_starts_with($path, '/v1/messages');
 
         return $isRedact || $isMessages;
     }
@@ -638,10 +628,10 @@ class Client implements LoggerAwareInterface
     protected function needsKeypairAuthentication(RequestInterface $request): bool
     {
         $path = $request->getUri()->getPath();
-        $isCallEndpoint = strpos($path, '/v1/calls') === 0;
-        $isRecordingUrl = strpos($path, '/v1/files') === 0;
-        $isStitchEndpoint = strpos($path, '/beta/conversation') === 0;
-        $isUserEndpoint = strpos($path, '/beta/users') === 0;
+        $isCallEndpoint = str_starts_with($path, '/v1/calls');
+        $isRecordingUrl = str_starts_with($path, '/v1/files');
+        $isStitchEndpoint = str_starts_with($path, '/beta/conversation');
+        $isUserEndpoint = str_starts_with($path, '/beta/users');
 
         return $isCallEndpoint || $isRecordingUrl || $isStitchEndpoint || $isUserEndpoint;
     }
