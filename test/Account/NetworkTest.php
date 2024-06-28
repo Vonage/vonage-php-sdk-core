@@ -1,6 +1,6 @@
 <?php
 
-namespace Account;
+namespace VonageTest\Account;
 
 use Vonage\Account\Network;
 use VonageTest\VonageTestCase;

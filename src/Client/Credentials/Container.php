@@ -14,7 +14,8 @@ class Container extends AbstractCredentials
     protected array $types = [
         Basic::class,
         SignatureSecret::class,
-        Keypair::class
+        Keypair::class,
+        Gnp::class
     ];
 
     /**

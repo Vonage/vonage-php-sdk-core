@@ -1,6 +1,6 @@
 <?php
 
-namespace Client\Credentials\Handler;
+namespace VonageTest\Client\Credentials\Handler;
 
 use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
@@ -10,7 +10,7 @@ use Prophecy\Prophecy\ObjectProphecy;
 use Vonage\Client;
 use Vonage\Client\Credentials\Gnp;
 use PHPUnit\Framework\TestCase;
-use Vonage\Client\Credentials\Handler\GnpHandler;
+use Vonage\Client\Credentials\Handler\SimSwapGnpHandler;
 use VonageTest\Psr7AssertionTrait;
 
 class GnpHandlerTest extends TestCase
@@ -87,7 +87,10 @@ class GnpHandlerTest extends TestCase
         }))->willReturn($this->getResponse('gnp-be-success'), $this->getResponse('gnp-token-success'));
 
         $credentials = new Gnp($this->msisdn, $this->key, $this->application);
-        $handler = new GnpHandler();
+        $handler = new Client\Credentials\Handler\SimSwapGnpHandler();
+        $handler->setBaseUrl('https://api-eu.vonage.com/oauth2/bc-authorize');
+        $handler->setTokenUrl('https://api-eu.vonage.com/oauth2/token');
+
         $handler->setClient($this->handlerClient->reveal());
         $handler->setScope('dpv:FraudPreventionAndDetection#check-sim-swap');
 
@@ -144,7 +147,10 @@ class GnpHandlerTest extends TestCase
         }))->willReturn($this->getResponse('gnp-be-success'), $this->getResponse('gnp-token-success'));
 
         $credentials = new Gnp($this->msisdn, $this->key, $this->application);
-        $handler = new GnpHandler();
+        $handler = new SimSwapGnpHandler();
+        $handler->setBaseUrl('https://api-eu.vonage.com/oauth2/bc-authorize');
+        $handler->setTokenUrl('https://api-eu.vonage.com/oauth2/token');
+
         $handler->setClient($this->handlerClient->reveal());
         $handler->setScope('dpv:FraudPreventionAndDetection#check-sim-swap');
 

@@ -16,7 +16,7 @@ use Vonage\JWT\TokenGenerator;
  */
 class Keypair extends AbstractCredentials
 {
-    public function __construct(protected string $key, $application = null)
+    public function __construct(protected string $key, protected ?string $application = null)
     {
         $this->credentials['key'] = $key;
 
@@ -40,6 +40,17 @@ class Keypair extends AbstractCredentials
     public function getKeyRaw(): string
     {
         return $this->key;
+    }
+
+    public function getApplication(): ?string
+    {
+        return $this->application;
+    }
+
+    public function setApplication(mixed $application): Keypair
+    {
+        $this->application = $application;
+        return $this;
     }
 
     public function generateJwt(array $claims = []): Token

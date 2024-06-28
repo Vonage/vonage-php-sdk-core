@@ -11,14 +11,37 @@ use Vonage\Client\Credentials\Gnp;
 /**
  * This handler is for Vonage GNP APIs that require the CAMARA standard OAuth Flow
  */
-class GnpHandler extends AbstractHandler
+class SimSwapGnpHandler extends AbstractHandler
 {
     use Client\ClientAwareTrait;
     use Client\ScopeAwareTrait;
 
-    protected const VONAGE_GNP_AUTH_BACKEND_URL = 'https://api-eu.vonage.com/oauth2/bc-authorize';
-    protected const VONAGE_GNP_AUTH_TOKEN_URL = 'https://api-eu.vonage.com/oauth2/token';
-    protected const VONAGE_GNP_AUTH_TOKEN_GRANT_TYPE = 'urn:openid:params:grant-type:ciba';
+    protected ?string $baseUrl = null;
+    protected ?string $tokenUrl = null;
+
+    public function getBaseUrl(): ?string
+    {
+        return $this->baseUrl;
+    }
+
+    public function setBaseUrl(?string $baseUrl): SimSwapGnpHandler
+    {
+        $this->baseUrl = $baseUrl;
+        return $this;
+    }
+
+    public function getTokenUrl(): ?string
+    {
+        return $this->tokenUrl;
+    }
+
+    public function setTokenUrl(?string $tokenUrl): SimSwapGnpHandler
+    {
+        $this->tokenUrl = $tokenUrl;
+        return $this;
+    }
+
+    public string $token;
 
     public function __invoke(RequestInterface $request, CredentialsInterface $credentials): RequestInterface
     {
@@ -26,14 +49,11 @@ class GnpHandler extends AbstractHandler
         $credentials = $this->extract(Gnp::class, $credentials);
         $msisdn = $credentials->getMsisdn();
 
-        // Request OIDC, returns Auth Request ID
-        // Reconfigure new client for GNP Auth
         $api = new APIResource();
-        $api->setAuthHandlers(new KeypairHandler());
+        $api->setAuthHandlers(new GnpKeypairHandler());
         $api->setClient($this->getClient());
-        $api->setBaseUrl(self::VONAGE_GNP_AUTH_BACKEND_URL);
+        $api->setBaseUrl($this->getBaseUrl());
 
-        // This handler requires an injected client configured with a Gnp credentials object and a configured scope
         $response = $api->submit([
             'login_hint' => $msisdn,
             'scope' => $this->getScope()
@@ -44,9 +64,9 @@ class GnpHandler extends AbstractHandler
         $authReqId = $decoded['auth_req_id'];
 
         // CAMARA Access Token
-        $api->setBaseUrl(self::VONAGE_GNP_AUTH_TOKEN_URL);
+        $api->setBaseUrl($this->getTokenUrl());
         $response = $api->submit([
-            'grant_type' => self::VONAGE_GNP_AUTH_TOKEN_GRANT_TYPE,
+            'grant_type' => 'urn:openid:params:grant-type:ciba',
             'auth_req_id' => $authReqId
         ]);
 

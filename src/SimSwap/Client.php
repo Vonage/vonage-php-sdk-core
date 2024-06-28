@@ -6,7 +6,7 @@ namespace Vonage\SimSwap;
 
 use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
-use Vonage\Client\Credentials\Handler\GnpHandler;
+use Vonage\Client\Credentials\Handler\SimSwapGnpHandler;
 
 class Client implements APIClient
 {
@@ -19,17 +19,15 @@ class Client implements APIClient
         return $this->api;
     }
 
-
     public function checkSimSwap(string $number, ?int $maxAge = null)
     {
-        /** @var GnpHandler $handler */
+        /** @var SimSwapGnpHandler $handler */
         $handler = $this->getAPIResource()->getAuthHandlers()[0];
+        $handler->setScope('dpv:FraudPreventionAndDetection#check-sim-swap');
 
-        if (!$handler instanceof GnpHandler) {
+        if (!$handler instanceof SimSwapGnpHandler) {
             throw new \RuntimeException('SimSwap Client has been misconfigured. Only a GNP Handler can be used');
         }
-
-        $handler->setScope('dpv:FraudPreventionAndDetection#check-sim-swap');
 
         $payload = [
             'phoneNumber' => $number
@@ -46,14 +44,13 @@ class Client implements APIClient
 
     public function checkSimSwapDate(string $number): string
     {
-        /** @var GnpHandler $handler */
+        /** @var SimSwapGnpHandler $handler */
         $handler = $this->getAPIResource()->getAuthHandlers()[0];
+        $handler->setScope('dpv:FraudPreventionAndDetection#retrieve-sim-swap-date');
 
-        if (!$handler instanceof GnpHandler) {
+        if (!$handler instanceof SimSwapGnpHandler) {
             throw new \RuntimeException('SimSwap Client has been misconfigured. Only a GNP Handler can be used');
         }
-
-        $handler->setScope('dpv:FraudPreventionAndDetection#retrieve-sim-swap');
 
         $response = $this->getAPIResource()->create(['phoneNumber' => $number], 'retrieve-date');
 

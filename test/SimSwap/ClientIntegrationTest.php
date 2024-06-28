@@ -29,7 +29,7 @@ class ClientIntegrationTest extends VonageTestCase
         $this->assertInstanceOf(\Vonage\SimSwap\Client::class, $simSwapClient);
 
         // Assert that Auth handler is Gnp
-        $this->assertInstanceOf(Client\Credentials\Handler\GnpHandler::class, $authHandlers[0]);
+        $this->assertInstanceOf(Client\Credentials\Handler\SimSwapGnpHandler::class, $authHandlers[0]);
 
         // Assert that Auth handler has a configured client with Gnp credentials
         /** @var Client $handlerClient */

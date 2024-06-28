@@ -24,6 +24,7 @@ use Vonage\Client\APIResource;
 use Vonage\Client\Credentials\Basic;
 use Vonage\Client\Credentials\Container;
 use Vonage\Client\Credentials\CredentialsInterface;
+use Vonage\Client\Credentials\Gnp;
 use Vonage\Client\Credentials\Handler\BasicHandler;
 use Vonage\Client\Credentials\Handler\SignatureBodyFormHandler;
 use Vonage\Client\Credentials\Handler\SignatureBodyHandler;
@@ -171,12 +172,12 @@ class Client implements LoggerAwareInterface
 
         $this->setHttpClient($client);
 
-        // Make sure we know how to use the credentials
         if (
             !($credentials instanceof Container) &&
             !($credentials instanceof Basic) &&
             !($credentials instanceof SignatureSecret) &&
-            !($credentials instanceof Keypair)
+            !($credentials instanceof Keypair) &&
+            !($credentials instanceof Gnp)
         ) {
             throw new RuntimeException('unknown credentials type: ' . $credentials::class);
         }
@@ -231,13 +232,15 @@ class Client implements LoggerAwareInterface
 
             // Additional utility classes
             APIResource::class => APIResource::class,
-            Client::class => function() { return $this; }
+            Client::class => function () {
+                return $this;
+            }
         ];
 
         if (class_exists('Vonage\Video\ClientFactory')) {
             $services['video'] = 'Vonage\Video\ClientFactory';
         } else {
-            $services['video'] = function() {
+            $services['video'] = function () {
                 throw new \RuntimeException('Please install @vonage/video to use the Video API');
             };
         }
@@ -360,7 +363,6 @@ class Client implements LoggerAwareInterface
 
     /**
      * @throws ClientException
-     * @deprecated Use the Vonage/JWT library if you need to generate a token
      */
     public function generateJwt($claims = []): Token
     {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Vonage\SimSwap;
+namespace Vonage\NumberVerification;
 
 use Psr\Container\ContainerInterface;
 use Vonage\Client\APIResource;
@@ -11,9 +11,9 @@ class ClientFactory
     public function __invoke(ContainerInterface $container): Client
     {
         $handler = new SimSwapGnpHandler();
-        $handler->setBaseUrl('https://api-eu.vonage.com/oauth2/bc-authorize');
+        $handler->setBaseUrl('https://oidc.idp.vonage.com/oauth2/auth');
         $handler->setTokenUrl('https://api-eu.vonage.com/oauth2/token');
-        $handler->setScope('openid dpv:FraudPreventionAndDetection#check-sim-swap');
+        $handler->setScope('openid+dpv:FraudPreventionAndDetection#number-verification-verify-read');
 
         $client = $container->get(\Vonage\Client::class);
         $handler->setClient($client);
@@ -21,7 +21,7 @@ class ClientFactory
         /** @var APIResource $api */
         $api = $container->make(APIResource::class);
         $api
-            ->setBaseUrl('https://api-eu.vonage.com/camara/sim-swap/v040')
+            ->setBaseUrl('https://api-eu.vonage.com/camara/number-verification/v031')
             ->setIsHAL(false)
             ->setErrorsOn200(false)
             ->setAuthHandlers($handler);
