@@ -169,6 +169,7 @@ class ClientTest extends VonageTestCase
         ];
 
         $message = new MMSImage($payload['to'], $payload['from'], $mmsImageObject);
+        $message->setTtl(400);
 
         $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
@@ -176,6 +177,7 @@ class ClientTest extends VonageTestCase
             $this->assertRequestJsonBodyContains('image', $payload['image']->toArray(), $request);
             $this->assertRequestJsonBodyContains('channel', 'mms', $request);
             $this->assertRequestJsonBodyContains('message_type', 'image', $request);
+            $this->assertRequestJsonBodyContains('ttl', 400, $request);
             $this->assertEquals('POST', $request->getMethod());
 
             return true;
@@ -197,6 +199,7 @@ class ClientTest extends VonageTestCase
         ];
 
         $message = new MMSvCard($payload['to'], $payload['from'], $vCardObject);
+        $message->setTtl(400);
 
         $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
@@ -204,6 +207,8 @@ class ClientTest extends VonageTestCase
             $this->assertRequestJsonBodyContains('vcard', $payload['vcard']->toArray(), $request);
             $this->assertRequestJsonBodyContains('channel', 'mms', $request);
             $this->assertRequestJsonBodyContains('message_type', 'vcard', $request);
+            $this->assertRequestJsonBodyContains('ttl', 400, $request);
+
             $this->assertEquals('POST', $request->getMethod());
 
             return true;
@@ -227,6 +232,7 @@ class ClientTest extends VonageTestCase
         ];
 
         $message = new MMSAudio($payload['to'], $payload['from'], $audioObject);
+        $message->setTtl(400);
 
         $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
@@ -234,6 +240,7 @@ class ClientTest extends VonageTestCase
             $this->assertRequestJsonBodyContains('audio', $payload['audio']->toArray(), $request);
             $this->assertRequestJsonBodyContains('channel', 'mms', $request);
             $this->assertRequestJsonBodyContains('message_type', 'audio', $request);
+            $this->assertRequestJsonBodyContains('ttl', 400, $request);
             $this->assertEquals('POST', $request->getMethod());
 
             return true;
@@ -257,6 +264,7 @@ class ClientTest extends VonageTestCase
         ];
 
         $message = new MMSVideo($payload['to'], $payload['from'], $videoObject);
+        $message->setTtl(400);
 
         $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
@@ -264,6 +272,7 @@ class ClientTest extends VonageTestCase
             $this->assertRequestJsonBodyContains('video', $payload['video']->toArray(), $request);
             $this->assertRequestJsonBodyContains('channel', 'mms', $request);
             $this->assertRequestJsonBodyContains('message_type', 'video', $request);
+            $this->assertRequestJsonBodyContains('ttl', 400, $request);
             $this->assertEquals('POST', $request->getMethod());
 
             return true;
@@ -282,6 +291,7 @@ class ClientTest extends VonageTestCase
         ];
 
         $message = new WhatsAppText($payload['to'], $payload['from'], $payload['text']);
+        $message->setContext(['message_uuid' => 'a1b2c3d4a1b2c3d4']);
 
         $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
@@ -289,6 +299,7 @@ class ClientTest extends VonageTestCase
             $this->assertRequestJsonBodyContains('text', $payload['text'], $request);
             $this->assertRequestJsonBodyContains('channel', 'whatsapp', $request);
             $this->assertRequestJsonBodyContains('message_type', 'text', $request);
+            $this->assertRequestJsonBodyContains('context', ['message_uuid' => 'a1b2c3d4a1b2c3d4'], $request);
             $this->assertEquals('POST', $request->getMethod());
 
             return true;
@@ -310,6 +321,7 @@ class ClientTest extends VonageTestCase
         ];
 
         $message = new WhatsAppImage($payload['to'], $payload['from'], $whatsAppImageObject);
+        $message->setContext(['message_uuid' => 'a1b2c3d4a1b2c3d4']);
 
         $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
@@ -317,6 +329,7 @@ class ClientTest extends VonageTestCase
             $this->assertRequestJsonBodyContains('image', $payload['image']->toArray(), $request);
             $this->assertRequestJsonBodyContains('channel', 'whatsapp', $request);
             $this->assertRequestJsonBodyContains('message_type', 'image', $request);
+            $this->assertRequestJsonBodyContains('context', ['message_uuid' => 'a1b2c3d4a1b2c3d4'], $request);
             $this->assertEquals('POST', $request->getMethod());
 
             return true;
@@ -340,6 +353,7 @@ class ClientTest extends VonageTestCase
         ];
 
         $message = new WhatsAppAudio($payload['to'], $payload['from'], $audioObject);
+        $message->setContext(['message_uuid' => 'a1b2c3d4a1b2c3d4']);
 
         $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
@@ -347,6 +361,7 @@ class ClientTest extends VonageTestCase
             $this->assertRequestJsonBodyContains('audio', $payload['audio']->toArray(), $request);
             $this->assertRequestJsonBodyContains('channel', 'whatsapp', $request);
             $this->assertRequestJsonBodyContains('message_type', 'audio', $request);
+            $this->assertRequestJsonBodyContains('context', ['message_uuid' => 'a1b2c3d4a1b2c3d4'], $request);
             $this->assertEquals('POST', $request->getMethod());
 
             return true;
@@ -370,6 +385,7 @@ class ClientTest extends VonageTestCase
         ];
 
         $message = new WhatsAppVideo($payload['to'], $payload['from'], $videoObject);
+        $message->setContext(['message_uuid' => 'a1b2c3d4a1b2c3d4']);
 
         $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
@@ -377,6 +393,7 @@ class ClientTest extends VonageTestCase
             $this->assertRequestJsonBodyContains('video', $payload['video']->toArray(), $request);
             $this->assertRequestJsonBodyContains('channel', 'whatsapp', $request);
             $this->assertRequestJsonBodyContains('message_type', 'video', $request);
+            $this->assertRequestJsonBodyContains('context', ['message_uuid' => 'a1b2c3d4a1b2c3d4'], $request);
             $this->assertEquals('POST', $request->getMethod());
 
             return true;
@@ -401,6 +418,7 @@ class ClientTest extends VonageTestCase
         ];
 
         $message = new WhatsAppFile($payload['to'], $payload['from'], $fileObject);
+        $message->setContext(['message_uuid' => 'a1b2c3d4a1b2c3d4']);
 
         $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
@@ -408,6 +426,7 @@ class ClientTest extends VonageTestCase
             $this->assertRequestJsonBodyContains('file', $payload['file']->toArray(), $request);
             $this->assertRequestJsonBodyContains('channel', 'whatsapp', $request);
             $this->assertRequestJsonBodyContains('message_type', 'file', $request);
+            $this->assertRequestJsonBodyContains('context', ['message_uuid' => 'a1b2c3d4a1b2c3d4'], $request);
             $this->assertEquals('POST', $request->getMethod());
 
             return true;
@@ -431,6 +450,7 @@ class ClientTest extends VonageTestCase
         ];
 
         $message = new WhatsAppTemplate($payload['to'], $payload['from'], $templateObject, 'en_GB');
+        $message->setContext(['message_uuid' => 'a1b2c3d4a1b2c3d4']);
 
         $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
@@ -438,6 +458,7 @@ class ClientTest extends VonageTestCase
             $this->assertRequestJsonBodyContains('template', $payload['template']->toArray(), $request);
             $this->assertRequestJsonBodyContains('channel', 'whatsapp', $request);
             $this->assertRequestJsonBodyContains('message_type', 'template', $request);
+            $this->assertRequestJsonBodyContains('context', ['message_uuid' => 'a1b2c3d4a1b2c3d4'], $request);
             $this->assertEquals('POST', $request->getMethod());
 
             return true;
@@ -468,12 +489,14 @@ class ClientTest extends VonageTestCase
         ];
 
         $message = new WhatsAppSticker($payload['to'], $payload['from'], $stickerObject);
+        $message->setContext(['message_uuid' => 'a1b2c3d4a1b2c3d4']);
 
         $this->vonageClient->send(Argument::that(function (Request $request) use ($payload, $type) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('channel', 'whatsapp', $request);
             $this->assertRequestJsonBodyContains('message_type', BaseMessage::MESSAGES_SUBTYPE_STICKER, $request);
+            $this->assertRequestJsonBodyContains('context', ['message_uuid' => 'a1b2c3d4a1b2c3d4'], $request);
             $this->assertEquals('POST', $request->getMethod());
 
             return true;
@@ -495,6 +518,7 @@ class ClientTest extends VonageTestCase
         ];
 
         $message = new WhatsAppCustom($payload['to'], $payload['from'], $payload['custom']);
+        $message->setContext(['message_uuid' => 'a1b2c3d4a1b2c3d4']);
 
         $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
@@ -502,6 +526,7 @@ class ClientTest extends VonageTestCase
             $this->assertRequestJsonBodyContains('custom', $payload['custom'], $request);
             $this->assertRequestJsonBodyContains('channel', 'whatsapp', $request);
             $this->assertRequestJsonBodyContains('message_type', 'custom', $request);
+            $this->assertRequestJsonBodyContains('context', ['message_uuid' => 'a1b2c3d4a1b2c3d4'], $request);
             $this->assertEquals('POST', $request->getMethod());
 
             return true;

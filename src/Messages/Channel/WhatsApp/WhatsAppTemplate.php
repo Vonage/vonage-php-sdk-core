@@ -5,9 +5,12 @@ namespace Vonage\Messages\Channel\WhatsApp;
 use Vonage\Messages\MessageObjects\FileObject;
 use Vonage\Messages\MessageObjects\TemplateObject;
 use Vonage\Messages\Channel\BaseMessage;
+use Vonage\Messages\MessageTraits\ContextTrait;
 
 class WhatsAppTemplate extends BaseMessage
 {
+    use ContextTrait;
+
     protected string $channel = 'whatsapp';
     protected string $subType = BaseMessage::MESSAGES_SUBTYPE_TEMPLATE;
 
@@ -30,6 +33,10 @@ class WhatsAppTemplate extends BaseMessage
                 'locale' => $this->getLocale()
             ]
         ];
+
+        if (!is_null($this->context)) {
+            $returnArray['context'] = $this->context;
+        }
 
         return array_merge($this->getBaseMessageUniversalOutputArray(), $returnArray);
     }
