@@ -744,7 +744,7 @@ class ClientTest extends VonageTestCase
         return [
             [60, true],
             [900, true],
-            [59, false],
+            [13, false],
             [564, true],
             [921, false],
         ];
