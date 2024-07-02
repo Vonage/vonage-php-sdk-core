@@ -7,7 +7,7 @@ use Vonage\Verify2\VerifyObjects\VerificationWorkflow;
 
 abstract class BaseVerifyRequest implements RequestInterface
 {
-    private const TIMEOUT_MIN = 60;
+    private const TIMEOUT_MIN = 15;
     private const TIMEOUT_MAX = 900;
     private const LENGTH_MIN = 4;
     private const LENGTH_MAX = 10;

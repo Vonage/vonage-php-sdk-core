@@ -30,7 +30,7 @@ class BaseVerifyRequestTest extends TestCase
         $this->assertEquals(120, $request->getTimeout());
 
         $this->expectException(\OutOfBoundsException::class);
-        $request->setTimeout(50);
+        $request->setTimeout(14);
     }
 
     public function testGetSetCode(): void
