@@ -4,9 +4,12 @@ namespace Vonage\Messages\Channel\WhatsApp;
 
 use Vonage\Messages\MessageObjects\VideoObject;
 use Vonage\Messages\Channel\BaseMessage;
+use Vonage\Messages\MessageTraits\ContextTrait;
 
 class WhatsAppVideo extends BaseMessage
 {
+    use ContextTrait;
+
     protected string $channel = 'whatsapp';
     protected string $subType = BaseMessage::MESSAGES_SUBTYPE_VIDEO;
 
@@ -23,6 +26,10 @@ class WhatsAppVideo extends BaseMessage
     {
         $returnArray = $this->getBaseMessageUniversalOutputArray();
         $returnArray['video'] = $this->videoObject->toArray();
+
+        if (!is_null($this->context)) {
+            $returnArray['context'] = $this->context;
+        }
 
         return $returnArray;
     }

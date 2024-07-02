@@ -4,9 +4,12 @@ namespace Vonage\Messages\Channel\WhatsApp;
 
 use Vonage\Messages\MessageObjects\ImageObject;
 use Vonage\Messages\Channel\BaseMessage;
+use Vonage\Messages\MessageTraits\ContextTrait;
 
 class WhatsAppImage extends BaseMessage
 {
+    use ContextTrait;
+
     protected string $channel = 'whatsapp';
     protected string $subType = BaseMessage::MESSAGES_SUBTYPE_IMAGE;
 
@@ -23,6 +26,10 @@ class WhatsAppImage extends BaseMessage
     {
         $returnArray = $this->getBaseMessageUniversalOutputArray();
         $returnArray['image'] = $this->image->toArray();
+
+        if (!is_null($this->context)) {
+            $returnArray['context'] = $this->context;
+        }
 
         return $returnArray;
     }

@@ -2,11 +2,13 @@
 
 namespace Vonage\Messages\Channel\WhatsApp;
 
+use Vonage\Messages\MessageTraits\ContextTrait;
 use Vonage\Messages\MessageTraits\TextTrait;
 use Vonage\Messages\Channel\BaseMessage;
 
 class WhatsAppText extends BaseMessage
 {
+    use ContextTrait;
     use TextTrait;
 
     protected string $subType = BaseMessage::MESSAGES_SUBTYPE_TEXT;
@@ -26,6 +28,10 @@ class WhatsAppText extends BaseMessage
     {
         $returnArray = $this->getBaseMessageUniversalOutputArray();
         $returnArray['text'] = $this->getText();
+
+        if (!is_null($this->context)) {
+            $returnArray['context'] = $this->context;
+        }
 
         return $returnArray;
     }

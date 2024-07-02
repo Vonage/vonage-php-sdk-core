@@ -3,9 +3,12 @@
 namespace Vonage\Messages\Channel\WhatsApp;
 
 use Vonage\Messages\Channel\BaseMessage;
+use Vonage\Messages\MessageTraits\ContextTrait;
 
 class WhatsAppCustom extends BaseMessage
 {
+    use ContextTrait;
+
     protected string $subType = BaseMessage::MESSAGES_SUBTYPE_CUSTOM;
     protected string $channel = 'whatsapp';
 
@@ -32,6 +35,10 @@ class WhatsAppCustom extends BaseMessage
     {
         $returnArray = $this->getBaseMessageUniversalOutputArray();
         $returnArray['custom'] = $this->getCustom();
+
+        if (!is_null($this->context)) {
+            $returnArray['context'] = $this->context;
+        }
 
         return $returnArray;
     }
