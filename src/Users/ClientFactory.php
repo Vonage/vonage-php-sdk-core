@@ -17,7 +17,7 @@ class ClientFactory
         $api
             ->setBaseUri('/v1/users')
             ->setCollectionName('users')
-            ->setAuthHandler(new KeypairHandler());
+            ->setAuthHandlers(new KeypairHandler());
 
         $hydrator = new ArrayHydrator();
         $hydrator->setPrototype(new User());

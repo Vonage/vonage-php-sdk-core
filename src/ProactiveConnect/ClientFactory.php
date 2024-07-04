@@ -13,7 +13,7 @@ class ClientFactory
         $api = $container->make(APIResource::class);
         $api->setIsHAL(false)
             ->setErrorsOn200(false)
-            ->setAuthHandler([new KeypairHandler()])
+            ->setAuthHandlers([new KeypairHandler()])
             ->setBaseUrl('https://api-eu.vonage.com/v0.1/bulk/');
 
         return new Client($api);
