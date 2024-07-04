@@ -14,7 +14,7 @@ class ClientFactory
     {
         $api = $container->make(APIResource::class);
         $api->setBaseUri('/accounts')
-            ->setAuthHandler(new BasicHandler())
+            ->setAuthHandlers(new BasicHandler())
             ->setCollectionName('secrets');
 
         return new Client($api);
