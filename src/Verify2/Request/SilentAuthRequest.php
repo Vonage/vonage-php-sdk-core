@@ -2,6 +2,7 @@
 
 namespace Vonage\Verify2\Request;
 
+use InvalidArgumentException;
 use Vonage\Verify2\VerifyObjects\VerificationWorkflow;
 
 class SilentAuthRequest extends BaseVerifyRequest
@@ -11,6 +12,10 @@ class SilentAuthRequest extends BaseVerifyRequest
         protected string $brand,
         protected ?string $redirectUrl = null
     ) {
+        if (!self::isBrandValid($this->brand)) {
+            throw new InvalidArgumentException('The brand name cannot be longer than 16 characters.');
+        }
+
         $workflow = new VerificationWorkflow(VerificationWorkflow::WORKFLOW_SILENT_AUTH, $to);
 
         if ($this->redirectUrl) {

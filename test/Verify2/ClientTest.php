@@ -8,6 +8,7 @@ use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
+use Vonage\Messages\Channel\Messenger\InvalidCategoryException;
 use VonageTest\Traits\Psr7AssertionTrait;
 use Vonage\Client;
 use Vonage\Client\APIResource;
@@ -500,8 +501,7 @@ class ClientTest extends VonageTestCase
 
     public function testCannotSendWithoutBrand(): void
     {
-        $this->expectException(Client\Exception\Request::class);
-        $this->expectExceptionMessage('Invalid params: The value of one or more parameters is invalid. See https://www.developer.vonage.com/api-errors#invalid-params for more information');
+        $this->expectException(\InvalidArgumentException::class);
 
         $payload = [
             'to' => '07785254785',

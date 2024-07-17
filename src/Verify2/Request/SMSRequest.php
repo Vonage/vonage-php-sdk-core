@@ -2,6 +2,7 @@
 
 namespace Vonage\Verify2\Request;
 
+use InvalidArgumentException;
 use Vonage\Verify2\VerifyObjects\VerificationLocale;
 use Vonage\Verify2\VerifyObjects\VerificationWorkflow;
 
@@ -15,6 +16,10 @@ class SMSRequest extends BaseVerifyRequest
         protected string $entityId = '',
         protected string $contentId = ''
     ) {
+        if (!self::isBrandValid($this->brand)) {
+            throw new InvalidArgumentException('The brand name cannot be longer than 16 characters.');
+        }
+
         if (!$this->locale) {
             $this->locale = new VerificationLocale();
         }
