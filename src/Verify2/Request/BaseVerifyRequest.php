@@ -170,4 +170,13 @@ abstract class BaseVerifyRequest implements RequestInterface
 
         return $returnArray;
     }
+
+    public static function isBrandValid(string $brand): bool
+    {
+        if (!strlen($brand) < 16) {
+            return true;
+        }
+
+        return false;
+    }
 }
