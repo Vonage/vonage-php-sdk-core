@@ -32,4 +32,15 @@ class SilentAuthRequest extends BaseVerifyRequest
             'workflow' => $this->getWorkflows()
         ];
     }
+
+    public static function isValidWorkflow(array $workflows): bool
+    {
+        $firstWorkflow = $workflows[0];
+
+        if ($firstWorkflow['channel'] == VerificationWorkflow::WORKFLOW_SILENT_AUTH) {
+            return true;
+        }
+
+        return false;
+    }
 }
