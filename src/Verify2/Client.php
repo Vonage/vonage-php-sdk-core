@@ -7,6 +7,8 @@ use Vonage\Client\APIResource;
 use Vonage\Client\Exception\Exception;
 use Vonage\Client\Exception\Request;
 use Vonage\Verify2\Request\BaseVerifyRequest;
+use Vonage\Verify2\Request\SilentAuthRequest;
+use Vonage\Verify2\VerifyObjects\VerificationWorkflow;
 
 class Client implements APIClient
 {
@@ -21,6 +23,14 @@ class Client implements APIClient
 
     public function startVerification(BaseVerifyRequest $request): ?array
     {
+        if (self::isSilentAuthRequest($request)) {
+            if (SilentAuthRequest::isValidWorkflow($request->getWorkflows())) {
+                return $this->getAPIResource()->create($request->toArray());
+            }
+
+            throw new \InvalidArgumentException('Silent Auth must be the first workflow if used');
+        }
+
         return $this->getAPIResource()->create($request->toArray());
     }
 
@@ -52,5 +62,16 @@ class Client implements APIClient
         $this->api->create([], '/' . $requestId . '/next_workflow');
 
         return true;
+    }
+
+    public static function isSilentAuthRequest(BaseVerifyRequest $request): bool
+    {
+        foreach ($request->getWorkflows() as $workflow) {
+            if ($workflow['channel'] == VerificationWorkflow::WORKFLOW_SILENT_AUTH) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
