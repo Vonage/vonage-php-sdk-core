@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace VonageTest\Voice\NCCO\Action;
 
 use InvalidArgumentException;
+use Vonage\Voice\Endpoint\SIP;
 use Vonage\Voice\VoiceObjects\AdvancedMachineDetection;
 use VonageTest\VonageTestCase;
 use Vonage\Voice\Endpoint\EndpointInterface;
@@ -35,6 +36,26 @@ class ConnectTest extends VonageTestCase
                 ]
             ]
         ], (new Connect($this->endpoint))->toNCCOArray());
+    }
+
+    public function testSipNccoHeaders(): void
+    {
+        $endpoint = new SIP('test');
+        $endpoint->setStandardHeadersUserToUser(true);
+        $connect = new Connect($endpoint);
+
+        $this->assertSame([
+            'action' => 'connect',
+            'endpoint' => [
+                [
+                    'type' => 'sip',
+                    'uri' => 'test',
+                    'standardHeaders' => [
+                        'User-to-User'
+                    ]
+                ]
+            ]
+        ], $connect->toNCCOArray());
     }
 
     public function testCanSetAdditionalInformation(): void

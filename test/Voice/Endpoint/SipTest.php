@@ -76,4 +76,20 @@ class SipTest extends VonageTestCase
     {
         $this->assertSame(['key' => 'value'], (new SIP($this->uri))->addHeader('key', 'value')->getHeaders());
     }
+
+    public function testCanCreateSipCallWithStandardHeaders(): void
+    {
+        $expected = [
+            'type' => $this->type,
+            'uri' => $this->uri,
+            'standard_headers' => [
+                'User-to-User'
+            ]
+        ];
+
+        $sipEndpoint = (new SIP($this->uri));
+        $sipEndpoint->setStandardHeadersUserToUser(true);
+
+        $this->assertSame($expected, $sipEndpoint->toArray());
+    }
 }

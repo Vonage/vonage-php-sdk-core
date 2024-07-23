@@ -6,6 +6,7 @@ namespace Vonage\Voice\NCCO\Action;
 
 use InvalidArgumentException;
 use Vonage\Voice\Endpoint\EndpointInterface;
+use Vonage\Voice\Endpoint\SIP;
 use Vonage\Voice\VoiceObjects\AdvancedMachineDetection;
 use Vonage\Voice\Webhook;
 
@@ -24,6 +25,8 @@ class Connect implements ActionInterface
     protected ?Webhook $eventWebhook = null;
     protected ?string $ringbackTone = '';
     protected ?AdvancedMachineDetection $advancedMachineDetection = null;
+
+    protected bool $standardHeadersUserToUser = false;
 
     public function __construct(protected EndpointInterface $endpoint)
     {
@@ -45,9 +48,17 @@ class Connect implements ActionInterface
 
     public function toNCCOArray(): array
     {
+        $endpoint = $this->endpoint->toArray();
+
+        if ($this->endpoint instanceof SIP) {
+            // This is absolutely horrible but necessary
+            $endpoint['standardHeaders'] = $endpoint['standard_headers'];
+            unset($endpoint['standard_headers']);
+        }
+
         $data = [
             'action' => 'connect',
-            'endpoint' => [$this->endpoint->toArray()],
+            'endpoint' => [$endpoint],
         ];
 
         if ($this->getTimeout()) {
@@ -218,6 +229,18 @@ class Connect implements ActionInterface
     public function setAdvancedMachineDetection(AdvancedMachineDetection $advancedMachineDetection): static
     {
         $this->advancedMachineDetection = $advancedMachineDetection;
+
+        return $this;
+    }
+
+    public function getStandardHeadersUserToUser(): bool
+    {
+        return $this->standardHeadersUserToUser;
+    }
+
+    public function setStandardHeadersUserToUser(bool $value): static
+    {
+        $this->standardHeadersUserToUser = $value;
 
         return $this;
     }

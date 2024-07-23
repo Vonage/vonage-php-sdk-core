@@ -11,6 +11,8 @@ class SIP implements EndpointInterface
      */
     protected $headers = [];
 
+    protected bool $standardHeadersUserToUser = false;
+
     public function __construct(protected string $id, array $headers = [])
     {
         $this->setHeaders($headers);
@@ -41,6 +43,10 @@ class SIP implements EndpointInterface
 
         if (!empty($this->getHeaders())) {
             $data['headers'] = $this->getHeaders();
+        }
+
+        if ($this->getStandardHeadersUserToUser()) {
+            $data['standard_headers'] = ['User-to-User'];
         }
 
         return $data;
@@ -74,5 +80,17 @@ class SIP implements EndpointInterface
         $this->headers = $headers;
 
         return $this;
+    }
+
+    public function setStandardHeadersUserToUser(bool $value): static
+    {
+        $this->standardHeadersUserToUser = $value;
+
+        return $this;
+    }
+
+    public function getStandardHeadersUserToUser(): bool
+    {
+        return $this->standardHeadersUserToUser;
     }
 }
