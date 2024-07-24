@@ -2,7 +2,6 @@
 
 namespace VonageTest\Meetings;
 
-use Laminas\Diactoros\Response;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
@@ -10,7 +9,6 @@ use Prophecy\Prophecy\ObjectProphecy;
 use Prophecy\Prophet;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
-use VonageTest\Traits\Psr7AssertionTrait;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Client\Credentials\Handler\KeypairHandler;
@@ -24,11 +22,14 @@ use Vonage\Meetings\DialInNumber;
 use Vonage\Meetings\ExceptionErrorHandler;
 use Vonage\Meetings\Recording;
 use Vonage\Meetings\Room;
+use VonageTest\Traits\HTTPTestTrait;
+use VonageTest\Traits\Psr7AssertionTrait;
 
 class ClientTest extends TestCase
 {
     use ProphecyTrait;
     use Psr7AssertionTrait;
+    use HTTPTestTrait;
 
     private APIResource $api;
 
@@ -38,6 +39,8 @@ class ClientTest extends TestCase
 
     public function setUp(): void
     {
+        $this->responsesDirectory = __DIR__ . '/Fixtures/Responses/';
+
         $this->vonageClient = $this->prophesize(Client::class);
         $this->vonageClient->getRestUrl()->willReturn('https://api-eu.vonage.com/v1/meetings');
         $this->vonageClient->getCredentials()->willReturn(
@@ -634,14 +637,6 @@ class ClientTest extends TestCase
         $this->assertInstanceOf(Application::class, $response);
         $this->assertEquals('f4d5a07b-260c-4458-b16c-e5a68553bc85', $response->application_id);
         $this->assertEquals('323867d7-8c4b-4dce-8c11-48f14425d888', $response->default_theme_id);
-    }
-
-    /**
-     * This method gets the fixtures and wraps them in a Response object to mock the API
-     */
-    protected function getResponse(string $identifier, int $status = 200): Response
-    {
-        return new Response(fopen(__DIR__ . '/Fixtures/Responses/' . $identifier . '.json', 'rb'), $status);
     }
 
     public function logoTypeDataProvider(): array

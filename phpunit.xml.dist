@@ -20,6 +20,9 @@
     <testsuite name="default">
       <directory>test</directory>
     </testsuite>
+    <testsuite name="verify">
+      <directory>test/Verify</directory>
+    </testsuite>
     <testsuite name="verify2">
       <directory>test/Verify2</directory>
     </testsuite>

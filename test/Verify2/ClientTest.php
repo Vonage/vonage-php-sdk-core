@@ -5,11 +5,8 @@ declare(strict_types=1);
 namespace VonageTest\Verify2;
 
 use Laminas\Diactoros\Request;
-use Laminas\Diactoros\Response;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
-use Vonage\Messages\Channel\Messenger\InvalidCategoryException;
-use VonageTest\Traits\Psr7AssertionTrait;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Verify2\Client as Verify2Client;
@@ -20,11 +17,14 @@ use Vonage\Verify2\Request\VoiceRequest;
 use Vonage\Verify2\Request\WhatsAppInteractiveRequest;
 use Vonage\Verify2\Request\WhatsAppRequest;
 use Vonage\Verify2\VerifyObjects\VerificationWorkflow;
+use VonageTest\Traits\HTTPTestTrait;
+use VonageTest\Traits\Psr7AssertionTrait;
 use VonageTest\VonageTestCase;
 
 class ClientTest extends VonageTestCase
 {
     use Psr7AssertionTrait;
+    use HTTPTestTrait;
 
     protected ObjectProphecy $vonageClient;
     protected Verify2Client $verify2Client;
@@ -32,6 +32,8 @@ class ClientTest extends VonageTestCase
 
     public function setUp(): void
     {
+        $this->responsesDirectory = __DIR__ . '/Fixtures/Responses';
+
         $this->vonageClient = $this->prophesize(Client::class);
         $this->vonageClient->getRestUrl()->willReturn('https://api.nexmo.com');
         $this->vonageClient->getCredentials()->willReturn(
@@ -690,14 +692,6 @@ class ClientTest extends VonageTestCase
         $result = $this->verify2Client->nextWorkflow($requestId);
 
         $this->assertTrue($result);
-    }
-
-    /**
-     * This method gets the fixtures and wraps them in a Response object to mock the API
-     */
-    protected function getResponse(string $identifier, int $status = 200): Response
-    {
-        return new Response(fopen(__DIR__ . '/Fixtures/Responses/' . $identifier . '.json', 'rb'), $status);
     }
 
     public function localeProvider(): array

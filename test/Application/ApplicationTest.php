@@ -5,18 +5,18 @@ declare(strict_types=1);
 namespace VonageTest\Application;
 
 use Exception;
-use Laminas\Diactoros\Response;
-use VonageTest\VonageTestCase;
 use Vonage\Application\Application;
 use Vonage\Application\MessagesConfig;
 use Vonage\Application\RtcConfig;
 use Vonage\Application\VoiceConfig;
 use Vonage\Client\Exception\Exception as ClientException;
-
-use function fopen;
+use VonageTest\Traits\HTTPTestTrait;
+use VonageTest\VonageTestCase;
 
 class ApplicationTest extends VonageTestCase
 {
+    use HTTPTestTrait;
+
     /**
      * @var Application
      */
@@ -24,6 +24,8 @@ class ApplicationTest extends VonageTestCase
 
     public function setUp(): void
     {
+        $this->responsesDirectory = __DIR__ . '/responses';
+
         $this->app = (new Application())->setName('test');
     }
 
@@ -161,13 +163,5 @@ class ApplicationTest extends VonageTestCase
 
         $webhook = $otherapp->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER);
         $this->assertEquals('https://example.com/webhooks/answer', $webhook);
-    }
-
-    /**
-     * Get the API response we'd expect for a call to the API.
-     */
-    protected function getResponse(string $type = 'success'): Response
-    {
-        return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'rb'));
     }
 }

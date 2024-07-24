@@ -5,11 +5,9 @@ declare(strict_types=1);
 namespace VonageTest\Users;
 
 use Laminas\Diactoros\Request;
-use Laminas\Diactoros\Response;
 use Laminas\Diactoros\ResponseFactory;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
-use VonageTest\Traits\Psr7AssertionTrait;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Entity\Hydrator\ArrayHydrator;
@@ -17,12 +15,14 @@ use Vonage\Users\Client as UsersClient;
 use Vonage\Users\Filter\UserFilter;
 use Vonage\Users\Hydrator;
 use Vonage\Users\User;
+use VonageTest\Traits\HTTPTestTrait;
+use VonageTest\Traits\Psr7AssertionTrait;
 use VonageTest\VonageTestCase;
-use function fopen;
 
 class ClientTest extends VonageTestCase
 {
     use Psr7AssertionTrait;
+    use HTTPTestTrait;
 
     protected Client|ObjectProphecy $vonageClient;
 
@@ -32,6 +32,8 @@ class ClientTest extends VonageTestCase
 
     public function setUp(): void
     {
+        $this->responsesDirectory = __DIR__ . '/responses';
+
         $this->vonageClient = $this->prophesize(Client::class);
         $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
         $this->vonageClient->getCredentials()->willReturn(
@@ -64,7 +66,7 @@ class ClientTest extends VonageTestCase
                 mb_substr($request->getHeaders()['Authorization'][0], 0, 7)
             );
 
-           $this->assertRequestMethod('GET', $request);
+            $this->assertRequestMethod('GET', $request);
 
             return true;
         }))->willReturn($this->getResponse('list-user-success'));
@@ -82,7 +84,7 @@ class ClientTest extends VonageTestCase
                 $uriString
             );
 
-           $this->assertRequestMethod('GET', $request);
+            $this->assertRequestMethod('GET', $request);
 
             return true;
         }))->willReturn($this->getResponse('list-user-success'));
@@ -199,7 +201,7 @@ class ClientTest extends VonageTestCase
                 $uriString
             );
 
-           $this->assertRequestMethod('GET', $request);
+            $this->assertRequestMethod('GET', $request);
 
             return true;
         }))->willReturn($this->getResponse('get-user-success'));
@@ -294,13 +296,5 @@ class ClientTest extends VonageTestCase
 
         $response = $this->usersClient->deleteUser($user);
         $this->assertTrue($response);
-    }
-
-    /**
-     * Get the API response we'd expect for a call to the API.
-     */
-    protected function getResponse(string $type = 'success', int $status = 200): Response
-    {
-        return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'rb'), $status);
     }
 }

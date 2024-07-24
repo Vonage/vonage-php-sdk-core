@@ -4,25 +4,29 @@ declare(strict_types=1);
 
 namespace VonageTest\Insights;
 
-use Laminas\Diactoros\Response;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Client\Credentials\Handler\BasicQueryHandler;
 use Vonage\Client\Exception\Request;
-use VonageTest\VonageTestCase;
 use Vonage\Insights\Advanced;
 use Vonage\Insights\Client as InsightClient;
+use VonageTest\Traits\HTTPTestTrait;
+use VonageTest\VonageTestCase;
 
 class AdvancedTest extends VonageTestCase
 {
+    use HTTPTestTrait;
+
     public InsightClient $insightClient;
     public Client|ObjectProphecy $vonageClient;
     public APIResource $api;
 
     public function setUp(): void
     {
+        $this->responsesDirectory = __DIR__ . '/responses';
+        
         $this->vonageClient = $this->prophesize(Client::class);
         $this->vonageClient->getRestUrl()->willReturn('https://api.nexmo.com');
         $this->vonageClient->getCredentials()->willReturn(
@@ -101,13 +105,5 @@ class AdvancedTest extends VonageTestCase
         $r['standard-1'] = [$advanced1, $input1];
 
         return $r;
-    }
-
-    /**
-     * This method gets the fixtures and wraps them in a Response object to mock the API
-     */
-    protected function getResponse(string $identifier, int $status = 200): Response
-    {
-        return new Response(fopen(__DIR__ . '/responses/' . $identifier . '.json', 'rb'), $status);
     }
 }

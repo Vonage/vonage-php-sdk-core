@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace VonageTest\Conversation;
 
 use Laminas\Diactoros\Request;
-use Laminas\Diactoros\Response;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
-use VonageTest\Traits\Psr7AssertionTrait;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Conversation\Client as ConversationClient;
@@ -27,11 +25,14 @@ use Vonage\Conversation\Filter\ListEventsFilter;
 use Vonage\Conversation\Filter\ListMembersFilter;
 use Vonage\Conversation\Filter\ListUserConversationsFilter;
 use Vonage\Entity\IterableAPICollection;
+use VonageTest\Traits\HTTPTestTrait;
+use VonageTest\Traits\Psr7AssertionTrait;
 use VonageTest\VonageTestCase;
 
 class ClientTest extends VonageTestCase
 {
     use Psr7AssertionTrait;
+    use HTTPTestTrait;
 
     protected ObjectProphecy $vonageClient;
     protected ConversationClient $conversationsClient;
@@ -40,6 +41,8 @@ class ClientTest extends VonageTestCase
 
     public function setUp(): void
     {
+        $this->responsesDirectory = __DIR__ . '/Fixtures/Responses';
+
         $this->vonageClient = $this->prophesize(Client::class);
         $this->vonageClient->getRestUrl()->willReturn('https://api.nexmo.com');
         $this->vonageClient->getCredentials()->willReturn(
@@ -794,10 +797,5 @@ class ClientTest extends VonageTestCase
         $response = $this->conversationsClient->deleteEventById('999', 'CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a');
 
         $this->assertTrue($response);
-    }
-
-    protected function getResponse(string $identifier, int $status = 200): Response
-    {
-        return new Response(fopen(__DIR__ . '/Fixtures/Responses/' . $identifier . '.json', 'rb'), $status);
     }
 }

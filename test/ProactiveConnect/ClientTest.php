@@ -9,7 +9,6 @@ use Laminas\Diactoros\Response;
 use Laminas\Diactoros\Stream;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
-use VonageTest\Traits\Psr7AssertionTrait;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Entity\IterableAPICollection;
@@ -17,11 +16,14 @@ use Vonage\ProactiveConnect\Client as ProactiveConnectClient;
 use Vonage\ProactiveConnect\Objects\ListItem;
 use Vonage\ProactiveConnect\Objects\ManualList;
 use Vonage\ProactiveConnect\Objects\SalesforceList;
+use VonageTest\Traits\HTTPTestTrait;
+use VonageTest\Traits\Psr7AssertionTrait;
 use VonageTest\VonageTestCase;
 
 class ClientTest extends VonageTestCase
 {
     use Psr7AssertionTrait;
+    use HTTPTestTrait;
 
     protected ObjectProphecy $vonageClient;
     protected ProactiveConnectClient $proactiveConnectClient;
@@ -29,6 +31,8 @@ class ClientTest extends VonageTestCase
 
     public function setUp(): void
     {
+        $this->responsesDirectory = __DIR__ . '/Fixtures/Responses';
+
         $this->vonageClient = $this->prophesize(Client::class);
         $this->vonageClient->getRestUrl()->willReturn('https://api-eu.vonage.com');
         $this->vonageClient->getCredentials()->willReturn(
@@ -705,8 +709,6 @@ class ClientTest extends VonageTestCase
         }
 
         $this->assertCount(2, $payload);
-//        $this->assertEquals('Recipients for demo', $payload[0]['name']);
-//        $this->assertEquals('Salesforce contacts', $payload[1]['name']);
     }
 
     public function testWillFindEventsByPageAndPageSize(): void
@@ -735,14 +737,6 @@ class ClientTest extends VonageTestCase
         $this->assertEquals(2, $pageMeta['page']);
         $this->assertEquals(3, $pageMeta['total_items']);
         $this->assertEquals(40, $pageMeta['page_size']);
-    }
-
-    /**
-     * This method gets the fixtures and wraps them in a Response object to mock the API
-     */
-    protected function getResponse(string $identifier, int $status = 200): Response
-    {
-        return new Response(fopen(__DIR__ . '/Fixtures/Responses/' . $identifier . '.json', 'rb'), $status);
     }
 
     protected function getCSVResponse(): Response

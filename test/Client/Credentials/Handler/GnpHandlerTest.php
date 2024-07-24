@@ -11,7 +11,7 @@ use Vonage\Client;
 use Vonage\Client\Credentials\Gnp;
 use PHPUnit\Framework\TestCase;
 use Vonage\Client\Credentials\Handler\SimSwapGnpHandler;
-use VonageTest\Psr7AssertionTrait;
+use VonageTest\Traits\Psr7AssertionTrait;
 
 class GnpHandlerTest extends TestCase
 {

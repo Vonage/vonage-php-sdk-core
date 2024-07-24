@@ -3,13 +3,13 @@
 namespace VonageTest\Secrets;
 
 use Prophecy\Argument;
+use Psr\Http\Message\RequestInterface;
+use Vonage\Client as VonageClient;
+use Vonage\Client\APIResource;
 use Vonage\Secrets\Client;
 use Vonage\Secrets\Secret;
-use VonageTest\HTTPTestTrait;
-use Vonage\Client\APIResource;
+use VonageTest\Traits\HTTPTestTrait;
 use VonageTest\VonageTestCase;
-use Vonage\Client as VonageClient;
-use Psr\Http\Message\RequestInterface;
 
 class ClientTest extends VonageTestCase
 {
@@ -20,12 +20,12 @@ class ClientTest extends VonageTestCase
      */
     protected $client;
 
-    protected $responsesDir = __DIR__ . '/responses';
-
     protected $vonage;
 
     public function setUp(): void
     {
+        $this->responsesDirectory = __DIR__ . '/responses';
+
         $this->vonage = $this->prophesize(VonageClient::class);
         $this->vonage->getRestUrl()->willReturn('https://rest.nexmo.com');
         $this->vonage->getApiUrl()->willReturn('https://api.nexmo.com');

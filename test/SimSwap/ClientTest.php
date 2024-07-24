@@ -5,18 +5,17 @@ declare(strict_types=1);
 namespace VonageTest\SimSwap;
 
 use Laminas\Diactoros\Request;
-use Laminas\Diactoros\Response;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
-use Vonage\Client\APIResource;
-use VonageTest\Psr7AssertionTrait;
-use VonageTest\VonageTestCase;
 use Vonage\Client;
+use Vonage\Client\APIResource;
 use Vonage\SimSwap\Client as SimSwapClient;
+use VonageTest\Traits\HTTPTestTrait;
+use VonageTest\VonageTestCase;
 
 class ClientTest extends VonageTestCase
 {
-    use Psr7AssertionTrait;
+    use HTTPTestTrait;
 
     protected ObjectProphecy $vonageClient;
     protected SimSwapClient $simSwapClient;
@@ -29,6 +28,8 @@ class ClientTest extends VonageTestCase
      */
     public function setUp(): void
     {
+        $this->responsesDirectory = __DIR__ . '/Fixtures/Responses';
+
         $this->vonageClient = $this->prophesize(Client::class);
         $this->vonageClient->getCredentials()->willReturn(
             new Client\Credentials\Container(new Client\Credentials\Gnp(
@@ -106,7 +107,6 @@ class ClientTest extends VonageTestCase
                 $this->assertRequestJsonBodyContains('maxAge', 240, $request);
                 return true;
             }
-
         }))->willReturn(
             $this->getResponse('../../../Client/Credentials/Handler/Fixtures/Responses/gnp-be-success'),
             $this->getResponse('../../../Client/Credentials/Handler/Fixtures/Responses/gnp-token-success'),
@@ -167,7 +167,6 @@ class ClientTest extends VonageTestCase
                 $this->assertRequestJsonBodyContains('phoneNumber', '+346661113334', $request);
                 return true;
             }
-
         }))->willReturn(
             $this->getResponse('../../../Client/Credentials/Handler/Fixtures/Responses/gnp-be-success'),
             $this->getResponse('../../../Client/Credentials/Handler/Fixtures/Responses/gnp-token-success'),
@@ -179,13 +178,5 @@ class ClientTest extends VonageTestCase
         $this->assertEquals('2019-08-24T14:15:22Z', $response);
 
         $this->requestCount = 0;
-    }
-
-    /**
-     * This method gets the fixtures and wraps them in a Response object to mock the API
-     */
-    protected function getResponse(string $identifier, int $status = 200): Response
-    {
-        return new Response(fopen(__DIR__ . '/Fixtures/Responses/' . $identifier . '.json', 'rb'), $status);
     }
 }

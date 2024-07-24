@@ -8,7 +8,6 @@ use Laminas\Diactoros\Response;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
-use VonageTest\Traits\Psr7AssertionTrait;
 use Vonage\Client;
 use Vonage\Client\Exception\Server as ServerException;
 use Vonage\Verify\Client as VerifyClient;
@@ -16,13 +15,15 @@ use Vonage\Verify\ExceptionErrorHandler;
 use Vonage\Verify\Request;
 use Vonage\Verify\RequestPSD2;
 use Vonage\Verify\Verification;
+use VonageTest\Traits\HTTPTestTrait;
+use VonageTest\Traits\Psr7AssertionTrait;
 use VonageTest\VonageTestCase;
-use function fopen;
 use function serialize;
 
 class ClientTest extends VonageTestCase
 {
     use Psr7AssertionTrait;
+    use HTTPTestTrait;
 
     /**
      * @var VerifyClient
@@ -36,6 +37,8 @@ class ClientTest extends VonageTestCase
      */
     public function setUp(): void
     {
+        $this->responsesDirectory = __DIR__ . '/responses';
+
         $this->vonageClient = $this->prophesize(Client::class);
         $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
         $this->vonageClient->getCredentials()->willReturn(
@@ -512,14 +515,5 @@ class ClientTest extends VonageTestCase
             ->shouldBeCalledTimes(1);
 
         return $response;
-    }
-
-    /**
-     * Get the API response we'd expect for a call to the API. Verify API currently returns 200 all the time, so only
-     * change between success / fail is body of the message.
-     */
-    protected function getResponse(string $type = 'success'): Response
-    {
-        return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'rb'));
     }
 }

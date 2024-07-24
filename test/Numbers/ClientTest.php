@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace VonageTest\Numbers;
 
-use Laminas\Diactoros\Response;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
-use VonageTest\Traits\Psr7AssertionTrait;
 use Vonage\Client\APIResource;
 use Vonage\Client\Credentials\Basic;
 use Vonage\Client\Credentials\Container;
@@ -18,13 +16,15 @@ use Vonage\Numbers\Client as NumbersClient;
 use Vonage\Numbers\Filter\AvailableNumbers;
 use Vonage\Numbers\Filter\OwnedNumbers;
 use Vonage\Numbers\Number;
+use VonageTest\Traits\HTTPTestTrait;
+use VonageTest\Traits\Psr7AssertionTrait;
 use VonageTest\VonageTestCase;
-use function fopen;
 use function is_null;
 
 class ClientTest extends VonageTestCase
 {
     use Psr7AssertionTrait;
+    use HTTPTestTrait;
 
     /**
      * @var APIResource
@@ -42,6 +42,8 @@ class ClientTest extends VonageTestCase
 
     public function setUp(): void
     {
+        $this->responsesDirectory = __DIR__ . '/responses';
+
         $this->vonageClient = $this->prophesize(\Vonage\Client::class);
         $this->vonageClient->getRestUrl()->willReturn('https://rest.nexmo.com');
         $this->vonageClient->getCredentials()->willReturn(
@@ -597,13 +599,5 @@ class ClientTest extends VonageTestCase
         $this->expectExceptionMessage("Invalid value: 'has_application' must be a boolean value");
 
         $this->numberClient->searchOwned(new OwnedNumbers(['has_application' => 'bob']));
-    }
-
-    /**
-     * Get the API response we'd expect for a call to the API.
-     */
-    protected function getResponse(string $type = 'success', int $status = 200): Response
-    {
-        return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'rb'), $status);
     }
 }

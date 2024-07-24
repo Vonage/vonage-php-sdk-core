@@ -5,26 +5,26 @@ declare(strict_types=1);
 namespace VonageTest\SMS;
 
 use Laminas\Diactoros\Request;
-use Laminas\Diactoros\Response;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
-use VonageTest\Traits\Psr7AssertionTrait;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Client\Exception\Server as ServerException;
 use Vonage\SMS\Client as SMSClient;
 use Vonage\SMS\ExceptionErrorHandler;
 use Vonage\SMS\Message\SMS;
+use VonageTest\Traits\HTTPTestTrait;
+use VonageTest\Traits\Psr7AssertionTrait;
 use VonageTest\VonageTestCase;
-use function fopen;
 use function json_decode;
 use function str_repeat;
 
 class ClientTest extends VonageTestCase
 {
     use Psr7AssertionTrait;
+    use HTTPTestTrait;
 
     /**
      * @var APIResource
@@ -40,6 +40,8 @@ class ClientTest extends VonageTestCase
 
     public function setUp(): void
     {
+        $this->responsesDirectory = __DIR__ . '/responses';
+
         $this->vonageClient = $this->prophesize(Client::class);
         $this->vonageClient->getRestUrl()->willReturn('https://rest.nexmo.com');
         $this->vonageClient->getCredentials()->willReturn(
@@ -485,14 +487,5 @@ class ClientTest extends VonageTestCase
             ->send(Argument::type(RequestInterface::class))
             ->willReturn($this->getResponse('fail-shortcode'));
         $this->smsClient->sendAlert('447700900000', ['key' => 'value']);
-    }
-
-    /**
-     * Get the API response we'd expect for a call to the API. Message API currently returns 200 all the time, so only
-     * change between success / fail is body of the message.
-     */
-    protected function getResponse(string $type = 'success', int $status = 200): Response
-    {
-        return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'rb'), $status);
     }
 }

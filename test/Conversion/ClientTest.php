@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace VonageTest\Conversion;
 
-use Laminas\Diactoros\Response;
 use PHPUnit\Framework\MockObject\MockObject;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
-use VonageTest\Traits\Psr7AssertionTrait;
 use Vonage\Client;
 use Vonage\Client as VonageClient;
 use Vonage\Client\APIResource;
@@ -17,12 +15,14 @@ use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Client\Exception\Request as RequestException;
 use Vonage\Client\Exception\Server as ServerException;
 use Vonage\Conversion\Client as ConversionClient;
+use VonageTest\Traits\HTTPTestTrait;
+use VonageTest\Traits\Psr7AssertionTrait;
 use VonageTest\VonageTestCase;
-use function fopen;
 
 class ClientTest extends VonageTestCase
 {
     use Psr7AssertionTrait;
+    use HTTPTestTrait;
 
     /**
      * @var Client|MockObject
@@ -43,6 +43,8 @@ class ClientTest extends VonageTestCase
 
     public function setUp(): void
     {
+        $this->responsesDirectory = 'data://text/plain,';
+
         $this->vonageClient = $this->prophesize(VonageClient::class);
         $this->vonageClient->getRestUrl()->willReturn('https://rest.nexmo.com');
         $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
@@ -134,13 +136,5 @@ class ClientTest extends VonageTestCase
         }))->willReturn($this->getResponse());
 
         $this->conversionClient->voice('ABC123', true);
-    }
-
-    /**
-     * Get the API response we'd expect for a call to the API.
-     */
-    protected function getResponse(): Response
-    {
-        return new Response(fopen('data://text/plain,', 'rb'), 200);
     }
 }

@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace VonageTest\Insights;
 
-use Laminas\Diactoros\Response;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
-use VonageTest\Traits\Psr7AssertionTrait;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Client\Exception\Request as RequestException;
@@ -19,12 +17,14 @@ use Vonage\Insights\Basic;
 use Vonage\Insights\Client as InsightsClient;
 use Vonage\Insights\Standard;
 use Vonage\Insights\StandardCnam;
+use VonageTest\Traits\HTTPTestTrait;
+use VonageTest\Traits\Psr7AssertionTrait;
 use VonageTest\VonageTestCase;
-use function fopen;
 
 class ClientTest extends VonageTestCase
 {
     use Psr7AssertionTrait;
+    use HTTPTestTrait;
 
     protected APIResource $apiClient;
 
@@ -39,6 +39,8 @@ class ClientTest extends VonageTestCase
 
     public function setUp(): void
     {
+        $this->responsesDirectory = __DIR__ . '/responses';
+
         $this->vonageClient = $this->prophesize(Client::class);
         $this->vonageClient->getApiUrl()->willReturn('http://api.nexmo.com');
         $this->vonageClient->getCredentials()->willReturn(
@@ -176,13 +178,5 @@ class ClientTest extends VonageTestCase
         $insightsStandard = @$this->insightsClient->$methodToCall('14155550100');
         $this->assertInstanceOf($expectedClass, $insightsStandard);
         $this->assertEquals('(415) 555-0100', $insightsStandard->getNationalFormatNumber());
-    }
-
-    /**
-     * Get the API response we'd expect for a call to the API.
-     */
-    protected function getResponse(string $type = 'success', int $status = 200): Response
-    {
-        return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'rb'), $status);
     }
 }

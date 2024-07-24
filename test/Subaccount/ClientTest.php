@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace VonageTest\Subaccount;
 
-use Laminas\Diactoros\Response;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Http\Message\RequestInterface;
-use VonageTest\Traits\Psr7AssertionTrait;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Subaccount\Client as SubaccountClient;
@@ -19,11 +17,14 @@ use Vonage\Subaccount\Request\TransferCreditRequest;
 use Vonage\Subaccount\SubaccountObjects\Account;
 use Vonage\Subaccount\SubaccountObjects\BalanceTransfer;
 use Vonage\Subaccount\SubaccountObjects\CreditTransfer;
+use VonageTest\Traits\HTTPTestTrait;
+use VonageTest\Traits\Psr7AssertionTrait;
 use VonageTest\VonageTestCase;
 
 class ClientTest extends VonageTestCase
 {
     use Psr7AssertionTrait;
+    use HTTPTestTrait;
 
     protected APIResource $api;
 
@@ -32,6 +33,8 @@ class ClientTest extends VonageTestCase
 
     public function setUp(): void
     {
+        $this->responsesDirectory = __DIR__ . '/Fixtures/Responses';
+
         $this->vonageClient = $this->prophesize(Client::class);
         $this->vonageClient->getCredentials()->willReturn(
             new Client\Credentials\Basic('abc', 'def'),
@@ -357,13 +360,5 @@ class ClientTest extends VonageTestCase
         $response = $this->subaccountClient->makeNumberTransfer($numberTransferRequest);
         $this->assertIsArray($response);
         $this->assertEquals('acc6111f', $response['from']);
-    }
-
-    /**
-     * This method gets the fixtures and wraps them in a Response object to mock the API
-     */
-    protected function getResponse(string $identifier, int $status = 200): Response
-    {
-        return new Response(fopen(__DIR__ . '/Fixtures/Responses/' . $identifier . '.json', 'rb'), $status);
     }
 }

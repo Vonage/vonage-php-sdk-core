@@ -8,7 +8,6 @@ use Laminas\Diactoros\Response;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
-use VonageTest\Traits\Psr7AssertionTrait;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Client\Exception\Request as RequestException;
@@ -21,6 +20,8 @@ use Vonage\Voice\NCCO\NCCO;
 use Vonage\Voice\OutboundCall;
 use Vonage\Voice\VoiceObjects\AdvancedMachineDetection;
 use Vonage\Voice\Webhook;
+use VonageTest\Traits\HTTPTestTrait;
+use VonageTest\Traits\Psr7AssertionTrait;
 use VonageTest\VonageTestCase;
 use function fopen;
 use function json_decode;
@@ -29,6 +30,7 @@ use function json_encode;
 class ClientTest extends VonageTestCase
 {
     use Psr7AssertionTrait;
+    use HTTPTestTrait;
 
     /**
      * @var APIResource
@@ -44,6 +46,8 @@ class ClientTest extends VonageTestCase
 
     public function setUp(): void
     {
+        $this->responsesDirectory = __DIR__ . '/responses';
+
         $this->vonageClient = $this->prophesize(Client::class);
         $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
         $this->vonageClient->getCredentials()->willReturn(
@@ -656,14 +660,6 @@ class ClientTest extends VonageTestCase
         $result = $this->voiceClient->getRecording($url);
 
         $this->assertStringEqualsFile($fixturePath, $result->getContents());
-    }
-
-    /**
-     * Get the API response we'd expect for a call to the API.
-     */
-    protected function getResponse(string $type = 'success', int $status = 200): Response
-    {
-        return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'rb'), $status);
     }
 
     /**

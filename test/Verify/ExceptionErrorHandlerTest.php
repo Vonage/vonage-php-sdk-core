@@ -33,7 +33,7 @@ class ExceptionErrorHandlerTest extends VonageTestCase
      * Get the API response we'd expect for a call to the API. Verify API currently returns 200 all the time, so only
      * change between success / fail is body of the message.
      */
-    protected function getResponse(string $type = 'success'): Response
+    public function getResponse(string $type = 'success'): Response
     {
         return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'rb'));
     }

@@ -6,6 +6,7 @@ namespace VonageTest\Traits;
 
 use PHPUnit\Framework\ExpectationFailedException;
 use Psr\Http\Message\RequestInterface;
+
 use function http_build_query;
 use function is_array;
 use function json_decode;

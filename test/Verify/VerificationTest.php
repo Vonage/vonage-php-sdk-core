@@ -7,7 +7,6 @@ namespace VonageTest\Verify;
 use DateTime;
 use Exception;
 use Laminas\Diactoros\Response;
-use VonageTest\VonageTestCase;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
 use Vonage\Client\Exception\Exception as ClientException;
@@ -16,15 +15,16 @@ use Vonage\Client\Exception\Server as ServerException;
 use Vonage\Verify\Check;
 use Vonage\Verify\Client as VerifyClient;
 use Vonage\Verify\Verification;
-
-use function fopen;
-use function get_class;
+use VonageTest\Traits\HTTPTestTrait;
+use VonageTest\VonageTestCase;
 use function is_null;
 use function serialize;
 use function unserialize;
 
 class VerificationTest extends VonageTestCase
 {
+    use HTTPTestTrait;
+
     /**
      * @var string
      */
@@ -44,6 +44,13 @@ class VerificationTest extends VonageTestCase
      * @var Verification
      */
     protected $existing;
+
+    public function __construct(?string $name = null, array $data = [], $dataName = '')
+    {
+        $this->responsesDirectory = __DIR__ . '/responses';
+
+        parent::__construct($name, $data, $dataName);
+    }
 
     /**
      * Create a basic verification object
@@ -387,14 +394,5 @@ class VerificationTest extends VonageTestCase
             ['check', 'check', '1234'],
             ['check', 'check', '1234', '192.168.1.1'],
         ];
-    }
-
-    /**
-     * Get the API response we'd expect for a call to the API. Verify API currently returns 200 all the time, so only
-     * change between success / fail is body of the message.
-     */
-    protected function getResponse(string $type = 'success'): Response
-    {
-        return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'rb'));
     }
 }

@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace VonageTest\Messages;
 
 use Laminas\Diactoros\Request;
-use Laminas\Diactoros\Response;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
-use VonageTest\Traits\Psr7AssertionTrait;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Messages\Channel\BaseMessage;
@@ -43,11 +41,14 @@ use Vonage\Messages\MessageObjects\ImageObject;
 use Vonage\Messages\MessageObjects\TemplateObject;
 use Vonage\Messages\MessageObjects\VCardObject;
 use Vonage\Messages\MessageObjects\VideoObject;
+use VonageTest\Traits\HTTPTestTrait;
+use VonageTest\Traits\Psr7AssertionTrait;
 use VonageTest\VonageTestCase;
 
 class ClientTest extends VonageTestCase
 {
     use Psr7AssertionTrait;
+    use HTTPTestTrait;
 
     protected ObjectProphecy $vonageClient;
     protected MessagesClient $messageClient;
@@ -58,6 +59,8 @@ class ClientTest extends VonageTestCase
      */
     public function setUp(): void
     {
+        $this->responsesDirectory = __DIR__ . '/Fixtures/Responses';
+
         $this->vonageClient = $this->prophesize(Client::class);
         $this->vonageClient->getRestUrl()->willReturn('https://rest.nexmo.com');
         $this->vonageClient->getCredentials()->willReturn(
@@ -955,14 +958,6 @@ class ClientTest extends VonageTestCase
         $result = $this->messageClient->send($message);
         $this->assertIsArray($result);
         $this->assertArrayHasKey('message_uuid', $result);
-    }
-
-    /**
-     * This method gets the fixtures and wraps them in a Response object to mock the API
-     */
-    protected function getResponse(string $identifier, int $status = 200): Response
-    {
-        return new Response(fopen(__DIR__ . '/Fixtures/Responses/' . $identifier . '.json', 'rb'), $status);
     }
 
     public function stickerTypeProvider(): array

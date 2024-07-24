@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace VonageTest\Account;
 
-use Laminas\Diactoros\Response;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
-use VonageTest\Traits\Psr7AssertionTrait;
 use Vonage\Account\Client as AccountClient;
 use Vonage\Account\Network;
 use Vonage\Account\PrefixPrice;
@@ -17,12 +15,14 @@ use Vonage\Client\APIResource;
 use Vonage\Client\Exception as ClientException;
 use Vonage\Client\Exception\Request as RequestException;
 use Vonage\Client\Exception\Server as ServerException;
+use VonageTest\Traits\HTTPTestTrait;
+use VonageTest\Traits\Psr7AssertionTrait;
 use VonageTest\VonageTestCase;
-use function fopen;
 
 class ClientTest extends VonageTestCase
 {
     use Psr7AssertionTrait;
+    use HTTPTestTrait;
 
     protected $vonageClient;
 
@@ -38,6 +38,8 @@ class ClientTest extends VonageTestCase
 
     public function setUp(): void
     {
+        $this->responsesDirectory = __DIR__ . '/responses';
+
         $this->vonageClient = $this->prophesize(Client::class);
         $this->vonageClient->getRestUrl()->willReturn('https://rest.nexmo.com');
         $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
@@ -154,7 +156,7 @@ class ClientTest extends VonageTestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/get-balance', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-           $this->assertRequestMethod('GET', $request);
+            $this->assertRequestMethod('GET', $request);
 
             $uri = $request->getUri();
             $uriString = $uri->__toString();
@@ -184,7 +186,7 @@ class ClientTest extends VonageTestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/get-balance', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-           $this->assertRequestMethod('GET', $request);
+            $this->assertRequestMethod('GET', $request);
 
             return true;
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('empty'));
@@ -313,7 +315,7 @@ class ClientTest extends VonageTestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/get-pricing/outbound/sms', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-           $this->assertRequestMethod('GET', $request);
+            $this->assertRequestMethod('GET', $request);
             $this->assertRequestQueryContains('country', 'US', $request);
 
             return true;
@@ -338,7 +340,7 @@ class ClientTest extends VonageTestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/get-pricing/outbound/sms', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-           $this->assertRequestMethod('GET', $request);
+            $this->assertRequestMethod('GET', $request);
             $this->assertRequestQueryContains('country', 'XX', $request);
 
             return true;
@@ -358,7 +360,7 @@ class ClientTest extends VonageTestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/get-pricing/outbound/voice', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-           $this->assertRequestMethod('GET', $request);
+            $this->assertRequestMethod('GET', $request);
             $this->assertRequestQueryContains('country', 'US', $request);
 
             return true;
@@ -379,7 +381,7 @@ class ClientTest extends VonageTestCase
 
             $this->assertEquals('/account/get-prefix-pricing/outbound', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-           $this->assertRequestMethod('GET', $request);
+            $this->assertRequestMethod('GET', $request);
             $this->assertRequestQueryContains('prefix', '263', $request);
 
             if ($hasRun) {
@@ -401,7 +403,7 @@ class ClientTest extends VonageTestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/get-prefix-pricing/outbound', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-           $this->assertRequestMethod('GET', $request);
+            $this->assertRequestMethod('GET', $request);
             $this->assertRequestQueryContains('prefix', '263', $request);
 
             return true;
@@ -419,7 +421,7 @@ class ClientTest extends VonageTestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/get-prefix-pricing/outbound', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-           $this->assertRequestMethod('GET', $request);
+            $this->assertRequestMethod('GET', $request);
             $this->assertRequestQueryContains('prefix', '263', $request);
 
             return true;
@@ -436,25 +438,12 @@ class ClientTest extends VonageTestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/get-prefix-pricing/outbound', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-           $this->assertRequestMethod('GET', $request);
+            $this->assertRequestMethod('GET', $request);
             $this->assertRequestQueryContains('prefix', '263', $request);
 
             return true;
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('prefix-pricing-server-failure', 500));
 
         $this->accountClient->getPrefixPricing('263');
-    }
-
-    /**
-     * Get the API response we'd expect for a call to the API.
-     */
-    protected function getResponse(string $type = 'success', int $status = 200): Response
-    {
-        return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'rb'), $status);
-    }
-
-    protected function getGenericResponse(string $type = 'success', int $status = 200): Response
-    {
-        return new Response(fopen(__DIR__ . '/../responses/general/' . $type . '.json', 'rb'), $status);
     }
 }

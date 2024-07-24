@@ -5,18 +5,17 @@ declare(strict_types=1);
 namespace VonageTest\NumberVerification;
 
 use Laminas\Diactoros\Request;
-use Laminas\Diactoros\Response;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
-use Vonage\Client\APIResource;
-use VonageTest\Psr7AssertionTrait;
-use VonageTest\VonageTestCase;
 use Vonage\Client;
+use Vonage\Client\APIResource;
 use Vonage\NumberVerification\Client as NumberVerificationClient;
+use VonageTest\Traits\HTTPTestTrait;
+use VonageTest\VonageTestCase;
 
 class ClientTest extends VonageTestCase
 {
-    use Psr7AssertionTrait;
+    use HTTPTestTrait;
 
     protected ObjectProphecy $vonageClient;
     protected NumberVerificationClient $numberVerificationClient;
@@ -26,6 +25,8 @@ class ClientTest extends VonageTestCase
 
     public function setUp(): void
     {
+        $this->responsesDirectory = __DIR__ . '/Fixtures/Responses';
+
         $this->vonageClient = $this->prophesize(Client::class);
         $this->vonageClient->getCredentials()->willReturn(
             new Client\Credentials\Container(new Client\Credentials\Gnp(
@@ -153,13 +154,5 @@ class ClientTest extends VonageTestCase
         );
 
         $this->assertFalse($result);
-    }
-
-    /**
-     * This method gets the fixtures and wraps them in a Response object to mock the API
-     */
-    protected function getResponse(string $identifier, int $status = 200): Response
-    {
-        return new Response(fopen(__DIR__ . '/Fixtures/Responses/' . $identifier . '.json', 'rb'), $status);
     }
 }
