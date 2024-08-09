@@ -43,10 +43,7 @@ class Record implements ActionInterface
      */
     protected $endOnKey;
 
-    /**
-     * @var int
-     */
-    protected $timeOut = 7200;
+    protected ?int $timeOut = null;
 
     /**
      * @var bool
@@ -126,7 +123,6 @@ class Record implements ActionInterface
         $data = [
             'action' => 'record',
             'format' => $this->getFormat(),
-            'timeOut' => (string)$this->getTimeout(),
             'beepStart' => $this->getBeepStart() ? 'true' : 'false',
         ];
 
@@ -144,6 +140,10 @@ class Record implements ActionInterface
 
         if ($this->getSplit()) {
             $data['split'] = $this->getSplit();
+        }
+
+        if ($this->getTimeout()) {
+            $data['timeOut'] = (string)$this->getTimeout();
         }
 
         if ($this->getEventWebhook()) {
@@ -243,7 +243,7 @@ class Record implements ActionInterface
         return $this;
     }
 
-    public function getTimeout(): int
+    public function getTimeout(): ?int
     {
         return $this->timeOut;
     }
