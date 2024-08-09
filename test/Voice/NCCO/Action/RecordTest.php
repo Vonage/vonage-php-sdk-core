@@ -26,7 +26,6 @@ class RecordTest extends VonageTestCase
         $this->assertSame([
             'action' => 'record',
             'format' => 'mp3',
-            'timeOut' => '7200',
             'beepStart' => 'false'
         ], (new Record())->jsonSerialize());
     }
