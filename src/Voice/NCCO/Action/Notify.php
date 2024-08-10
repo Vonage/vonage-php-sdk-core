@@ -21,6 +21,9 @@ class Notify implements ActionInterface
     public static function factory(array $payload, array $data): Notify
     {
         if (array_key_exists('eventUrl', $data)) {
+            if (is_array($data['eventUrl'])) {
+                $data['eventUrl'] = $data['eventUrl'][0];
+            }
             if (array_key_exists('eventMethod', $data)) {
                 $webhook = new Webhook($data['eventUrl'], $data['eventMethod']);
             } else {

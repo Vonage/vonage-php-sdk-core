@@ -71,7 +71,9 @@ class Record implements ActionInterface
         }
 
         if (array_key_exists('channels', $data)) {
-            $action->setChannels($data['channels']);
+            $action->setChannels(
+                filter_var($data['channels'], FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE)
+            );
         }
 
         if (array_key_exists('endOnSilence', $data)) {
@@ -85,7 +87,9 @@ class Record implements ActionInterface
         }
 
         if (array_key_exists('timeOut', $data)) {
-            $action->setTimeout($data['timeOut']);
+            $action->setTimeout(
+                filter_var($data['timeOut'], FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE)
+            );
         }
 
         if (array_key_exists('beepStart', $data)) {
@@ -95,6 +99,9 @@ class Record implements ActionInterface
         }
 
         if (array_key_exists('eventUrl', $data)) {
+            if (is_array($data['eventUrl'])) {
+                $data['eventUrl'] = $data['eventUrl'][0];
+            }
             if (array_key_exists('eventMethod', $data)) {
                 $webhook = new Webhook($data['eventUrl'], $data['eventMethod']);
             } else {

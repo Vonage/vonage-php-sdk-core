@@ -31,4 +31,20 @@ class StreamTest extends VonageTestCase
             ->setLoop(1)
             ->jsonSerialize());
     }
+
+    public function testFactoryWithArray(): void
+    {
+        $this->assertSame([
+            'action' => 'stream',
+            'streamUrl' => ['https://test.domain/music.mp3']
+        ], Stream::factory(['https://test.domain/music.mp3'], [])->toNCCOArray());
+    }
+
+    public function testFactoryWithString(): void
+    {
+        $this->assertSame([
+            'action' => 'stream',
+            'streamUrl' => ['https://test.domain/music.mp3']
+        ], Stream::factory('https://test.domain/music.mp3', [])->toNCCOArray());
+    }
 }
