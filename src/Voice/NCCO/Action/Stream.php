@@ -30,10 +30,13 @@ class Stream implements ActionInterface
     }
 
     /**
-     * @param array{streamUrl: string, bargeIn?: bool, level?: float, loop?: int, voiceName?: string} $data
+     * @param array{streamUrl: string|array, bargeIn?: bool, level?: float, loop?: int, voiceName?: string} $data
      */
-    public static function factory(string $streamUrl, array $data): Stream
+    public static function factory(string|array $streamUrl, array $data): Stream
     {
+        if (is_array($streamUrl)) {
+            $streamUrl = $streamUrl[0];
+        }
         $stream = new Stream($streamUrl);
 
         if (array_key_exists('bargeIn', $data)) {
