@@ -56,7 +56,7 @@ class ClientTest extends TestCase
             ->setClient($this->vonageClient->reveal())
             ->setAuthHandlers(new KeypairHandler())
             ->setBaseUrl('https://api-eu.vonage.com/v1/meetings');
-        $this->meetingsClient = new MeetingsClient($this->api);
+        $this->meetingsClient = @new MeetingsClient($this->api);
     }
 
     public function testBaseUrlIsSet(): void
@@ -79,7 +79,7 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('get-rooms-success'));
 
-        $response = $this->meetingsClient->getAllListedRooms();
+        $response = @$this->meetingsClient->getAllListedRooms();
         $this->assertCount(2, $response);
 
         foreach ($response as $room) {
@@ -99,7 +99,7 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('get-rooms-success'));
 
-        $response = $this->meetingsClient->getAllListedRooms('999', '234');
+        $response = @$this->meetingsClient->getAllListedRooms('999', '234');
         $this->assertCount(2, $response);
 
         foreach ($response as $room) {
@@ -123,7 +123,7 @@ class ClientTest extends TestCase
         $room = new Room();
         $room->fromArray(['display_name' => 'test-room']);
 
-        $response = $this->meetingsClient->createRoom($room);
+        $response = @$this->meetingsClient->createRoom($room);
         $this->assertInstanceOf(Room::class, $response);
 
         $this->assertEquals('test-room', $response->display_name);
@@ -150,7 +150,7 @@ class ClientTest extends TestCase
             'expires_at' => '2023-01-30T00:47:04+0000'
         ]);
 
-        $response = $this->meetingsClient->createRoom($room);
+        $response = @$this->meetingsClient->createRoom($room);
         $this->assertInstanceOf(Room::class, $response);
 
         $this->assertEquals('test-room', $response->display_name);
@@ -176,7 +176,7 @@ class ClientTest extends TestCase
         $room = new Room();
         $room->fromArray(['display_name' => 'something']);
 
-        $response = $this->meetingsClient->createRoom($room);
+        $response = @$this->meetingsClient->createRoom($room);
     }
 
     public function testClientWillHandleNotFoundResponse(): void
@@ -193,7 +193,7 @@ class ClientTest extends TestCase
         }))->willReturn($this->getResponse('empty', 404));
         $this->expectException(NotFound::class);
         $this->expectExceptionMessage('No resource found');
-        $response = $this->meetingsClient->getRoom('224d6219-dc05-4c09-9d42-96adce7fcb67');
+        $response = @$this->meetingsClient->getRoom('224d6219-dc05-4c09-9d42-96adce7fcb67');
     }
 
     public function testClientWillHandleValidationError(): void
@@ -214,7 +214,7 @@ class ClientTest extends TestCase
         $room = new Room();
         $room->fromArray(['display_name' => 'test-room']);
 
-        $response = $this->meetingsClient->createRoom($room);
+        $response = @$this->meetingsClient->createRoom($room);
     }
 
     public function testWillGetRoomDetails(): void
@@ -230,7 +230,7 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('get-room-success'));
 
-        $response = $this->meetingsClient->getRoom('224d6219-dc05-4c09-9d42-96adce7fcb67');
+        $response = @$this->meetingsClient->getRoom('224d6219-dc05-4c09-9d42-96adce7fcb67');
         $this->assertInstanceOf(Room::class, $response);
         $this->assertEquals('224d6219-dc05-4c09-9d42-96adce7fcb67', $response->id);
     }
@@ -263,7 +263,7 @@ class ClientTest extends TestCase
             ]
         ];
 
-        $response = $this->meetingsClient->updateRoom('e857c5ce-cdee-4971-ab20-208a98263282', $payload);
+        $response = @$this->meetingsClient->updateRoom('e857c5ce-cdee-4971-ab20-208a98263282', $payload);
         $this->assertInstanceOf(Room::class, $response);
         $this->assertEquals('custom', $response->initial_join_options['microphone_state']);
         $this->assertEquals('https://my-callback-url', $response->callback_urls['rooms_callback_url']);
@@ -284,7 +284,7 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('get-recording-success'));
 
-        $response = $this->meetingsClient->getRecording('2dbd1cf7-afbb-45d8-9fb6-9e95ce2f8885');
+        $response = @$this->meetingsClient->getRecording('2dbd1cf7-afbb-45d8-9fb6-9e95ce2f8885');
         $this->assertInstanceOf(Recording::class, $response);
         $this->assertEquals('2dbd1cf7-afbb-45d8-9fb6-9e95ce2f8885', $response->id);
     }
@@ -304,7 +304,7 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('empty', 204));
 
-        $response = $this->meetingsClient->deleteRecording('2dbd1cf7-afbb-45d8-9fb6-9e95ce2f8885');
+        $response = @$this->meetingsClient->deleteRecording('2dbd1cf7-afbb-45d8-9fb6-9e95ce2f8885');
         $this->assertTrue($response);
     }
 
@@ -323,7 +323,7 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('get-recordings-success'));
 
-        $response = $this->meetingsClient->getRecordingsFromSession('2_MX40NjMwODczMn5-MTU3NTgyODEwNzQ2MH5OZDJrVmdBRUNDbG5MUzNqNXgya20yQ1Z-fg');
+        $response = @$this->meetingsClient->getRecordingsFromSession('2_MX40NjMwODczMn5-MTU3NTgyODEwNzQ2MH5OZDJrVmdBRUNDbG5MUzNqNXgya20yQ1Z-fg');
 
         foreach ($response as $recording) {
             $this->assertInstanceOf(Recording::class, $recording);
@@ -345,7 +345,7 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('get-dialin-success'));
 
-        $response = $this->meetingsClient->getDialInNumbers();
+        $response = @$this->meetingsClient->getDialInNumbers();
 
         foreach ($response as $dialInNumber) {
             $this->assertInstanceOf(DialInNumber::class, $dialInNumber);
@@ -367,7 +367,7 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('get-application-themes-success'));
 
-        $response = $this->meetingsClient->getApplicationThemes();
+        $response = @$this->meetingsClient->getApplicationThemes();
 
         foreach ($response as $applicationThemes) {
             $this->assertInstanceOf(ApplicationTheme::class, $applicationThemes);
@@ -388,7 +388,7 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('create-theme-success', 201));
 
-        $response = $this->meetingsClient->createApplicationTheme('My-Theme');
+        $response = @$this->meetingsClient->createApplicationTheme('My-Theme');
         $this->assertInstanceOf(ApplicationTheme::class, $response);
 
         $this->assertEquals('My-Theme', $response->theme_name);
@@ -410,7 +410,7 @@ class ClientTest extends TestCase
 
         $this->expectException(Conflict::class);
         $this->expectExceptionMessage('Entity conflict');
-        $response = $this->meetingsClient->createApplicationTheme('My-Theme');
+        $response = @$this->meetingsClient->createApplicationTheme('My-Theme');
     }
 
     public function testWillGetThemeById(): void
@@ -425,7 +425,7 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('get-theme-success'));
 
-        $response = $this->meetingsClient->getThemeById('afb5b1f2-fe83-4b14-83ff-f23f5630c160');
+        $response = @$this->meetingsClient->getThemeById('afb5b1f2-fe83-4b14-83ff-f23f5630c160');
         $this->assertInstanceOf(ApplicationTheme::class, $response);
         $this->assertEquals('afb5b1f2-fe83-4b14-83ff-f23f5630c160', $response->theme_id);
     }
@@ -442,7 +442,7 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('empty', 204));
 
-        $response = $this->meetingsClient->deleteTheme('2dbd1cf7-afbb-45d8-9fb6-9e95ce2f8885');
+        $response = @$this->meetingsClient->deleteTheme('2dbd1cf7-afbb-45d8-9fb6-9e95ce2f8885');
         $this->assertTrue($response);
     }
 
@@ -458,7 +458,7 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('empty', 204));
 
-        $response = $this->meetingsClient->deleteTheme('2dbd1cf7-afbb-45d8-9fb6-9e95ce2f8885', true);
+        $response = @$this->meetingsClient->deleteTheme('2dbd1cf7-afbb-45d8-9fb6-9e95ce2f8885', true);
         $this->assertTrue($response);
     }
 
@@ -483,7 +483,7 @@ class ClientTest extends TestCase
             ]
         ];
 
-        $response = $this->meetingsClient->updateTheme('afb5b1f2-fe83-4b14-83ff-f23f5630c160', $payload);
+        $response = @$this->meetingsClient->updateTheme('afb5b1f2-fe83-4b14-83ff-f23f5630c160', $payload);
         $this->assertInstanceOf(ApplicationTheme::class, $response);
         $this->assertEquals('Updated Theme', $response->theme_name);
         $this->assertEquals('Updated Branding', $response->brand_text);
@@ -508,9 +508,9 @@ class ClientTest extends TestCase
             }
         }))->willReturn($this->getResponse('get-upload-urls-success'));
 
-        $uploadUrls = $this->meetingsClient->getUploadUrls();
+        $uploadUrls = @$this->meetingsClient->getUploadUrls();
 
-        $entity = $this->meetingsClient->returnCorrectUrlEntityFromType($uploadUrls, $logoType);
+        $entity = @$this->meetingsClient->returnCorrectUrlEntityFromType($uploadUrls, $logoType);
 
         if ($validCall) {
             $this->assertEquals($logoType, $entity->fields['logoType']);
@@ -559,7 +559,7 @@ class ClientTest extends TestCase
         $this->vonageClient->getHttpClient()->willReturn($httpClient);
 
         $file = __DIR__ . '/Fixtures/vonage.png';
-        $this->meetingsClient->uploadImage('afb5b1f2-fe83-4b14-83ff-f23f5630c160', 'white', $file);
+        @$this->meetingsClient->uploadImage('afb5b1f2-fe83-4b14-83ff-f23f5630c160', 'white', $file);
     }
 
     public function testCanGetUploadUrlsForThemeLogo(): void
@@ -574,7 +574,7 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('get-upload-urls-success'));
 
-        $response = $this->meetingsClient->getUploadUrls();
+        $response = @$this->meetingsClient->getUploadUrls();
         $this->assertEquals('auto-expiring-temp/logos/white/ca63a155-d5f0-4131-9903-c59907e53df0', $response[0]->fields['key']);
     }
 
@@ -590,7 +590,7 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('get-rooms-by-theme-id-success'));
 
-        $response = $this->meetingsClient->getRoomsByThemeId('323867d7-8c4b-4dce-8c11-48f14425d888');
+        $response = @$this->meetingsClient->getRoomsByThemeId('323867d7-8c4b-4dce-8c11-48f14425d888');
 
         foreach ($response as $room) {
             $this->assertInstanceOf(Room::class, $room);
@@ -609,7 +609,7 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('get-rooms-by-theme-id-success'));
 
-        $response = $this->meetingsClient->getRoomsByThemeId('323867d7-8c4b-4dce-8c11-48f14425d888', startId: '245', endId: '765');
+        $response = @$this->meetingsClient->getRoomsByThemeId('323867d7-8c4b-4dce-8c11-48f14425d888', startId: '245', endId: '765');
 
         foreach ($response as $room) {
             $this->assertInstanceOf(Room::class, $room);
@@ -633,7 +633,7 @@ class ClientTest extends TestCase
             'default_theme_id' => '323867d7-8c4b-4dce-8c11-48f14425d888',
         ];
 
-        $response = $this->meetingsClient->updateApplication($payload);
+        $response = @$this->meetingsClient->updateApplication($payload);
         $this->assertInstanceOf(Application::class, $response);
         $this->assertEquals('f4d5a07b-260c-4458-b16c-e5a68553bc85', $response->application_id);
         $this->assertEquals('323867d7-8c4b-4dce-8c11-48f14425d888', $response->default_theme_id);
