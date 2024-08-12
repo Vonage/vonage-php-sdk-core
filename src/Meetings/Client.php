@@ -18,8 +18,15 @@ class Client implements APIClient
 {
     public const IMAGE_TYPES = ['white', 'colored', 'favicon'];
 
+    /**
+     * @deprecated The Meetings API is being sunset and this will be removed in the next major version
+     */
     public function __construct(protected APIResource $api)
     {
+        trigger_error(
+            'The Meetings API is being sunset and this will be removed in the next major version',
+            E_USER_DEPRECATED
+        );
     }
 
     public function getAPIResource(): APIResource
