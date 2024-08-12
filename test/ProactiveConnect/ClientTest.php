@@ -52,7 +52,7 @@ class ClientTest extends VonageTestCase
             ->setAuthHandlers(new Client\Credentials\Handler\KeypairHandler())
             ->setBaseUrl('https://api-eu.vonage.com/v0.1/bulk');
 
-        $this->proactiveConnectClient = new ProactiveConnectClient($this->api);
+        $this->proactiveConnectClient = @new ProactiveConnectClient($this->api);
     }
 
     public function testHasSetupClientCorrectly(): void
@@ -77,7 +77,7 @@ class ClientTest extends VonageTestCase
             return true;
         }))->willReturn($this->getResponse('list-success'));
 
-        $list = $this->proactiveConnectClient->getLists();
+        $list = @$this->proactiveConnectClient->getLists();
         $this->assertInstanceOf(IterableAPICollection::class, $list);
         $list->getPageData();
     }
@@ -94,9 +94,9 @@ class ClientTest extends VonageTestCase
             return true;
         }))->willReturn($this->getResponse('list-success'));
 
-        $list = $this->proactiveConnectClient->getLists();
+        $list = @$this->proactiveConnectClient->getLists();
         $this->assertInstanceOf(IterableAPICollection::class, $list);
-        $list->getPageData();
+        @$list->getPageData();
     }
 
     public function testCanGetList(): void
