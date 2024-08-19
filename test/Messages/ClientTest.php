@@ -1191,9 +1191,24 @@ class ClientTest extends VonageTestCase
         $this->assertArrayHasKey('message_uuid', $result);
     }
 
-    public function testCanUpdateRcsMessage()
+    public function testCanUpdateRcsMessage(): void
     {
-        $this->markTestIncomplete();
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $this->assertEquals(
+                'Bearer ',
+                mb_substr($request->getHeaders()['Authorization'][0], 0, 7)
+            );
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals('https://api.nexmo.com/v1/messages/6ce72c29-e454-442a-94f2-47a1cadba45f', $uriString);
+
+            $this->assertRequestJsonBodyContains('status', 'revoked', $request);
+            $this->assertEquals('PATCH', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('rcs-update-success'));
+
+        $this->messageClient->updateRcsStatus('6ce72c29-e454-442a-94f2-47a1cadba45f', MessagesClient::RCS_STATUS_REVOKED);
     }
 
     public function stickerTypeProvider(): array
