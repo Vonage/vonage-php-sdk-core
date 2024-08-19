@@ -84,6 +84,9 @@ class Input implements ActionInterface
         if (array_key_exists('dtmf', $data)) {
             $dtmf = $data['dtmf'];
             $action->setEnableDtmf(true);
+            if (is_object($dtmf)) {
+                $dtmf = (array)$dtmf;
+            }
 
             if (array_key_exists('timeOut', $dtmf)) {
                 $action->setDtmfTimeout((int)$dtmf['timeOut']);
@@ -103,6 +106,9 @@ class Input implements ActionInterface
         if (array_key_exists('speech', $data)) {
             $speech = $data['speech'];
             $action->setEnableSpeech(true);
+            if (is_object($speech)) {
+                $speech = (array)$speech;
+            }
 
             if (array_key_exists('uuid', $speech)) {
                 $action->setSpeechUUID($speech['uuid'][0]);
