@@ -19,6 +19,12 @@ use Vonage\Messages\Channel\MMS\MMSAudio;
 use Vonage\Messages\Channel\MMS\MMSImage;
 use Vonage\Messages\Channel\MMS\MMSvCard;
 use Vonage\Messages\Channel\MMS\MMSVideo;
+use Vonage\Messages\Channel\RCS\RcsCustom;
+use Vonage\Messages\Channel\RCS\RcsFile;
+use Vonage\Messages\Channel\RCS\RcsImage;
+use Vonage\Messages\Channel\RCS\RcsInvalidTtlException;
+use Vonage\Messages\Channel\RCS\RcsText;
+use Vonage\Messages\Channel\RCS\RcsVideo;
 use Vonage\Messages\Channel\SMS\SMSText;
 use Vonage\Messages\Channel\Viber\ViberFile;
 use Vonage\Messages\Channel\Viber\ViberImage;
@@ -958,6 +964,251 @@ class ClientTest extends VonageTestCase
         $result = $this->messageClient->send($message);
         $this->assertIsArray($result);
         $this->assertArrayHasKey('message_uuid', $result);
+    }
+
+    public function testCanSendRcsText(): void
+    {
+        $payload = [
+            'to' => '447700900000',
+            'from' => '16105551212',
+            'text' => 'Reticulating Splines',
+            'client_ref' => 'RCS Message',
+            'ttl' => 330,
+            'webhook_url' => 'https://example.com/incoming'
+        ];
+
+        $message = new RcsText($payload['to'], $payload['from'], $payload['text']);
+        $message->setClientRef($payload['client_ref']);
+        $message->setTtl($payload['ttl']);
+        $message->setWebhookUrl($payload['webhook_url']);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertEquals(
+                'Bearer ',
+                mb_substr($request->getHeaders()['Authorization'][0], 0, 7)
+            );
+            $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
+            $this->assertRequestJsonBodyContains('text', $payload['text'], $request);
+            $this->assertRequestJsonBodyContains('client_ref', $payload['client_ref'], $request);
+            $this->assertRequestJsonBodyContains('webhook_url', $payload['webhook_url'], $request);
+            $this->assertRequestJsonBodyContains('ttl', $payload['ttl'], $request);
+            $this->assertRequestJsonBodyContains('channel', 'rcs', $request);
+            $this->assertRequestJsonBodyContains('message_type', 'text', $request);
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('rcs-success', 202));
+
+        $result = $this->messageClient->send($message);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('message_uuid', $result);
+    }
+
+    public function testCannotSendRcsTtlOutOfRange()
+    {
+        $this->expectException(RcsInvalidTtlException::class);
+
+        $payload = [
+            'to' => '447700900000',
+            'from' => '16105551212',
+            'text' => 'Reticulating Splines',
+            'ttl' => 100,
+        ];
+
+        $message = new RcsText($payload['to'], $payload['from'], $payload['text']);
+        $message->setTtl($payload['ttl']);
+    }
+
+    public function testCanSendRcsImage()
+    {
+        $image = new ImageObject('https://my-image.com');
+
+        $payload = [
+            'to' => '447700900000',
+            'from' => '16105551212',
+            'text' => 'Reticulating Splines',
+            'client_ref' => 'RCS Message',
+            'ttl' => 330,
+            'webhook_url' => 'https://example.com/incoming',
+            'image' => $image
+        ];
+
+        $message = new RcsImage($payload['to'], $payload['from'], $payload['image']);
+        $message->setClientRef($payload['client_ref']);
+        $message->setTtl($payload['ttl']);
+        $message->setWebhookUrl($payload['webhook_url']);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertEquals(
+                'Bearer ',
+                mb_substr($request->getHeaders()['Authorization'][0], 0, 7)
+            );
+            $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
+            $this->assertRequestJsonBodyContains('client_ref', $payload['client_ref'], $request);
+            $this->assertRequestJsonBodyContains('webhook_url', $payload['webhook_url'], $request);
+            $this->assertRequestJsonBodyContains('ttl', $payload['ttl'], $request);
+            $this->assertRequestJsonBodyContains('channel', 'rcs', $request);
+            $this->assertRequestJsonBodyContains('message_type', 'image', $request);
+            $this->assertRequestJsonBodyContains('image', ['url' => 'https://my-image.com'], $request);
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('rcs-success', 202));
+
+        $result = $this->messageClient->send($message);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('message_uuid', $result);
+    }
+
+    public function testCanSendRcsVideo(): void
+    {
+        $videoObject = new VideoObject('https://my-image.com');
+
+        $payload = [
+            'to' => '447700900000',
+            'from' => '16105551212',
+            'text' => 'Reticulating Splines',
+            'client_ref' => 'RCS Message',
+            'ttl' => 330,
+            'webhook_url' => 'https://example.com/incoming',
+            'video' => $videoObject
+        ];
+
+        $message = new RcsVideo($payload['to'], $payload['from'], $payload['video']);
+        $message->setClientRef($payload
+        ['client_ref']);
+        $message->setTtl($payload['ttl']);
+        $message->setWebhookUrl($payload['webhook_url']);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertEquals(
+                'Bearer ',
+                mb_substr($request->getHeaders()['Authorization'][0], 0, 7)
+            );
+            $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
+            $this->assertRequestJsonBodyContains('client_ref', $payload['client_ref'], $request);
+            $this->assertRequestJsonBodyContains('webhook_url', $payload['webhook_url'], $request);
+            $this->assertRequestJsonBodyContains('ttl', $payload['ttl'], $request);
+            $this->assertRequestJsonBodyContains('channel', 'rcs', $request);
+            $this->assertRequestJsonBodyContains('message_type', 'video', $request);
+            $this->assertRequestJsonBodyContains('video', ['url' => 'https://my-image.com'], $request);
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('rcs-success', 202));
+
+        $result = $this->messageClient->send($message);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('message_uuid', $result);
+    }
+
+    public function testCanSendRcsFile(): void
+    {
+        $fileObject = new FileObject('https://example.com/file.pdf');
+
+        $payload = [
+            'to' => '447700900000',
+            'from' => '16105551212',
+            'text' => 'Reticulating Splines',
+            'client_ref' => 'RCS Message',
+            'ttl' => 330,
+            'webhook_url' => 'https://example.com/incoming',
+            'file' => $fileObject
+        ];
+
+        $message = new RcsFile($payload['to'], $payload['from'], $payload['file']);
+        $message->setClientRef($payload['client_ref']);
+        $message->setTtl($payload['ttl']);
+        $message->setWebhookUrl($payload['webhook_url']);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertEquals(
+                'Bearer ',
+                mb_substr($request->getHeaders()['Authorization'][0], 0, 7)
+            );
+            $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
+            $this->assertRequestJsonBodyContains('client_ref', $payload['client_ref'], $request);
+            $this->assertRequestJsonBodyContains('webhook_url', $payload['webhook_url'], $request);
+            $this->assertRequestJsonBodyContains('ttl', $payload['ttl'], $request);
+            $this->assertRequestJsonBodyContains('channel', 'rcs', $request);
+            $this->assertRequestJsonBodyContains('message_type', 'file', $request);
+            $this->assertRequestJsonBodyContains('file', ['url' => 'https://example.com/file.pdf'], $request);
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('rcs-success', 202));
+
+        $result = $this->messageClient->send($message);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('message_uuid', $result);
+    }
+
+    public function testCanSendRcsCustom()
+    {
+        $customObject = [
+            'custom_key' => 'custom_value',
+        ];
+
+        $payload = [
+            'to' => '447700900000',
+            'from' => '16105551212',
+            'text' => 'Reticulating Splines',
+            'client_ref' => 'RCS Message',
+            'ttl' => 330,
+            'webhook_url' => 'https://example.com/incoming',
+            'custom' => $customObject
+        ];
+
+        $message = new RcsCustom($payload['to'], $payload['from'], $payload['custom']);
+        $message->setClientRef($payload['client_ref']);
+        $message->setTtl($payload['ttl']);
+        $message->setWebhookUrl($payload['webhook_url']);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertEquals(
+                'Bearer ',
+                mb_substr($request->getHeaders()['Authorization'][0], 0, 7)
+            );
+            $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
+            $this->assertRequestJsonBodyContains('client_ref', $payload['client_ref'], $request);
+            $this->assertRequestJsonBodyContains('webhook_url', $payload['webhook_url'], $request);
+            $this->assertRequestJsonBodyContains('ttl', $payload['ttl'], $request);
+            $this->assertRequestJsonBodyContains('channel', 'rcs', $request);
+            $this->assertRequestJsonBodyContains('message_type', 'file', $request);
+            $this->assertRequestJsonBodyContains('custom', ['custom_key' => 'custom_value'], $request);
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('rcs-success', 202));
+
+        $result = $this->messageClient->send($message);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('message_uuid', $result);
+    }
+
+    public function testCanUpdateRcsMessage(): void
+    {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $this->assertEquals(
+                'Bearer ',
+                mb_substr($request->getHeaders()['Authorization'][0], 0, 7)
+            );
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals('https://api.nexmo.com/v1/messages/6ce72c29-e454-442a-94f2-47a1cadba45f', $uriString);
+
+            $this->assertRequestJsonBodyContains('status', 'revoked', $request);
+            $this->assertEquals('PATCH', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('rcs-update-success'));
+
+        $this->messageClient->updateRcsStatus('6ce72c29-e454-442a-94f2-47a1cadba45f', MessagesClient::RCS_STATUS_REVOKED);
     }
 
     public function stickerTypeProvider(): array
