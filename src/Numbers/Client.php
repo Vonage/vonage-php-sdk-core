@@ -34,10 +34,6 @@ class Client implements APIClient
     }
 
     /**
-     * @param Number $number
-     * @param string|null $id
-     *
-     * @return Number
      * @throws ClientExceptionInterface
      * @throws Exception
      * @throws Request
@@ -84,11 +80,8 @@ class Client implements APIClient
     }
 
     /**
-     * Returns a number
-     *
      * @param string $number Number to fetch, deprecating passing a `Number` object
      *
-     * @return Number
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -108,12 +101,6 @@ class Client implements APIClient
     }
 
     /**
-     * Returns a set of numbers for the specified country
-     *
-     * @param string $country The two character country code in ISO 3166-1 alpha-2 format
-     * @param FilterInterface $options Additional options, see https://developer.nexmo.com/api/numbers#getAvailableNumbers
-     *
-     * @return array
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -142,12 +129,6 @@ class Client implements APIClient
     }
 
     /**
-     * Returns a set of numbers for the specified country
-     *
-     * @param null $number
-     * @param FilterInterface|null $options
-     *
-     * @return array
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -176,8 +157,6 @@ class Client implements APIClient
     }
 
     /**
-     * @param $number deprecated
-     *
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
@@ -203,8 +182,6 @@ class Client implements APIClient
     }
 
     /**
-     * @param $number
-     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      */
@@ -217,7 +194,6 @@ class Client implements APIClient
         }
 
         if ($number instanceof Number) {
-
             trigger_error(
                 'Passing a Number object to Vonage\Number\Client::purchase() is being deprecated, ' .
                 'please pass a string MSISDN instead',
@@ -230,7 +206,6 @@ class Client implements APIClient
             ];
         // Evil else that will be removed in the next major version.
         } else {
-
             $body = [
                 'msisdn' => $number,
                 'country' => $country
@@ -243,9 +218,6 @@ class Client implements APIClient
     }
 
     /**
-     * @param string $number
-     * @param string|null $country
-     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
