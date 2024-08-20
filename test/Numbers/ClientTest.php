@@ -19,6 +19,7 @@ use Vonage\Numbers\Number;
 use VonageTest\Traits\HTTPTestTrait;
 use VonageTest\Traits\Psr7AssertionTrait;
 use VonageTest\VonageTestCase;
+
 use function is_null;
 
 class ClientTest extends VonageTestCase
@@ -31,13 +32,10 @@ class ClientTest extends VonageTestCase
      */
     protected APIResource $apiClient;
 
-    protected $vonageClient;
+    protected \Vonage\Client|\Prophecy\Prophecy\ObjectProphecy $vonageClient;
 
     protected APIResource $api;
 
-    /**
-     * @var NumbersClient
-     */
     protected NumbersClient $numberClient;
 
     public function setUp(): void
@@ -62,15 +60,6 @@ class ClientTest extends VonageTestCase
 
     /**
      * @dataProvider updateNumber
-     *
-     * @param $payload
-     * @param $id
-     * @param $expectedId
-     * @param $lookup
-     *
-     * @throws ClientException\Exception
-     * @throws RequestException
-     * @throws ClientExceptionInterface
      */
     public function testUpdateNumber($payload, $id, $expectedId, $lookup): void
     {
@@ -123,9 +112,6 @@ class ClientTest extends VonageTestCase
         }
     }
 
-    /**
-     * @return array[]
-     */
     public function updateNumber(): array
     {
         $number = new Number('1415550100');
@@ -144,23 +130,12 @@ class ClientTest extends VonageTestCase
         $fresh->setVoiceDestination('https://example.com/new_voice');
 
         return [
-//            [clone $number, null, '1415550100', true],
             [clone $number, '1415550100', '1415550100', true],
-//            [clone $noLookup, null, '1415550100', false],
-//            [clone $fresh, '1415550100', '1415550100', true],
         ];
     }
 
     /**
      * @dataProvider numbers
-     *
-     * @param $payload
-     * @param $id
-     *
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Server
-     * @throws RequestException
      */
     public function testGetNumber($payload, $id): void
     {
@@ -188,12 +163,6 @@ class ClientTest extends VonageTestCase
         ];
     }
 
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Server
-     * @throws RequestException
-     */
     public function testListNumbers(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
@@ -212,12 +181,6 @@ class ClientTest extends VonageTestCase
         $this->assertSame('14155550101', $numbers[1]->getId());
     }
 
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Server
-     * @throws RequestException
-     */
     public function testSearchAvailablePassesThroughWhitelistedOptions(): void
     {
         $options = [
@@ -244,26 +207,22 @@ class ClientTest extends VonageTestCase
         $this->numberClient->searchAvailable('US', new AvailableNumbers($options));
     }
 
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Server
-     * @throws RequestException
-     */
     public function testSearchAvailableAcceptsFilterInterfaceOptions(): void
     {
         $options = new AvailableNumbers([
             'pattern' => '1',
             'search_pattern' => 2,
+            'type' => 'landline',
             'features' => 'SMS,VOICE',
             'size' => '100',
             'index' => '19'
         ]);
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-            $this->assertEquals('/number/search', $request->getUri()->getPath());
-            $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-           $this->assertRequestMethod('GET', $request);
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals('https://rest.nexmo.com/number/search?size=100&index=19&country=US&search_pattern=2&pattern=1&type=landline&features=SMS%2CVOICE&page_index=1', $uriString);
+            $this->assertRequestMethod('GET', $request);
 
             return true;
         }))->willReturn($this->getResponse('available-numbers'));
@@ -271,14 +230,6 @@ class ClientTest extends VonageTestCase
         $this->numberClient->searchAvailable('US', $options);
     }
 
-    /**
-     * Make sure that unknown parameters fail validation
-     *
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Server
-     * @throws RequestException
-     */
     public function testUnknownParameterValueForSearchThrowsException(): void
     {
         $this->expectException(RequestException::class);
@@ -287,12 +238,6 @@ class ClientTest extends VonageTestCase
         $this->numberClient->searchAvailable('US', new AvailableNumbers(['foo' => 'bar']));
     }
 
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Server
-     * @throws RequestException
-     */
     public function testSearchAvailableReturnsNumberList(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
@@ -314,11 +259,6 @@ class ClientTest extends VonageTestCase
 
     /**
      * A search can return an empty set `[]` result when no numbers are found
-     *
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Server
-     * @throws RequestException
      */
     public function testSearchAvailableReturnsEmptyNumberList(): void
     {
@@ -336,12 +276,6 @@ class ClientTest extends VonageTestCase
         $this->assertEmpty($numbers);
     }
 
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Server
-     * @throws RequestException
-     */
     public function testSearchOwnedErrorsOnUnknownSearchParameters(): void
     {
         $this->expectException(ClientException\Request::class);
@@ -350,12 +284,6 @@ class ClientTest extends VonageTestCase
         $this->numberClient->searchOwned(new OwnedNumbers(['foo' => 'bar']), '1415550100');
     }
 
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Server
-     * @throws RequestException
-     */
     public function testSearchOwnedPassesInAllowedAdditionalParameters(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
@@ -383,12 +311,6 @@ class ClientTest extends VonageTestCase
         );
     }
 
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Server
-     * @throws RequestException
-     */
     public function testSearchOwnedReturnsSingleNumber(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
@@ -406,15 +328,13 @@ class ClientTest extends VonageTestCase
         $this->assertSame('1415550100', $numbers[0]->getId());
     }
 
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     */
     public function testPurchaseNumberWithNumberObject(): void
     {
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/number/buy', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
+            $this->assertRequestFormBodyContains('country', 'US', $request);
+            $this->assertRequestFormBodyContains('msisdn', '1415550100', $request);
             $this->assertEquals('POST', $request->getMethod());
 
             return true;
@@ -425,10 +345,6 @@ class ClientTest extends VonageTestCase
         // If there's no exception thrown, everything is fine!
     }
 
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     */
     public function testPurchaseNumberWithNumberAndCountry(): void
     {
         // When providing a number string, the first thing that happens is a GET request to fetch number details
@@ -453,16 +369,6 @@ class ClientTest extends VonageTestCase
 
     /**
      * @dataProvider purchaseNumberErrorProvider
-     *
-     * @param $number
-     * @param $country
-     * @param $responseFile
-     * @param $expectedHttpCode
-     * @param $expectedException
-     * @param $expectedExceptionMessage
-     *
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
      */
     public function testPurchaseNumberErrors(
         $number,
@@ -519,12 +425,6 @@ class ClientTest extends VonageTestCase
         return $r;
     }
 
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Server
-     * @throws RequestException
-     */
     public function testCancelNumberWithNumberString(): void
     {
         // When providing a number string, the first thing that happens is a GET request to fetch number details
@@ -544,12 +444,6 @@ class ClientTest extends VonageTestCase
         @$this->numberClient->cancel('1415550100');
     }
 
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Server
-     * @throws RequestException
-     */
     public function testCancelNumberWithNumberAndCountryString(): void
     {
         // When providing a number string, the first thing that happens is a GET request to fetch number details
@@ -571,11 +465,6 @@ class ClientTest extends VonageTestCase
 
     /**
      * Make sure that integer values that fail validation throw properly
-     *
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Server
-     * @throws RequestException
      */
     public function testInvalidIntegerValueForSearchThrowsException(): void
     {
@@ -587,11 +476,6 @@ class ClientTest extends VonageTestCase
 
     /**
      * Make sure that boolean values that fail validation throw properly
-     *
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Server
-     * @throws RequestException
      */
     public function testInvalidBooleanValueForSearchThrowsException(): void
     {
