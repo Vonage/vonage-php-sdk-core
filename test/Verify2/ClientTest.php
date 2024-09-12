@@ -10,15 +10,20 @@ use Prophecy\Prophecy\ObjectProphecy;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Verify2\Client as Verify2Client;
+use Vonage\Verify2\Request\CreateCustomTemplateFragmentRequest;
 use Vonage\Verify2\Request\EmailRequest;
 use Vonage\Verify2\Request\SilentAuthRequest;
 use Vonage\Verify2\Request\SMSRequest;
+use Vonage\Verify2\Request\UpdateCustomTemplateRequest;
 use Vonage\Verify2\Request\VoiceRequest;
 use Vonage\Verify2\Request\WhatsAppInteractiveRequest;
 use Vonage\Verify2\Request\WhatsAppRequest;
+use Vonage\Verify2\VerifyObjects\Template;
+use Vonage\Verify2\VerifyObjects\TemplateFragment;
 use Vonage\Verify2\VerifyObjects\VerificationWorkflow;
 use VonageTest\Traits\HTTPTestTrait;
 use VonageTest\Traits\Psr7AssertionTrait;
+use VonageTest\Verify2\Request\UpdateTemplateRequest;
 use VonageTest\VonageTestCase;
 
 class ClientTest extends VonageTestCase
@@ -692,6 +697,260 @@ class ClientTest extends VonageTestCase
         $result = $this->verify2Client->nextWorkflow($requestId);
 
         $this->assertTrue($result);
+    }
+
+    public function testWillListCustomTemplates(): void
+    {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api.nexmo.com/v2/verify/templates',
+                $uriString
+            );
+
+            $this->assertEquals('GET', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('get-templates-success'));
+
+        $response = $this->verify2Client->listCustomTemplates();
+
+        foreach ($response as $template) {
+            $this->assertInstanceOf(Template::class, $template);
+        }
+    }
+
+    public function testWillListCustomTemplatesWithQuery(): void
+    {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api.nexmo.com/v2/verify/templates?page_size=100&page=1',
+                $uriString
+            );
+
+            $this->assertEquals('GET', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('get-templates-success'));
+
+        $filter = new TemplateFilter();
+        $filter->setPageSize(5);
+        $filter->setPage(2);
+
+        $response = $this->verify2Client->listCustomTemplates($filter);
+        $this->assertCount(5, $response);
+    }
+
+    public function testWillCreateTemplate(): void
+    {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api.nexmo.com/v2/verify/templates',
+                $uriString
+            );
+
+            $this->assertEquals('POST', $request->getMethod());
+            $this->assertRequestJsonBodyContains('name', 'my-template', $request);
+
+            return true;
+        }))->willReturn($this->getResponse('create-template-success'));
+
+        $template = $this->verify2Client->createCustomTemplate('my-template');
+        $this->assertInstanceOf(Template::class, $template);
+    }
+
+    public function testWillGetTemplate(): void
+    {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api.nexmo.com/v2/verify/templates/8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9',
+                $uriString
+            );
+
+            $this->assertEquals('GET', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('get-template-success'));
+
+        $template = $this->verify2Client->getCustomTemplate('8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9');
+        $this->assertEquals('8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9', $template->template_id);
+    }
+
+    public function testWillDeleteTemplate(): void
+    {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api.nexmo.com/v2/verify/templates/8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9',
+                $uriString
+            );
+
+            $this->assertEquals('DELETE', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('delete-template-success', 204));
+
+        $response = $this->verify2Client->deleteCustomTemplate('8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9');
+        $this->assertTrue($response);
+    }
+
+    public function testWillUpdateTemplate(): void
+    {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api.nexmo.com/v2/verify/templates/8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9',
+                $uriString
+            );
+
+            $this->assertEquals('PATCH', $request->getMethod());
+            $this->assertRequestJsonBodyContains('name', 'new-name', $request);
+            $this->assertRequestJsonBodyContains('is_default', true, $request);
+
+            return true;
+        }))->willReturn($this->getResponse('update-template-success'));
+
+        $updateTemplateRequest = new UpdateCustomTemplateRequest(
+            'new-name',
+            true
+        );
+
+        $this->verify2Client->updateCustomTemplate('8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9', $updateTemplateRequest);
+    }
+
+    public function testWillListTemplateFragments(): void
+    {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api.nexmo.com/v2/verify/templates/8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9/template_fragments',
+                $uriString
+            );
+
+            $this->assertEquals('GET', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('list-template-fragment-success'));
+
+        $fragments = $this->verify2Client->listTemplateFragments('8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9');
+        $this->assertCount(2, $fragments);
+    }
+
+    public function testWillListTemplateFragmentsWithQuery(): void
+    {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api.nexmo.com/v2/verify/templates/8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9/template_fragments?page_size=5&&page=2',
+                $uriString
+            );
+
+            $this->assertEquals('GET', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('list-template-fragment-success-2'));
+        $templateFilter = new TemplateFilter();
+        $templateFilter->setPage(2);
+        $templateFilter->setPageSize(5);
+
+        $fragments = $this->verify2Client->listTemplateFragments('8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9', $templateFilter);
+        $this->assertCount(5, $fragments);
+    }
+
+    public function testWillCreateTemplateFragment(): void
+    {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api.nexmo.com/v2/verify/templates/c70f446e-997a-4313-a081-60a02a31dc19/template_fragments',
+                $uriString
+            );
+            $this->assertRequestJsonBodyContains('channel', 'sms', $request);
+            $this->assertRequestJsonBodyContains('locale', 'en-us', $request);
+            $this->assertRequestJsonBodyContains('text', 'The authentication code for your ${brand} is: ${code}', $request);
+
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('create-template-fragment-success'));
+
+        $createTemplateFragmentRequest = new CreateCustomTemplateFragmentRequest(
+            "sms",
+            "en-us",
+            'The authentication code for your ${brand} is: ${code}'
+        );
+        
+        $template = $this->verify2Client->createCustomTemplateFragment('c70f446e-997a-4313-a081-60a02a31dc19', $createTemplateFragmentRequest);
+
+        $this->assertInstanceOf(TemplateFragment::class, $template);
+    }
+
+    public function testWillGetTemplateFragment(): void
+    {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api.nexmo.com/v2/verify/templates/8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9/template_fragments/c70f446e-997a-4313-a081-60a02a31dc19',
+                $uriString
+            );
+
+            $this->assertEquals('GET', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('get-template-fragment-success'));
+
+        $fragment = $this->verify2Client->getCustomTemplateFragment('8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9', 'c70f446e-997a-4313-a081-60a02a31dc19');
+    }
+
+    public function testWillUpdateTemplateFragment(): void
+    {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api.nexmo.com/v2/verify/templates/8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9/template_fragments/c70f446e-997a-4313-a081-60a02a31dc19',
+                $uriString
+            );
+
+            $this->assertEquals('PATCH', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('update-template-fragment-success'));
+
+        $fragment = $this->verify2Client->updateCustomTemplateFragment('8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9', 'c70f446e-997a-4313-a081-60a02a31dc19', 'The authentication code for your ${brand} is: ${code}');
+        $this->assertInstanceOf(TemplateFragment::class, $fragment);
+    }
+
+    public function testWillDeleteTemplateFragment(): void
+    {
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api.nexmo.com/v2/verify/templates/8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9/template_fragments/c70f446e-997a-4313-a081-60a02a31dc19',
+                $uriString
+            );
+
+            $this->assertEquals('DELETE', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('delete-template-fragment-success'));
+
+        $response = $this->verify2Client->deleteCustomTemplateFragment('8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9', 'c70f446e-997a-4313-a081-60a02a31dc19');
+        $this->assertTrue($response);
     }
 
     public function localeProvider(): array
