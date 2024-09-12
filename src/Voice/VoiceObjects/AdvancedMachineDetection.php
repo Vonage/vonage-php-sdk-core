@@ -74,7 +74,9 @@ class AdvancedMachineDetection implements ArrayHydrateInterface
 
     public function fromArray(array $data): static
     {
-        $this->isArrayValid($data);
+        if (!$this->isArrayValid($data)) {
+            throw new \InvalidArgumentException('Invalid payload');
+        };
 
         $this->behaviour = $data['behaviour'];
         $this->mode = $data['mode'];
@@ -102,8 +104,12 @@ class AdvancedMachineDetection implements ArrayHydrateInterface
             return false;
         }
 
-        return $this->isValidBehaviour($data['behaviour'])
-               || $this->isValidMode($data['mode'])
-               || $this->isValidTimeout($data['beep_timeout']);
+        if ($this->isValidBehaviour($data['behaviour'])
+               && $this->isValidMode($data['mode'])
+               && $this->isValidTimeout($data['beep_timeout'])) {
+            return true;
+        };
+
+        return false;
     }
 }
