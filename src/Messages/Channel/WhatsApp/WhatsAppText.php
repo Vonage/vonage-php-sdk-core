@@ -28,10 +28,7 @@ class WhatsAppText extends BaseMessage
     {
         $returnArray = $this->getBaseMessageUniversalOutputArray();
         $returnArray['text'] = $this->getText();
-
-        if (!is_null($this->context)) {
-            $returnArray['context'] = $this->context;
-        }
+        $returnArray['context'] = $this->context ?? null;
 
         return $returnArray;
     }
