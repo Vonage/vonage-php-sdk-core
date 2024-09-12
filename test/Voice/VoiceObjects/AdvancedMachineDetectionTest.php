@@ -42,7 +42,7 @@ class AdvancedMachineDetectionTest extends TestCase
     public function testWillRenderDefault()
     {
         $amd = new AdvancedMachineDetection('hangup', 100, 'default');
-        $this->assertEquals('default', $amd->toArray()['default']);
+        $this->assertEquals('default', $amd->toArray()['mode']);
     }
 
     public function testToArray()
