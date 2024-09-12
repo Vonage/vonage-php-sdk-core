@@ -318,6 +318,30 @@ class ClientTest extends VonageTestCase
         $this->assertArrayHasKey('message_uuid', $result);
     }
 
+    public function testCanSendWhatsAppTextWithoutContext(): void
+    {
+        $payload = [
+            'to' => '447700900000',
+            'from' => '16105551212',
+            'text' => 'This is a WhatsApp text'
+        ];
+
+        $message = new WhatsAppText($payload['to'], $payload['from'], $payload['text']);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
+            $this->assertRequestJsonBodyContains('text', $payload['text'], $request);
+            $this->assertRequestJsonBodyContains('channel', 'whatsapp', $request);
+            $this->assertRequestJsonBodyContains('message_type', 'text', $request);
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('sms-success', 202));
+        $result = $this->messageClient->send($message);
+        $this->assertIsArray($result);
+    }
+
     public function testCanSendWhatsAppImage(): void
     {
         $imageUrl = 'https://picsum.photos/200/300';
