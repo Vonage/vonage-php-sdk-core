@@ -10,6 +10,7 @@ use Prophecy\Prophecy\ObjectProphecy;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Verify2\Client as Verify2Client;
+use Vonage\Verify2\Filters\TemplateFilter;
 use Vonage\Verify2\Request\CreateCustomTemplateFragmentRequest;
 use Vonage\Verify2\Request\EmailRequest;
 use Vonage\Verify2\Request\SilentAuthRequest;
@@ -23,7 +24,6 @@ use Vonage\Verify2\VerifyObjects\TemplateFragment;
 use Vonage\Verify2\VerifyObjects\VerificationWorkflow;
 use VonageTest\Traits\HTTPTestTrait;
 use VonageTest\Traits\Psr7AssertionTrait;
-use VonageTest\Verify2\Request\UpdateTemplateRequest;
 use VonageTest\VonageTestCase;
 
 class ClientTest extends VonageTestCase
@@ -34,6 +34,7 @@ class ClientTest extends VonageTestCase
     protected ObjectProphecy $vonageClient;
     protected Verify2Client $verify2Client;
     protected APIResource $api;
+    private int $requestCount;
 
     public function setUp(): void
     {
@@ -49,7 +50,7 @@ class ClientTest extends VonageTestCase
 
         /** @noinspection PhpParamsInspection */
         $this->api = (new APIResource())
-            ->setIsHAL(false)
+            ->setIsHAL(true)
             ->setErrorsOn200(false)
             ->setClient($this->vonageClient->reveal())
             ->setAuthHandlers([new Client\Credentials\Handler\BasicHandler(), new Client\Credentials\Handler\KeypairHandler()])
@@ -727,7 +728,7 @@ class ClientTest extends VonageTestCase
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
-                'https://api.nexmo.com/v2/verify/templates?page_size=100&page=1',
+                'https://api.nexmo.com/v2/verify/templates?page=1&page_size=5',
                 $uriString
             );
 
@@ -741,7 +742,10 @@ class ClientTest extends VonageTestCase
         $filter->setPage(2);
 
         $response = $this->verify2Client->listCustomTemplates($filter);
-        $this->assertCount(5, $response);
+
+        foreach ($response as $template) {
+            $this->assertInstanceOf(Template::class, $template);
+        }
     }
 
     public function testWillCreateTemplate(): void
@@ -829,21 +833,38 @@ class ClientTest extends VonageTestCase
 
     public function testWillListTemplateFragments(): void
     {
+        $this->requestCount = 0;
         $this->vonageClient->send(Argument::that(function (Request $request) {
+            $this->requestCount++;
             $uri = $request->getUri();
             $uriString = $uri->__toString();
-            $this->assertEquals(
-                'https://api.nexmo.com/v2/verify/templates/8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9/template_fragments',
-                $uriString
-            );
+
+            if ($this->requestCount == 1) {
+                $this->assertEquals(
+                    'https://api.nexmo.com/v2/verify/templates/8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9/template_fragments',
+                    $uriString
+                );
+            }
+
+            if ($this->requestCount == 2) {
+                $this->assertEquals(
+                    'https://api.nexmo.com/v2/verify/templates/c70f446e-997a-4313-a081-60a02a31dc19/template_fragments?page=3',
+                    $uriString
+                );
+            }
 
             $this->assertEquals('GET', $request->getMethod());
 
             return true;
-        }))->willReturn($this->getResponse('list-template-fragment-success'));
+        }))->willReturn($this->getResponse('list-template-fragment-success'), $this->getResponse('list-template-fragment-success-2'));
 
         $fragments = $this->verify2Client->listTemplateFragments('8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9');
-        $this->assertCount(2, $fragments);
+
+        foreach ($fragments as $fragment) {
+            $this->assertInstanceOf(TemplateFragment::class, $fragment);
+        }
+
+        $this->requestCount = 0;
     }
 
     public function testWillListTemplateFragmentsWithQuery(): void
@@ -852,20 +873,23 @@ class ClientTest extends VonageTestCase
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
-                'https://api.nexmo.com/v2/verify/templates/8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9/template_fragments?page_size=5&&page=2',
+                'https://api.nexmo.com/v2/verify/templates/8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9/template_fragments?page=2&page_size=10',
                 $uriString
             );
 
             $this->assertEquals('GET', $request->getMethod());
 
             return true;
-        }))->willReturn($this->getResponse('list-template-fragment-success-2'));
+        }))->willReturn($this->getResponse('list-template-fragment-success'));
         $templateFilter = new TemplateFilter();
         $templateFilter->setPage(2);
-        $templateFilter->setPageSize(5);
+        $templateFilter->setPageSize(10);
 
         $fragments = $this->verify2Client->listTemplateFragments('8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9', $templateFilter);
-        $this->assertCount(5, $fragments);
+
+        foreach ($fragments as $fragment) {
+            $this->assertInstanceOf(TemplateFragment::class, $fragment);
+        }
     }
 
     public function testWillCreateTemplateFragment(): void

@@ -86,12 +86,11 @@ class Client implements APIClient
     {
         $collection = $this->api->search($filter, '/templates');
         $collection->setNaiveCount(true);
+        $collection->setPageIndexKey('page');
 
         if (is_null($filter)) {
             $collection->setNoQueryParameters(true);
         }
-
-//        $collection->setPageIndexKey('page');
 
         $hydrator = new ArrayHydrator();
         $hydrator->setPrototype(new Template());
@@ -157,5 +156,32 @@ class Client implements APIClient
     {
         $this->api->delete('templates/' . $templateId . '/template_fragments/' . $fragmentId);
         return true;
+    }
+
+    public function listTemplateFragments(string $templateId, TemplateFilter $filter = null): IterableAPICollection
+    {
+        $api = clone $this->getAPIResource();
+        $api->setCollectionName('template_fragments');
+
+        $collection = $api->search($filter, '/templates/' . $templateId . '/template_fragments');
+        $collection->setNaiveCount(true);
+        $collection->setPageIndexKey('page');
+
+        if (is_null($filter)) {
+            $collection->setNoQueryParameters(true);
+        }
+
+        if (!is_null($filter)) {
+            if ($filter->getQuery()['page']) {
+                $collection->setAutoAdvance(false);
+                $collection->setIndex($filter->getQuery()['page']);
+            }
+        }
+
+        $hydrator = new ArrayHydrator();
+        $hydrator->setPrototype(new TemplateFragment());
+        $collection->setHydrator($hydrator);
+
+        return $collection;
     }
 }

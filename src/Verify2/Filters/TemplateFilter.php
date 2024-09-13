@@ -31,9 +31,6 @@ class TemplateFilter implements FilterInterface
         return $this->pageSize;
     }
 
-    /**
-     * @return $this
-     */
     public function setPageSize(int $pageSize): self
     {
         $this->pageSize = $pageSize;
@@ -43,15 +40,12 @@ class TemplateFilter implements FilterInterface
 
     public function getPage(): ?int
     {
-        return $this->pageSize;
+        return $this->page;
     }
 
-    /**
-     * @return $this
-     */
-    public function setPage(int $pageSize): self
+    public function setPage(int $page): self
     {
-        $this->pageSize = $pageSize;
+        $this->page = $page;
 
         return $this;
     }
