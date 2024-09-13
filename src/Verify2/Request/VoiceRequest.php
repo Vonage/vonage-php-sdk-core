@@ -3,11 +3,14 @@
 namespace Vonage\Verify2\Request;
 
 use InvalidArgumentException;
+use Vonage\Verify2\Traits\CustomTemplateTrait;
 use Vonage\Verify2\VerifyObjects\VerificationLocale;
 use Vonage\Verify2\VerifyObjects\VerificationWorkflow;
 
 class VoiceRequest extends BaseVerifyRequest
 {
+    use CustomTemplateTrait;
+
     public function __construct(
         protected string $to,
         protected string $brand,

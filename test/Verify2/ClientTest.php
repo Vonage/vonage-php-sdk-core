@@ -126,6 +126,38 @@ class ClientTest extends VonageTestCase
         $this->assertArrayHasKey('request_id', $result);
     }
 
+    public function testCanRequestSmsWithCustomTemplate(): void
+    {
+        $payload = [
+            'to' => '07785254785',
+            'client_ref' => 'my-verification',
+            'brand' => 'my-brand',
+            'from' => 'vonage'
+        ];
+
+        $smsVerification = new SMSRequest($payload['to'], $payload['brand'], null, $payload['from']);
+        $smsVerification->setTemplateId('33945c03-71c6-4aaf-954d-750a9b480def');
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api.nexmo.com/v2/verify',
+                $uriString
+            );
+
+            $this->assertRequestJsonBodyContains('template_id', '33945c03-71c6-4aaf-954d-750a9b480def', $request);
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('verify-request-success', 202));
+
+        $result = $this->verify2Client->startVerification($smsVerification);
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('request_id', $result);
+    }
+
     public function testWillPopulateEntityIdAndContentId(): void
     {
         $payload = [
@@ -1026,4 +1058,20 @@ class ClientTest extends VonageTestCase
             [921, false],
         ];
     }
+//
+//    public function testIntegration()
+//    {
+//        $credentials = new Client\Credentials\Keypair(
+//            file_get_contents('/Users/JSeconde/Sites/vonage-php-sdk-core/test/Verify2/private.key'),
+//            '4a875f7e-2559-4fb5-84f6-f8b144f6e9f6'
+//        );
+//
+//        $liveClient = new Client($credentials);
+//
+//        $response = $liveClient->verify2()->createCustomTemplate('example-template');
+
+//        $smsRequest = new SMSRequest('447738066610', 'VONAGE', null, '447738066610');
+//        $response = $liveClient->verify2()->startVerification($smsRequest);
+//        var_dump($response);
+//    }
 }
