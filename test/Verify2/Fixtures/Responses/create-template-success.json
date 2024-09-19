@@ -1,0 +1,13 @@
+{
+  "template_id": "8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9",
+  "name": "my-template",
+  "is_default": true,
+  "_links": {
+    "self": {
+      "href": "https://api.nexmo.com/v2/verify/templates/8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9"
+    },
+    "fragments": {
+      "href": "https://api.nexmo.com/v2/verify/templates/8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9/template_fragments"
+    }
+  }
+}

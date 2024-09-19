@@ -1,0 +1,44 @@
+{
+  "page_size": 2,
+  "page": 1,
+  "total_pages": 1,
+  "total_items": 2,
+  "_embedded": {
+    "templates": [
+      {
+        "template_id": "8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9",
+        "name": "my-template-1",
+        "is_default": true,
+        "_links": {
+          "self": {
+            "href": "https://api.nexmo.com/v2/verify/templates/8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9"
+          },
+          "fragments": {
+            "href": "https://api.nexmo.com/v2/verify/templates/8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9/template_fragments"
+          }
+        }
+      },
+      {
+        "template_id": "0ac50843-b549-4a89-916e-848749f20040",
+        "name": "my-template-2",
+        "is_default": false,
+        "_links": {
+          "self": {
+            "href": "https://api.nexmo.com/v2/verify/templates/0ac50843-b549-4a89-916e-848749f20040"
+          },
+          "fragments": {
+            "href": "https://api.nexmo.com/v2/verify/templates/0ac50843-b549-4a89-916e-848749f20040/template_fragments"
+          }
+        }
+      }
+    ]
+  },
+  "_links": {
+    "self": {
+      "href": "https://api.nexmo.com/v2/verify/templates?page=1"
+    },
+    "last": {
+      "href": "https://api.nexmo.com/v2/verify/templates?page=1"
+    }
+  }
+}

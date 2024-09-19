@@ -3,11 +3,14 @@
 namespace Vonage\Verify2\Request;
 
 use InvalidArgumentException;
+use Vonage\Verify2\Traits\CustomTemplateTrait;
 use Vonage\Verify2\VerifyObjects\VerificationLocale;
 use Vonage\Verify2\VerifyObjects\VerificationWorkflow;
 
 class SMSRequest extends BaseVerifyRequest
 {
+    use CustomTemplateTrait;
+
     public function __construct(
         protected string $to,
         protected string $brand,
@@ -36,6 +39,12 @@ class SMSRequest extends BaseVerifyRequest
 
     public function toArray(): array
     {
-        return $this->getBaseVerifyUniversalOutputArray();
+        $return = $this->getBaseVerifyUniversalOutputArray();
+
+        if (!is_null($this->getTemplateId())) {
+            $return['template_id'] = $this->getTemplateId();
+        }
+
+        return $return;
     }
 }
