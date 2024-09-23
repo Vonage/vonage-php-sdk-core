@@ -21,6 +21,7 @@ use Vonage\Verify2\Request\WhatsAppInteractiveRequest;
 use Vonage\Verify2\Request\WhatsAppRequest;
 use Vonage\Verify2\VerifyObjects\Template;
 use Vonage\Verify2\VerifyObjects\TemplateFragment;
+use Vonage\Verify2\VerifyObjects\VerificationLocale;
 use Vonage\Verify2\VerifyObjects\VerificationWorkflow;
 use VonageTest\Traits\HTTPTestTrait;
 use VonageTest\Traits\Psr7AssertionTrait;
@@ -1058,20 +1059,4 @@ class ClientTest extends VonageTestCase
             [921, false],
         ];
     }
-//
-//    public function testIntegration()
-//    {
-//        $credentials = new Client\Credentials\Keypair(
-//            file_get_contents('/Users/JSeconde/Sites/vonage-php-sdk-core/test/Verify2/private.key'),
-//            '4a875f7e-2559-4fb5-84f6-f8b144f6e9f6'
-//        );
-//
-//        $liveClient = new Client($credentials);
-//
-//        $response = $liveClient->verify2()->createCustomTemplate('example-template');
-
-//        $smsRequest = new SMSRequest('447738066610', 'VONAGE', null, '447738066610');
-//        $response = $liveClient->verify2()->startVerification($smsRequest);
-//        var_dump($response);
-//    }
 }
