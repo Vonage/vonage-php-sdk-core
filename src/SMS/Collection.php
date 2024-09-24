@@ -9,10 +9,7 @@ use Iterator;
 
 class Collection implements Countable, Iterator
 {
-    /**
-     * @var int
-     */
-    protected $current = 0;
+    protected int $current = 0;
 
     /**
      * @param array<string, int|array<string, mixed>> $data
