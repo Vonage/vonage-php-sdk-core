@@ -13,7 +13,7 @@ use function count;
 
 class Response extends BaseResponse
 {
-    protected $callbacks = [];
+    protected array $callbacks = [];
 
     public function __construct(array $data, array $callbacks = [])
     {
@@ -77,10 +77,7 @@ class Response extends BaseResponse
     }
 
     /**
-     * @param $name
-     * @param $args
-     *
-     * @todo This looks somewhat illogical
+     * @TODO This looks somewhat illogical
      */
     public function __call($name, $args)
     {
