@@ -22,32 +22,17 @@ class Application implements EntityInterface, JsonSerializable, ArrayHydrateInte
     use Psr7Trait;
     use JsonResponseTrait;
 
-    /**
-     * @var VoiceConfig
-     */
-    protected $voiceConfig;
+    protected VoiceConfig $voiceConfig;
 
-    /**
-     * @var MessagesConfig
-     */
-    protected $messagesConfig;
+    protected MessagesConfig $messagesConfig;
 
-    /**
-     * @var RtcConfig
-     */
-    protected $rtcConfig;
+    protected RtcConfig $rtcConfig;
 
-    /**
-     * @var VbcConfig
-     */
-    protected $vbcConfig;
+    protected VbcConfig $vbcConfig;
 
-    protected $name;
+    protected ?string $name = null;
 
-    /**
-     * @var array
-     */
-    protected $keys = [];
+    protected array $keys = [];
 
     public function __construct(protected ?string $id = null)
     {

@@ -10,10 +10,7 @@ class RtcConfig
 {
     public const EVENT = 'event_url';
 
-    /**
-     * @var array
-     */
-    protected $webhooks = [];
+    protected array $webhooks = [];
 
     public function setWebhook($type, $url, $method = null): self
     {

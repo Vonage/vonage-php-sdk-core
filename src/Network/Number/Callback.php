@@ -31,7 +31,7 @@ use function substr;
  */
 class Callback extends BaseCallback
 {
-    protected $expected = ['request_id', 'callback_part', 'callback_total_parts', 'number', 'status'];
+    protected array $expected = ['request_id', 'callback_part', 'callback_total_parts', 'number', 'status'];
     protected $optional = [
         'Type' => 'number_type',
         'Network' => 'carrier_network_code',
