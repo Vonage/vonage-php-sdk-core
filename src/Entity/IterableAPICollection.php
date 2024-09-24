@@ -15,6 +15,8 @@ use Vonage\Client\APIResource;
 use Vonage\Client\ClientAwareInterface;
 use Vonage\Client\ClientAwareTrait;
 use Vonage\Client\Exception as ClientException;
+use Vonage\Client\Exception\Exception;
+use Vonage\Client\Exception\Server;
 use Vonage\Entity\Filter\EmptyFilter;
 use Vonage\Entity\Filter\FilterInterface;
 
@@ -26,7 +28,6 @@ use function http_build_query;
 use function is_null;
 use function json_decode;
 use function md5;
-use function strpos;
 
 /**
  * Common code for iterating over a collection, and using the collection class to discover the API path.
@@ -402,7 +403,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
     /**
      * @return int|mixed
      */
-    public function getPage()
+    public function getPage(): mixed
     {
         if (isset($this->pageData)) {
             if (array_key_exists('page', $this->pageData)) {
@@ -459,11 +460,6 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
         throw new RuntimeException('size not set');
     }
 
-    /**
-     * @param $size
-     *
-     * @return $this
-     */
     public function setSize($size): self
     {
         $this->size = (int)$size;
@@ -473,8 +469,6 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
 
     /**
      * Filters reduce to query params and include paging settings.
-     *
-     * @return $this
      */
     public function setFilter(FilterInterface $filter): self
     {
@@ -493,8 +487,6 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
 
     /**
      * Fetch a page using the current filter if no query is provided.
-     *
-     * @param $absoluteUri
      *
      * @throws ClientException\Exception
      * @throws ClientException\Request
@@ -564,12 +556,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
         }
     }
 
-    /**
-     * @throws ClientException\Exception
-     *
-     * @return ClientException\Request|ClientException\Server
-     */
-    protected function getException(ResponseInterface $response)
+    protected function getException(ResponseInterface $response): ClientException\Request|ClientException\Server
     {
         $response->getBody()->rewind();
         $body = json_decode($response->getBody()->getContents(), true);
@@ -599,9 +586,6 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
         return $this->autoAdvance;
     }
 
-    /**
-     * @return $this
-     */
     public function setAutoAdvance(bool $autoAdvance): self
     {
         $this->autoAdvance = $autoAdvance;
@@ -614,9 +598,6 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
         return $this->naiveCount;
     }
 
-    /**
-     * @return $this
-     */
     public function setNaiveCount(bool $naiveCount): self
     {
         $this->naiveCount = $naiveCount;
@@ -643,9 +624,6 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function hasPagination(): bool
     {
         return $this->hasPagination;

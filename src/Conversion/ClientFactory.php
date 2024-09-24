@@ -9,11 +9,10 @@ use Vonage\Client\APIResource;
 use Vonage\Client\Credentials\Handler\BasicHandler;
 
 /**
- * @todo Finish this Namespace
+ * @TODO Finish this Namespace
  */
 class ClientFactory
 {
-
     public function __invoke(ContainerInterface $container): Client
     {
         /** @var APIResource $api */

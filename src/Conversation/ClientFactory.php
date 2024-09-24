@@ -5,7 +5,6 @@ namespace Vonage\Conversation;
 use Psr\Container\ContainerInterface;
 use Vonage\Client\APIResource;
 use Vonage\Client\Credentials\Handler\KeypairHandler;
-use Vonage\Conversation\Client;
 
 class ClientFactory
 {

@@ -6,21 +6,14 @@ namespace Vonage\Entity\Hydrator;
 
 class ConstructorHydrator implements HydratorInterface
 {
-    /**
-     * Class to create
-     * @var string
-     */
-    protected $prototype;
+    protected string $prototype;
 
-    public function hydrate(array $data)
+    public function hydrate(array $data): mixed
     {
         $className = $this->prototype;
         return new $className($data);
     }
 
-    /**
-     * @param $object
-     */
     public function hydrateObject(array $data, $object): never
     {
         throw new \RuntimeException('Constructor Hydration can not happen on an existing object');

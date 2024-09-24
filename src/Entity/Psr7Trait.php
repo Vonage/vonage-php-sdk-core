@@ -9,7 +9,6 @@ use Psr\Http\Message\ResponseInterface;
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 
 use function array_merge;
-use function get_class;
 use function is_array;
 use function json_decode;
 use function method_exists;
@@ -23,15 +22,8 @@ use function trigger_error;
  */
 trait Psr7Trait
 {
-    /**
-     * @var RequestInterface
-     */
-    protected $request;
-
-    /**
-     * @var ResponseInterface
-     */
-    protected $response;
+    protected RequestInterface $request;
+    protected ResponseInterface $response;
 
     /**
      * @deprecated See error

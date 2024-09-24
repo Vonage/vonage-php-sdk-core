@@ -6,10 +6,7 @@ namespace Vonage\Entity\Hydrator;
 
 class ArrayHydrator implements HydratorInterface
 {
-    /**
-     * @var ArrayHydrateInterface
-     */
-    protected $prototype;
+    protected ArrayHydrateInterface $prototype;
 
     public function hydrate(array $data): ArrayHydrateInterface
     {
@@ -19,9 +16,6 @@ class ArrayHydrator implements HydratorInterface
         return $object;
     }
 
-    /**
-     * @param $object
-     */
     public function hydrateObject(array $data, $object)
     {
         $object->fromArray($data);
