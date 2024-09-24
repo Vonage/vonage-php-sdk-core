@@ -14,5 +14,5 @@ interface LoggerAwareInterface
      */
     public function log(int|string $level, string $message, array $context = []): void;
 
-    public function setLogger(LoggerInterface $logger);
+    public function setLogger(LoggerInterface $logger): void;
 }
