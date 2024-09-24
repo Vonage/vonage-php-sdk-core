@@ -23,12 +23,9 @@ abstract class Price implements
     use NoRequestResponseTrait;
     use JsonResponseTrait;
 
-    /**
-     * @var array<string, mixed>
-     */
-    protected $data = [];
+    protected array $data = [];
 
-    public function getCountryCode()
+    public function getCountryCode(): mixed
     {
         return $this->data['country_code'];
     }
@@ -43,12 +40,12 @@ abstract class Price implements
         return $this->data['country_name'];
     }
 
-    public function getDialingPrefix()
+    public function getDialingPrefix(): mixed
     {
         return $this->data['dialing_prefix'];
     }
 
-    public function getDefaultPrice()
+    public function getDefaultPrice(): mixed
     {
         if (isset($this->data['default_price'])) {
             return $this->data['default_price'];
@@ -68,7 +65,7 @@ abstract class Price implements
         return $this->data['currency'];
     }
 
-    public function getNetworks()
+    public function getNetworks(): mixed
     {
         return $this->data['networks'];
     }

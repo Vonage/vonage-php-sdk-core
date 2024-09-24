@@ -22,16 +22,9 @@ class Network implements
     use NoRequestResponseTrait;
     use JsonResponseTrait;
 
-    /**
-     * @var array
-     */
     protected array $data = [];
 
-    /**
-     * @param string|int $networkCode
-     * @param string|int $networkName
-     */
-    public function __construct($networkCode, $networkName)
+    public function __construct(int|string $networkCode, int|string $networkName)
     {
         $this->data['network_code'] = (string)$networkCode;
         $this->data['network_name'] = (string)$networkName;
@@ -47,12 +40,12 @@ class Network implements
         return $this->data['network_name'];
     }
 
-    public function getOutboundSmsPrice()
+    public function getOutboundSmsPrice(): mixed
     {
         return $this->data['sms_price'] ?? $this->data['price'];
     }
 
-    public function getOutboundVoicePrice()
+    public function getOutboundVoicePrice(): mixed
     {
         return $this->data['voice_price'] ?? $this->data['price'];
     }

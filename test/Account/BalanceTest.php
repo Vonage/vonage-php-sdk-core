@@ -17,12 +17,12 @@ class BalanceTest extends VonageTestCase
 
     public function setUp(): void
     {
-        $this->balance = new Balance('12.99', false);
+        $this->balance = new Balance(12.99, false);
     }
 
     public function testObjectAccess(): void
     {
-        $this->assertEquals("12.99", $this->balance->getBalance());
+        $this->assertEquals(12.99, $this->balance->getBalance());
         $this->assertEquals(false, $this->balance->getAutoReload());
     }
 }
