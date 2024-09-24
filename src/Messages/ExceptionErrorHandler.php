@@ -40,6 +40,12 @@ class ExceptionErrorHandler
             throw new ClientException\Server($responseBody['title'] . ': ' . $responseBody['detail']);
         }
 
-        throw new ClientException\Request($responseBody['title'] . ': ' . $responseBody['detail']);
+        $message = $responseBody['title'] ?? '';
+
+        if (isset($responseBody['detail'])) {
+            $message .= ': ' . $responseBody['detail'];
+        }
+
+        throw new ClientException\Request($message);
     }
 }
