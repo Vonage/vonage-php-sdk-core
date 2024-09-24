@@ -32,98 +32,88 @@ class Client implements APIClient
     }
 
     /**
-     * @param $number
-     *
-     * @return Basic
      * @throws ClientExceptionInterface
      * @throws Exception
      * @throws Request
      * @throws Server
      */
-    public function basic($number): Basic
+    public function basic(string $number): Basic
     {
         $insightsResults = $this->makeRequest('/ni/basic/json', $number);
 
         $basic = new Basic($insightsResults['national_format_number']);
         $basic->fromArray($insightsResults);
+
         return $basic;
     }
 
     /**
-     * @param $number
-     *
-     * @return StandardCnam
      * @throws ClientExceptionInterface
      * @throws Exception
      * @throws Request
      * @throws Server
      */
-    public function standardCNam($number): StandardCnam
+    public function standardCNam(string $number): StandardCnam
     {
         $insightsResults = $this->makeRequest('/ni/standard/json', $number, ['cnam' => 'true']);
         $standard = new StandardCnam($insightsResults['national_format_number']);
         $standard->fromArray($insightsResults);
+
         return $standard;
     }
 
     /**
-     * @param $number
-     *
-     * @return AdvancedCnam
      * @throws ClientExceptionInterface
      * @throws Exception
      * @throws Request
      * @throws Server
      */
-    public function advancedCnam($number): AdvancedCnam
+    public function advancedCnam(string $number): AdvancedCnam
     {
         $insightsResults = $this->makeRequest('/ni/advanced/json', $number, ['cnam' => 'true']);
         $standard = new AdvancedCnam($insightsResults['national_format_number']);
         $standard->fromArray($insightsResults);
+
         return $standard;
     }
 
     /**
-     * @param $number
-     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
      */
-    public function standard($number): Standard
+    public function standard(string $number): Standard
     {
         $insightsResults = $this->makeRequest('/ni/standard/json', $number);
         $standard = new Standard($insightsResults['national_format_number']);
         $standard->fromArray($insightsResults);
+
         return $standard;
     }
 
     /**
-     * @param $number
-     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
      */
-    public function advanced($number): Advanced
+    public function advanced(string $number): Advanced
     {
         $insightsResults = $this->makeRequest('/ni/advanced/json', $number);
         $advanced = new Advanced($insightsResults['national_format_number']);
         $advanced->fromArray($insightsResults);
+
         return $advanced;
     }
 
     /**
-     * @param $number
-     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
      */
-    public function advancedAsync($number, string $webhook): void
+    public function advancedAsync(string $number, string $webhook): void
     {
         // This method does not have a return value as it's async. If there is no exception thrown
         // We can assume that everything is fine
@@ -132,8 +122,6 @@ class Client implements APIClient
 
     /**
      * Common code for generating a request
-     *
-     * @param $number
      *
      * @throws ClientException\Exception
      * @throws ClientException\Request

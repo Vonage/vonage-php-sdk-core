@@ -5,15 +5,11 @@ declare(strict_types=1);
 namespace Vonage\Insights;
 
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
-
 class Basic implements ArrayHydrateInterface
 {
     protected array $data = [];
 
-    /**
-     * @param $number
-     */
-    public function __construct($number)
+    public function __construct(string $number)
     {
         $this->data['national_format_number'] = $number;
     }
