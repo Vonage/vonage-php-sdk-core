@@ -22,8 +22,8 @@ use function trigger_error;
  */
 trait Psr7Trait
 {
-    protected RequestInterface $request;
-    protected ResponseInterface $response;
+    protected ?RequestInterface $request = null;
+    protected ?ResponseInterface $response = null;
 
     /**
      * @deprecated See error
