@@ -26,75 +26,33 @@ class Event
     public const STATUS_TIMEOUT = 'timeout';
     public const STATUS_COMPLETED = 'completed';
 
-    /**
-     * @var string
-     */
-    protected $conversationUuid;
+    protected ?string $conversationUuid = null;
 
-    /**
-     * @var string
-     */
-    protected $detail;
+    protected ?string $detail = null;
 
-    /**
-     * @var string
-     */
-    protected $direction;
+    protected ?string $direction = null;
 
-    /**
-     * @var ?string
-     */
-    protected $duration;
+    protected ?string $duration = null;
 
-    /**
-     * @var ?DateTimeImmutable
-     */
-    protected $endTime;
+    protected ?DateTimeImmutable $endTime = null;
 
-    /**
-     * @var string
-     */
-    protected $from;
+    protected ?string $from = null;
 
-    /**
-     * @var ?string
-     */
-    protected $network;
+    protected ?string $network = null;
 
-    /**
-     * @var ?string
-     */
-    protected $price;
+    protected ?string $price = null;
 
-    /**
-     * @var ?string
-     */
-    protected $rate;
+    protected ?string $rate = null;
 
-    /**
-     * @var string
-     */
-    protected $status;
+    protected ?string $status = null;
 
-    /**
-     * @var ?DateTimeImmutable
-     */
-    protected $startTime;
+    protected ?DateTimeImmutable $startTime = null;
 
-    /**
-     * @var DateTimeImmutable
-     */
-    protected $timestamp;
+    protected ?DateTimeImmutable $timestamp = null;
 
-    /**
-     * @var string
-     */
-    protected $to;
+    protected ?string $to = null;
 
-    /**
-     * @var string
-     */
-    protected $uuid;
+    protected ?string $uuid = null;
 
     /**
      * @throws Exception

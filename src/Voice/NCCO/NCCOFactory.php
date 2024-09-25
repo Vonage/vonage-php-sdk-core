@@ -17,10 +17,7 @@ use Vonage\Voice\NCCO\Action\Talk;
 
 class NCCOFactory
 {
-    /**
-     * @param $data
-     */
-    public function build($data): ActionInterface
+    public function build(array $data): ActionInterface
     {
         switch ($data['action']) {
             case 'connect':

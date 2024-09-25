@@ -15,17 +15,11 @@ class Notification
     /**
      * @var array<string, mixed>
      */
-    protected $payload;
+    protected ?array $payload = null;
 
-    /**
-     * @var string
-     */
-    protected $conversationUuid;
+    protected ?string $conversationUuid = null;
 
-    /**
-     * @var DateTimeImmutable
-     */
-    protected $timestamp;
+    protected ?DateTimeImmutable $timestamp = null;
 
     /**
      * @throws Exception

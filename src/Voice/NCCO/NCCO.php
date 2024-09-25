@@ -13,11 +13,8 @@ class NCCO implements ArrayHydrateInterface, JsonSerializable
     /**
      * @var array<ActionInterface>
      */
-    protected $actions = [];
+    protected array $actions = [];
 
-    /**
-     * @return $this
-     */
     public function addAction(ActionInterface $action): self
     {
         $this->actions[] = $action;

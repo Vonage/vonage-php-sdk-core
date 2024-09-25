@@ -19,7 +19,7 @@ class Check
     {
     }
 
-    public function getCode()
+    public function getCode(): mixed
     {
         return $this->data['code'];
     }

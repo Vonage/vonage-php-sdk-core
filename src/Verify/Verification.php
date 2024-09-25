@@ -48,14 +48,14 @@ class Verification implements VerificationInterface, Serializable, ArrayHydrateI
     public const EXPIRED = 'EXPIRED';
     public const IN_PROGRESS = 'IN PROGRESS';
 
-    protected $dirty = true;
+    protected bool $dirty = true;
 
     /**
      * @deprecated Use the Vonage\Verify\Client instead to interact with the API
      *
      * @var Client;
      */
-    protected $client;
+    protected Client $client;
 
     /**
      * Verification constructor.

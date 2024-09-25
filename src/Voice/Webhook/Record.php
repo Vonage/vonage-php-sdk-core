@@ -9,40 +9,19 @@ use Exception;
 
 class Record
 {
-    /**
-     * @var DateTimeImmutable
-     */
-    protected $startTime;
+    protected ?DateTimeImmutable $startTime = null;
 
-    /**
-     * @var string
-     */
-    protected $recordingUrl;
+    protected ?string $recordingUrl = null;
 
-    /**
-     * @var int
-     */
-    protected $size;
+    protected ?int $size = null;
 
-    /**
-     * @var string
-     */
-    protected $recordingUuid;
+    protected ?string $recordingUuid = null;
 
-    /**
-     * @var DateTimeImmutable
-     */
-    protected $endTime;
+    protected ?DateTimeImmutable $endTime = null;
 
-    /**
-     * @var string
-     */
-    protected $conversationUuid;
+    protected ?string $conversationUuid = null;
 
-    /**
-     * @var DateTimeImmutable
-     */
-    protected $timestamp;
+    protected ?DateTimeImmutable $timestamp = null;
 
     /**
      * @throws Exception

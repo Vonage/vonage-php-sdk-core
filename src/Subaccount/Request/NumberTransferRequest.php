@@ -12,7 +12,8 @@ class NumberTransferRequest implements ArrayHydrateInterface
         protected string $to,
         protected string $number,
         protected string $country
-    ) {}
+    ) {
+    }
 
     public function setFrom(string $from): self
     {

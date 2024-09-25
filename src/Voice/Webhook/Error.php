@@ -9,20 +9,11 @@ use Exception;
 
 class Error
 {
-    /**
-     * @var string
-     */
-    protected $conversationUuid;
+    protected ?string $conversationUuid = null;
 
-    /**
-     * @var string
-     */
-    protected $reason;
+    protected ?string $reason = null;
 
-    /**
-     * @var DateTimeImmutable
-     */
-    protected $timestamp;
+    protected ?DateTimeImmutable $timestamp = null;
 
     /**
      * @throws Exception

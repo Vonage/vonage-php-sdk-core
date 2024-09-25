@@ -104,9 +104,11 @@ class AdvancedMachineDetection implements ArrayHydrateInterface
             return false;
         }
 
-        if ($this->isValidBehaviour($data['behaviour'])
+        if (
+            $this->isValidBehaviour($data['behaviour'])
                && $this->isValidMode($data['mode'])
-               && $this->isValidTimeout($data['beep_timeout'])) {
+               && $this->isValidTimeout($data['beep_timeout'])
+        ) {
             return true;
         };
 

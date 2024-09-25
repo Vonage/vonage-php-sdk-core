@@ -19,7 +19,7 @@ class ExceptionErrorHandler
      * @todo This should throw a Server exception instead of Request, fix next major release
      * @throws Request
      */
-    public function __invoke(ResponseInterface $response, RequestInterface $request)
+    public function __invoke(ResponseInterface $response, RequestInterface $request): void
     {
         $data = json_decode($response->getBody()->getContents(), true);
         $response->getBody()->rewind();

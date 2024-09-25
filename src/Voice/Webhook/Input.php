@@ -12,40 +12,19 @@ use function json_decode;
 
 class Input
 {
-    /**
-     * @var array
-     */
-    protected $speech;
+    protected ?array $speech = null;
 
-    /**
-     * @var array
-     */
-    protected $dtmf;
+    protected ?array $dtmf = null;
 
-    /**
-     * @var string
-     */
-    protected $from;
+    protected ?string $from = null;
 
-    /**
-     * @var string
-     */
-    protected $to;
+    protected ?string $to = null;
 
-    /**
-     * @var string
-     */
-    protected $uuid;
+    protected ?string $uuid = null;
 
-    /**
-     * @var string
-     */
-    protected $conversationUuid;
+    protected ?string $conversationUuid = null;
 
-    /**
-     * @var DateTimeImmutable
-     */
-    protected $timestamp;
+    protected ?DateTimeImmutable $timestamp = null;
 
     /**
      * @throws Exception

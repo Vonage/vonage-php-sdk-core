@@ -20,7 +20,7 @@ class Factory extends WebhookFactory
      *
      * @return mixed|Answer|Error|Event|Input|Notification|Record|Transfer
      */
-    public static function createFromArray(array $data)
+    public static function createFromArray(array $data): mixed
     {
         if (array_key_exists('status', $data)) {
             return new Event($data);

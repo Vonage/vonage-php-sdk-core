@@ -10,7 +10,6 @@ use Vonage\Client\Credentials\Handler\TokenBodyHandler;
 
 class ClientFactory
 {
-
     public function __invoke(ContainerInterface $container): Client
     {
         /** @var APIResource $api */
