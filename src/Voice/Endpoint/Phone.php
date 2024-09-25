@@ -8,15 +8,9 @@ use function array_key_exists;
 
 class Phone implements EndpointInterface
 {
-    /**
-     * @var ?string
-     */
-    protected $ringbackTone;
+    protected ?string $ringbackTone = null;
 
-    /**
-     * @var ?string
-     */
-    protected $url;
+    protected ?string $url = null;
 
     public function __construct(protected string $id, protected ?string $dtmfAnswer = null)
     {

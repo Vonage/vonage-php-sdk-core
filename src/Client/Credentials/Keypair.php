@@ -11,9 +11,6 @@ use Lcobucci\JWT\Token;
 use Vonage\Application\Application;
 use Vonage\JWT\TokenGenerator;
 
-/**
- * @property mixed application
- */
 class Keypair extends AbstractCredentials
 {
     public function __construct(protected string $key, protected ?string $application = null)
@@ -21,10 +18,6 @@ class Keypair extends AbstractCredentials
         $this->credentials['key'] = $key;
 
         if ($application) {
-            if ($application instanceof Application) {
-                $application = $application->getId();
-            }
-
             $this->credentials['application'] = $application;
         }
     }

@@ -6,9 +6,6 @@ namespace Vonage\Client\Credentials;
 
 abstract class AbstractCredentials implements CredentialsInterface
 {
-    /**
-     * @var array
-     */
     protected array $credentials = [];
 
     /**

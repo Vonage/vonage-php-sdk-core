@@ -31,8 +31,8 @@ use function substr;
  */
 class Callback extends BaseCallback
 {
-    protected $expected = ['request_id', 'callback_part', 'callback_total_parts', 'number', 'status'];
-    protected $optional = [
+    protected array $expected = ['request_id', 'callback_part', 'callback_total_parts', 'number', 'status'];
+    protected array $optional = [
         'Type' => 'number_type',
         'Network' => 'carrier_network_code',
         'NetworkName' => 'carrier_network_name',
@@ -64,10 +64,6 @@ class Callback extends BaseCallback
         return $this->data['number'];
     }
 
-    /**
-     * @param $name
-     * @param $args
-     */
     public function __call($name, $args)
     {
         $type = substr((string) $name, 0, 3);

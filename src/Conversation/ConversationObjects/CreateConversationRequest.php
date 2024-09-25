@@ -105,7 +105,7 @@ class CreateConversationRequest implements ArrayHydrateInterface
         return $this;
     }
 
-    public function fromArray(array $data)
+    public function fromArray(array $data): void
     {
         if (isset($data['name'])) {
             $this->setName($data['name']);

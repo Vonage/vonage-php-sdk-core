@@ -11,10 +11,7 @@ class MessagesConfig
     public const INBOUND = 'inbound_url';
     public const STATUS = 'status_url';
 
-    /**
-     * @var array
-     */
-    protected $webhooks = [];
+    protected array $webhooks = [];
 
     public function setWebhook($type, $url, $method = null): self
     {

@@ -10,20 +10,11 @@ use function is_null;
 
 class Stream implements ActionInterface
 {
-    /**
-     * @var bool
-     */
-    protected $bargeIn;
+    protected ?bool $bargeIn = null;
 
-    /**
-     * @var float
-     */
-    protected $level;
+    protected ?float $level = null;
 
-    /**
-     * @var int
-     */
-    protected $loop;
+    protected ?int $loop = null;
 
     public function __construct(protected string $streamUrl)
     {

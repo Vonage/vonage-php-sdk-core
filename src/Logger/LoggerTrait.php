@@ -17,10 +17,10 @@ trait LoggerTrait
     }
 
     /**
-     * @param string|int $level Level of message that we are logging
+     * @param int|string $level Level of message that we are logging
      * @param array<mixed> $context Additional information for context
      */
-    public function log($level, string $message, array $context = []): void
+    public function log(int|string $level, string $message, array $context = []): void
     {
         $logger = $this->getLogger();
         if ($logger) {
@@ -28,7 +28,7 @@ trait LoggerTrait
         }
     }
 
-    public function setLogger(LoggerInterface $logger)
+    public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
     }

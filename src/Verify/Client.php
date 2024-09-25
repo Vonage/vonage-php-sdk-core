@@ -48,14 +48,12 @@ class Client implements ClientAwareInterface, APIClient
     }
 
     /**
-     * @param string|array|Verification|Request $verification
-     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
      */
-    public function start($verification): Verification
+    public function start(Request|Verification|array|string $verification): Verification
     {
         if (is_array($verification)) {
             trigger_error(
@@ -104,14 +102,12 @@ class Client implements ClientAwareInterface, APIClient
     }
 
     /**
-     * @param string|Verification $verification
-     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
      */
-    public function search($verification)
+    public function search(Verification|string $verification)
     {
         if ($verification instanceof Verification) {
             trigger_error(
@@ -177,14 +173,12 @@ class Client implements ClientAwareInterface, APIClient
     }
 
     /**
-     * @param string|array|Verification $verification
-     *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      * @throws ClientException\Request
      * @throws ClientException\Server
      */
-    public function check($verification, string $code, string $ip = null): Verification
+    public function check(Verification|array|string $verification, string $code, string $ip = null): Verification
     {
         if (is_array($verification)) {
             trigger_error(
@@ -254,7 +248,6 @@ class Client implements ClientAwareInterface, APIClient
     }
 
     /**
-     * @param string|array|Verification $verification
      * @param string $cmd Next command to execute, must be `cancel` or `trigger_next_event`
      *
      * @throws ClientExceptionInterface
@@ -262,7 +255,7 @@ class Client implements ClientAwareInterface, APIClient
      * @throws ClientException\Request
      * @throws ClientException\Server
      */
-    protected function control($verification, string $cmd): Verification
+    protected function control(Verification|array|string $verification, string $cmd): Verification
     {
         if (is_array($verification)) {
             trigger_error(
@@ -293,13 +286,10 @@ class Client implements ClientAwareInterface, APIClient
     }
 
     /**
-     * @param $verification
-     * @param $data
-     *
      * @throws ClientException\Request
      * @throws ClientException\Server
      */
-    protected function checkError($verification, $data)
+    protected function checkError($verification, array $data)
     {
         if (!isset($data['status'])) {
             $e = new ClientException\Request('unexpected response from API');
@@ -344,9 +334,6 @@ class Client implements ClientAwareInterface, APIClient
         throw $e;
     }
 
-    /**
-     * @param bool $replace
-     */
     protected function processReqRes(
         Verification $verification,
         RequestInterface $req,
@@ -370,8 +357,6 @@ class Client implements ClientAwareInterface, APIClient
 
     /**
      * Creates a verification object from a variety of sources
-     *
-     * @param $verification
      */
     protected function createVerification($verification): Verification
     {

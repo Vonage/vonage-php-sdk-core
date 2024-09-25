@@ -21,11 +21,6 @@ parameters:
 			path: src/Client.php
 
 		-
-			message: "#^Method Vonage\\\\Client\\:\\:setLogger\\(\\) should return Vonage\\\\Logger\\\\LoggerAwareInterface but return statement is missing\\.$#"
-			count: 1
-			path: src/Client.php
-
-		-
 			message: "#^Unsafe usage of new static\\(\\)\\.$#"
 			count: 1
 			path: src/Client/Callback/Callback.php

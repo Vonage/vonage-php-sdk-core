@@ -20,7 +20,7 @@ class Connect implements ActionInterface
 
     protected int $timeout = 0;
     protected int $limit = 0;
-    protected $machineDetection = '';
+    protected string $machineDetection = '';
     protected ?Webhook $eventWebhook = null;
     protected ?string $ringbackTone = '';
     protected ?AdvancedMachineDetection $advancedMachineDetection = null;
@@ -34,11 +34,8 @@ class Connect implements ActionInterface
         return new Connect($endpoint);
     }
 
-    /**
-     * @return array|mixed
-     */
     #[\ReturnTypeWillChange]
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->toNCCOArray();
     }
@@ -114,9 +111,6 @@ class Connect implements ActionInterface
         return $this->eventType;
     }
 
-    /**
-     * @return $this
-     */
     public function setEventType(string $eventType): self
     {
         if ($eventType !== self::EVENT_TYPE_SYNCHRONOUS) {
@@ -133,9 +127,6 @@ class Connect implements ActionInterface
         return $this->timeout;
     }
 
-    /**
-     * @return $this
-     */
     public function setTimeout(int $timeout): self
     {
         $this->timeout = $timeout;
@@ -148,9 +139,6 @@ class Connect implements ActionInterface
         return $this->limit;
     }
 
-    /**
-     * @return $this
-     */
     public function setLimit(int $limit): self
     {
         $this->limit = $limit;
@@ -163,9 +151,6 @@ class Connect implements ActionInterface
         return $this->machineDetection;
     }
 
-    /**
-     * @return $this
-     */
     public function setMachineDetection(string $machineDetection): self
     {
         if (
@@ -185,9 +170,6 @@ class Connect implements ActionInterface
         return $this->eventWebhook;
     }
 
-    /**
-     * @return $this
-     */
     public function setEventWebhook(Webhook $eventWebhook): self
     {
         $this->eventWebhook = $eventWebhook;
@@ -200,9 +182,6 @@ class Connect implements ActionInterface
         return $this->ringbackTone;
     }
 
-    /**
-     * @return $this
-     */
     public function setRingbackTone(string $ringbackTone): self
     {
         $this->ringbackTone = $ringbackTone;

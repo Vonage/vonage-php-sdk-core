@@ -26,10 +26,6 @@ class Request extends AbstractRequest implements WrapResponseInterface
      */
     protected $params;
 
-    /**
-     * @param $number
-     * @param $callback
-     */
     public function __construct($number, $callback, array $features = [], $timeout = null, $method = null, $ref = null)
     {
         $this->params['number'] = $number;

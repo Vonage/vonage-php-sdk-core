@@ -8,9 +8,6 @@ trait HasEntityTrait
 {
     protected $entity;
 
-    /**
-     * @param $entity
-     */
     public function setEntity($entity): void
     {
         $this->entity = $entity;

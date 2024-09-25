@@ -21,43 +21,28 @@ class Record implements ActionInterface
     /**
      * @var string Record::FORMAT_*
      */
-    protected $format = 'mp3';
+    protected string $format = 'mp3';
 
     /**
-     * @var string Record::SPLIT
+     * @var ?string Record::SPLIT
      */
-    protected $split;
+    protected ?string $split = null;
+
+    protected ?int $channels = null;
+
+    protected ?int $endOnSilence = null;
 
     /**
-     * @var int
+     * @var ?string '*'|'#'|1'|2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'|'0'
      */
-    protected $channels;
-
-    /**
-     * @var int
-     */
-    protected $endOnSilence;
-
-    /**
-     * @var string '*'|'#'|1'|2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'|'0'
-     */
-    protected $endOnKey;
+    protected ?string $endOnKey = null;
 
     protected ?int $timeOut = null;
 
-    /**
-     * @var bool
-     */
-    protected $beepStart = false;
+    protected bool $beepStart = false;
 
-    /**
-     * @var Webhook
-     */
-    protected $eventWebhook;
+    protected ?Webhook $eventWebhook = null;
 
-    /**
-     * @return static
-     */
     public static function factory(array $data): self
     {
         $action = new self();
@@ -166,9 +151,6 @@ class Record implements ActionInterface
         return $this->format;
     }
 
-    /**
-     * @return $this
-     */
     public function setFormat(string $format): self
     {
         $this->format = $format;
@@ -181,9 +163,6 @@ class Record implements ActionInterface
         return $this->split;
     }
 
-    /**
-     * @return $this
-     */
     public function setSplit(string $split): self
     {
         if ($split !== 'conversation') {
@@ -200,9 +179,6 @@ class Record implements ActionInterface
         return $this->endOnKey;
     }
 
-    /**
-     * @return $this
-     */
     public function setEndOnKey(string $endOnKey): self
     {
         $match = preg_match('/^[*#0-9]$/', $endOnKey);
@@ -221,9 +197,6 @@ class Record implements ActionInterface
         return $this->eventWebhook;
     }
 
-    /**
-     * @return $this
-     */
     public function setEventWebhook(Webhook $eventWebhook): self
     {
         $this->eventWebhook = $eventWebhook;
@@ -236,9 +209,6 @@ class Record implements ActionInterface
         return $this->endOnSilence;
     }
 
-    /**
-     * @return $this
-     */
     public function setEndOnSilence(int $endOnSilence): self
     {
         if ($endOnSilence > 10 || $endOnSilence < 3) {
@@ -255,9 +225,6 @@ class Record implements ActionInterface
         return $this->timeOut;
     }
 
-    /**
-     * @return $this
-     */
     public function setTimeout(int $timeOut): self
     {
         if ($timeOut > 7200 || $timeOut < 3) {
@@ -274,9 +241,6 @@ class Record implements ActionInterface
         return $this->beepStart;
     }
 
-    /**
-     * @return $this
-     */
     public function setBeepStart(bool $beepStart): self
     {
         $this->beepStart = $beepStart;
@@ -289,9 +253,6 @@ class Record implements ActionInterface
         return $this->channels;
     }
 
-    /**
-     * @return $this
-     */
     public function setChannels(int $channels): self
     {
         if ($channels > 32) {

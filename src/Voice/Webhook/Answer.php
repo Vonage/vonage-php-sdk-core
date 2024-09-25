@@ -6,25 +6,13 @@ namespace Vonage\Voice\Webhook;
 
 class Answer
 {
-    /**
-     * @var string
-     */
-    protected $conversationUuid;
+    protected ?string $conversationUuid = null;
 
-    /**
-     * @var string
-     */
-    protected $from;
+    protected ?string $from = null;
 
-    /**
-     * @var string
-     */
-    protected $to;
+    protected ?string $to = null;
 
-    /**
-     * @var string
-     */
-    protected $uuid;
+    protected ?string $uuid = null;
 
     public function __construct(array $event)
     {

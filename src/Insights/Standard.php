@@ -6,38 +6,37 @@ namespace Vonage\Insights;
 
 class Standard extends Basic
 {
-
-    public function getCurrentCarrier()
+    public function getCurrentCarrier(): mixed
     {
         return $this->data['current_carrier'];
     }
 
-    public function getOriginalCarrier()
+    public function getOriginalCarrier(): mixed
     {
         return $this->data['original_carrier'];
     }
 
-    public function getPorted()
+    public function getPorted(): mixed
     {
         return $this->data['ported'];
     }
 
-    public function getRefundPrice()
+    public function getRefundPrice(): mixed
     {
         return $this->data['refund_price'];
     }
 
-    public function getRequestPrice()
+    public function getRequestPrice(): mixed
     {
         return $this->data['request_price'];
     }
 
-    public function getRemainingBalance()
+    public function getRemainingBalance(): mixed
     {
         return $this->data['remaining_balance'];
     }
 
-    public function getRoaming()
+    public function getRoaming(): mixed
     {
         return $this->data['roaming'];
     }

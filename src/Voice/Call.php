@@ -14,65 +14,29 @@ use function array_key_exists;
 
 class Call implements ArrayHydrateInterface
 {
-    /**
-     * @var string
-     */
-    protected $conversationUuid;
+    protected ?string $conversationUuid = null;
 
-    /**
-     * @var string
-     */
-    protected $direction;
+    protected ?string $direction = null;
 
-    /**
-     * @var string
-     */
-    protected $duration;
+    protected ?string $duration = null;
 
-    /**
-     * @var DateTime
-     */
-    protected $endTime;
+    protected ?DateTime $endTime = null;
 
-    /**
-     * @var EndpointInterface
-     */
-    protected $from;
+    protected ?EndpointInterface $from = null;
 
-    /**
-     * @var string
-     */
-    protected $network;
+    protected ?string $network = null;
 
-    /**
-     * @var string
-     */
-    protected $price;
+    protected ?string $price = null;
 
-    /**
-     * @var string
-     */
-    protected $rate;
+    protected ?string $rate = null;
 
-    /**
-     * @var DateTime
-     */
-    protected $startTime;
+    protected ?DateTime $startTime = null;
 
-    /**
-     * @var string
-     */
-    protected $status;
+    protected ?string $status = null;
 
-    /**
-     * @var EndpointInterface
-     */
-    protected $to;
+    protected ?EndpointInterface $to = null;
 
-    /**
-     * @var string
-     */
-    protected $uuid;
+    protected ?string $uuid = null;
 
     /**
      * @throws Exception

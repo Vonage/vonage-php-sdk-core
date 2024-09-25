@@ -102,49 +102,24 @@ class Client implements LoggerAwareInterface
     public const BASE_API = 'https://api.nexmo.com';
     public const BASE_REST = 'https://rest.nexmo.com';
 
-    /**
-     * API Credentials
-     *
-     * @var CredentialsInterface
-     */
-    protected $credentials;
+    protected CredentialsInterface $credentials;
 
-    /**
-     * Http Client
-     *
-     * @var HttpClient
-     */
-    protected $client;
+    protected ClientInterface $client;
 
-    /**
-     * @var bool
-     */
-    protected $debug = false;
+    protected mixed $debug = false;
 
-    /**
-     * @var ContainerInterface
-     */
-    protected $factory;
+    protected ContainerInterface $factory;
 
     /**
      * @var LoggerInterface
      */
     protected $logger;
 
-    /**
-     * @var array
-     */
-    protected $options = ['show_deprecations' => false, 'debug' => false];
+    protected array $options = ['show_deprecations' => false, 'debug' => false];
 
-    /**
-     * @string
-     */
-    public $apiUrl;
+    public string $apiUrl;
 
-    /**
-     * @string
-     */
-    public $restUrl;
+    public string $restUrl;
 
     /**
      * Create a new API client using the provided credentials.

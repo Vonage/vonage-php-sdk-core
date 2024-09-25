@@ -14,65 +14,32 @@ use function is_null;
 
 class Input implements ActionInterface
 {
-    /**
-     * @var int
-     */
-    protected $dtmfTimeout;
+    protected ?int $dtmfTimeout = null;
+
+    protected ?int $dtmfMaxDigits = null;
+
+    protected ?bool $dtmfSubmitOnHash = null;
+
+    protected ?string $speechUUID = null;
+
+    protected ?int $speechEndOnSilence = null;
+
+    protected ?string $speechLanguage = null;
 
     /**
-     * @var int
+     * @var ?array<string>
      */
-    protected $dtmfMaxDigits;
+    protected ?array $speechContext = null;
 
-    /**
-     * @var bool
-     */
-    protected $dtmfSubmitOnHash;
+    protected ?int $speechStartTimeout = null;
 
-    /**
-     * @var ?string
-     */
-    protected $speechUUID;
+    protected ?int $speechMaxDuration = null;
 
-    /**
-     * @var int
-     */
-    protected $speechEndOnSilence;
+    protected ?Webhook $eventWebhook = null;
 
-    /**
-     * @var string
-     */
-    protected $speechLanguage;
+    protected bool $enableSpeech = false;
 
-    /**
-     * @var array<string>
-     */
-    protected $speechContext;
-
-    /**
-     * @var ?int
-     */
-    protected $speechStartTimeout;
-
-    /**
-     * @var int
-     */
-    protected $speechMaxDuration;
-
-    /**
-     * @var ?Webhook
-     */
-    protected $eventWebhook;
-
-    /**
-     * @var bool
-     */
-    protected $enableSpeech = false;
-
-    /**
-     * @var bool
-     */
-    protected $enableDtmf = false;
+    protected bool $enableDtmf = false;
 
     /**
      * @param array<array, mixed> $data
@@ -255,9 +222,6 @@ class Input implements ActionInterface
         return $this->dtmfMaxDigits;
     }
 
-    /**
-     * @return $this
-     */
     public function setDtmfMaxDigits(int $dtmfMaxDigits): self
     {
         $this->setEnableDtmf(true);
@@ -271,9 +235,6 @@ class Input implements ActionInterface
         return $this->dtmfSubmitOnHash;
     }
 
-    /**
-     * @return $this
-     */
     public function setDtmfSubmitOnHash(bool $dtmfSubmitOnHash): self
     {
         $this->setEnableDtmf(true);
@@ -287,9 +248,6 @@ class Input implements ActionInterface
         return $this->speechUUID;
     }
 
-    /**
-     * @return $this
-     */
     public function setSpeechUUID(string $speechUUID): self
     {
         $this->setEnableSpeech(true);
@@ -303,9 +261,6 @@ class Input implements ActionInterface
         return $this->speechEndOnSilence;
     }
 
-    /**
-     * @return $this
-     */
     public function setSpeechEndOnSilence(int $speechEndOnSilence): self
     {
         $this->setEnableSpeech(true);
@@ -319,9 +274,6 @@ class Input implements ActionInterface
         return $this->speechLanguage;
     }
 
-    /**
-     * @return $this
-     */
     public function setSpeechLanguage(string $speechLanguage): self
     {
         $this->setEnableSpeech(true);
@@ -331,7 +283,7 @@ class Input implements ActionInterface
     }
 
     /**
-     * @return array<string>
+     * @return ?array<string>
      */
     public function getSpeechContext(): ?array
     {
@@ -340,8 +292,6 @@ class Input implements ActionInterface
 
     /**
      * @param array<string> $speechContext Array of words to help with speech recognition
-     *
-     * @return Input
      */
     public function setSpeechContext(array $speechContext): self
     {
@@ -356,9 +306,6 @@ class Input implements ActionInterface
         return $this->speechStartTimeout;
     }
 
-    /**
-     * @return $this
-     */
     public function setSpeechStartTimeout(int $speechStartTimeout): self
     {
         $this->setEnableSpeech(true);
@@ -400,9 +347,6 @@ class Input implements ActionInterface
         return $this->enableSpeech;
     }
 
-    /**
-     * @return $this
-     */
     public function setEnableSpeech(bool $enableSpeech): Input
     {
         $this->enableSpeech = $enableSpeech;
@@ -415,9 +359,6 @@ class Input implements ActionInterface
         return $this->enableDtmf;
     }
 
-    /**
-     * @return $this
-     */
     public function setEnableDtmf(bool $enableDtmf): Input
     {
         $this->enableDtmf = $enableDtmf;

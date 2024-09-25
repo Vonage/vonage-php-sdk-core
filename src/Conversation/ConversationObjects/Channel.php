@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Vonage\Conversation\ConversationObjects;
 
-use phpDocumentor\Reflection\Types\This;
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 
 class Channel implements ArrayHydrateInterface

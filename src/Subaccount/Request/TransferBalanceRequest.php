@@ -23,7 +23,7 @@ class TransferBalanceRequest implements ArrayHydrateInterface
     {
         $this->from = $from;
 
-        return $this; 
+        return $this;
     }
 
     public function getTo(): string
@@ -35,7 +35,7 @@ class TransferBalanceRequest implements ArrayHydrateInterface
     {
         $this->to = $to;
 
-        return $this; 
+        return $this;
     }
 
     public function getAmount(): string
@@ -47,7 +47,7 @@ class TransferBalanceRequest implements ArrayHydrateInterface
     {
         $this->amount = $amount;
 
-        return $this; 
+        return $this;
     }
 
     public function getReference(): string
@@ -59,7 +59,7 @@ class TransferBalanceRequest implements ArrayHydrateInterface
     {
         $this->reference = $reference;
 
-        return $this; 
+        return $this;
     }
 
     public function getApiKey(): string
@@ -71,7 +71,7 @@ class TransferBalanceRequest implements ArrayHydrateInterface
     {
         $this->apiKey = $apiKey;
 
-        return $this; 
+        return $this;
     }
 
     public function fromArray(array $data): static

@@ -9,25 +9,13 @@ use Exception;
 
 class Transfer
 {
-    /**
-     * @var string
-     */
-    protected $conversationUuidFrom;
+    protected ?string $conversationUuidFrom = null;
 
-    /**
-     * @var string
-     */
-    protected $conversationUuidTo;
+    protected ?string $conversationUuidTo = null;
 
-    /**
-     * @var string
-     */
-    protected $uuid;
+    protected ?string $uuid = null;
 
-    /**
-     * @var DateTimeImmutable
-     */
-    protected $timestamp;
+    protected ?DateTimeImmutable $timestamp = null;
 
     /**
      * @throws Exception

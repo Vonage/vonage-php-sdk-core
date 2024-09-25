@@ -9,7 +9,7 @@ class SIP implements EndpointInterface
     /**
      * @var array<string, string>
      */
-    protected $headers = [];
+    protected array $headers = [];
 
     public function __construct(protected string $id, array $headers = [])
     {

@@ -9,23 +9,20 @@ use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 class Balance implements
     ArrayHydrateInterface
 {
-    /**
-     * @var array
-     */
     protected array $data;
 
-    public function __construct($balance, $autoReload)
+    public function __construct(float $balance, bool $autoReload)
     {
         $this->data['balance'] = $balance;
         $this->data['auto_reload'] = $autoReload;
     }
 
-    public function getBalance()
+    public function getBalance(): float
     {
         return $this->data['balance'];
     }
 
-    public function getAutoReload()
+    public function getAutoReload(): bool
     {
         return $this->data['auto_reload'];
     }

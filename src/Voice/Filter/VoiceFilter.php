@@ -26,40 +26,19 @@ class VoiceFilter implements FilterInterface
     public const ORDER_ASC = 'asc';
     public const ORDER_DESC = 'desc';
 
-    /**
-     * @var string
-     */
-    protected $status;
+    protected ?string $status = null;
 
-    /**
-     * @var DateTimeImmutable
-     */
-    protected $dateStart;
+    protected ?DateTimeImmutable $dateStart = null;
 
-    /**
-     * @var DateTimeImmutable
-     */
-    protected $dateEnd;
+    protected ?DateTimeImmutable $dateEnd = null;
 
-    /**
-     * @var int
-     */
-    protected $pageSize = 10;
+    protected int $pageSize = 10;
 
-    /**
-     * @var int
-     */
-    protected $recordIndex = 0;
+    protected int $recordIndex = 0;
 
-    /**
-     * @var string
-     */
-    protected $order = 'asc';
+    protected string $order = 'asc';
 
-    /**
-     * @var string
-     */
-    protected $conversationUUID;
+    protected ?string $conversationUUID = null;
 
     public function getQuery(): array
     {

@@ -34,7 +34,7 @@ class Client implements APIClient
      *
      * @return array<PrefixPrice>
      */
-    public function getPrefixPricing($prefix): array
+    public function getPrefixPricing(string $prefix): array
     {
         $api = $this->getAPIResource();
         $api->setBaseUri('/account/get-prefix-pricing/outbound');
@@ -138,7 +138,7 @@ class Client implements APIClient
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      */
-    public function topUp($trx): void
+    public function topUp(string $trx): void
     {
         $api = $this->getAPIResource();
         $api->setBaseUri('/account/top-up');

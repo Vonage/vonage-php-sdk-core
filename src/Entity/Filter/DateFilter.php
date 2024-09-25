@@ -13,8 +13,8 @@ class DateFilter implements FilterInterface
 {
     public const FORMAT = 'Y:m:d:H:i:s';
 
-    protected $start;
-    protected $end;
+    protected DateTime $start;
+    protected DateTime $end;
 
     public function __construct(DateTime $start, DateTime $end)
     {
@@ -27,9 +27,6 @@ class DateFilter implements FilterInterface
         }
     }
 
-    /**
-     * @return string[]
-     */
     public function getQuery(): array
     {
         return [

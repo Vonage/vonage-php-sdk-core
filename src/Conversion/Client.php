@@ -13,7 +13,6 @@ use Vonage\Client\ClientAwareTrait;
 use Vonage\Client\Exception as ClientException;
 
 use function http_build_query;
-use function is_null;
 use function json_decode;
 
 class Client implements ClientAwareInterface, APIClient
@@ -91,13 +90,10 @@ class Client implements ClientAwareInterface, APIClient
         }
     }
 
-    /**
-     * @return ClientException\Exception|ClientException\Request|ClientException\Server
-     */
-    protected function getException(ResponseInterface $response)
+    protected function getException(ResponseInterface $response): ClientException\Exception|ClientException\Request|ClientException\Server
     {
         $body = json_decode($response->getBody()->getContents(), true);
-        $status = (int)$response->getStatusCode();
+        $status = $response->getStatusCode();
 
         if ($status === 402) {
             $e = new ClientException\Request('This endpoint may need activating on your account. ' .

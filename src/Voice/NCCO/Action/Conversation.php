@@ -13,40 +13,25 @@ use function is_null;
 
 class Conversation implements ActionInterface
 {
-    /**
-     * @var ?string
-     */
-    protected $musicOnHoldUrl;
+    protected ?string $musicOnHoldUrl = null;
 
-    /**
-     * @var bool
-     */
-    protected $startOnEnter;
+    protected ?bool $startOnEnter = null;
 
-    /**
-     * @var bool
-     */
-    protected $endOnExit;
+    protected ?bool $endOnExit = null;
 
-    /**
-     * @var bool
-     */
-    protected $record;
+    protected ?bool $record = null;
 
     /**
      * @var ?array<string>
      */
-    protected $canSpeak;
+    protected ?array $canSpeak = null;
 
     /**
      * @var ?array<string>
      */
-    protected $canHear;
+    protected ?array $canHear = null;
 
-    /**
-     * @var Webhook
-     */
-    protected $eventWebhook;
+    protected ?Webhook $eventWebhook = null;
 
     public function __construct(protected string $name)
     {
@@ -107,9 +92,6 @@ class Conversation implements ActionInterface
         return $this->record;
     }
 
-    /**
-     * @return $this
-     */
     public function setRecord(bool $record): self
     {
         $this->record = $record;
@@ -127,8 +109,6 @@ class Conversation implements ActionInterface
 
     /**
      * @param array<string> $canSpeak
-     *
-     * @return Conversation
      */
     public function setCanSpeak(array $canSpeak): self
     {
@@ -137,9 +117,6 @@ class Conversation implements ActionInterface
         return $this;
     }
 
-    /**
-     * @return $this
-     */
     public function addCanSpeak(string $uuid): self
     {
         $this->canSpeak[] = $uuid;
@@ -157,8 +134,6 @@ class Conversation implements ActionInterface
 
     /**
      * @param array<string> $canHear
-     *
-     * @return Conversation
      */
     public function setCanHear(array $canHear): self
     {
@@ -167,9 +142,6 @@ class Conversation implements ActionInterface
         return $this;
     }
 
-    /**
-     * @return $this
-     */
     public function addCanHear(string $uuid): self
     {
         $this->canHear[] = $uuid;

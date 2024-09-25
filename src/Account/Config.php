@@ -14,19 +14,14 @@ class Config implements
     /**
      * @var array<string, mixed>
      */
-    protected $data = [];
+    protected array $data = [];
 
-    /**
-     * @param string|int|null $max_outbound_request
-     * @param string|int|null $max_inbound_request
-     * @param string|int|null $max_calls_per_second
-     */
     public function __construct(
         ?string $sms_callback_url = null,
         ?string $dr_callback_url = null,
-        $max_outbound_request = null,
-        $max_inbound_request = null,
-        $max_calls_per_second = null
+        int|string $max_outbound_request = null,
+        int|string $max_inbound_request = null,
+        int|string $max_calls_per_second = null
     ) {
         if (!is_null($sms_callback_url)) {
             $this->data['sms_callback_url'] = $sms_callback_url;
@@ -59,26 +54,17 @@ class Config implements
         return $this->data['dr_callback_url'];
     }
 
-    /**
-     * @return string|int|null
-     */
-    public function getMaxOutboundRequest()
+    public function getMaxOutboundRequest(): int|string|null
     {
         return $this->data['max_outbound_request'];
     }
 
-    /**
-     * @return string|int|null
-     */
-    public function getMaxInboundRequest()
+    public function getMaxInboundRequest(): int|string|null
     {
         return $this->data['max_inbound_request'];
     }
 
-    /**
-     * @return string|int|null
-     */
-    public function getMaxCallsPerSecond()
+    public function getMaxCallsPerSecond(): int|string|null
     {
         return $this->data['max_calls_per_second'];
     }

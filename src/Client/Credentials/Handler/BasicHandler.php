@@ -15,8 +15,6 @@ class BasicHandler extends AbstractHandler
         $c = $credentials->asArray();
         $cx = base64_encode($c['api_key'] . ':' . $c['api_secret']);
 
-        $request = $request->withHeader('Authorization', 'Basic ' . $cx);
-
-        return $request;
+        return $request->withHeader('Authorization', 'Basic ' . $cx);
     }
 }
