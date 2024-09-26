@@ -23,7 +23,14 @@ class Client implements APIClient
 
     public function send(BaseMessage $message): ?array
     {
-        return $this->getAPIResource()->create($message->toArray());
+        $messageArray = $message->toArray();
+
+        if ($this->isValidE164($messageArray['to'])) {
+            $messageArray['to'] = $this->stripLeadingPlus($messageArray['to']);
+            return $this->getAPIResource()->create($messageArray);
+        };
+
+        throw new \InvalidArgumentException('Number provided is not a valid E164 number');
     }
 
     public function updateRcsStatus(string $messageUuid, string $status): bool
@@ -35,5 +42,23 @@ class Client implements APIClient
             return false;
         }
         return false;
+    }
+
+    protected function stripLeadingPlus(string $phoneNumber): string
+    {
+        if (str_starts_with($phoneNumber, '+')) {
+            return substr($phoneNumber, 1);
+        }
+
+        return $phoneNumber;
+    }
+
+    public function isValidE164(string $phoneNumber): bool
+    {
+        $phoneNumber = $this->stripLeadingPlus($phoneNumber);
+
+        $regex = '/^\+?[1-9]\d{1,14}$/';
+
+        return preg_match($regex, $phoneNumber) === 1;
     }
 }

@@ -1243,4 +1243,50 @@ class ClientTest extends VonageTestCase
             ['caption', 'this is not valid', false]
         ];
     }
+
+    public function testWillSendValidE164Number()
+    {
+        $message = new SMSText('447700900000', '16105551212', 'Reticulating Splines');
+
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $this->assertRequestJsonBodyContains('to', '447700900000', $request);
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('sms-success', 202));
+        $result = $this->messageClient->send($message);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('message_uuid', $result);
+    }
+
+    public function testWillSendValidE164NumberWithPlus()
+    {
+        $message = new SMSText('+447700900000', '16105551212', 'Reticulating Splines');
+
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $this->assertRequestJsonBodyContains('to', '447700900000', $request);
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('sms-success', 202));
+        $result = $this->messageClient->send($message);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('message_uuid', $result);
+    }
+
+    public function testWillErrorOnInvalidE164Number()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $message = new SMSText('00447700900000', '16105551212', 'Reticulating Splines');
+
+        $result = $this->messageClient->send($message);
+    }
+
+    public function testWillErrorOnInvalidE164NumberWithPlus()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $message = new SMSText('+00447700900000', '16105551212', 'Reticulating Splines');
+
+        $result = $this->messageClient->send($message);
+    }
 }
