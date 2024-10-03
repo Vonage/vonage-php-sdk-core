@@ -26,10 +26,7 @@ class WhatsAppFile extends BaseMessage
     {
         $returnArray = $this->getBaseMessageUniversalOutputArray();
         $returnArray['file'] = $this->fileObject->toArray();
-
-        if (!is_null($this->context)) {
-            $returnArray['context'] = $this->context;
-        }
+        $returnArray['context'] = $this->context ?? null;
 
         return $returnArray;
     }
