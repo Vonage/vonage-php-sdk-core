@@ -38,10 +38,7 @@ class WhatsAppSticker extends BaseMessage
     {
         $returnArray = $this->getBaseMessageUniversalOutputArray();
         $returnArray['sticker'] = $this->getSticker()->toArray();
-
-        if (!is_null($this->context)) {
-            $returnArray['context'] = $this->context;
-        }
+        $returnArray['context'] = $this->context ?? null;
 
         return $returnArray;
     }
