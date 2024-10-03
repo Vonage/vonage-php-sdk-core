@@ -34,9 +34,7 @@ class WhatsAppTemplate extends BaseMessage
             ]
         ];
 
-        if (!is_null($this->context)) {
-            $returnArray['context'] = $this->context;
-        }
+        $returnArray['context'] = $this->context ?? null;
 
         return array_merge($this->getBaseMessageUniversalOutputArray(), $returnArray);
     }
