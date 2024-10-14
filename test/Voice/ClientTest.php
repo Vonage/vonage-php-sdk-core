@@ -23,6 +23,7 @@ use Vonage\Voice\Webhook;
 use VonageTest\Traits\HTTPTestTrait;
 use VonageTest\Traits\Psr7AssertionTrait;
 use VonageTest\VonageTestCase;
+
 use function fopen;
 use function json_decode;
 use function json_encode;
@@ -145,7 +146,11 @@ class ClientTest extends VonageTestCase
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($payload) {
             $this->assertRequestUrl('api.nexmo.com', '/v1/calls', 'POST', $request);
-            $this->assertRequestJsonBodyContains('advanced_machine_detection', $payload['advanced_machine_detection']->toArray(), $request);
+            $this->assertRequestJsonBodyContains(
+                'advanced_machine_detection',
+                $payload['advanced_machine_detection']->toArray(),
+                $request
+            );
 
             return true;
         }))->willReturn($this->getResponse('create-outbound-call-success', 201));
@@ -279,7 +284,9 @@ class ClientTest extends VonageTestCase
         $this->expectException(RequestException::class);
         $this->expectExceptionMessage("Unexpected error");
 
-        $this->vonageClient->send(Argument::that(fn() => true))->willReturn($this->getResponse('error_unknown_format', 400));
+        $this->vonageClient->send(Argument::that(
+            fn () => true
+        ))->willReturn($this->getResponse('error_unknown_format', 400));
 
         $outboundCall = new OutboundCall(new Phone('15555555555'), new Phone('16666666666'));
         $this->voiceClient->createOutboundCall($outboundCall);

@@ -112,6 +112,6 @@ class SalesforceList extends ListBaseObject implements ArrayHydrateInterface
             'attributes' => $this->getAttributes() ?: null
         ];
 
-        return array_filter($returnArray, fn($value) => $value !== null);
+        return array_filter($returnArray, fn ($value) => $value !== null);
     }
 }

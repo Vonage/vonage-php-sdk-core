@@ -18,6 +18,7 @@ use Vonage\Verify\Verification;
 use VonageTest\Traits\HTTPTestTrait;
 use VonageTest\Traits\Psr7AssertionTrait;
 use VonageTest\VonageTestCase;
+
 use function serialize;
 
 class ClientTest extends VonageTestCase

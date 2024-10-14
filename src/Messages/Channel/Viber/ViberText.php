@@ -38,10 +38,10 @@ class ViberText extends BaseMessage
         $returnArray['text'] = $this->getText();
 
         if ($this->requiresViberServiceObject()) {
-            $this->getCategory() ? $returnArray['viber_service']['category'] = $this->getCategory(): null;
-            $this->getTtl() ? $returnArray['viber_service']['ttl'] = $this->getTtl(): null;
-            $this->getType() ? $returnArray['viber_service']['type'] = $this->getType(): null;
-            $this->getAction() ? $returnArray['viber_service']['action'] = $this->getAction()->toArray(): null;
+            $this->getCategory() ? $returnArray['viber_service']['category'] = $this->getCategory() : null;
+            $this->getTtl() ? $returnArray['viber_service']['ttl'] = $this->getTtl() : null;
+            $this->getType() ? $returnArray['viber_service']['type'] = $this->getType() : null;
+            $this->getAction() ? $returnArray['viber_service']['action'] = $this->getAction()->toArray() : null;
         }
 
         return array_filter($returnArray);

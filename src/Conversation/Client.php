@@ -103,7 +103,7 @@ class Client implements APIClient
         ?ListMembersFilter $filter = null
     ): IterableAPICollection {
         $api = clone $this->getAPIResource();
-        $api->setBaseUrl('https://api.nexmo.com/v1/users');
+        $api->setBaseUrl('https://api.nexmo.com/v1/users/');
         $api->setCollectionName('members');
         $response = $api->search($filter, $conversationId . '/members');
         $response->setHasPagination(true);

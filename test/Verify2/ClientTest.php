@@ -54,7 +54,8 @@ class ClientTest extends VonageTestCase
             ->setIsHAL(true)
             ->setErrorsOn200(false)
             ->setClient($this->vonageClient->reveal())
-            ->setAuthHandlers([new Client\Credentials\Handler\BasicHandler(), new Client\Credentials\Handler\KeypairHandler()])
+            ->setAuthHandlers([new Client\Credentials\Handler\BasicHandler(),
+                new Client\Credentials\Handler\KeypairHandler()])
             ->setBaseUrl('https://api.nexmo.com/v2/verify');
 
         $this->verify2Client = new Verify2Client($this->api);
@@ -147,7 +148,12 @@ class ClientTest extends VonageTestCase
                 $uriString
             );
 
-            $this->assertRequestJsonBodyContains('template_id', '33945c03-71c6-4aaf-954d-750a9b480def', $request);
+            $this->assertRequestJsonBodyContains(
+                'template_id',
+                '33945c03-71c6-4aaf-954d-750a9b480def',
+                $request
+            );
+
             $this->assertEquals('POST', $request->getMethod());
 
             return true;
@@ -189,8 +195,19 @@ class ClientTest extends VonageTestCase
                 $uriString
             );
 
-            $this->assertRequestJsonBodyContains('entity_id', '1101407360000017170', $request, true);
-            $this->assertRequestJsonBodyContains('content_id', '1107158078772563946', $request, true);
+            $this->assertRequestJsonBodyContains(
+                'entity_id',
+                '1101407360000017170',
+                $request,
+                true
+            );
+
+            $this->assertRequestJsonBodyContains(
+                'content_id',
+                '1107158078772563946',
+                $request,
+                true
+            );
             $this->assertEquals('POST', $request->getMethod());
 
             return true;
@@ -480,7 +497,10 @@ class ClientTest extends VonageTestCase
         $this->assertIsArray($result);
         $this->assertArrayHasKey('request_id', $result);
         $this->assertArrayHasKey('check_url', $result);
-        $this->assertEquals('https://api.nexmo.com/v2/verify/c11236f4-00bf-4b89-84ba-88b25df97315/silent-auth/redirect', $result['check_url']);
+        $this->assertEquals(
+            'https://api.nexmo.com/v2/verify/c11236f4-00bf-4b89-84ba-88b25df97315/silent-auth/redirect',
+            $result['check_url']
+        );
     }
 
     public function testCanRequestSilentAuthWithRedirectUrl(): void
@@ -497,7 +517,12 @@ class ClientTest extends VonageTestCase
             $this->assertRequestJsonBodyContains('brand', $payload['brand'], $request);
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request, true);
             $this->assertRequestJsonBodyContains('channel', 'silent_auth', $request, true);
-            $this->assertRequestJsonBodyContains('redirect_url', 'https://my-app-endpoint/webhook', $request, true);
+            $this->assertRequestJsonBodyContains(
+                'redirect_url',
+                'https://my-app-endpoint/webhook',
+                $request,
+                true
+            );
             $this->assertEquals('POST', $request->getMethod());
 
             return true;
@@ -507,13 +532,17 @@ class ClientTest extends VonageTestCase
         $this->assertIsArray($result);
         $this->assertArrayHasKey('request_id', $result);
         $this->assertArrayHasKey('check_url', $result);
-        $this->assertEquals('https://api.nexmo.com/v2/verify/c11236f4-00bf-4b89-84ba-88b25df97315/silent-auth/redirect', $result['check_url']);
+        $this->assertEquals(
+            'https://api.nexmo.com/v2/verify/c11236f4-00bf-4b89-84ba-88b25df97315/silent-auth/redirect',
+            $result['check_url']
+        );
     }
 
     public function testCannotSendConcurrentVerifications(): void
     {
         $this->expectException(Client\Exception\Request::class);
-        $this->expectExceptionMessage('Conflict: Concurrent verifications to the same number are not allowed.. See https://www.developer.vonage.com/api-errors/verify#conflict for more information');
+        $this->expectExceptionMessage('Conflict: Concurrent verifications to the same number are not allowed.. ' .
+            'See https://www.developer.vonage.com/api-errors/verify#conflict for more information');
 
         $payload = [
             'to' => '07785254785',
@@ -564,7 +593,8 @@ class ClientTest extends VonageTestCase
     public function testCanHandleThrottle(): void
     {
         $this->expectException(Client\Exception\Request::class);
-        $this->expectExceptionMessage('Rate Limit Hit: Please wait, then retry your request. See https://www.developer.vonage.com/api-errors#throttled for more information');
+        $this->expectExceptionMessage('Rate Limit Hit: Please wait, then retry your request. See https://www.' .
+            'developer.vonage.com/api-errors#throttled for more information');
 
         $payload = [
             'to' => '07785254785',
@@ -604,7 +634,8 @@ class ClientTest extends VonageTestCase
     public function testCheckHandlesInvalidPIN(): void
     {
         $this->expectException(Client\Exception\Request::class);
-        $this->expectExceptionMessage('Invalid Code: The code you provided does not match the expected value.. See https://www.developer.vonage.com/api-errors/verify#invalid-code for more information');
+        $this->expectExceptionMessage('Invalid Code: The code you provided does not match the expected value.. See' .
+            ' https://www.developer.vonage.com/api-errors/verify#invalid-code for more information');
 
         $this->vonageClient->send(Argument::that(function (Request $request) {
             $this->assertRequestJsonBodyContains('code', '24525', $request);
@@ -624,7 +655,8 @@ class ClientTest extends VonageTestCase
     public function testCheckHandlesInvalidRequestId(): void
     {
         $this->expectException(Client\Exception\Request::class);
-        $this->expectExceptionMessage('Not Found: Request c11236f4-00bf-4b89-84ba-88b25df97315 was not found or it has been verified already.. See https://developer.vonage.com/api-errors#not-found for more information');
+        $this->expectExceptionMessage('Not Found: Request c11236f4-00bf-4b89-84ba-88b25df97315 was not found or it ' .
+            'has been verified already.. See https://developer.vonage.com/api-errors#not-found for more information');
 
         $this->vonageClient->send(Argument::that(function (Request $request) {
             $this->assertRequestJsonBodyContains('code', '24525', $request);
@@ -672,9 +704,10 @@ class ClientTest extends VonageTestCase
     public function testCheckHandlesLockedCodeSubmission(): void
     {
         $this->expectException(Client\Exception\Request::class);
-        $this->expectExceptionMessage('Invalid Code: An incorrect code has been provided too many times. Workflow terminated.. See https://www.developer.vonage.com/api-errors/verify#expired for more information');
+        $this->expectExceptionMessage('Invalid Code: An incorrect code has been provided too many times. ' .
+            'Workflow terminated.. See https://www.developer.vonage.com/api-errors/verify#expired for more information');
 
-        $this->vonageClient->send(Argument::that(fn(Request $request) => true))->willReturn($this->getResponse('verify-check-locked', 410));
+        $this->vonageClient->send(Argument::that(fn (Request $request) => true))->willReturn($this->getResponse('verify-check-locked', 410));
 
         $result = $this->verify2Client->check('c11236f4-00bf-4b89-84ba-88b25df97315', '24525');
     }
@@ -682,9 +715,13 @@ class ClientTest extends VonageTestCase
     public function testCheckHandlesThrottle(): void
     {
         $this->expectException(Client\Exception\Request::class);
-        $this->expectExceptionMessage('Rate Limit Hit: Please wait, then retry your request. See https://www.developer.vonage.com/api-errors#throttled for more information');
+        $this->expectExceptionMessage('Rate Limit Hit: Please wait, then retry your request. See https://www.de' .
+            'veloper.vonage.com/api-errors#throttled for more information');
 
-        $this->vonageClient->send(Argument::that(fn(Request $request) => true))->willReturn($this->getResponse('verify-check-throttle', 429));
+        $this->vonageClient->send(
+            Argument::that(fn (Request $request) => true)
+        )
+            ->willReturn($this->getResponse('verify-check-throttle', 429));
 
         $result = $this->verify2Client->check('c11236f4-00bf-4b89-84ba-88b25df97315', '24525');
     }
@@ -861,7 +898,10 @@ class ClientTest extends VonageTestCase
             true
         );
 
-        $this->verify2Client->updateCustomTemplate('8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9', $updateTemplateRequest);
+        $this->verify2Client->updateCustomTemplate(
+            '8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9',
+            $updateTemplateRequest
+        );
     }
 
     public function testWillListTemplateFragments(): void
@@ -874,14 +914,16 @@ class ClientTest extends VonageTestCase
 
             if ($this->requestCount == 1) {
                 $this->assertEquals(
-                    'https://api.nexmo.com/v2/verify/templates/8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9/template_fragments',
+                    'https://api.nexmo.com/v2/verify/templates/8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9/' .
+                    'template_fragments',
                     $uriString
                 );
             }
 
             if ($this->requestCount == 2) {
                 $this->assertEquals(
-                    'https://api.nexmo.com/v2/verify/templates/c70f446e-997a-4313-a081-60a02a31dc19/template_fragments?page=3',
+                    'https://api.nexmo.com/v2/verify/templates/c70f446e-997a-4313-a081-60a02a31dc19/' .
+                    'template_fragments?page=3',
                     $uriString
                 );
             }
@@ -889,7 +931,10 @@ class ClientTest extends VonageTestCase
             $this->assertEquals('GET', $request->getMethod());
 
             return true;
-        }))->willReturn($this->getResponse('list-template-fragment-success'), $this->getResponse('list-template-fragment-success-2'));
+        }))->willReturn(
+            $this->getResponse('list-template-fragment-success'),
+            $this->getResponse('list-template-fragment-success-2')
+        );
 
         $fragments = $this->verify2Client->listTemplateFragments('8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9');
 
@@ -906,7 +951,8 @@ class ClientTest extends VonageTestCase
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
-                'https://api.nexmo.com/v2/verify/templates/8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9/template_fragments?page=2&page_size=10',
+                'https://api.nexmo.com/v2/verify/templates/8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9/' .
+                'template_fragments?page=2&page_size=10',
                 $uriString
             );
 
@@ -918,7 +964,10 @@ class ClientTest extends VonageTestCase
         $templateFilter->setPage(2);
         $templateFilter->setPageSize(10);
 
-        $fragments = $this->verify2Client->listTemplateFragments('8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9', $templateFilter);
+        $fragments = $this->verify2Client->listTemplateFragments(
+            '8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9',
+            $templateFilter
+        );
 
         foreach ($fragments as $fragment) {
             $this->assertInstanceOf(TemplateFragment::class, $fragment);
@@ -931,12 +980,17 @@ class ClientTest extends VonageTestCase
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
-                'https://api.nexmo.com/v2/verify/templates/c70f446e-997a-4313-a081-60a02a31dc19/template_fragments',
+                'https://api.nexmo.com/v2/verify/templates/c70f446e-997a-4313-a081-60a02a31dc19/' .
+                'template_fragments',
                 $uriString
             );
             $this->assertRequestJsonBodyContains('channel', 'sms', $request);
             $this->assertRequestJsonBodyContains('locale', 'en-us', $request);
-            $this->assertRequestJsonBodyContains('text', 'The authentication code for your ${brand} is: ${code}', $request);
+            $this->assertRequestJsonBodyContains(
+                'text',
+                'The authentication code for your ${brand} is: ${code}',
+                $request
+            );
 
             $this->assertEquals('POST', $request->getMethod());
 
@@ -948,8 +1002,11 @@ class ClientTest extends VonageTestCase
             "en-us",
             'The authentication code for your ${brand} is: ${code}'
         );
-        
-        $template = $this->verify2Client->createCustomTemplateFragment('c70f446e-997a-4313-a081-60a02a31dc19', $createTemplateFragmentRequest);
+
+        $template = $this->verify2Client->createCustomTemplateFragment(
+            'c70f446e-997a-4313-a081-60a02a31dc19',
+            $createTemplateFragmentRequest
+        );
 
         $this->assertInstanceOf(TemplateFragment::class, $template);
     }
@@ -960,7 +1017,8 @@ class ClientTest extends VonageTestCase
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
-                'https://api.nexmo.com/v2/verify/templates/8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9/template_fragments/c70f446e-997a-4313-a081-60a02a31dc19',
+                'https://api.nexmo.com/v2/verify/templates/8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9/' .
+                'template_fragments/c70f446e-997a-4313-a081-60a02a31dc19',
                 $uriString
             );
 
@@ -969,7 +1027,10 @@ class ClientTest extends VonageTestCase
             return true;
         }))->willReturn($this->getResponse('get-template-fragment-success'));
 
-        $fragment = $this->verify2Client->getCustomTemplateFragment('8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9', 'c70f446e-997a-4313-a081-60a02a31dc19');
+        $fragment = $this->verify2Client->getCustomTemplateFragment(
+            '8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9',
+            'c70f446e-997a-4313-a081-60a02a31dc19'
+        );
     }
 
     public function testWillUpdateTemplateFragment(): void
@@ -1006,7 +1067,10 @@ class ClientTest extends VonageTestCase
             return true;
         }))->willReturn($this->getResponse('delete-template-fragment-success'));
 
-        $response = $this->verify2Client->deleteCustomTemplateFragment('8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9', 'c70f446e-997a-4313-a081-60a02a31dc19');
+        $response = $this->verify2Client->deleteCustomTemplateFragment(
+            '8f35a1a7-eb2f-4552-8fdf-fffdaee41bc9',
+            'c70f446e-997a-4313-a081-60a02a31dc19'
+        );
         $this->assertTrue($response);
     }
 

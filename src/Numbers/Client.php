@@ -204,7 +204,7 @@ class Client implements APIClient
                 'msisdn' => $number->getMsisdn(),
                 'country' => $number->getCountry()
             ];
-        // Evil else that will be removed in the next major version.
+            // Evil else that will be removed in the next major version.
         } else {
             $body = [
                 'msisdn' => $number,

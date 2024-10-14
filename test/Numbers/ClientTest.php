@@ -50,7 +50,7 @@ class ClientTest extends VonageTestCase
 
         $this->api = new APIResource();
         $this->api->setBaseUrl('https://rest.nexmo.com')
-                  ->setIsHAL(false);
+            ->setIsHAL(false);
 
         $this->api->setClient($this->vonageClient->reveal());
 
@@ -92,10 +92,22 @@ class ClientTest extends VonageTestCase
             $this->assertRequestFormBodyContains('country', 'US', $request);
             $this->assertRequestFormBodyContains('msisdn', $expectedId, $request);
 
-            $this->assertRequestFormBodyContains('moHttpUrl', 'https://example.com/new_message', $request);
+            $this->assertRequestFormBodyContains(
+                'moHttpUrl',
+                'https://example.com/new_message',
+                $request
+            );
             $this->assertRequestFormBodyContains('voiceCallbackType', 'vxml', $request);
-            $this->assertRequestFormBodyContains('voiceCallbackValue', 'https://example.com/new_voice', $request);
-            $this->assertRequestFormBodyContains('voiceStatusCallback', 'https://example.com/new_status', $request);
+            $this->assertRequestFormBodyContains(
+                'voiceCallbackValue',
+                'https://example.com/new_voice',
+                $request
+            );
+            $this->assertRequestFormBodyContains(
+                'voiceStatusCallback',
+                'https://example.com/new_status',
+                $request
+            );
 
             return true;
         }))->willReturn($first, $second, $third);
@@ -142,7 +154,7 @@ class ClientTest extends VonageTestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id) {
             $this->assertEquals('/account/numbers', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-           $this->assertRequestMethod('GET', $request);
+            $this->assertRequestMethod('GET', $request);
             $this->assertRequestQueryContains('pattern', $id, $request);
             return true;
         }))->willReturn($this->getResponse('single'));
@@ -168,7 +180,7 @@ class ClientTest extends VonageTestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/numbers', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-           $this->assertRequestMethod('GET', $request);
+            $this->assertRequestMethod('GET', $request);
             return true;
         }))->willReturn($this->getResponse('list'));
 
@@ -194,7 +206,7 @@ class ClientTest extends VonageTestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($options) {
             $this->assertEquals('/number/search', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-           $this->assertRequestMethod('GET', $request);
+            $this->assertRequestMethod('GET', $request);
 
             // Things that are whitelisted should be shown
             foreach ($options as $name => $value) {
@@ -221,7 +233,11 @@ class ClientTest extends VonageTestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
-            $this->assertEquals('https://rest.nexmo.com/number/search?size=100&index=19&country=US&search_pattern=2&pattern=1&type=landline&features=SMS%2CVOICE&page_index=1', $uriString);
+            $this->assertEquals(
+                'https://rest.nexmo.com/number/search?size=100&index=19&country=US&' .
+                        'search_pattern=2&pattern=1&type=landline&features=SMS%2CVOICE&page_index=1',
+                $uriString
+            );
             $this->assertRequestMethod('GET', $request);
 
             return true;
@@ -243,7 +259,7 @@ class ClientTest extends VonageTestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/number/search', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-           $this->assertRequestMethod('GET', $request);
+            $this->assertRequestMethod('GET', $request);
 
             return true;
         }))->willReturn($this->getResponse('available-numbers'));
@@ -265,7 +281,7 @@ class ClientTest extends VonageTestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/number/search', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-           $this->assertRequestMethod('GET', $request);
+            $this->assertRequestMethod('GET', $request);
 
             return true;
         }))->willReturn($this->getResponse('empty'));
@@ -289,7 +305,7 @@ class ClientTest extends VonageTestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/numbers', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-           $this->assertRequestMethod('GET', $request);
+            $this->assertRequestMethod('GET', $request);
             $this->assertRequestQueryContains('index', '1', $request);
             $this->assertRequestQueryContains('size', '100', $request);
             $this->assertRequestQueryContains('search_pattern', '0', $request);
@@ -316,7 +332,7 @@ class ClientTest extends VonageTestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/numbers', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-           $this->assertRequestMethod('GET', $request);
+            $this->assertRequestMethod('GET', $request);
 
             return true;
         }))->willReturn($this->getResponse('single'));
@@ -348,7 +364,10 @@ class ClientTest extends VonageTestCase
     public function testPurchaseNumberWithNumberAndCountry(): void
     {
         // When providing a number string, the first thing that happens is a GET request to fetch number details
-        $this->vonageClient->send(Argument::that(fn(RequestInterface $request) => $request->getUri()->getPath() === '/account/numbers'))->willReturn($this->getResponse('single'));
+        $this->vonageClient->send(
+            Argument::that(fn (RequestInterface $request) => $request->getUri()->getPath() === '/account/numbers')
+        )
+            ->willReturn($this->getResponse('single'));
 
         // Then we purchase the number
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
@@ -428,9 +447,12 @@ class ClientTest extends VonageTestCase
     public function testCancelNumberWithNumberString(): void
     {
         // When providing a number string, the first thing that happens is a GET request to fetch number details
-        $this->vonageClient->send(Argument::that(fn(RequestInterface $request) => $request->getUri()->getPath() === '/account/numbers'))->willReturn($this->getResponse('single'));
+        $this->vonageClient->send(
+            Argument::that(fn (RequestInterface $request) => $request->getUri()->getPath() === '/account/numbers')
+        )
+            ->willReturn($this->getResponse('single'));
 
-    // Then we get a POST request to cancel
+        // Then we get a POST request to cancel
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             if ($request->getUri()->getPath() === '/number/cancel') {
                 $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
@@ -447,7 +469,10 @@ class ClientTest extends VonageTestCase
     public function testCancelNumberWithNumberAndCountryString(): void
     {
         // When providing a number string, the first thing that happens is a GET request to fetch number details
-        $this->vonageClient->send(Argument::that(fn(RequestInterface $request) => $request->getUri()->getPath() === '/account/numbers'))->willReturn($this->getResponse('single'));
+        $this->vonageClient->send(
+            Argument::that(fn (RequestInterface $request) => $request->getUri()->getPath() === '/account/numbers')
+        )
+            ->willReturn($this->getResponse('single'));
 
         // Then we get a POST request to cancel
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {

@@ -269,7 +269,7 @@ class ClientTest extends VonageTestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('integration_id needs to be set on datasource on a Salesforce list');
 
-        $this->vonageClient->send(Argument::that(fn(Request $request) => true))->willReturn($this->getResponse('list-create-success'));
+        $this->vonageClient->send(Argument::that(fn (Request $request) => true))->willReturn($this->getResponse('list-create-success'));
 
         $createSalesforceListRequest = new SalesforceList('my-list');
         $createSalesforceListRequest->setDescription('my-description')
@@ -292,7 +292,7 @@ class ClientTest extends VonageTestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('soql needs to be set on datasource on a Salesforce list');
 
-        $this->vonageClient->send(Argument::that(fn(Request $request) => true))->willReturn($this->getResponse('list-create-success'));
+        $this->vonageClient->send(Argument::that(fn (Request $request) => true))->willReturn($this->getResponse('list-create-success'));
 
         $createSalesforceListRequest = new SalesforceList('my-list');
         $createSalesforceListRequest->setDescription('my-description')
@@ -322,7 +322,7 @@ class ClientTest extends VonageTestCase
                 $uriString
             );
 
-           $this->assertRequestMethod('GET', $request);
+            $this->assertRequestMethod('GET', $request);
             return true;
         }))->willReturn($this->getResponse('list-get-success'));
 
@@ -479,7 +479,7 @@ class ClientTest extends VonageTestCase
     public function testWillGetListItems(): void
     {
         $this->vonageClient->send(Argument::that(function (Request $request) {
-           $this->assertRequestMethod('GET', $request);
+            $this->assertRequestMethod('GET', $request);
 
             $uri = $request->getUri();
             $uriString = $uri->__toString();
@@ -545,7 +545,7 @@ class ClientTest extends VonageTestCase
     public function testWillDownloadItemCsv(): void
     {
         $this->vonageClient->send(Argument::that(function (Request $request) {
-           $this->assertRequestMethod('GET', $request);
+            $this->assertRequestMethod('GET', $request);
 
             $uri = $request->getUri();
             $uriString = $uri->__toString();
@@ -593,7 +593,7 @@ class ClientTest extends VonageTestCase
         $itemId = '4cb98f71-a879-49f7-b5cf-2314353eb52c';
 
         $this->vonageClient->send(Argument::that(function (Request $request) {
-           $this->assertRequestMethod('GET', $request);
+            $this->assertRequestMethod('GET', $request);
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(

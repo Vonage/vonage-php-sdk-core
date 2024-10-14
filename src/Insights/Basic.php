@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Vonage\Insights;
 
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
+
 class Basic implements ArrayHydrateInterface
 {
     protected array $data = [];

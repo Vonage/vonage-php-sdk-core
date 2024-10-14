@@ -98,7 +98,11 @@ class ClientTest extends VonageTestCase
             }
 
             if ($requestIndex === 2) {
-                $this->assertEquals('https://api.nexmo.com/v1/conversations?order=desc&page_size=10&cursor=7EjDNQrAcipmOnc0HCzpQRkhBULzY44ljGUX4lXKyUIVfiZay5pv9wg=');
+                $this->assertEquals(
+                    'https://api.nexmo.com/v1/conversations?' .
+                    'order=desc&page_size=10&' .
+                    'cursor=7EjDNQrAcipmOnc0HCzpQRkhBULzY44ljGUX4lXKyUIVfiZay5pv9wg='
+                );
             }
 
             return true;
@@ -147,7 +151,14 @@ class ClientTest extends VonageTestCase
             $uri = $request->getUri();
             $uriString = $uri->__toString();
 
-            $this->assertEquals('https://api.nexmo.com/v1/conversations?date_start=2018-01-01+10%3A00%3A00&date_end=2018-01-01+12%3A00%3A00&page_size=5&order=asc', $uriString);
+            $this->assertEquals(
+                'https://api.nexmo.com/v1/conversations?' .
+                'date_start=2018-01-01+10%3A00%3A00&' .
+                'date_end=2018-01-01+12%3A00%3A00&' .
+                'page_size=5&' .
+                'order=asc',
+                $uriString
+            );
 
             return true;
         }))->willReturn($this->getResponse('list-conversations'));
@@ -183,7 +194,11 @@ class ClientTest extends VonageTestCase
             $this->assertRequestJsonBodyContains('display_name', 'Customer Chat', $request);
             $this->assertRequestJsonBodyContains('image_url', 'https://example.com/image.png', $request);
             $this->assertRequestJsonBodyContains('ttl', 60, $request, true);
-            $this->assertRequestJsonBodyContains('numbers', ['type' => 'phone', 'number' => '447700900000'], $request);
+            $this->assertRequestJsonBodyContains(
+                'numbers',
+                ['type' => 'phone', 'number' => '447700900000'],
+                $request
+            );
 
             $callbackStructure = [
                 'url' => 'https://example.com/eventcallback',
@@ -200,7 +215,11 @@ class ClientTest extends VonageTestCase
             return true;
         }))->willReturn($this->getResponse('create-conversation'));
 
-        $conversation = new CreateConversationRequest('customer_chat', 'Customer Chat', 'https://example.com/image.png');
+        $conversation = new CreateConversationRequest(
+            'customer_chat',
+            'Customer Chat',
+            'https://example.com/image.png'
+        );
         $conversation->setTtl(60);
 
         $conversationNumber = new ConversationNumber('447700900000');
@@ -252,7 +271,10 @@ class ClientTest extends VonageTestCase
             $uri = $request->getUri();
             $uriString = $uri->__toString();
 
-            $this->assertEquals('https://api.nexmo.com/v1/conversations/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a', $uriString);
+            $this->assertEquals(
+                'https://api.nexmo.com/v1/conversations/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a',
+                $uriString
+            );
 
             return true;
         }))->willReturn($this->getResponse('get-conversation'));
@@ -297,7 +319,10 @@ class ClientTest extends VonageTestCase
             $uri = $request->getUri();
             $uriString = $uri->__toString();
 
-            $this->assertEquals('https://api.nexmo.com/v1/conversations/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a', $uriString);
+            $this->assertEquals(
+                'https://api.nexmo.com/v1/conversations/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a',
+                $uriString
+            );
 
             return true;
         }))->willReturn($this->getResponse('update-conversation'));
@@ -312,7 +337,11 @@ class ClientTest extends VonageTestCase
             $updatePayload
         );
 
-        $response = $this->conversationsClient->updateConversationById('CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a', $updateConversationRequest);
+        $response = $this->conversationsClient->updateConversationById(
+            'CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a',
+            $updateConversationRequest
+        );
+
         $this->assertInstanceOf(Conversation::class, $response);
 
         $conversationShape = [
@@ -352,7 +381,10 @@ class ClientTest extends VonageTestCase
             $uri = $request->getUri();
             $uriString = $uri->__toString();
 
-            $this->assertEquals('https://api.nexmo.com/v1/conversations/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a', $uriString);
+            $this->assertEquals(
+                'https://api.nexmo.com/v1/conversations/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a',
+                $uriString
+            );
 
             return true;
         }))->willReturn($this->getResponse('delete-conversation', 204));
@@ -372,17 +404,33 @@ class ClientTest extends VonageTestCase
             $uriString = $uri->__toString();
 
             if ($requestIndex == 1) {
-                $this->assertEquals('https://api.nexmo.com/v1/users/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a/conversations?page_size=1', $uriString);
+                $this->assertEquals(
+                    'https://api.nexmo.com/v1/users/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a/conversations?' .
+                    'page_size=1',
+                    $uriString
+                );
             }
 
             if ($requestIndex == 2) {
-                $this->assertEquals('https://api.nexmo.com/v1/conversations?order=desc&page_size=10&cursor=7EjDNQrAcipmOnc0HCzpQRkhBULzY44ljGUX4lXKyUIVfiZay5pv9wg=');
+                $this->assertEquals(
+                    'https://api.nexmo.com/v1/conversations?' .
+                    'order=desc&' .
+                    'page_size=10&' .
+                    'cursor=7EjDNQrAcipmOnc0HCzpQRkhBULzY44ljGUX4lXKyUIVfiZay5pv9wg='
+                );
             }
 
             return true;
-        }))->willReturn($this->getResponse('list-user-conversations'), $this->getResponse('list-user-conversations-2'));
+        }))->willReturn(
+            $this->getResponse(
+                'list-user-conversations'
+            ),
+            $this->getResponse('list-user-conversations-2')
+        );
 
-        $response = $this->conversationsClient->listUserConversationsByUserId('CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a');
+        $response = $this->conversationsClient->listUserConversationsByUserId(
+            'CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a'
+        );
         $this->assertInstanceOf(IterableAPICollection::class, $response);
 
         $conversations = [];
@@ -440,15 +488,36 @@ class ClientTest extends VonageTestCase
             $uriString = $uri->__toString();
 
             if ($this->requestIndex == 1) {
-                $this->assertEquals('https://api.nexmo.com/v1/users/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a/conversations?state=INVITED&order_by=created&include_custom_data=1&date_start=2018-01-01+10%3A00%3A00&date_end=2018-01-01+12%3A00%3A00&page_size=5&order=asc&page_index=1', $uriString);
+                $this->assertEquals(
+                    'https://api.nexmo.com/v1/users/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a/conversations?' .
+                    'state=INVITED&' .
+                    'order_by=created&' .
+                    'include_custom_data=1&' .
+                    'date_start=2018-01-01+10%3A00%3A00&' .
+                    'date_end=2018-01-01+12%3A00%3A00&' .
+                    'page_size=5&' .
+                    'order=asc&' .
+                    'page_index=1',
+                    $uriString
+                );
             }
 
             if ($this->requestIndex == 2) {
-                $this->assertEquals('https://api.nexmo.com/v1/users/USR-82e028d9-5201-4f1e-8188-604b2d3471ec/conversations?order=desc&page_size=10&cursor=7EjDNQrAcipmOnc0HCzpQRkhBULzY44ljGUX4lXKyUIVfiZay5pv9wg=', $uriString);
+                $this->assertEquals(
+                    'https://api.nexmo.com/v1/users/USR-82e028d9-5201-4f1e-8188-604b2d3471ec/conversations?' .
+                    'order=desc&' .
+                    'page_size=10&' .
+                    'cursor=7EjDNQrAcipmOnc0HCzpQRkhBULzY44ljGUX4lXKyUIVfiZay5pv9wg=',
+                    $uriString
+                );
             }
 
+
             return true;
-        }))->willReturn($this->getResponse('list-user-conversations'), $this->getResponse('list-user-conversations-2'));
+        }))->willReturn(
+            $this->getResponse('list-user-conversations'),
+            $this->getResponse('list-user-conversations-2')
+        );
 
         $filter = new ListUserConversationsFilter();
         $filter->setState('INVITED');
@@ -459,7 +528,10 @@ class ClientTest extends VonageTestCase
         $filter->setPageSize(5);
         $filter->setOrder('asc');
 
-        $response = $this->conversationsClient->listUserConversationsByUserId('CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a', $filter);
+        $response = $this->conversationsClient->listUserConversationsByUserId(
+            'CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a',
+            $filter
+        );
 
         $conversations = [];
 
@@ -482,11 +554,22 @@ class ClientTest extends VonageTestCase
             $uriString = $uri->__toString();
 
             if ($this->requestIndex == 1) {
-                $this->assertEquals('https://api.nexmo.com/v1/usersCON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a/members?page_index=1', $uriString);
+                $this->assertEquals(
+                    'https://api.nexmo.com/v1/users/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a/members?' .
+                    'page_index=1',
+                    $uriString
+                );
             }
 
             if ($this->requestIndex == 2) {
-                $this->assertEquals('https://api.nexmo.com/v1/conversations/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a/members?order=desc&page_size=10&cursor=88b395c167da4d94e929705cbd63b829a650e69a39197bfd4c949f4243f60dc4babb696afa404d2f44e7775e32b967f2a1a0bb8fb259c0999ba5a4e501eaab55', $uriString);
+                $this->assertEquals(
+                    'https://api.nexmo.com/v1/conversations/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a/' .
+                    'members?order=desc&' .
+                    'page_size=10&' .
+                    'cursor=88b395c167da4d94e929705cbd63b829a650e69a39197bfd4c949f4243f60dc4babb696afa404d2f4' .
+                    '4e7775e32b967f2a1a0bb8fb259c0999ba5a4e501eaab55',
+                    $uriString
+                );
             }
 
             return true;
@@ -515,7 +598,13 @@ class ClientTest extends VonageTestCase
             $uriString = $uri->__toString();
 
             if ($this->requestIndex == 1) {
-                $this->assertEquals('https://api.nexmo.com/v1/usersCON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a/members?page_size=50&order=DESC&page_index=1', $uriString);
+                $this->assertEquals(
+                    'https://api.nexmo.com/v1/users/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a/members?' .
+                    'page_size=50&' .
+                    'order=DESC&' .
+                    'page_index=1',
+                    $uriString
+                );
             }
 
             return true;
@@ -525,7 +614,10 @@ class ClientTest extends VonageTestCase
         $filter->setOrder('DESC');
         $filter->setPageSize(50);
 
-        $response = $this->conversationsClient->listMembersByConversationId('CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a', $filter);
+        $response = $this->conversationsClient->listMembersByConversationId(
+            'CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a',
+            $filter
+        );
 
         $conversations = [];
 
@@ -546,10 +638,17 @@ class ClientTest extends VonageTestCase
             $uri = $request->getUri();
             $uriString = $uri->__toString();
 
-            $this->assertEquals('https://api.nexmo.com/v1/conversations/CON-63f61863-4a51-4f6b-86e1-46edebio0391/members', $uriString);
+            $this->assertEquals(
+                'https://api.nexmo.com/v1/conversations/CON-63f61863-4a51-4f6b-86e1-46edebio0391/members',
+                $uriString
+            );
             $this->assertRequestJsonBodyContains('state', 'invited', $request);
             $this->assertRequestJsonBodyContains('knocking_id', '4f1e-8188', $request);
-            $this->assertRequestJsonBodyContains('member_id_inviting', 'MEM-63f61863-4a51-4f6b-86e1-46edebio0391', $request);
+            $this->assertRequestJsonBodyContains(
+                'member_id_inviting',
+                'MEM-63f61863-4a51-4f6b-86e1-46edebio0391',
+                $request
+            );
             $this->assertRequestJsonBodyContains('from', 'value', $request);
             $this->assertRequestJsonBodyContains(
                 'channel',
@@ -630,12 +729,17 @@ class ClientTest extends VonageTestCase
             $uri = $request->getUri();
             $uriString = $uri->__toString();
 
-            $this->assertEquals('https://api.nexmo.com/v1/conversations/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a/members/me', $uriString);
+            $this->assertEquals(
+                'https://api.nexmo.com/v1/conversations/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a/members/me',
+                $uriString
+            );
 
             return true;
         }))->willReturn($this->getResponse('get-member'));
 
-        $response = $this->conversationsClient->getMyMemberByConversationId('CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a');
+        $response = $this->conversationsClient->getMyMemberByConversationId(
+            'CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a'
+        );
         $this->assertInstanceOf(Member::class, $response);
     }
 
@@ -647,7 +751,11 @@ class ClientTest extends VonageTestCase
             $uri = $request->getUri();
             $uriString = $uri->__toString();
 
-            $this->assertEquals('https://api.nexmo.com/v1/conversations/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a/members/MEM-63f61863-4a51-4f6b-86e1-46edebio0391', $uriString);
+            $this->assertEquals(
+                'https://api.nexmo.com/v1/conversations/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a/members/' .
+                'MEM-63f61863-4a51-4f6b-86e1-46edebio0391',
+                $uriString
+            );
 
             return true;
         }))->willReturn($this->getResponse('get-member'));
@@ -668,10 +776,19 @@ class ClientTest extends VonageTestCase
             $uri = $request->getUri();
             $uriString = $uri->__toString();
 
-            $this->assertEquals('https://api.nexmo.com/v1/conversations/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a/members/MEM-63f61863-4a51-4f6b-86e1-46edebio0391', $uriString);
+            $this->assertEquals(
+                'https://api.nexmo.com/v1/conversations/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a/members/' .
+                'MEM-63f61863-4a51-4f6b-86e1-46edebio0391',
+                $uriString
+            );
+
             $this->assertRequestJsonBodyContains('state', 'left', $request);
             $this->assertRequestJsonBodyContains('from', 'value', $request);
-            $this->assertRequestJsonBodyContains('reason', ['code' => '400', 'text' => 'user got bored'], $request);
+            $this->assertRequestJsonBodyContains(
+                'reason',
+                ['code' => '400', 'text' => 'user got bored'],
+                $request
+            );
 
             return true;
         }))->willReturn($this->getResponse('update-member'));
@@ -707,10 +824,17 @@ class ClientTest extends VonageTestCase
             $uri = $request->getUri();
             $uriString = $uri->__toString();
 
-            $this->assertEquals('https://api.nexmo.com/v1/conversations/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a/events', $uriString);
+            $this->assertEquals(
+                'https://api.nexmo.com/v1/conversations/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a/events',
+                $uriString
+            );
             $this->assertRequestJsonBodyContains('type', 'message', $request);
             $this->assertRequestJsonBodyContains('from', 'from-value', $request);
-            $this->assertRequestJsonBodyContains('body', ['message_type' => 'text', 'text' => 'my event'], $request);
+            $this->assertRequestJsonBodyContains(
+                'body',
+                ['message_type' => 'text', 'text' => 'my event'],
+                $request
+            );
 
             return true;
         }))->willReturn($this->getResponse('create-event'));
@@ -729,7 +853,15 @@ class ClientTest extends VonageTestCase
                 $uri = $request->getUri();
                 $uriString = $uri->__toString();
 
-                $this->assertEquals('https://api.nexmo.com/v1/conversations/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a/events?start_id=3453&end_id=5634&event_type=member%3Amessage%3Astatus&page_size=2&order=desc', $uriString);
+                $this->assertEquals(
+                    'https://api.nexmo.com/v1/conversations/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a/events?' .
+                    'start_id=3453&' .
+                    'end_id=5634&' .
+                    'event_type=member%3Amessage%3Astatus&' .
+                    'page_size=2&' .
+                    'order=desc',
+                    $uriString
+                );
 
                 return true;
             }
@@ -740,7 +872,11 @@ class ClientTest extends VonageTestCase
                 $uri = $request->getUri();
                 $uriString = $uri->__toString();
 
-                $this->assertEquals('https://api.nexmo.com/v1/conversations/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a?cursor=94f0', $uriString);
+                $this->assertEquals(
+                    'https://api.nexmo.com/v1/conversations/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a?' .
+                    'cursor=94f0',
+                    $uriString
+                );
 
                 return true;
             }
@@ -754,7 +890,10 @@ class ClientTest extends VonageTestCase
         $filter->setOrder('desc');
         $filter->setExcludeDeletedEvents(false);
 
-        $response = $this->conversationsClient->listEvents('CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a', $filter);
+        $response = $this->conversationsClient->listEvents(
+            'CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a',
+            $filter
+        );
         $responseData = [];
 
         foreach ($response as $event) {
@@ -773,12 +912,19 @@ class ClientTest extends VonageTestCase
             $uri = $request->getUri();
             $uriString = $uri->__toString();
 
-            $this->assertEquals('https://api.nexmo.com/v1/conversations/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a/events/999', $uriString);
+            $this->assertEquals(
+                'https://api.nexmo.com/v1/conversations/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a/events/' .
+                '999',
+                $uriString
+            );
 
             return true;
         }))->willReturn($this->getResponse('get-event'));
 
-        $response = $this->conversationsClient->getEventById('999', 'CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a');
+        $response = $this->conversationsClient->getEventById(
+            '999',
+            'CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a'
+        );
     }
 
     public function testWillDeleteEvent(): void
@@ -789,12 +935,19 @@ class ClientTest extends VonageTestCase
             $uri = $request->getUri();
             $uriString = $uri->__toString();
 
-            $this->assertEquals('https://api.nexmo.com/v1/conversations/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a/events/999', $uriString);
+            $this->assertEquals(
+                'https://api.nexmo.com/v1/conversations/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a/events/' .
+                '999',
+                $uriString
+            );
 
             return true;
         }))->willReturn($this->getResponse('delete-conversation', 204));
 
-        $response = $this->conversationsClient->deleteEventById('999', 'CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a');
+        $response = $this->conversationsClient->deleteEventById(
+            '999',
+            'CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a'
+        );
 
         $this->assertTrue($response);
     }
