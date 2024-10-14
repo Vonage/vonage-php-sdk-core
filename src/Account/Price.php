@@ -10,6 +10,7 @@ use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 use Vonage\Entity\JsonResponseTrait;
 use Vonage\Entity\JsonSerializableTrait;
 use Vonage\Entity\NoRequestResponseTrait;
+
 use function array_key_exists;
 use function ltrim;
 use function preg_replace;

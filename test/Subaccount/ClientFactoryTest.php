@@ -35,13 +35,13 @@ class ClientFactoryTest extends VonageTestCase
 
     /**
      * Makes sure that the client factory returns the correct object instance
-     * 
+     *
      * @see https://github.com/Vonage/vonage-php-sdk-core/pull/472
-     * 
-     * @return void 
-     * @throws InvalidArgumentException 
-     * @throws Exception 
-     * @throws ExpectationFailedException 
+     *
+     * @return void
+     * @throws InvalidArgumentException
+     * @throws Exception
+     * @throws ExpectationFailedException
      */
     public function testFactoryMakeCorrectClient(): void
     {

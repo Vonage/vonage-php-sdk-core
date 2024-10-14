@@ -17,6 +17,7 @@ use Vonage\Verify\Client as VerifyClient;
 use Vonage\Verify\Verification;
 use VonageTest\Traits\HTTPTestTrait;
 use VonageTest\VonageTestCase;
+
 use function is_null;
 use function serialize;
 use function unserialize;

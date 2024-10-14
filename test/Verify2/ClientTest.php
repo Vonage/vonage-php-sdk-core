@@ -948,7 +948,7 @@ class ClientTest extends VonageTestCase
             "en-us",
             'The authentication code for your ${brand} is: ${code}'
         );
-        
+
         $template = $this->verify2Client->createCustomTemplateFragment('c70f446e-997a-4313-a081-60a02a31dc19', $createTemplateFragmentRequest);
 
         $this->assertInstanceOf(TemplateFragment::class, $template);

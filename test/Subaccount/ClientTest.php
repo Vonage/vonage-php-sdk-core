@@ -249,7 +249,7 @@ class ClientTest extends VonageTestCase
 
         $filter = new SubaccountFilter([
             'start_date' => '2022-01-01',
-            'end_date'=> '2022-01-05',
+            'end_date' => '2022-01-05',
             'subaccount' => 's5r3fds'
         ]);
 
@@ -283,7 +283,7 @@ class ClientTest extends VonageTestCase
 
         $filter = new SubaccountFilter([
             'start_date' => '2022-01-01',
-            'end_date'=> '2022-01-05',
+            'end_date' => '2022-01-05',
             'subaccount' => 's5r3fds'
         ]);
 

@@ -7,7 +7,7 @@ use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 class StickerObject implements ArrayHydrateInterface
 {
     public const STICKER_URL = 'url';
-    public  const STICKER_ID = 'id';
+    public const STICKER_ID = 'id';
 
     private array $allowedTypes = [
         self::STICKER_URL,

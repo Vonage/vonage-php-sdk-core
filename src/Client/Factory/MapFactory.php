@@ -34,8 +34,7 @@ class MapFactory implements FactoryInterface, ContainerInterface
          * Vonage Client
          */
         protected Client $client
-    )
-    {
+    ) {
     }
 
     /**

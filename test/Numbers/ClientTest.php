@@ -142,7 +142,7 @@ class ClientTest extends VonageTestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id) {
             $this->assertEquals('/account/numbers', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-           $this->assertRequestMethod('GET', $request);
+            $this->assertRequestMethod('GET', $request);
             $this->assertRequestQueryContains('pattern', $id, $request);
             return true;
         }))->willReturn($this->getResponse('single'));
@@ -168,7 +168,7 @@ class ClientTest extends VonageTestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/numbers', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-           $this->assertRequestMethod('GET', $request);
+            $this->assertRequestMethod('GET', $request);
             return true;
         }))->willReturn($this->getResponse('list'));
 
@@ -194,7 +194,7 @@ class ClientTest extends VonageTestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($options) {
             $this->assertEquals('/number/search', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-           $this->assertRequestMethod('GET', $request);
+            $this->assertRequestMethod('GET', $request);
 
             // Things that are whitelisted should be shown
             foreach ($options as $name => $value) {
@@ -243,7 +243,7 @@ class ClientTest extends VonageTestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/number/search', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-           $this->assertRequestMethod('GET', $request);
+            $this->assertRequestMethod('GET', $request);
 
             return true;
         }))->willReturn($this->getResponse('available-numbers'));
@@ -265,7 +265,7 @@ class ClientTest extends VonageTestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/number/search', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-           $this->assertRequestMethod('GET', $request);
+            $this->assertRequestMethod('GET', $request);
 
             return true;
         }))->willReturn($this->getResponse('empty'));
@@ -289,7 +289,7 @@ class ClientTest extends VonageTestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/numbers', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-           $this->assertRequestMethod('GET', $request);
+            $this->assertRequestMethod('GET', $request);
             $this->assertRequestQueryContains('index', '1', $request);
             $this->assertRequestQueryContains('size', '100', $request);
             $this->assertRequestQueryContains('search_pattern', '0', $request);
@@ -316,7 +316,7 @@ class ClientTest extends VonageTestCase
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/numbers', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-           $this->assertRequestMethod('GET', $request);
+            $this->assertRequestMethod('GET', $request);
 
             return true;
         }))->willReturn($this->getResponse('single'));

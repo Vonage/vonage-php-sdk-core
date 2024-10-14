@@ -9,7 +9,6 @@ use Vonage\Entity\Factory\FactoryInterface;
 
 class EndpointFactory implements FactoryInterface
 {
-
     public function create(array $data): ?EndpointInterface
     {
         return match ($data['type']) {

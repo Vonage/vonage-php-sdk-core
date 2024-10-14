@@ -26,7 +26,7 @@ class AdvancedTest extends VonageTestCase
     public function setUp(): void
     {
         $this->responsesDirectory = __DIR__ . '/responses';
-        
+
         $this->vonageClient = $this->prophesize(Client::class);
         $this->vonageClient->getRestUrl()->willReturn('https://api.nexmo.com');
         $this->vonageClient->getCredentials()->willReturn(
