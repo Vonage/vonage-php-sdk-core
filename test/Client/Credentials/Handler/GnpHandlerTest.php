@@ -59,7 +59,11 @@ class GnpHandlerTest extends TestCase
                 );
 
                 $this->assertRequestFormBodyContains('login_hint', 'tel:+447700900000', $request);
-                $this->assertRequestFormBodyContains('scope', 'dpv:FraudPreventionAndDetection#check-sim-swap', $request);
+                $this->assertRequestFormBodyContains(
+                    'scope',
+                    'dpv:FraudPreventionAndDetection#check-sim-swap',
+                    $request
+                );
 
                 $this->assertEquals(
                     'Bearer ',
@@ -79,8 +83,17 @@ class GnpHandlerTest extends TestCase
                     $uriString
                 );
 
-                $this->assertRequestFormBodyContains('grant_type', 'urn:openid:params:grant-type:ciba', $request);
-                $this->assertRequestFormBodyContains('auth_req_id', '0dadaeb4-7c79-4d39-b4b0-5a6cc08bf537', $request);
+                $this->assertRequestFormBodyContains(
+                    'grant_type',
+                    'urn:openid:params:grant-type:ciba',
+                    $request
+                );
+
+                $this->assertRequestFormBodyContains(
+                    'auth_req_id',
+                    '0dadaeb4-7c79-4d39-b4b0-5a6cc08bf537',
+                    $request
+                );
 
                 return true;
             }
@@ -118,8 +131,17 @@ class GnpHandlerTest extends TestCase
                     $uriString
                 );
 
-                $this->assertRequestFormBodyContains('login_hint', 'tel:+447700900000', $request);
-                $this->assertRequestFormBodyContains('scope', 'dpv:FraudPreventionAndDetection#check-sim-swap', $request);
+                $this->assertRequestFormBodyContains(
+                    'login_hint',
+                    'tel:+447700900000',
+                    $request
+                );
+
+                $this->assertRequestFormBodyContains(
+                    'scope',
+                    'dpv:FraudPreventionAndDetection#check-sim-swap',
+                    $request
+                );
 
                 $this->assertEquals(
                     'Bearer ',
@@ -139,8 +161,17 @@ class GnpHandlerTest extends TestCase
                     $uriString
                 );
 
-                $this->assertRequestFormBodyContains('grant_type', 'urn:openid:params:grant-type:ciba', $request);
-                $this->assertRequestFormBodyContains('auth_req_id', '0dadaeb4-7c79-4d39-b4b0-5a6cc08bf537', $request);
+                $this->assertRequestFormBodyContains(
+                    'grant_type',
+                    'urn:openid:params:grant-type:ciba',
+                    $request
+                );
+
+                $this->assertRequestFormBodyContains(
+                    'auth_req_id',
+                    '0dadaeb4-7c79-4d39-b4b0-5a6cc08bf537',
+                    $request
+                );
 
                 return true;
             }

@@ -76,7 +76,12 @@ class ClientTest extends VonageTestCase
                 $this->assertArrayHasKey('Authorization', $headers);
 
                 $this->assertRequestFormBodyContains('login_hint', '+346661113334', $request);
-                $this->assertRequestFormBodyContains('scope', 'dpv:FraudPreventionAndDetection#check-sim-swap', $request);
+                $this->assertRequestFormBodyContains(
+                    'scope',
+                    'dpv:FraudPreventionAndDetection#check-sim-swap',
+                    $request
+                );
+
                 return true;
             }
 
@@ -137,7 +142,11 @@ class ClientTest extends VonageTestCase
                 $this->assertArrayHasKey('Authorization', $headers);
 
                 $this->assertRequestFormBodyContains('login_hint', '+346661113334', $request);
-                $this->assertRequestFormBodyContains('scope', 'dpv:FraudPreventionAndDetection#retrieve-sim-swap-date', $request);
+                $this->assertRequestFormBodyContains(
+                    'scope',
+                    'dpv:FraudPreventionAndDetection#retrieve-sim-swap-date',
+                    $request
+                );
                 return true;
             }
 
