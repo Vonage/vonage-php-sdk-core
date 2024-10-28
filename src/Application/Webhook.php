@@ -8,9 +8,7 @@ class Webhook implements \Stringable
 {
     public const METHOD_POST = 'POST';
     public const METHOD_GET = 'GET';
-
     public ?string $socketTimeout = null;
-
     public ?string $connectionTimeout = null;
 
     public function __construct(protected ?string $url, protected ?string $method = self::METHOD_POST)

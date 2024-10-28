@@ -23,6 +23,9 @@
     <testsuite name="verify">
       <directory>test/Verify</directory>
     </testsuite>
+    <testsuite name="application">
+      <directory>test/Application</directory>
+    </testsuite>
     <testsuite name="verify2">
       <directory>test/Verify2</directory>
     </testsuite>
