@@ -361,6 +361,27 @@ class ClientTest extends VonageTestCase
         // If there's no exception thrown, everything is fine!
     }
 
+    public function testSearchOwnedNumbersWithFilter(): void
+    {
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://rest.nexmo.com/account/numbers?size=10&index=1&application_id=66c04cea-68b2-45e4-9061-3fd847d627b8&page_index=1',
+                $uriString
+            );
+
+            $this->assertEquals('GET', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('owned-numbers'));
+
+        $filter = new \Vonage\Numbers\Filter\OwnedNumbers();
+        $filter->setApplicationId("66c04cea-68b2-45e4-9061-3fd847d627b8");
+
+        $response = $this->numberClient->searchOwned(null, $filter);
+    }
+
     public function testPurchaseNumberWithNumberAndCountry(): void
     {
         // When providing a number string, the first thing that happens is a GET request to fetch number details
