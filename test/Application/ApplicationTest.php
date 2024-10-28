@@ -9,6 +9,7 @@ use Vonage\Application\Application;
 use Vonage\Application\MessagesConfig;
 use Vonage\Application\RtcConfig;
 use Vonage\Application\VoiceConfig;
+use Vonage\Application\Webhook;
 use Vonage\Client\Exception\Exception as ClientException;
 use VonageTest\Traits\HTTPTestTrait;
 use VonageTest\VonageTestCase;
@@ -163,5 +164,18 @@ class ApplicationTest extends VonageTestCase
 
         $webhook = $otherapp->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER);
         $this->assertEquals('https://example.com/webhooks/answer', $webhook);
+    }
+
+    public function testCanSetFallbackUrlWebhook(): void
+    {
+        $application = new Application();
+        $application->setName('my application');
+        $application->getVoiceConfig()->setRegion('eu-west');
+
+        $webhook = new Webhook('https://example.com/fallbackUrl', 'GET');
+        $application->getVoiceConfig()->setWebhook(\Vonage\Application\VoiceConfig::FALLBACK_ANSWER_URL, $webhook);
+
+        $output = $application->toArray();
+        $this->assertEquals('https://example.com/fallbackUrl', $output['capabilities']['voice']['webhooks']['fallback_answer_url']['address']);
     }
 }

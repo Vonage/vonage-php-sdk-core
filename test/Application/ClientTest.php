@@ -556,17 +556,4 @@ class ClientTest extends VonageTestCase
         $application->setName('my application');
         $application->getVoiceConfig()->setRegion('eu-west-1');
     }
-
-    public function testCanSetFallbackUrlWebhook(): void
-    {
-        $application = new Application();
-        $application->setName('my application');
-        $application->getVoiceConfig()->setRegion('eu-west');
-
-        $webhook = new Webhook('https://example.com/fallbackUrl', 'GET');
-        $application->getVoiceConfig()->setWebhook(\Vonage\Application\VoiceConfig::FALLBACK_ANSWER_URL, $webhook);
-
-        $output = $application->toArray();
-        $this->assertEquals('https://example.com/fallbackUrl', $output['capabilities']['voice']['webhooks']['fallback_answer_url']['address']);
-    }
 }
