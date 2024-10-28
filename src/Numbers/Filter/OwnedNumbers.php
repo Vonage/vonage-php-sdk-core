@@ -38,7 +38,7 @@ class OwnedNumbers implements FilterInterface
 
     protected int $pageIndex = 1;
 
-    protected string $pattern;
+    protected ?string $pattern = null;
 
     protected int $searchPattern = 0;
 

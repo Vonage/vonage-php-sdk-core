@@ -921,7 +921,7 @@ $filter
     ->setPattern(234)
     ->setSearchPattern(\Vonage\Numbers\Filter\OwnedNumbers::SEARCH_PATTERN_CONTAINS)
 ;
-$response = $client->numbers()->searchOwned($filter);
+$response = $client->numbers()->searchOwned(null, $filter);
 ```
 
 `has_application`:
