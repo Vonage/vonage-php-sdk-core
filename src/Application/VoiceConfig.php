@@ -10,6 +10,8 @@ class VoiceConfig
 {
     public const EVENT = 'event_url';
     public const ANSWER = 'answer_url';
+    public const FALLBACK_ANSWER_URL = 'fallback_answer_url';
+
     protected ?bool $signedCallbacks = null;
     protected ?int $conversationsTtl = null;
     protected ?string $region = null;

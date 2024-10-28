@@ -230,7 +230,7 @@ class Application implements EntityInterface, JsonSerializable, ArrayHydrateInte
     {
         // Build up capabilities that are set
         $availableCapabilities = [
-            'voice' => [VoiceConfig::ANSWER, VoiceConfig::EVENT],
+            'voice' => [VoiceConfig::ANSWER, VoiceConfig::EVENT, VoiceConfig::FALLBACK_ANSWER_URL],
             'messages' => [MessagesConfig::INBOUND, MessagesConfig::STATUS],
             'rtc' => [RtcConfig::EVENT]
         ];
