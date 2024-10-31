@@ -19,6 +19,7 @@ interface Message
     public function setWebhookUrl(string $url): void;
     public function getWebhookVersion(): ?string;
     public function setWebhookVersion(string $version): void;
+    public function validatesE164(): bool;
 
     /**
      * All message types have shared outputs required by the endpoint.

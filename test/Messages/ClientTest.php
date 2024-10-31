@@ -572,7 +572,7 @@ class ClientTest extends VonageTestCase
     public function testCanSendMessengerText(): void
     {
         $payload = [
-            'to' => '447700900000',
+            'to' => '10152368852405295',
             'from' => '16105551212',
             'text' => 'This is a messenger response',
             'category' => 'response'

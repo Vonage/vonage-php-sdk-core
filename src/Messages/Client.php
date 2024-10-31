@@ -25,12 +25,16 @@ class Client implements APIClient
     {
         $messageArray = $message->toArray();
 
-        if ($this->isValidE164($messageArray['to'])) {
-            $messageArray['to'] = $this->stripLeadingPlus($messageArray['to']);
-            return $this->getAPIResource()->create($messageArray);
-        };
+        if ($message->validatesE164()) {
+            if ($this->isValidE164($messageArray['to'])) {
+                $messageArray['to'] = $this->stripLeadingPlus($messageArray['to']);
+                return $this->getAPIResource()->create($messageArray);
+            } else {
+                throw new \InvalidArgumentException('Number provided is not a valid E164 number');
+            }
+        }
 
-        throw new \InvalidArgumentException('Number provided is not a valid E164 number');
+        return $this->getAPIResource()->create($messageArray);
     }
 
     public function updateRcsStatus(string $messageUuid, string $status): bool

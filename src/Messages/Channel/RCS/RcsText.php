@@ -16,6 +16,7 @@ class RcsText extends BaseMessage
 
     protected string $subType = BaseMessage::MESSAGES_SUBTYPE_TEXT;
     protected string $channel = 'rcs';
+    protected bool $validatesE164 = true;
 
     public function __construct(
         string $to,
@@ -25,6 +26,11 @@ class RcsText extends BaseMessage
         $this->to = $to;
         $this->from = $from;
         $this->text = $message;
+    }
+
+    public function validatesE164(): bool
+    {
+        return $this->validatesE164;
     }
 
     public function setTtl(?int $ttl): void

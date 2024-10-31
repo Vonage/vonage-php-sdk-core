@@ -13,6 +13,7 @@ class ViberText extends BaseMessage
 
     protected string $subType = BaseMessage::MESSAGES_SUBTYPE_TEXT;
     protected string $channel = 'viber_service';
+    protected bool $validatesE164 = true;
 
     public function __construct(
         string $to,
@@ -30,6 +31,11 @@ class ViberText extends BaseMessage
         $this->ttl = $ttl;
         $this->type = $type;
         $this->action = $viberActionObject;
+    }
+
+    public function validatesE164(): bool
+    {
+        return $this->validatesE164;
     }
 
     public function toArray(): array

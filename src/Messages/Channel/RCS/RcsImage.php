@@ -16,6 +16,7 @@ class RcsImage extends BaseMessage
     protected string $subType = BaseMessage::MESSAGES_SUBTYPE_IMAGE;
     protected string $channel = 'rcs';
     protected ImageObject $image;
+    protected bool $validatesE164 = true;
 
     public function __construct(
         string $to,
@@ -25,6 +26,11 @@ class RcsImage extends BaseMessage
         $this->to = $to;
         $this->from = $from;
         $this->image = $image;
+    }
+
+    public function validatesE164(): bool
+    {
+        return $this->validatesE164;
     }
 
     public function setTtl(?int $ttl): void
