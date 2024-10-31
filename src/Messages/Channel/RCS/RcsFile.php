@@ -16,6 +16,7 @@ class RcsFile extends BaseMessage
     protected string $subType = BaseMessage::MESSAGES_SUBTYPE_FILE;
     protected string $channel = 'rcs';
     protected FileObject $file;
+    protected bool $validatesE164 = true;
 
     public function __construct(
         string $to,
@@ -25,6 +26,11 @@ class RcsFile extends BaseMessage
         $this->to = $to;
         $this->from = $from;
         $this->file = $file;
+    }
+
+    public function validatesE164(): bool
+    {
+        return $this->validatesE164;
     }
 
     public function setTtl(?int $ttl): void

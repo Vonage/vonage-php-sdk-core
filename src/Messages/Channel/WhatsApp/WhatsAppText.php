@@ -13,6 +13,7 @@ class WhatsAppText extends BaseMessage
 
     protected string $subType = BaseMessage::MESSAGES_SUBTYPE_TEXT;
     protected string $channel = 'whatsapp';
+    protected bool $validatesE164 = true;
 
     public function __construct(
         string $to,
@@ -22,6 +23,11 @@ class WhatsAppText extends BaseMessage
         $this->to = $to;
         $this->from = $from;
         $this->text = $text;
+    }
+
+    public function validatesE164(): bool
+    {
+        return $this->validatesE164;
     }
 
     public function toArray(): array

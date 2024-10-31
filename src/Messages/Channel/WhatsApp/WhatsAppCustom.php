@@ -11,6 +11,7 @@ class WhatsAppCustom extends BaseMessage
 
     protected string $subType = BaseMessage::MESSAGES_SUBTYPE_CUSTOM;
     protected string $channel = 'whatsapp';
+    protected bool $validatesE164 = true;
 
     public function __construct(
         string $to,
@@ -19,6 +20,11 @@ class WhatsAppCustom extends BaseMessage
     ) {
         $this->to = $to;
         $this->from = $from;
+    }
+
+    public function validatesE164(): bool
+    {
+        return $this->validatesE164;
     }
 
     public function setCustom(array $custom): void

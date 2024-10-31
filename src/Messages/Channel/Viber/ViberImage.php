@@ -12,6 +12,7 @@ class ViberImage extends BaseMessage
 
     protected string $channel = 'viber_service';
     protected string $subType = BaseMessage::MESSAGES_SUBTYPE_IMAGE;
+    protected bool $validatesE164 = true;
 
     public function __construct(
         string $to,
@@ -28,6 +29,11 @@ class ViberImage extends BaseMessage
         $this->ttl = $ttl;
         $this->type = $type;
         $this->action = $viberActionObject;
+    }
+
+    public function validatesE164(): bool
+    {
+        return $this->validatesE164;
     }
 
     public function toArray(): array

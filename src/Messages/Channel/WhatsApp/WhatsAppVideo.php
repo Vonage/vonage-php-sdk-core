@@ -12,6 +12,7 @@ class WhatsAppVideo extends BaseMessage
 
     protected string $channel = 'whatsapp';
     protected string $subType = BaseMessage::MESSAGES_SUBTYPE_VIDEO;
+    protected bool $validatesE164 = true;
 
     public function __construct(
         string $to,
@@ -20,6 +21,11 @@ class WhatsAppVideo extends BaseMessage
     ) {
         $this->to = $to;
         $this->from = $from;
+    }
+
+    public function validatesE164(): bool
+    {
+        return $this->validatesE164;
     }
 
     public function toArray(): array

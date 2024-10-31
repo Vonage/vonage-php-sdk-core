@@ -21,6 +21,7 @@ class SMSText extends BaseMessage
     protected ?string $encodingType = null;
     protected ?string $contentId = null;
     protected ?string $entityId = null;
+    protected bool $validatesE164 = true;
 
     public function __construct(
         string $to,
@@ -30,6 +31,11 @@ class SMSText extends BaseMessage
         $this->to = $to;
         $this->from = $from;
         $this->text = $message;
+    }
+
+    public function validatesE164(): bool
+    {
+        return $this->validatesE164;
     }
 
     public function getEncodingType(): ?string
