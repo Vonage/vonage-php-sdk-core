@@ -6,7 +6,10 @@ use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 
 class AudioObject implements ArrayHydrateInterface
 {
-    public function __construct(private string $url, private string $caption = '')
+    /**
+     * Legacy to pass in a caption as this should never have been supported. Nothing will happen if you pass one in.
+     */
+    public function __construct(private string $url, private readonly ?string $caption = null)
     {
     }
 
@@ -14,26 +17,14 @@ class AudioObject implements ArrayHydrateInterface
     {
         $this->url = $data['url'];
 
-        if (isset($data['caption'])) {
-            $this->caption = $data['caption'];
-        }
-
         return $this;
     }
 
     public function toArray(): array
     {
-        $returnArray = [
+        return [
             'url' => $this->url
         ];
-
-        if ($this->caption) {
-            $returnArray[] = [
-                'caption' => $this->caption
-            ];
-        }
-
-        return $returnArray;
     }
 
     public function getUrl(): string
@@ -41,8 +32,17 @@ class AudioObject implements ArrayHydrateInterface
         return $this->url;
     }
 
+    /**
+     * @deprecated Unsupported
+     * @return string
+     */
     public function getCaption(): string
     {
+        trigger_error(
+            'Captions are not supported in this API, this will error at server level.',
+            E_USER_DEPRECATED
+        );
+
         return $this->caption;
     }
 }
