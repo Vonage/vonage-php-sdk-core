@@ -11,6 +11,7 @@ use Vonage\Messages\Channel\BaseMessage;
 class Client implements APIClient
 {
     public const RCS_STATUS_REVOKED = 'revoked';
+    public const WHATSAPP_STATUS_READ = 'read';
 
     public function __construct(protected APIResource $api)
     {
@@ -45,7 +46,15 @@ class Client implements APIClient
         } catch (\Exception $e) {
             return false;
         }
-        return false;
+    }
+
+    /**
+     * This method is just a wrapper for updateRcsStatus to make it semantically
+     * correct for other uses such as WhatsApp messages
+     */
+    public function markAsStatus(string $messageUuid, string $status): bool
+    {
+        return $this->updateRcsStatus($messageUuid, $status);
     }
 
     protected function stripLeadingPlus(string $phoneNumber): string

@@ -1235,6 +1235,30 @@ class ClientTest extends VonageTestCase
         $this->messageClient->updateRcsStatus('6ce72c29-e454-442a-94f2-47a1cadba45f', MessagesClient::RCS_STATUS_REVOKED);
     }
 
+    public function testCanUpdateWhatsAppStatus(): void
+    {
+        $geoSpecificClient = clone $this->messageClient;
+        $geoSpecificClient->getAPIResource()->setBaseUrl('https://api-us.nexmo.com/v1');
+
+        $this->vonageClient->send(Argument::that(function (Request $request) {
+            $this->assertEquals(
+                'Bearer ',
+                mb_substr($request->getHeaders()['Authorization'][0], 0, 7)
+            );
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals('https://api-us.nexmo.com/v1/messages/6ce72c29-e454-442a-94f2-47a1cadba45f',
+                $uriString);
+
+            $this->assertRequestJsonBodyContains('status', 'read', $request);
+            $this->assertEquals('PATCH', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('rcs-update-success'));
+
+        $geoSpecificClient->markAsStatus('6ce72c29-e454-442a-94f2-47a1cadba45f', MessagesClient::WHATSAPP_STATUS_READ);
+    }
+
     public function stickerTypeProvider(): array
     {
         return [
