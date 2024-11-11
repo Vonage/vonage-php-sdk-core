@@ -43,6 +43,7 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
 
     public const WEBHOOK_MESSAGE = 'moHttpUrl';
     public const WEBHOOK_VOICE_STATUS = 'voiceStatusCallback';
+    public const WEBHOOK_VOICE_STATUS_URL = 'voiceStatusCallbackUrl';
 
     public const ENDPOINT_SIP = 'sip';
     public const ENDPOINT_TEL = 'tel';
