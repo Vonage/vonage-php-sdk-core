@@ -809,6 +809,29 @@ class ClientTest extends VonageTestCase
         $this->assertInstanceOf(Member::class, $response);
     }
 
+    public function testWillDeleteMemberInConversation(): void
+    {
+        $this->vonageClient->send(Argument::that(function (Request $request) use (&$requestIndex) {
+            $this->assertEquals('DELETE', $request->getMethod());
+
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+
+            $this->assertEquals(
+                'https://api.nexmo.com/v1/conversations/CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a/members/' .
+                'MEM-63f61863-4a51-4f6b-86e1-46edebio0391',
+                $uriString
+            );
+
+            return true;
+        }))->willReturn($this->getResponse('delete-member', 204));
+
+        $this->conversationsClient->deleteMember(
+            'MEM-63f61863-4a51-4f6b-86e1-46edebio0391',
+            'CON-d66d47de-5bcb-4300-94f0-0c9d4b948e9a'
+        );
+    }
+
     public function testWillCreateEvent(): void
     {
         $messageText = new EventRequest(

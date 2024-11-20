@@ -152,6 +152,13 @@ class Client implements APIClient
         return $member;
     }
 
+    public function deleteMember(string $memberId, string $conversationId): bool
+    {
+        $this->getApiResource()->delete($conversationId . '/members/' . $memberId);
+
+        return true;
+    }
+
     public function createEvent(EventRequest $event): Event
     {
         $response = $this->getAPIResource()->create($event->toArray(), '/' . $event->getConversationId() . '/events');
