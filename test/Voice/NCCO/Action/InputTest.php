@@ -128,6 +128,76 @@ class InputTest extends VonageTestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Input NCCO action must have either speech or DTMF enabled');
 
-        (new Input())->toNCCOArray();
+        $input = new Input();
+        $array = $input->toNCCOArray();
+    }
+
+    public function testCanCreateInputSyncNCCOCorrectly(): void
+    {
+        $data = [
+            'action' => 'input',
+            'eventUrl' => ['https://test.domain/events'],
+            'dtmf' => [
+                'maxDigits' => 4,
+            ],
+            'mode' => 'synchronous'
+        ];
+
+        $action = Input::factory($data);
+        $ncco = $action->toNCCOArray();
+
+        $this->assertSame($data['dtmf']['maxDigits'], $action->getDtmfMaxDigits());
+        $this->assertSame($data['dtmf']['maxDigits'], $ncco['dtmf']->maxDigits);
+        $this->assertSame($data['mode'], $ncco['mode']);
+        $this->assertSame('POST', $action->getEventWebhook()->getMethod());
+        $this->assertSame($data['mode'], $action->getMode());
+    }
+
+    public function testCanCreateInputAsyncNCCOCorrectly(): void
+    {
+        $data = [
+            'action' => 'input',
+            'eventUrl' => ['https://test.domain/events'],
+            'mode' => 'asynchronous'
+        ];
+
+        $action = Input::factory($data);
+        $ncco = $action->toNCCOArray();
+
+        $this->assertSame($data['mode'], $ncco['mode']);
+        $this->assertSame('POST', $action->getEventWebhook()->getMethod());
+        $this->assertSame($data['mode'], $action->getMode());
+    }
+
+    public function testCannotCreateInputNCCOWithDtmfAndAsyncMode(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $data = [
+            'action' => 'input',
+            'eventUrl' => ['https://test.domain/events'],
+            'dtmf' => [
+                'maxDigits' => 4,
+            ],
+            'mode' => 'asynchronous'
+        ];
+
+        $action = Input::factory($data);
+    }
+
+    public function testErrorsOnInvalidInput(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $data = [
+            'action' => 'input',
+            'eventUrl' => ['https://test.domain/events'],
+            'dtmf' => [
+                'maxDigits' => 4,
+            ],
+            'mode' => 'syncronus'
+        ];
+
+        $action = Input::factory($data);
     }
 }
