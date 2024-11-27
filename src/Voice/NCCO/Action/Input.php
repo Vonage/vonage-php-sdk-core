@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Vonage\Voice\NCCO\Action;
 
+use phpDocumentor\Reflection\Types\This;
 use RuntimeException;
 use Vonage\Voice\Webhook;
 
@@ -14,6 +15,13 @@ use function is_null;
 
 class Input implements ActionInterface
 {
+    public const ASYNCHRONOUS_MODE = 'asynchronous';
+    public const SYNCHRONOUS_MODE = 'synchronous';
+
+    public array $allowedModes = [
+        self::SYNCHRONOUS_MODE,
+        self::ASYNCHRONOUS_MODE,
+    ];
     protected ?int $dtmfTimeout = null;
 
     protected ?int $dtmfMaxDigits = null;
@@ -25,6 +33,8 @@ class Input implements ActionInterface
     protected ?int $speechEndOnSilence = null;
 
     protected ?string $speechLanguage = null;
+
+    protected ?string $mode = null;
 
     /**
      * @var ?array<string>
@@ -68,6 +78,10 @@ class Input implements ActionInterface
                     filter_var($dtmf['submitOnHash'], FILTER_VALIDATE_BOOLEAN, ['flags' => FILTER_NULL_ON_FAILURE])
                 );
             }
+        }
+
+        if (array_key_exists('mode', $data)) {
+            $action->setMode($data['mode']);
         }
 
         if (array_key_exists('speech', $data)) {
@@ -136,7 +150,10 @@ class Input implements ActionInterface
             'action' => 'input',
         ];
 
-        if ($this->getEnableDtmf() === false && $this->getEnableSpeech() === false) {
+        if (
+            $this->getEnableDtmf() === false && $this->getEnableSpeech() === false && $this->getMode() !==
+            self::ASYNCHRONOUS_MODE
+        ) {
             throw new RuntimeException('Input NCCO action must have either speech or DTMF enabled');
         }
 
@@ -196,6 +213,10 @@ class Input implements ActionInterface
         if ($eventWebhook) {
             $data['eventUrl'] = [$eventWebhook->getUrl()];
             $data['eventMethod'] = $eventWebhook->getMethod();
+        }
+
+        if ($this->getMode()) {
+            $data['mode'] = $this->getMode();
         }
 
         return $data;
@@ -363,6 +384,27 @@ class Input implements ActionInterface
     {
         $this->enableDtmf = $enableDtmf;
 
+        return $this;
+    }
+
+    public function getMode(): ?string
+    {
+        return $this->mode;
+    }
+
+    public function setMode(?string $mode): self
+    {
+        if ($this->getEnableDtmf()) {
+            if ($mode == self::ASYNCHRONOUS_MODE) {
+                throw new \InvalidArgumentException('Cannot have DTMF input when using Asynchronous mode.');
+            }
+        }
+
+        if (!in_array($mode, $this->allowedModes)) {
+            throw new \InvalidArgumentException('Mode not a valid string');
+        }
+
+        $this->mode = $mode;
         return $this;
     }
 }
