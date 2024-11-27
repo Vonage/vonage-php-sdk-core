@@ -150,8 +150,10 @@ class Input implements ActionInterface
             'action' => 'input',
         ];
 
-        if ($this->getEnableDtmf() === false && $this->getEnableSpeech() === false && $this->getMode() !==
-            self::ASYNCHRONOUS_MODE) {
+        if (
+            $this->getEnableDtmf() === false && $this->getEnableSpeech() === false && $this->getMode() !==
+            self::ASYNCHRONOUS_MODE
+        ) {
             throw new RuntimeException('Input NCCO action must have either speech or DTMF enabled');
         }
 

@@ -152,6 +152,22 @@ class Client implements APIClient
         ]);
     }
 
+    public function subscribeToDtmfEventsById(string $id, array $payload): bool
+    {
+        $this->api->update($id . '/input/dtmf', [
+            'eventUrl' => $payload
+        ]);
+
+        return true;
+    }
+
+    public function unsubscribeToDtmfEventsById(string $id): bool
+    {
+        $this->api->delete($id . '/input/dtmf');
+
+        return true;
+    }
+
     /**
      * @throws ClientExceptionInterface
      * @throws \Vonage\Client\Exception\Exception

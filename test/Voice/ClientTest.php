@@ -570,6 +570,50 @@ class ClientTest extends VonageTestCase
         $this->assertEquals('Talk started', $response['message']);
     }
 
+    public function testCanSubscribeToDtmfEvents(): void
+    {
+        $id = '63f61863-4a51-4f6b-86e1-46edebcf9356';
+
+        $payload = [
+            'https://example.com/events'
+        ];
+
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id) {
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api.nexmo.com/v1/calls/63f61863-4a51-4f6b-86e1-46edebcf9356/input/dtmf',
+                $uriString
+            );
+            $this->assertEquals('PUT', $request->getMethod());
+
+            $this->assertRequestJsonBodyContains('eventUrl', ['https://example.com/events'], $request);
+
+            return true;
+        }))->willReturn($this->getResponse('dtmf-subscribed'));
+
+        $this->voiceClient->subscribeToDtmfEventsById($id, $payload);
+    }
+
+    public function testCanUnsubscribeToDtmfEvents(): void
+    {
+        $id = '63f61863-4a51-4f6b-86e1-46edebcf9356';
+
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id) {
+            $uri = $request->getUri();
+            $uriString = $uri->__toString();
+            $this->assertEquals(
+                'https://api.nexmo.com/v1/calls/63f61863-4a51-4f6b-86e1-46edebcf9356/input/dtmf',
+                $uriString
+            );
+            $this->assertEquals('DELETE', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('dtmf-unsubscribed'));
+
+        $this->voiceClient->unsubscribeToDtmfEventsById($id);
+    }
+
     /**
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Exception
