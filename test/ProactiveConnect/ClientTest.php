@@ -570,7 +570,7 @@ class ClientTest extends VonageTestCase
         fwrite($handle, (string) $response->getContents());
         fseek($handle, 0);
 
-        while (($row = fgetcsv($handle)) !== false) {
+        while (($row = fgetcsv($handle, 0, ',', '"', '\\')) !== false) {
             if (!$header) {
                 $header = $row;
             } else {

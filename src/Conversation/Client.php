@@ -30,8 +30,9 @@ class Client implements APIClient
         return $this->api;
     }
 
-    public function listConversations(ListConversationFilter $conversationFilter = null): IterableAPICollection
-    {
+    public function listConversations(
+        ?ListConversationFilter $conversationFilter = null
+    ): IterableAPICollection {
         if (!$conversationFilter) {
             $conversationFilter = new ListConversationFilter();
         }

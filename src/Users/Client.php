@@ -29,7 +29,7 @@ class Client implements ClientAwareInterface, APIClient
         return $this->api;
     }
 
-    public function listUsers(FilterInterface $filter = null): IterableAPICollection
+    public function listUsers(?FilterInterface $filter = null): IterableAPICollection
     {
         if (is_null($filter)) {
             $filter = new EmptyFilter();
