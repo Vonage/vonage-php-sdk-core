@@ -178,7 +178,7 @@ class Client implements ClientAwareInterface, APIClient
      * @throws ClientException\Request
      * @throws ClientException\Server
      */
-    public function check(Verification|array|string $verification, string $code, string $ip = null): Verification
+    public function check(Verification|array|string $verification, string $code, ?string $ip = null): Verification
     {
         if (is_array($verification)) {
             trigger_error(

@@ -82,7 +82,7 @@ class Client implements APIClient
         return false;
     }
 
-    public function listCustomTemplates(TemplateFilter $filter = null): IterableAPICollection
+    public function listCustomTemplates(?TemplateFilter $filter = null): IterableAPICollection
     {
         $collection = $this->api->search($filter, '/templates');
         $collection->setNaiveCount(true);
@@ -158,7 +158,7 @@ class Client implements APIClient
         return true;
     }
 
-    public function listTemplateFragments(string $templateId, TemplateFilter $filter = null): IterableAPICollection
+    public function listTemplateFragments(string $templateId, ?TemplateFilter $filter = null): IterableAPICollection
     {
         $api = clone $this->getAPIResource();
         $api->setCollectionName('template_fragments');

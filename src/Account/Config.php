@@ -19,9 +19,9 @@ class Config implements
     public function __construct(
         ?string $sms_callback_url = null,
         ?string $dr_callback_url = null,
-        int|string $max_outbound_request = null,
-        int|string $max_inbound_request = null,
-        int|string $max_calls_per_second = null
+        int|string|null $max_outbound_request = null,
+        int|string|null $max_inbound_request = null,
+        int|string|null $max_calls_per_second = null
     ) {
         if (!is_null($sms_callback_url)) {
             $this->data['sms_callback_url'] = $sms_callback_url;

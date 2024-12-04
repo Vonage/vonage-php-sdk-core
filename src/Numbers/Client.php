@@ -106,7 +106,7 @@ class Client implements APIClient
      * @throws ClientException\Request
      * @throws ClientException\Server
      */
-    public function searchAvailable(string $country, FilterInterface $options = null): array
+    public function searchAvailable(string $country, ?FilterInterface $options = null): array
     {
         if (is_null($options)) {
             $options = new AvailableNumbers([
@@ -134,7 +134,7 @@ class Client implements APIClient
      * @throws ClientException\Request
      * @throws ClientException\Server
      */
-    public function searchOwned($number = null, FilterInterface $options = null): array
+    public function searchOwned($number = null, ?FilterInterface $options = null): array
     {
         if ($number !== null) {
             if ($options !== null) {

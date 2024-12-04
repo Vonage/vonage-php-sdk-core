@@ -86,7 +86,7 @@ class Client implements APIClient
         return $this->api->partiallyUpdate($apiKey . '/subaccounts/' . $subaccountApiKey, $account->toArray());
     }
 
-    public function getCreditTransfers(string $apiKey, FilterInterface $filter = null): mixed
+    public function getCreditTransfers(string $apiKey, ?FilterInterface $filter = null): mixed
     {
         if (!$filter) {
             $filter = new EmptyFilter();
@@ -101,7 +101,7 @@ class Client implements APIClient
         return array_map(fn ($item) => $hydrator->hydrate($item), $transfers);
     }
 
-    public function getBalanceTransfers(string $apiKey, FilterInterface $filter = null): mixed
+    public function getBalanceTransfers(string $apiKey, ?FilterInterface $filter = null): mixed
     {
         if (!$filter) {
             $filter = new EmptyFilter();

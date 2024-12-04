@@ -182,7 +182,7 @@ class Client implements APIClient
         return $this->api->update($callId . '/talk', $payload);
     }
 
-    public function search(FilterInterface $filter = null): IterableAPICollection
+    public function search(?FilterInterface $filter = null): IterableAPICollection
     {
         $response = $this->api->search($filter);
         $response->setApiResource(clone $this->api);

@@ -39,7 +39,7 @@ class RequestPSD2 implements ArrayHydrateInterface
         protected string $number,
         protected string $payee,
         protected string $amount,
-        int $workflowId = null
+        ?int $workflowId = null
     ) {
         if ($workflowId) {
             $this->setWorkflowId($workflowId);
