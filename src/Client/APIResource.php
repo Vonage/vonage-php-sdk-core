@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 namespace Vonage\Client;
 
+use Composer\InstalledVersions;
+use GuzzleHttp\Client as GuzzleClient;
+use Http\Adapter\Guzzle6\Client;
 use Laminas\Diactoros\Request;
+use Laminas\Diactoros\Uri;
+use Psr\Http\Client\ClientInterface;
 use Psr\Log\LogLevel;
 use Vonage\Client\Credentials\Handler\BasicHandler;
 use Vonage\Entity\Filter\EmptyFilter;
@@ -21,9 +26,8 @@ use function json_decode;
 use function json_encode;
 use function http_build_query;
 
-class APIResource implements ClientAwareInterface
+class APIResource
 {
-    use ClientAwareTrait;
     use LoggerTrait;
 
     /**
@@ -61,6 +65,42 @@ class APIResource implements ClientAwareInterface
 
     protected ?ResponseInterface $lastResponse = null;
 
+    protected ?ClientInterface $client = null;
+    protected bool $debug;
+
+    public function __construct(?ClientInterface $client = null)
+    {
+        if (is_null($client)) {
+            // Since the user did not pass a client, try and make a client
+            // using the Guzzle 6 adapter or Guzzle 7 (depending on availability)
+            [$guzzleVersion] = explode('@', (string) InstalledVersions::getVersion('guzzlehttp/guzzle'), 1);
+            $guzzleVersion = (float) $guzzleVersion;
+
+            if ($guzzleVersion >= 6.0 && $guzzleVersion < 7) {
+                /** @noinspection CallableParameterUseCaseInTypeContextInspection */
+                /** @noinspection PhpUndefinedClassInspection */
+                $client = new Client();
+            }
+
+            if ($guzzleVersion >= 7.0 && $guzzleVersion < 8.0) {
+                $client = new GuzzleClient();
+            }
+
+            $this->setHttpClient($client);
+        }
+    }
+
+    public function getHttpClient(): ?ClientInterface
+    {
+        return $this->client;
+    }
+
+    public function setHttpClient(?ClientInterface $client): APIResource
+    {
+        $this->client = $client;
+        return $this;
+    }
+
     /**
      * Adds authentication to a request
      *
@@ -87,6 +127,75 @@ class APIResource implements ClientAwareInterface
         }
 
         return $this->getAuthHandlers()($request, $credentials);
+    }
+
+    /**
+     * Wraps the HTTP Client, creates a new PSR-7 request adding authentication, signatures, etc.
+     *
+     * @throws ClientExceptionInterface
+     */
+    public function send(RequestInterface $request): ResponseInterface
+    {
+        // Allow any part of the URI to be replaced with a simple search
+        if (isset($this->options['url'])) {
+            foreach ($this->options['url'] as $search => $replace) {
+                $uri = (string)$request->getUri();
+                $new = str_replace($search, $replace, $uri);
+
+                if ($uri !== $new) {
+                    $request = $request->withUri(new Uri($new));
+                }
+            }
+        }
+
+        // The user agent must be in the following format:
+        // LIBRARY-NAME/LIBRARY-VERSION LANGUAGE-NAME/LANGUAGE-VERSION [APP-NAME/APP-VERSION]
+        // See https://github.com/Vonage/client-library-specification/blob/master/SPECIFICATION.md#reporting
+        $userAgent = [];
+
+        // Library name
+        $userAgent[] = 'vonage-php/' . $this->getVersion();
+
+        // Language name
+        $userAgent[] = 'php/' . PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION;
+
+        // If we have an app set, add that to the UA
+        if (isset($this->options['app'])) {
+            $app = $this->options['app'];
+            $userAgent[] = $app['name'] . '/' . $app['version'];
+        }
+
+        // Set the header. Build by joining all the parts we have with a space
+        $request = $request->withHeader('User-Agent', implode(' ', $userAgent));
+        $response = $this->client->sendRequest($request);
+
+        if ($this->debug) {
+            $id = uniqid('', true);
+            $request->getBody()->rewind();
+            $response->getBody()->rewind();
+            $this->log(
+                LogLevel::DEBUG,
+                'Request ' . $id,
+                [
+                    'url' => $request->getUri()->__toString(),
+                    'headers' => $request->getHeaders(),
+                    'body' => explode("\n", $request->getBody()->__toString())
+                ]
+            );
+            $this->log(
+                LogLevel::DEBUG,
+                'Response ' . $id,
+                [
+                    'headers ' => $response->getHeaders(),
+                    'body' => explode("\n", $response->getBody()->__toString())
+                ]
+            );
+
+            $request->getBody()->rewind();
+            $response->getBody()->rewind();
+        }
+
+        return $response;
     }
 
     /**
