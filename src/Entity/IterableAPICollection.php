@@ -15,8 +15,6 @@ use Vonage\Client\APIResource;
 use Vonage\Client\ClientAwareInterface;
 use Vonage\Client\ClientAwareTrait;
 use Vonage\Client\Exception as ClientException;
-use Vonage\Client\Exception\Exception;
-use Vonage\Client\Exception\Server;
 use Vonage\Entity\Filter\EmptyFilter;
 use Vonage\Entity\Filter\FilterInterface;
 
@@ -32,10 +30,8 @@ use function md5;
 /**
  * Common code for iterating over a collection, and using the collection class to discover the API path.
  */
-class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
+class IterableAPICollection implements Iterator, Countable
 {
-    use ClientAwareTrait;
-
     protected APIResource $api;
 
     /**
@@ -171,11 +167,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
         return $this;
     }
 
-    /**
-     * @param $data
-     * @param $id deprecated
-     */
-    public function hydrateEntity($data, $id = null)
+    public function hydrateEntity($data)
     {
         if ($this->hydrator) {
             return $this->hydrator->hydrate($data);
@@ -540,7 +532,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
             $request = $this->getApiResource()->addAuth($request);
         }
 
-        $response = $this->client->send($request);
+        $response = $this->getApiResource()->getVonageConfig()->getHttpClient()->send($request);
 
         $this->getApiResource()->setLastRequest($request);
         $this->response = $response;

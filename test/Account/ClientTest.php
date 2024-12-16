@@ -24,34 +24,20 @@ class ClientTest extends VonageTestCase
     use Psr7AssertionTrait;
     use HTTPTestTrait;
 
-    protected $vonageClient;
+    protected AccountClient $accountClient;
 
-    /**
-     * @var AccountClient
-     */
-    protected $accountClient;
-
-    /**
-     * APIResource
-     */
-    protected $api;
+    protected APIResource $api;
 
     public function setUp(): void
     {
         $this->responsesDirectory = __DIR__ . '/responses';
 
-        $this->vonageClient = $this->prophesize(Client::class);
-        $this->vonageClient->getRestUrl()->willReturn('https://rest.nexmo.com');
-        $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
-        $this->vonageClient->getCredentials()->willReturn(
-            new Client\Credentials\Container(new Client\Credentials\Basic('abc', 'def'))
-        );
-
-        $this->api = new APIResource();
+        $this->api = new APIResource(new Client\VonageConfig());
         $this->api->setBaseUrl('https://rest.nexmo.com')
             ->setIsHAL(false)
             ->setAuthHandlers(new Client\Credentials\Handler\BasicQueryHandler())
-            ->setBaseUri('/account');
+            ->setBaseUri('/account')
+            ->setCredentials(new Client\Credentials\Container(new Client\Credentials\Basic('abc', 'def')));
 
         $this->api->setClient($this->vonageClient->reveal());
         $this->accountClient = new AccountClient($this->api);

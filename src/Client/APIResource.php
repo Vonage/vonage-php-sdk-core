@@ -11,6 +11,7 @@ use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Uri;
 use Psr\Http\Client\ClientInterface;
 use Psr\Log\LogLevel;
+use Vonage\Client\Credentials\CredentialsInterface;
 use Vonage\Client\Credentials\Handler\BasicHandler;
 use Vonage\Entity\Filter\EmptyFilter;
 use Psr\Http\Message\RequestInterface;
@@ -65,12 +66,13 @@ class APIResource
 
     protected ?ResponseInterface $lastResponse = null;
 
-    protected ?ClientInterface $client = null;
-    protected bool $debug;
+    protected VonageConfig $vonageConfig;
 
-    public function __construct(?ClientInterface $client = null)
+    protected CredentialsInterface $credentials;
+
+    public function __construct(VonageConfig $vonageConfig)
     {
-        if (is_null($client)) {
+        if (is_null($vonageConfig->getHttpClient())) {
             // Since the user did not pass a client, try and make a client
             // using the Guzzle 6 adapter or Guzzle 7 (depending on availability)
             [$guzzleVersion] = explode('@', (string) InstalledVersions::getVersion('guzzlehttp/guzzle'), 1);
@@ -86,18 +88,29 @@ class APIResource
                 $client = new GuzzleClient();
             }
 
-            $this->setHttpClient($client);
+            $vonageConfig->setHttpClient($client);
         }
     }
 
-    public function getHttpClient(): ?ClientInterface
+    public function getVonageConfig(): VonageConfig
     {
-        return $this->client;
+        return $this->vonageConfig;
     }
 
-    public function setHttpClient(?ClientInterface $client): APIResource
+    public function setVonageConfig(VonageConfig $vonageConfig): APIResource
     {
-        $this->client = $client;
+        $this->vonageConfig = $vonageConfig;
+        return $this;
+    }
+
+    public function getCredentials(): CredentialsInterface
+    {
+        return $this->credentials;
+    }
+
+    public function setCredentials(CredentialsInterface $credentials): APIResource
+    {
+        $this->credentials = $credentials;
         return $this;
     }
 
@@ -107,7 +120,7 @@ class APIResource
      */
     public function addAuth(RequestInterface $request): RequestInterface
     {
-        $credentials = $this->getClient()->getCredentials();
+        $credentials = $this->getCredentials();
 
         if (is_array($this->getAuthHandlers())) {
             foreach ($this->getAuthHandlers() as $handler) {
@@ -167,13 +180,14 @@ class APIResource
 
         // Set the header. Build by joining all the parts we have with a space
         $request = $request->withHeader('User-Agent', implode(' ', $userAgent));
-        $response = $this->client->sendRequest($request);
+        $response = $this->getVonageConfig()->getHttpClient()->sendRequest($request);
 
-        if ($this->debug) {
+        if ($this->getVonageConfig()->isDebugMode()) {
             $id = uniqid('', true);
             $request->getBody()->rewind();
             $response->getBody()->rewind();
-            $this->log(
+
+            $this->vonageConfig->getLogger()->log(
                 LogLevel::DEBUG,
                 'Request ' . $id,
                 [
@@ -182,7 +196,8 @@ class APIResource
                     'body' => explode("\n", $request->getBody()->__toString())
                 ]
             );
-            $this->log(
+
+            $this->vonageConfig->getLogger()->log(
                 LogLevel::DEBUG,
                 'Response ' . $id,
                 [
@@ -223,7 +238,7 @@ class APIResource
 
         $this->lastRequest = $request;
 
-        $response = $this->getClient()->send($request);
+        $response = $this->getVonageConfig()->getHttpClient()->send($request);
         $status = (int)$response->getStatusCode();
 
         $this->setLastResponse($response);
@@ -269,7 +284,7 @@ class APIResource
             $request = $this->addAuth($request);
         }
 
-        $response = $this->getClient()->send($request);
+        $response = $this->getVonageConfig()->getHttpClient()->send($request);
         $status = (int)$response->getStatusCode();
 
         $this->lastRequest = $request;
@@ -327,7 +342,7 @@ class APIResource
             $request = $this->addAuth($request);
         }
 
-        $response = $this->getClient()->send($request);
+        $response = $this->getVonageConfig()->getHttpClient()->send($request);
         $status = (int)$response->getStatusCode();
 
         $this->lastRequest = $request;
@@ -347,11 +362,11 @@ class APIResource
         return json_decode($response->getBody()->getContents(), true);
     }
 
-    public function getAuthHandlers()
+    public function getAuthHandlers(): BasicHandler|array
     {
         // If we have not set a handler, default to Basic and issue warning.
         if (!$this->authHandlers) {
-            $this->log(
+            $this->getVonageConfig()->getLogger()->log(
                 LogLevel::WARNING,
                 'Warning: no authorisation handler set for this Client. Defaulting to Basic which might not be
                 the correct authorisation for this API call'
@@ -365,8 +380,8 @@ class APIResource
 
     public function getBaseUrl(): ?string
     {
-        if (!$this->baseUrl && $this->client) {
-            $this->baseUrl = $this->client->getApiUrl();
+        if ($this->getVonageConfig()->getBaseUrl()) {
+            return $this->getVonageConfig()->getBaseUrl();
         }
 
         return $this->baseUrl;
@@ -455,7 +470,6 @@ class APIResource
         $collection
             ->setApiResource($api)
             ->setFilter($filter);
-        $collection->setClient($this->client);
 
         return $collection;
     }
@@ -620,5 +634,10 @@ class APIResource
         $this->errorsOn200 = $value;
 
         return $this;
+    }
+
+    protected function getVersion(): string
+    {
+        return InstalledVersions::getVersion('vonage/client-core');
     }
 }

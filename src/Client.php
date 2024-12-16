@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Vonage;
 
 use Composer\InstalledVersions;
+use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Client\ClientInterface;
-use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Vonage\Account\ClientFactory;
 use Vonage\Application\ClientFactory as ApplicationClientFactory;
@@ -20,6 +20,7 @@ use Vonage\Client\Credentials\Keypair;
 use Vonage\Client\Credentials\SignatureSecret;
 use Vonage\Client\Factory\FactoryInterface;
 use Vonage\Client\Factory\MapFactory;
+use Vonage\Client\VonageConfig;
 use Vonage\Conversion\ClientFactory as ConversionClientFactory;
 use Vonage\Insights\ClientFactory as InsightsClientFactory;
 use Vonage\Meetings\ClientFactory as MeetingsClientFactory;
@@ -66,14 +67,9 @@ use function set_error_handler;
  * @method Verify2\Client  verify2()
  * @method Voice\Client voice()
  * @method Vonage\Video\Client video()
- *
- * @property string restUrl
- * @property string apiUrl
  */
-class Client implements LoggerAwareInterface
+class Client
 {
-    use LoggerTrait;
-
     protected CredentialsInterface $credentials;
 
     protected ClientInterface $client;
@@ -81,35 +77,21 @@ class Client implements LoggerAwareInterface
     protected mixed $debug = false;
 
     protected ContainerInterface $factory;
+    protected VonageConfig $vonageConfig;
 
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
-
-    protected array $options = ['show_deprecations' => false, 'debug' => false];
+    public const BASE_API = 'https://api.vonage.com/';
 
     /**
      * Create a new API client using the provided credentials.
      */
     public function __construct(
         CredentialsInterface $credentials,
-        ?VonageConfig $options = null,
-        ?ClientInterface $client = null
+        ?VonageConfig        $vonageConfig = null,
     ) {
-        if (is_null($client)) {
-            // Since the user did not pass a client, try and make a client
-            // using the Guzzle 6 adapter or Guzzle 7 (depending on availability)
-            [$guzzleVersion] = explode('@', (string) InstalledVersions::getVersion('guzzlehttp/guzzle'), 1);
-            $guzzleVersion = (float) $guzzleVersion;
-
-            if ($guzzleVersion >= 6.0 && $guzzleVersion < 7) {
-                $client = new \Http\Adapter\Guzzle6\Client();
-            }
-
-            if ($guzzleVersion >= 7.0 && $guzzleVersion < 8.0) {
-                $client = new \GuzzleHttp\Client();
-            }
+        if (is_null($vonageConfig)) {
+            $this->vonageConfig = new VonageConfig();
+        } else {
+            $this->vonageConfig = $vonageConfig;
         }
 
         if (
@@ -124,11 +106,9 @@ class Client implements LoggerAwareInterface
 
         $this->credentials = $credentials;
 
-        $this->options = array_merge($this->options, $options);
-
         // If they've provided an app name, validate it
-        if (isset($options['app'])) {
-            $this->validateAppOptions($options['app']);
+        if (isset($vonageConfig['app'])) {
+            $this->validateAppOptions($vonageConfig['app']);
         }
 
         $services = [
@@ -154,7 +134,9 @@ class Client implements LoggerAwareInterface
 
             // Additional utility classes
             APIResource::class => APIResource::class,
-            Client::class => fn () => $this
+            Client::class => fn () => $this,
+            VonageConfig::class => fn () => $this->vonageConfig,
+            'credentials' => fn () => $this->credentials,
         ];
 
         if (class_exists('Vonage\Video\ClientFactory')) {
@@ -173,43 +155,13 @@ class Client implements LoggerAwareInterface
         );
 
         // Disable throwing E_USER_DEPRECATED notices by default, the user can turn it on during development
-        if (array_key_exists('show_deprecations', $this->options) && ($this->options['show_deprecations'] == true)) {
+        if ($this->vonageConfig->getShowDeprecations()) {
             set_error_handler(
-                static fn (int $errno, string $errstr, string $errfile = null, int $errline = null, array $errorcontext = null) => true,
+                static fn (int $errno, string $errstr, ?string $errfile = null, ?int $errline = null, ?array
+                $errorcontext = null) => true,
                 E_USER_DEPRECATED
             );
         }
-    }
-
-    public function getRestUrl(): string
-    {
-        return $this->restUrl;
-    }
-
-    public function getApiUrl(): string
-    {
-        return $this->apiUrl;
-    }
-
-    /**
-     * Set the Http Client to used to make API requests.
-     *
-     * This allows the default http client to be swapped out for a HTTPlug compatible
-     * replacement.
-     */
-    public function setHttpClient(ClientInterface $client): self
-    {
-        $this->client = $client;
-
-        return $this;
-    }
-
-    /**
-     * Get the Http Client used to make API requests.
-     */
-    public function getHttpClient(): ClientInterface
-    {
-        return $this->client;
     }
 
     /**
@@ -269,20 +221,6 @@ class Client implements LoggerAwareInterface
         }
 
         return $this->factory->get($name);
-    }
-
-    protected function getVersion(): string
-    {
-        return InstalledVersions::getVersion('vonage/client-core');
-    }
-
-    public function getLogger(): ?LoggerInterface
-    {
-        if (!$this->logger && $this->getFactory()->has(LoggerInterface::class)) {
-            $this->setLogger($this->getFactory()->get(LoggerInterface::class));
-        }
-
-        return $this->logger;
     }
 
     public function getCredentials(): CredentialsInterface
