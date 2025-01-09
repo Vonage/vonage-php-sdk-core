@@ -51,22 +51,23 @@ class ClientTest extends VonageTestCase
             ->setIsHAL(false)
             ->setBaseUri('/verify')
             ->setErrorsOn200(true)
-            ->setAuthHandlers(new Client\Credentials\Handler\TokenBodyHandler())
+            ->setAuthHandlers(new Client\Credentials\Handler\BasicHandler())
             ->setClient($this->vonageClient->reveal())
             ->setExceptionErrorHandler(new ExceptionErrorHandler());
 
         $this->client = new VerifyClient($api);
     }
 
-    public function testUsesCorrectAuthInBody(): void
+    public function testUsesCorrectAuth(): void
     {
         $this->vonageClient->send(
             Argument::that(
                 function (RequestInterface $request) {
-                    $this->assertRequestJsonBodyContains('api_key', 'abc', $request);
-                    $this->assertRequestJsonBodyContains('api_secret', 'def', $request);
                     $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/psd2/json', $request);
-
+                    $this->assertEquals(
+                        'Basic ',
+                        mb_substr($request->getHeaders()['Authorization'][0], 0, 6)
+                    );
                     return true;
                 }
             )
