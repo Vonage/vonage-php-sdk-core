@@ -6,7 +6,6 @@ namespace Vonage\Verify;
 
 use Psr\Container\ContainerInterface;
 use Vonage\Client\APIResource;
-use Vonage\Client\Credentials\Handler\BasicHandler;
 use Vonage\Client\Credentials\Handler\TokenBodyHandler;
 
 class ClientFactory
@@ -19,7 +18,7 @@ class ClientFactory
             ->setIsHAL(false)
             ->setBaseUri('/verify')
             ->setErrorsOn200(true)
-            ->setAuthHandlers(new BasicHandler())
+            ->setAuthHandlers(new TokenBodyHandler())
             ->setExceptionErrorHandler(new ExceptionErrorHandler());
 
         return new Client($api);
