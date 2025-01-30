@@ -97,7 +97,7 @@ class Client implements ClientAwareInterface, APIClient
 
         if ($status === 402) {
             $e = new ClientException\Request('This endpoint may need activating on your account. ' .
-                '"Please email support@Vonage.com for more information', $status);
+                'Please email support@Vonage.com for more information', $status);
         } elseif ($status >= 400 && $status < 500) {
             $e = new ClientException\Request($body['error_title'], $status);
         } elseif ($status >= 500 && $status < 600) {
