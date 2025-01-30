@@ -544,6 +544,17 @@ class Client implements LoggerAwareInterface
         return $this->factory->get($name);
     }
 
+    public function getDebug(): mixed
+    {
+        return $this->debug;
+    }
+
+    public function setDebug(mixed $debug): Client
+    {
+        $this->debug = $debug;
+        return $this;
+    }
+
     /**
      * @deprecated Use the Verify Client, this shouldn't be here and will be removed.
      */

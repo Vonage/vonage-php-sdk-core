@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace VonageTest\Account;
+namespace VonageTest\Application;
 
 use PHPUnit\Framework\TestCase;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Client\Factory\MapFactory;
-use Vonage\Account\ClientFactory;
+use Vonage\Application\ClientFactory;
 
 class ClientFactoryTest extends TestCase
 {
@@ -24,10 +24,10 @@ class ClientFactoryTest extends TestCase
         $factory = new ClientFactory();
 
         $result = $factory($container);
-        $this->assertInstanceOf(\Vonage\Account\Client::class, $result);
-        $this->assertEquals('/account', $result->getAPIResource()->getBaseUri());
+        $this->assertInstanceOf(\Vonage\Application\Client::class, $result);
+        $this->assertEquals('/v2/applications', $result->getAPIResource()->getBaseUri());
         $this->assertInstanceOf(Client\Credentials\Handler\BasicHandler::class, $result->getAPIResource()
             ->getAuthHandlers()[0]);
-        $this->assertFalse($result->getAPIResource()->isHAL());
+        $this->assertEquals('applications', $result->getAPIResource()->getCollectionName());
     }
 }

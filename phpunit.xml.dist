@@ -15,6 +15,9 @@
     <include>
       <directory suffix=".php">src</directory>
     </include>
+    <report>
+      <html outputDirectory="coverage"/>
+    </report>
   </coverage>
   <testsuites>
     <testsuite name="default">
@@ -23,8 +26,14 @@
     <testsuite name="verify">
       <directory>test/Verify</directory>
     </testsuite>
+    <testsuite name="account">
+      <directory>test/Account</directory>
+    </testsuite>
     <testsuite name="application">
       <directory>test/Application</directory>
+    </testsuite>
+    <testsuite name="conversion">
+      <directory>test/Conversion</directory>
     </testsuite>
     <testsuite name="verify2">
       <directory>test/Verify2</directory>
@@ -73,6 +82,9 @@
     </testsuite>
     <testsuite name="users">
       <directory>test/Users</directory>
+    </testsuite>
+    <testsuite name="insights">
+      <directory>test/Insights</directory>
     </testsuite>
   </testsuites>
   <php>

@@ -137,4 +137,15 @@ class ClientTest extends VonageTestCase
 
         $this->conversionClient->voice('ABC123', true);
     }
+
+    public function testExceptionHandler(): void
+    {
+        $this->expectException(Client\Exception\Request::class);
+
+        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+            return true;
+        }))->willReturn($this->getResponse('error', 402));
+
+        $this->conversionClient->sms('ABC123', true, '123456');
+    }
 }
