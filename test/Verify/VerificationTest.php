@@ -11,7 +11,7 @@ use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
 use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Client\Exception\Request as RequestException;
-use Vonage\Client\Exception\Server as ServerException;
+use Vonage\Client\Exception\Request as ServerException;
 use Vonage\Verify\Check;
 use Vonage\Verify\Client as VerifyClient;
 use Vonage\Verify\Verification;

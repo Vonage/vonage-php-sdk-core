@@ -9,7 +9,7 @@ use Laminas\Diactoros\Response\JsonResponse;
 use Laminas\Diactoros\ResponseFactory;
 use VonageTest\VonageTestCase;
 use Vonage\Client\Exception\Request as RequestException;
-use Vonage\Client\Exception\Server as ServerException;
+use Vonage\Client\Exception\Request as ServerException;
 use Vonage\Client\Exception\ThrottleException;
 use Vonage\SMS\ExceptionErrorHandler;
 

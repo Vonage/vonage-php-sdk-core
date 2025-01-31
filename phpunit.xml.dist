@@ -26,6 +26,9 @@
     <testsuite name="verify">
       <directory>test/Verify</directory>
     </testsuite>
+    <testsuite name="handlers">
+      <directory>test/Client/Credentials/Handler</directory>
+    </testsuite>
     <testsuite name="account">
       <directory>test/Account</directory>
     </testsuite>

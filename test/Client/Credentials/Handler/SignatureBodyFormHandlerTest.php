@@ -27,14 +27,12 @@ class SignatureBodyFormHandlerTest extends VonageTestCase
 
         $handler = new SignatureBodyFormHandler();
         $authRequest = $handler($request, $credentials);
-
-        // Check the modified body
         $authRequest->getBody()->rewind();
         $newBody = $authRequest->getBody()->getContents();
 
         parse_str($newBody, $params);
 
         $this->assertArrayHasKey('api_key', $params);
-        $this->assertArrayHasKey('sig', $params); // assuming Signature adds 'sig'
+        $this->assertArrayHasKey('sig', $params);
     }
 }
