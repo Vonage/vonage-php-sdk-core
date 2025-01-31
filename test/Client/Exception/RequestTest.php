@@ -30,4 +30,24 @@ class RequestTest extends TestCase
 
         $this->assertInstanceOf(\Exception::class, $exception);
     }
+
+    public function testSetAndGetRequestId(): void
+    {
+        $exception = new Request('Test exception');
+        $requestId = '12345';
+
+        $exception->setRequestId($requestId);
+
+        $this->assertSame($requestId, $exception->getRequestId());
+    }
+
+    public function testSetAndGetNetworkId(): void
+    {
+        $exception = new Request('Test exception');
+        $networkId = '67890';
+
+        $exception->setNetworkId($networkId);
+
+        $this->assertSame($networkId, $exception->getNetworkId());
+    }
 }
