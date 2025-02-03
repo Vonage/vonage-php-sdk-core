@@ -35,8 +35,8 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: json, mbstring
-          coverage: pcov
+          extensions: json, mbstring, xdebug
+          coverage: xdebug
         env:
           COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -57,11 +57,21 @@ jobs:
       - name: Install dependencies
         run: composer update --prefer-dist --no-interaction
 
-      - name: Analyze & test
-        run: composer test -- -v --coverage-clover=coverage.xml
+      - name: PHPUnit tests with coverage
+        run: vendor/bin/phpunit --coverage-text --coverage-clover=coverage.xml
 
       - name: Run PHPStan
         run: ./vendor/bin/phpstan
 
       - name: Run codecov
         uses: codecov/codecov-action@v1
+
+      - name: Check code coverage threshold
+        run: |
+          min_coverage=80
+          coverage=$(php -r "echo simplexml_load_file('coverage.xml')->project->metrics['elements'] > 0 ? (simplexml_load_file('coverage.xml')->project->metrics['coveredelements'] / simplexml_load_file('coverage.xml')->project->metrics['elements'] * 100) : 0;")
+          echo "Coverage: $coverage%"
+          if (( $(echo "$coverage < $min_coverage" | bc -l) )); then
+            echo "Code coverage is below $min_coverage%. Failing the build."
+            exit 1
+          fi
