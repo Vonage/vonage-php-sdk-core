@@ -35,8 +35,8 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: json, mbstring
-          coverage: pcov
+          extensions: json, mbstring, xdebug
+          coverage: xdebug
         env:
           COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -57,11 +57,35 @@ jobs:
       - name: Install dependencies
         run: composer update --prefer-dist --no-interaction
 
-      - name: Analyze & test
-        run: composer test -- -v --coverage-clover=coverage.xml
+      - name: Run Tests
+        run: vendor/bin/phpunit
 
       - name: Run PHPStan
         run: ./vendor/bin/phpstan
 
-      - name: Run codecov
-        uses: codecov/codecov-action@v1
+  phpunit-coverage-check:
+    name: PHPUnit Coverage Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install PHP 8.4
+        uses: shivammathur/setup-php@master
+        with:
+          php-version: 8.4
+          extensions: mbstring
+          coverage: xdebug, pcov
+          tools: composer:v2
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: Run tests
+        run: ./vendor/bin/phpunit --coverage-clover clover.xml
+
+      - name: Coverage Check
+        uses: docker://ghcr.io/ericsizemore/phpunit-coverage-check-action
+        with:
+          clover_file: 'clover.xml'
+          threshold: 80

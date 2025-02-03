@@ -11,14 +11,14 @@
   convertWarningsToExceptions="true"
   stopOnFailure="false"
 >
-  <coverage processUncoveredFiles="true">
-    <include>
-      <directory suffix=".php">src</directory>
-    </include>
-    <report>
-      <html outputDirectory="coverage"/>
-    </report>
-  </coverage>
+<!--  <coverage processUncoveredFiles="true">-->
+<!--    <include>-->
+<!--      <directory suffix=".php">src</directory>-->
+<!--    </include>-->
+<!--    <report>-->
+<!--      <html outputDirectory="coverage"/>-->
+<!--    </report>-->
+<!--  </coverage>-->
   <testsuites>
     <testsuite name="default">
       <directory>test</directory>
