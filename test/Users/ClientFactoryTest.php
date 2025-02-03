@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace VonageTest\Account;
+namespace VonageTest\Users;
 
 use PHPUnit\Framework\TestCase;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Client\Factory\MapFactory;
-use Vonage\Account\ClientFactory;
+use Vonage\Users\ClientFactory;
 
 class ClientFactoryTest extends TestCase
 {
     public function testInvokeCreatesClientWithConfiguredApiResource(): void
     {
         $mockServices = [
-            'account' => ClientFactory::class,
+            'users' => ClientFactory::class,
             APIResource::class => APIResource::class,
         ];
 
@@ -24,10 +24,9 @@ class ClientFactoryTest extends TestCase
         $factory = new ClientFactory();
 
         $result = $factory($container);
-        $this->assertInstanceOf(\Vonage\Account\Client::class, $result);
-        $this->assertEquals('/account', $result->getAPIResource()->getBaseUri());
-        $this->assertInstanceOf(Client\Credentials\Handler\BasicHandler::class, $result->getAPIResource()
+        $this->assertInstanceOf(\Vonage\Users\Client::class, $result);
+        $this->assertInstanceOf(Client\Credentials\Handler\KeypairHandler::class, $result->getAPIResource()
             ->getAuthHandlers()[0]);
-        $this->assertFalse($result->getAPIResource()->isHAL());
+        $this->assertEquals('users', $result->getAPIResource()->getCollectionName());
     }
 }

@@ -2,20 +2,21 @@
 
 declare(strict_types=1);
 
-namespace VonageTest\Account;
+namespace VonageTest\Verify;
 
 use PHPUnit\Framework\TestCase;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Client\Factory\MapFactory;
-use Vonage\Account\ClientFactory;
+use Vonage\Verify\ClientFactory;
+use Vonage\Verify\ExceptionErrorHandler;
 
 class ClientFactoryTest extends TestCase
 {
     public function testInvokeCreatesClientWithConfiguredApiResource(): void
     {
         $mockServices = [
-            'account' => ClientFactory::class,
+            'verify' => ClientFactory::class,
             APIResource::class => APIResource::class,
         ];
 
@@ -24,10 +25,11 @@ class ClientFactoryTest extends TestCase
         $factory = new ClientFactory();
 
         $result = $factory($container);
-        $this->assertInstanceOf(\Vonage\Account\Client::class, $result);
-        $this->assertEquals('/account', $result->getAPIResource()->getBaseUri());
-        $this->assertInstanceOf(Client\Credentials\Handler\BasicHandler::class, $result->getAPIResource()
+        $this->assertInstanceOf(\Vonage\Verify\Client::class, $result);
+        $this->assertInstanceOf(Client\Credentials\Handler\TokenBodyHandler::class, $result->getAPIResource()
             ->getAuthHandlers()[0]);
-        $this->assertFalse($result->getAPIResource()->isHAL());
+        $this->assertEquals('/verify', $result->getAPIResource()->getBaseUri());
+        $this->assertTrue($result->getApiResource()->errorsOn200());
+        $this->assertInstanceOf(ExceptionErrorHandler::class, $result->getAPIResource()->getExceptionErrorHandler());
     }
 }

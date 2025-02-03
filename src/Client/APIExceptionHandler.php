@@ -25,6 +25,11 @@ class APIExceptionHandler
         $this->rfc7807Format = $format;
     }
 
+    public function getRfc7807Format(): string
+    {
+        return $this->rfc7807Format;
+    }
+
     /**
      * @throws Exception\Exception
      *

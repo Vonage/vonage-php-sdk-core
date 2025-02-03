@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace VonageTest\Conversion;
 
+use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\MockObject\MockObject;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
+use ReflectionClass;
 use Vonage\Client;
 use Vonage\Client as VonageClient;
 use Vonage\Client\APIResource;
@@ -136,5 +138,42 @@ class ClientTest extends VonageTestCase
         }))->willReturn($this->getResponse());
 
         $this->conversionClient->voice('ABC123', true);
+    }
+
+    public function testExceptionHandler(): void
+    {
+        $reflection = new ReflectionClass($this->conversionClient);
+        $method = $reflection->getMethod('getException');
+        $method->setAccessible(true);
+
+        $response = new Response(402);
+
+        $return = $method->invoke($this->conversionClient, $response);
+        $this->assertEquals('This endpoint may need activating on your account. Please email support@Vonage.com for more information', $return->getMessage());
+        $this->assertInstanceOf(Client\Exception\Request::class, $return);
+
+        $serverResponse = new Response(500, [], json_encode([
+            'error_title' => 'Vonage Server Error',
+        ]));
+
+        $return2 = $method->invoke($this->conversionClient, $serverResponse);
+        $this->assertEquals('Vonage Server Error', $return2->getMessage());
+        $this->assertInstanceOf(Client\Exception\Server::class, $return2);
+
+        $unexpected = new Response(201, [], json_encode([
+            'error_title' => 'this is not an error',
+        ]));
+
+        $return3 = $method->invoke($this->conversionClient, $unexpected);
+        $this->assertEquals('Unexpected HTTP Status Code (201)', $return3->getMessage());
+        $this->assertInstanceOf(Client\Exception\Exception::class, $return3);
+
+        $notFound = new Response(404, [], json_encode([
+            'error_title' => 'Not Found',
+        ]));
+
+        $return4 = $method->invoke($this->conversionClient, $notFound);
+        $this->assertEquals('Not Found', $return4->getMessage());
+        $this->assertInstanceOf(Client\Exception\Request::class, $return4);
     }
 }

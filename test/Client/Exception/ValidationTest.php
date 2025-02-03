@@ -6,8 +6,9 @@ namespace VonageTest\Client\Exception;
 
 use PHPUnit\Framework\TestCase;
 use Vonage\Client\Exception\Exception;
+use Vonage\Client\Exception\Validation;
 
-class Validation extends TestCase
+class ValidationTest extends TestCase
 {
     public function testValidationException()
     {
@@ -20,17 +21,9 @@ class Validation extends TestCase
         ];
 
         $exception = new Validation($message, $code, $previous, $errors);
-
-        // Assert the exception message
         $this->assertEquals($message, $exception->getMessage());
-
-        // Assert the exception code
         $this->assertEquals($code, $exception->getCode());
-
-        // Assert the previous exception
         $this->assertSame($previous, $exception->getPrevious());
-
-        // Assert the validation errors
         $this->assertEquals($errors, $exception->getValidationErrors());
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Vonage\Client\Credentials\Handler;
 
+use GuzzleHttp\Psr7\Utils;
 use Psr\Http\Message\RequestInterface;
 use Vonage\Client\Credentials\CredentialsInterface;
 use Vonage\Client\Credentials\SignatureSecret;
@@ -17,6 +18,7 @@ class SignatureBodyFormHandler extends AbstractHandler
         $body = $request->getBody();
         $body->rewind();
         $content = $body->getContents();
+
         $params = [];
         parse_str($content, $params);
         $params['api_key'] = $credentialsArray['api_key'];
@@ -28,9 +30,8 @@ class SignatureBodyFormHandler extends AbstractHandler
         );
 
         $params = $signature->getSignedParams();
-        $body->rewind();
-        $body->write(http_build_query($params, '', '&'));
 
-        return $request;
+        $newBody = Utils::streamFor(http_build_query($params, '', '&'));
+        return $request->withBody($newBody);
     }
 }
