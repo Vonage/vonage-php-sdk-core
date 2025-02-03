@@ -61,12 +61,8 @@ jobs:
       - name: Run PHPStan
         run: ./vendor/bin/phpstan
 
-      - name: Check code coverage threshold
-        run: |
-          min_coverage=80
-          coverage=$(php -r "echo simplexml_load_file('coverage.xml')->project->metrics['elements'] > 0 ? (simplexml_load_file('coverage.xml')->project->metrics['coveredelements'] / simplexml_load_file('coverage.xml')->project->metrics['elements'] * 100) : 0;")
-          echo "Coverage: $coverage%"
-          if (( $(echo "$coverage < $min_coverage" | bc -l) )); then
-            echo "Code coverage is below $min_coverage%. Failing the build."
-            exit 1
-          fi
+      - name: Coverage Check
+        uses: ericsizemore/phpunit-coverage-check-action@1.0.0
+        with:
+          clover_file: 'coverage.xml'
+          threshold: 80
