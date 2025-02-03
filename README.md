@@ -4,7 +4,6 @@ Client Library for PHP
 [![Build Status](https://github.com/vonage/vonage-php-sdk-core/workflows/build/badge.svg)](https://github.com/Vonage/vonage-php-sdk-core/actions?query=workflow%3Abuild)
 [![Latest Stable Version](https://poser.pugx.org/vonage/client/v/stable)](https://packagist.org/packages/vonage/client)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![codecov](https://codecov.io/gh/Vonage/vonage-php-sdk-core/branch/master/graph/badge.svg)](https://codecov.io/gh/vonage/vonage-php-sdk-core)
 
 ![The Vonage logo](./vonage_logo.png)
 
