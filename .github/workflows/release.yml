@@ -1,67 +1,39 @@
----
-name: Release published
+name: Release Action
 
 on:
   release:
-    types: [ published, edited ]
+    types:
+      - published
 
-permissions:
-  actions: write
-  checks: write
-  contents: read
-  deployments: read
-  issues: write
-  discussions: write
-  packages: read
-  pages: write
-  pull-requests: write
-  security-events: write
-  statuses: write
+env:
+  GH_TOKEN: ${{ secrets.GH_TOKEN_COMMIT }}
 
 jobs:
-  build:
+  notify-release:
     runs-on: ubuntu-latest
+    name: Notify Release
     strategy:
       matrix:
-        php: [ '8.1', '8.2', '8.3', '8.4' ]
-
-    name: PHP ${{ matrix.php }} Test
-
+        url: [SLACK_WEBHOOK_ASK_DEVREL_URL, SLACK_WEBHOOK_DEVREL_TOOLING_URL, SLACK_WEBHOOK_DEVREL_PRIVATE_URL, SLACK_WEBHOOK_COMMUNITY]
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+      - name: Send to slack channles
+        uses: slackapi/slack-github-action@v2.0.0
         with:
-          php-version: ${{ matrix.php }}
-          extensions: json, mbstring
-          coverage: pcov
-        env:
-          COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Setup problem matchers for PHPUnit
-        run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
-
-      - name: Get Composer cache directory
-        id: composercache
-        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-
-      - name: Cache Composer dependencies
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.composercache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
-          restore-keys: ${{ runner.os }}-composer-
-
-      - name: Install dependencies
-        run: composer update --prefer-dist --no-interaction
-
-      - name: Analyze & test
-        run: composer test -- -v --coverage-clover=coverage.xml
-
-      - name: Run PHPStan
-        run: ./vendor/bin/phpstan
-
-      - name: Run codecov
-        uses: codecov/codecov-action@v1
+          webhook: ${{ secrets[matrix.url]}}
+          webhook-type: incoming-webhook
+          errors: true
+          payload: |
+            blocks:
+              - type: "header"
+                text:
+                  type: "plain_text"
+                  text: ":initial_external_notification_sent: :php: Version ${{ github.event.release.name }} of the PHP SDK has been released"
+              - type: "section"
+                text:
+                  type: "mrkdwn"
+                  text: "${{ github.event.release.body }}"
+              - type: "divider"
+              - type: "section"
+                text:
+                  type: "mrkdwn"
+                  text: "You can view the full change log <${{github.event.release.html_url }}|here>"
