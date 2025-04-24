@@ -14,10 +14,12 @@ jobs:
     name: Notify Release
     strategy:
       matrix:
-        url: [SLACK_WEBHOOK_ASK_DEVREL_URL, SLACK_WEBHOOK_DEVREL_TOOLING_URL, SLACK_WEBHOOK_DEVREL_PRIVATE_URL, SLACK_WEBHOOK_COMMUNITY]
+        url: [SLACK_WEBHOOK_ASK_DEVREL_URL, SLACK_WEBHOOK_DEVREL_TOOLING_URL, SLACK_WEBHOOK_DEVREL_PRIVATE_URL]
     steps:
-      - name: Send to slack channles
+      - name: Send to slack channels
         uses: slackapi/slack-github-action@v2.0.0
+        if: always();
+        continue-on-error: true
         with:
           webhook: ${{ secrets[matrix.url]}}
           webhook-type: incoming-webhook
