@@ -22,7 +22,7 @@ jobs:
     strategy:
       matrix:
         php: ['8.1', '8.2', '8.3', '8.4']
-        
+
     name: PHP ${{ matrix.php }} Test
 
     steps:
@@ -46,7 +46,7 @@ jobs:
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
 
       - name: Cache Composer dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ${{ steps.composercache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
@@ -62,4 +62,10 @@ jobs:
         run: ./vendor/bin/phpstan
 
       - name: Run codecov
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v3
+
+      - name: Upload test results to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/test-results-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
