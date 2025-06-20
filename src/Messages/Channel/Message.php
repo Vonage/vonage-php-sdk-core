@@ -20,6 +20,8 @@ interface Message
     public function getWebhookVersion(): ?string;
     public function setWebhookVersion(string $version): void;
     public function validatesE164(): bool;
+    public function addFailover(Message $message): void;
+  
 
     /**
      * All message types have shared outputs required by the endpoint.

@@ -166,6 +166,38 @@ class ClientTest extends VonageTestCase
         $this->assertArrayHasKey('message_uuid', $result);
     }
 
+    public function testCanSendSMSWtihFailover(): void
+    {
+        $payload = [
+            'to' => '447700900000',
+            'from' => '16105551212',
+            'text' => 'Reticulating Splines',
+            'message_type' => 'text',
+            'channel' => 'sms',
+            'failover' => [
+                [
+                    'message_type' => 'text',
+                    'to' => '447700900000',
+                    'from' => '16105551212',
+                    'channel' => 'sms',
+                    'text' => 'Reticulating Splines',
+                ]
+            ]
+        ];
+
+        $message = new SMSText($payload['to'], $payload['from'], $payload['text']);
+        $failMessage = new SMSText($payload['to'], $payload['from'], $payload['text']);
+        $message->addFailover($failMessage);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertRequestJsonBodyContains('failover', $payload['failover'], $request);
+            return true;
+        }))->willReturn($this->getResponse('sms-success', 202));
+        $result = $this->messageClient->send($message);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('message_uuid', $result);
+    }
+
     public function testCanSendMMSImage(): void
     {
         $imageUrl = 'https://picsum.photos/200/300';
