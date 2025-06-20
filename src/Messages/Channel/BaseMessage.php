@@ -11,6 +11,7 @@ abstract class BaseMessage implements Message
     protected ?string $clientRef = null;
     protected ?string $webhookUrl = null;
     protected ?string $webhookVersion = null;
+    protected ?array $failover = null;
 
     protected array $permittedVersions = [
         'v0.1',
@@ -91,6 +92,17 @@ abstract class BaseMessage implements Message
         return $this->webhookVersion;
     }
 
+    public function addFailover(Message $message): void
+    {
+        if (!isset($this->failover)) {
+            $this->failover = [];
+        }
+        array_push(
+            $this->failover,
+            $message
+        );
+    }
+
     public function getBaseMessageUniversalOutputArray(): array
     {
         $returnArray = [
@@ -110,6 +122,11 @@ abstract class BaseMessage implements Message
 
         if ($this->getWebhookVersion()) {
             $returnArray['webhook_version'] = $this->getWebhookVersion();
+        }
+
+        if (isset($this->failover)) {
+            $callback = fn(Message $message): array => $message->toArray();
+            $returnArray['failover'] = array_map($callback, $this->failover);
         }
 
         return $returnArray;

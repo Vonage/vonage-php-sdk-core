@@ -1,4 +1,5 @@
 {
+  "$schema": "https://getcomposer.org/schema.json",
   "name": "vonage/client-core",
   "type": "library",
   "description": "PHP Client for using Vonage's API.",
@@ -9,6 +10,11 @@
       "name": "James Seconde",
       "email": "jim.seconde@vonage.com",
       "role": "PHP Developer Advocate"
+    },
+    {
+      "name": "Chuck \"MANCHUCK\" Reeves",
+      "homepage": "https://github.com/manchuck",
+      "role": "Sr Developer Advocate"
     }
   ],
   "require": {
@@ -22,7 +28,7 @@
     "psr/log": "^1.1|^2.0|^3.0",
     "vonage/jwt": "^0.5.0"
   },
-  "require-dev": {  
+  "require-dev": {
     "guzzlehttp/guzzle": ">=6",
     "helmich/phpunit-json-assert": "^3.3",
     "php-http/mock-client": "^1.4",
