@@ -8,3 +8,6 @@ max_line_length = 80
 indent_style = space
 indent_size = 4
 charset = utf-8
+
+[*.json]
+indent_size = 2
