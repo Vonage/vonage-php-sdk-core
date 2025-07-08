@@ -15,6 +15,11 @@
       "name": "Chuck \"MANCHUCK\" Reeves",
       "homepage": "https://github.com/manchuck",
       "role": "Sr Developer Advocate"
+    }.
+    {
+      "name": "Chris Tankersley",
+      "homepage": "https://github.com/dragonmantank",
+      "role": "Staff Dev Relations Engineer"
     }
   ],
   "require": {
