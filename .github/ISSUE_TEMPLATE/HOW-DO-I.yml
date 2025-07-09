@@ -1,0 +1,53 @@
+---
+name: How do I?
+description: Ask a question around how to do a task using the SDK
+title: "How Do I: "
+labels: ["question"]
+assignees: ["manchuck", "dragonmantank"]
+body:
+ - type: input
+   id: question
+   attributes:
+    label: How do I
+    description: Ask the question on how to do X with Y
+    placeholder: send a WhatsApp Message
+   validations:
+    required: true
+ - type: dropdown
+   id: product
+   attributes:
+    label: API/Product
+    description: Which API or Product do yo need help with?
+    multiple: false
+    options:
+     - "Accounts"
+     - "Applications"
+     - "Audit"
+     - "Authentication"
+     - "Conversation"
+     - "Media"
+     - "Meetings"
+     - "Messages"
+     - "Number Insight V2"
+     - "Number Insights"
+     - "Numbers"
+     - "Pricing"
+     - "Proactive Connect"
+     - "Redact"
+     - "SMS"
+     - "Sub Accounts"
+     - "Users"
+     - "Verify V2"
+     - "Verify"
+     - "Video"
+     - "Voice"
+     - "Webhooks"
+     - "Other"
+   validations:
+    required: true
+ - type: textarea
+   id: code_sample
+   attributes:
+    label: Code Sample
+    description: If you already have some code, please provide a sample to help
+      answer the question

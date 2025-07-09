@@ -1,0 +1,63 @@
+---
+name: Bug Report
+description: File a bug report
+title: "[Bug]: "
+labels: ["bug", "Triage"]
+assignees: ["manchuck", "dragonmantank"]
+body:
+ - type: dropdown
+   id: node_version
+   attributes:
+    label: PHP Version
+    description: What version of PHP are you using?
+    options:
+     - 8.1
+     - 8.2
+     - 8.3
+     - 8.4
+   validations:
+    required: true
+ - type: dropdown
+   id: platform
+   attributes:
+    label: Platform
+    description: What is the platform you are having the issue on?
+    multiple: true
+    options:
+     - "Windows"
+     - "Linux"
+     - "Mac (intel)"
+     - "Mac (Apple Silcon)"
+     - "Docker Container"
+   validations:
+    required: true
+ - type: input
+   id: sdk_version
+   attributes:
+    label: SDK Version
+    description: What version of the SDK are you using?
+    placeholder: 4.11.2
+   validations:
+    required: true
+ - type: textarea
+   id: code_sample
+   attributes:
+    label: Code Sample
+    description: Please provide a sample of the code
+   validations:
+    required: true
+ - type: textarea
+   id: expected_behavior
+   attributes:
+    label: Expected Behavior
+    description: Please provide a brief description of what you wanted to
+      happen
+   validations:
+    required: true
+ - type: textarea
+   id: actual_behavior
+   attributes:
+    label: Actual Behavior
+    description: Please provide a brief description of what happened
+   validations:
+    required: true
