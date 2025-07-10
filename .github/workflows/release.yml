@@ -7,7 +7,7 @@ on:
 
 env:
   GH_TOKEN: ${{ secrets.GH_TOKEN_COMMIT }}
-
+permissions: read-all
 jobs:
   notify-release:
     runs-on: ubuntu-latest

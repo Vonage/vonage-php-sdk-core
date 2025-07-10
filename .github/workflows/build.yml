@@ -3,19 +3,7 @@ name: build
 
 on: [ push, pull_request ]
 
-permissions:
-  actions: write
-  checks: write
-  contents: read
-  deployments: read
-  issues: write
-  discussions: write
-  packages: read
-  pages: write
-  pull-requests: write
-  security-events: write
-  statuses: write
-
+permissions: read-all
 jobs:
   build:
     runs-on: ubuntu-latest
