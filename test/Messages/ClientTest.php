@@ -10,12 +10,15 @@ use Prophecy\Prophecy\ObjectProphecy;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Messages\Channel\BaseMessage;
+use Vonage\Messages\Channel\MMS\MMSContent;
+use Vonage\Messages\Channel\MMS\MMSText;
 use Vonage\Messages\Channel\Messenger\MessengerAudio;
 use Vonage\Messages\Channel\Messenger\MessengerFile;
 use Vonage\Messages\Channel\Messenger\MessengerImage;
 use Vonage\Messages\Channel\Messenger\MessengerText;
 use Vonage\Messages\Channel\Messenger\MessengerVideo;
 use Vonage\Messages\Channel\MMS\MMSAudio;
+use Vonage\Messages\Channel\MMS\MMSFile;
 use Vonage\Messages\Channel\MMS\MMSImage;
 use Vonage\Messages\Channel\MMS\MMSvCard;
 use Vonage\Messages\Channel\MMS\MMSVideo;
@@ -42,6 +45,7 @@ use Vonage\Messages\Channel\WhatsApp\WhatsAppVideo;
 use Vonage\Messages\Client as MessagesClient;
 use Vonage\Messages\ExceptionErrorHandler;
 use Vonage\Messages\MessageObjects\AudioObject;
+use Vonage\Messages\MessageObjects\ContentObject;
 use Vonage\Messages\MessageObjects\FileObject;
 use Vonage\Messages\MessageObjects\ImageObject;
 use Vonage\Messages\MessageObjects\TemplateObject;
@@ -191,6 +195,93 @@ class ClientTest extends VonageTestCase
 
         $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('failover', $payload['failover'], $request);
+            return true;
+        }))->willReturn($this->getResponse('sms-success', 202));
+        $result = $this->messageClient->send($message);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('message_uuid', $result);
+    }
+
+    public function testCanSendMMSContent(): void
+    {
+        $contentUrl = 'https://picsum.photos/200/300';
+        $mmsContentObject = new ContentObject($contentUrl, 'Picture of a skateboarder', ContentObject::TYPE_IMAGE);
+
+        $payload = [
+            'to' => '447700900000',
+            'from' => '16105551212',
+            'content' => $mmsContentObject
+        ];
+
+        $message = new MMSContent($payload['to'], $payload['from'], $mmsContentObject);
+        $message->setTtl(400);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
+            $this->assertRequestJsonBodyContains('content', $payload['content']->toArray(), $request);
+            $this->assertRequestJsonBodyContains('channel', 'mms', $request);
+            $this->assertRequestJsonBodyContains('message_type', 'content', $request);
+            $this->assertRequestJsonBodyContains('ttl', 400, $request);
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('sms-success', 202));
+        $result = $this->messageClient->send($message);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('message_uuid', $result);
+    }
+
+    public function testCanSendMMSText(): void
+    {
+        $payload = [
+            'to' => '447700900000',
+            'from' => '16105551212',
+            'text' => 'my cool message'
+        ];
+
+        $message = new MMSText($payload['to'], $payload['from'], $payload['text']);
+        $message->setTtl(400);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
+            $this->assertRequestJsonBodyContains('text', $payload['text'], $request);
+            $this->assertRequestJsonBodyContains('channel', 'mms', $request);
+            $this->assertRequestJsonBodyContains('message_type', 'text', $request);
+            $this->assertRequestJsonBodyContains('ttl', 400, $request);
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('sms-success', 202));
+        $result = $this->messageClient->send($message);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('message_uuid', $result);
+    }
+
+    public function testCanSendMMSFile(): void
+    {
+        $fileUrl = 'https://picsum.photos/200/300';
+        $mmsFileObject = new FileObject($fileUrl, 'Picture of a skateboarder');
+
+        $payload = [
+            'to' => '447700900000',
+            'from' => '16105551212',
+            'file' => $mmsFileObject
+        ];
+
+        $message = new MMSFile($payload['to'], $payload['from'], $mmsFileObject);
+        $message->setTtl(400);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
+            $this->assertRequestJsonBodyContains('file', $payload['file']->toArray(), $request);
+            $this->assertRequestJsonBodyContains('channel', 'mms', $request);
+            $this->assertRequestJsonBodyContains('message_type', 'file', $request);
+            $this->assertRequestJsonBodyContains('ttl', 400, $request);
+            $this->assertEquals('POST', $request->getMethod());
+
             return true;
         }))->willReturn($this->getResponse('sms-success', 202));
         $result = $this->messageClient->send($message);
