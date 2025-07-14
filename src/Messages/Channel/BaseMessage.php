@@ -27,6 +27,7 @@ abstract class BaseMessage implements Message
     public const MESSAGES_SUBTYPE_TEMPLATE = 'template';
     public const MESSAGES_SUBTYPE_STICKER = 'sticker';
     public const MESSAGES_SUBTYPE_CUSTOM = 'custom';
+    public const MESSAGES_SUBTYPE_CONTENT = 'content';
 
     public function getClientRef(): ?string
     {
