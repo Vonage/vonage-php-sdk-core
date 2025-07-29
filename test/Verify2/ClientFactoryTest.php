@@ -20,6 +20,7 @@ class ClientFactoryTest extends TestCase
         ];
 
         $mockClient = $this->createMock(Client::class);
+        $mockClient->method('getApiUrl')->willReturn('https://api.nexmo.com');
         $container = new MapFactory($mockServices, $mockClient);
         $factory = new ClientFactory();
 
@@ -29,7 +30,8 @@ class ClientFactoryTest extends TestCase
             ->getAuthHandlers()[0]);
         $this->assertInstanceOf(Client\Credentials\Handler\BasicHandler::class, $result->getAPIResource()
             ->getAuthHandlers()[1]);
-        $this->assertEquals('https://api.nexmo.com/v2/verify', $result->getAPIResource()->getBaseUrl());
+        $this->assertEquals('https://api.nexmo.com', $result->getAPIResource()->getBaseUrl());
+        $this->assertEquals('/v2/verify', $result->getAPIResource()->getBaseUri());
         $this->assertFalse($result->getApiResource()->errorsOn200());
         $this->assertFalse($result->getApiResource()->isHAL());
     }
