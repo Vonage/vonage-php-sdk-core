@@ -1152,6 +1152,42 @@ class ClientTest extends VonageTestCase
         $this->assertArrayHasKey('message_uuid', $result);
     }
 
+    public function testCanSendRcsTextWithoutTtl(): void
+    {
+        $payload = [
+            'to' => '447700900000',
+            'from' => '16105551212',
+            'text' => 'Reticulating Splines',
+            'client_ref' => 'RCS Message',
+            'webhook_url' => 'https://example.com/incoming'
+        ];
+
+        $message = new RcsText($payload['to'], $payload['from'], $payload['text']);
+        $message->setClientRef($payload['client_ref']);
+        $message->setWebhookUrl($payload['webhook_url']);
+
+        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+            $this->assertEquals(
+                'Bearer ',
+                mb_substr($request->getHeaders()['Authorization'][0], 0, 7)
+            );
+            $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
+            $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
+            $this->assertRequestJsonBodyContains('text', $payload['text'], $request);
+            $this->assertRequestJsonBodyContains('client_ref', $payload['client_ref'], $request);
+            $this->assertRequestJsonBodyContains('webhook_url', $payload['webhook_url'], $request);
+            $this->assertRequestJsonBodyContains('channel', 'rcs', $request);
+            $this->assertRequestJsonBodyContains('message_type', 'text', $request);
+            $this->assertEquals('POST', $request->getMethod());
+
+            return true;
+        }))->willReturn($this->getResponse('rcs-success', 202));
+
+        $result = $this->messageClient->send($message);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('message_uuid', $result);
+    }
+
     public function testCannotSendRcsTtlOutOfRange()
     {
         $this->expectException(RcsInvalidTtlException::class);
