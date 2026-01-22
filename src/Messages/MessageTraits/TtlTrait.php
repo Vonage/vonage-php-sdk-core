@@ -4,7 +4,7 @@ namespace Vonage\Messages\MessageTraits;
 
 trait TtlTrait
 {
-    private ?int $ttl;
+    private ?int $ttl = null;
 
     public function getTtl(): ?int
     {
