@@ -30,8 +30,10 @@ class TokenBodyHandlerTest extends VonageTestCase
 
         $this->assertIsArray($newBodyArray);
         $this->assertArrayHasKey('foo', $newBodyArray);
-        $this->assertArrayHasKey('api_key', $newBodyArray);
-        $this->assertArrayHasKey('api_secret', $newBodyArray);
         $this->assertEquals('bar', $newBodyArray['foo']);
+        $this->assertEquals(
+            'Basic ' . base64_encode('secret:sha256'),
+            $authRequest->getHeaderLine('Authorization'),
+        );
     }
 }

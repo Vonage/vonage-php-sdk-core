@@ -77,6 +77,7 @@ class ClientTest extends VonageTestCase
             $this->assertRequestQueryContains('message-id', 'ABC123', $request);
             $this->assertRequestQueryContains('delivered', '1', $request);
             $this->assertRequestQueryContains('timestamp', '123456', $request);
+            $this->assertEquals('Basic ' . base64_encode('abc:def'), $request->getHeaderLine('Authorization'));
             return true;
         }))->willReturn($this->getResponse());
 
@@ -96,6 +97,7 @@ class ClientTest extends VonageTestCase
             $this->assertRequestQueryContains('message-id', 'ABC123', $request);
             $this->assertRequestQueryContains('delivered', '1', $request);
             $this->assertRequestQueryNotContains('timestamp', $request);
+            $this->assertEquals('Basic ' . base64_encode('abc:def'), $request->getHeaderLine('Authorization'));
             return true;
         }))->willReturn($this->getResponse());
 
@@ -115,6 +117,7 @@ class ClientTest extends VonageTestCase
             $this->assertRequestQueryContains('message-id', 'ABC123', $request);
             $this->assertRequestQueryContains('delivered', '1', $request);
             $this->assertRequestQueryContains('timestamp', '123456', $request);
+            $this->assertEquals('Basic ' . base64_encode('abc:def'), $request->getHeaderLine('Authorization'));
             return true;
         }))->willReturn($this->getResponse());
 
@@ -134,6 +137,7 @@ class ClientTest extends VonageTestCase
             $this->assertRequestQueryContains('message-id', 'ABC123', $request);
             $this->assertRequestQueryContains('delivered', '1', $request);
             $this->assertRequestQueryNotContains('timestamp', $request);
+            $this->assertEquals('Basic ' . base64_encode('abc:def'), $request->getHeaderLine('Authorization'));
             return true;
         }))->willReturn($this->getResponse());
 
@@ -144,7 +148,6 @@ class ClientTest extends VonageTestCase
     {
         $reflection = new ReflectionClass($this->conversionClient);
         $method = $reflection->getMethod('getException');
-        $method->setAccessible(true);
 
         $response = new Response(402);
 

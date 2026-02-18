@@ -25,7 +25,9 @@ class TokenQueryHandlerTest extends VonageTestCase
         $handler = new TokenQueryHandler();
         $authRequest = $handler($request, $credentials);
 
-        $this->assertStringContainsString('api_key', $authRequest->getUri()->getQuery());
-        $this->assertStringContainsString('api_secret', $authRequest->getUri()->getQuery());
+        $basicAuth = base64_encode('secret:sha256');
+
+        $this->assertStringContainsString($basicAuth, $authRequest->getHeader('Authorization')[0]);
     }
 }
+

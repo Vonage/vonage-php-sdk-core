@@ -15,6 +15,7 @@ use Vonage\Client\APIResource;
 use Vonage\Client\Exception as ClientException;
 use Vonage\Client\Exception\Request as RequestException;
 use Vonage\Client\Exception\Server as ServerException;
+use Vonage\Client\Credentials\Basic;
 use VonageTest\Traits\HTTPTestTrait;
 use VonageTest\Traits\Psr7AssertionTrait;
 use VonageTest\VonageTestCase;
@@ -36,15 +37,18 @@ class ClientTest extends VonageTestCase
      */
     protected $api;
 
+    protected Basic $credentials;
+
     public function setUp(): void
     {
+        $this->credentials = new Basic('abc', 'def');
         $this->responsesDirectory = __DIR__ . '/responses';
 
         $this->vonageClient = $this->prophesize(Client::class);
         $this->vonageClient->getRestUrl()->willReturn('https://rest.nexmo.com');
         $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
         $this->vonageClient->getCredentials()->willReturn(
-            new Client\Credentials\Container(new Client\Credentials\Basic('abc', 'def'))
+            new Client\Credentials\Container($this->credentials)
         );
 
         $this->api = new APIResource();
@@ -160,7 +164,11 @@ class ClientTest extends VonageTestCase
 
             $uri = $request->getUri();
             $uriString = $uri->__toString();
-            $this->assertEquals('https://rest.nexmo.com/account/get-balance?api_key=abc&api_secret=def', $uriString);
+            $this->assertEquals('https://rest.nexmo.com/account/get-balance', $uriString);
+            $this->assertEquals(
+                'Basic ' . base64_encode($this->credentials->api_key . ':' . $this->credentials->api_secret),
+                $request->getHeaderLine('Authorization'),
+            );
 
             return true;
         }))->shouldBeCalledTimes(1)->willReturn($this->getResponse('get-balance'));

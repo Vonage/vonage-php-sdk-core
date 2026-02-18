@@ -29,9 +29,6 @@ use Vonage\Client\Credentials\Handler\BasicHandler;
 use Vonage\Client\Credentials\Handler\SignatureBodyFormHandler;
 use Vonage\Client\Credentials\Handler\SignatureBodyHandler;
 use Vonage\Client\Credentials\Handler\SignatureQueryHandler;
-use Vonage\Client\Credentials\Handler\TokenBodyFormHandler;
-use Vonage\Client\Credentials\Handler\TokenBodyHandler;
-use Vonage\Client\Credentials\Handler\TokenQueryHandler;
 use Vonage\Client\Credentials\Keypair;
 use Vonage\Client\Credentials\SignatureSecret;
 use Vonage\Client\Exception\Exception as ClientException;
@@ -67,7 +64,6 @@ use function json_encode;
 use function method_exists;
 use function set_error_handler;
 use function str_replace;
-use function strpos;
 
 /**
  * Vonage API Client, allows access to the API from PHP.
@@ -210,7 +206,7 @@ class Client implements LoggerAwareInterface
 
             // Additional utility classes
             APIResource::class => APIResource::class,
-            Client::class => fn () => $this
+            Client::class => fn() => $this
         ];
 
         if (class_exists('Vonage\Video\ClientFactory')) {
@@ -231,7 +227,7 @@ class Client implements LoggerAwareInterface
         // Disable throwing E_USER_DEPRECATED notices by default, the user can turn it on during development
         if (array_key_exists('show_deprecations', $this->options) && ($this->options['show_deprecations'] == true)) {
             set_error_handler(
-                static fn (
+                static fn(
                     int $errno,
                     string $errstr,
                     ?string $errfile = null,
@@ -310,28 +306,7 @@ class Client implements LoggerAwareInterface
      */
     public static function authRequest(RequestInterface $request, Basic $credentials): RequestInterface
     {
-        switch ($request->getHeaderLine('content-type')) {
-            case 'application/json':
-                if (static::requiresBasicAuth($request)) {
-                    $handler = new BasicHandler();
-                } elseif (static::requiresAuthInUrlNotBody($request)) {
-                    $handler = new TokenQueryHandler();
-                } else {
-                    $handler = new TokenBodyHandler();
-                }
-                break;
-            case 'application/x-www-form-urlencoded':
-                $handler = new TokenBodyFormHandler();
-                break;
-            default:
-                if (static::requiresBasicAuth($request)) {
-                    $handler = new BasicHandler();
-                } else {
-                    $handler = new TokenQueryHandler();
-                }
-                break;
-        }
-
+        $handler = new BasicHandler();
         return $handler($request, $credentials);
     }
 
@@ -603,28 +578,17 @@ class Client implements LoggerAwareInterface
      * @deprecated Use a configured APIResource with a HandlerInterface
      * Request business logic is being removed from the User Client Layer.
      */
-    protected static function requiresAuthInUrlNotBody(RequestInterface $request): bool
+    protected static function requiresAuthInUrlNotBody(): bool
     {
-        $path = $request->getUri()->getPath();
-
-        $isRedact =  str_starts_with($path, '/v1/redact');
-        $isMessages =  str_starts_with($path, '/v1/messages');
-
-        return $isRedact || $isMessages;
+        return false;
     }
 
     /**
      * @deprecated Use a configured APIResource with a HandlerInterface
      * Request business logic is being removed from the User Client Layer.
      */
-    protected function needsKeypairAuthentication(RequestInterface $request): bool
+    protected function needsKeypairAuthentication(): bool
     {
-        $path = $request->getUri()->getPath();
-        $isCallEndpoint = str_starts_with($path, '/v1/calls');
-        $isRecordingUrl = str_starts_with($path, '/v1/files');
-        $isStitchEndpoint = str_starts_with($path, '/beta/conversation');
-        $isUserEndpoint = str_starts_with($path, '/beta/users');
-
-        return $isCallEndpoint || $isRecordingUrl || $isStitchEndpoint || $isUserEndpoint;
+        return false;
     }
 }

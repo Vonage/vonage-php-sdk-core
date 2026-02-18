@@ -71,7 +71,7 @@ class AdvancedTest extends VonageTestCase
         $this->vonageClient->send(Argument::that(function (\Laminas\Diactoros\Request $request) use ($responseName) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
-            $this->assertEquals('https://api.nexmo.com/ni/advanced/ni/advanced/json?number=12345&api_key=abc&api_secret=def', $uriString);
+            $this->assertEquals('https://api.nexmo.com/ni/advanced/ni/advanced/json?number=12345', $uriString);
             return true;
         }))->willReturn($this->getResponse($responseName, 200));
 

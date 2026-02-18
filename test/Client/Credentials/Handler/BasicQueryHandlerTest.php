@@ -18,6 +18,10 @@ class BasicQueryHandlerTest extends TestCase
 
         $uri = $request->getUri();
         $uriString = $uri->__toString();
-        $this->assertEquals('https://example.com?api_key=abc&api_secret=xyz', $uriString);
+        $this->assertEquals('https://example.com', $uriString);
+        $this->assertEquals(
+            'Basic ' . base64_encode('abc:xyz'),
+            $request->getHeaderLine('Authorization'),
+        );
     }
 }
