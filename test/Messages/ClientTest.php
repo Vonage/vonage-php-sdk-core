@@ -138,7 +138,9 @@ class ClientTest extends VonageTestCase
             'entity_id' => '1101456324675322134',
             'webhook_url' => 'https://example.com/status',
             'webhook_version' => 'v1',
-            'ttl' => 300
+            'ttl' => 300,
+            'trusted_recipient' => true,
+            'pool_id' => 'abcd123',
         ];
 
         $message = new SMSText($payload['to'], $payload['from'], $payload['text']);
@@ -148,15 +150,19 @@ class ClientTest extends VonageTestCase
         $message->setEntityId($payload['entity_id']);
         $message->setWebhookUrl($payload['webhook_url']);
         $message->setWebhookVersion($payload['webhook_version']);
+        $message->setTrustedRecipient($payload['trusted_recipient']);
+        $message->setPoolId($payload['pool_id']);
 
         $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('ttl', $payload['ttl'], $request);
+            $this->assertRequestJsonBodyContains('trusted_recipient', $payload['trusted_recipient'], $request);
             $this->assertRequestJsonBodyContains('webhook_url', $payload['webhook_url'], $request);
             $this->assertRequestJsonBodyContains('webhook_version', $payload['webhook_version'], $request);
             $smsObject = [
                 'encoding_type' => $payload['encoding_type'],
                 'content_id' => $payload['content_id'],
-                'entity_id' => $payload['entity_id']
+                'entity_id' => $payload['entity_id'],
+                'pool_id' => $payload['pool_id'],
             ];
 
             $this->assertRequestJsonBodyContains('sms', $smsObject, $request);
@@ -1260,8 +1266,7 @@ class ClientTest extends VonageTestCase
         ];
 
         $message = new RcsVideo($payload['to'], $payload['from'], $payload['video']);
-        $message->setClientRef($payload
-        ['client_ref']);
+        $message->setClientRef($payload['client_ref']);
         $message->setTtl($payload['ttl']);
         $message->setWebhookUrl($payload['webhook_url']);
 
@@ -1406,8 +1411,10 @@ class ClientTest extends VonageTestCase
             );
             $uri = $request->getUri();
             $uriString = $uri->__toString();
-            $this->assertEquals('https://api-us.nexmo.com/v1/messages/6ce72c29-e454-442a-94f2-47a1cadba45f',
-                $uriString);
+            $this->assertEquals(
+                'https://api-us.nexmo.com/v1/messages/6ce72c29-e454-442a-94f2-47a1cadba45f',
+                $uriString
+            );
 
             $this->assertRequestJsonBodyContains('status', 'read', $request);
             $this->assertEquals('PATCH', $request->getMethod());
