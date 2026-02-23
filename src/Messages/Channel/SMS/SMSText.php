@@ -22,6 +22,8 @@ class SMSText extends BaseMessage
     protected ?string $contentId = null;
     protected ?string $entityId = null;
     protected bool $validatesE164 = true;
+    protected ?bool $trustedRecipient = null;
+    protected ?string $poolId = null;
 
     public function __construct(
         string $to,
@@ -82,6 +84,26 @@ class SMSText extends BaseMessage
         $this->ttl = $ttl;
     }
 
+    public function getTrustedRecipient(): ?bool
+    {
+        return $this->trustedRecipient;
+    }
+
+    public function setTrustedRecipient(?bool $trustedRecipient): void
+    {
+        $this->trustedRecipient = $trustedRecipient;
+    }
+
+    public function getPoolId(): ?string
+    {
+        return $this->poolId;
+    }
+
+    public function setPoolId(?string $poolId): void
+    {
+        $this->poolId = $poolId;
+    }
+
     public function toArray(): array
     {
         $returnArray = $this->getBaseMessageUniversalOutputArray();
@@ -99,8 +121,16 @@ class SMSText extends BaseMessage
             $returnArray['sms']['entity_id'] = $this->getEntityId();
         }
 
+        if ($this->getPoolId()) {
+            $returnArray['sms']['pool_id'] = $this->getPoolId();
+        }
+
         if ($this->getTtl()) {
             $returnArray['ttl'] = $this->getTtl();
+        }
+
+        if ($this->getTrustedRecipient()) {
+            $returnArray['trusted_recipient'] = $this->getTrustedRecipient();
         }
 
         return $returnArray;
