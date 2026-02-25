@@ -28,6 +28,8 @@ abstract class BaseMessage implements Message
     public const MESSAGES_SUBTYPE_STICKER = 'sticker';
     public const MESSAGES_SUBTYPE_CUSTOM = 'custom';
     public const MESSAGES_SUBTYPE_CONTENT = 'content';
+    public const MESSAGES_SUBTYPE_CARD = 'card';
+    public const MESSAGES_SUBTYPE_CAROUSEL = 'carousel';
 
     public function getClientRef(): ?string
     {
