@@ -13,9 +13,7 @@ class Client implements APIClient
     public const RCS_STATUS_REVOKED = 'revoked';
     public const WHATSAPP_STATUS_READ = 'read';
 
-    public function __construct(protected APIResource $api)
-    {
-    }
+    public function __construct(protected APIResource $api) {}
 
     public function getAPIResource(): APIResource
     {

@@ -15,7 +15,6 @@ class AbstractResponseTest extends TestCase
 
         $reflection = new \ReflectionClass($mock);
         $property = $reflection->getProperty('data');
-        $property->setAccessible(true);
 
         $testData = ['key' => 'value'];
         $property->setValue($mock, $testData);
@@ -29,7 +28,6 @@ class AbstractResponseTest extends TestCase
 
         $reflection = new \ReflectionClass($mock);
         $property = $reflection->getProperty('data');
-        $property->setAccessible(true);
 
         $property->setValue($mock, ['status' => 0]);
 
@@ -42,7 +40,6 @@ class AbstractResponseTest extends TestCase
 
         $reflection = new \ReflectionClass($mock);
         $property = $reflection->getProperty('data');
-        $property->setAccessible(true);
 
         $property->setValue($mock, ['status' => 1]);
 
@@ -55,7 +52,6 @@ class AbstractResponseTest extends TestCase
 
         $reflection = new \ReflectionClass($mock);
         $property = $reflection->getProperty('data');
-        $property->setAccessible(true);
 
         $property->setValue($mock, ['status' => 1]);
 
@@ -68,7 +64,6 @@ class AbstractResponseTest extends TestCase
 
         $reflection = new \ReflectionClass($mock);
         $property = $reflection->getProperty('data');
-        $property->setAccessible(true);
 
         $property->setValue($mock, ['status' => 0]);
 
