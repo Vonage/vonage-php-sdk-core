@@ -25,6 +25,7 @@ class SipTest extends VonageTestCase
 
         $this->assertSame($this->uri, $endpoint->getId());
         $this->assertEmpty($endpoint->getHeaders());
+        $this->assertEmpty($endpoint->getStandardHeaders());
     }
 
     public function testFactoryCreatesAppEndpoint(): void
@@ -75,5 +76,53 @@ class SipTest extends VonageTestCase
     public function testHeaderCanBeIndividuallyAdded(): void
     {
         $this->assertSame(['key' => 'value'], (new SIP($this->uri))->addHeader('key', 'value')->getHeaders());
+    }
+
+    public function testStandardHeadersAreReturnedInArray(): void
+    {
+        $standardHeaders = ['User-to-User' => 'token;encoding=hex'];
+
+        $expected = [
+            'type' => $this->type,
+            'uri' => $this->uri,
+            'standard_headers' => $standardHeaders,
+        ];
+
+        $this->assertSame($expected, (new SIP($this->uri))->setStandardHeaders($standardHeaders)->toArray());
+    }
+
+    public function testStandardHeadersNotIncludedWhenEmpty(): void
+    {
+        $result = (new SIP($this->uri))->toArray();
+
+        $this->assertArrayNotHasKey('standard_headers', $result);
+    }
+
+    public function testStandardHeaderCanBeIndividuallyAdded(): void
+    {
+        $endpoint = (new SIP($this->uri))->addStandardHeader('User-to-User', 'token;encoding=hex');
+
+        $this->assertSame(['User-to-User' => 'token;encoding=hex'], $endpoint->getStandardHeaders());
+    }
+
+    public function testStandardHeadersAndCustomHeadersCanCoexist(): void
+    {
+        $headers = ['location' => 'New York City'];
+        $standardHeaders = ['User-to-User' => 'token;encoding=hex'];
+
+        $expected = [
+            'type' => $this->type,
+            'uri' => $this->uri,
+            'headers' => $headers,
+            'standard_headers' => $standardHeaders,
+        ];
+
+        $this->assertSame(
+            $expected,
+            (new SIP($this->uri))
+                ->setHeaders($headers)
+                ->setStandardHeaders($standardHeaders)
+                ->toArray()
+        );
     }
 }

@@ -12,6 +12,8 @@ class Phone implements EndpointInterface
 
     protected ?string $url = null;
 
+    protected ?string $shaken = null;
+
     public function __construct(protected string $id, protected ?string $dtmfAnswer = null)
     {
     }
@@ -35,6 +37,10 @@ class Phone implements EndpointInterface
             if (array_key_exists('ringback', $data['onAnswer'])) {
                 $endpoint->setRingbackTone($data['onAnswer']['ringback']);
             }
+        }
+
+        if (array_key_exists('shaken', $data)) {
+            $endpoint->setShaken($data['shaken']);
         }
 
         return $endpoint;
@@ -85,6 +91,10 @@ class Phone implements EndpointInterface
             }
         }
 
+        if (null !== $this->getShaken()) {
+            $data['shaken'] = $this->getShaken();
+        }
+
         return $data;
     }
 
@@ -119,6 +129,23 @@ class Phone implements EndpointInterface
     public function setUrl(string $url): self
     {
         $this->url = $url;
+        return $this;
+    }
+
+    public function getShaken(): ?string
+    {
+        return $this->shaken;
+    }
+
+    /**
+     * Set the STIR/SHAKEN Identity Header for FCC-mandated call signing to the USA.
+     *
+     * @return $this
+     */
+    public function setShaken(string $shaken): self
+    {
+        $this->shaken = $shaken;
+
         return $this;
     }
 }

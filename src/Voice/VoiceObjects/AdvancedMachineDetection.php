@@ -11,7 +11,7 @@ class AdvancedMachineDetection implements ArrayHydrateInterface
     public const MACHINE_MODE_DETECT = 'detect';
     public const MACHINE_MODE_DETECT_BEEP = 'detect_beep';
     public const MACHINE_MODE_DEFAULT = 'default';
-    public const BEEP_TIMEOUT_MIN = 45;
+    public const BEEP_TIMEOUT_MIN = 30;
     public const BEEP_TIMEOUT_MAX = 120;
     protected array $permittedBehaviour = [self::MACHINE_BEHAVIOUR_CONTINUE, self::MACHINE_BEHAVIOUR_HANGUP];
     protected array $permittedModes = [
