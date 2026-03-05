@@ -47,11 +47,11 @@ class AdvancedMachineDetectionTest extends TestCase
 
     public function testToArray()
     {
-        $amd = new AdvancedMachineDetection('continue', 45, 'detect');
+        $amd = new AdvancedMachineDetection('continue', 30, 'detect');
         $expected = [
             'behavior' => 'continue',
             'mode' => 'detect',
-            'beep_timeout' => 45
+            'beep_timeout' => 30
         ];
 
         $this->assertEquals($expected, $amd->toArray());
@@ -65,7 +65,7 @@ class AdvancedMachineDetectionTest extends TestCase
             'beep_timeout' => 60
         ];
 
-        $amd = (new AdvancedMachineDetection('continue', 45))->fromArray($data);
+        $amd = (new AdvancedMachineDetection('continue', 30))->fromArray($data);
         $this->assertEquals('hangup', $amd->toArray()['behavior']);
         $this->assertEquals('detect_beep', $amd->toArray()['mode']);
         $this->assertEquals(60, $amd->toArray()['beep_timeout']);
@@ -81,6 +81,18 @@ class AdvancedMachineDetectionTest extends TestCase
             'beep_timeout' => 60
         ];
 
-        (new AdvancedMachineDetection('continue', 45))->fromArray($data);
+        (new AdvancedMachineDetection('continue', 30))->fromArray($data);
+    }
+
+    public function testBeepTimeoutMinimumIs30()
+    {
+        $amd = new AdvancedMachineDetection('continue', 30, 'detect');
+        $this->assertEquals(30, $amd->toArray()['beep_timeout']);
+    }
+
+    public function testBeepTimeoutBelowMinimumThrows()
+    {
+        $this->expectException(OutOfBoundsException::class);
+        new AdvancedMachineDetection('continue', 29, 'detect');
     }
 }

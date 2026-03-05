@@ -11,6 +11,11 @@ class SIP implements EndpointInterface
      */
     protected array $headers = [];
 
+    /**
+     * @var array<string, string>
+     */
+    protected array $standardHeaders = [];
+
     public function __construct(protected string $id, array $headers = [])
     {
         $this->setHeaders($headers);
@@ -22,7 +27,7 @@ class SIP implements EndpointInterface
     }
 
     /**
-     * @return array{type: string, uri: string, headers?: array<string, string>}
+     * @return array{type: string, uri: string, headers?: array<string, string>, standard_headers?: array<string, string>}
      */
     public function jsonSerialize(): array
     {
@@ -30,7 +35,7 @@ class SIP implements EndpointInterface
     }
 
     /**
-     * @return array{type: string, uri: string, headers?: array<string, string>}
+     * @return array{type: string, uri: string, headers?: array<string, string>, standard_headers?: array<string, string>}
      */
     public function toArray(): array
     {
@@ -41,6 +46,10 @@ class SIP implements EndpointInterface
 
         if (!empty($this->getHeaders())) {
             $data['headers'] = $this->getHeaders();
+        }
+
+        if (!empty($this->getStandardHeaders())) {
+            $data['standard_headers'] = $this->getStandardHeaders();
         }
 
         return $data;
@@ -72,6 +81,38 @@ class SIP implements EndpointInterface
     public function setHeaders(array $headers): self
     {
         $this->headers = $headers;
+
+        return $this;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function getStandardHeaders(): array
+    {
+        return $this->standardHeaders;
+    }
+
+    /**
+     * Set standard SIP INVITE headers. Unlike custom headers, these are not prepended with X-.
+     * The supported key is 'User-to-User' (RFC 7433).
+     *
+     * @param array<string, string> $standardHeaders
+     * @return $this
+     */
+    public function setStandardHeaders(array $standardHeaders): self
+    {
+        $this->standardHeaders = $standardHeaders;
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function addStandardHeader(string $key, string $value): self
+    {
+        $this->standardHeaders[$key] = $value;
 
         return $this;
     }

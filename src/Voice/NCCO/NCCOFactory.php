@@ -14,6 +14,7 @@ use Vonage\Voice\NCCO\Action\Notify;
 use Vonage\Voice\NCCO\Action\Record;
 use Vonage\Voice\NCCO\Action\Stream;
 use Vonage\Voice\NCCO\Action\Talk;
+use Vonage\Voice\NCCO\Action\Wait;
 
 class NCCOFactory
 {
@@ -41,6 +42,8 @@ class NCCOFactory
                 return Stream::factory($data['streamUrl'], $data);
             case 'talk':
                 return Talk::factory($data['text'], $data);
+            case 'wait':
+                return Wait::factory($data);
             default:
                 throw new InvalidArgumentException("Unknown NCCO Action " . $data['action']);
         }

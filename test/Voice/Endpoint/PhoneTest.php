@@ -42,6 +42,7 @@ class PhoneTest extends VonageTestCase
         $this->assertNull($endpoint->getDtmfAnswer());
         $this->assertNull($endpoint->getRingbackTone());
         $this->assertNull($endpoint->getUrl());
+        $this->assertNull($endpoint->getShaken());
     }
 
     public function testFactoryCreatesPhoneEndpoint(): void
@@ -128,5 +129,33 @@ class PhoneTest extends VonageTestCase
         $endpoint->setDtmfAnswer($this->dtmfAnswer);
 
         $this->assertSame($expected, $endpoint->jsonSerialize());
+    }
+
+    public function testShakenIsIncludedInArray(): void
+    {
+        $shaken = 'eyJhbGciOiJFUzI1NiIsInBwdCI6InNoYWtlbiJ9.payload.sig;info=<https://cert.example.com/cert.cer>;alg=ES256;ppt="shaken"';
+
+        $expected = [
+            'type' => $this->type,
+            'number' => $this->number,
+            'shaken' => $shaken,
+        ];
+
+        $this->assertSame($expected, (new Phone($this->number))->setShaken($shaken)->toArray());
+    }
+
+    public function testShakenNotIncludedWhenNotSet(): void
+    {
+        $result = (new Phone($this->number))->toArray();
+
+        $this->assertArrayNotHasKey('shaken', $result);
+    }
+
+    public function testFactorySetsShakenFromData(): void
+    {
+        $shaken = 'eyJhbGciOiJFUzI1NiIsInBwdCI6InNoYWtlbiJ9.payload.sig';
+        $endpoint = Phone::factory($this->number, ['shaken' => $shaken]);
+
+        $this->assertSame($shaken, $endpoint->getShaken());
     }
 }
