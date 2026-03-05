@@ -4,10 +4,23 @@ root = true
 end_of_line = lf
 insert_final_newline = true
 trim_trailing_whitespace = true
-max_line_length = 80
+max_line_length = 120
 indent_style = space
 indent_size = 4
 charset = utf-8
 
+[*.php]
+indent_style = space
+indent_size = 4
+max_line_length = 120
+insert_final_newline = true
+trim_trailing_whitespace = true
+
 [*.json]
+indent_size = 2
+
+[*.{yml,yaml}]
+indent_size = 2
+
+[*.xml]
 indent_size = 2
