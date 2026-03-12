@@ -6,7 +6,7 @@ namespace Vonage\Voice\NCCO\Action;
 
 use JsonSerializable;
 
-interface ActionInterface extends JsonSerializable
+interface ActionInterface
 {
     /**
      * @return array<string, string>
