@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Vonage\Subaccount\Filter;
 
 use Vonage\Client\Exception\Request;
