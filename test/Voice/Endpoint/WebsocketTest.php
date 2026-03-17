@@ -44,6 +44,55 @@ class WebsocketTest extends VonageTestCase
         $this->assertSame(Websocket::TYPE_16000, $endpoint->getContentType());
     }
 
+    public function testContentTypeConstantsAreCorrect(): void
+    {
+        $this->assertSame('audio/l16;rate=8000', Websocket::TYPE_8000);
+        $this->assertSame('audio/l16;rate=16000', Websocket::TYPE_16000);
+        $this->assertSame('audio/l16;rate=24000', Websocket::TYPE_24000);
+    }
+
+    public function testCanSetAuthorizationVonage(): void
+    {
+        $authorization = ['type' => 'vonage'];
+        $endpoint = (new Websocket($this->uri))->setAuthorization($authorization);
+
+        $this->assertSame($authorization, $endpoint->getAuthorization());
+    }
+
+    public function testCanSetAuthorizationCustom(): void
+    {
+        $authorization = ['type' => 'custom', 'value' => 'Bearer abc123'];
+        $endpoint = (new Websocket($this->uri))->setAuthorization($authorization);
+
+        $this->assertSame($authorization, $endpoint->getAuthorization());
+    }
+
+    public function testFactoryCreatesAuthorizationFromData(): void
+    {
+        $authorization = ['type' => 'vonage'];
+        $endpoint = Websocket::factory($this->uri, ['authorization' => $authorization]);
+
+        $this->assertSame($authorization, $endpoint->getAuthorization());
+    }
+
+    public function testToArrayIncludesAuthorization(): void
+    {
+        $authorization = ['type' => 'custom', 'value' => 'Bearer abc123'];
+        $endpoint = (new Websocket($this->uri))->setAuthorization($authorization);
+
+        $result = $endpoint->toArray();
+
+        $this->assertArrayHasKey('authorization', $result);
+        $this->assertSame($authorization, $result['authorization']);
+    }
+
+    public function testToArrayExcludesAuthorizationWhenNotSet(): void
+    {
+        $result = (new Websocket($this->uri))->toArray();
+
+        $this->assertArrayNotHasKey('authorization', $result);
+    }
+
     public function testToArrayHasCorrectStructure(): void
     {
         $this->assertSame([

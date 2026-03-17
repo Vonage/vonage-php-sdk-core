@@ -8,8 +8,9 @@ use function array_key_exists;
 
 class Websocket implements EndpointInterface
 {
-    public const TYPE_16000 = 'audio/116;rate=16000';
-    public const TYPE_8000 = 'audio/116;rate=8000';
+    public const TYPE_8000 = 'audio/l16;rate=8000';
+    public const TYPE_16000 = 'audio/l16;rate=16000';
+    public const TYPE_24000 = 'audio/l16;rate=24000';
 
     protected string $contentType;
 
@@ -17,6 +18,11 @@ class Websocket implements EndpointInterface
      * @var array<string, string>
      */
     protected array $headers = [];
+
+    /**
+     * @var array{type: string, value?: string}|null
+     */
+    protected ?array $authorization = null;
 
     public function __construct(protected string $id, string $rate = self::TYPE_8000, array $headers = [])
     {
@@ -36,11 +42,15 @@ class Websocket implements EndpointInterface
             $endpoint->setHeaders($data['headers']);
         }
 
+        if (array_key_exists('authorization', $data)) {
+            $endpoint->setAuthorization($data['authorization']);
+        }
+
         return $endpoint;
     }
 
     /**
-     * @return array{type: string, uri: string, content-type?: string, headers?: array<string, string>}
+     * @return array{type: string, uri: string, content-type?: string, headers?: array<string, string>, authorization?: array{type: string, value?: string}}
      */
     public function jsonSerialize(): array
     {
@@ -48,7 +58,7 @@ class Websocket implements EndpointInterface
     }
 
     /**
-     * @return array{type: string, uri: string, content-type?: string, headers?: array<string, string>}
+     * @return array{type: string, uri: string, content-type?: string, headers?: array<string, string>, authorization?: array{type: string, value?: string}}
      */
     public function toArray(): array
     {
@@ -60,6 +70,10 @@ class Websocket implements EndpointInterface
 
         if (!empty($this->getHeaders())) {
             $data['headers'] = $this->getHeaders();
+        }
+
+        if (null !== $this->getAuthorization()) {
+            $data['authorization'] = $this->getAuthorization();
         }
 
         return $data;
@@ -97,6 +111,27 @@ class Websocket implements EndpointInterface
     public function setHeaders(array $headers): self
     {
         $this->headers = $headers;
+
+        return $this;
+    }
+
+    /**
+     * @return array{type: string, value?: string}|null
+     */
+    public function getAuthorization(): ?array
+    {
+        return $this->authorization;
+    }
+
+    /**
+     * Set the authorization configuration for the WebSocket opening handshake.
+     * The type must be 'vonage' or 'custom'. When type is 'custom', a value must be provided.
+     *
+     * @param array{type: string, value?: string} $authorization
+     */
+    public function setAuthorization(array $authorization): self
+    {
+        $this->authorization = $authorization;
 
         return $this;
     }
