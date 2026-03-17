@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Vonage\Messages\MessageTraits;
 
 use Vonage\Messages\Channel\RCS\Suggestions\RcsSuggestionCollection;
