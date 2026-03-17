@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace Vonage;
 
 use Composer\InstalledVersions;
-use Http\Client\HttpClient;
 use InvalidArgumentException;
-use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Uri;
 use Lcobucci\JWT\Token;
 use Psr\Container\ContainerInterface;
@@ -25,17 +23,12 @@ use Vonage\Client\Credentials\Basic;
 use Vonage\Client\Credentials\Container;
 use Vonage\Client\Credentials\CredentialsInterface;
 use Vonage\Client\Credentials\Gnp;
-use Vonage\Client\Credentials\Handler\BasicHandler;
-use Vonage\Client\Credentials\Handler\SignatureBodyFormHandler;
-use Vonage\Client\Credentials\Handler\SignatureBodyHandler;
-use Vonage\Client\Credentials\Handler\SignatureQueryHandler;
 use Vonage\Client\Credentials\Keypair;
 use Vonage\Client\Credentials\SignatureSecret;
 use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Client\Factory\FactoryInterface;
 use Vonage\Client\Factory\MapFactory;
 use Vonage\Conversion\ClientFactory as ConversionClientFactory;
-use Vonage\Entity\EntityInterface;
 use Vonage\Insights\ClientFactory as InsightsClientFactory;
 use Vonage\Meetings\ClientFactory as MeetingsClientFactory;
 use Vonage\Numbers\ClientFactory as NumbersClientFactory;
@@ -50,17 +43,14 @@ use Vonage\Users\ClientFactory as UsersClientFactory;
 use Vonage\Verify\ClientFactory as VerifyClientFactory;
 use Vonage\Verify2\ClientFactory as Verify2ClientFactory;
 use Vonage\Conversation\ClientFactory as ConversationClientFactory;
-use Vonage\Verify\Verification;
 use Vonage\Voice\ClientFactory as VoiceClientFactory;
 use Vonage\Logger\{LoggerAwareInterface, LoggerTrait};
 
 use function array_key_exists;
 use function array_merge;
 use function call_user_func_array;
-use function http_build_query;
 use function implode;
 use function is_null;
-use function json_encode;
 use function method_exists;
 use function set_error_handler;
 use function str_replace;
@@ -69,7 +59,6 @@ use function str_replace;
  * Vonage API Client, allows access to the API from PHP.
  *
  * @method Account\Client account()
- * @method Meetings\Client meetings()
  * @method Messages\Client messages()
  * @method Application\Client applications()
  * @method Conversion\Client conversion()
@@ -192,7 +181,6 @@ class Client implements LoggerAwareInterface
             'insights' => InsightsClientFactory::class,
             'numbers' => NumbersClientFactory::class,
             'numberVerification' => NumberVerificationClientFactory::class,
-            'meetings' => MeetingsClientFactory::class,
             'messages' => MessagesClientFactory::class,
             'redact' => RedactClientFactory::class,
             'secrets' => SecretsClientFactory::class,
@@ -286,31 +274,6 @@ class Client implements LoggerAwareInterface
     }
 
     /**
-     * @deprecated Use a configured APIResource with a HandlerInterface
-     * Request business logic is being removed from the User Client Layer.
-     */
-    public static function signRequest(RequestInterface $request, SignatureSecret $credentials): RequestInterface
-    {
-        $handler = match ($request->getHeaderLine('content-type')) {
-            'application/json' => new SignatureBodyHandler(),
-            'application/x-www-form-urlencoded' => new SignatureBodyFormHandler(),
-            default => new SignatureQueryHandler(),
-        };
-
-        return $handler($request, $credentials);
-    }
-
-    /**
-     * @deprecated Use a configured APIResource with a HandlerInterface
-     * Request business logic is being removed from the User Client Layer.
-     */
-    public static function authRequest(RequestInterface $request, Basic $credentials): RequestInterface
-    {
-        $handler = new BasicHandler();
-        return $handler($request, $credentials);
-    }
-
-    /**
      * @throws ClientException
      */
     public function generateJwt($claims = []): Token
@@ -320,89 +283,6 @@ class Client implements LoggerAwareInterface
         }
 
         throw new ClientException($this->credentials::class . ' does not support JWT generation');
-    }
-
-    /**
-     * @deprecated Use a configured APIResource with a HandlerInterface
-     * Request business logic is being removed from the User Client Layer.
-     */
-    public function get(string $url, array $params = []): ResponseInterface
-    {
-        $queryString = '?' . http_build_query($params);
-        $url .= $queryString;
-
-        $request = new Request($url, 'GET');
-
-        return $this->send($request);
-    }
-
-    /**
-     * @deprecated Use a configured APIResource with a HandlerInterface
-     * Request business logic is being removed from the User Client Layer.
-     */
-    public function post(string $url, array $params): ResponseInterface
-    {
-        $request = new Request(
-            $url,
-            'POST',
-            'php://temp',
-            ['content-type' => 'application/json']
-        );
-
-        $request->getBody()->write(json_encode($params));
-
-        return $this->send($request);
-    }
-
-    /**
-     * @deprecated Use a configured APIResource with a HandlerInterface
-     * Request business logic is being removed from the User Client Layer.
-     */
-    public function postUrlEncoded(string $url, array $params): ResponseInterface
-    {
-        $request = new Request(
-            $url,
-            'POST',
-            'php://temp',
-            ['content-type' => 'application/x-www-form-urlencoded']
-        );
-
-        $request->getBody()->write(http_build_query($params));
-
-        return $this->send($request);
-    }
-
-
-    /**
-     * @deprecated Use a configured APIResource with a HandlerInterface
-     * Request business logic is being removed from the User Client Layer.
-     */
-    public function put(string $url, array $params): ResponseInterface
-    {
-        $request = new Request(
-            $url,
-            'PUT',
-            'php://temp',
-            ['content-type' => 'application/json']
-        );
-
-        $request->getBody()->write(json_encode($params));
-
-        return $this->send($request);
-    }
-
-    /**
-     * @deprecated Use a configured APIResource with a HandlerInterface
-     * Request business logic is being removed from the User Client Layer.
-     */
-    public function delete(string $url): ResponseInterface
-    {
-        $request = new Request(
-            $url,
-            'DELETE'
-        );
-
-        return $this->send($request);
     }
 
     /**
@@ -530,18 +410,6 @@ class Client implements LoggerAwareInterface
         return $this;
     }
 
-    /**
-     * @deprecated Use the Verify Client, this shouldn't be here and will be removed.
-     */
-    public function serialize(EntityInterface $entity): string
-    {
-        if ($entity instanceof Verification) {
-            return $this->verify()->serialize($entity);
-        }
-
-        throw new RuntimeException('unknown class `' . $entity::class . '``');
-    }
-
     protected function getVersion(): string
     {
         return InstalledVersions::getVersion('vonage/client-core');
@@ -559,36 +427,5 @@ class Client implements LoggerAwareInterface
     public function getCredentials(): CredentialsInterface
     {
         return $this->credentials;
-    }
-
-    /**
-     * @deprecated Use a configured APIResource with a HandlerInterface
-     * Request business logic is being removed from the User Client Layer.
-     */
-    protected static function requiresBasicAuth(RequestInterface $request): bool
-    {
-        $path = $request->getUri()->getPath();
-        $isSecretManagementEndpoint = str_starts_with($path, '/accounts') && str_contains($path, '/secrets');
-        $isApplicationV2 = str_starts_with($path, '/v2/applications');
-
-        return $isSecretManagementEndpoint || $isApplicationV2;
-    }
-
-    /**
-     * @deprecated Use a configured APIResource with a HandlerInterface
-     * Request business logic is being removed from the User Client Layer.
-     */
-    protected static function requiresAuthInUrlNotBody(): bool
-    {
-        return false;
-    }
-
-    /**
-     * @deprecated Use a configured APIResource with a HandlerInterface
-     * Request business logic is being removed from the User Client Layer.
-     */
-    protected function needsKeypairAuthentication(): bool
-    {
-        return false;
     }
 }
