@@ -26,7 +26,7 @@ class ClientFactoryTest extends TestCase
 
         $result = $factory($container);
         $this->assertInstanceOf(\Vonage\Verify\Client::class, $result);
-        $this->assertInstanceOf(Client\Credentials\Handler\TokenBodyHandler::class, $result->getAPIResource()
+        $this->assertInstanceOf(Client\Credentials\Handler\BasicHandler::class, $result->getAPIResource()
             ->getAuthHandlers()[0]);
         $this->assertEquals('/verify', $result->getAPIResource()->getBaseUri());
         $this->assertTrue($result->getApiResource()->errorsOn200());
