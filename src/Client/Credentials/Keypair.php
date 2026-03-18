@@ -5,10 +5,7 @@ declare(strict_types=1);
 namespace Vonage\Client\Credentials;
 
 use Lcobucci\JWT\Encoding\JoseEncoder;
-use Lcobucci\JWT\Signer\Key;
-use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Token;
-use Vonage\Application\Application;
 use Vonage\JWT\TokenGenerator;
 
 class Keypair extends AbstractCredentials
@@ -20,14 +17,6 @@ class Keypair extends AbstractCredentials
         if ($application) {
             $this->credentials['application'] = $application;
         }
-    }
-
-    /**
-     * @deprecated Old public signature using Lcobucci/Jwt directly
-     */
-    public function getKey(): Key
-    {
-        return InMemory::plainText($this->key);
     }
 
     public function getKeyRaw(): string

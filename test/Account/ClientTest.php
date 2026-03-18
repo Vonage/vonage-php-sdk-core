@@ -12,10 +12,11 @@ use Vonage\Account\Network;
 use Vonage\Account\PrefixPrice;
 use Vonage\Client;
 use Vonage\Client\APIResource;
+use Vonage\Client\Credentials\Basic;
+use Vonage\Client\Credentials\Handler\BasicHandler;
 use Vonage\Client\Exception as ClientException;
 use Vonage\Client\Exception\Request as RequestException;
 use Vonage\Client\Exception\Server as ServerException;
-use Vonage\Client\Credentials\Basic;
 use VonageTest\Traits\HTTPTestTrait;
 use VonageTest\Traits\Psr7AssertionTrait;
 use VonageTest\VonageTestCase;
@@ -54,7 +55,7 @@ class ClientTest extends VonageTestCase
         $this->api = new APIResource();
         $this->api->setBaseUrl('https://rest.nexmo.com')
             ->setIsHAL(false)
-            ->setAuthHandlers(new Client\Credentials\Handler\BasicQueryHandler())
+            ->setAuthHandlers(new BasicHandler())
             ->setBaseUri('/account');
 
         $this->api->setClient($this->vonageClient->reveal());

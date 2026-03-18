@@ -2,8 +2,6 @@
 
 namespace VonageTest\Client\Credentials;
 
-use Lcobucci\JWT\Signer\Key\InMemory;
-use Vonage\Client\Exception\Validation;
 use VonageTest\VonageTestCase;
 use Vonage\Client\Credentials\Keypair;
 
@@ -34,14 +32,6 @@ class KeypairTest extends VonageTestCase
         $array = $credentials->asArray();
         $this->assertEquals($this->key, $array['key']);
         $this->assertEquals($this->application, $array['application']);
-    }
-
-    public function testGetKey(): void
-    {
-        $credentials = new Keypair($this->key, $this->application);
-
-        $key = $credentials->getKey();
-        $this->assertInstanceOf(InMemory::class, $key);
     }
 
     public function testProperties(): void

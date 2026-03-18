@@ -8,7 +8,7 @@ use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
 use Vonage\Client;
 use Vonage\Client\APIResource;
-use Vonage\Client\Credentials\Handler\BasicQueryHandler;
+use Vonage\Client\Credentials\Handler\BasicHandler;
 use Vonage\Client\Exception\Request;
 use Vonage\Insights\Advanced;
 use Vonage\Insights\Client as InsightClient;
@@ -28,7 +28,7 @@ class AdvancedTest extends VonageTestCase
         $this->responsesDirectory = __DIR__ . '/responses';
 
         $this->vonageClient = $this->prophesize(Client::class);
-        $this->vonageClient->getRestUrl()->willReturn('https://api.nexmo.com');
+        $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
         $this->vonageClient->getCredentials()->willReturn(
             new Client\Credentials\Container(
                 new Client\Credentials\Basic('abc', 'def'),
@@ -38,8 +38,7 @@ class AdvancedTest extends VonageTestCase
         $this->api = (new APIResource())
             ->setClient($this->vonageClient->reveal())
             ->setIsHAL(false)
-            ->setAuthHandlers(new BasicQueryHandler())
-            ->setBaseUrl('https://api.nexmo.com/ni/advanced');
+            ->setAuthHandlers(new BasicHandler());
 
         $this->insightClient = new InsightClient($this->api);
     }
@@ -71,12 +70,12 @@ class AdvancedTest extends VonageTestCase
         $this->vonageClient->send(Argument::that(function (\Laminas\Diactoros\Request $request) use ($responseName) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
-            $this->assertEquals('https://api.nexmo.com/ni/advanced/ni/advanced/json?number=12345', $uriString);
+            $this->assertEquals('https://api.nexmo.com/ni/advanced/json?number=12345', $uriString);
             return true;
         }))->willReturn($this->getResponse($responseName, 200));
 
         $response = $this->insightClient->advanced('12345');
-        $this->assertInstanceOf(Advanced::class, $response);
+        $this->assertInstanceOf(Advanced::class,  $response);
     }
 
     public function advancedExceptionResponseProvider(): array
