@@ -48,14 +48,6 @@ class MapFactory implements FactoryInterface, ContainerInterface
     }
 
     /**
-     * @deprecated Use has() instead
-     */
-    public function hasApi(string $api): bool
-    {
-        return $this->has($api);
-    }
-
-    /**
      * @param string $id
      *
      * @noinspection PhpMissingParamTypeInspection
@@ -75,14 +67,6 @@ class MapFactory implements FactoryInterface, ContainerInterface
     public function getClient(): Client
     {
         return $this->client;
-    }
-
-    /**
-     * @deprecated Use get() instead
-     */
-    public function getApi(string $api)
-    {
-        return $this->get($api);
     }
 
     public function make($key)
