@@ -10,7 +10,7 @@ use Vonage\Client\APIResource;
 use Vonage\Client\Credentials\Container;
 use Vonage\Client\Credentials\CredentialsInterface;
 use Vonage\Client\Credentials\Gnp;
-use Vonage\Client\Exception\Credentials;
+use Vonage\Client\Exception\CredentialsException;
 use Vonage\Client\Exception\Exception;
 use Vonage\Webhook\Factory;
 

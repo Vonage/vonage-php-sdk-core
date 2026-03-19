@@ -9,7 +9,7 @@ use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
 use Vonage\Client;
-use Vonage\Client\Exception\Server as ServerException;
+use Vonage\Client\Exception\ServerException as ServerException;
 use Vonage\Verify\Client as VerifyClient;
 use Vonage\Verify\ExceptionErrorHandler;
 use Vonage\Verify\Request;

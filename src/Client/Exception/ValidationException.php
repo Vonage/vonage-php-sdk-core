@@ -6,7 +6,7 @@ namespace Vonage\Client\Exception;
 
 use Throwable;
 
-class Validation extends Request
+class ValidationException extends RequestException
 {
     public function __construct(
         string $message = '',

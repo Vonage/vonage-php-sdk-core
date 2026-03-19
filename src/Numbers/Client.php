@@ -9,8 +9,8 @@ use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
 use Vonage\Client\Exception as ClientException;
 use Vonage\Client\Exception\Exception;
-use Vonage\Client\Exception\Request;
-use Vonage\Client\Exception\Server;
+use Vonage\Client\Exception\RequestException;
+use Vonage\Client\Exception\ServerException;
 use Vonage\Client\Exception\ThrottleException;
 use Vonage\Entity\Filter\FilterInterface;
 use Vonage\Entity\IterableAPICollection;
@@ -84,8 +84,8 @@ class Client implements APIClient
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      */
     public function get(string $number): Number
     {
@@ -94,7 +94,7 @@ class Client implements APIClient
         // This is legacy behaviour, so we need to keep it even though
         // it isn't technically the correct message
         if (count($items) !== 1) {
-            throw new ClientException\Request('number not found', 404);
+            throw new ClientException\RequestException('number not found', 404);
         }
 
         return $items[0];
@@ -103,8 +103,8 @@ class Client implements APIClient
     /**
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      */
     public function searchAvailable(string $country, ?FilterInterface $options = null): array
     {
@@ -131,8 +131,8 @@ class Client implements APIClient
     /**
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      */
     public function searchOwned($number = null, ?FilterInterface $options = null): array
     {
@@ -158,8 +158,8 @@ class Client implements APIClient
 
     /**
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      * @throws ClientExceptionInterface
      */
     private function handleNumberSearchResult(IterableAPICollection $response, $number = null): array
@@ -220,8 +220,8 @@ class Client implements APIClient
     /**
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      */
     public function cancel(string $number, ?string $country = null): void
     {

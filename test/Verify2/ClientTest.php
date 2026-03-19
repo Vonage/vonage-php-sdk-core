@@ -540,7 +540,7 @@ class ClientTest extends VonageTestCase
 
     public function testCannotSendConcurrentVerifications(): void
     {
-        $this->expectException(Client\Exception\Request::class);
+        $this->expectException(Client\Exception\RequestException::class);
         $this->expectExceptionMessage('Conflict: Concurrent verifications to the same number are not allowed.. ' .
             'See https://www.developer.vonage.com/api-errors/verify#conflict for more information');
 
@@ -592,7 +592,7 @@ class ClientTest extends VonageTestCase
 
     public function testCanHandleThrottle(): void
     {
-        $this->expectException(Client\Exception\Request::class);
+        $this->expectException(Client\Exception\RequestException::class);
         $this->expectExceptionMessage('Rate Limit Hit: Please wait, then retry your request. See https://www.' .
             'developer.vonage.com/api-errors#throttled for more information');
 
@@ -633,7 +633,7 @@ class ClientTest extends VonageTestCase
 
     public function testCheckHandlesInvalidPIN(): void
     {
-        $this->expectException(Client\Exception\Request::class);
+        $this->expectException(Client\Exception\RequestException::class);
         $this->expectExceptionMessage('Invalid Code: The code you provided does not match the expected value.. See' .
             ' https://www.developer.vonage.com/api-errors/verify#invalid-code for more information');
 
@@ -654,7 +654,7 @@ class ClientTest extends VonageTestCase
 
     public function testCheckHandlesInvalidRequestId(): void
     {
-        $this->expectException(Client\Exception\Request::class);
+        $this->expectException(Client\Exception\RequestException::class);
         $this->expectExceptionMessage('Not Found: Request c11236f4-00bf-4b89-84ba-88b25df97315 was not found or it ' .
             'has been verified already.. See https://developer.vonage.com/api-errors#not-found for more information');
 
@@ -675,7 +675,7 @@ class ClientTest extends VonageTestCase
 
     public function testCheckHandlesConflict(): void
     {
-        $this->expectException(Client\Exception\Request::class);
+        $this->expectException(Client\Exception\RequestException::class);
         $this->expectExceptionMessage('Conflict: The current Verify workflow step does not support a code.');
 
         $payload = [
@@ -703,7 +703,7 @@ class ClientTest extends VonageTestCase
 
     public function testCheckHandlesLockedCodeSubmission(): void
     {
-        $this->expectException(Client\Exception\Request::class);
+        $this->expectException(Client\Exception\RequestException::class);
         $this->expectExceptionMessage('Invalid Code: An incorrect code has been provided too many times. ' .
             'Workflow terminated.. See https://www.developer.vonage.com/api-errors/verify#expired for more information');
 
@@ -714,7 +714,7 @@ class ClientTest extends VonageTestCase
 
     public function testCheckHandlesThrottle(): void
     {
-        $this->expectException(Client\Exception\Request::class);
+        $this->expectException(Client\Exception\RequestException::class);
         $this->expectExceptionMessage('Rate Limit Hit: Please wait, then retry your request. See https://www.de' .
             'veloper.vonage.com/api-errors#throttled for more information');
 

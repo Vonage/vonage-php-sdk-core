@@ -141,46 +141,46 @@ class ClientTest extends VonageTestCase
     public function exceptionsProvider(): array
     {
         return [
-            'unauthorized' => ['unauthorized', 401, ClientException\Request::class, "Unauthorized"],
+            'unauthorized' => ['unauthorized', 401, ClientException\RequestException::class, "Unauthorized"],
             'premature-redaction' => [
                 'premature-redaction',
                 403,
-                ClientException\Request::class,
+                ClientException\RequestException::class,
                 "Premature Redaction - You must wait 60 minutes before redacting ID '0A000000B0C9A1234'. " .
                 "See https://developer.nexmo.com/api-errors/redact#premature-redaction"
             ],
             'unprovisioned' => [
                 'unprovisioned',
                 403,
-                ClientException\Request::class,
+                ClientException\RequestException::class,
                 "Authorisation error - User=ABC123 is not provisioned to redact product=SMS. " .
                 "See https://developer.nexmo.com/api-errors#unprovisioned"
             ],
             'invalid-id' => [
                 'invalid-id',
                 404,
-                ClientException\Request::class,
+                ClientException\RequestException::class,
                 "Invalid ID - ID '0A000000B0C9A1234' could not be found (type=MT). " .
                 "See https://developer.nexmo.com/api-errors#invalid-id"
             ],
             'invalid-json' => [
                 'invalid-json',
                 422,
-                ClientException\Request::class,
+                ClientException\RequestException::class,
                 "Invalid JSON - Unexpected character ('\"' (code 34)): was expecting comma to separate " .
                 "Object entries. See https://developer.nexmo.com/api-errors#invalid-json"
             ],
             'unsupported-product' => [
                 'unsupported-product',
                 422,
-                ClientException\Request::class,
+                ClientException\RequestException::class,
                 "Invalid Product - No product corresponding to supplied string sms2!. " .
                 "See https://developer.nexmo.com/api-errors/redact#invalid-product"
             ],
             'unknown-error' => [
                 'error',
                 500,
-                ClientException\Server::class,
+                ClientException\ServerException::class,
                 "Unexpected error"
             ],
         ];

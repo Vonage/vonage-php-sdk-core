@@ -35,8 +35,8 @@ class Client implements ClientAwareInterface, APIClient
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      */
     public function sms($message_id, $delivered, $timestamp = null): void
     {
@@ -50,8 +50,8 @@ class Client implements ClientAwareInterface, APIClient
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      */
     public function voice($message_id, $delivered, $timestamp = null): void
     {
@@ -65,8 +65,8 @@ class Client implements ClientAwareInterface, APIClient
      * @param $timestamp
      *
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      * @throws ClientExceptionInterface
      */
     protected function sendConversion($type, $message_id, $delivered, $timestamp = null): void
@@ -90,18 +90,18 @@ class Client implements ClientAwareInterface, APIClient
         }
     }
 
-    protected function getException(ResponseInterface $response): ClientException\Exception|ClientException\Request|ClientException\Server
+    protected function getException(ResponseInterface $response): ClientException\Exception|ClientException\RequestException|ClientException\ServerException
     {
         $body = json_decode($response->getBody()->getContents(), true);
         $status = $response->getStatusCode();
 
         if ($status === 402) {
-            $e = new ClientException\Request('This endpoint may need activating on your account. ' .
+            $e = new ClientException\RequestException('This endpoint may need activating on your account. ' .
                 'Please email support@Vonage.com for more information', $status);
         } elseif ($status >= 400 && $status < 500) {
-            $e = new ClientException\Request($body['error_title'], $status);
+            $e = new ClientException\RequestException($body['error_title'], $status);
         } elseif ($status >= 500 && $status < 600) {
-            $e = new ClientException\Server($body['error_title'], $status);
+            $e = new ClientException\ServerException($body['error_title'], $status);
         } else {
             $e = new ClientException\Exception('Unexpected HTTP Status Code (' . $status . ')');
         }

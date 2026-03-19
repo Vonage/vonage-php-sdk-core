@@ -3,7 +3,7 @@
 namespace VonageTest\Subaccount\Filter;
 
 use PHPUnit\Framework\TestCase;
-use Vonage\Client\Exception\Request;
+use Vonage\Client\Exception\RequestException;
 use Vonage\Subaccount\Filter\SubaccountFilter;
 
 class SubaccountTest extends TestCase
@@ -99,7 +99,7 @@ class SubaccountTest extends TestCase
 
     public function testConstructionWithInvalidKeyThrowsException(): void
     {
-        $this->expectException(Request::class);
+        $this->expectException(RequestException::class);
 
         $filterValues = [
             'start_date'  => '2023-01-01',
@@ -112,7 +112,7 @@ class SubaccountTest extends TestCase
 
     public function testConstructionWithNonStringValueThrowsException(): void
     {
-        $this->expectException(Request::class);
+        $this->expectException(RequestException::class);
 
         $filterValues = [
             'start_date' => '2023-01-01',

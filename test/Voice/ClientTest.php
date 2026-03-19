@@ -10,7 +10,7 @@ use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
 use Vonage\Client;
 use Vonage\Client\APIResource;
-use Vonage\Client\Exception\Request as RequestException;
+use Vonage\Client\Exception\RequestException as RequestException;
 use Vonage\Voice\CallAction;
 use Vonage\Voice\Client as VoiceClient;
 use Vonage\Voice\Endpoint\Phone;
@@ -659,7 +659,7 @@ class ClientTest extends VonageTestCase
     /**
      * @throws ClientExceptionInterface
      * @throws Client\Exception\Exception
-     * @throws Client\Exception\Server
+     * @throws Client\Exception\ServerException
      * @throws RequestException
      */
     public function testCanSearchCalls(): void

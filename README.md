@@ -1025,7 +1025,7 @@ And delete the old secret (any application still using these credentials will st
 ```php
 try {
     $response = $client->account()->deleteSecret(API_KEY, 'd0f40c7e-91f2-4fe0-8bc6-8942587b622c');
-} catch(\Vonage\Client\Exception\Request $e) {
+} catch(\Vonage\Client\Exception\RequestException $e) {
     echo $e->getMessage();
 }
 ```
@@ -1383,7 +1383,7 @@ $vonage_client = new Vonage\Client(new Vonage\Client\Credentials\Basic($api_key,
 
 ### Accessing Response Data
 
-When things go wrong, you'll receive an `Exception`. The Vonage exception classes `Vonage\Client\Exception\Request` and `Vonage\Client\Exception\Server` support an additional `getEntity()` method which you can use in addition to `getCode()` and `getMessage()` to find out more about what went wrong. The entity returned will typically be an object related to the operation, or the response object from the API call.
+When things go wrong, you'll receive an `Exception`. The Vonage exception classes `Vonage\Client\Exception\RequestException` and `Vonage\Client\Exception\ServerException` support an additional `getEntity()` method which you can use in addition to `getCode()` and `getMessage()` to find out more about what went wrong. The entity returned will typically be an object related to the operation, or the response object from the API call.
 
 ### Composer installation fails due to Guzzle Adapter
 

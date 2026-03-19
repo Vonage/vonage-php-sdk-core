@@ -10,7 +10,7 @@ use Psr\Http\Client\ClientExceptionInterface;
 use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
 use Vonage\Client\Exception\Exception;
-use Vonage\Client\Exception\NotFound;
+use Vonage\Client\Exception\NotFoundException;
 use Vonage\Entity\Filter\KeyValueFilter;
 use Vonage\Entity\Hydrator\ArrayHydrator;
 
@@ -314,7 +314,7 @@ class Client implements APIClient
             }
         }
 
-        throw new NotFound('Could not find correct image type');
+        throw new NotFoundException('Could not find correct image type');
     }
 
     /**

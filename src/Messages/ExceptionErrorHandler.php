@@ -15,8 +15,8 @@ use function json_decode;
 class ExceptionErrorHandler
 {
     /**
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      * @throws ThrottleException|JsonException
      */
     public function __invoke(ResponseInterface $response, RequestInterface $request)
@@ -37,7 +37,7 @@ class ExceptionErrorHandler
         }
 
         if ($statusCode >= 500 && $statusCode <= 599) {
-            throw new ClientException\Server($responseBody['title'] . ': ' . $responseBody['detail']);
+            throw new ClientException\ServerException($responseBody['title'] . ': ' . $responseBody['detail']);
         }
 
         $message = $responseBody['title'] ?? '';
@@ -46,6 +46,6 @@ class ExceptionErrorHandler
             $message .= ': ' . $responseBody['detail'];
         }
 
-        throw new ClientException\Request($message);
+        throw new ClientException\RequestException($message);
     }
 }
