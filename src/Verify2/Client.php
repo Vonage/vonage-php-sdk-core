@@ -5,7 +5,7 @@ namespace Vonage\Verify2;
 use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
 use Vonage\Client\Exception\Exception;
-use Vonage\Client\Exception\Request;
+use Vonage\Client\Exception\RequestException;
 use Vonage\Entity\Hydrator\ArrayHydrator;
 use Vonage\Entity\IterableAPICollection;
 use Vonage\Verify2\Filters\TemplateFilter;
@@ -48,7 +48,7 @@ class Client implements APIClient
         } catch (Exception $e) {
             // For horrible reasons in the API Error Handler, throw the error unless it's a 409.
             if ($e->getCode() === 409) {
-                throw new Request('Conflict: The current Verify workflow step does not support a code.');
+                throw new RequestException('Conflict: The current Verify workflow step does not support a code.');
             }
 
             throw $e;

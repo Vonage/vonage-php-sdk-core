@@ -6,7 +6,7 @@ namespace Vonage\Verify;
 
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Vonage\Client\Exception\Request;
+use Vonage\Client\Exception\RequestException;
 
 use function json_decode;
 
@@ -26,7 +26,7 @@ class ExceptionErrorHandler
         $e = null;
 
         if (!isset($data['status'])) {
-            $e = new Request('unexpected response from API');
+            $e = new RequestException('unexpected response from API');
             $e->setEntity($data);
             throw $e;
         }
@@ -45,7 +45,7 @@ class ExceptionErrorHandler
                 break;
             case '5':
             default:
-                $e = new Request($data['error_text'], (int)$data['status']);
+                $e = new RequestException($data['error_text'], (int)$data['status']);
                 $e->setEntity($data);
                 throw $e;
         }

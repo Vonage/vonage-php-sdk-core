@@ -153,7 +153,7 @@ class ClientTest extends VonageTestCase
 
     public function testGetListFailsAuth(): void
     {
-        $this->expectException(Client\Exception\Request::class);
+        $this->expectException(Client\Exception\RequestException::class);
         $this->expectExceptionMessage('Unauthorized');
 
         $this->vonageClient->send(Argument::that(function (Request $request) {

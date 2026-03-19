@@ -11,7 +11,7 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 use Vonage\Client;
 use Vonage\Client\APIResource;
-use Vonage\Client\Exception\Server as ServerException;
+use Vonage\Client\Exception\ServerException as ServerException;
 use Vonage\SMS\Client as SMSClient;
 use Vonage\SMS\ExceptionErrorHandler;
 use Vonage\SMS\Message\SMS;
@@ -147,7 +147,7 @@ class ClientTest extends VonageTestCase
      */
     public function testHandlesEmptyResponse(): void
     {
-        $this->expectException(Client\Exception\Request::class);
+        $this->expectException(Client\Exception\RequestException::class);
         $this->expectExceptionMessage('Unexpected response from the API');
 
         $this->vonageClient
@@ -199,7 +199,7 @@ class ClientTest extends VonageTestCase
      */
     public function testCanParseErrorsAndThrowException(): void
     {
-        $this->expectException(Client\Exception\Request::class);
+        $this->expectException(Client\Exception\RequestException::class);
         $this->expectExceptionMessage('Missing from param');
 
         $this->vonageClient
@@ -401,7 +401,7 @@ class ClientTest extends VonageTestCase
      */
     public function testCanHandleMissingShortcodeOn2FA(): void
     {
-        $this->expectException(Client\Exception\Request::class);
+        $this->expectException(Client\Exception\RequestException::class);
         $this->expectExceptionMessage('Invalid Account for Campaign');
         $this->expectExceptionCode(101);
 
@@ -482,7 +482,7 @@ class ClientTest extends VonageTestCase
      */
     public function testCanHandleMissingAlertSetup(): void
     {
-        $this->expectException(Client\Exception\Request::class);
+        $this->expectException(Client\Exception\RequestException::class);
         $this->expectExceptionMessage('Invalid Account for Campaign');
         $this->expectExceptionCode(101);
 

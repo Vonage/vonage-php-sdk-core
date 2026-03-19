@@ -9,7 +9,7 @@ use Prophecy\Prophecy\ObjectProphecy;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Client\Credentials\Handler\BasicQueryHandler;
-use Vonage\Client\Exception\Request;
+use Vonage\Client\Exception\RequestException;
 use Vonage\Insights\Advanced;
 use Vonage\Insights\Client as InsightClient;
 use VonageTest\Traits\HTTPTestTrait;
@@ -65,7 +65,7 @@ class AdvancedTest extends VonageTestCase
     public function testExceptionWhenNotChargeable($responseName, $expectException): void
     {
         if ($expectException) {
-            $this->expectException(Request::class);
+            $this->expectException(RequestException::class);
         }
 
         $this->vonageClient->send(Argument::that(function (\Laminas\Diactoros\Request $request) use ($responseName) {

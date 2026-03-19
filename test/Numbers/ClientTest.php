@@ -11,7 +11,7 @@ use Vonage\Client\APIResource;
 use Vonage\Client\Credentials\Basic;
 use Vonage\Client\Credentials\Container;
 use Vonage\Client\Exception as ClientException;
-use Vonage\Client\Exception\Request as RequestException;
+use Vonage\Client\Exception\RequestException as RequestException;
 use Vonage\Numbers\Client as NumbersClient;
 use Vonage\Numbers\Filter\AvailableNumbers;
 use Vonage\Numbers\Filter\OwnedNumbers;
@@ -294,7 +294,7 @@ class ClientTest extends VonageTestCase
 
     public function testSearchOwnedErrorsOnUnknownSearchParameters(): void
     {
-        $this->expectException(ClientException\Request::class);
+        $this->expectException(ClientException\RequestException::class);
         $this->expectExceptionMessage("Unknown option: 'foo'");
 
         $this->numberClient->searchOwned(new OwnedNumbers(['foo' => 'bar']), '1415550100');
@@ -440,7 +440,7 @@ class ClientTest extends VonageTestCase
             'GB',
             'method-failed',
             420,
-            ClientException\Request::class,
+            ClientException\RequestException::class,
             'method failed'
         ];
 
@@ -449,7 +449,7 @@ class ClientTest extends VonageTestCase
             'GB',
             'method-failed',
             420,
-            ClientException\Request::class,
+            ClientException\RequestException::class,
             'method failed'
         ];
 
@@ -458,7 +458,7 @@ class ClientTest extends VonageTestCase
             'GB',
             'method-failed',
             420,
-            ClientException\Request::class,
+            ClientException\RequestException::class,
             'method failed'
         ];
 

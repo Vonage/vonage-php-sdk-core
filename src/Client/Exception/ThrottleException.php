@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Vonage\Client\Exception;
 
-class ThrottleException extends Server
+class ThrottleException extends ServerException
 {
     /**
      * @var int

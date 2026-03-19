@@ -2,7 +2,7 @@
 
 namespace Vonage\Subaccount\Filter;
 
-use Vonage\Client\Exception\Request;
+use Vonage\Client\Exception\RequestException;
 use Vonage\Entity\Filter\FilterInterface;
 
 class SubaccountFilter implements FilterInterface
@@ -21,11 +21,11 @@ class SubaccountFilter implements FilterInterface
     {
         foreach ($filterValues as $key => $value) {
             if (! in_array($key, self::$possibleParameters, true)) {
-                throw new Request($value . ' is not a valid value');
+                throw new RequestException($value . ' is not a valid value');
             }
 
             if (!is_string($value)) {
-                throw new Request($value . ' is not a string');
+                throw new RequestException($value . ' is not a string');
             }
         }
 

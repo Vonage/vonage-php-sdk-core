@@ -5,28 +5,28 @@ declare(strict_types=1);
 namespace VonageTest\Client\Exception;
 
 use PHPUnit\Framework\TestCase;
-use Vonage\Client\Exception\NotFound;
+use Vonage\Client\Exception\NotFoundException;
 
 class NotFoundTest extends TestCase
 {
     public function testExceptionCanBeThrown(): void
     {
-        $this->expectException(NotFound::class);
+        $this->expectException(NotFoundException::class);
 
-        throw new NotFound('You are not authorised to perform this request');
+        throw new NotFoundException('You are not authorised to perform this request');
     }
 
     public function testExceptionMessage(): void
     {
         $message = 'You are not authorised to perform this request';
-        $exception = new NotFound($message);
+        $exception = new NotFoundException($message);
 
         $this->assertSame($message, $exception->getMessage());
     }
 
     public function testExceptionIsInstanceOfBaseException(): void
     {
-        $exception = new NotFound('You are not authorised to perform this request');
+        $exception = new NotFoundException('You are not authorised to perform this request');
 
         $this->assertInstanceOf(\Exception::class, $exception);
     }

@@ -33,7 +33,7 @@ class APIExceptionHandler
     /**
      * @throws Exception\Exception
      *
-     * @return Exception\Request|Exception\Server
+     * @return Exception\RequestException|Exception\ServerException
      */
     public function __invoke(ResponseInterface $response, RequestInterface $request)
     {
@@ -75,11 +75,11 @@ class APIExceptionHandler
         }
 
         if ($status >= 400 && $status < 500) {
-            $e = new Exception\Request($errorTitle, $status);
+            $e = new Exception\RequestException($errorTitle, $status);
             @$e->setRequest($request);
             @$e->setResponse($response);
         } elseif ($status >= 500 && $status < 600) {
-            $e = new Exception\Server($errorTitle, $status);
+            $e = new Exception\ServerException($errorTitle, $status);
             @$e->setRequest($request);
             @$e->setResponse($response);
         } else {

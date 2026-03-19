@@ -5,28 +5,28 @@ declare(strict_types=1);
 namespace VonageTest\Client\Exception;
 
 use PHPUnit\Framework\TestCase;
-use Vonage\Client\Exception\Request;
+use Vonage\Client\Exception\ServerException;
 
 class ServerTest extends TestCase
 {
     public function testExceptionCanBeThrown(): void
     {
-        $this->expectException(Request::class);
+        $this->expectException(ServerException::class);
 
-        throw new Request('No results found');
+        throw new ServerException('No results found');
     }
 
     public function testExceptionMessage(): void
     {
         $message = 'No results found';
-        $exception = new Request($message);
+        $exception = new ServerException($message);
 
         $this->assertSame($message, $exception->getMessage());
     }
 
     public function testExceptionIsInstanceOfBaseException(): void
     {
-        $exception = new Request('No results found');
+        $exception = new ServerException('No results found');
 
         $this->assertInstanceOf(\Exception::class, $exception);
     }

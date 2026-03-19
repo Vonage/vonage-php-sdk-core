@@ -21,7 +21,7 @@ use Vonage\Application\Webhook as ApplicationWebhook;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Client\Exception\Exception as ClientException;
-use Vonage\Client\Exception\Server as ServerException;
+use Vonage\Client\Exception\ServerException as ServerException;
 use VonageTest\Traits\HTTPTestTrait;
 use VonageTest\Traits\Psr7AssertionTrait;
 use VonageTest\VonageTestCase;
@@ -338,7 +338,7 @@ class ClientTest extends VonageTestCase
 
             switch ($class) {
                 case '4':
-                    $this->assertInstanceOf(Client\Exception\Request::class, $e);
+                    $this->assertInstanceOf(Client\Exception\RequestException::class, $e);
                     $this->assertEquals($msg, $e->getMessage());
                     $this->assertEquals($code, $e->getCode());
                     break;

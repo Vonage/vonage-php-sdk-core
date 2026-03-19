@@ -8,7 +8,7 @@ use Psr\Http\Client\ClientExceptionInterface;
 use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
 use Vonage\Client\Exception as ClientException;
-use Vonage\Client\Exception\Request as ClientRequestException;
+use Vonage\Client\Exception\RequestException as ClientRequestException;
 use Vonage\Entity\Filter\KeyValueFilter;
 
 use function count;
@@ -64,7 +64,7 @@ class Client implements APIClient
      * @throws ClientExceptionInterface
      * @throws ClientRequestException
      * @throws ClientException\Exception
-     * @throws ClientException\Server
+     * @throws ClientException\ServerException
      */
     public function getSmsPrice(string $country): SmsPrice
     {
@@ -81,7 +81,7 @@ class Client implements APIClient
      * @throws ClientExceptionInterface
      * @throws ClientRequestException
      * @throws ClientException\Exception
-     * @throws ClientException\Server
+     * @throws ClientException\ServerException
      */
     public function getVoicePrice(string $country): VoicePrice
     {
@@ -95,7 +95,7 @@ class Client implements APIClient
     /**
      * @throws ClientRequestException
      * @throws ClientException\Exception
-     * @throws ClientException\Server
+     * @throws ClientException\ServerException
      * @throws ClientExceptionInterface
      *
      * @todo This should return an empty result instead of throwing an Exception on no results
@@ -108,7 +108,7 @@ class Client implements APIClient
         $pageData = $results->getPageData();
 
         if (is_null($pageData)) {
-            throw new ClientException\Server('No results found');
+            throw new ClientException\ServerException('No results found');
         }
 
         return $pageData;
@@ -119,7 +119,7 @@ class Client implements APIClient
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
-     * @throws ClientException\Server
+     * @throws ClientException\ServerException
      *
      * @todo This needs further investigated to see if '' can even be returned from this endpoint
      */
@@ -128,7 +128,7 @@ class Client implements APIClient
         $data = $this->getAPIResource()->get('get-balance', [], ['accept' => 'application/json']);
 
         if (is_null($data)) {
-            throw new ClientException\Server('No results found');
+            throw new ClientException\ServerException('No results found');
         }
 
         return new Balance($data['value'], $data['autoReload']);
@@ -150,7 +150,7 @@ class Client implements APIClient
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
-     * @throws ClientException\Server
+     * @throws ClientException\ServerException
      */
     public function getConfig(): Config
     {
@@ -159,7 +159,7 @@ class Client implements APIClient
         $body = $api->submit();
 
         if ($body === '') {
-            throw new ClientException\Server('Response was empty');
+            throw new ClientException\ServerException('Response was empty');
         }
 
         $body = json_decode($body, true);
@@ -178,7 +178,7 @@ class Client implements APIClient
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
-     * @throws ClientException\Server
+     * @throws ClientException\ServerException
      */
     public function updateConfig(array $options): Config
     {
@@ -199,7 +199,7 @@ class Client implements APIClient
         $rawBody = $api->submit($params);
 
         if ($rawBody === '') {
-            throw new ClientException\Server('Response was empty');
+            throw new ClientException\ServerException('Response was empty');
         }
 
         $body = json_decode($rawBody, true);

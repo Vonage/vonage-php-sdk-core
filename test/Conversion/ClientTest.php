@@ -14,8 +14,8 @@ use Vonage\Client;
 use Vonage\Client as VonageClient;
 use Vonage\Client\APIResource;
 use Vonage\Client\Exception\Exception as ClientException;
-use Vonage\Client\Exception\Request as RequestException;
-use Vonage\Client\Exception\Server as ServerException;
+use Vonage\Client\Exception\RequestException as RequestException;
+use Vonage\Client\Exception\ServerException as ServerException;
 use Vonage\Conversion\Client as ConversionClient;
 use VonageTest\Traits\HTTPTestTrait;
 use VonageTest\Traits\Psr7AssertionTrait;
@@ -153,7 +153,7 @@ class ClientTest extends VonageTestCase
 
         $return = $method->invoke($this->conversionClient, $response);
         $this->assertEquals('This endpoint may need activating on your account. Please email support@Vonage.com for more information', $return->getMessage());
-        $this->assertInstanceOf(Client\Exception\Request::class, $return);
+        $this->assertInstanceOf(Client\Exception\RequestException::class, $return);
 
         $serverResponse = new Response(500, [], json_encode([
             'error_title' => 'Vonage Server Error',
@@ -161,7 +161,7 @@ class ClientTest extends VonageTestCase
 
         $return2 = $method->invoke($this->conversionClient, $serverResponse);
         $this->assertEquals('Vonage Server Error', $return2->getMessage());
-        $this->assertInstanceOf(Client\Exception\Server::class, $return2);
+        $this->assertInstanceOf(Client\Exception\ServerException::class, $return2);
 
         $unexpected = new Response(201, [], json_encode([
             'error_title' => 'this is not an error',
@@ -177,6 +177,6 @@ class ClientTest extends VonageTestCase
 
         $return4 = $method->invoke($this->conversionClient, $notFound);
         $this->assertEquals('Not Found', $return4->getMessage());
-        $this->assertInstanceOf(Client\Exception\Request::class, $return4);
+        $this->assertInstanceOf(Client\Exception\RequestException::class, $return4);
     }
 }

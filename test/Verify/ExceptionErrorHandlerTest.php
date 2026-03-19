@@ -8,7 +8,7 @@ use Laminas\Diactoros\Request;
 use VonageTest\VonageTestCase;
 use Vonage\Entity\Psr7Trait;
 use Laminas\Diactoros\Response;
-use Vonage\Client\Exception\Request as ExceptionRequest;
+use Vonage\Client\Exception\RequestException as ExceptionRequest;
 use Vonage\Verify\ExceptionErrorHandler;
 
 class ExceptionErrorHandlerTest extends VonageTestCase

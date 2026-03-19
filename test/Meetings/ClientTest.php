@@ -12,9 +12,9 @@ use Psr\Http\Message\RequestInterface;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Client\Credentials\Handler\KeypairHandler;
-use Vonage\Client\Exception\Conflict;
-use Vonage\Client\Exception\NotFound;
-use Vonage\Client\Exception\Validation;
+use Vonage\Client\Exception\ConflictException;
+use Vonage\Client\Exception\NotFoundException;
+use Vonage\Client\Exception\ValidationException;
 use Vonage\Meetings\Application;
 use Vonage\Meetings\ApplicationTheme;
 use Vonage\Meetings\Client as MeetingsClient;
@@ -170,7 +170,7 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('empty', 403));
 
-        $this->expectException(Client\Exception\Credentials::class);
+        $this->expectException(Client\Exception\CredentialsException::class);
         $this->expectExceptionMessage('You are not authorised to perform this request');
 
         $room = new Room();
@@ -191,7 +191,7 @@ class ClientTest extends TestCase
             );
             return true;
         }))->willReturn($this->getResponse('empty', 404));
-        $this->expectException(NotFound::class);
+        $this->expectException(NotFoundException::class);
         $this->expectExceptionMessage('No resource found');
         $response = @$this->meetingsClient->getRoom('224d6219-dc05-4c09-9d42-96adce7fcb67');
     }
@@ -208,7 +208,7 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('empty', 400));
 
-        $this->expectException(Validation::class);
+        $this->expectException(ValidationException::class);
         $this->expectExceptionMessage('The request data was invalid');
 
         $room = new Room();
@@ -408,7 +408,7 @@ class ClientTest extends TestCase
             return true;
         }))->willReturn($this->getResponse('empty', 409));
 
-        $this->expectException(Conflict::class);
+        $this->expectException(ConflictException::class);
         $this->expectExceptionMessage('Entity conflict');
         $response = @$this->meetingsClient->createApplicationTheme('My-Theme');
     }
@@ -495,7 +495,7 @@ class ClientTest extends TestCase
     public function testWillExtractCorrectImageKey($logoType, $validCall): void
     {
         if (!$validCall) {
-            $this->expectException(NotFound::class);
+            $this->expectException(NotFoundException::class);
         }
 
         $this->vonageClient->send(Argument::that(function (RequestInterface $request) {

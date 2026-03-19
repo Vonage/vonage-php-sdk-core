@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Vonage\Numbers\Filter;
 
 use InvalidArgumentException;
-use Vonage\Client\Exception\Request;
+use Vonage\Client\Exception\RequestException;
 use Vonage\Entity\Filter\FilterInterface;
 use Vonage\Numbers\Number;
 
@@ -54,21 +54,21 @@ class AvailableNumbers implements FilterInterface
     {
         foreach ($filter as $key => $value) {
             if (!array_key_exists($key, self::$possibleParameters)) {
-                throw new Request("Unknown option: '" . $key . "'");
+                throw new RequestException("Unknown option: '" . $key . "'");
             }
 
             switch (self::$possibleParameters[$key]) {
                 case 'boolean':
                     $value = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
                     if (is_null($value)) {
-                        throw new Request("Invalid value: '" . $key . "' must be a boolean value");
+                        throw new RequestException("Invalid value: '" . $key . "' must be a boolean value");
                     }
                     $value = $value ? "true" : "false";
                     break;
                 case 'integer':
                     $value = filter_var($value, FILTER_VALIDATE_INT);
                     if ($value === false) {
-                        throw new Request("Invalid value: '" . $key . "' must be an integer");
+                        throw new RequestException("Invalid value: '" . $key . "' must be an integer");
                     }
                     break;
                 default:

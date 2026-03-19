@@ -5,28 +5,28 @@ declare(strict_types=1);
 namespace VonageTest\Client\Exception;
 
 use PHPUnit\Framework\TestCase;
-use Vonage\Client\Exception\Request;
+use Vonage\Client\Exception\TransportException;
 
 class TransportTest extends TestCase
 {
     public function testExceptionCanBeThrown(): void
     {
-        $this->expectException(Request::class);
+        $this->expectException(TransportException::class);
 
-        throw new Request('Response was empty');
+        throw new TransportException('Response was empty');
     }
 
     public function testExceptionMessage(): void
     {
         $message = 'Response was empty';
-        $exception = new Request($message);
+        $exception = new TransportException($message);
 
         $this->assertSame($message, $exception->getMessage());
     }
 
     public function testExceptionIsInstanceOfBaseException(): void
     {
-        $exception = new Request('Response was empty');
+        $exception = new TransportException('Response was empty');
 
         $this->assertInstanceOf(\Exception::class, $exception);
     }

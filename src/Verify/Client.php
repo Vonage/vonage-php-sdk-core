@@ -50,8 +50,8 @@ class Client implements ClientAwareInterface, APIClient
     /**
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      */
     public function start(Request|Verification|array|string $verification): Verification
     {
@@ -86,8 +86,8 @@ class Client implements ClientAwareInterface, APIClient
     /**
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      *
      * @return array{request_id: string, status: string}
      */
@@ -104,8 +104,8 @@ class Client implements ClientAwareInterface, APIClient
     /**
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      */
     public function search(Verification|string $verification)
     {
@@ -135,8 +135,8 @@ class Client implements ClientAwareInterface, APIClient
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      */
     public function cancel($verification): Verification
     {
@@ -156,8 +156,8 @@ class Client implements ClientAwareInterface, APIClient
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      */
     public function trigger($verification): Verification
     {
@@ -175,8 +175,8 @@ class Client implements ClientAwareInterface, APIClient
     /**
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      */
     public function check(Verification|array|string $verification, string $code, ?string $ip = null): Verification
     {
@@ -252,8 +252,8 @@ class Client implements ClientAwareInterface, APIClient
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      */
     protected function control(Verification|array|string $verification, string $cmd): Verification
     {
@@ -286,13 +286,13 @@ class Client implements ClientAwareInterface, APIClient
     }
 
     /**
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      */
     protected function checkError($verification, array $data)
     {
         if (!isset($data['status'])) {
-            $e = new ClientException\Request('unexpected response from API');
+            $e = new ClientException\RequestException('unexpected response from API');
             $e->setEntity($data);
 
             throw $e;
@@ -311,11 +311,11 @@ class Client implements ClientAwareInterface, APIClient
             case '0':
                 return $verification;
             case '5':
-                $e = new ClientException\Server($data['error_text'], (int)$data['status']);
+                $e = new ClientException\ServerException($data['error_text'], (int)$data['status']);
                 $e->setEntity($data);
                 break;
             default:
-                $e = new ClientException\Request($data['error_text'], (int)$data['status']);
+                $e = new ClientException\RequestException($data['error_text'], (int)$data['status']);
                 $e->setEntity($data);
 
                 if (array_key_exists('request_id', $data)) {

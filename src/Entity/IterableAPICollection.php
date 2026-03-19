@@ -16,7 +16,7 @@ use Vonage\Client\ClientAwareInterface;
 use Vonage\Client\ClientAwareTrait;
 use Vonage\Client\Exception as ClientException;
 use Vonage\Client\Exception\Exception;
-use Vonage\Client\Exception\Server;
+use Vonage\Client\Exception\ServerException;
 use Vonage\Entity\Filter\EmptyFilter;
 use Vonage\Entity\Filter\FilterInterface;
 
@@ -214,8 +214,8 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      */
     #[\ReturnTypeWillChange]
     public function current()
@@ -254,8 +254,8 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      */
     public function valid(): bool
     {
@@ -320,8 +320,8 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      */
     public function rewind(): void
     {
@@ -349,8 +349,8 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      */
     public function count(): int
     {
@@ -423,8 +423,8 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
     /**
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      */
     public function getPageData(): ?array
     {
@@ -489,8 +489,8 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
      * Fetch a page using the current filter if no query is provided.
      *
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      * @throws ClientExceptionInterface
      */
     protected function fetchPage($absoluteUri): void
@@ -556,7 +556,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
         }
     }
 
-    protected function getException(ResponseInterface $response): ClientException\Request|ClientException\Server
+    protected function getException(ResponseInterface $response): ClientException\RequestException|ClientException\ServerException
     {
         $response->getBody()->rewind();
         $body = json_decode($response->getBody()->getContents(), true);
@@ -570,9 +570,9 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
         $errorTitle = $body['error-code-label'] ?? $body['error_title'] ?? $body['title'] ?? 'Unexpected error';
 
         if ($status >= 400 && $status < 500) {
-            $e = new ClientException\Request($errorTitle, $status);
+            $e = new ClientException\RequestException($errorTitle, $status);
         } elseif ($status >= 500 && $status < 600) {
-            $e = new ClientException\Server($errorTitle, $status);
+            $e = new ClientException\ServerException($errorTitle, $status);
         } else {
             $e = new ClientException\Exception('Unexpected HTTP Status Code');
             throw $e;

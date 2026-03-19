@@ -3,7 +3,6 @@
 namespace VonageTest\Client\Credentials;
 
 use Lcobucci\JWT\Signer\Key\InMemory;
-use Vonage\Client\Exception\Validation;
 use VonageTest\VonageTestCase;
 use Vonage\Client\Credentials\Keypair;
 

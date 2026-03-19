@@ -5,28 +5,28 @@ declare(strict_types=1);
 namespace VonageTest\Client\Exception;
 
 use PHPUnit\Framework\TestCase;
-use Vonage\Client\Exception\Conflict;
+use Vonage\Client\Exception\ConflictException;
 
 class ConflictTest extends TestCase
 {
     public function testExceptionCanBeThrown(): void
     {
-        $this->expectException(Conflict::class);
+        $this->expectException(ConflictException::class);
 
-        throw new Conflict('Conflict occurred');
+        throw new ConflictException('Conflict occurred');
     }
 
     public function testExceptionMessage(): void
     {
         $message = 'Conflict occurred';
-        $exception = new Conflict($message);
+        $exception = new ConflictException($message);
 
         $this->assertSame($message, $exception->getMessage());
     }
 
     public function testExceptionIsInstanceOfBaseException(): void
     {
-        $exception = new Conflict('Conflict occurred');
+        $exception = new ConflictException('Conflict occurred');
 
         $this->assertInstanceOf(\Exception::class, $exception);
     }

@@ -15,8 +15,8 @@ use function preg_match;
 class ExceptionErrorHandler
 {
     /**
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      * @throws ThrottleException
      */
     public function __invoke(ResponseInterface $response, RequestInterface $request)
@@ -30,11 +30,11 @@ class ExceptionErrorHandler
 
         if (!isset($data['messages'])) {
             if (isset($data['error-code'], $data['error-code-label'])) {
-                $e = new ClientException\Request($data['error-code-label'], (int)$data['error-code']);
+                $e = new ClientException\RequestException($data['error-code-label'], (int)$data['error-code']);
             } elseif (isset($data['title'], $data['detail'])) {
-                $e = new ClientException\Request($data['title'] . ' : ' . $data['detail']);
+                $e = new ClientException\RequestException($data['title'] . ' : ' . $data['detail']);
             } else {
-                $e = new ClientException\Request('Unexpected response from the API');
+                $e = new ClientException\RequestException('Unexpected response from the API');
             }
 
             $e->setEntity($data);
@@ -58,11 +58,11 @@ class ExceptionErrorHandler
 
                     throw $e;
                 case '5':
-                    $e = new ClientException\Server($part['error-text'], (int)$part['status']);
+                    $e = new ClientException\ServerException($part['error-text'], (int)$part['status']);
                     $e->setEntity($data);
                     throw $e;
                 default:
-                    $e = new ClientException\Request($part['error-text'], (int)$part['status']);
+                    $e = new ClientException\RequestException($part['error-text'], (int)$part['status']);
                     $e->setEntity($data);
                     throw $e;
             }
