@@ -6,7 +6,7 @@ namespace Vonage\Messages;
 
 use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
-use Vonage\Messages\Channel\BaseMessage;
+use Vonage\Messages\Channel\Message;
 
 class Client implements APIClient
 {
@@ -20,7 +20,7 @@ class Client implements APIClient
         return $this->api;
     }
 
-    public function send(BaseMessage $message): ?array
+    public function send(Message $message): ?array
     {
         $messageArray = $message->toArray();
 
@@ -53,6 +53,25 @@ class Client implements APIClient
     public function markAsStatus(string $messageUuid, string $status): bool
     {
         return $this->updateRcsStatus($messageUuid, $status);
+    }
+
+    public function updateTypingIndicators(string $messageUuid, string $status, bool $show, string $type = 'text'): bool
+    {
+        try {
+            $this->getAPIResource()->partiallyUpdate(
+                $messageUuid,
+                [
+                    'status' => $status,
+                    'replying_indicator' => [
+                        'show' => $show,
+                        'type' => $type,
+                    ]
+                ],
+            );
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
     protected function stripLeadingPlus(string $phoneNumber): string

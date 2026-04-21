@@ -79,7 +79,7 @@ class APIResource implements ClientAwareInterface
                     // This has a really nasty side effect for complex handlers where we never see the error
                 }
                 throw new \RuntimeException(
-                    'Unable to set credentials, please check configuration and 
+                    'Unable to set credentials, please check configuration and
                     supplied authentication'
                 );
             }

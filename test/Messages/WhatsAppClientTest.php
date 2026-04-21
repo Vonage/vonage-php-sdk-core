@@ -43,18 +43,22 @@ class WhatsAppClientTest extends MessagesClientTest
         $message = new WhatsAppText($payload['to'], $payload['from'], $payload['text']);
         $message->setContext(['message_uuid' => 'a1b2c3d4a1b2c3d4']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
-            $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
-            $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
-            $this->assertRequestJsonBodyContains('text', $payload['text'], $request);
-            $this->assertRequestJsonBodyContains('channel', 'whatsapp', $request);
-            $this->assertRequestJsonBodyContains('message_type', 'text', $request);
-            $this->assertRequestJsonBodyContains('context', ['message_uuid' => 'a1b2c3d4a1b2c3d4'], $request);
-            $this->assertEquals('POST', $request->getMethod());
-
+        $capturedRequest = null;
+        $this->vonageClient->send(Argument::that(function (Request $request) use (&$capturedRequest) {
+            $capturedRequest = $request;
             return true;
         }))->willReturn($this->getResponse('sms-success', 202));
+
         $result = $this->messageClient->send($message);
+
+        $this->assertNotNull($capturedRequest, 'No HTTP request was sent');
+        $this->assertEquals('POST', $capturedRequest->getMethod());
+        $this->assertRequestJsonBodyContains('to', $payload['to'], $capturedRequest);
+        $this->assertRequestJsonBodyContains('from', $payload['from'], $capturedRequest);
+        $this->assertRequestJsonBodyContains('text', $payload['text'], $capturedRequest);
+        $this->assertRequestJsonBodyContains('channel', 'whatsapp', $capturedRequest);
+        $this->assertRequestJsonBodyContains('message_type', 'text', $capturedRequest);
+        $this->assertRequestJsonBodyContains('context', ['message_uuid' => 'a1b2c3d4a1b2c3d4'], $capturedRequest);
         $this->assertIsArray($result);
         $this->assertArrayHasKey('message_uuid', $result);
     }
@@ -69,17 +73,21 @@ class WhatsAppClientTest extends MessagesClientTest
 
         $message = new WhatsAppText($payload['to'], $payload['from'], $payload['text']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
-            $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
-            $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
-            $this->assertRequestJsonBodyContains('text', $payload['text'], $request);
-            $this->assertRequestJsonBodyContains('channel', 'whatsapp', $request);
-            $this->assertRequestJsonBodyContains('message_type', 'text', $request);
-            $this->assertEquals('POST', $request->getMethod());
-
+        $capturedRequest = null;
+        $this->vonageClient->send(Argument::that(function (Request $request) use (&$capturedRequest) {
+            $capturedRequest = $request;
             return true;
         }))->willReturn($this->getResponse('sms-success', 202));
+
         $result = $this->messageClient->send($message);
+
+        $this->assertNotNull($capturedRequest, 'No HTTP request was sent');
+        $this->assertEquals('POST', $capturedRequest->getMethod());
+        $this->assertRequestJsonBodyContains('to', $payload['to'], $capturedRequest);
+        $this->assertRequestJsonBodyContains('from', $payload['from'], $capturedRequest);
+        $this->assertRequestJsonBodyContains('text', $payload['text'], $capturedRequest);
+        $this->assertRequestJsonBodyContains('channel', 'whatsapp', $capturedRequest);
+        $this->assertRequestJsonBodyContains('message_type', 'text', $capturedRequest);
         $this->assertIsArray($result);
     }
 
@@ -97,18 +105,22 @@ class WhatsAppClientTest extends MessagesClientTest
         $message = new WhatsAppImage($payload['to'], $payload['from'], $whatsAppImageObject);
         $message->setContext(['message_uuid' => 'a1b2c3d4a1b2c3d4']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
-            $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
-            $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
-            $this->assertRequestJsonBodyContains('image', $payload['image']->toArray(), $request);
-            $this->assertRequestJsonBodyContains('channel', 'whatsapp', $request);
-            $this->assertRequestJsonBodyContains('message_type', 'image', $request);
-            $this->assertRequestJsonBodyContains('context', ['message_uuid' => 'a1b2c3d4a1b2c3d4'], $request);
-            $this->assertEquals('POST', $request->getMethod());
-
+        $capturedRequest = null;
+        $this->vonageClient->send(Argument::that(function (Request $request) use (&$capturedRequest) {
+            $capturedRequest = $request;
             return true;
         }))->willReturn($this->getResponse('sms-success', 202));
+
         $result = $this->messageClient->send($message);
+
+        $this->assertNotNull($capturedRequest, 'No HTTP request was sent');
+        $this->assertEquals('POST', $capturedRequest->getMethod());
+        $this->assertRequestJsonBodyContains('to', $payload['to'], $capturedRequest);
+        $this->assertRequestJsonBodyContains('from', $payload['from'], $capturedRequest);
+        $this->assertRequestJsonBodyContains('image', $payload['image']->toArray(), $capturedRequest);
+        $this->assertRequestJsonBodyContains('channel', 'whatsapp', $capturedRequest);
+        $this->assertRequestJsonBodyContains('message_type', 'image', $capturedRequest);
+        $this->assertRequestJsonBodyContains('context', ['message_uuid' => 'a1b2c3d4a1b2c3d4'], $capturedRequest);
         $this->assertIsArray($result);
         $this->assertArrayHasKey('message_uuid', $result);
     }
@@ -129,18 +141,22 @@ class WhatsAppClientTest extends MessagesClientTest
         $message = new WhatsAppAudio($payload['to'], $payload['from'], $audioObject);
         $message->setContext(['message_uuid' => 'a1b2c3d4a1b2c3d4']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
-            $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
-            $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
-            $this->assertRequestJsonBodyContains('audio', $payload['audio']->toArray(), $request);
-            $this->assertRequestJsonBodyContains('channel', 'whatsapp', $request);
-            $this->assertRequestJsonBodyContains('message_type', 'audio', $request);
-            $this->assertRequestJsonBodyContains('context', ['message_uuid' => 'a1b2c3d4a1b2c3d4'], $request);
-            $this->assertEquals('POST', $request->getMethod());
-
+        $capturedRequest = null;
+        $this->vonageClient->send(Argument::that(function (Request $request) use (&$capturedRequest) {
+            $capturedRequest = $request;
             return true;
         }))->willReturn($this->getResponse('sms-success', 202));
+
         $result = $this->messageClient->send($message);
+
+        $this->assertNotNull($capturedRequest, 'No HTTP request was sent');
+        $this->assertEquals('POST', $capturedRequest->getMethod());
+        $this->assertRequestJsonBodyContains('to', $payload['to'], $capturedRequest);
+        $this->assertRequestJsonBodyContains('from', $payload['from'], $capturedRequest);
+        $this->assertRequestJsonBodyContains('audio', $payload['audio']->toArray(), $capturedRequest);
+        $this->assertRequestJsonBodyContains('channel', 'whatsapp', $capturedRequest);
+        $this->assertRequestJsonBodyContains('message_type', 'audio', $capturedRequest);
+        $this->assertRequestJsonBodyContains('context', ['message_uuid' => 'a1b2c3d4a1b2c3d4'], $capturedRequest);
         $this->assertIsArray($result);
         $this->assertArrayHasKey('message_uuid', $result);
     }
@@ -161,18 +177,22 @@ class WhatsAppClientTest extends MessagesClientTest
         $message = new WhatsAppVideo($payload['to'], $payload['from'], $videoObject);
         $message->setContext(['message_uuid' => 'a1b2c3d4a1b2c3d4']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
-            $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
-            $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
-            $this->assertRequestJsonBodyContains('video', $payload['video']->toArray(), $request);
-            $this->assertRequestJsonBodyContains('channel', 'whatsapp', $request);
-            $this->assertRequestJsonBodyContains('message_type', 'video', $request);
-            $this->assertRequestJsonBodyContains('context', ['message_uuid' => 'a1b2c3d4a1b2c3d4'], $request);
-            $this->assertEquals('POST', $request->getMethod());
-
+        $capturedRequest = null;
+        $this->vonageClient->send(Argument::that(function (Request $request) use (&$capturedRequest) {
+            $capturedRequest = $request;
             return true;
         }))->willReturn($this->getResponse('sms-success', 202));
+
         $result = $this->messageClient->send($message);
+
+        $this->assertNotNull($capturedRequest, 'No HTTP request was sent');
+        $this->assertEquals('POST', $capturedRequest->getMethod());
+        $this->assertRequestJsonBodyContains('to', $payload['to'], $capturedRequest);
+        $this->assertRequestJsonBodyContains('from', $payload['from'], $capturedRequest);
+        $this->assertRequestJsonBodyContains('video', $payload['video']->toArray(), $capturedRequest);
+        $this->assertRequestJsonBodyContains('channel', 'whatsapp', $capturedRequest);
+        $this->assertRequestJsonBodyContains('message_type', 'video', $capturedRequest);
+        $this->assertRequestJsonBodyContains('context', ['message_uuid' => 'a1b2c3d4a1b2c3d4'], $capturedRequest);
         $this->assertIsArray($result);
         $this->assertArrayHasKey('message_uuid', $result);
     }
@@ -194,18 +214,22 @@ class WhatsAppClientTest extends MessagesClientTest
         $message = new WhatsAppFile($payload['to'], $payload['from'], $fileObject);
         $message->setContext(['message_uuid' => 'a1b2c3d4a1b2c3d4']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
-            $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
-            $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
-            $this->assertRequestJsonBodyContains('file', $payload['file']->toArray(), $request);
-            $this->assertRequestJsonBodyContains('channel', 'whatsapp', $request);
-            $this->assertRequestJsonBodyContains('message_type', 'file', $request);
-            $this->assertRequestJsonBodyContains('context', ['message_uuid' => 'a1b2c3d4a1b2c3d4'], $request);
-            $this->assertEquals('POST', $request->getMethod());
-
+        $capturedRequest = null;
+        $this->vonageClient->send(Argument::that(function (Request $request) use (&$capturedRequest) {
+            $capturedRequest = $request;
             return true;
         }))->willReturn($this->getResponse('sms-success', 202));
+
         $result = $this->messageClient->send($message);
+
+        $this->assertNotNull($capturedRequest, 'No HTTP request was sent');
+        $this->assertEquals('POST', $capturedRequest->getMethod());
+        $this->assertRequestJsonBodyContains('to', $payload['to'], $capturedRequest);
+        $this->assertRequestJsonBodyContains('from', $payload['from'], $capturedRequest);
+        $this->assertRequestJsonBodyContains('file', $payload['file']->toArray(), $capturedRequest);
+        $this->assertRequestJsonBodyContains('channel', 'whatsapp', $capturedRequest);
+        $this->assertRequestJsonBodyContains('message_type', 'file', $capturedRequest);
+        $this->assertRequestJsonBodyContains('context', ['message_uuid' => 'a1b2c3d4a1b2c3d4'], $capturedRequest);
         $this->assertIsArray($result);
         $this->assertArrayHasKey('message_uuid', $result);
     }
@@ -226,18 +250,22 @@ class WhatsAppClientTest extends MessagesClientTest
         $message = new WhatsAppTemplate($payload['to'], $payload['from'], $templateObject, 'en_GB');
         $message->setContext(['message_uuid' => 'a1b2c3d4a1b2c3d4']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
-            $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
-            $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
-            $this->assertRequestJsonBodyContains('template', $payload['template']->toArray(), $request);
-            $this->assertRequestJsonBodyContains('channel', 'whatsapp', $request);
-            $this->assertRequestJsonBodyContains('message_type', 'template', $request);
-            $this->assertRequestJsonBodyContains('context', ['message_uuid' => 'a1b2c3d4a1b2c3d4'], $request);
-            $this->assertEquals('POST', $request->getMethod());
-
+        $capturedRequest = null;
+        $this->vonageClient->send(Argument::that(function (Request $request) use (&$capturedRequest) {
+            $capturedRequest = $request;
             return true;
         }))->willReturn($this->getResponse('sms-success', 202));
+
         $result = $this->messageClient->send($message);
+
+        $this->assertNotNull($capturedRequest, 'No HTTP request was sent');
+        $this->assertEquals('POST', $capturedRequest->getMethod());
+        $this->assertRequestJsonBodyContains('to', $payload['to'], $capturedRequest);
+        $this->assertRequestJsonBodyContains('from', $payload['from'], $capturedRequest);
+        $this->assertRequestJsonBodyContains('template', $payload['template']->toArray(), $capturedRequest);
+        $this->assertRequestJsonBodyContains('channel', 'whatsapp', $capturedRequest);
+        $this->assertRequestJsonBodyContains('message_type', 'template', $capturedRequest);
+        $this->assertRequestJsonBodyContains('context', ['message_uuid' => 'a1b2c3d4a1b2c3d4'], $capturedRequest);
         $this->assertIsArray($result);
         $this->assertArrayHasKey('message_uuid', $result);
     }
@@ -265,18 +293,21 @@ class WhatsAppClientTest extends MessagesClientTest
         $message = new WhatsAppSticker($payload['to'], $payload['from'], $stickerObject);
         $message->setContext(['message_uuid' => 'a1b2c3d4a1b2c3d4']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload, $type) {
-            $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
-            $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
-            $this->assertRequestJsonBodyContains('channel', 'whatsapp', $request);
-            $this->assertRequestJsonBodyContains('message_type', BaseMessage::MESSAGES_SUBTYPE_STICKER, $request);
-            $this->assertRequestJsonBodyContains('context', ['message_uuid' => 'a1b2c3d4a1b2c3d4'], $request);
-            $this->assertEquals('POST', $request->getMethod());
-
+        $capturedRequest = null;
+        $this->vonageClient->send(Argument::that(function (Request $request) use (&$capturedRequest) {
+            $capturedRequest = $request;
             return true;
         }))->willReturn($this->getResponse('sms-success', 202));
 
         $result = $this->messageClient->send($message);
+
+        $this->assertNotNull($capturedRequest, 'No HTTP request was sent');
+        $this->assertEquals('POST', $capturedRequest->getMethod());
+        $this->assertRequestJsonBodyContains('to', $payload['to'], $capturedRequest);
+        $this->assertRequestJsonBodyContains('from', $payload['from'], $capturedRequest);
+        $this->assertRequestJsonBodyContains('channel', 'whatsapp', $capturedRequest);
+        $this->assertRequestJsonBodyContains('message_type', BaseMessage::MESSAGES_SUBTYPE_STICKER, $capturedRequest);
+        $this->assertRequestJsonBodyContains('context', ['message_uuid' => 'a1b2c3d4a1b2c3d4'], $capturedRequest);
         $this->assertIsArray($result);
         $this->assertArrayHasKey('message_uuid', $result);
     }
@@ -294,18 +325,22 @@ class WhatsAppClientTest extends MessagesClientTest
         $message = new WhatsAppCustom($payload['to'], $payload['from'], $payload['custom']);
         $message->setContext(['message_uuid' => 'a1b2c3d4a1b2c3d4']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
-            $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
-            $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
-            $this->assertRequestJsonBodyContains('custom', $payload['custom'], $request);
-            $this->assertRequestJsonBodyContains('channel', 'whatsapp', $request);
-            $this->assertRequestJsonBodyContains('message_type', 'custom', $request);
-            $this->assertRequestJsonBodyContains('context', ['message_uuid' => 'a1b2c3d4a1b2c3d4'], $request);
-            $this->assertEquals('POST', $request->getMethod());
-
+        $capturedRequest = null;
+        $this->vonageClient->send(Argument::that(function (Request $request) use (&$capturedRequest) {
+            $capturedRequest = $request;
             return true;
         }))->willReturn($this->getResponse('sms-success', 202));
+
         $result = $this->messageClient->send($message);
+
+        $this->assertNotNull($capturedRequest, 'No HTTP request was sent');
+        $this->assertEquals('POST', $capturedRequest->getMethod());
+        $this->assertRequestJsonBodyContains('to', $payload['to'], $capturedRequest);
+        $this->assertRequestJsonBodyContains('from', $payload['from'], $capturedRequest);
+        $this->assertRequestJsonBodyContains('custom', $payload['custom'], $capturedRequest);
+        $this->assertRequestJsonBodyContains('channel', 'whatsapp', $capturedRequest);
+        $this->assertRequestJsonBodyContains('message_type', 'custom', $capturedRequest);
+        $this->assertRequestJsonBodyContains('context', ['message_uuid' => 'a1b2c3d4a1b2c3d4'], $capturedRequest);
         $this->assertIsArray($result);
         $this->assertArrayHasKey('message_uuid', $result);
     }
@@ -315,24 +350,71 @@ class WhatsAppClientTest extends MessagesClientTest
         $geoSpecificClient = clone $this->messageClient;
         $geoSpecificClient->getAPIResource()->setBaseUrl('https://api-us.nexmo.com/v1');
 
-        $this->vonageClient->send(Argument::that(function (Request $request) {
-            $this->assertEquals(
-                'Bearer ',
-                mb_substr($request->getHeaders()['Authorization'][0], 0, 7)
-            );
-            $uri = $request->getUri();
-            $uriString = $uri->__toString();
-            $this->assertEquals(
-                'https://api-us.nexmo.com/v1/messages/6ce72c29-e454-442a-94f2-47a1cadba45f',
-                $uriString
-            );
-
-            $this->assertRequestJsonBodyContains('status', 'read', $request);
-            $this->assertEquals('PATCH', $request->getMethod());
-
+        $capturedRequest = null;
+        $this->vonageClient->send(Argument::that(function (Request $request) use (&$capturedRequest) {
+            $capturedRequest = $request;
             return true;
         }))->willReturn($this->getResponse('rcs-update-success'));
 
         $geoSpecificClient->markAsStatus('6ce72c29-e454-442a-94f2-47a1cadba45f', MessagesClient::WHATSAPP_STATUS_READ);
+
+        $this->assertNotNull($capturedRequest, 'No HTTP request was sent');
+        $this->assertEquals('PATCH', $capturedRequest->getMethod());
+        $this->assertEquals(
+            'https://api-us.nexmo.com/v1/6ce72c29-e454-442a-94f2-47a1cadba45f',
+            (string) $capturedRequest->getUri()
+        );
+        $this->assertEquals('Bearer ', mb_substr($capturedRequest->getHeaders()['Authorization'][0], 0, 7));
+        $this->assertRequestJsonBodyContains('status', 'read', $capturedRequest);
+    }
+
+    public function testSendTypingIndicators(): void
+    {
+        $capturedRequest = null;
+
+        $this->vonageClient->send(Argument::that(
+            function (Request $request) use (&$capturedRequest) {
+                $capturedRequest = $request;
+                return true;
+            }
+        ))->willReturn($this->getResponse('rcs-update-success'));
+
+        $this->messageClient->updateTypingIndicators('6ce72c29-e454-442a-94f2-47a1cadba45f', 'read', true, 'text');
+
+        $this->assertNotNull(
+            $capturedRequest,
+            'HTTP request was never sent — check that vonageClient->send() is being called'
+        );
+
+        $this->assertEquals(
+            'PATCH',
+            $capturedRequest->getMethod(),
+        );
+
+        $this->assertStringContainsString(
+            '6ce72c29-e454-442a-94f2-47a1cadba45f',
+            (string) $capturedRequest->getUri(),
+        );
+
+        $this->assertEquals(
+            'Bearer ',
+            mb_substr(
+                $capturedRequest->getHeaders()['Authorization'][0],
+                0,
+                7,
+            ),
+        );
+
+        $this->assertRequestJsonBodyContains(
+            'status',
+            'read',
+            $capturedRequest,
+        );
+
+        $this->assertRequestJsonBodyContains(
+            'replying_indicator',
+            ['show' => true, 'type' => 'text'],
+            $capturedRequest,
+        );
     }
 }
