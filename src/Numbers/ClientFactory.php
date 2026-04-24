@@ -7,6 +7,7 @@ namespace Vonage\Numbers;
 use Psr\Container\ContainerInterface;
 use Vonage\Client\APIResource;
 use Vonage\Client\Credentials\Handler\BasicHandler;
+use Vonage\Entity\Hydrator\ArrayHydrator;
 
 class ClientFactory
 {
@@ -19,6 +20,9 @@ class ClientFactory
             ->setIsHAL(false)
             ->setAuthHandlers(new BasicHandler());
 
-        return new Client($api);
+        $hydrator = new ArrayHydrator();
+        $hydrator->setPrototype(new Number());
+
+        return new Client($api, $hydrator);
     }
 }

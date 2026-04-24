@@ -9,7 +9,9 @@ use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Client\APIResourceFactory;
 use Vonage\Client\Factory\MapFactory;
+use Vonage\Entity\Hydrator\ArrayHydrator;
 use Vonage\Numbers\ClientFactory;
+use Vonage\Numbers\Number;
 
 class ClientFactoryTest extends TestCase
 {
@@ -35,5 +37,12 @@ class ClientFactoryTest extends TestCase
 
         $this->assertInstanceOf(Client\Credentials\Handler\BasicHandler::class, $apiResource->getAuthHandlers()[0]);
         $this->assertFalse($apiResource->isHAL());
+
+        $hydratorProperty = $reflection->getProperty('hydrator');
+        $hydrator = $hydratorProperty->getValue($result);
+        $this->assertInstanceOf(ArrayHydrator::class, $hydrator);
+
+        $prototypeProperty = (new \ReflectionClass($hydrator))->getProperty('prototype');
+        $this->assertInstanceOf(Number::class, $prototypeProperty->getValue($hydrator));
     }
 }

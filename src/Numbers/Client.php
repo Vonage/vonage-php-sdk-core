@@ -12,6 +12,8 @@ use Vonage\Client\Exception\Request;
 use Vonage\Client\Exception\Server;
 use Vonage\Client\Exception\ThrottleException;
 use Vonage\Entity\Filter\FilterInterface;
+use Vonage\Entity\Hydrator\ArrayHydrator;
+use Vonage\Entity\Hydrator\HydratorInterface;
 use Vonage\Entity\IterableAPICollection;
 use Vonage\Numbers\Filter\AvailableNumbers;
 use Vonage\Numbers\Filter\OwnedNumbers;
@@ -22,8 +24,13 @@ use function sleep;
 
 class Client
 {
-    public function __construct(protected APIResource $api)
+    public function __construct(protected APIResource $api, protected ?HydratorInterface $hydrator = null)
     {
+        if ($this->hydrator === null) {
+            $hydrator = new ArrayHydrator();
+            $hydrator->setPrototype(new Number());
+            $this->hydrator = $hydrator;
+        }
     }
 
     /**
@@ -113,7 +120,7 @@ class Client
             '/number/search'
         );
 
-        $response->setHydrator(new Hydrator());
+        $response->setHydrator($this->hydrator);
         $response->setAutoAdvance(false); // The search results on this can be quite large
 
         return $this->handleNumberSearchResult($response, null);
@@ -140,7 +147,7 @@ class Client
         $this->api->setCollectionName('numbers');
 
         $response = $this->api->search($options, '/account/numbers');
-        $response->setHydrator(new Hydrator());
+        $response->setHydrator($this->hydrator);
         $response->setAutoAdvance(false); // The search results on this can be quite large
 
         return $this->handleNumberSearchResult($response, $number);
