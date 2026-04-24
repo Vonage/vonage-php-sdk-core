@@ -4,396 +4,107 @@ declare(strict_types=1);
 
 namespace VonageTest\Verify;
 
-use DateTime;
-use Exception;
-use Laminas\Diactoros\Response;
-use Prophecy\Argument;
-use Psr\Http\Client\ClientExceptionInterface;
-use Vonage\Client\Exception\Exception as ClientException;
-use Vonage\Client\Exception\Request as RequestException;
-use Vonage\Client\Exception\Request as ServerException;
-use Vonage\Verify\Check;
-use Vonage\Verify\Client as VerifyClient;
+use DateTimeImmutable;
+use Vonage\Verify\CheckAttempt;
 use Vonage\Verify\Verification;
-use VonageTest\Traits\HTTPTestTrait;
 use VonageTest\VonageTestCase;
-
-use function is_null;
-use function serialize;
-use function unserialize;
 
 class VerificationTest extends VonageTestCase
 {
-    use HTTPTestTrait;
-
-    /**
-     * @var string
-     */
-    protected $number = '14845551212';
-
-    /**
-     * @var string
-     */
-    protected $brand = 'Vonage-PHP';
-
-    /**
-     * @var Verification
-     */
-    protected $verification;
-
-    /**
-     * @var Verification
-     */
-    protected $existing;
-
-    public function __construct(?string $name = null, array $data = [], $dataName = '')
-    {
-        $this->responsesDirectory = __DIR__ . '/responses';
-
-        parent::__construct($name, $data, $dataName);
-    }
-
-    /**
-     * Create a basic verification object
-     */
-    public function setUp(): void
-    {
-        $this->verification = @new Verification($this->number, $this->brand);
-        $this->existing = new Verification('44a5279b27dd4a638d614d265ad57a77');
-    }
-
-    public function testExistingAndNew(): void
-    {
-        $this->assertTrue(@$this->verification->isDirty());
-        $this->assertFalse(@$this->existing->isDirty());
-    }
-
-    public function testConstructDataAsObject(): void
-    {
-        $this->assertEquals($this->number, @$this->verification->getNumber());
-    }
-
-    /**
-     * @throws ClientException
-     */
-    public function testConstructDataAsParams(): void
-    {
-        $params = $this->verification->getRequestData(false);
-        $this->assertEquals($this->number, @$params['number']);
-        $this->assertEquals($this->brand, @$params['brand']);
-    }
-
-    /**
-     * @dataProvider optionalValues
-     *
-     * @param $value
-     * @param $setter
-     * @param $param
-     * @param null $normal
-     *
-     * @throws ClientException
-     * @noinspection PhpUnusedParameterInspection
-     */
-    public function testCanConstructOptionalValues($value, $setter, $param, $normal = null): void
-    {
-        if (is_null($normal)) {
-            $normal = $value;
-        }
-
-        $verification = @new Verification('14845552121', 'brand', [
-            $param => $normal
-        ]);
-
-        $params = $verification->getRequestData(false);
-
-        $this->assertEquals($normal, $params[$param]);
-        $verificationArray = $verification->toArray();
-        $this->assertEquals($normal, $verificationArray[$param]);
-    }
-
-    /**
-     * @dataProvider optionalValues
-     *
-     * @param $value
-     * @param $setter
-     * @param $param
-     * @param null $normal
-     *
-     * @throws ClientException
-     */
-    public function testCanSetOptionalValues($value, $setter, $param, $normal = null): void
-    {
-        if (is_null($normal)) {
-            $normal = $value;
-        }
-
-        $this->verification->$setter($value);
-        $params = @$this->verification->getRequestData(false);
-
-        $this->assertEquals($normal, $params[$param]);
-        $verificationArray = $this->verification->toArray();
-        $this->assertEquals($normal, $verificationArray[$param]);
-    }
-
-    /**
-     * @return string[]
-     */
-    public function optionalValues(): array
+    private function fixture(): array
     {
         return [
-            ['us', 'setCountry', 'country'],
-            ['16105551212', 'setSenderId', 'sender_id'],
-            ['6', 'setCodeLength', 'code_length'],
-            ['en-us', 'setLanguage', 'lg'],
-            ['landline', 'setRequireType', 'require_type'],
-            ['400', 'setPinExpiry', 'pin_expiry'],
-            ['200', 'setWaitTime', 'next_event_wait'],
+            'request_id' => '44a5279b27dd4a638d614d265ad57a77',
+            'account_id' => '6cff3913',
+            'number' => '14845551212',
+            'sender_id' => 'verify',
+            'date_submitted' => '2016-05-15 03:55:05',
+            'date_finalized' => '',
+            'checks' => [
+                ['date_received' => '2016-05-15 03:58:11', 'code' => '123456', 'status' => 'INVALID', 'ip_address' => ''],
+                ['date_received' => '2016-05-15 03:55:50', 'code' => '1234', 'status' => 'INVALID', 'ip_address' => ''],
+                ['date_received' => '2016-05-15 03:59:18', 'code' => '1234', 'status' => 'INVALID', 'ip_address' => '8.8.4.4'],
+            ],
+            'first_event_date' => '2016-05-15 03:55:05',
+            'last_event_date' => '2016-05-15 03:57:12',
+            'price' => '0.10000000',
+            'currency' => 'EUR',
+            'status' => 'FAILED',
         ];
     }
 
-    /**
-     * Test that the request id can be accessed when a verification is created with it, or when a request is created.
-     */
-    public function testRequestId(): void
+    public function testFromArrayPopulatesAllProperties(): void
     {
-        $this->assertEquals('44a5279b27dd4a638d614d265ad57a77', @$this->existing->getRequestId());
+        $v = Verification::fromArray($this->fixture());
 
-        @$this->verification->setResponse($this->getResponse('search'));
-
-        $this->assertEquals('44a5279b27dd4a638d614d265ad57a77', @$this->verification->getRequestId());
+        $this->assertSame('44a5279b27dd4a638d614d265ad57a77', $v->requestId);
+        $this->assertSame('6cff3913', $v->accountId);
+        $this->assertSame('FAILED', $v->status);
+        $this->assertSame('14845551212', $v->number);
+        $this->assertSame('0.10000000', $v->price);
+        $this->assertSame('EUR', $v->currency);
+        $this->assertSame('verify', $v->senderId);
     }
 
-    /**
-     * Verification provides object access to normalized data (dates as DateTime)
-     *
-     * @throws Exception
-     */
-    public function testSearchParamsAsObject(): void
+    public function testFromArrayHydratesCheckAttempts(): void
     {
-        @$this->existing->setResponse($this->getResponse('search'));
+        $v = Verification::fromArray($this->fixture());
 
-        $this->assertEquals('6cff3913', @$this->existing->getAccountId());
-        $this->assertEquals('14845551212', @$this->existing->getNumber());
-        $this->assertEquals('verify', @$this->existing->getSenderId());
-        $this->assertEquals(new DateTime("2016-05-15 03:55:05"), @$this->existing->getSubmitted());
-        $this->assertEquals(null, @$this->existing->getFinalized());
-        $this->assertEquals(new DateTime("2016-05-15 03:55:05"), @$this->existing->getFirstEvent());
-        $this->assertEquals(new DateTime("2016-05-15 03:57:12"), @$this->existing->getLastEvent());
-        $this->assertEquals('0.10000000', @$this->existing->getPrice());
-        $this->assertEquals('EUR', @$this->existing->getCurrency());
-        $this->assertEquals(Verification::FAILED, @$this->existing->getStatus());
-
-        @$checks = $this->existing->getChecks();
-
-        $this->assertIsArray($checks);
-        $this->assertCount(3, $checks);
-
-        foreach ($checks as $index => $check) {
-            $this->assertInstanceOf(Check::class, $check);
-        }
-
-        $this->assertEquals('123456', $checks[0]->getCode());
-        $this->assertEquals('1234', $checks[1]->getCode());
-        $this->assertEquals('1234', $checks[2]->getCode());
-        $this->assertEquals(new DateTime('2016-05-15 03:58:11'), $checks[0]->getDate());
-        $this->assertEquals(new DateTime('2016-05-15 03:55:50'), $checks[1]->getDate());
-        $this->assertEquals(new DateTime('2016-05-15 03:59:18'), $checks[2]->getDate());
-        $this->assertEquals(Check::INVALID, $checks[0]->getStatus());
-        $this->assertEquals(Check::INVALID, $checks[1]->getStatus());
-        $this->assertEquals(Check::INVALID, $checks[2]->getStatus());
-        $this->assertEquals(null, $checks[0]->getIpAddress());
-        $this->assertEquals(null, $checks[1]->getIpAddress());
-        $this->assertEquals('8.8.4.4', $checks[2]->getIpAddress());
+        $this->assertCount(3, $v->checks);
+        $this->assertContainsOnlyInstancesOf(CheckAttempt::class, $v->checks);
+        $this->assertSame('123456', $v->checks[0]->code);
+        $this->assertSame(CheckAttempt::INVALID, $v->checks[0]->status);
+        $this->assertSame('8.8.4.4', $v->checks[2]->ipAddress);
     }
 
-    /**
-     * Verification provides simple access to raw data when available.
-     *
-     * @dataProvider dataResponses
-     *
-     * @param $type
-     *
-     * @throws Exception
-     */
-    public function testResponseDataAsArray($type): void
+    public function testFromArrayParsesDateSubmitted(): void
     {
-        @$this->existing->setResponse($this->getResponse($type));
-        $existingAsArray = $this->existing->toArray();
-        $json = $this->existing->getResponseData();
+        $v = Verification::fromArray($this->fixture());
 
-        foreach ($json as $key => $value) {
-            $this->assertEquals($value, $existingAsArray[$key], "Could not access `$key` as a property.");
-        }
+        $this->assertInstanceOf(DateTimeImmutable::class, $v->dateSubmitted);
+        $this->assertSame('2016-05-15', $v->dateSubmitted->format('Y-m-d'));
     }
 
-    /**
-     * @return string[]
-     */
-    public function dataResponses(): array
+    public function testFromArrayDateFinalizedIsNullWhenEmpty(): void
     {
-        return [
-            ['search'],
-            ['start']
-        ];
+        $v = Verification::fromArray($this->fixture());
+
+        $this->assertNull($v->dateFinalized);
     }
 
-    /**
-     * @dataProvider getClientProxyMethods
-     *
-     * @param $method
-     * @param $proxy
-     * @param null $code
-     * @param null $ip
-     */
-    public function testMethodsProxyClient($method, $proxy, $code = null, $ip = null): void
+    public function testFromArrayDateFinalizedIsSetWhenPopulated(): void
     {
-        /** @var mixed $client */
-        $client = $this->prophesize(VerifyClient::class);
+        $data = $this->fixture();
+        $data['date_finalized'] = '2016-05-15 04:00:00';
 
-        if (!is_null($ip)) {
-            $prediction = $client->$proxy($this->existing, $code, $ip);
-        } elseif (!is_null($code)) {
-            $prediction = $client->$proxy($this->existing, $code, Argument::cetera());
-        } else {
-            $prediction = $client->$proxy($this->existing);
-        }
+        $v = Verification::fromArray($data);
 
-        $prediction->shouldBeCalled()->willReturn($this->existing);
-
-        @$this->existing->setClient($client->reveal());
-
-        if (!is_null($ip)) {
-            @$this->existing->$method($code, $ip);
-        } elseif (!is_null($code)) {
-            @$this->existing->$method($code);
-        } else {
-            @$this->existing->$method();
-        }
+        $this->assertInstanceOf(DateTimeImmutable::class, $v->dateFinalized);
+        $this->assertSame('2016-05-15', $v->dateFinalized->format('Y-m-d'));
     }
 
-    /**
-     * @throws ClientException
-     * @throws RequestException
-     * @throws ClientExceptionInterface
-     * @throws ServerException
-     */
-    public function testCheckReturnsBoolForInvalidCode(): void
+    public function testFromArrayParsesEventDates(): void
     {
-        /** @var mixed $client */
-        $client = $this->prophesize(VerifyClient::class);
-        $client->check($this->existing, '1234', Argument::cetera())->willReturn($this->existing);
-        $client->check($this->existing, '4321', Argument::cetera())->willThrow(new RequestException('dummy', 16));
+        $v = Verification::fromArray($this->fixture());
 
-        @$this->existing->setClient($client->reveal());
-
-        @$this->assertFalse($this->existing->check('4321'));
-        @$this->assertTrue($this->existing->check('1234'));
+        $this->assertInstanceOf(DateTimeImmutable::class, $v->firstEventDate);
+        $this->assertInstanceOf(DateTimeImmutable::class, $v->lastEventDate);
     }
 
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException
-     * @throws RequestException
-     * @throws ServerException
-     */
-    public function testCheckReturnsBoolForTooManyAttempts(): void
+    public function testStatusConstants(): void
     {
-        /** @var mixed $client */
-        $client = $this->prophesize(VerifyClient::class);
-        $client->check($this->existing, '1234', Argument::cetera())->willReturn($this->existing);
-        $client->check($this->existing, '4321', Argument::cetera())->willThrow(new RequestException('dummy', 17));
-
-        @$this->existing->setClient($client->reveal());
-
-        @$this->assertFalse($this->existing->check('4321'));
-        @$this->assertTrue($this->existing->check('1234'));
+        $this->assertSame('FAILED', Verification::STATUS_FAILED);
+        $this->assertSame('SUCCESS', Verification::STATUS_SUCCESSFUL);
+        $this->assertSame('EXPIRED', Verification::STATUS_EXPIRED);
+        $this->assertSame('IN PROGRESS', Verification::STATUS_IN_PROGRESS);
+        $this->assertSame('CANCELLED', Verification::STATUS_CANCELLED);
     }
 
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException
-     * @throws RequestException
-     * @throws ServerException
-     */
-    public function testExceptionForCheckFail(): void
+    public function testPropertiesAreReadonly(): void
     {
-        /** @var mixed $client */
-        $client = $this->prophesize(VerifyClient::class);
-        $client->check($this->existing, '1234', Argument::cetera())->willReturn($this->existing);
-        $client->check($this->existing, '4321', Argument::cetera())->willThrow(new RequestException('dummy', 6));
+        $v = Verification::fromArray($this->fixture());
 
-        @$this->existing->setClient($client->reveal());
-
-        $this->expectException(RequestException::class);
-        @$this->existing->check('4321');
-    }
-
-    /**
-     * @dataProvider getSerializeResponses
-     *
-     * @param $response
-     *
-     * @throws Exception
-     */
-    public function testSerialize($response): void
-    {
-        @$this->existing->setResponse($response);
-        @$this->existing->getResponse()->getBody()->rewind();
-        @$this->existing->getResponse()->getBody()->getContents();
-
-        $serialized = serialize($this->existing);
-        $unserialized = unserialize($serialized, [Verification::class]);
-
-        $this->assertInstanceOf($this->existing::class, $unserialized);
-        $this->assertEquals(@$this->existing->getAccountId(), @$unserialized->getAccountId());
-        $this->assertEquals(@$this->existing->getStatus(), @$unserialized->getStatus());
-        $this->assertEquals(@$this->existing->getResponseData(), @$unserialized->getResponseData());
-    }
-
-    /**
-     * @return Response[]
-     */
-    public function getSerializeResponses(): array
-    {
-        return [
-            [$this->getResponse('search')],
-            [$this->getResponse('start')],
-        ];
-    }
-
-    /**
-     * @dataProvider getClientProxyMethods
-     *
-     * @param $method
-     * @param $proxy
-     * @param null $code
-     * @param null $ip
-     * @noinspection PhpUnusedParameterInspection
-     */
-    public function testMissingClientException($method, $proxy, $code = null, $ip = null): void
-    {
-        $this->expectException('RuntimeException');
-
-        if (!is_null($ip)) {
-            @$this->existing->$method($code, $ip);
-        } elseif (!is_null($code)) {
-            @$this->existing->$method($code);
-        } else {
-            @$this->existing->$method();
-        }
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getClientProxyMethods(): array
-    {
-        return [
-            ['cancel', 'cancel'],
-            ['trigger', 'trigger'],
-            ['sync', 'search'],
-            ['check', 'check', '1234'],
-            ['check', 'check', '1234', '192.168.1.1'],
-        ];
+        $this->expectException(\Error::class);
+        $v->requestId = 'new-id'; // @phpstan-ignore-line
     }
 }

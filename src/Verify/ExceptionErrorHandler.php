@@ -26,6 +26,11 @@ class ExceptionErrorHandler
         $e = null;
 
         if (!isset($data['status'])) {
+            // Bulk search responses have no top-level status key
+            if (isset($data['verification_requests'])) {
+                return;
+            }
+
             $e = new Request('unexpected response from API');
             $e->setResponse($response);
             throw $e;

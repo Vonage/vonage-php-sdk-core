@@ -4,39 +4,31 @@ declare(strict_types=1);
 
 namespace VonageTest\Verify;
 
-use Laminas\Diactoros\Response;
 use Prophecy\Argument;
-use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
 use Vonage\Client;
-use Vonage\Client\Exception\Server as ServerException;
+use Vonage\Client\Exception\Request as RequestException;
+use Vonage\Entity\IterableAPICollection;
+use Vonage\Verify\Check;
+use Vonage\Verify\CheckAttempt;
 use Vonage\Verify\Client as VerifyClient;
 use Vonage\Verify\ExceptionErrorHandler;
-use Vonage\Verify\Request;
-use Vonage\Verify\RequestPSD2;
+use Vonage\Verify\StartPSD2;
+use Vonage\Verify\StartVerification;
 use Vonage\Verify\Verification;
 use VonageTest\Traits\HTTPTestTrait;
 use VonageTest\Traits\Psr7AssertionTrait;
 use VonageTest\VonageTestCase;
-
-use function serialize;
 
 class ClientTest extends VonageTestCase
 {
     use Psr7AssertionTrait;
     use HTTPTestTrait;
 
-    /**
-     * @var VerifyClient
-     */
-    protected $client;
-
+    protected VerifyClient $client;
     protected $vonageClient;
     protected $httpClient;
 
-    /**
-     * Create the Message API Client, and mock the Vonage Client
-     */
     public function setUp(): void
     {
         $this->responsesDirectory = __DIR__ . '/responses';
@@ -60,464 +52,289 @@ class ClientTest extends VonageTestCase
         $this->client = new VerifyClient($api);
     }
 
-    public function testUsesCorrectAuth(): void
+    public function testUsesBasicAuth(): void
     {
         $this->httpClient->sendRequest(
-            Argument::that(
-                function (RequestInterface $request) {
-                    $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/psd2/json', $request);
-                    $this->assertEquals(
-                        'Basic ',
-                        mb_substr($request->getHeaders()['Authorization'][0], 0, 6)
-                    );
-                    return true;
-                }
-            )
-        )->willReturn($this->getResponse('start'))
-                           ->shouldBeCalledTimes(1);
-
-        $request = new RequestPSD2('14845551212', 'Test Verify', '5.25');
-        $response = @$this->client->requestPSD2($request);
-    }
-
-    public function testUnserializeAcceptsObject(): void
-    {
-        $mock = @$this->getMockBuilder(Verification::class)
-            ->setConstructorArgs(['14845551212', 'Test Verify'])
-            ->setMethods(['setClient'])
-            ->getMock();
-
-        $mock->expects(self::once())->method('setClient')->with($this->client);
-
-        @$this->client->unserialize($mock);
-    }
-
-    /**
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     * @throws ServerException
-     * @throws ClientExceptionInterface
-     */
-    public function testUnserializeSetsClient(): void
-    {
-        $verification = @new Verification('14845551212', 'Test Verify');
-        @$verification->setResponse($this->getResponse('start'));
-
-        $string = serialize($verification);
-        $object = @$this->client->unserialize($string);
-
-        $this->assertInstanceOf(Verification::class, $object);
-
-        $search = $this->setupClientForSearch('search');
-        @$object->sync();
-
-        $this->assertSame($search, @$object->getResponse());
-    }
-
-    public function testSerializeMatchesEntity(): void
-    {
-        $verification = @new Verification('14845551212', 'Test Verify');
-        @$verification->setResponse($this->getResponse('start'));
-
-        $string = serialize($verification);
-
-        $this->assertSame($string, @$this->client->serialize($verification));
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     * @throws ServerException
-     *
-     * @deprecated
-     */
-    public function testCanStartVerificationWithVerificationObject(): void
-    {
-        $success = $this->setupClientForStart('start');
-
-        $verification = @new Verification('14845551212', 'Test Verify');
-        @$this->client->start($verification);
-
-        $this->assertSame($success, @$verification->getResponse());
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     * @throws ServerException
-     */
-    public function testCanStartVerification(): void
-    {
-        $success = $this->setupClientForStart('start');
-
-        $verification = new Request('14845551212', 'Test Verify');
-        $verification = @$this->client->start($verification);
-
-        $this->assertSame($success, @$verification->getResponse());
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     * @throws ServerException
-     */
-    public function testCanStartPSD2Verification(): void
-    {
-        $this->httpClient->sendRequest(
-            Argument::that(
-                function (RequestInterface $request) {
-                    $this->assertRequestJsonBodyContains('number', '14845551212', $request);
-                    $this->assertRequestJsonBodyContains('payee', 'Test Verify', $request);
-                    $this->assertRequestJsonBodyContains('amount', '5.25', $request);
-                    $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/psd2/json', $request);
-
-                    return true;
-                }
-            )
+            Argument::that(function (RequestInterface $request) {
+                $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/json', $request);
+                $this->assertStringStartsWith('Basic ', $request->getHeaders()['Authorization'][0]);
+                return true;
+            })
         )->willReturn($this->getResponse('start'))
             ->shouldBeCalledTimes(1);
 
-        $request = new RequestPSD2('14845551212', 'Test Verify', '5.25');
-        $response = @$this->client->requestPSD2($request);
-
-        $this->assertSame('0', $response['status']);
-        $this->assertSame('44a5279b27dd4a638d614d265ad57a77', $response['request_id']);
+        $this->client->startVerification(new StartVerification('14845551212', 'Test Verify'));
     }
 
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     * @throws ServerException
-     */
-    public function testCanStartPSD2VerificationWithWorkflowID(): void
+    // -------------------------------------------------------------------------
+    // startVerification
+    // -------------------------------------------------------------------------
+
+    public function testStartVerificationReturnsRequestId(): void
     {
         $this->httpClient->sendRequest(
-            Argument::that(
-                function (RequestInterface $request) {
-                    $this->assertRequestJsonBodyContains('number', '14845551212', $request);
-                    $this->assertRequestJsonBodyContains('payee', 'Test Verify', $request);
-                    $this->assertRequestJsonBodyContains('amount', '5.25', $request);
-                    $this->assertRequestJsonBodyContains('workflow_id', 5, $request);
-                    $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/psd2/json', $request);
-
-                    return true;
-                }
-            )
+            Argument::that(function (RequestInterface $request) {
+                $this->assertRequestJsonBodyContains('number', '14845551212', $request);
+                $this->assertRequestJsonBodyContains('brand', 'Test Verify', $request);
+                $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/json', $request);
+                return true;
+            })
         )->willReturn($this->getResponse('start'))
             ->shouldBeCalledTimes(1);
 
-        $request = new RequestPSD2('14845551212', 'Test Verify', '5.25', 5);
-        $response = @$this->client->requestPSD2($request);
+        $requestId = $this->client->startVerification(new StartVerification('14845551212', 'Test Verify'));
 
-        $this->assertSame('0', $response['status']);
-        $this->assertSame('44a5279b27dd4a638d614d265ad57a77', $response['request_id']);
+        $this->assertIsString($requestId);
+        $this->assertSame('44a5279b27dd4a638d614d265ad57a77', $requestId);
     }
 
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     * @throws ServerException
-     */
-    public function testCanStartArray(): void
+    public function testStartVerificationThrowsOnError(): void
     {
-        $response = $this->setupClientForStart('start');
+        $this->expectException(RequestException::class);
 
-        @$verification = $this->client->start(
-            [
-                'number' => '14845551212',
-                'brand' => 'Test Verify'
-            ]
-        );
+        $this->httpClient->sendRequest(Argument::any())
+            ->willReturn($this->getResponse('start-error'));
 
-        $this->assertSame($response, @$verification->getResponse());
+        $this->client->startVerification(new StartVerification('14845551212', 'Test Verify'));
     }
 
-    /**
-     * @param $response
-     */
-    protected function setupClientForStart($response): Response
+    public function testStartVerificationThrowsOnConcurrentError(): void
     {
-        $response = $this->getResponse($response);
+        $this->expectException(RequestException::class);
+
+        $this->httpClient->sendRequest(Argument::any())
+            ->willReturn($this->getResponse('start-error-concurrent'));
+
+        $this->client->startVerification(new StartVerification('14845551212', 'Test Verify'));
+    }
+
+    public function testStartVerificationThrowsOnBlockedNumber(): void
+    {
+        $this->expectException(RequestException::class);
+
+        $this->httpClient->sendRequest(Argument::any())
+            ->willReturn($this->getResponse('start-error-blocked'));
+
+        $this->client->startVerification(new StartVerification('14845551212', 'Test Verify'));
+    }
+
+    // -------------------------------------------------------------------------
+    // startPsd2Verification
+    // -------------------------------------------------------------------------
+
+    public function testStartPsd2VerificationReturnsRequestId(): void
+    {
         $this->httpClient->sendRequest(
-            Argument::that(
-                function (RequestInterface $request) {
-                    $this->assertRequestJsonBodyContains('number', '14845551212', $request);
-                    $this->assertRequestJsonBodyContains('brand', 'Test Verify', $request);
-                    $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/json', $request);
-
-                    return true;
-                }
-            )
-        )->willReturn($response)
+            Argument::that(function (RequestInterface $request) {
+                $this->assertRequestJsonBodyContains('number', '14845551212', $request);
+                $this->assertRequestJsonBodyContains('payee', 'Test Payee', $request);
+                $this->assertRequestJsonBodyContains('amount', '5.25', $request);
+                $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/psd2/json', $request);
+                return true;
+            })
+        )->willReturn($this->getResponse('start'))
             ->shouldBeCalledTimes(1);
 
-        return $response;
+        $requestId = $this->client->startPsd2Verification(new StartPSD2('14845551212', 'Test Payee', '5.25'));
+
+        $this->assertIsString($requestId);
+        $this->assertSame('44a5279b27dd4a638d614d265ad57a77', $requestId);
     }
 
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     * @throws ServerException
-     */
-    public function testCanSearchVerification(): void
+    public function testStartPsd2VerificationWithWorkflowId(): void
     {
-        $response = $this->setupClientForSearch('search');
-
-        $verification = new Verification('44a5279b27dd4a638d614d265ad57a77');
-        @$this->client->search($verification);
-
-        $this->assertSame($response, @$verification->getResponse());
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     * @throws ServerException
-     */
-    public function testCanSearchId(): void
-    {
-        $response = $this->setupClientForSearch('search');
-
-        $verification = @$this->client->search('44a5279b27dd4a638d614d265ad57a77');
-
-        $this->assertSame($response, @$verification->getResponse());
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     * @throws ServerException
-     */
-    public function testSearchReplacesResponse(): void
-    {
-        $old = $this->getResponse('start');
-        $verification = @new Verification('14845551212', 'Test Verify');
-        @$verification->setResponse($old);
-
-        $response = $this->setupClientForSearch('search');
-        @$this->client->search($verification);
-
-        $this->assertSame($response, @$verification->getResponse());
-    }
-
-    /**
-     * @param $response
-     */
-    protected function setupClientForSearch($response): Response
-    {
-        $response = $this->getResponse($response);
         $this->httpClient->sendRequest(
-            Argument::that(
-                function (RequestInterface $request) {
-                    $this->assertRequestJsonBodyContains('request_id', '44a5279b27dd4a638d614d265ad57a77', $request);
-                    $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/search/json', $request);
-
-                    return true;
-                }
-            )
-        )->willReturn($response)
+            Argument::that(function (RequestInterface $request) {
+                $this->assertRequestJsonBodyContains('workflow_id', 5, $request);
+                $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/psd2/json', $request);
+                return true;
+            })
+        )->willReturn($this->getResponse('start'))
             ->shouldBeCalledTimes(1);
 
-        return $response;
+        $this->client->startPsd2Verification(new StartPSD2('14845551212', 'Test Payee', '5.25', 5));
     }
 
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     * @throws ServerException
-     */
-    public function testCanCancelVerification(): void
+    public function testPsd2UsesBasicAuth(): void
     {
-        $response = $this->setupClientForControl('cancel', 'cancel');
-
-        $verification = new Verification('44a5279b27dd4a638d614d265ad57a77');
-        $result = @$this->client->cancel($verification);
-
-        $this->assertSame($verification, $result);
-        $this->assertSame($response, @$verification->getResponse());
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     * @throws ServerException
-     */
-    public function testCanCancelId(): void
-    {
-        $response = $this->setupClientForControl('cancel', 'cancel');
-
-        $verification = @$this->client->cancel('44a5279b27dd4a638d614d265ad57a77');
-
-        $this->assertSame($response, @$verification->getResponse());
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     * @throws ServerException
-     */
-    public function testCanTriggerId(): void
-    {
-        $response = $this->setupClientForControl('trigger', 'trigger_next_event');
-
-        $verification = @$this->client->trigger('44a5279b27dd4a638d614d265ad57a77');
-
-        $this->assertSame($response, @$verification->getResponse());
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     * @throws ServerException
-     */
-    public function testCanTriggerVerification(): void
-    {
-        $response = $this->setupClientForControl('trigger', 'trigger_next_event');
-
-        $verification = new Verification('44a5279b27dd4a638d614d265ad57a77');
-        $result = @$this->client->trigger($verification);
-
-        $this->assertSame($verification, $result);
-        $this->assertSame($response, @$verification->getResponse());
-    }
-
-    /**
-     * @dataProvider getControlCommands
-     *
-     * @param $method
-     * @param $cmd
-     */
-    public function testControlNotReplaceResponse($method, $cmd): void
-    {
-        $response = $this->getResponse('search');
-        $verification = new Verification('44a5279b27dd4a638d614d265ad57a77');
-        @$verification->setResponse($response);
-
-        $this->setupClientForControl($method, $cmd);
-        @$this->client->$method($verification);
-
-        $this->assertSame($response, @$verification->getResponse());
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getControlCommands(): array
-    {
-        return [
-            ['cancel', 'cancel'],
-            ['trigger', 'trigger_next_event']
-        ];
-    }
-
-    /**
-     * @param $response
-     * @param $cmd
-     */
-    protected function setupClientForControl($response, $cmd): Response
-    {
-        $response = $this->getResponse($response);
         $this->httpClient->sendRequest(
-            Argument::that(
-                function (RequestInterface $request) use ($cmd) {
-                    $this->assertRequestJsonBodyContains('request_id', '44a5279b27dd4a638d614d265ad57a77', $request);
-                    $this->assertRequestJsonBodyContains('cmd', $cmd, $request);
-                    $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/control/json', $request);
-
-                    return true;
-                }
-            )
-        )->willReturn($response)
+            Argument::that(function (RequestInterface $request) {
+                $this->assertStringStartsWith('Basic ', $request->getHeaders()['Authorization'][0]);
+                return true;
+            })
+        )->willReturn($this->getResponse('start'))
             ->shouldBeCalledTimes(1);
 
-        return $response;
+        $this->client->startPsd2Verification(new StartPSD2('14845551212', 'Test Payee', '5.25'));
     }
 
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     * @throws ServerException
-     */
-    public function testCanCheckVerification(): void
+    // -------------------------------------------------------------------------
+    // get (single)
+    // -------------------------------------------------------------------------
+
+    public function testGetReturnsVerification(): void
     {
-        $response = $this->setupClientForCheck('check', '1234');
-        $verification = new Verification('44a5279b27dd4a638d614d265ad57a77');
-
-        @$this->client->check($verification, '1234');
-
-        $this->assertSame($response, @$verification->getResponse());
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     * @throws ServerException
-     */
-    public function testCanCheckId(): void
-    {
-        $response = $this->setupClientForCheck('check', '1234');
-        $verification = @$this->client->check('44a5279b27dd4a638d614d265ad57a77', '1234');
-
-        $this->assertSame($response, @$verification->getResponse());
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     * @throws ServerException
-     */
-    public function testCheckNotReplaceResponse(): void
-    {
-        $old = $this->getResponse('search');
-        $verification = new Verification('44a5279b27dd4a638d614d265ad57a77');
-        @$verification->setResponse($old);
-
-        $this->setupClientForCheck('check', '1234');
-
-        @$this->client->check($verification, '1234');
-        $this->assertSame($old, @$verification->getResponse());
-    }
-
-    /**
-     * @param $response
-     * @param $code
-     */
-    protected function setupClientForCheck($response, $code, ?string $ip = null): Response
-    {
-        $response = $this->getResponse($response);
-
         $this->httpClient->sendRequest(
-            Argument::that(
-                function (RequestInterface $request) use ($code, $ip) {
-                    $this->assertRequestJsonBodyContains('request_id', '44a5279b27dd4a638d614d265ad57a77', $request);
-                    $this->assertRequestJsonBodyContains('code', $code, $request);
-
-                    if ($ip) {
-                        $this->assertRequestJsonBodyContains('ip_address', $ip, $request);
-                    }
-
-                    $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/check/json', $request);
-                    return true;
-                }
-            )
-        )->willReturn($response)
+            Argument::that(function (RequestInterface $request) {
+                $this->assertRequestMethod('GET', $request);
+                $this->assertRequestQueryContains('request_id', '44a5279b27dd4a638d614d265ad57a77', $request);
+                $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/search/json', $request);
+                return true;
+            })
+        )->willReturn($this->getResponse('search'))
             ->shouldBeCalledTimes(1);
 
-        return $response;
+        $verification = $this->client->get('44a5279b27dd4a638d614d265ad57a77');
+
+        $this->assertInstanceOf(Verification::class, $verification);
+        $this->assertSame('44a5279b27dd4a638d614d265ad57a77', $verification->requestId);
+        $this->assertSame('FAILED', $verification->status);
+    }
+
+    public function testGetHydratesCheckAttempts(): void
+    {
+        $this->httpClient->sendRequest(Argument::any())
+            ->willReturn($this->getResponse('search'));
+
+        $verification = $this->client->get('44a5279b27dd4a638d614d265ad57a77');
+
+        $checks = $verification->checks;
+        $this->assertCount(3, $checks);
+        $this->assertContainsOnlyInstancesOf(CheckAttempt::class, $checks);
+    }
+
+    public function testGetThrowsOnError(): void
+    {
+        $this->expectException(RequestException::class);
+
+        $this->httpClient->sendRequest(Argument::any())
+            ->willReturn($this->getResponse('search-error'));
+
+        $this->client->get('44a5279b27dd4a638d614d265ad57a77');
+    }
+
+    // -------------------------------------------------------------------------
+    // search (bulk)
+    // -------------------------------------------------------------------------
+
+    public function testSearchReturnsBulkVerifications(): void
+    {
+        $this->httpClient->sendRequest(
+            Argument::that(function (RequestInterface $request) {
+                $this->assertRequestMethod('GET', $request);
+                $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/search/json', $request);
+                return true;
+            })
+        )->willReturn($this->getResponse('search-bulk'))
+            ->shouldBeCalledTimes(1);
+
+        $results = $this->client->search([
+            '44a5279b27dd4a638d614d265ad57a77',
+            'c1878c7451f94c1992d52797df57658e',
+        ]);
+
+        $this->assertInstanceOf(IterableAPICollection::class, $results);
+
+        $items = iterator_to_array($results);
+        $this->assertCount(2, $items);
+        $this->assertContainsOnlyInstancesOf(Verification::class, $items);
+        $this->assertSame('44a5279b27dd4a638d614d265ad57a77', $items[0]->requestId);
+        $this->assertSame('c1878c7451f94c1992d52797df57658e', $items[1]->requestId);
+    }
+
+    // -------------------------------------------------------------------------
+    // check
+    // -------------------------------------------------------------------------
+
+    public function testCheckReturnsCheckDto(): void
+    {
+        $this->httpClient->sendRequest(
+            Argument::that(function (RequestInterface $request) {
+                $this->assertRequestJsonBodyContains('request_id', '44a5279b27dd4a638d614d265ad57a77', $request);
+                $this->assertRequestJsonBodyContains('code', '1234', $request);
+                $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/check/json', $request);
+                return true;
+            })
+        )->willReturn($this->getResponse('check'))
+            ->shouldBeCalledTimes(1);
+
+        $result = $this->client->check('44a5279b27dd4a638d614d265ad57a77', '1234');
+
+        $this->assertInstanceOf(Check::class, $result);
+        $this->assertSame('de37150c89584f36a18925181d62627c', $result->requestId);
+        $this->assertSame('0', $result->status);
+        $this->assertSame('0.10000000', $result->price);
+        $this->assertSame('EUR', $result->currency);
+    }
+
+    public function testCheckThrowsOnInvalidCode(): void
+    {
+        $this->expectException(RequestException::class);
+
+        $this->httpClient->sendRequest(Argument::any())
+            ->willReturn($this->getResponse('check-error'));
+
+        $this->client->check('44a5279b27dd4a638d614d265ad57a77', '9999');
+    }
+
+    // -------------------------------------------------------------------------
+    // cancel
+    // -------------------------------------------------------------------------
+
+    public function testCancelReturnsTrue(): void
+    {
+        $this->httpClient->sendRequest(
+            Argument::that(function (RequestInterface $request) {
+                $this->assertRequestJsonBodyContains('request_id', '44a5279b27dd4a638d614d265ad57a77', $request);
+                $this->assertRequestJsonBodyContains('cmd', 'cancel', $request);
+                $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/control/json', $request);
+                return true;
+            })
+        )->willReturn($this->getResponse('cancel'))
+            ->shouldBeCalledTimes(1);
+
+        $result = $this->client->cancel('44a5279b27dd4a638d614d265ad57a77');
+        $this->assertTrue($result);
+    }
+
+    public function testCancelThrowsOnError(): void
+    {
+        $this->expectException(RequestException::class);
+
+        $this->httpClient->sendRequest(Argument::any())
+            ->willReturn($this->getResponse('cancel-error'));
+
+        $this->client->cancel('c1878c7451f94c1992d52797df57658e');
+    }
+
+    // -------------------------------------------------------------------------
+    // triggerNextEvent
+    // -------------------------------------------------------------------------
+
+    public function testTriggerNextEventReturnsTrue(): void
+    {
+        $this->httpClient->sendRequest(
+            Argument::that(function (RequestInterface $request) {
+                $this->assertRequestJsonBodyContains('request_id', '44a5279b27dd4a638d614d265ad57a77', $request);
+                $this->assertRequestJsonBodyContains('cmd', 'trigger_next_event', $request);
+                $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/control/json', $request);
+                return true;
+            })
+        )->willReturn($this->getResponse('trigger'))
+            ->shouldBeCalledTimes(1);
+
+        $result = $this->client->triggerNextEvent('44a5279b27dd4a638d614d265ad57a77');
+        $this->assertTrue($result);
+    }
+
+    public function testTriggerNextEventThrowsOnError(): void
+    {
+        $this->expectException(RequestException::class);
+
+        $this->httpClient->sendRequest(Argument::any())
+            ->willReturn($this->getResponse('trigger-error'));
+
+        $this->client->triggerNextEvent('44a5279b27dd4a638d614d265ad57a77');
     }
 }
+

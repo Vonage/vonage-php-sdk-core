@@ -4,41 +4,25 @@ declare(strict_types=1);
 
 namespace Vonage\Verify;
 
-use DateTime;
-use Exception;
-
-class Check
+readonly class Check
 {
-    /**
-     * Possible status of checking a code.
-     */
-    public const VALID = 'VALID';
-    public const INVALID = 'INVALID';
-
-    public function __construct(protected array $data)
-    {
+    public function __construct(
+        public string $requestId,
+        public string $eventId,
+        public string $status,
+        public string $price,
+        public string $currency,
+    ) {
     }
 
-    public function getCode(): mixed
+    public static function fromArray(array $data): self
     {
-        return $this->data['code'];
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function getDate(): DateTime
-    {
-        return new DateTime($this->data['date_received']);
-    }
-
-    public function getStatus()
-    {
-        return $this->data['status'];
-    }
-
-    public function getIpAddress()
-    {
-        return $this->data['ip_address'];
+        return new self(
+            requestId: $data['request_id'],
+            eventId: $data['event_id'],
+            status: $data['status'],
+            price: $data['price'],
+            currency: $data['currency'],
+        );
     }
 }
