@@ -21,7 +21,6 @@ use Vonage\Client\APIResourceFactory;
 use Vonage\Client\Credentials\Basic;
 use Vonage\Client\Credentials\Container;
 use Vonage\Client\Credentials\CredentialsInterface;
-use Vonage\Client\Credentials\Gnp;
 use Vonage\Client\Credentials\Keypair;
 use Vonage\Client\Credentials\SignatureSecret;
 use Vonage\Client\Exception\Exception as ClientException;
@@ -31,10 +30,8 @@ use Vonage\Conversion\ClientFactory as ConversionClientFactory;
 use Vonage\Insights\ClientFactory as InsightsClientFactory;
 use Vonage\Meetings\ClientFactory as MeetingsClientFactory;
 use Vonage\Numbers\ClientFactory as NumbersClientFactory;
-use Vonage\NumberVerification\ClientFactory as NumberVerificationClientFactory;
 use Vonage\Redact\ClientFactory as RedactClientFactory;
 use Vonage\Secrets\ClientFactory as SecretsClientFactory;
-use Vonage\SimSwap\ClientFactory as SimSwapClientFactory;
 use Vonage\SMS\ClientFactory as SMSClientFactory;
 use Vonage\Subaccount\ClientFactory as SubaccountClientFactory;
 use Vonage\Messages\ClientFactory as MessagesClientFactory;
@@ -64,10 +61,8 @@ use function str_replace;
  * @method Conversation\Client conversation()
  * @method Insights\Client insights()
  * @method Numbers\Client numbers()
- * @method NumberVerification\Client numberVerification()
  * @method Redact\Client redact()
  * @method Secrets\Client secrets()
- * @method SimSwap\Client simswap()
  * @method SMS\Client sms()
  * @method Subaccount\Client subaccount()
  * @method Users\Client users()
@@ -137,8 +132,7 @@ class Client implements LoggerAwareInterface
             !($credentials instanceof Container) &&
             !($credentials instanceof Basic) &&
             !($credentials instanceof SignatureSecret) &&
-            !($credentials instanceof Keypair) &&
-            !($credentials instanceof Gnp)
+            !($credentials instanceof Keypair)
         ) {
             throw new RuntimeException('unknown credentials type: ' . $credentials::class);
         }
@@ -179,11 +173,9 @@ class Client implements LoggerAwareInterface
             'conversation' => ConversationClientFactory::class,
             'insights' => InsightsClientFactory::class,
             'numbers' => NumbersClientFactory::class,
-            'numberVerification' => NumberVerificationClientFactory::class,
             'messages' => MessagesClientFactory::class,
             'redact' => RedactClientFactory::class,
             'secrets' => SecretsClientFactory::class,
-            'simswap' => SimSwapClientFactory::class,
             'sms' => SMSClientFactory::class,
             'subaccount' => SubaccountClientFactory::class,
             'users' => UsersClientFactory::class,
