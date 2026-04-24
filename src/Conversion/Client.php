@@ -6,26 +6,16 @@ namespace Vonage\Conversion;
 
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
-use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
-use Vonage\Client\ClientAwareInterface;
-use Vonage\Client\ClientAwareTrait;
 use Vonage\Client\Exception as ClientException;
 
 use function http_build_query;
 use function json_decode;
 
-class Client implements ClientAwareInterface, APIClient
+class Client
 {
-    use ClientAwareTrait;
-
-    public function __construct(protected ?APIResource $api = null)
+    public function __construct(protected APIResource $api)
     {
-    }
-
-    public function getAPIResource(): APIResource
-    {
-        return $this->api;
     }
 
     /**
@@ -82,8 +72,8 @@ class Client implements ClientAwareInterface, APIClient
 
         $uri = $type . '?' . http_build_query($params);
 
-        $this->getAPIResource()->create([], $uri);
-        $response = $this->getAPIResource()->getLastResponse();
+        $this->api->create([], $uri);
+        $response = $this->api->getLastResponse();
 
         if (null === $response || (int)$response->getStatusCode() !== 200) {
             throw $this->getException($response);

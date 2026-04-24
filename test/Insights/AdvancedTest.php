@@ -21,6 +21,7 @@ class AdvancedTest extends VonageTestCase
 
     public InsightClient $insightClient;
     public Client|ObjectProphecy $vonageClient;
+    public ObjectProphecy $httpClient;
     public APIResource $api;
 
     public function setUp(): void
@@ -28,6 +29,8 @@ class AdvancedTest extends VonageTestCase
         $this->responsesDirectory = __DIR__ . '/responses';
 
         $this->vonageClient = $this->prophesize(Client::class);
+        $this->httpClient = $this->prophesize(\Psr\Http\Client\ClientInterface::class);
+        $this->vonageClient->getHttpClient()->willReturn($this->httpClient->reveal());
         $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
         $this->vonageClient->getCredentials()->willReturn(
             new Client\Credentials\Container(
@@ -35,8 +38,7 @@ class AdvancedTest extends VonageTestCase
             )
         );
 
-        $this->api = (new APIResource())
-            ->setClient($this->vonageClient->reveal())
+        $this->api = (new APIResource($this->vonageClient->reveal()))
             ->setIsHAL(false)
             ->setAuthHandlers(new BasicHandler());
 
@@ -67,7 +69,7 @@ class AdvancedTest extends VonageTestCase
             $this->expectException(Request::class);
         }
 
-        $this->vonageClient->send(Argument::that(function (\Laminas\Diactoros\Request $request) use ($responseName) {
+        $this->httpClient->sendRequest(Argument::that(function (\Laminas\Diactoros\Request $request) use ($responseName) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals('https://api.nexmo.com/ni/advanced/json?number=12345', $uriString);

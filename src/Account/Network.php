@@ -4,27 +4,17 @@ declare(strict_types=1);
 
 namespace Vonage\Account;
 
-use Vonage\Entity\EntityInterface;
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
-use Vonage\Entity\JsonResponseTrait;
-use Vonage\Entity\JsonSerializableTrait;
-use Vonage\Entity\NoRequestResponseTrait;
 
 use function ltrim;
 use function preg_replace;
 use function strtolower;
 
-class Network implements
-    EntityInterface,
-    ArrayHydrateInterface
+class Network implements ArrayHydrateInterface
 {
-    use JsonSerializableTrait;
-    use NoRequestResponseTrait;
-    use JsonResponseTrait;
-
     protected array $data = [];
 
-    public function __construct(int|string $networkCode, int|string $networkName)
+    public function __construct(int|string $networkCode, string $networkName)
     {
         $this->data['network_code'] = (string)$networkCode;
         $this->data['network_name'] = (string)$networkName;

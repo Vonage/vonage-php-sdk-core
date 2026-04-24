@@ -34,7 +34,7 @@ class ViberClientTest extends MessagesClientTest
             $payload['type']
         );
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('text', $payload['text'], $request);
@@ -73,7 +73,7 @@ class ViberClientTest extends MessagesClientTest
             $payload['text']
         );
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('text', $payload['text'], $request);
@@ -113,7 +113,7 @@ class ViberClientTest extends MessagesClientTest
             $payload['type']
         );
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('image', $payload['image']->toArray(), $request);
@@ -149,7 +149,7 @@ class ViberClientTest extends MessagesClientTest
             $payload['file']
         );
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('file', $payload['file']->toArray(), $request);
@@ -199,7 +199,7 @@ class ViberClientTest extends MessagesClientTest
             'file_size' => $payload['file_size']
         ];
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload, $videoMatch, $serviceObject) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload, $videoMatch, $serviceObject) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('video', $videoMatch, $request);

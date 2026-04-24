@@ -32,6 +32,7 @@ class ClientTest extends VonageTestCase
     protected $client;
 
     protected $vonageClient;
+    protected $httpClient;
 
     /**
      * Create the Message API Client, and mock the Vonage Client
@@ -41,18 +42,19 @@ class ClientTest extends VonageTestCase
         $this->responsesDirectory = __DIR__ . '/responses';
 
         $this->vonageClient = $this->prophesize(Client::class);
+        $this->httpClient = $this->prophesize(\Psr\Http\Client\ClientInterface::class);
+        $this->vonageClient->getHttpClient()->willReturn($this->httpClient->reveal());
         $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
         $this->vonageClient->getCredentials()->willReturn(
             new Client\Credentials\Basic('abc', 'def'),
         );
 
-        $api = new Client\APIResource();
+        $api = new Client\APIResource($this->vonageClient->reveal());
         $api
             ->setIsHAL(false)
             ->setBaseUri('/verify')
             ->setErrorsOn200(true)
             ->setAuthHandlers(new Client\Credentials\Handler\BasicHandler())
-            ->setClient($this->vonageClient->reveal())
             ->setExceptionErrorHandler(new ExceptionErrorHandler());
 
         $this->client = new VerifyClient($api);
@@ -60,7 +62,7 @@ class ClientTest extends VonageTestCase
 
     public function testUsesCorrectAuth(): void
     {
-        $this->vonageClient->send(
+        $this->httpClient->sendRequest(
             Argument::that(
                 function (RequestInterface $request) {
                     $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/psd2/json', $request);
@@ -164,7 +166,7 @@ class ClientTest extends VonageTestCase
      */
     public function testCanStartPSD2Verification(): void
     {
-        $this->vonageClient->send(
+        $this->httpClient->sendRequest(
             Argument::that(
                 function (RequestInterface $request) {
                     $this->assertRequestJsonBodyContains('number', '14845551212', $request);
@@ -193,7 +195,7 @@ class ClientTest extends VonageTestCase
      */
     public function testCanStartPSD2VerificationWithWorkflowID(): void
     {
-        $this->vonageClient->send(
+        $this->httpClient->sendRequest(
             Argument::that(
                 function (RequestInterface $request) {
                     $this->assertRequestJsonBodyContains('number', '14845551212', $request);
@@ -241,7 +243,7 @@ class ClientTest extends VonageTestCase
     protected function setupClientForStart($response): Response
     {
         $response = $this->getResponse($response);
-        $this->vonageClient->send(
+        $this->httpClient->sendRequest(
             Argument::that(
                 function (RequestInterface $request) {
                     $this->assertRequestJsonBodyContains('number', '14845551212', $request);
@@ -312,7 +314,7 @@ class ClientTest extends VonageTestCase
     protected function setupClientForSearch($response): Response
     {
         $response = $this->getResponse($response);
-        $this->vonageClient->send(
+        $this->httpClient->sendRequest(
             Argument::that(
                 function (RequestInterface $request) {
                     $this->assertRequestJsonBodyContains('request_id', '44a5279b27dd4a638d614d265ad57a77', $request);
@@ -427,7 +429,7 @@ class ClientTest extends VonageTestCase
     protected function setupClientForControl($response, $cmd): Response
     {
         $response = $this->getResponse($response);
-        $this->vonageClient->send(
+        $this->httpClient->sendRequest(
             Argument::that(
                 function (RequestInterface $request) use ($cmd) {
                     $this->assertRequestJsonBodyContains('request_id', '44a5279b27dd4a638d614d265ad57a77', $request);
@@ -499,7 +501,7 @@ class ClientTest extends VonageTestCase
     {
         $response = $this->getResponse($response);
 
-        $this->vonageClient->send(
+        $this->httpClient->sendRequest(
             Argument::that(
                 function (RequestInterface $request) use ($code, $ip) {
                     $this->assertRequestJsonBodyContains('request_id', '44a5279b27dd4a638d614d265ad57a77', $request);

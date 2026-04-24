@@ -6,10 +6,7 @@ namespace Vonage\Application;
 
 use Exception;
 use Psr\Http\Client\ClientExceptionInterface;
-use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
-use Vonage\Client\ClientAwareInterface;
-use Vonage\Client\ClientAwareTrait;
 use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Entity\Hydrator\ArrayHydrator;
 use Vonage\Entity\Hydrator\HydratorInterface;
@@ -17,25 +14,13 @@ use Vonage\Entity\IterableAPICollection;
 
 use function is_null;
 
-class Client implements ClientAwareInterface, APIClient
+class Client
 {
-    use ClientAwareTrait;
-
     public function __construct(protected APIResource $api, protected ?HydratorInterface $hydrator = null)
     {
-    }
-
-    public function getApiResource(): APIResource
-    {
-        if (is_null($this->api)) {
-            $api = new APIResource();
-            $api->setClient($this->getClient())
-                ->setBaseUri('/v2/applications')
-                ->setCollectionName('applications');
-            $this->api = $api;
+        if (is_null($this->hydrator)) {
+            $this->hydrator = new Hydrator();
         }
-
-        return $this->api;
     }
 
     /**
@@ -46,7 +31,7 @@ class Client implements ClientAwareInterface, APIClient
      */
     public function get(string $application): Application
     {
-        $data = $this->getApiResource()->get($application);
+        $data = $this->api->get($application);
         $application = new Application();
         $application->fromArray($data);
 
@@ -78,7 +63,7 @@ class Client implements ClientAwareInterface, APIClient
         $data = $application->toArray();
         unset($data['id']);
 
-        $response = $this->getApiResource()->create($data);
+        $response = $this->api->create($data);
 
         return $this->hydrator->hydrate($response);
     }
@@ -90,29 +75,9 @@ class Client implements ClientAwareInterface, APIClient
      * @throws ClientException
      * @throws Exception
      */
-    public function update($application, ?string $id = null): Application
+    public function update(Application $application): Application
     {
-        if (!($application instanceof Application)) {
-            trigger_error(
-                'Passing an array to Vonage\Application\Client::update() is deprecated, ' .
-                'please pass an Application object instead.',
-                E_USER_DEPRECATED
-            );
-
-            $application = $this->fromArray($application);
-        }
-
-        if (is_null($id)) {
-            $id = $application->getId();
-        } else {
-            trigger_error(
-                'Passing an ID to Vonage\Application\Client::update() is deprecated ' .
-                'and will be removed in a future release',
-                E_USER_DEPRECATED
-            );
-        }
-
-        $data = $this->getApiResource()->update($id, $application->toArray());
+        $data = $this->api->update($application->getId(), $application->toArray());
         return $this->hydrator->hydrate($data);
     }
 
@@ -124,7 +89,7 @@ class Client implements ClientAwareInterface, APIClient
      */
     public function delete(string $application): bool
     {
-        $this->getApiResource()->delete($application);
+        $this->api->delete($application);
 
         return true;
     }

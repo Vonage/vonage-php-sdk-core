@@ -35,6 +35,7 @@ class ClientTest extends VonageTestCase
     use HTTPTestTrait;
 
     protected ObjectProphecy $vonageClient;
+    protected $httpClient;
     protected ConversationClient $conversationsClient;
     protected APIResource $api;
     protected int $requestIndex = 0;
@@ -44,6 +45,8 @@ class ClientTest extends VonageTestCase
         $this->responsesDirectory = __DIR__ . '/Fixtures/Responses';
 
         $this->vonageClient = $this->prophesize(Client::class);
+        $this->httpClient = $this->prophesize(\Psr\Http\Client\ClientInterface::class);
+        $this->vonageClient->getHttpClient()->willReturn($this->httpClient->reveal());
         $this->vonageClient->getRestUrl()->willReturn('https://api.nexmo.com');
         $this->vonageClient->getCredentials()->willReturn(
             new Client\Credentials\Container(new Client\Credentials\Keypair(
@@ -53,11 +56,10 @@ class ClientTest extends VonageTestCase
         );
 
         /** @noinspection PhpParamsInspection */
-        $this->api = (new APIResource())
+        $this->api = (new APIResource($this->vonageClient->reveal()))
             ->setIsHAL(true)
             ->setCollectionName('conversations')
             ->setErrorsOn200(false)
-            ->setClient($this->vonageClient->reveal())
             ->setAuthHandlers(new Client\Credentials\Handler\KeypairHandler())
             ->setBaseUrl('https://api.nexmo.com/v1/conversations');
 
@@ -71,7 +73,7 @@ class ClientTest extends VonageTestCase
 
     public function testWillUseCorrectAuth(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $this->assertEquals(
                 'Bearer ',
                 mb_substr($request->getHeaders()['Authorization'][0], 0, 7)
@@ -86,7 +88,7 @@ class ClientTest extends VonageTestCase
 
     public function testWillListConversations(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) use (&$requestIndex) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use (&$requestIndex) {
             $this->requestIndex++;
             $this->assertEquals('GET', $request->getMethod());
 
@@ -145,7 +147,7 @@ class ClientTest extends VonageTestCase
 
     public function testWillListConversationsByQueryParameters(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) use (&$requestIndex) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use (&$requestIndex) {
             $this->assertEquals('GET', $request->getMethod());
 
             $uri = $request->getUri();
@@ -183,7 +185,7 @@ class ClientTest extends VonageTestCase
 
     public function testWillCreateConversation(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) use (&$requestIndex) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use (&$requestIndex) {
             $this->assertEquals('POST', $request->getMethod());
 
             $uri = $request->getUri();
@@ -265,7 +267,7 @@ class ClientTest extends VonageTestCase
 
     public function testWillRetrieveConversation(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) use (&$requestIndex) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use (&$requestIndex) {
             $this->assertEquals('GET', $request->getMethod());
 
             $uri = $request->getUri();
@@ -313,7 +315,7 @@ class ClientTest extends VonageTestCase
 
     public function testWillUpdateConversation(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) use (&$requestIndex) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use (&$requestIndex) {
             $this->assertEquals('PUT', $request->getMethod());
 
             $uri = $request->getUri();
@@ -375,7 +377,7 @@ class ClientTest extends VonageTestCase
 
     public function testWillDeleteConversation(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) use (&$requestIndex) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use (&$requestIndex) {
             $this->assertEquals('DELETE', $request->getMethod());
 
             $uri = $request->getUri();
@@ -396,7 +398,7 @@ class ClientTest extends VonageTestCase
 
     public function testWillListMembersByConversationId(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) use (&$requestIndex) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use (&$requestIndex) {
             $this->requestIndex++;
             $this->assertEquals('GET', $request->getMethod());
 
@@ -480,7 +482,7 @@ class ClientTest extends VonageTestCase
 
     public function testWillListMembersByConversationByUserIdUsingQueryParameters(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) use (&$requestIndex) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use (&$requestIndex) {
             $this->requestIndex++;
             $this->assertEquals('GET', $request->getMethod());
 
@@ -546,7 +548,7 @@ class ClientTest extends VonageTestCase
 
     public function testWillListMembersInConversation(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) use (&$requestIndex) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use (&$requestIndex) {
             $this->requestIndex++;
             $this->assertEquals('GET', $request->getMethod());
 
@@ -590,7 +592,7 @@ class ClientTest extends VonageTestCase
 
     public function testWillListMembersWithQuery(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) use (&$requestIndex) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use (&$requestIndex) {
             $this->requestIndex++;
             $this->assertEquals('GET', $request->getMethod());
 
@@ -632,7 +634,7 @@ class ClientTest extends VonageTestCase
 
     public function testWillCreateMemberInConversation(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) use (&$requestIndex) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use (&$requestIndex) {
             $this->assertEquals('POST', $request->getMethod());
 
             $uri = $request->getUri();
@@ -723,7 +725,7 @@ class ClientTest extends VonageTestCase
 
     public function testWillGetMeAsMemberInConversation(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) use (&$requestIndex) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use (&$requestIndex) {
             $this->assertEquals('GET', $request->getMethod());
 
             $uri = $request->getUri();
@@ -745,7 +747,7 @@ class ClientTest extends VonageTestCase
 
     public function testWillGetMemberInConversation(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) use (&$requestIndex) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use (&$requestIndex) {
             $this->assertEquals('GET', $request->getMethod());
 
             $uri = $request->getUri();
@@ -770,7 +772,7 @@ class ClientTest extends VonageTestCase
 
     public function testWillUpdateMemberInConversation(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) use (&$requestIndex) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use (&$requestIndex) {
             $this->assertEquals('PUT', $request->getMethod());
 
             $uri = $request->getUri();
@@ -811,7 +813,7 @@ class ClientTest extends VonageTestCase
 
     public function testWillDeleteMemberInConversation(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) use (&$requestIndex) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use (&$requestIndex) {
             $this->assertEquals('DELETE', $request->getMethod());
 
             $uri = $request->getUri();
@@ -841,7 +843,7 @@ class ClientTest extends VonageTestCase
             ['message_type' => 'text', 'text' => 'my event']
         );
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use (&$requestIndex) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use (&$requestIndex) {
             $this->assertEquals('POST', $request->getMethod());
 
             $uri = $request->getUri();
@@ -867,7 +869,7 @@ class ClientTest extends VonageTestCase
 
     public function testWillListEvents(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) use (&$requestIndex) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use (&$requestIndex) {
             $this->requestIndex++;
 
             if ($this->requestIndex === 1) {
@@ -929,7 +931,7 @@ class ClientTest extends VonageTestCase
 
     public function testWillGetEventById(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) use (&$requestIndex) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use (&$requestIndex) {
             $this->assertEquals('GET', $request->getMethod());
 
             $uri = $request->getUri();
@@ -952,7 +954,7 @@ class ClientTest extends VonageTestCase
 
     public function testWillDeleteEvent(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) use (&$requestIndex) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use (&$requestIndex) {
             $this->assertEquals('DELETE', $request->getMethod());
 
             $uri = $request->getUri();

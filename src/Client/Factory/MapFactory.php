@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Vonage\Client\Factory;
 
-use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Vonage\Client;
@@ -13,7 +12,7 @@ use Vonage\Logger\LoggerAwareInterface;
 use function is_callable;
 use function sprintf;
 
-class MapFactory implements FactoryInterface, ContainerInterface
+class MapFactory implements FactoryInterface
 {
     /**
      * Map of instances.
@@ -88,10 +87,6 @@ class MapFactory implements FactoryInterface, ContainerInterface
             if (is_callable($instance)) {
                 $instance = $instance($this);
             }
-        }
-
-        if ($instance instanceof Client\ClientAwareInterface) {
-            $instance->setClient($this->client);
         }
 
         if ($instance instanceof LoggerAwareInterface && $this->has(LoggerInterface::class)) {

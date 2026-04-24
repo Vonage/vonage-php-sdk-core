@@ -11,14 +11,13 @@ use Lcobucci\JWT\Token;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use RuntimeException;
 use Vonage\Account\ClientFactory;
 use Vonage\Application\ClientFactory as ApplicationClientFactory;
 use Vonage\Client\APIResource;
+use Vonage\Client\APIResourceFactory;
 use Vonage\Client\Credentials\Basic;
 use Vonage\Client\Credentials\Container;
 use Vonage\Client\Credentials\CredentialsInterface;
@@ -193,7 +192,7 @@ class Client implements LoggerAwareInterface
             'voice' => VoiceClientFactory::class,
 
             // Additional utility classes
-            APIResource::class => APIResource::class,
+            APIResource::class => APIResourceFactory::class,
             Client::class => fn() => $this
         ];
 
@@ -283,76 +282,6 @@ class Client implements LoggerAwareInterface
         }
 
         throw new ClientException($this->credentials::class . ' does not support JWT generation');
-    }
-
-    /**
-     * Wraps the HTTP Client, creates a new PSR-7 request adding authentication, signatures, etc.
-     *
-     * @throws ClientExceptionInterface
-     */
-    public function send(RequestInterface $request): ResponseInterface
-    {
-        // Allow any part of the URI to be replaced with a simple search
-        if (isset($this->options['url'])) {
-            foreach ($this->options['url'] as $search => $replace) {
-                $uri = (string)$request->getUri();
-                $new = str_replace($search, $replace, $uri);
-
-                if ($uri !== $new) {
-                    $request = $request->withUri(new Uri($new));
-                }
-            }
-        }
-
-        // The user agent must be in the following format:
-        // LIBRARY-NAME/LIBRARY-VERSION LANGUAGE-NAME/LANGUAGE-VERSION [APP-NAME/APP-VERSION]
-        // See https://github.com/Vonage/client-library-specification/blob/master/SPECIFICATION.md#reporting
-        $userAgent = [];
-
-        // Library name
-        $userAgent[] = 'vonage-php/' . $this->getVersion();
-
-        // Language name
-        $userAgent[] = 'php/' . PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION;
-
-        // If we have an app set, add that to the UA
-        if (isset($this->options['app'])) {
-            $app = $this->options['app'];
-            $userAgent[] = $app['name'] . '/' . $app['version'];
-        }
-
-        // Set the header. Build by joining all the parts we have with a space
-        $request = $request->withHeader('User-Agent', implode(' ', $userAgent));
-        /** @noinspection PhpUnnecessaryLocalVariableInspection */
-        $response = $this->client->sendRequest($request);
-
-        if ($this->debug) {
-            $id = uniqid('', true);
-            $request->getBody()->rewind();
-            $response->getBody()->rewind();
-            $this->log(
-                LogLevel::DEBUG,
-                'Request ' . $id,
-                [
-                    'url' => $request->getUri()->__toString(),
-                    'headers' => $request->getHeaders(),
-                    'body' => explode("\n", $request->getBody()->__toString())
-                ]
-            );
-            $this->log(
-                LogLevel::DEBUG,
-                'Response ' . $id,
-                [
-                    'headers ' => $response->getHeaders(),
-                    'body' => explode("\n", $response->getBody()->__toString())
-                ]
-            );
-
-            $request->getBody()->rewind();
-            $response->getBody()->rewind();
-        }
-
-        return $response;
     }
 
     protected function validateAppOptions($app): void

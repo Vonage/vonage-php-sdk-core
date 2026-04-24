@@ -6,15 +6,12 @@ namespace VonageTest\Verify;
 
 use Laminas\Diactoros\Request;
 use VonageTest\VonageTestCase;
-use Vonage\Entity\Psr7Trait;
 use Laminas\Diactoros\Response;
 use Vonage\Client\Exception\Request as ExceptionRequest;
 use Vonage\Verify\ExceptionErrorHandler;
 
 class ExceptionErrorHandlerTest extends VonageTestCase
 {
-    use Psr7Trait;
-
     public function testServerExceptionThrowOnError()
     {
         $this->expectException(ExceptionRequest::class);

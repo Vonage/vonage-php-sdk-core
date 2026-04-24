@@ -26,6 +26,7 @@ class ClientTest extends VonageTestCase
     protected $apiClient;
 
     protected $vonageClient;
+    protected $httpClient;
 
     /**
      * @var RedactClient
@@ -37,14 +38,15 @@ class ClientTest extends VonageTestCase
         $this->responsesDirectory = __DIR__ . '/responses';
 
         $this->vonageClient = $this->prophesize(Client::class);
+        $this->httpClient = $this->prophesize(\Psr\Http\Client\ClientInterface::class);
+        $this->vonageClient->getHttpClient()->willReturn($this->httpClient->reveal());
         $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
         $this->vonageClient->getCredentials()->willReturn(
             new Client\Credentials\Container(new Client\Credentials\Basic('abc', 'def'))
         );
 
-        $this->redact = new RedactClient();
-        /** @noinspection PhpParamsInspection */
-        $this->redact->setClient($this->vonageClient->reveal());
+        $this->apiClient = new APIResource($this->vonageClient->reveal());
+        $this->redact = new RedactClient($this->apiClient);
     }
 
     /**
@@ -53,7 +55,7 @@ class ClientTest extends VonageTestCase
      */
     public function testUrlAndMethod(): void
     {
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/v1/redact/transaction', $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('POST', $request->getMethod());
@@ -70,7 +72,7 @@ class ClientTest extends VonageTestCase
      */
     public function testNoOptions(): void
     {
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) {
             $this->assertRequestJsonBodyContains('id', 'ABC123', $request);
             $this->assertRequestJsonBodyContains('product', 'sms', $request);
 
@@ -86,7 +88,7 @@ class ClientTest extends VonageTestCase
      */
     public function testWithOptions(): void
     {
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) {
             $this->assertRequestJsonBodyContains('id', 'ABC123', $request);
             $this->assertRequestJsonBodyContains('product', 'sms', $request);
             $this->assertRequestJsonBodyContains('type', 'inbound', $request);
@@ -103,7 +105,7 @@ class ClientTest extends VonageTestCase
      */
     public function testOptionsDoNotOverwriteParams(): void
     {
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) {
             $this->assertRequestJsonBodyContains('id', 'ABC123', $request);
             $this->assertRequestJsonBodyContains('product', 'sms', $request);
             $this->assertRequestJsonBodyContains('type', 'inbound', $request);
@@ -130,7 +132,7 @@ class ClientTest extends VonageTestCase
         $this->expectException($expectedException);
         $this->expectExceptionMessage($expectedMessage);
 
-        $this->vonageClient->send(Argument::that(fn (RequestInterface $request) => true))->shouldBeCalledTimes(1)->willReturn($this->getResponse($response, $code));
+        $this->httpClient->sendRequest(Argument::that(fn(RequestInterface $request) => true))->shouldBeCalledTimes(1)->willReturn($this->getResponse($response, $code));
 
         $this->redact->transaction('ABC123', 'sms');
     }

@@ -33,6 +33,7 @@ class ClientTest extends VonageTestCase
     use HTTPTestTrait;
 
     protected ObjectProphecy $vonageClient;
+    protected $httpClient;
     protected Verify2Client $verify2Client;
     protected APIResource $api;
     private int $requestCount;
@@ -42,6 +43,8 @@ class ClientTest extends VonageTestCase
         $this->responsesDirectory = __DIR__ . '/Fixtures/Responses';
 
         $this->vonageClient = $this->prophesize(Client::class);
+        $this->httpClient = $this->prophesize(\Psr\Http\Client\ClientInterface::class);
+        $this->vonageClient->getHttpClient()->willReturn($this->httpClient->reveal());
         $this->vonageClient->getRestUrl()->willReturn('https://api.nexmo.com');
         $this->vonageClient->getCredentials()->willReturn(
             new Client\Credentials\Container(
@@ -50,10 +53,9 @@ class ClientTest extends VonageTestCase
         );
 
         /** @noinspection PhpParamsInspection */
-        $this->api = (new APIResource())
+        $this->api = (new APIResource($this->vonageClient->reveal()))
             ->setIsHAL(true)
             ->setErrorsOn200(false)
-            ->setClient($this->vonageClient->reveal())
             ->setAuthHandlers([new Client\Credentials\Handler\BasicHandler(),
                 new Client\Credentials\Handler\KeypairHandler()])
             ->setBaseUrl('https://api.nexmo.com/v2/verify');
@@ -77,7 +79,7 @@ class ClientTest extends VonageTestCase
         $smsVerification = new SMSRequest($payload['to'], $payload['brand']);
         $smsVerification->setClientRef($payload['client_ref']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $this->assertEquals(
                 'Basic ',
                 mb_substr($request->getHeaders()['Authorization'][0], 0, 6)
@@ -100,7 +102,7 @@ class ClientTest extends VonageTestCase
         $smsVerification = new SMSRequest($payload['to'], $payload['brand'], null, $payload['from']);
         $smsVerification->setClientRef($payload['client_ref']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
@@ -140,7 +142,7 @@ class ClientTest extends VonageTestCase
         $smsVerification = new SMSRequest($payload['to'], $payload['brand'], null, $payload['from']);
         $smsVerification->setTemplateId('33945c03-71c6-4aaf-954d-750a9b480def');
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
@@ -187,7 +189,7 @@ class ClientTest extends VonageTestCase
 
         $smsVerification->setClientRef($payload['client_ref']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
@@ -229,7 +231,7 @@ class ClientTest extends VonageTestCase
         $smsVerification = new SMSRequest($payload['to'], $payload['brand']);
         $smsVerification->setFraudCheck(false);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $this->assertRequestJsonBodyContains('fraud_check', false, $request);
 
             return true;
@@ -261,7 +263,7 @@ class ClientTest extends VonageTestCase
         $smsVerification->setClientRef($payload['client_ref']);
         $smsVerification->setTimeout($timeout);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertEquals(
                 'Basic ',
                 mb_substr($request->getHeaders()['Authorization'][0], 0, 6)
@@ -300,7 +302,7 @@ class ClientTest extends VonageTestCase
         $smsVerification->setClientRef($payload['client_ref']);
         $smsVerification->setLength($payload['length']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('code_length', $payload['length'], $request);
             return true;
         }))->willReturn($this->getResponse('verify-request-success', 202));
@@ -323,7 +325,7 @@ class ClientTest extends VonageTestCase
         $whatsAppVerification = new WhatsAppRequest($payload['to'], $payload['brand'], $payload['from']);
         $whatsAppVerification->setClientRef($payload['client_ref']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('locale', 'en-us', $request);
             $this->assertRequestJsonBodyContains('channel_timeout', 300, $request);
             $this->assertRequestJsonBodyContains('client_ref', $payload['client_ref'], $request);
@@ -354,7 +356,7 @@ class ClientTest extends VonageTestCase
         $whatsAppInteractiveRequest = new WhatsAppInteractiveRequest($payload['to'], $payload['brand']);
         $whatsAppInteractiveRequest->setClientRef($payload['client_ref']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('locale', 'en-us', $request);
             $this->assertRequestJsonBodyContains('channel_timeout', 300, $request);
             $this->assertRequestJsonBodyContains('client_ref', $payload['client_ref'], $request);
@@ -383,7 +385,7 @@ class ClientTest extends VonageTestCase
         $voiceRequest = new VoiceRequest($payload['to'], $payload['brand']);
         $voiceRequest->setClientRef($payload['client_ref']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('locale', 'en-us', $request);
             $this->assertRequestJsonBodyContains('channel_timeout', 300, $request);
             $this->assertRequestJsonBodyContains('client_ref', $payload['client_ref'], $request);
@@ -413,7 +415,7 @@ class ClientTest extends VonageTestCase
         $emailRequest = new EmailRequest($payload['to'], $payload['brand'], $payload['from']);
         $emailRequest->setClientRef($payload['client_ref']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('locale', 'en-us', $request);
             $this->assertRequestJsonBodyContains('channel_timeout', 300, $request);
             $this->assertRequestJsonBodyContains('client_ref', $payload['client_ref'], $request);
@@ -442,7 +444,7 @@ class ClientTest extends VonageTestCase
         $smsRequest = new SMSRequest($payload['to'], $payload['brand']);
         $smsRequest->setCode('123456789');
 
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $this->assertRequestJsonBodyContains('code', '123456789', $request, true);
 
             return true;
@@ -464,7 +466,7 @@ class ClientTest extends VonageTestCase
         $voiceWorkflow = new VerificationWorkflow('voice', '07785254785');
         $smsVerification->addWorkflow($voiceWorkflow);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('channel', 'sms', $request, true);
             $this->assertRequestJsonBodyContains('channel', 'voice', $request, true);
             $this->assertEquals('POST', $request->getMethod());
@@ -484,7 +486,7 @@ class ClientTest extends VonageTestCase
 
         $silentAuthRequest = new SilentAuthRequest($payload['to'], $payload['brand']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('brand', $payload['brand'], $request);
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request, true);
             $this->assertRequestJsonBodyContains('channel', 'silent_auth', $request, true);
@@ -513,7 +515,7 @@ class ClientTest extends VonageTestCase
 
         $silentAuthRequest = new SilentAuthRequest($payload['to'], $payload['brand'], $payload['redirect_url']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('brand', $payload['brand'], $request);
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request, true);
             $this->assertRequestJsonBodyContains('channel', 'silent_auth', $request, true);
@@ -553,7 +555,7 @@ class ClientTest extends VonageTestCase
         $smsVerification = new SMSRequest($payload['to'], $payload['brand']);
         $smsVerification->setClientRef($payload['client_ref']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $this->assertEquals('POST', $request->getMethod());
             return true;
         }))->willReturn(
@@ -582,7 +584,7 @@ class ClientTest extends VonageTestCase
         $voiceRequest = new VoiceRequest($payload['to'], $payload['brand']);
         $voiceRequest->setClientRef($payload['client_ref']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $this->assertEquals('POST', $request->getMethod());
             return true;
         }))->willReturn($this->getResponse('verify-request-invalid', 422));
@@ -605,7 +607,7 @@ class ClientTest extends VonageTestCase
         $voiceRequest = new VoiceRequest($payload['to'], $payload['brand']);
         $voiceRequest->setClientRef($payload['client_ref']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $this->assertEquals('POST', $request->getMethod());
             return true;
         }))->willReturn($this->getResponse('verify-request-throttle', 429));
@@ -615,7 +617,7 @@ class ClientTest extends VonageTestCase
 
     public function testCheckValidIdAndPIN(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $this->assertRequestJsonBodyContains('code', '24525', $request);
             $this->assertEquals('POST', $request->getMethod());
             $uri = $request->getUri();
@@ -637,7 +639,7 @@ class ClientTest extends VonageTestCase
         $this->expectExceptionMessage('Invalid Code: The code you provided does not match the expected value.. See' .
             ' https://www.developer.vonage.com/api-errors/verify#invalid-code for more information');
 
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $this->assertRequestJsonBodyContains('code', '24525', $request);
             $this->assertEquals('POST', $request->getMethod());
             $uri = $request->getUri();
@@ -658,7 +660,7 @@ class ClientTest extends VonageTestCase
         $this->expectExceptionMessage('Not Found: Request c11236f4-00bf-4b89-84ba-88b25df97315 was not found or it ' .
             'has been verified already.. See https://developer.vonage.com/api-errors#not-found for more information');
 
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $this->assertRequestJsonBodyContains('code', '24525', $request);
             $this->assertEquals('POST', $request->getMethod());
             $uri = $request->getUri();
@@ -685,7 +687,7 @@ class ClientTest extends VonageTestCase
 
         $silentAuthRequest = new SilentAuthRequest($payload['to'], $payload['brand']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertEquals('POST', $request->getMethod());
 
             return true;
@@ -707,7 +709,7 @@ class ClientTest extends VonageTestCase
         $this->expectExceptionMessage('Invalid Code: An incorrect code has been provided too many times. ' .
             'Workflow terminated.. See https://www.developer.vonage.com/api-errors/verify#expired for more information');
 
-        $this->vonageClient->send(Argument::that(fn (Request $request) => true))->willReturn($this->getResponse('verify-check-locked', 410));
+        $this->httpClient->sendRequest(Argument::that(fn (Request $request) => true))->willReturn($this->getResponse('verify-check-locked', 410));
 
         $result = $this->verify2Client->check('c11236f4-00bf-4b89-84ba-88b25df97315', '24525');
     }
@@ -718,7 +720,7 @@ class ClientTest extends VonageTestCase
         $this->expectExceptionMessage('Rate Limit Hit: Please wait, then retry your request. See https://www.de' .
             'veloper.vonage.com/api-errors#throttled for more information');
 
-        $this->vonageClient->send(
+        $this->httpClient->sendRequest(
             Argument::that(fn (Request $request) => true)
         )
             ->willReturn($this->getResponse('verify-check-throttle', 429));
@@ -730,7 +732,7 @@ class ClientTest extends VonageTestCase
     {
         $requestId = 'c11236f4-00bf-4b89-84ba-88b25df97315';
 
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
@@ -752,7 +754,7 @@ class ClientTest extends VonageTestCase
     {
         $requestId = 'c11236f4-00bf-4b89-84ba-88b25df97315';
 
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
@@ -772,7 +774,7 @@ class ClientTest extends VonageTestCase
 
     public function testWillListCustomTemplates(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
@@ -794,7 +796,7 @@ class ClientTest extends VonageTestCase
 
     public function testWillListCustomTemplatesWithQuery(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
@@ -820,7 +822,7 @@ class ClientTest extends VonageTestCase
 
     public function testWillCreateTemplate(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
@@ -840,7 +842,7 @@ class ClientTest extends VonageTestCase
 
     public function testWillGetTemplate(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
@@ -859,7 +861,7 @@ class ClientTest extends VonageTestCase
 
     public function testWillDeleteTemplate(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
@@ -878,7 +880,7 @@ class ClientTest extends VonageTestCase
 
     public function testWillUpdateTemplate(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
@@ -907,7 +909,7 @@ class ClientTest extends VonageTestCase
     public function testWillListTemplateFragments(): void
     {
         $this->requestCount = 0;
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $this->requestCount++;
             $uri = $request->getUri();
             $uriString = $uri->__toString();
@@ -947,7 +949,7 @@ class ClientTest extends VonageTestCase
 
     public function testWillListTemplateFragmentsWithQuery(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
@@ -976,7 +978,7 @@ class ClientTest extends VonageTestCase
 
     public function testWillCreateTemplateFragment(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
@@ -1013,7 +1015,7 @@ class ClientTest extends VonageTestCase
 
     public function testWillGetTemplateFragment(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
@@ -1035,7 +1037,7 @@ class ClientTest extends VonageTestCase
 
     public function testWillUpdateTemplateFragment(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
@@ -1054,7 +1056,7 @@ class ClientTest extends VonageTestCase
 
     public function testWillDeleteTemplateFragment(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(

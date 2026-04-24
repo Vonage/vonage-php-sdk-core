@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Vonage\Client;
 
+use Composer\InstalledVersions;
+use Laminas\Diactoros\Uri;
 use Laminas\Diactoros\Request;
 use Psr\Log\LogLevel;
 use Vonage\Client\Credentials\Handler\BasicHandler;
@@ -13,6 +15,8 @@ use Psr\Http\Message\ResponseInterface;
 use Vonage\Entity\IterableAPICollection;
 use Vonage\Entity\Filter\FilterInterface;
 use Psr\Http\Client\ClientExceptionInterface;
+use Vonage\Client;
+use Vonage\Client\Credentials\CredentialsInterface;
 use Vonage\Client\Credentials\Handler\HandlerInterface;
 use Vonage\Logger\LoggerTrait;
 
@@ -21,10 +25,13 @@ use function json_decode;
 use function json_encode;
 use function http_build_query;
 
-class APIResource implements ClientAwareInterface
+class APIResource
 {
-    use ClientAwareTrait;
     use LoggerTrait;
+
+    protected array $options = [];
+
+    protected mixed $debug = false;
 
     /**
      * @var HandlerInterface[]
@@ -61,13 +68,15 @@ class APIResource implements ClientAwareInterface
 
     protected ?ResponseInterface $lastResponse = null;
 
+    public function __construct(protected Client $client) {}
+
     /**
      * Adds authentication to a request
      *
      */
     public function addAuth(RequestInterface $request): RequestInterface
     {
-        $credentials = $this->getClient()->getCredentials();
+        $credentials = $this->client->getCredentials();
 
         if (is_array($this->getAuthHandlers())) {
             foreach ($this->getAuthHandlers() as $handler) {
@@ -79,7 +88,7 @@ class APIResource implements ClientAwareInterface
                     // This has a really nasty side effect for complex handlers where we never see the error
                 }
                 throw new \RuntimeException(
-                    'Unable to set credentials, please check configuration and 
+                    'Unable to set credentials, please check configuration and
                     supplied authentication'
                 );
             }
@@ -114,7 +123,7 @@ class APIResource implements ClientAwareInterface
 
         $this->lastRequest = $request;
 
-        $response = $this->getClient()->send($request);
+        $response = $this->send($request);
         $status = (int)$response->getStatusCode();
 
         $this->setLastResponse($response);
@@ -160,7 +169,7 @@ class APIResource implements ClientAwareInterface
             $request = $this->addAuth($request);
         }
 
-        $response = $this->getClient()->send($request);
+        $response = $this->send($request);
         $status = (int)$response->getStatusCode();
 
         $this->lastRequest = $request;
@@ -218,7 +227,7 @@ class APIResource implements ClientAwareInterface
             $request = $this->addAuth($request);
         }
 
-        $response = $this->getClient()->send($request);
+        $response = $this->send($request);
         $status = (int)$response->getStatusCode();
 
         $this->lastRequest = $request;
@@ -346,7 +355,6 @@ class APIResource implements ClientAwareInterface
         $collection
             ->setApiResource($api)
             ->setFilter($filter);
-        $collection->setClient($this->client);
 
         return $collection;
     }
@@ -442,7 +450,7 @@ class APIResource implements ClientAwareInterface
         }
 
         $request->getBody()->write(http_build_query($formData));
-        $response = $this->getClient()->send($request);
+        $response = $this->send($request);
         $status = $response->getStatusCode();
 
         $this->lastRequest = $request;
@@ -485,7 +493,7 @@ class APIResource implements ClientAwareInterface
         }
 
         $request->getBody()->write(json_encode($body));
-        $response = $this->getClient()->send($request);
+        $response = $this->send($request);
 
         $this->lastRequest = $request;
         $this->setLastResponse($response);
@@ -511,5 +519,95 @@ class APIResource implements ClientAwareInterface
         $this->errorsOn200 = $value;
 
         return $this;
+    }
+
+    /**
+     * Wraps the HTTP Client, creates a new PSR-7 request adding authentication, signatures, etc.
+     *
+     * @throws ClientExceptionInterface
+     */
+    public function send(RequestInterface $request): ResponseInterface
+    {
+        // Allow any part of the URI to be replaced with a simple search
+        if (isset($this->options['url'])) {
+            foreach ($this->options['url'] as $search => $replace) {
+                $uri = (string)$request->getUri();
+                $new = str_replace($search, $replace, $uri);
+
+                if ($uri !== $new) {
+                    $request = $request->withUri(new Uri($new));
+                }
+            }
+        }
+
+        // The user agent must be in the following format:
+        // LIBRARY-NAME/LIBRARY-VERSION LANGUAGE-NAME/LANGUAGE-VERSION [APP-NAME/APP-VERSION]
+        // See https://github.com/Vonage/client-library-specification/blob/master/SPECIFICATION.md#reporting
+        $userAgent = [];
+
+        // Library name
+        $userAgent[] = 'vonage-php/' . $this->getVersion();
+
+        // Language name
+        $userAgent[] = 'php/' . PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION;
+
+        // If we have an app set, add that to the UA
+        if (isset($this->options['app'])) {
+            $app = $this->options['app'];
+            $userAgent[] = $app['name'] . '/' . $app['version'];
+        }
+
+        // Set the header. Build by joining all the parts we have with a space
+        $request = $request->withHeader('User-Agent', implode(' ', $userAgent));
+        /** @noinspection PhpUnnecessaryLocalVariableInspection */
+        $response = $this->client->getHttpClient()->sendRequest($request);
+
+        if ($this->debug) {
+            $id = uniqid('', true);
+            $request->getBody()->rewind();
+            $response->getBody()->rewind();
+            $this->log(
+                LogLevel::DEBUG,
+                'Request ' . $id,
+                [
+                    'url' => $request->getUri()->__toString(),
+                    'headers' => $request->getHeaders(),
+                    'body' => explode("\n", $request->getBody()->__toString())
+                ]
+            );
+            $this->log(
+                LogLevel::DEBUG,
+                'Response ' . $id,
+                [
+                    'headers ' => $response->getHeaders(),
+                    'body' => explode("\n", $response->getBody()->__toString())
+                ]
+            );
+
+            $request->getBody()->rewind();
+            $response->getBody()->rewind();
+        }
+
+        return $response;
+    }
+
+    protected function getVersion(): string
+    {
+        return InstalledVersions::getVersion('vonage/client-core') ?: 'unknown';
+    }
+
+    public function getRestURL(): string
+    {
+        return $this->client->getRestUrl();
+    }
+
+    public function getAPIURL(): string
+    {
+        return $this->client->getApiUrl();
+    }
+
+    public function getCredentials(): CredentialsInterface
+    {
+        return $this->client->getCredentials();
     }
 }

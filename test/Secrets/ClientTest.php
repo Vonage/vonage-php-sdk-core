@@ -21,12 +21,15 @@ class ClientTest extends VonageTestCase
     protected $client;
 
     protected $vonage;
+    protected $httpClient;
 
     public function setUp(): void
     {
         $this->responsesDirectory = __DIR__ . '/responses';
 
         $this->vonage = $this->prophesize(VonageClient::class);
+        $this->httpClient = $this->prophesize(\Psr\Http\Client\ClientInterface::class);
+        $this->vonage->getHttpClient()->willReturn($this->httpClient->reveal());
         $this->vonage->getRestUrl()->willReturn('https://rest.nexmo.com');
         $this->vonage->getApiUrl()->willReturn('https://api.nexmo.com');
 
@@ -34,8 +37,8 @@ class ClientTest extends VonageTestCase
             new VonageClient\Credentials\Basic('abc', 'def')
         );
 
-        $api = new APIResource();
-        $api->setClient($this->vonage->reveal())
+        $api = new APIResource($this->vonage->reveal());
+        $api
             ->setBaseUri('/accounts')
             ->setAuthHandlers(new VonageClient\Credentials\Handler\BasicHandler())
             ->setCollectionName('secrets');
@@ -45,7 +48,7 @@ class ClientTest extends VonageTestCase
 
     public function testListAllSecrets()
     {
-        $this->vonage->send(Argument::that(function (RequestInterface $request) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) {
             $this->assertRequestUrl('api.nexmo.com', '/accounts/abcd123/secrets', 'GET', $request);
             return true;
         }))->willReturn($this->getResponse('list', 200));
@@ -61,7 +64,7 @@ class ClientTest extends VonageTestCase
 
     public function testGetSecret()
     {
-        $this->vonage->send(Argument::that(function (RequestInterface $request) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) {
             $this->assertRequestUrl('api.nexmo.com', '/accounts/abcd123/secrets/105abf14-aa00-45a3-9d27-dd19c5920f2c', 'GET', $request);
             return true;
         }))->willReturn($this->getResponse('single', 200));
@@ -74,7 +77,7 @@ class ClientTest extends VonageTestCase
 
     public function testRevokeSecret()
     {
-        $this->vonage->send(Argument::that(function (RequestInterface $request) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) {
             $this->assertRequestUrl('api.nexmo.com', '/accounts/abcd123/secrets/105abf14-aa00-45a3-9d27-dd19c5920f2c', 'DELETE', $request);
             return true;
         }))->willReturn($this->getResponse('empty', 204));
@@ -84,7 +87,7 @@ class ClientTest extends VonageTestCase
 
     public function testCreateSecret()
     {
-        $this->vonage->send(Argument::that(function (RequestInterface $request) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) {
             $this->assertRequestUrl('api.nexmo.com', '/accounts/abcd123/secrets', 'POST', $request);
             return true;
         }))->willReturn($this->getResponse('new', 204));

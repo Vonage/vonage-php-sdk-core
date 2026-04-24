@@ -9,10 +9,7 @@ use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
-use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
-use Vonage\Client\ClientAwareInterface;
-use Vonage\Client\ClientAwareTrait;
 use Vonage\Client\Exception as ClientException;
 
 use function is_array;
@@ -22,29 +19,9 @@ use function serialize;
 use function trigger_error;
 use function unserialize;
 
-class Client implements ClientAwareInterface, APIClient
+class Client
 {
-    use ClientAwareTrait;
-
-    public function __construct(protected ?APIResource $api = null)
-    {
-    }
-
-    /**
-     * Shim to handle older instantiations of this class
-     * Will change in v3 to just return the required API object
-     */
-    public function getApiResource(): APIResource
-    {
-        if (is_null($this->api)) {
-            $api = new APIResource();
-            $api->setClient($this->getClient())
-                ->setIsHAL(false)
-                ->setBaseUri('/verify');
-            $this->api = $api;
-        }
-
-        return $this->api;
+    public function __construct(protected APIResource $api) {
     }
 
     /**
@@ -74,11 +51,10 @@ class Client implements ClientAwareInterface, APIClient
             $verification = $verification->toArray();
         }
 
-        $api = $this->getApiResource();
         $verification = $this->createVerification($verification);
-        $response = $api->create($verification->toArray(), '/json');
+        $response = $this->api->create($verification->toArray(), '/json');
 
-        $this->processReqRes($verification, $api->getLastRequest(), $api->getLastResponse(), true);
+        $this->processReqRes($verification, $this->api->getLastRequest(), $this->api->getLastResponse(), true);
 
         return $this->checkError($verification, $response);
     }
@@ -93,8 +69,7 @@ class Client implements ClientAwareInterface, APIClient
      */
     public function requestPSD2(RequestPSD2 $request): array
     {
-        $api = $this->getApiResource();
-        $response = $api->create($request->toArray(), '/psd2/json');
+        $response = $this->api->create($request->toArray(), '/psd2/json');
 
         $this->checkError($request, $response);
 
@@ -117,15 +92,14 @@ class Client implements ClientAwareInterface, APIClient
             );
         }
 
-        $api = $this->getApiResource();
         $verification = $this->createVerification($verification);
 
         $params = [
             'request_id' => $verification->getRequestId()
         ];
 
-        $data = $api->create($params, '/search/json');
-        $this->processReqRes($verification, $api->getLastRequest(), $api->getLastResponse(), true);
+        $data = $this->api->create($params, '/search/json');
+        $this->processReqRes($verification, $this->api->getLastRequest(), $this->api->getLastResponse(), true);
 
         return $this->checkError($verification, $data);
     }
@@ -194,7 +168,6 @@ class Client implements ClientAwareInterface, APIClient
             );
         }
 
-        $api = $this->getApiResource();
         $verification = $this->createVerification($verification);
         $params = [
             'request_id' => $verification->getRequestId(),
@@ -205,9 +178,9 @@ class Client implements ClientAwareInterface, APIClient
             $params['ip'] = $ip;
         }
 
-        $data = $api->create($params, '/check/json');
+        $data = $this->api->create($params, '/check/json');
 
-        $this->processReqRes($verification, $api->getLastRequest(), $api->getLastResponse(), false);
+        $this->processReqRes($verification, $this->api->getLastRequest(), $this->api->getLastResponse(), false);
 
         return $this->checkError($verification, $data);
     }
@@ -271,7 +244,6 @@ class Client implements ClientAwareInterface, APIClient
             );
         }
 
-        $api = $this->getApiResource();
         $verification = $this->createVerification($verification);
 
         $params = [
@@ -279,8 +251,8 @@ class Client implements ClientAwareInterface, APIClient
             'cmd' => $cmd
         ];
 
-        $data = $api->create($params, '/control/json');
-        $this->processReqRes($verification, $api->getLastRequest(), $api->getLastResponse(), false);
+        $data = $this->api->create($params, '/control/json');
+        $this->processReqRes($verification, $this->api->getLastRequest(), $this->api->getLastResponse(), false);
 
         return $this->checkError($verification, $data);
     }

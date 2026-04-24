@@ -2,20 +2,14 @@
 
 namespace Vonage\Secrets;
 
-use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
 use Vonage\Entity\Hydrator\ArrayHydrator;
 use Vonage\Entity\IterableAPICollection;
 
-class Client implements APIClient
+class Client
 {
     public function __construct(protected APIResource $api)
     {
-    }
-
-    public function getAPIResource(): APIResource
-    {
-        return $this->api;
     }
 
     public function get(string $accountId, string $id): Secret

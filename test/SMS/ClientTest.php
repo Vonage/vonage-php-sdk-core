@@ -33,6 +33,7 @@ class ClientTest extends VonageTestCase
     protected $api;
 
     protected $vonageClient;
+    protected $httpClient;
 
     /**
      * @var SMSClient
@@ -44,6 +45,8 @@ class ClientTest extends VonageTestCase
         $this->responsesDirectory = __DIR__ . '/responses';
 
         $this->vonageClient = $this->prophesize(Client::class);
+        $this->httpClient = $this->prophesize(\Psr\Http\Client\ClientInterface::class);
+        $this->vonageClient->getHttpClient()->willReturn($this->httpClient->reveal());
         $this->vonageClient->getRestUrl()->willReturn('https://rest.nexmo.com');
         $this->vonageClient->getCredentials()->willReturn(
             new Client\Credentials\Container(
@@ -53,11 +56,10 @@ class ClientTest extends VonageTestCase
         );
 
         /** @noinspection PhpParamsInspection */
-        $this->api = (new APIResource())
+        $this->api = (new APIResource($this->vonageClient->reveal()))
             ->setCollectionName('messages')
             ->setIsHAL(false)
             ->setErrorsOn200(true)
-            ->setClient($this->vonageClient->reveal())
             ->setExceptionErrorHandler(new ExceptionErrorHandler())
             ->setBaseUrl('https://rest.nexmo.com');
         $this->smsClient = new SMSClient($this->api);
@@ -77,7 +79,7 @@ class ClientTest extends VonageTestCase
             'client-ref' => 'my-personal-reference'
         ];
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($args) {
             $this->assertRequestJsonBodyContains('to', $args['to'], $request);
             $this->assertRequestJsonBodyContains('from', $args['from'], $request);
             $this->assertRequestJsonBodyContains('text', $args['text'], $request);
@@ -113,7 +115,7 @@ class ClientTest extends VonageTestCase
             'client-ref' => 'my-personal-reference'
         ];
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($args) {
             $this->assertRequestJsonBodyContains('to', $args['to'], $request);
             $this->assertRequestJsonBodyContains('from', $args['from'], $request);
             $this->assertRequestJsonBodyContains('text', $args['text'], $request);
@@ -150,8 +152,8 @@ class ClientTest extends VonageTestCase
         $this->expectException(Client\Exception\Request::class);
         $this->expectExceptionMessage('Unexpected response from the API');
 
-        $this->vonageClient
-            ->send(Argument::type(RequestInterface::class))
+        $this->httpClient
+            ->sendRequest(Argument::type(RequestInterface::class))
             ->willReturn($this->getResponse('empty'));
 
         $this->smsClient->send(new SMS('14845551212', '16105551212', "Go To Gino's"));
@@ -167,7 +169,7 @@ class ClientTest extends VonageTestCase
             'client-ref' => 'my-personal-reference'
         ];
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($args) {
             $this->assertRequestJsonBodyContains('to', $args['to'], $request);
             $this->assertRequestJsonBodyContains('from', $args['from'], $request);
             $this->assertRequestJsonBodyContains('text', $args['text'], $request);
@@ -202,8 +204,8 @@ class ClientTest extends VonageTestCase
         $this->expectException(Client\Exception\Request::class);
         $this->expectExceptionMessage('Missing from param');
 
-        $this->vonageClient
-            ->send(Argument::type(RequestInterface::class))
+        $this->httpClient
+            ->sendRequest(Argument::type(RequestInterface::class))
             ->willReturn($this->getResponse('fail'));
 
         $this->smsClient->send(new SMS('14845551212', '16105551212', "Go To Gino's"));
@@ -218,8 +220,8 @@ class ClientTest extends VonageTestCase
         $this->expectException(ServerException::class);
         $this->expectExceptionMessage('Server Error');
 
-        $this->vonageClient
-            ->send(Argument::type(RequestInterface::class))
+        $this->httpClient
+            ->sendRequest(Argument::type(RequestInterface::class))
             ->willReturn($this->getResponse('fail-server'));
 
         $this->smsClient->send(new SMS('14845551212', '16105551212', "Go To Gino's"));
@@ -241,7 +243,7 @@ class ClientTest extends VonageTestCase
             'text' => 'test message'
         ];
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($args) {
             $this->assertRequestJsonBodyContains('to', $args['to'], $request);
             $this->assertRequestJsonBodyContains('from', $args['from'], $request);
             $this->assertRequestJsonBodyContains('text', $args['text'], $request);
@@ -279,7 +281,7 @@ class ClientTest extends VonageTestCase
             'text' => 'test message'
         ];
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($args) {
             $this->assertRequestJsonBodyContains('to', $args['to'], $request);
             $this->assertRequestJsonBodyContains('from', $args['from'], $request);
             $this->assertRequestJsonBodyContains('text', $args['text'], $request);
@@ -315,7 +317,7 @@ class ClientTest extends VonageTestCase
             'text' => 'test message'
         ];
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($args) {
             $this->assertRequestJsonBodyContains('to', $args['to'], $request);
             $this->assertRequestJsonBodyContains('from', $args['from'], $request);
             $this->assertRequestJsonBodyContains('text', $args['text'], $request);
@@ -349,7 +351,7 @@ class ClientTest extends VonageTestCase
             'text' => str_repeat('This is an incredibly large SMS message', 5)
         ];
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($args) {
             $this->assertRequestJsonBodyContains('to', $args['to'], $request);
             $this->assertRequestJsonBodyContains('from', $args['from'], $request);
             $this->assertRequestJsonBodyContains('text', $args['text'], $request);
@@ -378,7 +380,7 @@ class ClientTest extends VonageTestCase
      */
     public function testCanSend2FAMessage(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $this->assertRequestJsonBodyContains('to', '447700900000', $request);
             $this->assertRequestJsonBodyContains('pin', 1245, $request);
 
@@ -405,15 +407,15 @@ class ClientTest extends VonageTestCase
         $this->expectExceptionMessage('Invalid Account for Campaign');
         $this->expectExceptionCode(101);
 
-        $this->vonageClient
-            ->send(Argument::type(RequestInterface::class))
+        $this->httpClient
+            ->sendRequest(Argument::type(RequestInterface::class))
             ->willReturn($this->getResponse('fail-shortcode'));
         $this->smsClient->sendTwoFactor('447700900000', 1245);
     }
 
     public function testLogsWarningWhenSendingUnicodeAsText(): void
     {
-        $this->vonageClient->send(
+        $this->httpClient->sendRequest(
             Argument::that(fn (Request $request) => true)
         )->willReturn($this->getResponse('send-success'));
 
@@ -457,7 +459,7 @@ class ClientTest extends VonageTestCase
      */
     public function testCanSendAlert(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $this->assertRequestJsonBodyContains('to', '447700900000', $request);
             $this->assertRequestJsonBodyContains('key', 'value', $request);
 
@@ -486,8 +488,8 @@ class ClientTest extends VonageTestCase
         $this->expectExceptionMessage('Invalid Account for Campaign');
         $this->expectExceptionCode(101);
 
-        $this->vonageClient
-            ->send(Argument::type(RequestInterface::class))
+        $this->httpClient
+            ->sendRequest(Argument::type(RequestInterface::class))
             ->willReturn($this->getResponse('fail-shortcode'));
         $this->smsClient->sendAlert('447700900000', ['key' => 'value']);
     }

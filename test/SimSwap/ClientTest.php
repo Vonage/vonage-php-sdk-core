@@ -18,6 +18,7 @@ class ClientTest extends VonageTestCase
     use HTTPTestTrait;
 
     protected ObjectProphecy $vonageClient;
+    protected $httpClient;
     protected SimSwapClient $simSwapClient;
     protected APIResource $api;
     protected Client|ObjectProphecy $handlerClient;
@@ -31,6 +32,8 @@ class ClientTest extends VonageTestCase
         $this->responsesDirectory = __DIR__ . '/Fixtures/Responses';
 
         $this->vonageClient = $this->prophesize(Client::class);
+        $this->httpClient = $this->prophesize(\Psr\Http\Client\ClientInterface::class);
+        $this->vonageClient->getHttpClient()->willReturn($this->httpClient->reveal());
         $this->vonageClient->getCredentials()->willReturn(
             new Client\Credentials\Container(new Client\Credentials\Gnp(
                 '+346661113334',
@@ -46,8 +49,7 @@ class ClientTest extends VonageTestCase
         $handler->setTokenUrl('https://api-eu.vonage.com/oauth2/token');
         $handler->setClient($revealedClient);
 
-        $this->api = (new APIResource())
-            ->setClient($revealedClient)
+        $this->api = (new APIResource($revealedClient))
             ->setAuthHandlers($handler)
             ->setBaseUrl('https://api-eu.vonage.com/camara/sim-swap/v040/');
 
@@ -61,7 +63,7 @@ class ClientTest extends VonageTestCase
 
     public function testWillCheckSimSwap(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $this->requestCount++;
 
             if ($this->requestCount == 1) {
@@ -127,7 +129,7 @@ class ClientTest extends VonageTestCase
 
     public function testWillRetrieveSimSwapDate(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $this->requestCount++;
 
             if ($this->requestCount == 1) {

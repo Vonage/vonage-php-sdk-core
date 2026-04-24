@@ -2,7 +2,6 @@
 
 namespace Vonage\Verify2;
 
-use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
 use Vonage\Client\Exception\Exception;
 use Vonage\Client\Exception\Request;
@@ -17,34 +16,29 @@ use Vonage\Verify2\VerifyObjects\Template;
 use Vonage\Verify2\VerifyObjects\TemplateFragment;
 use Vonage\Verify2\VerifyObjects\VerificationWorkflow;
 
-class Client implements APIClient
+class Client
 {
     public function __construct(protected APIResource $api)
     {
-    }
-
-    public function getAPIResource(): APIResource
-    {
-        return $this->api;
     }
 
     public function startVerification(BaseVerifyRequest $request): ?array
     {
         if (self::isSilentAuthRequest($request)) {
             if (SilentAuthRequest::isValidWorkflow($request->getWorkflows())) {
-                return $this->getAPIResource()->create($request->toArray());
+                return $this->api->create($request->toArray());
             }
 
             throw new \InvalidArgumentException('Silent Auth must be the first workflow if used');
         }
 
-        return $this->getAPIResource()->create($request->toArray());
+        return $this->api->create($request->toArray());
     }
 
     public function check(string $requestId, $code): bool
     {
         try {
-            $response = $this->getAPIResource()->create(['code' => $code], '/' . $requestId);
+            $response = $this->api->create(['code' => $code], '/' . $requestId);
         } catch (Exception $e) {
             // For horrible reasons in the API Error Handler, throw the error unless it's a 409.
             if ($e->getCode() === 409) {
@@ -160,7 +154,7 @@ class Client implements APIClient
 
     public function listTemplateFragments(string $templateId, ?TemplateFilter $filter = null): IterableAPICollection
     {
-        $api = clone $this->getAPIResource();
+        $api = clone $this->api;
         $api->setCollectionName('template_fragments');
 
         $collection = $api->search($filter, '/templates/' . $templateId . '/template_fragments');

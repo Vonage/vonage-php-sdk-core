@@ -7,21 +7,14 @@ namespace Vonage\Application;
 use Exception;
 use JsonSerializable;
 use StdClass;
-use Vonage\Entity\EntityInterface;
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
-use Vonage\Entity\JsonResponseTrait;
-use Vonage\Entity\JsonSerializableTrait;
-use Vonage\Entity\Psr7Trait;
 
 use function count;
+use function is_null;
 use function ucfirst;
 
-class Application implements EntityInterface, JsonSerializable, ArrayHydrateInterface, \Stringable
+class Application implements JsonSerializable, ArrayHydrateInterface, \Stringable
 {
-    use JsonSerializableTrait;
-    use Psr7Trait;
-    use JsonResponseTrait;
-
     protected VoiceConfig $voiceConfig;
 
     protected MessagesConfig $messagesConfig;
@@ -33,6 +26,8 @@ class Application implements EntityInterface, JsonSerializable, ArrayHydrateInte
     protected ?string $name = null;
 
     protected array $keys = [];
+
+    protected array $responseData = [];
 
     public function __construct(protected ?string $id = null)
     {
@@ -77,10 +72,9 @@ class Application implements EntityInterface, JsonSerializable, ArrayHydrateInte
     {
         if (!isset($this->voiceConfig)) {
             $this->setVoiceConfig(new VoiceConfig());
-            $data = $this->getResponseData();
 
-            if (isset($data['voice']['webhooks'])) {
-                foreach ($data['voice']['webhooks'] as $webhook) {
+            if (isset($this->responseData['voice']['webhooks'])) {
+                foreach ($this->responseData['voice']['webhooks'] as $webhook) {
                     $this->voiceConfig->setWebhook(
                         $webhook['endpoint_type'],
                         $webhook['endpoint'],
@@ -100,10 +94,9 @@ class Application implements EntityInterface, JsonSerializable, ArrayHydrateInte
     {
         if (!isset($this->messagesConfig)) {
             $this->setMessagesConfig(new MessagesConfig());
-            $data = $this->getResponseData();
 
-            if (isset($data['messages']['webhooks'])) {
-                foreach ($data['messages']['webhooks'] as $webhook) {
+            if (isset($this->responseData['messages']['webhooks'])) {
+                foreach ($this->responseData['messages']['webhooks'] as $webhook) {
                     $this->getMessagesConfig()->setWebhook(
                         $webhook['endpoint_type'],
                         $webhook['endpoint'],
@@ -123,10 +116,9 @@ class Application implements EntityInterface, JsonSerializable, ArrayHydrateInte
     {
         if (!isset($this->rtcConfig)) {
             $this->setRtcConfig(new RtcConfig());
-            $data = $this->getResponseData();
 
-            if (isset($data['rtc']['webhooks'])) {
-                foreach ($data['rtc']['webhooks'] as $webhook) {
+            if (isset($this->responseData['rtc']['webhooks'])) {
+                foreach ($this->responseData['rtc']['webhooks'] as $webhook) {
                     $this->getRtcConfig()->setWebhook(
                         $webhook['endpoint_type'],
                         $webhook['endpoint'],

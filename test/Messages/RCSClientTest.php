@@ -26,7 +26,10 @@ use Vonage\Messages\Channel\RCS\Suggestions\Reply;
 use Vonage\Messages\Channel\RCS\Suggestions\ShareLocation;
 use Vonage\Messages\Channel\RCS\Suggestions\Suggestion;
 use Vonage\Messages\Channel\RCS\Suggestions\ViewLocation;
+use Vonage\Client;
+use Vonage\Client\APIResource;
 use Vonage\Messages\Client as MessagesClient;
+use Vonage\Messages\ExceptionErrorHandler;
 use Vonage\Messages\MessageObjects\FileObject;
 use Vonage\Messages\MessageObjects\ImageObject;
 use Vonage\Messages\MessageObjects\VideoObject;
@@ -268,7 +271,7 @@ class RCSClientTest extends MessagesClientTest
         $this->assertInstanceOf(RcsBase::class, $message);
         $message->setSuggestions(new RcsSuggestionCollection($suggestions));
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($expected, $payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($expected, $payload) {
             $this->assertEquals(
                 'Bearer ',
                 mb_substr($request->getHeaders()['Authorization'][0], 0, 7)
@@ -295,7 +298,7 @@ class RCSClientTest extends MessagesClientTest
         $message = new RcsText($payload['to'], $payload['from'], $payload['text']);
         $this->assertInstanceOf(RcsBase::class, $message);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertEquals(
                 'Bearer ',
                 mb_substr($request->getHeaders()['Authorization'][0], 0, 7)
@@ -336,7 +339,7 @@ class RCSClientTest extends MessagesClientTest
         $message->setWebhookUrl($payload['webhook_url']);
         $message->setCategory(RCSCategory::Acknowledgement);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertEquals(
                 'Bearer ',
                 mb_substr($request->getHeaders()['Authorization'][0], 0, 7)
@@ -375,7 +378,7 @@ class RCSClientTest extends MessagesClientTest
         $message = new RcsImage($payload['to'], $payload['from'], $payload['image']);
         $this->assertInstanceOf(RcsBase::class, $message);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertEquals(
                 'Bearer ',
                 mb_substr($request->getHeaders()['Authorization'][0], 0, 7)
@@ -408,7 +411,7 @@ class RCSClientTest extends MessagesClientTest
         $message = new RcsVideo($payload['to'], $payload['from'], $payload['video']);
         $this->assertInstanceOf(RcsBase::class, $message);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertEquals(
                 'Bearer ',
                 mb_substr($request->getHeaders()['Authorization'][0], 0, 7)
@@ -441,7 +444,7 @@ class RCSClientTest extends MessagesClientTest
         $message = new RcsFile($payload['to'], $payload['from'], $payload['file']);
         $this->assertInstanceOf(RcsBase::class, $message);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertEquals(
                 'Bearer ',
                 mb_substr($request->getHeaders()['Authorization'][0], 0, 7)
@@ -482,7 +485,7 @@ class RCSClientTest extends MessagesClientTest
         $message = new RcsCard($payload['to'], $payload['from'], $payload['card']);
         $this->assertInstanceOf(RcsBase::class, $message);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload, $cardObject) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload, $cardObject) {
             $this->assertEquals(
                 'Bearer ',
                 mb_substr($request->getHeaders()['Authorization'][0], 0, 7)
@@ -538,7 +541,7 @@ class RCSClientTest extends MessagesClientTest
         $message->setOrientation(RCSCardOrentation::Horizontal);
         $message->setImageAlignment(RCSCardAlignment::Left);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload, $cardObject) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload, $cardObject) {
             $this->assertEquals(
                 'Bearer ',
                 mb_substr($request->getHeaders()['Authorization'][0], 0, 7)
@@ -606,7 +609,7 @@ class RCSClientTest extends MessagesClientTest
         $message = new RcsCard($payload['to'], $payload['from'], $payload['card']);
         $this->assertInstanceOf(RcsBase::class, $message);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($expected, $payload, $cardObject) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($expected, $payload, $cardObject) {
             $this->assertEquals(
                 'Bearer ',
                 mb_substr($request->getHeaders()['Authorization'][0], 0, 7)
@@ -664,7 +667,7 @@ class RCSClientTest extends MessagesClientTest
         $message = new RcsCarousel($payload['to'], $payload['from'], $payload['cards']);
         $this->assertInstanceOf(RcsBase::class, $message);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload, $cardObject) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload, $cardObject) {
             $this->assertEquals(
                 'Bearer ',
                 mb_substr($request->getHeaders()['Authorization'][0], 0, 7)
@@ -739,7 +742,7 @@ class RCSClientTest extends MessagesClientTest
         $message = new RcsCarousel($payload['to'], $payload['from'], $payload['cards']);
         $this->assertInstanceOf(RcsBase::class, $message);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($expected, $payload, $cardObject) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($expected, $payload, $cardObject) {
             $this->assertEquals(
                 'Bearer ',
                 mb_substr($request->getHeaders()['Authorization'][0], 0, 7)
@@ -803,7 +806,7 @@ class RCSClientTest extends MessagesClientTest
         $message = new RcsCustom($payload['to'], $payload['from'], $payload['custom']);
         $this->assertInstanceOf(RcsBase::class, $message);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertEquals(
                 'Bearer ',
                 mb_substr($request->getHeaders()['Authorization'][0], 0, 7)
@@ -825,7 +828,7 @@ class RCSClientTest extends MessagesClientTest
 
     public function testCanUpdateRcsMessage(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $this->assertEquals(
                 'Bearer ',
                 mb_substr($request->getHeaders()['Authorization'][0], 0, 7)
@@ -843,12 +846,19 @@ class RCSClientTest extends MessagesClientTest
         $this->messageClient->updateRcsStatus('6ce72c29-e454-442a-94f2-47a1cadba45f', MessagesClient::RCS_STATUS_REVOKED);
     }
 
-    public function testCanUpdateWhatsAppStatus(): void
+    public function testCanUpdateRcsStatus(): void
     {
-        $geoSpecificClient = clone $this->messageClient;
-        $geoSpecificClient->getAPIResource()->setBaseUrl('https://api-us.nexmo.com/v1');
+        $api = (new APIResource($this->vonageClient->reveal()))
+            ->setCollectionName('messages')
+            ->setIsHAL(false)
+            ->setErrorsOn200(false)
+            ->setAuthHandlers([new Client\Credentials\Handler\KeypairHandler(), new Client\Credentials\Handler\BasicHandler()])
+            ->setExceptionErrorHandler(new ExceptionErrorHandler())
+            ->setBaseUrl('https://api-us.nexmo.com/v1');
 
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $geoSpecificClient = new MessagesClient($api);
+
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $this->assertEquals(
                 'Bearer ',
                 mb_substr($request->getHeaders()['Authorization'][0], 0, 7)

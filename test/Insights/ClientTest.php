@@ -29,6 +29,7 @@ class ClientTest extends VonageTestCase
     protected APIResource $apiClient;
 
     protected $vonageClient;
+    protected $httpClient;
 
     protected APIResource $api;
 
@@ -42,6 +43,8 @@ class ClientTest extends VonageTestCase
         $this->responsesDirectory = __DIR__ . '/responses';
 
         $this->vonageClient = $this->prophesize(Client::class);
+        $this->httpClient = $this->prophesize(\Psr\Http\Client\ClientInterface::class);
+        $this->vonageClient->getHttpClient()->willReturn($this->httpClient->reveal());
         $this->vonageClient->getApiUrl()->willReturn('http://api.nexmo.com');
         $this->vonageClient->getCredentials()->willReturn(
             new Client\Credentials\Container(
@@ -49,9 +52,8 @@ class ClientTest extends VonageTestCase
             )
         );
 
-        $this->api = new APIResource();
+        $this->api = new APIResource($this->vonageClient->reveal());
         $this->api->setIsHAL(false);
-        $this->api->setClient($this->vonageClient->reveal());
         $this->api->setAuthHandlers(new Client\Credentials\Handler\BasicHandler());
 
         $this->insightsClient = new InsightsClient($this->api);
@@ -75,7 +77,7 @@ class ClientTest extends VonageTestCase
      */
     public function testAdvancedAsync(): void
     {
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/ni/advanced/async/json', $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertRequestMethod('GET', $request);
@@ -113,7 +115,7 @@ class ClientTest extends VonageTestCase
     {
         $this->expectException(RequestException::class);
 
-        $this->vonageClient->send(Argument::that(fn (RequestInterface $request) => true))->willReturn($this->getResponse('error'));
+        $this->httpClient->sendRequest(Argument::that(fn (RequestInterface $request) => true))->willReturn($this->getResponse('error'));
 
         $this->insightsClient->basic('14155550100');
     }
@@ -128,7 +130,7 @@ class ClientTest extends VonageTestCase
     {
         $this->expectException(RequestException::class);
 
-        $this->vonageClient->send(Argument::that(fn (RequestInterface $request) => true))->willReturn($this->getResponse('error', 401));
+        $this->httpClient->sendRequest(Argument::that(fn (RequestInterface $request) => true))->willReturn($this->getResponse('error', 401));
 
         $this->insightsClient->basic('14155550100');
     }
@@ -143,14 +145,14 @@ class ClientTest extends VonageTestCase
     {
         $this->expectException(ServerException::class);
 
-        $this->vonageClient->send(Argument::that(fn (RequestInterface $request) => true))->willReturn($this->getResponse('error', 502));
+        $this->httpClient->sendRequest(Argument::that(fn (RequestInterface $request) => true))->willReturn($this->getResponse('error', 502));
 
         $this->insightsClient->basic('14155550100');
     }
 
     protected function checkInsightsRequest($methodToCall, $expectedPath, $expectedClass): void
     {
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($expectedPath) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) use ($expectedPath) {
             $this->assertEquals($expectedPath, $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertRequestMethod('GET', $request);
@@ -166,7 +168,7 @@ class ClientTest extends VonageTestCase
 
     protected function checkInsightsRequestCnam($methodToCall, $expectedPath, $expectedClass): void
     {
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($expectedPath) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) use ($expectedPath) {
             $this->assertEquals($expectedPath, $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertRequestMethod('GET', $request);

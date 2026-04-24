@@ -30,6 +30,7 @@ class ClientTest extends VonageTestCase
      * @var Client|MockObject
      */
     protected $vonageClient;
+    protected $httpClient;
 
     private $conversionClient;
 
@@ -48,6 +49,8 @@ class ClientTest extends VonageTestCase
         $this->responsesDirectory = 'data://text/plain,';
 
         $this->vonageClient = $this->prophesize(VonageClient::class);
+        $this->httpClient = $this->prophesize(\Psr\Http\Client\ClientInterface::class);
+        $this->vonageClient->getHttpClient()->willReturn($this->httpClient->reveal());
         $this->vonageClient->getRestUrl()->willReturn('https://rest.nexmo.com');
         $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
 
@@ -55,11 +58,11 @@ class ClientTest extends VonageTestCase
             new Client\Credentials\Basic('abc', 'def'),
         );
 
-        $this->apiResource = new APIResource();
+        $this->apiResource = new APIResource($this->vonageClient->reveal());
         $this->apiResource
             ->setBaseUri('/conversions/')
             ->setAuthHandlers(new Client\Credentials\Handler\BasicHandler())
-            ->setClient($this->vonageClient->reveal());
+            ;
 
         $this->conversionClient = new ConversionClient($this->apiResource);
     }
@@ -72,7 +75,7 @@ class ClientTest extends VonageTestCase
      */
     public function testSmsWithTimestamp(): void
     {
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) {
             $this->assertRequestUrl('api.nexmo.com', '/conversions/sms', 'POST', $request);
             $this->assertRequestQueryContains('message-id', 'ABC123', $request);
             $this->assertRequestQueryContains('delivered', '1', $request);
@@ -92,7 +95,7 @@ class ClientTest extends VonageTestCase
      */
     public function testSmsWithoutTimestamp(): void
     {
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) {
             $this->assertRequestUrl('api.nexmo.com', '/conversions/sms', 'POST', $request);
             $this->assertRequestQueryContains('message-id', 'ABC123', $request);
             $this->assertRequestQueryContains('delivered', '1', $request);
@@ -112,7 +115,7 @@ class ClientTest extends VonageTestCase
      */
     public function testVoiceWithTimestamp(): void
     {
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) {
             $this->assertRequestUrl('api.nexmo.com', '/conversions/voice', 'POST', $request);
             $this->assertRequestQueryContains('message-id', 'ABC123', $request);
             $this->assertRequestQueryContains('delivered', '1', $request);
@@ -132,7 +135,7 @@ class ClientTest extends VonageTestCase
      */
     public function testVoiceWithoutTimestamp(): void
     {
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) {
             $this->assertRequestUrl('api.nexmo.com', '/conversions/voice', 'POST', $request);
             $this->assertRequestQueryContains('message-id', 'ABC123', $request);
             $this->assertRequestQueryContains('delivered', '1', $request);

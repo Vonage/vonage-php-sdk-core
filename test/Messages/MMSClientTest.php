@@ -34,7 +34,7 @@ class MMSClientTest extends MessagesClientTest
         $message = new MMSContent($payload['to'], $payload['from'], $mmsContentObject);
         $message->setTtl(400);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('content', $payload['content']->toArray(), $request);
@@ -61,7 +61,7 @@ class MMSClientTest extends MessagesClientTest
         $message = new MMSText($payload['to'], $payload['from'], $payload['text']);
         $message->setTtl(400);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('text', $payload['text'], $request);
@@ -91,7 +91,7 @@ class MMSClientTest extends MessagesClientTest
         $message = new MMSFile($payload['to'], $payload['from'], $mmsFileObject);
         $message->setTtl(400);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('file', $payload['file']->toArray(), $request);
@@ -121,7 +121,7 @@ class MMSClientTest extends MessagesClientTest
         $message = new MMSImage($payload['to'], $payload['from'], $mmsImageObject);
         $message->setTtl(400);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('image', $payload['image']->toArray(), $request);
@@ -151,7 +151,7 @@ class MMSClientTest extends MessagesClientTest
         $message = new MMSvCard($payload['to'], $payload['from'], $vCardObject);
         $message->setTtl(400);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('vcard', $payload['vcard']->toArray(), $request);
@@ -184,7 +184,7 @@ class MMSClientTest extends MessagesClientTest
         $message = new MMSAudio($payload['to'], $payload['from'], $audioObject);
         $message->setTtl(400);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('audio', $payload['audio']->toArray(), $request);
@@ -216,7 +216,7 @@ class MMSClientTest extends MessagesClientTest
         $message = new MMSVideo($payload['to'], $payload['from'], $videoObject);
         $message->setTtl(400);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('video', $payload['video']->toArray(), $request);

@@ -35,6 +35,7 @@ class ClientTest extends VonageTestCase
     use HTTPTestTrait;
 
     protected Client|\Prophecy\Prophecy\ObjectProphecy $vonageClient;
+    protected $httpClient;
 
     /**
      * @var APIResource
@@ -51,20 +52,19 @@ class ClientTest extends VonageTestCase
         $this->responsesDirectory = __DIR__ . '/responses/';
 
         $this->vonageClient = $this->prophesize(Client::class);
+        $this->httpClient = $this->prophesize(\Psr\Http\Client\ClientInterface::class);
+        $this->vonageClient->getHttpClient()->willReturn($this->httpClient->reveal());
         $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
         $this->vonageClient->getCredentials()->willReturn(
             new Client\Credentials\Container(new Client\Credentials\Basic('abc', 'def'))
         );
 
-        $apiResource = new APIResource();
-        $apiResource->setClient($this->vonageClient->reveal())
+        $apiResource = new APIResource($this->vonageClient->reveal());
+        $apiResource
             ->setBaseUri('/v2/applications')
             ->setCollectionName('applications');
 
         $this->applicationClient = new ApplicationClient($apiResource, new Hydrator());
-
-        /** @noinspection PhpParamsInspection */
-        $this->applicationClient->setClient($this->vonageClient->reveal());
     }
 
     public function testCannotCreateApplicationClientWithId(): void
@@ -89,7 +89,7 @@ class ClientTest extends VonageTestCase
             $this->expectError();
         }
 
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) use ($id) {
             $this->assertEquals('/v2/applications/' . $id, $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertRequestMethod('GET', $request);
@@ -160,7 +160,7 @@ class ClientTest extends VonageTestCase
      */
     public function testUpdateApplication($payload, $method, $expectedId): void
     {
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($expectedId) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) use ($expectedId) {
             $this->assertEquals('/v2/applications/' . $expectedId, $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('PUT', $request->getMethod());
@@ -285,7 +285,7 @@ class ClientTest extends VonageTestCase
      */
     public function testDeleteApplication($payload, $id): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($id) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($id) {
             $this->assertEquals('/v2/applications/' . $id, $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('DELETE', $request->getMethod());
@@ -319,7 +319,7 @@ class ClientTest extends VonageTestCase
     public function testThrowsException($method, $response, $code): void
     {
         $response = $this->getResponse($response, $code);
-        $this->vonageClient->send(Argument::type(RequestInterface::class))->willReturn($response);
+        $this->httpClient->sendRequest(Argument::type(RequestInterface::class))->willReturn($response);
         $application = new Application('78d335fa323d01149c3dd6f0d48968cf');
 
         try {
@@ -378,7 +378,7 @@ class ClientTest extends VonageTestCase
      */
     public function testCreateApplication($payload, $method): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $this->assertEquals('/v2/applications', $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('POST', $request->getMethod());
@@ -521,7 +521,7 @@ class ClientTest extends VonageTestCase
 
     public function testCreateApplicationWithRegion(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $this->assertEquals('/v2/applications', $request->getUri()->getPath());
             $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('POST', $request->getMethod());

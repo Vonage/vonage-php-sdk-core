@@ -18,15 +18,14 @@ class APIResourceTest extends VonageTestCase
         $mockClient = $this->prophesize(Client::class);
         $mockClient->getApiUrl()->willReturn('https://test.domain');
 
-        $resource = new APIResource();
-        $resource->setClient($mockClient->reveal());
+        $resource = new APIResource($mockClient->reveal());
 
         $this->assertSame('https://test.domain', $resource->getBaseUrl());
     }
 
     public function testOverridingBaseUrlManuallyWorks(): void
     {
-        $resource = new APIResource();
+        $resource = new APIResource($this->createMock(Client::class));
         $resource->setBaseUrl('https://test.domain');
 
         $this->assertSame('https://test.domain', $resource->getBaseUrl());
@@ -34,13 +33,13 @@ class APIResourceTest extends VonageTestCase
 
     public function testNotOverridingBaseURLReturnsBlank(): void
     {
-        $resource = new APIResource();
+        $resource = new APIResource($this->createMock(Client::class));
         $this->assertSame('', $resource->getBaseUrl());
     }
 
     public function testCanSetMultipleAuthHandlers(): void
     {
-        $resource = new APIResource();
+        $resource = new APIResource($this->createMock(Client::class));
         $resource->setAuthHandlers([new BasicHandler(), new SignatureBodyHandler()]);
 
         $this->assertIsArray($resource->getAuthHandlers());
@@ -48,7 +47,7 @@ class APIResourceTest extends VonageTestCase
 
     public function testSingleAuthHanlderConvertedToArray(): void
     {
-        $resource = new APIResource();
+        $resource = new APIResource($this->createMock(Client::class));
         $resource->setAuthHandlers(new BasicHandler());
 
         $this->assertIsArray($resource->getAuthHandlers());

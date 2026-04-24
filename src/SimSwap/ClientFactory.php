@@ -22,7 +22,6 @@ class ClientFactory
         $api
             ->setBaseUrl('https://api-eu.vonage.com/camara/sim-swap/v040')
             ->setIsHAL(false)
-            ->setClient($client)
             ->setErrorsOn200(false)
             ->setAuthHandlers($handler);
 

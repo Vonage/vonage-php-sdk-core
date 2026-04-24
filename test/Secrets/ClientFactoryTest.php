@@ -5,54 +5,36 @@ declare(strict_types=1);
 namespace VonageTest\Secrets;
 
 use PHPUnit\Framework\TestCase;
-use Vonage\Secrets\ClientFactory;
-use Vonage\Secrets\Client;
+use Vonage\Client;
 use Vonage\Client\APIResource;
-use Vonage\Client\Credentials\Handler\BasicHandler;
-use Vonage\Client\Factory\FactoryInterface;
+use Vonage\Client\APIResourceFactory;
+use Vonage\Client\Factory\MapFactory;
+use Vonage\Secrets\ClientFactory;
 
 class ClientFactoryTest extends TestCase
 {
     public function testInvokeCreatesClientWithProperConfiguration(): void
     {
-        // Mock the FactoryInterface
-        $factoryMock = $this->createMock(FactoryInterface::class);
+        $mockClient = $this->createMock(Client::class);
 
-        // Mock the APIResource
-        $apiResourceMock = $this->createMock(APIResource::class);
+        $mockServices = [
+            'secrets' => ClientFactory::class,
+            APIResource::class => APIResourceFactory::class,
+            Client::class => fn() => $mockClient,
+        ];
 
-        // Configure the factory to return the mocked APIResource
-        $factoryMock->expects($this->once())
-            ->method('make')
-            ->with(APIResource::class)
-            ->willReturn($apiResourceMock);
+        $container = new MapFactory($mockServices, $mockClient);
+        $factory = new ClientFactory();
 
-        // Expect the methods on APIResource to be called with specific parameters
-        $apiResourceMock->expects($this->once())
-            ->method('setBaseUri')
-            ->with('/accounts')
-            ->willReturnSelf();
+        $client = $factory($container);
+        $this->assertInstanceOf(\Vonage\Secrets\Client::class, $client);
 
-        $apiResourceMock->expects($this->once())
-            ->method('setAuthHandlers')
-            ->with($this->isInstanceOf(BasicHandler::class))
-            ->willReturnSelf();
+        $reflection = new \ReflectionClass($client);
+        $apiProperty = $reflection->getProperty('api');
+        $apiResource = $apiProperty->getValue($client);
 
-        $apiResourceMock->expects($this->once())
-            ->method('setCollectionName')
-            ->with('secrets')
-            ->willReturnSelf();
-
-        // Create an instance of the ClientFactory
-        $clientFactory = new ClientFactory();
-
-        // Call the __invoke method and retrieve the Client
-        $client = $clientFactory($factoryMock);
-
-        // Assert that the result is an instance of the Client
-        $this->assertInstanceOf(Client::class, $client);
-
-        // Assert that the Client has the correctly configured APIResource (optional, if Client exposes it)
-         $this->assertSame($apiResourceMock, $client->getApiResource());
+        $this->assertEquals('/accounts', $apiResource->getBaseUri());
+        $this->assertInstanceOf(Client\Credentials\Handler\BasicHandler::class, $apiResource->getAuthHandlers()[0]);
+        $this->assertEquals('secrets', $apiResource->getCollectionName());
     }
 }

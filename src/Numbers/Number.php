@@ -7,13 +7,7 @@ namespace Vonage\Numbers;
 use InvalidArgumentException;
 use RuntimeException;
 use Vonage\Application\Application;
-use Vonage\Entity\EntityInterface;
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
-use Vonage\Entity\JsonResponseTrait;
-use Vonage\Entity\JsonSerializableInterface;
-use Vonage\Entity\JsonSerializableTrait;
-use Vonage\Entity\JsonUnserializableInterface;
-use Vonage\Entity\NoRequestResponseTrait;
 
 use function in_array;
 use function is_null;
@@ -23,12 +17,8 @@ use function preg_match;
 use function stripos;
 use function trigger_error;
 
-class Number implements EntityInterface, JsonSerializableInterface, JsonUnserializableInterface, ArrayHydrateInterface, \Stringable
+class Number implements ArrayHydrateInterface, \Stringable
 {
-    use JsonSerializableTrait;
-    use NoRequestResponseTrait;
-    use JsonResponseTrait;
-
     public const TYPE_MOBILE = 'mobile-lvn';
     public const TYPE_FIXED = 'landline';
     public const TYPE_TOLLFREE = 'landline-toll-free';

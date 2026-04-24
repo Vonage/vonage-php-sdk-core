@@ -37,7 +37,8 @@ class ExceptionErrorHandler
                 $e = new ClientException\Request('Unexpected response from the API');
             }
 
-            $e->setEntity($data);
+            $e->setRequest($request);
+            $e->setResponse($response);
             throw $e;
         }
 

@@ -87,13 +87,13 @@ class NumberTest extends VonageTestCase
 
         $this->assertInstanceOf(Application::class, $app);
         $this->assertEquals($id, $app->getId());
-        $this->assertArrayHas('app_id', $id, $this->number->getRequestData());
+        $this->assertArrayHas('app_id', $id, $this->number->toArray());
 
         $app = new Application($id);
         $this->number->setVoiceDestination($app);
 
         $this->assertSame($app, $this->number->getVoiceDestination());
-        $this->assertArrayHas('app_id', $id, $this->number->getRequestData());
+        $this->assertArrayHas('app_id', $id, $this->number->toArray());
     }
 
     /**
@@ -104,7 +104,7 @@ class NumberTest extends VonageTestCase
         $this->number->setVoiceDestination('not-valid', NUMBER::ENDPOINT_SIP);
 
         $this->assertSame(Number::ENDPOINT_SIP, $this->number->getVoiceType());
-        $this->assertArrayHas('voiceCallbackType', Number::ENDPOINT_SIP, $this->number->getRequestData());
+        $this->assertArrayHas('voiceCallbackType', Number::ENDPOINT_SIP, $this->number->toArray());
     }
 
     /**
@@ -120,8 +120,8 @@ class NumberTest extends VonageTestCase
         $this->assertSame($this->number, $this->number->setVoiceDestination($value));
         $this->assertEquals($value, $this->number->getVoiceDestination());
         $this->assertEquals($type, $this->number->getVoiceType());
-        $this->assertArrayHas('voiceCallbackType', $type, $this->number->getRequestData());
-        $this->assertArrayHas('voiceCallbackValue', $value, $this->number->getRequestData());
+        $this->assertArrayHas('voiceCallbackType', $type, $this->number->toArray());
+        $this->assertArrayHas('voiceCallbackValue', $value, $this->number->toArray());
     }
 
     /**
@@ -155,7 +155,7 @@ class NumberTest extends VonageTestCase
     {
         $this->assertSame($this->number, $this->number->setWebhook(Number::WEBHOOK_VOICE_STATUS, 'http://example.com'));
         $this->assertEquals('http://example.com', $this->number->getWebhook(Number::WEBHOOK_VOICE_STATUS));
-        $this->assertArrayHas('voiceStatusCallback', 'http://example.com', $this->number->getRequestData());
+        $this->assertArrayHas('voiceStatusCallback', 'http://example.com', $this->number->toArray());
     }
 
     /**
@@ -165,7 +165,7 @@ class NumberTest extends VonageTestCase
     {
         $this->assertSame($this->number, $this->number->setWebhook(Number::WEBHOOK_MESSAGE, 'http://example.com'));
         $this->assertEquals('http://example.com', $this->number->getWebhook(Number::WEBHOOK_MESSAGE));
-        $this->assertArrayHas('moHttpUrl', 'http://example.com', $this->number->getRequestData());
+        $this->assertArrayHas('moHttpUrl', 'http://example.com', $this->number->toArray());
     }
 
     public static function assertArrayHas($key, $value, $array): void

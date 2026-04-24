@@ -9,7 +9,6 @@ use DateTimeZone;
 use Exception;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\StreamInterface;
-use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
 use Vonage\Entity\Filter\FilterInterface;
 use Vonage\Entity\Hydrator\ArrayHydrator;
@@ -20,15 +19,10 @@ use Vonage\Voice\Webhook\Event;
 
 use function is_null;
 
-class Client implements APIClient
+class Client
 {
     public function __construct(protected APIResource $api)
     {
-    }
-
-    public function getAPIResource(): APIResource
-    {
-        return $this->api;
     }
 
     /**
@@ -283,6 +277,6 @@ class Client implements APIClient
 
     public function getRecording(string $url): StreamInterface
     {
-        return $this->getAPIResource()->get($url, [], [], false, true);
+        return $this->api->get($url, [], [], false, true);
     }
 }

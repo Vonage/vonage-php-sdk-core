@@ -20,6 +20,7 @@ class MessagesClientTest extends VonageTestCase
     use HTTPTestTrait;
 
     protected ObjectProphecy $vonageClient;
+    protected $httpClient;
     protected MessagesClient $messageClient;
     protected APIResource $api;
 
@@ -31,6 +32,8 @@ class MessagesClientTest extends VonageTestCase
         $this->responsesDirectory = __DIR__ . '/Fixtures/Responses';
 
         $this->vonageClient = $this->prophesize(Client::class);
+        $this->httpClient = $this->prophesize(\Psr\Http\Client\ClientInterface::class);
+        $this->vonageClient->getHttpClient()->willReturn($this->httpClient->reveal());
         $this->vonageClient->getRestUrl()->willReturn('https://rest.nexmo.com');
         $this->vonageClient->getCredentials()->willReturn(
             new Client\Credentials\Container(new Client\Credentials\Keypair(
@@ -40,11 +43,10 @@ class MessagesClientTest extends VonageTestCase
         );
 
         /** @noinspection PhpParamsInspection */
-        $this->api = (new APIResource())
+        $this->api = (new APIResource($this->vonageClient->reveal()))
             ->setCollectionName('messages')
             ->setIsHAL(false)
             ->setErrorsOn200(false)
-            ->setClient($this->vonageClient->reveal())
             ->setAuthHandlers([new Client\Credentials\Handler\KeypairHandler(), new Client\Credentials\Handler\BasicHandler()])
             ->setExceptionErrorHandler(new ExceptionErrorHandler())
             ->setBaseUrl('https://rest.nexmo.com');
@@ -70,7 +72,7 @@ class MessagesClientTest extends VonageTestCase
 
         $message = new SMSText($payload['to'], $payload['from'], $payload['text']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('text', $payload['text'], $request);
@@ -96,7 +98,7 @@ class MessagesClientTest extends VonageTestCase
 
         $message = new SMSText($payload['to'], $payload['from'], $payload['text']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('text', $payload['text'], $request);

@@ -26,14 +26,8 @@ class MapFactoryTest extends VonageTestCase
         $this->client = new Client(new Client\Credentials\Basic('key', 'secret'));
 
         $this->factory = new MapFactory([
-            'test' => TestDouble::class
+            'test' => \stdClass::class
         ], $this->client);
-    }
-
-    public function testClientInjection(): void
-    {
-        $api = $this->factory->get('test');
-        $this->assertSame($this->client, $api->client);
     }
 
     public function testCache(): void
@@ -50,7 +44,7 @@ class MapFactoryTest extends VonageTestCase
         $this->assertFalse($this->factory->has('not'));
 
         $api = $this->factory->get('test');
-        $this->assertInstanceOf(TestDouble::class, $api);
+        $this->assertInstanceOf(\stdClass::class, $api);
 
         $this->expectException(RuntimeException::class);
         $this->factory->get('not');
@@ -62,8 +56,8 @@ class MapFactoryTest extends VonageTestCase
         $second = $this->factory->make('test');
 
         $this->assertNotSame($first, $second);
-        $this->assertInstanceOf(TestDouble::class, $first);
-        $this->assertInstanceOf(TestDouble::class, $second);
+        $this->assertInstanceOf(\stdClass::class, $first);
+        $this->assertInstanceOf(\stdClass::class, $second);
     }
 
     public function testMakeDoesNotUseCache(): void

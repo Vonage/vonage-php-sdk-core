@@ -11,6 +11,7 @@ use SebastianBergmann\RecursionContext\InvalidArgumentException;
 use VonageTest\Traits\Psr7AssertionTrait;
 use Vonage\Client;
 use Vonage\Client\APIResource;
+use Vonage\Client\APIResourceFactory;
 use Vonage\Client\Factory\MapFactory;
 use Vonage\Subaccount\Client as SubaccountClient;
 use Vonage\Subaccount\ClientFactory;
@@ -47,7 +48,8 @@ class ClientFactoryTest extends VonageTestCase
     {
         $container = new MapFactory(
             [
-                APIResource::class => APIResource::class,
+                APIResource::class => APIResourceFactory::class,
+                Client::class => fn() => $this->vonageClient,
             ],
             $this->vonageClient
         );

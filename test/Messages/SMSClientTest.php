@@ -18,7 +18,7 @@ class SMSClientTest extends MessagesClientTest
 
         $message = new SMSText($payload['to'], $payload['from'], $payload['text']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertEquals(
                 'Bearer ',
                 mb_substr($request->getHeaders()['Authorization'][0], 0, 7)
@@ -59,7 +59,7 @@ class SMSClientTest extends MessagesClientTest
         $message->setWebhookUrl($payload['webhook_url']);
         $message->setWebhookVersion($payload['webhook_version']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('ttl', $payload['ttl'], $request);
             $this->assertRequestJsonBodyContains('webhook_url', $payload['webhook_url'], $request);
             $this->assertRequestJsonBodyContains('webhook_version', $payload['webhook_version'], $request);
@@ -103,7 +103,7 @@ class SMSClientTest extends MessagesClientTest
         $failMessage = new SMSText($payload['to'], $payload['from'], $payload['text']);
         $message->addFailover($failMessage);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('failover', $payload['failover'], $request);
             return true;
         }))->willReturn($this->getResponse('sms-success', 202));
@@ -116,7 +116,7 @@ class SMSClientTest extends MessagesClientTest
     {
         $message = new SMSText('447700900000', '16105551212', 'Reticulating Splines');
 
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $this->assertRequestJsonBodyContains('to', '447700900000', $request);
             $this->assertEquals('POST', $request->getMethod());
 
@@ -131,7 +131,7 @@ class SMSClientTest extends MessagesClientTest
     {
         $message = new SMSText('+447700900000', '16105551212', 'Reticulating Splines');
 
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $this->assertRequestJsonBodyContains('to', '447700900000', $request);
             $this->assertEquals('POST', $request->getMethod());
 

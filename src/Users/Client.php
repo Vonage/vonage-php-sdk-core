@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Vonage\Users;
 
-use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
-use Vonage\Client\ClientAwareInterface;
-use Vonage\Client\ClientAwareTrait;
+use Vonage\Client as VonageClient;
 use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Entity\Filter\EmptyFilter;
 use Vonage\Entity\Hydrator\HydratorInterface;
@@ -16,17 +14,10 @@ use Vonage\Entity\Filter\FilterInterface;
 
 use function is_null;
 
-class Client implements ClientAwareInterface, APIClient
+class Client
 {
-    use ClientAwareTrait;
-
     public function __construct(protected APIResource $api, protected ?HydratorInterface $hydrator = null)
     {
-    }
-
-    public function getApiResource(): APIResource
-    {
-        return $this->api;
     }
 
     public function listUsers(?FilterInterface $filter = null): IterableAPICollection

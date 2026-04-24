@@ -4,21 +4,15 @@ declare(strict_types=1);
 
 namespace Vonage\Messages;
 
-use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
 use Vonage\Messages\Channel\BaseMessage;
 
-class Client implements APIClient
+class Client
 {
     public const RCS_STATUS_REVOKED = 'revoked';
     public const WHATSAPP_STATUS_READ = 'read';
 
     public function __construct(protected APIResource $api) {}
-
-    public function getAPIResource(): APIResource
-    {
-        return $this->api;
-    }
 
     public function send(BaseMessage $message): ?array
     {
@@ -27,13 +21,13 @@ class Client implements APIClient
         if ($message->validatesE164()) {
             if ($this->isValidE164($messageArray['to'])) {
                 $messageArray['to'] = $this->stripLeadingPlus($messageArray['to']);
-                return $this->getAPIResource()->create($messageArray);
+                return $this->api->create($messageArray);
             } else {
                 throw new \InvalidArgumentException('Number provided is not a valid E164 number');
             }
         }
 
-        return $this->getAPIResource()->create($messageArray);
+        return $this->api->create($messageArray);
     }
 
     public function updateRcsStatus(string $messageUuid, string $status): bool

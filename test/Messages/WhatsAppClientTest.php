@@ -14,7 +14,10 @@ use Vonage\Messages\Channel\WhatsApp\WhatsAppSticker;
 use Vonage\Messages\Channel\WhatsApp\WhatsAppTemplate;
 use Vonage\Messages\Channel\WhatsApp\WhatsAppText;
 use Vonage\Messages\Channel\WhatsApp\WhatsAppVideo;
+use Vonage\Client;
+use Vonage\Client\APIResource;
 use Vonage\Messages\Client as MessagesClient;
+use Vonage\Messages\ExceptionErrorHandler;
 use Vonage\Messages\MessageObjects\AudioObject;
 use Vonage\Messages\MessageObjects\FileObject;
 use Vonage\Messages\MessageObjects\ImageObject;
@@ -43,7 +46,7 @@ class WhatsAppClientTest extends MessagesClientTest
         $message = new WhatsAppText($payload['to'], $payload['from'], $payload['text']);
         $message->setContext(['message_uuid' => 'a1b2c3d4a1b2c3d4']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('text', $payload['text'], $request);
@@ -69,7 +72,7 @@ class WhatsAppClientTest extends MessagesClientTest
 
         $message = new WhatsAppText($payload['to'], $payload['from'], $payload['text']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('text', $payload['text'], $request);
@@ -97,7 +100,7 @@ class WhatsAppClientTest extends MessagesClientTest
         $message = new WhatsAppImage($payload['to'], $payload['from'], $whatsAppImageObject);
         $message->setContext(['message_uuid' => 'a1b2c3d4a1b2c3d4']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('image', $payload['image']->toArray(), $request);
@@ -129,7 +132,7 @@ class WhatsAppClientTest extends MessagesClientTest
         $message = new WhatsAppAudio($payload['to'], $payload['from'], $audioObject);
         $message->setContext(['message_uuid' => 'a1b2c3d4a1b2c3d4']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('audio', $payload['audio']->toArray(), $request);
@@ -161,7 +164,7 @@ class WhatsAppClientTest extends MessagesClientTest
         $message = new WhatsAppVideo($payload['to'], $payload['from'], $videoObject);
         $message->setContext(['message_uuid' => 'a1b2c3d4a1b2c3d4']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('video', $payload['video']->toArray(), $request);
@@ -194,7 +197,7 @@ class WhatsAppClientTest extends MessagesClientTest
         $message = new WhatsAppFile($payload['to'], $payload['from'], $fileObject);
         $message->setContext(['message_uuid' => 'a1b2c3d4a1b2c3d4']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('file', $payload['file']->toArray(), $request);
@@ -226,7 +229,7 @@ class WhatsAppClientTest extends MessagesClientTest
         $message = new WhatsAppTemplate($payload['to'], $payload['from'], $templateObject, 'en_GB');
         $message->setContext(['message_uuid' => 'a1b2c3d4a1b2c3d4']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('template', $payload['template']->toArray(), $request);
@@ -265,7 +268,7 @@ class WhatsAppClientTest extends MessagesClientTest
         $message = new WhatsAppSticker($payload['to'], $payload['from'], $stickerObject);
         $message->setContext(['message_uuid' => 'a1b2c3d4a1b2c3d4']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload, $type) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload, $type) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('channel', 'whatsapp', $request);
@@ -294,7 +297,7 @@ class WhatsAppClientTest extends MessagesClientTest
         $message = new WhatsAppCustom($payload['to'], $payload['from'], $payload['custom']);
         $message->setContext(['message_uuid' => 'a1b2c3d4a1b2c3d4']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('custom', $payload['custom'], $request);
@@ -312,10 +315,17 @@ class WhatsAppClientTest extends MessagesClientTest
 
     public function testCanUpdateWhatsAppStatus(): void
     {
-        $geoSpecificClient = clone $this->messageClient;
-        $geoSpecificClient->getAPIResource()->setBaseUrl('https://api-us.nexmo.com/v1');
+        $api = (new APIResource($this->vonageClient->reveal()))
+            ->setCollectionName('messages')
+            ->setIsHAL(false)
+            ->setErrorsOn200(false)
+            ->setAuthHandlers([new Client\Credentials\Handler\KeypairHandler(), new Client\Credentials\Handler\BasicHandler()])
+            ->setExceptionErrorHandler(new ExceptionErrorHandler())
+            ->setBaseUrl('https://api-us.nexmo.com/v1');
 
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $geoSpecificClient = new MessagesClient($api);
+
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $this->assertEquals(
                 'Bearer ',
                 mb_substr($request->getHeaders()['Authorization'][0], 0, 7)

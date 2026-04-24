@@ -16,7 +16,7 @@ class ClientFactory
         /** @var APIResource $api */
         $api = $container->make(APIResource::class);
         $api
-            ->setBaseUrl($api->getClient()->getRestUrl())
+            ->setBaseUrl($api->getRestURL())
             ->setCollectionName('messages')
             ->setIsHAL(false)
             ->setErrorsOn200(true)

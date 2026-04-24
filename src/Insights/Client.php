@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Vonage\Insights;
 
 use Psr\Http\Client\ClientExceptionInterface;
-use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
 use Vonage\Client\Exception as ClientException;
 use Vonage\Client\Exception\Exception;
@@ -18,17 +17,12 @@ use Vonage\Numbers\Number;
 /**
  * Class Client
  */
-class Client implements APIClient
+class Client
 {
     protected array $chargeableCodes = [0, 43, 44, 45];
 
-    public function __construct(protected ?APIResource $api = null)
+    public function __construct(protected APIResource $api)
     {
-    }
-
-    public function getApiResource(): APIResource
-    {
-        return clone $this->api;
     }
 
     /**
@@ -130,18 +124,17 @@ class Client implements APIClient
      */
     public function makeRequest(string $path, $number, array $additionalParams = []): array
     {
-        $api = $this->getApiResource();
-        $api->setBaseUri($path);
+        $this->api->setBaseUri($path);
         $collectionPrototype = new IterableAPICollection();
         $collectionPrototype->setHasPagination(false);
-        $api->setCollectionPrototype($collectionPrototype);
+        $this->api->setCollectionPrototype($collectionPrototype);
 
         if ($number instanceof Number) {
             $number = $number->getMsisdn();
         }
 
         $query = ['number' => $number] + $additionalParams;
-        $result = $api->search(new KeyValueFilter($query));
+        $result = $this->api->search(new KeyValueFilter($query));
         $data = $result->getPageData();
 
         // check the status field in response (HTTP status is 200 even for errors)

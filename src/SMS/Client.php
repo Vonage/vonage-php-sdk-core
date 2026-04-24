@@ -6,7 +6,6 @@ namespace Vonage\SMS;
 
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Log\LogLevel;
-use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
 use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Client\Exception\ThrottleException;
@@ -15,17 +14,12 @@ use Vonage\SMS\Message\Message;
 
 use function sleep;
 
-class Client implements APIClient
+class Client
 {
     use LoggerTrait;
 
     public function __construct(protected APIResource $api)
     {
-    }
-
-    public function getAPIResource(): APIResource
-    {
-        return $this->api;
     }
 
     /**

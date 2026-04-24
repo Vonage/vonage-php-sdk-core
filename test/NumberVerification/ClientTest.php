@@ -18,6 +18,7 @@ class ClientTest extends VonageTestCase
     use HTTPTestTrait;
 
     protected ObjectProphecy $vonageClient;
+    protected $httpClient;
     protected NumberVerificationClient $numberVerificationClient;
     protected APIResource $api;
     protected Client|ObjectProphecy $handlerClient;
@@ -28,6 +29,8 @@ class ClientTest extends VonageTestCase
         $this->responsesDirectory = __DIR__ . '/Fixtures/Responses';
 
         $this->vonageClient = $this->prophesize(Client::class);
+        $this->httpClient = $this->prophesize(\Psr\Http\Client\ClientInterface::class);
+        $this->vonageClient->getHttpClient()->willReturn($this->httpClient->reveal());
         $this->vonageClient->getCredentials()->willReturn(
             new Client\Credentials\Container(new Client\Credentials\Gnp(
                 '447700900000',
@@ -41,8 +44,7 @@ class ClientTest extends VonageTestCase
         $handler = new Client\Credentials\Handler\NumberVerificationGnpHandler();
         $handler->setClient($reveal);
 
-        $this->api = (new APIResource())
-            ->setClient($reveal)
+        $this->api = (new APIResource($reveal))
             ->setAuthHandlers($handler)
             ->setBaseUrl('https://api-eu.vonage.com/camara/number-verification/v031/');
 
@@ -67,7 +69,7 @@ class ClientTest extends VonageTestCase
 
     public function testWillCompleteVerification()
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $this->requestCount++;
 
             if ($this->requestCount == 1) {
@@ -119,7 +121,7 @@ class ClientTest extends VonageTestCase
 
     public function testWillFailVerification()
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $this->requestCount++;
 
             if ($this->requestCount == 1) {

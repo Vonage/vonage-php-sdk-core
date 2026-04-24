@@ -12,8 +12,6 @@ use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
 use Vonage\Client;
 use Vonage\Client\APIResource;
-use Vonage\Client\ClientAwareInterface;
-use Vonage\Client\ClientAwareTrait;
 use Vonage\Client\Exception as ClientException;
 use Vonage\Client\Exception\Exception;
 use Vonage\Client\Exception\Server;
@@ -32,10 +30,8 @@ use function md5;
 /**
  * Common code for iterating over a collection, and using the collection class to discover the API path.
  */
-class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
+class IterableAPICollection implements Iterator, Countable
 {
-    use ClientAwareTrait;
-
     protected APIResource $api;
 
     /**
@@ -192,9 +188,9 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
             return [];
         }
 
-        $collectionName = $this->getApiResource()->getCollectionName();
+        $collectionName = $this->api->getCollectionName();
 
-        if ($this->getApiResource()->isHAL()) {
+        if ($this->api->isHAL()) {
             if ($this->isHalNoCollection() === true) {
                 return $this->pageData['_embedded'];
             }
@@ -202,7 +198,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
             return $this->pageData['_embedded'][$collectionName];
         }
 
-        if (!empty($this->getApiResource()->getCollectionName())) {
+        if (!empty($this->api->getCollectionName())) {
             return $this->pageData[$collectionName];
         }
 
@@ -267,8 +263,8 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
         //all hal collections have an `_embedded` object, we expect there to be a property matching the collection name
         if (
             $this->isHalNoCollection() === false &&
-            $this->getApiResource()->isHAL() &&
-            !isset($this->pageData['_embedded'][$this->getApiResource()->getCollectionName()])
+            $this->api->isHAL() &&
+            !isset($this->pageData['_embedded'][$this->api->getCollectionName()])
         ) {
             return false;
         }
@@ -304,7 +300,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
             if ($this->current === count($this->getResourceRoot())) {
                 $this->index++;
                 $this->current = 0;
-                $this->fetchPage($this->getApiResource()->getBaseUri());
+                $this->fetchPage($this->api->getBaseUri());
 
                 return !($this->count() === 0);
             }
@@ -326,7 +322,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
     public function rewind(): void
     {
         $this->current = 0;
-        $this->fetchPage($this->getApiResource()->getBaseUri());
+        $this->fetchPage($this->api->getBaseUri());
     }
 
     /**
@@ -337,11 +333,6 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
         $this->api = $api;
 
         return $this;
-    }
-
-    public function getApiResource(): APIResource
-    {
-        return $this->api;
     }
 
     /**
@@ -524,7 +515,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
         $requestUri = $absoluteUri;
 
         if (filter_var($absoluteUri, FILTER_VALIDATE_URL) === false) {
-            $requestUri = $this->getApiResource()->getBaseUrl() . $absoluteUri;
+            $requestUri = $this->api->getBaseUrl() . $absoluteUri;
         }
 
         $cacheKey = md5((string) $requestUri);
@@ -536,15 +527,15 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
 
         $request = new Request($requestUri, 'GET');
 
-        if ($this->getApiResource()->getAuthHandlers()) {
-            $request = $this->getApiResource()->addAuth($request);
+        if ($this->api->getAuthHandlers()) {
+            $request = $this->api->addAuth($request);
         }
 
-        $response = $this->client->send($request);
+        $response = $this->api->send($request);
 
-        $this->getApiResource()->setLastRequest($request);
+        $this->api->setLastRequest($request);
         $this->response = $response;
-        $this->getApiResource()->setLastResponse($response);
+        $this->api->setLastResponse($response);
 
         $body = $this->response->getBody()->getContents();
         $json = json_decode($body, true);

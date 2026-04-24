@@ -38,7 +38,7 @@ class MessengerClientTest extends MessagesClientTest
 
         $message = new MessengerText($payload['to'], $payload['from'], $payload['text'], $payload['category']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('text', $payload['text'], $request);
@@ -68,7 +68,7 @@ class MessengerClientTest extends MessagesClientTest
 
         $message = new MessengerImage($payload['to'], $payload['from'], $whatsAppImageObject, $payload['category']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('image', $payload['image']->toArray(), $request);
@@ -108,7 +108,7 @@ class MessengerClientTest extends MessagesClientTest
             $payload['tag']
         );
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('audio', $payload['audio']->toArray(), $request);
@@ -145,7 +145,7 @@ class MessengerClientTest extends MessagesClientTest
 
         $message = new MessengerVideo($payload['to'], $payload['from'], $videoObject, $payload['category']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('video', $payload['video']->toArray(), $request);
@@ -177,7 +177,7 @@ class MessengerClientTest extends MessagesClientTest
 
         $message = new MessengerFile($payload['to'], $payload['from'], $fileObject, $payload['category']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('file', $payload['file']->toArray(), $request);
@@ -217,7 +217,7 @@ class MessengerClientTest extends MessagesClientTest
 
         $message = new RcsCard($payload['to'], $payload['from'], $payload['card']);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($payload, $cardObject, $replySuggestion) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($payload, $cardObject, $replySuggestion) {
             $this->assertRequestJsonBodyContains('to', $payload['to'], $request);
             $this->assertRequestJsonBodyContains('from', $payload['from'], $request);
             $this->assertRequestJsonBodyContains('channel', 'rcs', $request);
@@ -256,7 +256,7 @@ class MessengerClientTest extends MessagesClientTest
 
         $message = new RcsCard('447700900000', '16105551212', $cardObject);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($cardObject) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($cardObject) {
             $this->assertRequestJsonBodyContains('channel', 'rcs', $request);
             $this->assertRequestJsonBodyContains('message_type', 'card', $request);
             $this->assertRequestJsonBodyContains('card', $cardObject->toArray(), $request);
@@ -291,7 +291,7 @@ class MessengerClientTest extends MessagesClientTest
 
         $message = new RcsCard('447700900000', '16105551212', $cardObject);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($cardObject) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($cardObject) {
             $this->assertRequestJsonBodyContains('channel', 'rcs', $request);
             $this->assertRequestJsonBodyContains('message_type', 'card', $request);
             $this->assertRequestJsonBodyContains('card', $cardObject->toArray(), $request);
@@ -327,7 +327,7 @@ class MessengerClientTest extends MessagesClientTest
 
         $message = new RcsCard('447700900000', '16105551212', $cardObject);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($cardObject) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($cardObject) {
             $this->assertRequestJsonBodyContains('channel', 'rcs', $request);
             $this->assertRequestJsonBodyContains('message_type', 'card', $request);
             $this->assertRequestJsonBodyContains('card', $cardObject->toArray(), $request);
@@ -360,7 +360,7 @@ class MessengerClientTest extends MessagesClientTest
 
         $message = new RcsCard('447700900000', '16105551212', $cardObject);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($cardObject) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($cardObject) {
             $this->assertRequestJsonBodyContains('channel', 'rcs', $request);
             $this->assertRequestJsonBodyContains('message_type', 'card', $request);
             $this->assertRequestJsonBodyContains('card', $cardObject->toArray(), $request);
@@ -397,7 +397,7 @@ class MessengerClientTest extends MessagesClientTest
 
         $message = new RcsCard('447700900000', '16105551212', $cardObject);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($cardObject) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($cardObject) {
             $this->assertRequestJsonBodyContains('channel', 'rcs', $request);
             $this->assertRequestJsonBodyContains('message_type', 'card', $request);
             $this->assertRequestJsonBodyContains('card', $cardObject->toArray(), $request);
@@ -434,7 +434,7 @@ class MessengerClientTest extends MessagesClientTest
 
         $message = new RcsCard('447700900000', '16105551212', $cardObject);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($cardObject) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($cardObject) {
             $this->assertRequestJsonBodyContains('channel', 'rcs', $request);
             $this->assertRequestJsonBodyContains('message_type', 'card', $request);
             $cardArray = $cardObject->toArray();
@@ -480,7 +480,7 @@ class MessengerClientTest extends MessagesClientTest
         $cards = [$cardObject1, $cardObject2];
         $message = new RcsCarousel('447700900000', '16105551212', $cards);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($cardObject1, $cardObject2) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) use ($cardObject1, $cardObject2) {
             $this->assertRequestJsonBodyContains('channel', 'rcs', $request);
             $this->assertRequestJsonBodyContains('message_type', 'carousel', $request);
             $this->assertRequestJsonBodyContains(

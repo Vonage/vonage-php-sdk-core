@@ -33,6 +33,7 @@ class ClientTest extends VonageTestCase
     protected APIResource $apiClient;
 
     protected \Vonage\Client|\Prophecy\Prophecy\ObjectProphecy $vonageClient;
+    protected $httpClient;
 
     protected APIResource $api;
 
@@ -43,16 +44,16 @@ class ClientTest extends VonageTestCase
         $this->responsesDirectory = __DIR__ . '/responses';
 
         $this->vonageClient = $this->prophesize(\Vonage\Client::class);
+        $this->httpClient = $this->prophesize(\Psr\Http\Client\ClientInterface::class);
+        $this->vonageClient->getHttpClient()->willReturn($this->httpClient->reveal());
         $this->vonageClient->getRestUrl()->willReturn('https://rest.nexmo.com');
         $this->vonageClient->getCredentials()->willReturn(
             new Container(new Basic('abc', 'def'))
         );
 
-        $this->api = new APIResource();
+        $this->api = new APIResource($this->vonageClient->reveal());
         $this->api->setBaseUrl('https://rest.nexmo.com')
             ->setIsHAL(false);
-
-        $this->api->setClient($this->vonageClient->reveal());
 
         /** @noinspection PhpParamsInspection */
         $this->numberClient = (new NumbersClient($this->api));
@@ -79,7 +80,7 @@ class ClientTest extends VonageTestCase
             $third = null;
         }
 
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($expectedId) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) use ($expectedId) {
             if ($request->getUri()->getPath() === '/account/numbers') {
                 //just getting the number first / last
                 return true;
@@ -151,7 +152,7 @@ class ClientTest extends VonageTestCase
      */
     public function testGetNumber($payload, $id): void
     {
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) use ($id) {
             $this->assertEquals('/account/numbers', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertRequestMethod('GET', $request);
@@ -177,7 +178,7 @@ class ClientTest extends VonageTestCase
 
     public function testListNumbers(): void
     {
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/numbers', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertRequestMethod('GET', $request);
@@ -203,7 +204,7 @@ class ClientTest extends VonageTestCase
             'index' => '19'
         ];
 
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($options) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) use ($options) {
             $this->assertEquals('/number/search', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertRequestMethod('GET', $request);
@@ -230,7 +231,7 @@ class ClientTest extends VonageTestCase
             'index' => '19'
         ]);
 
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
@@ -256,7 +257,7 @@ class ClientTest extends VonageTestCase
 
     public function testSearchAvailableReturnsNumberList(): void
     {
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/number/search', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertRequestMethod('GET', $request);
@@ -278,7 +279,7 @@ class ClientTest extends VonageTestCase
      */
     public function testSearchAvailableReturnsEmptyNumberList(): void
     {
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/number/search', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertRequestMethod('GET', $request);
@@ -302,7 +303,7 @@ class ClientTest extends VonageTestCase
 
     public function testSearchOwnedPassesInAllowedAdditionalParameters(): void
     {
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/numbers', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertRequestMethod('GET', $request);
@@ -329,7 +330,7 @@ class ClientTest extends VonageTestCase
 
     public function testSearchOwnedReturnsSingleNumber(): void
     {
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/account/numbers', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertRequestMethod('GET', $request);
@@ -346,7 +347,7 @@ class ClientTest extends VonageTestCase
 
     public function testPurchaseNumberWithNumberObject(): void
     {
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/number/buy', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertRequestFormBodyContains('country', 'US', $request);
@@ -363,7 +364,7 @@ class ClientTest extends VonageTestCase
 
     public function testSearchOwnedNumbersWithFilter(): void
     {
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
@@ -385,13 +386,13 @@ class ClientTest extends VonageTestCase
     public function testPurchaseNumberWithNumberAndCountry(): void
     {
         // When providing a number string, the first thing that happens is a GET request to fetch number details
-        $this->vonageClient->send(
+        $this->httpClient->sendRequest(
             Argument::that(fn (RequestInterface $request) => $request->getUri()->getPath() === '/account/numbers')
         )
             ->willReturn($this->getResponse('single'));
 
         // Then we purchase the number
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) {
             if ($request->getUri()->getPath() === '/number/buy') {
                 $this->assertEquals('/number/buy', $request->getUri()->getPath());
                 $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
@@ -418,7 +419,7 @@ class ClientTest extends VonageTestCase
         $expectedException,
         $expectedExceptionMessage
     ): void {
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) {
             $this->assertEquals('/number/buy', $request->getUri()->getPath());
             $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
             $this->assertEquals('POST', $request->getMethod());
@@ -468,13 +469,13 @@ class ClientTest extends VonageTestCase
     public function testCancelNumberWithNumberString(): void
     {
         // When providing a number string, the first thing that happens is a GET request to fetch number details
-        $this->vonageClient->send(
+        $this->httpClient->sendRequest(
             Argument::that(fn (RequestInterface $request) => $request->getUri()->getPath() === '/account/numbers')
         )
             ->willReturn($this->getResponse('single'));
 
         // Then we get a POST request to cancel
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) {
             if ($request->getUri()->getPath() === '/number/cancel') {
                 $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
                 $this->assertEquals('POST', $request->getMethod());
@@ -490,13 +491,13 @@ class ClientTest extends VonageTestCase
     public function testCancelNumberWithNumberAndCountryString(): void
     {
         // When providing a number string, the first thing that happens is a GET request to fetch number details
-        $this->vonageClient->send(
+        $this->httpClient->sendRequest(
             Argument::that(fn (RequestInterface $request) => $request->getUri()->getPath() === '/account/numbers')
         )
             ->willReturn($this->getResponse('single'));
 
         // Then we get a POST request to cancel
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) {
             if ($request->getUri()->getPath() === '/number/cancel') {
                 $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
                 $this->assertEquals('POST', $request->getMethod());

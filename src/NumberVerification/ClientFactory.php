@@ -23,7 +23,6 @@ class ClientFactory
         $api
             ->setBaseUrl('https://api-eu.vonage.com/camara/number-verification/v031')
             ->setIsHAL(false)
-            ->setClient($client)
             ->setErrorsOn200(false)
             ->setAuthHandlers($handler);
 

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Vonage\Account;
 
 use Psr\Http\Client\ClientExceptionInterface;
-use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
 use Vonage\Client\Exception as ClientException;
 use Vonage\Client\Exception\Request as ClientRequestException;
@@ -18,15 +17,10 @@ use function json_decode;
 /**
  * @todo Unify the exception handling to avoid duplicated code and logic (ie: getPrefixPricing())
  */
-class Client implements APIClient
+class Client
 {
-    public function __construct(protected ?APIResource $accountAPI = null)
+    public function __construct(protected APIResource $api)
     {
-    }
-
-    public function getAPIResource(): APIResource
-    {
-        return clone $this->accountAPI;
     }
 
     /**
@@ -36,7 +30,7 @@ class Client implements APIClient
      */
     public function getPrefixPricing(string $prefix): array
     {
-        $api = $this->getAPIResource();
+        $api = clone $this->api;
         $api->setBaseUri('/account/get-prefix-pricing/outbound');
         $api->setCollectionName('prices');
 
@@ -102,7 +96,7 @@ class Client implements APIClient
      */
     protected function makePricingRequest($country, $pricingType): array
     {
-        $api = $this->getAPIResource();
+        $api = clone $this->api;
         $api->setBaseUri('/account/get-pricing/outbound/' . $pricingType);
         $results = $api->search(new KeyValueFilter(['country' => $country]));
         $pageData = $results->getPageData();
@@ -125,7 +119,7 @@ class Client implements APIClient
      */
     public function getBalance(): Balance
     {
-        $data = $this->getAPIResource()->get('get-balance', [], ['accept' => 'application/json']);
+        $data = $this->api->get('get-balance', [], ['accept' => 'application/json']);
 
         if (is_null($data)) {
             throw new ClientException\Server('No results found');
@@ -140,7 +134,7 @@ class Client implements APIClient
      */
     public function topUp(string $trx): void
     {
-        $api = $this->getAPIResource();
+        $api = clone $this->api;
         $api->setBaseUri('/account/top-up');
         $api->submit(['trx' => $trx]);
     }
@@ -154,7 +148,7 @@ class Client implements APIClient
      */
     public function getConfig(): Config
     {
-        $api = $this->getAPIResource();
+        $api = clone $this->api;
         $api->setBaseUri('/account/settings');
         $body = $api->submit();
 
@@ -193,7 +187,7 @@ class Client implements APIClient
             $params['drCallBackUrl'] = $options['dr_callback_url'];
         }
 
-        $api = $this->getAPIResource();
+        $api = clone $this->api;
         $api->setBaseUri('/account/settings');
 
         $rawBody = $api->submit($params);

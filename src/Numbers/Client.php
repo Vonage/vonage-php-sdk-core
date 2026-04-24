@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Vonage\Numbers;
 
 use Psr\Http\Client\ClientExceptionInterface;
-use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
 use Vonage\Client\Exception as ClientException;
 use Vonage\Client\Exception\Exception;
@@ -20,17 +19,11 @@ use Vonage\Numbers\Filter\OwnedNumbers;
 use function count;
 use function is_null;
 use function sleep;
-use function trigger_error;
 
-class Client implements APIClient
+class Client
 {
-    public function __construct(protected ?APIResource $api = null)
+    public function __construct(protected APIResource $api)
     {
-    }
-
-    public function getApiResource(): APIResource
-    {
-        return $this->api;
     }
 
     /**
@@ -59,8 +52,7 @@ class Client implements APIClient
 
         unset($body['features'], $body['type']);
 
-        $api = $this->getApiResource();
-        $api->submit($body, '/number/update');
+        $this->api->submit($body, '/number/update');
 
         if (isset($update)) {
             try {
@@ -114,10 +106,9 @@ class Client implements APIClient
             ]);
         }
 
-        $api = $this->getApiResource();
-        $api->setCollectionName('numbers');
+        $this->api->setCollectionName('numbers');
 
-        $response = $api->search(
+        $response = $this->api->search(
             new AvailableNumbers($options->getQuery() + ['country' => $country]),
             '/number/search'
         );
@@ -146,10 +137,9 @@ class Client implements APIClient
             }
         }
 
-        $api = $this->getApiResource();
-        $api->setCollectionName('numbers');
+        $this->api->setCollectionName('numbers');
 
-        $response = $api->search($options, '/account/numbers');
+        $response = $this->api->search($options, '/account/numbers');
         $response->setHydrator(new Hydrator());
         $response->setAutoAdvance(false); // The search results on this can be quite large
 
@@ -162,20 +152,13 @@ class Client implements APIClient
      * @throws ClientException\Server
      * @throws ClientExceptionInterface
      */
-    private function handleNumberSearchResult(IterableAPICollection $response, $number = null): array
+    private function handleNumberSearchResult(IterableAPICollection $response): array
     {
         // We're going to return a list of numbers
         $numbers = [];
 
-        // Legacy - If the user passed in a number object, populate that object
-        // @deprecated This will eventually return a new clean object
-        if ($number instanceof Number && count($response) === 1) {
-            $number->fromArray($response->current()->toArray());
-            $numbers[] = $number;
-        } else {
-            foreach ($response as $rawNumber) {
-                $numbers[] = $rawNumber;
-            }
+        foreach ($response as $rawNumber) {
+            $numbers[] = $rawNumber;
         }
 
         return $numbers;
@@ -185,36 +168,15 @@ class Client implements APIClient
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      */
-    public function purchase($number, ?string $country = null): void
+    public function purchase(string $number, string $country): void
     {
-        if (!$country) {
-            throw new ClientException\Exception(
-                "You must supply a country in addition to a number to purchase a number"
-            );
-        }
+        $body = [
+            'msisdn' => $number,
+            'country' => $country
+        ];
 
-        if ($number instanceof Number) {
-            trigger_error(
-                'Passing a Number object to Vonage\Number\Client::purchase() is being deprecated, ' .
-                'please pass a string MSISDN instead',
-                E_USER_DEPRECATED
-            );
-
-            $body = [
-                'msisdn' => $number->getMsisdn(),
-                'country' => $number->getCountry()
-            ];
-            // Evil else that will be removed in the next major version.
-        } else {
-            $body = [
-                'msisdn' => $number,
-                'country' => $country
-            ];
-        }
-
-        $api = $this->getApiResource();
-        $api->setBaseUri('/number/buy');
-        $api->submit($body);
+        $this->api->setBaseUri('/number/buy');
+        $this->api->submit($body);
     }
 
     /**
@@ -223,7 +185,7 @@ class Client implements APIClient
      * @throws ClientException\Request
      * @throws ClientException\Server
      */
-    public function cancel(string $number, ?string $country = null): void
+    public function cancel(string $number): void
     {
         $number = $this->get($number);
 
@@ -232,8 +194,7 @@ class Client implements APIClient
             'country' => $number->getCountry()
         ];
 
-        $api = $this->getApiResource();
-        $api->setBaseUri('/number/cancel');
-        $api->submit($body);
+        $this->api->setBaseUri('/number/cancel');
+        $this->api->submit($body);
     }
 }

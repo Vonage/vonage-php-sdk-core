@@ -29,6 +29,7 @@ class ClientTest extends VonageTestCase
     protected APIResource $api;
 
     protected Client|ObjectProphecy $vonageClient;
+    protected $httpClient;
     protected $subaccountClient;
 
     public function setUp(): void
@@ -36,15 +37,16 @@ class ClientTest extends VonageTestCase
         $this->responsesDirectory = __DIR__ . '/Fixtures/Responses';
 
         $this->vonageClient = $this->prophesize(Client::class);
+        $this->httpClient = $this->prophesize(\Psr\Http\Client\ClientInterface::class);
+        $this->vonageClient->getHttpClient()->willReturn($this->httpClient->reveal());
         $this->vonageClient->getCredentials()->willReturn(
             new Client\Credentials\Basic('abc', 'def'),
         );
 
         /** @noinspection PhpParamsInspection */
-        $this->api = (new APIResource())
+        $this->api = (new APIResource($this->vonageClient->reveal()))
             ->setIsHAL(true)
             ->setErrorsOn200(false)
-            ->setClient($this->vonageClient->reveal())
             ->setBaseUrl('https://api.nexmo.com/accounts');
 
         $this->subaccountClient = new SubaccountClient($this->api);
@@ -57,7 +59,7 @@ class ClientTest extends VonageTestCase
 
     public function testUsesCorrectAuth(): void
     {
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) {
             $this->assertEquals(
                 'Basic ',
                 mb_substr($request->getHeaders()['Authorization'][0], 0, 6)
@@ -82,7 +84,7 @@ class ClientTest extends VonageTestCase
 
         $account = (new Account())->fromArray($payload);
 
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
@@ -102,7 +104,7 @@ class ClientTest extends VonageTestCase
     {
         $apiKey = 'acc6111f';
 
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
@@ -131,7 +133,7 @@ class ClientTest extends VonageTestCase
 
         $account = (new Account())->fromArray($payload);
 
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
@@ -157,7 +159,7 @@ class ClientTest extends VonageTestCase
         $apiKey = 'acc6111f';
         $subaccountKey = 'bbe6222f';
 
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
@@ -179,7 +181,7 @@ class ClientTest extends VonageTestCase
     {
         $apiKey = 'acc6111f';
 
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
@@ -202,7 +204,7 @@ class ClientTest extends VonageTestCase
     {
         $apiKey = 'acc6111f';
 
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
@@ -232,7 +234,7 @@ class ClientTest extends VonageTestCase
     {
         $apiKey = 'acc6111f';
 
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
@@ -266,7 +268,7 @@ class ClientTest extends VonageTestCase
     {
         $apiKey = 'acc6111f';
 
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
@@ -300,7 +302,7 @@ class ClientTest extends VonageTestCase
     {
         $apiKey = 'acc6111f';
 
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
@@ -332,7 +334,7 @@ class ClientTest extends VonageTestCase
     {
         $apiKey = 'acc6111f';
 
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
+        $this->httpClient->sendRequest(Argument::that(function (RequestInterface $request) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(

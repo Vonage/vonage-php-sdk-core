@@ -5,24 +5,17 @@ declare(strict_types=1);
 namespace Vonage\NumberVerification;
 
 use Psr\Http\Client\ClientExceptionInterface;
-use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
 use Vonage\Client\Credentials\Container;
 use Vonage\Client\Credentials\CredentialsInterface;
 use Vonage\Client\Credentials\Gnp;
 use Vonage\Client\Exception\Credentials;
 use Vonage\Client\Exception\Exception;
-use Vonage\Webhook\Factory;
 
-class Client implements APIClient
+class Client
 {
     public function __construct(protected APIResource $api)
     {
-    }
-
-    public function getAPIResource(): APIResource
-    {
-        return $this->api;
     }
 
     /**
@@ -37,7 +30,7 @@ class Client implements APIClient
     public function verifyNumber(string $phoneNumber, string $code, string $state): bool
     {
         /** @var Gnp $credentials */
-        $credentials = $this->getAPIResource()->getClient()->getCredentials();
+        $credentials = $this->api->getCredentials();
 
         if ($credentials instanceof Container) {
             $credentials = $credentials->get(Gnp::class);
@@ -53,7 +46,7 @@ class Client implements APIClient
 
         // By the time this hits the Number Verification API, the handler will have
         // completed the CAMARA OAuth flow
-        $response = $this->getAPIResource()->create(
+        $response = $this->api->create(
             [$phoneNumberKey => $phoneNumber],
             'verify'
         );
@@ -79,7 +72,7 @@ class Client implements APIClient
     public function buildFrontEndUrl(string $phoneNumber, string $redirectUrl, string $state = ''): string
     {
         /** @var Gnp $credentials */
-        $credentials = $this->getAPIResource()->getClient()->getCredentials();
+        $credentials = $this->api->getCredentials();
 
         if ($credentials instanceof Container) {
             $credentials = $credentials->get(Gnp::class);

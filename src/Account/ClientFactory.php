@@ -15,7 +15,7 @@ class ClientFactory
         /** @var APIResource $accountApi */
         $accountApi = $container->make(APIResource::class);
         $accountApi
-            ->setBaseUrl($accountApi->getClient()->getRestUrl())
+            ->setBaseUrl($accountApi->getRestURL())
             ->setIsHAL(false)
             ->setBaseUri('/account')
             ->setAuthHandlers(new BasicHandler())

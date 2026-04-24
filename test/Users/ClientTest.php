@@ -25,6 +25,7 @@ class ClientTest extends VonageTestCase
     use HTTPTestTrait;
 
     protected Client|ObjectProphecy $vonageClient;
+    protected $httpClient;
 
     protected APIResource $apiClient;
 
@@ -35,6 +36,8 @@ class ClientTest extends VonageTestCase
         $this->responsesDirectory = __DIR__ . '/responses';
 
         $this->vonageClient = $this->prophesize(Client::class);
+        $this->httpClient = $this->prophesize(\Psr\Http\Client\ClientInterface::class);
+        $this->vonageClient->getHttpClient()->willReturn($this->httpClient->reveal());
         $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
         $this->vonageClient->getCredentials()->willReturn(
             new Client\Credentials\Container(new Client\Credentials\Keypair(
@@ -43,8 +46,8 @@ class ClientTest extends VonageTestCase
             ))
         );
 
-        $apiResource = new APIResource();
-        $apiResource->setClient($this->vonageClient->reveal())
+        $apiResource = new APIResource($this->vonageClient->reveal());
+        $apiResource
             ->setBaseUri('/v1/users')
             ->setCollectionName('users')
             ->setAuthHandlers(new Client\Credentials\Handler\KeypairHandler());
@@ -53,14 +56,11 @@ class ClientTest extends VonageTestCase
         $hydrator->setPrototype(new User());
 
         $this->usersClient = new UsersClient($apiResource, $hydrator);
-
-        /** @noinspection PhpParamsInspection */
-        $this->usersClient->setClient($this->vonageClient->reveal());
     }
 
     public function testClientWillUseJwtAuth(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $this->assertEquals(
                 'Bearer ',
                 mb_substr($request->getHeaders()['Authorization'][0], 0, 7)
@@ -76,7 +76,7 @@ class ClientTest extends VonageTestCase
 
     public function testWillListUsers(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
@@ -102,7 +102,7 @@ class ClientTest extends VonageTestCase
 
     public function testWillCreateUser(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
@@ -193,7 +193,7 @@ class ClientTest extends VonageTestCase
 
     public function testWillGetUser(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
@@ -235,7 +235,7 @@ class ClientTest extends VonageTestCase
 
     public function testWillUpdateUser(): void
     {
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(
@@ -279,7 +279,7 @@ class ClientTest extends VonageTestCase
         $response = $responseFactory->createResponse()
                                     ->withStatus(204);
 
-        $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->httpClient->sendRequest(Argument::that(function (Request $request) {
             $uri = $request->getUri();
             $uriString = $uri->__toString();
             $this->assertEquals(

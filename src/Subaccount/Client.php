@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Vonage\Subaccount;
 
-use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
 use Vonage\Entity\Filter\EmptyFilter;
 use Vonage\Entity\Filter\FilterInterface;
@@ -16,17 +15,12 @@ use Vonage\Subaccount\SubaccountObjects\Account;
 use Vonage\Subaccount\SubaccountObjects\BalanceTransfer;
 use Vonage\Subaccount\SubaccountObjects\CreditTransfer;
 
-class Client implements APIClient
+class Client
 {
     public const PRIMARY_ACCOUNT_ARRAY_KEY = 'primary_account';
 
     public function __construct(protected APIResource $api)
     {
-    }
-
-    public function getAPIResource(): APIResource
-    {
-        return $this->api;
     }
 
     public function getPrimaryAccount(string $apiKey): Account

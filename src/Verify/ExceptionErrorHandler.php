@@ -27,7 +27,7 @@ class ExceptionErrorHandler
 
         if (!isset($data['status'])) {
             $e = new Request('unexpected response from API');
-            $e->setEntity($data);
+            $e->setResponse($response);
             throw $e;
         }
 
@@ -46,7 +46,7 @@ class ExceptionErrorHandler
             case '5':
             default:
                 $e = new Request($data['error_text'], (int)$data['status']);
-                $e->setEntity($data);
+                $e->setResponse($response);
                 throw $e;
         }
     }
