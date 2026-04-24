@@ -33,13 +33,6 @@ class Talk implements ActionInterface
     {
         $talk = new Talk($text);
 
-        if (array_key_exists('voiceName', $data)) {
-            trigger_error(
-                'voiceName is deprecated and will not be added to the NCCO',
-                E_USER_DEPRECATED
-            );
-        }
-
         if (array_key_exists('bargeIn', $data)) {
             $talk->setBargeIn(
                 filter_var($data['bargeIn'], FILTER_VALIDATE_BOOLEAN, ['flags' => FILTER_NULL_ON_FAILURE])

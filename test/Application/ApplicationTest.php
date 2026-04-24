@@ -50,10 +50,10 @@ class ApplicationTest extends VonageTestCase
      */
     public function testVoiceWebhookParams(): void
     {
-        @$this->app->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'http://example.com/event');
-        @$this->app->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'http://example.com/answer');
+        $this->app->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, new Webhook('http://example.com/event'));
+        $this->app->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, new Webhook('http://example.com/answer'));
 
-        $params = @$this->app->toArray();
+        $params = $this->app->toArray();
         $capabilities = $params['capabilities'];
 
         $this->assertArrayHasKey('event_url', $capabilities['voice']['webhooks']);
@@ -145,7 +145,7 @@ class ApplicationTest extends VonageTestCase
         $webhook = $this->app->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER);
         $this->assertEquals('https://example.com/webhooks/answer', $webhook);
 
-        @$this->app->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'http://example.com');
+        $this->app->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, new Webhook('http://example.com'));
         $webhook = $this->app->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER);
         $this->assertEquals('http://example.com', (string)$webhook);
     }

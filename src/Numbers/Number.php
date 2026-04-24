@@ -168,25 +168,6 @@ class Number implements ArrayHydrateInterface, \Stringable
         return $this->data[$name];
     }
 
-    /**
-     * @param string|array $json
-     */
-    public function jsonUnserialize($json): void
-    {
-        trigger_error(
-            static::class . "::jsonUnserialize is deprecated, please fromArray() instead",
-            E_USER_DEPRECATED
-        );
-
-        $jsonArr = json_decode($json, true);
-
-        if (json_last_error() === JSON_ERROR_NONE) {
-            $json = $jsonArr;
-        }
-
-        $this->fromArray($json);
-    }
-
     public function fromArray(array $data): void
     {
         $this->data = $data;
