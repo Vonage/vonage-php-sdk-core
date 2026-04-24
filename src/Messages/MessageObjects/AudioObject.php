@@ -31,18 +31,4 @@ class AudioObject implements ArrayHydrateInterface
     {
         return $this->url;
     }
-
-    /**
-     * @deprecated Unsupported
-     * @return string
-     */
-    public function getCaption(): string
-    {
-        trigger_error(
-            'Captions are not supported in this API, this will error at server level.',
-            E_USER_DEPRECATED
-        );
-
-        return $this->caption;
-    }
 }

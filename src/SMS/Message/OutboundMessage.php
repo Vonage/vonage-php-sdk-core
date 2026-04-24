@@ -42,14 +42,6 @@ abstract class OutboundMessage implements Message
     {
     }
 
-    /**
-     * @deprecated Shim when correcting naming conventions, will be removed when it comes out the interface
-     */
-    public function getErrorMessage(): ?string
-    {
-        return $this->getWarningMessage();
-    }
-
     public function getWarningMessage(): ?string
     {
         return $this->warningMessage;
