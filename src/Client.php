@@ -7,9 +7,7 @@ namespace Vonage;
 use Composer\InstalledVersions;
 use InvalidArgumentException;
 use Laminas\Diactoros\Uri;
-use Lcobucci\JWT\Token;
 use Psr\Container\ContainerInterface;
-use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
@@ -23,7 +21,6 @@ use Vonage\Client\Credentials\Container;
 use Vonage\Client\Credentials\CredentialsInterface;
 use Vonage\Client\Credentials\Keypair;
 use Vonage\Client\Credentials\SignatureSecret;
-use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Client\Factory\FactoryInterface;
 use Vonage\Client\Factory\MapFactory;
 use Vonage\Conversion\ClientFactory as ConversionClientFactory;
@@ -262,18 +259,6 @@ class Client implements LoggerAwareInterface
     public function getFactory(): ContainerInterface
     {
         return $this->factory;
-    }
-
-    /**
-     * @throws ClientException
-     */
-    public function generateJwt($claims = []): Token
-    {
-        if (method_exists($this->credentials, "generateJwt")) {
-            return $this->credentials->generateJwt($claims);
-        }
-
-        throw new ClientException($this->credentials::class . ' does not support JWT generation');
     }
 
     protected function validateAppOptions($app): void

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace VonageTest;
 
-use Lcobucci\JWT\Token\Plain;
 use Psr\Http\Client\ClientInterface;
 use RuntimeException;
 use Vonage\Client\Credentials\CredentialsInterface;
@@ -101,14 +100,4 @@ class ClientTest extends VonageTestCase
         $client->video();
     }
 
-    public function testWillGenerateJwt()
-    {
-        $keyPath = __DIR__ . '/Client/Credentials/test.key';
-        $keyContents = file_get_contents($keyPath);
-        $credentials = new Client\Credentials\Keypair($keyContents, 'abc123');
-        $client = new Client($credentials);
-        $jwt = $client->generateJwt();
-
-        $this->assertInstanceOf(Plain::class, $jwt);
-    }
 }
