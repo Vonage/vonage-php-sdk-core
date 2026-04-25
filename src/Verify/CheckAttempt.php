@@ -6,16 +6,16 @@ namespace Vonage\Verify;
 
 use DateTimeImmutable;
 
-readonly class CheckAttempt
+class CheckAttempt
 {
     public const VALID = 'VALID';
     public const INVALID = 'INVALID';
 
     public function __construct(
-        public string $code,
-        public DateTimeImmutable $dateReceived,
-        public string $status,
-        public ?string $ipAddress,
+        public readonly string $code,
+        public readonly DateTimeImmutable $dateReceived,
+        public readonly string $status,
+        public readonly ?string $ipAddress,
     ) {
     }
 
