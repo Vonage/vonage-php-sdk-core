@@ -46,7 +46,7 @@ class ClientTest extends VonageTestCase
             ->setAuthHandlers($handler)
             ->setBaseUrl('https://api-eu.vonage.com/camara/number-verification/v031/');
 
-        $this->numberVerificationClient = new NumberVerificationClient($this->api);
+        $this->numberVerificationClient = @new NumberVerificationClient($this->api);
     }
 
     public function testHasSetupClientCorrectly(): void

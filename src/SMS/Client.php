@@ -23,15 +23,18 @@ class Client implements APIClient
     {
     }
 
+    /**
+     * @deprecated This method will be removed in the next major version.
+     *             The APIResource is injected and should not be accessed directly from outside the client.
+     */
     public function getAPIResource(): APIResource
     {
+        trigger_error(
+            'Vonage\\SMS\\Client::getAPIResource() is deprecated and will be removed in the next major version.',
+            E_USER_DEPRECATED
+        );
         return $this->api;
     }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException
-     */
     public function send(Message $message): Collection
     {
         if ($warningMessage = $message->getWarningMessage()) {

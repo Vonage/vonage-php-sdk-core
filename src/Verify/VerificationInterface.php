@@ -6,6 +6,10 @@ namespace Vonage\Verify;
 
 use Vonage\Entity\EntityInterface;
 
+/**
+ * @deprecated This interface will be removed in the next major version.
+ *             Interact with verifications through Vonage\Verify\Client directly.
+ */
 interface VerificationInterface extends EntityInterface
 {
     public function getNumber();

@@ -27,6 +27,12 @@ class Keypair extends AbstractCredentials
      */
     public function getKey(): Key
     {
+        trigger_error(
+            'Vonage\\Client\\Credentials\\Keypair::getKey() is deprecated and will be removed in the next major version. '
+            . 'Use getKeyRaw() instead.',
+            E_USER_DEPRECATED
+        );
+
         return InMemory::plainText($this->key);
     }
 

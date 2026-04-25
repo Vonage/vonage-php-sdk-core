@@ -26,8 +26,16 @@ class Client implements APIClient
     {
     }
 
+    /**
+     * @deprecated This method will be removed in the next major version.
+     *             The APIResource is injected and should not be accessed directly from outside the client.
+     */
     public function getApiResource(): APIResource
     {
+        trigger_error(
+            'Vonage\\Insights\\Client::getApiResource() is deprecated and will be removed in the next major version.',
+            E_USER_DEPRECATED
+        );
         return clone $this->api;
     }
 
@@ -130,7 +138,7 @@ class Client implements APIClient
      */
     public function makeRequest(string $path, $number, array $additionalParams = []): array
     {
-        $api = $this->getApiResource();
+        $api = clone $this->api;
         $api->setBaseUri($path);
         $collectionPrototype = new IterableAPICollection();
         $collectionPrototype->setHasPagination(false);

@@ -31,8 +31,19 @@ class Client implements ClientAwareInterface, APIClient
     /**
      * Shim to handle older instantiations of this class
      * Will change in v3 to just return the required API object
+     *
+     * @deprecated This method will be removed in the next major version.
      */
     public function getApiResource(): APIResource
+    {
+        trigger_error(
+            'Vonage\\Redact\\Client::getApiResource() is deprecated and will be removed in the next major version.',
+            E_USER_DEPRECATED
+        );
+        return $this->resolveApi();
+    }
+
+    private function resolveApi(): APIResource
     {
         if (is_null($this->api)) {
             $api = new APIResource();
@@ -61,7 +72,7 @@ class Client implements ClientAwareInterface, APIClient
      */
     public function transaction(string $id, string $product, array $options = []): void
     {
-        $api = $this->getApiResource();
+        $api = $this->resolveApi();
         $api->setBaseUri('/v1/redact/transaction');
 
         $body = ['id' => $id, 'product' => $product] + $options;

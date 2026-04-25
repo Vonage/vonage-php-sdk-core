@@ -23,8 +23,16 @@ class Client implements APIClient
     {
     }
 
+    /**
+     * @deprecated This method will be removed in the next major version.
+     *             The APIResource is injected and should not be accessed directly from outside the client.
+     */
     public function getAPIResource(): APIResource
     {
+        trigger_error(
+            'Vonage\\Verify2\\Client::getAPIResource() is deprecated and will be removed in the next major version.',
+            E_USER_DEPRECATED
+        );
         return $this->api;
     }
 
@@ -32,19 +40,19 @@ class Client implements APIClient
     {
         if (self::isSilentAuthRequest($request)) {
             if (SilentAuthRequest::isValidWorkflow($request->getWorkflows())) {
-                return $this->getAPIResource()->create($request->toArray());
+                return $this->api->create($request->toArray());
             }
 
             throw new \InvalidArgumentException('Silent Auth must be the first workflow if used');
         }
 
-        return $this->getAPIResource()->create($request->toArray());
+        return $this->api->create($request->toArray());
     }
 
     public function check(string $requestId, $code): bool
     {
         try {
-            $response = $this->getAPIResource()->create(['code' => $code], '/' . $requestId);
+            $response = $this->api->create(['code' => $code], '/' . $requestId);
         } catch (Exception $e) {
             // For horrible reasons in the API Error Handler, throw the error unless it's a 409.
             if ($e->getCode() === 409) {
@@ -160,7 +168,7 @@ class Client implements APIClient
 
     public function listTemplateFragments(string $templateId, ?TemplateFilter $filter = null): IterableAPICollection
     {
-        $api = clone $this->getAPIResource();
+        $api = clone $this->api;
         $api->setCollectionName('template_fragments');
 
         $collection = $api->search($filter, '/templates/' . $templateId . '/template_fragments');

@@ -10,6 +10,10 @@ use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 use function array_key_exists;
 use function strlen;
 
+/**
+ * @deprecated Use Vonage\Verify\StartPSD2 instead.
+ *             This class will be removed in the next major version.
+ */
 class RequestPSD2 implements ArrayHydrateInterface
 {
     public const PIN_LENGTH_4 = 4;
@@ -41,6 +45,10 @@ class RequestPSD2 implements ArrayHydrateInterface
         protected string $amount,
         ?int $workflowId = null
     ) {
+        trigger_error(
+            'Vonage\\Verify\\RequestPSD2 is deprecated. Use Vonage\\Verify\\StartPSD2 instead.',
+            E_USER_DEPRECATED
+        );
         if ($workflowId) {
             $this->setWorkflowId($workflowId);
         }

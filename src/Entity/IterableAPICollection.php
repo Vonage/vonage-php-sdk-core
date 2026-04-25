@@ -192,9 +192,9 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
             return [];
         }
 
-        $collectionName = $this->getApiResource()->getCollectionName();
+        $collectionName = $this->api->getCollectionName();
 
-        if ($this->getApiResource()->isHAL()) {
+        if ($this->api->isHAL()) {
             if ($this->isHalNoCollection() === true) {
                 return $this->pageData['_embedded'];
             }
@@ -202,7 +202,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
             return $this->pageData['_embedded'][$collectionName];
         }
 
-        if (!empty($this->getApiResource()->getCollectionName())) {
+        if (!empty($this->api->getCollectionName())) {
             return $this->pageData[$collectionName];
         }
 
@@ -267,8 +267,8 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
         //all hal collections have an `_embedded` object, we expect there to be a property matching the collection name
         if (
             $this->isHalNoCollection() === false &&
-            $this->getApiResource()->isHAL() &&
-            !isset($this->pageData['_embedded'][$this->getApiResource()->getCollectionName()])
+            $this->api->isHAL() &&
+            !isset($this->pageData['_embedded'][$this->api->getCollectionName()])
         ) {
             return false;
         }
@@ -304,7 +304,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
             if ($this->current === count($this->getResourceRoot())) {
                 $this->index++;
                 $this->current = 0;
-                $this->fetchPage($this->getApiResource()->getBaseUri());
+                $this->fetchPage($this->api->getBaseUri());
 
                 return !($this->count() === 0);
             }
@@ -326,7 +326,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
     public function rewind(): void
     {
         $this->current = 0;
-        $this->fetchPage($this->getApiResource()->getBaseUri());
+        $this->fetchPage($this->api->getBaseUri());
     }
 
     /**
@@ -339,8 +339,15 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
         return $this;
     }
 
+    /**
+     * @deprecated This method will be removed in the next major version.
+     */
     public function getApiResource(): APIResource
     {
+        trigger_error(
+            'Vonage\\Entity\\IterableAPICollection::getApiResource() is deprecated and will be removed in the next major version.',
+            E_USER_DEPRECATED
+        );
         return $this->api;
     }
 
@@ -524,7 +531,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
         $requestUri = $absoluteUri;
 
         if (filter_var($absoluteUri, FILTER_VALIDATE_URL) === false) {
-            $requestUri = $this->getApiResource()->getBaseUrl() . $absoluteUri;
+            $requestUri = $this->api->getBaseUrl() . $absoluteUri;
         }
 
         $cacheKey = md5((string) $requestUri);
@@ -536,15 +543,15 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
 
         $request = new Request($requestUri, 'GET');
 
-        if ($this->getApiResource()->getAuthHandlers()) {
-            $request = $this->getApiResource()->addAuth($request);
+        if ($this->api->getAuthHandlers()) {
+            $request = $this->api->addAuth($request);
         }
 
         $response = $this->client->send($request);
 
-        $this->getApiResource()->setLastRequest($request);
+        $this->api->setLastRequest($request);
         $this->response = $response;
-        $this->getApiResource()->setLastResponse($response);
+        $this->api->setLastResponse($response);
 
         $body = $this->response->getBody()->getContents();
         $json = json_decode($body, true);
