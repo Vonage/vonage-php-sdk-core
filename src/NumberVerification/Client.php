@@ -115,7 +115,7 @@ class Client implements APIClient
     protected function enforceCredentials(CredentialsInterface $credentials): void
     {
         if (!$credentials instanceof Gnp) {
-            throw new Credentials('You can only use GNP Credentials with the Number Verification API');
+            throw new CredentialsException('You can only use GNP Credentials with the Number Verification API');
         }
     }
 }

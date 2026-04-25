@@ -26,24 +26,24 @@ parameters:
 			path: src/Client/Callback/Callback.php
 
 		-
-			message: "#^Access to an undefined property Vonage\\\\Client\\\\Exception\\\\Request\\:\\:\\$data\\.$#"
+			message: "#^Access to an undefined property Vonage\\\\Client\\\\Exception\\\\RequestException\\:\\:\\$data\\.$#"
 			count: 1
-			path: src/Client/Exception/Request.php
+			path: src/Client/Exception/RequestException.php
 
 		-
-			message: "#^Call to an undefined method \\$this\\(Vonage\\\\Client\\\\Exception\\\\Request\\)&Vonage\\\\Entity\\\\Hydrator\\\\ArrayHydrateInterface\\:\\:getResponseData\\(\\)\\.$#"
+			message: "#^Call to an undefined method \\$this\\(Vonage\\\\Client\\\\Exception\\\\RequestException\\)&Vonage\\\\Entity\\\\Hydrator\\\\ArrayHydrateInterface\\:\\:getResponseData\\(\\)\\.$#"
 			count: 1
-			path: src/Client/Exception/Request.php
+			path: src/Client/Exception/RequestException.php
 
 		-
-			message: "#^Access to an undefined property Vonage\\\\Client\\\\Exception\\\\Server\\:\\:\\$data\\.$#"
+			message: "#^Access to an undefined property Vonage\\\\Client\\\\Exception\\\\ServerException\\:\\:\\$data\\.$#"
 			count: 1
-			path: src/Client/Exception/Server.php
+			path: src/Client/Exception/ServerException.php
 
 		-
-			message: "#^Call to an undefined method \\$this\\(Vonage\\\\Client\\\\Exception\\\\Server\\)&Vonage\\\\Entity\\\\Hydrator\\\\ArrayHydrateInterface\\:\\:getResponseData\\(\\)\\.$#"
+			message: "#^Call to an undefined method \\$this\\(Vonage\\\\Client\\\\Exception\\\\ServerException\\)&Vonage\\\\Entity\\\\Hydrator\\\\ArrayHydrateInterface\\:\\:getResponseData\\(\\)\\.$#"
 			count: 1
-			path: src/Client/Exception/Server.php
+			path: src/Client/Exception/ServerException.php
 
 		-
 			message: "#^Unsafe usage of new static\\(\\)\\.$#"
