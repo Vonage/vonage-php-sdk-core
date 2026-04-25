@@ -23,8 +23,8 @@ class ClientIntegrationTest extends VonageTestCase
 
     public function testWillConfigureClientCorrectly(): void
     {
-        $vonageClient = new Client(new Client\Credentials\Gnp('999', $this->key, 'XXX'));
-        $simSwapClient = $vonageClient->simswap();
+        $vonageClient = new Client(@new Client\Credentials\Gnp('999', $this->key, 'XXX'));
+        $simSwapClient = @$vonageClient->simswap();
         $authHandlers = $simSwapClient->getAPIResource()->getAuthHandlers();
         $this->assertInstanceOf(\Vonage\SimSwap\Client::class, $simSwapClient);
 

@@ -52,6 +52,12 @@ class MapFactory implements FactoryInterface, ContainerInterface
      */
     public function hasApi(string $api): bool
     {
+        trigger_error(
+            'Vonage\\Client\\Factory\\MapFactory::hasApi() is deprecated and will be removed in the next major version. '
+            . 'Use has() instead.',
+            E_USER_DEPRECATED
+        );
+
         return $this->has($api);
     }
 
@@ -82,6 +88,12 @@ class MapFactory implements FactoryInterface, ContainerInterface
      */
     public function getApi(string $api)
     {
+        trigger_error(
+            'Vonage\\Client\\Factory\\MapFactory::getApi() is deprecated and will be removed in the next major version. '
+            . 'Use get() instead.',
+            E_USER_DEPRECATED
+        );
+
         return $this->get($api);
     }
 

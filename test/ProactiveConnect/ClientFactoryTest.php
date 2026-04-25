@@ -14,21 +14,26 @@ class ClientFactoryTest extends TestCase
 {
     public function testInvokeCreatesClientWithConfiguredApiResource(): void
     {
+        $mockClient = $this->createMock(Client::class);
+
         $mockServices = [
             'proactiveConnect' => ClientFactory::class,
             APIResource::class => APIResource::class,
         ];
 
-        $mockClient = $this->createMock(Client::class);
         $container = new MapFactory($mockServices, $mockClient);
         $factory = new ClientFactory();
 
-        $result = $factory($container);
+        $result = @$factory($container);
         $this->assertInstanceOf(\Vonage\ProactiveConnect\Client::class, $result);
-        $this->assertInstanceOf(Client\Credentials\Handler\KeypairHandler::class, $result->getAPIResource()
-            ->getAuthHandlers()[0]);
-        $this->assertEquals('https://api-eu.vonage.com/v0.1/bulk/', $result->getAPIResource()->getBaseUrl());
-        $this->assertFalse($result->getAPIResource()->isHAL());
-        $this->assertFalse($result->getAPIResource()->errorsOn200());
+
+        $reflection = new \ReflectionClass($result);
+        $apiProperty = $reflection->getProperty('api');
+        $apiResource = $apiProperty->getValue($result);
+
+        $this->assertInstanceOf(Client\Credentials\Handler\KeypairHandler::class, $apiResource->getAuthHandlers()[0]);
+        $this->assertEquals('https://api-eu.vonage.com/v0.1/bulk/', $apiResource->getBaseUrl());
+        $this->assertFalse($apiResource->isHAL());
+        $this->assertFalse($apiResource->errorsOn200());
     }
 }

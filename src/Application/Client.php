@@ -25,8 +25,16 @@ class Client implements ClientAwareInterface, APIClient
     {
     }
 
+    /**
+     * @deprecated This method will be removed in the next major version.
+     *             The APIResource is injected and should not be accessed directly from outside the client.
+     */
     public function getApiResource(): APIResource
     {
+        trigger_error(
+            'Vonage\\Application\\Client::getApiResource() is deprecated and will be removed in the next major version.',
+            E_USER_DEPRECATED
+        );
         if (is_null($this->api)) {
             $api = new APIResource();
             $api->setClient($this->getClient())
@@ -46,7 +54,7 @@ class Client implements ClientAwareInterface, APIClient
      */
     public function get(string $application): Application
     {
-        $data = $this->getApiResource()->get($application);
+        $data = $this->api->get($application);
         $application = new Application();
         $application->fromArray($data);
 
@@ -78,7 +86,7 @@ class Client implements ClientAwareInterface, APIClient
         $data = $application->toArray();
         unset($data['id']);
 
-        $response = $this->getApiResource()->create($data);
+        $response = $this->api->create($data);
 
         return $this->hydrator->hydrate($response);
     }
@@ -112,7 +120,7 @@ class Client implements ClientAwareInterface, APIClient
             );
         }
 
-        $data = $this->getApiResource()->update($id, $application->toArray());
+        $data = $this->api->update($id, $application->toArray());
         return $this->hydrator->hydrate($data);
     }
 
@@ -124,7 +132,7 @@ class Client implements ClientAwareInterface, APIClient
      */
     public function delete(string $application): bool
     {
-        $this->getApiResource()->delete($application);
+        $this->api->delete($application);
 
         return true;
     }

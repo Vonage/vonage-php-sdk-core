@@ -29,6 +29,9 @@ class Client implements APIClient
         );
     }
 
+    /**
+     * @deprecated The Meetings API is being sunset and this will be removed in the next major version.
+     */
     public function getAPIResource(): APIResource
     {
         return $this->api;
@@ -36,8 +39,9 @@ class Client implements APIClient
 
     public function getRoom(string $id): Room
     {
-        $this->api->setBaseUri('/rooms');
-        $response = $this->api->get($id);
+        $api = clone $this->api;
+        $api->setBaseUri('/rooms');
+        $response = $api->get($id);
 
         $room = new Room();
         $room->fromArray($response);
@@ -98,13 +102,14 @@ class Client implements APIClient
             $start_id ? $filterParams['start_id'] = $start_id : null;
             $end_id ? $filterParams['end_id'] = $end_id : null;
         }
-        $response = $this->api->search(
+        $roomsApi = clone $this->api;
+        $roomsApi->setCollectionName('rooms');
+        $response = $roomsApi->search(
             $filterParams ? new KeyValueFilter($filterParams) : null,
             '/rooms',
         );
 
         $response->setAutoAdvance(false);
-        $response->getApiResource()->setCollectionName('rooms');
         $response->setSize($size);
         $response->setIndex(null);
 

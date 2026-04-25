@@ -24,8 +24,16 @@ class Client implements APIClient
     {
     }
 
+    /**
+     * @deprecated This method will be removed in the next major version.
+     *             The APIResource is injected and should not be accessed directly from outside the client.
+     */
     public function getAPIResource(): APIResource
     {
+        trigger_error(
+            'Vonage\\Account\\Client::getAPIResource() is deprecated and will be removed in the next major version.',
+            E_USER_DEPRECATED
+        );
         return clone $this->accountAPI;
     }
 
@@ -36,7 +44,7 @@ class Client implements APIClient
      */
     public function getPrefixPricing(string $prefix): array
     {
-        $api = $this->getAPIResource();
+        $api = clone $this->accountAPI;
         $api->setBaseUri('/account/get-prefix-pricing/outbound');
         $api->setCollectionName('prices');
 
@@ -102,7 +110,7 @@ class Client implements APIClient
      */
     protected function makePricingRequest($country, $pricingType): array
     {
-        $api = $this->getAPIResource();
+        $api = clone $this->accountAPI;
         $api->setBaseUri('/account/get-pricing/outbound/' . $pricingType);
         $results = $api->search(new KeyValueFilter(['country' => $country]));
         $pageData = $results->getPageData();
@@ -125,7 +133,7 @@ class Client implements APIClient
      */
     public function getBalance(): Balance
     {
-        $data = $this->getAPIResource()->get('get-balance', [], ['accept' => 'application/json']);
+        $data = $this->accountAPI->get('get-balance', [], ['accept' => 'application/json']);
 
         if (is_null($data)) {
             throw new ClientException\ServerException('No results found');
@@ -140,7 +148,7 @@ class Client implements APIClient
      */
     public function topUp(string $trx): void
     {
-        $api = $this->getAPIResource();
+        $api = clone $this->accountAPI;
         $api->setBaseUri('/account/top-up');
         $api->submit(['trx' => $trx]);
     }
@@ -154,7 +162,7 @@ class Client implements APIClient
      */
     public function getConfig(): Config
     {
-        $api = $this->getAPIResource();
+        $api = clone $this->accountAPI;
         $api->setBaseUri('/account/settings');
         $body = $api->submit();
 
@@ -193,7 +201,7 @@ class Client implements APIClient
             $params['drCallBackUrl'] = $options['dr_callback_url'];
         }
 
-        $api = $this->getAPIResource();
+        $api = clone $this->accountAPI;
         $api->setBaseUri('/account/settings');
 
         $rawBody = $api->submit($params);

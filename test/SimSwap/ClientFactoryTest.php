@@ -25,7 +25,7 @@ class ClientFactoryTest extends TestCase
         $container = new MapFactory($mockServices, $mockClient);
         $factory = new ClientFactory();
 
-        $result = $factory($container);
+        $result = @$factory($container);
         $this->assertInstanceOf(\Vonage\SimSwap\Client::class, $result);
         $this->assertInstanceOf(Client\Credentials\Handler\SimSwapGnpHandler::class, $result->getAPIResource()
             ->getAuthHandlers()[0]);

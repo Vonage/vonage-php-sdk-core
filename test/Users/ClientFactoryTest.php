@@ -14,19 +14,24 @@ class ClientFactoryTest extends TestCase
 {
     public function testInvokeCreatesClientWithConfiguredApiResource(): void
     {
+        $mockClient = $this->createMock(Client::class);
+
         $mockServices = [
             'users' => ClientFactory::class,
             APIResource::class => APIResource::class,
         ];
 
-        $mockClient = $this->createMock(Client::class);
         $container = new MapFactory($mockServices, $mockClient);
         $factory = new ClientFactory();
 
         $result = $factory($container);
         $this->assertInstanceOf(\Vonage\Users\Client::class, $result);
-        $this->assertInstanceOf(Client\Credentials\Handler\KeypairHandler::class, $result->getAPIResource()
-            ->getAuthHandlers()[0]);
-        $this->assertEquals('users', $result->getAPIResource()->getCollectionName());
+
+        $reflection = new \ReflectionClass($result);
+        $apiProperty = $reflection->getProperty('api');
+        $apiResource = $apiProperty->getValue($result);
+
+        $this->assertInstanceOf(Client\Credentials\Handler\KeypairHandler::class, $apiResource->getAuthHandlers()[0]);
+        $this->assertEquals('users', $apiResource->getCollectionName());
     }
 }

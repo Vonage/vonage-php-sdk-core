@@ -23,8 +23,16 @@ class Client implements ClientAwareInterface, APIClient
     {
     }
 
+    /**
+     * @deprecated This method will be removed in the next major version.
+     *             The APIResource is injected and should not be accessed directly from outside the client.
+     */
     public function getAPIResource(): APIResource
     {
+        trigger_error(
+            'Vonage\\Conversion\\Client::getAPIResource() is deprecated and will be removed in the next major version.',
+            E_USER_DEPRECATED
+        );
         return $this->api;
     }
 
@@ -82,8 +90,8 @@ class Client implements ClientAwareInterface, APIClient
 
         $uri = $type . '?' . http_build_query($params);
 
-        $this->getAPIResource()->create([], $uri);
-        $response = $this->getAPIResource()->getLastResponse();
+        $this->api->create([], $uri);
+        $response = $this->api->getLastResponse();
 
         if (null === $response || (int)$response->getStatusCode() !== 200) {
             throw $this->getException($response);

@@ -15,24 +15,28 @@ class ClientFactoryTest extends TestCase
 {
     public function testInvokeCreatesClientWithConfiguredApiResource(): void
     {
+        $mockClient = $this->createMock(Client::class);
+
         $mockServices = [
             'messages' => ClientFactory::class,
             APIResource::class => APIResource::class,
         ];
 
-        $mockClient = $this->createMock(Client::class);
         $container = new MapFactory($mockServices, $mockClient);
         $factory = new ClientFactory();
 
         $result = $factory($container);
         $this->assertInstanceOf(\Vonage\Messages\Client::class, $result);
-        $this->assertInstanceOf(Client\Credentials\Handler\KeypairHandler::class, $result->getAPIResource()
-            ->getAuthHandlers()[0]);
-        $this->assertInstanceOf(Client\Credentials\Handler\BasicHandler::class, $result->getAPIResource()
-            ->getAuthHandlers()[1]);
-        $this->assertEquals('/v1/messages', $result->getAPIResource()->getBaseUrl());
-        $this->assertInstanceOf(ExceptionErrorHandler::class, $result->getAPIResource()->getExceptionErrorHandler());
-        $this->assertFalse($result->getAPIResource()->isHAL());
-        $this->assertFalse($result->getAPIResource()->errorsOn200());
+
+        $reflection = new \ReflectionClass($result);
+        $apiProperty = $reflection->getProperty('api');
+        $apiResource = $apiProperty->getValue($result);
+
+        $this->assertInstanceOf(Client\Credentials\Handler\KeypairHandler::class, $apiResource->getAuthHandlers()[0]);
+        $this->assertInstanceOf(Client\Credentials\Handler\BasicHandler::class, $apiResource->getAuthHandlers()[1]);
+        $this->assertEquals('/v1/messages', $apiResource->getBaseUrl());
+        $this->assertInstanceOf(ExceptionErrorHandler::class, $apiResource->getExceptionErrorHandler());
+        $this->assertFalse($apiResource->isHAL());
+        $this->assertFalse($apiResource->errorsOn200());
     }
 }
