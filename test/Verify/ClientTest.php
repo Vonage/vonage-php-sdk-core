@@ -14,6 +14,8 @@ use Vonage\Verify\Client as VerifyClient;
 use Vonage\Verify\ExceptionErrorHandler;
 use Vonage\Verify\Request;
 use Vonage\Verify\RequestPSD2;
+use Vonage\Verify\StartPSD2;
+use Vonage\Verify\StartVerification;
 use Vonage\Verify\Verification;
 use VonageTest\Traits\HTTPTestTrait;
 use VonageTest\Traits\Psr7AssertionTrait;
@@ -74,7 +76,7 @@ class ClientTest extends VonageTestCase
         )->willReturn($this->getResponse('start'))
                            ->shouldBeCalledTimes(1);
 
-        $request = new RequestPSD2('14845551212', 'Test Verify', '5.25');
+        $request = @new RequestPSD2('14845551212', 'Test Verify', '5.25');
         $response = @$this->client->requestPSD2($request);
     }
 
@@ -150,7 +152,7 @@ class ClientTest extends VonageTestCase
     {
         $success = $this->setupClientForStart('start');
 
-        $verification = new Request('14845551212', 'Test Verify');
+        $verification = @new Request('14845551212', 'Test Verify');
         $verification = @$this->client->start($verification);
 
         $this->assertSame($success, @$verification->getResponse());
@@ -178,7 +180,7 @@ class ClientTest extends VonageTestCase
         )->willReturn($this->getResponse('start'))
             ->shouldBeCalledTimes(1);
 
-        $request = new RequestPSD2('14845551212', 'Test Verify', '5.25');
+        $request = @new RequestPSD2('14845551212', 'Test Verify', '5.25');
         $response = @$this->client->requestPSD2($request);
 
         $this->assertSame('0', $response['status']);
@@ -208,7 +210,7 @@ class ClientTest extends VonageTestCase
         )->willReturn($this->getResponse('start'))
             ->shouldBeCalledTimes(1);
 
-        $request = new RequestPSD2('14845551212', 'Test Verify', '5.25', 5);
+        $request = @new RequestPSD2('14845551212', 'Test Verify', '5.25', 5);
         $response = @$this->client->requestPSD2($request);
 
         $this->assertSame('0', $response['status']);
@@ -238,6 +240,69 @@ class ClientTest extends VonageTestCase
     /**
      * @param $response
      */
+    public function testCanStartVerificationWithStartVerificationObject(): void
+    {
+        $this->vonageClient->send(
+            Argument::that(
+                function (RequestInterface $request) {
+                    $this->assertRequestJsonBodyContains('number', '14845551212', $request);
+                    $this->assertRequestJsonBodyContains('brand', 'Test Verify', $request);
+                    $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/json', $request);
+
+                    return true;
+                }
+            )
+        )->willReturn($this->getResponse('start'))
+            ->shouldBeCalledTimes(1);
+
+        $request = new StartVerification('14845551212', 'Test Verify');
+        $requestId = $this->client->startVerification($request);
+
+        $this->assertSame('44a5279b27dd4a638d614d265ad57a77', $requestId);
+    }
+
+    public function testCanStartPsd2VerificationWithStartPsd2Object(): void
+    {
+        $this->vonageClient->send(
+            Argument::that(
+                function (RequestInterface $request) {
+                    $this->assertRequestJsonBodyContains('number', '14845551212', $request);
+                    $this->assertRequestJsonBodyContains('payee', 'Test Verify', $request);
+                    $this->assertRequestJsonBodyContains('amount', '5.25', $request);
+                    $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/psd2/json', $request);
+
+                    return true;
+                }
+            )
+        )->willReturn($this->getResponse('start'))
+            ->shouldBeCalledTimes(1);
+
+        $request = new StartPSD2('14845551212', 'Test Verify', '5.25');
+        $requestId = $this->client->startPsd2Verification($request);
+
+        $this->assertSame('44a5279b27dd4a638d614d265ad57a77', $requestId);
+    }
+
+    public function testCanTriggerNextEvent(): void
+    {
+        $this->vonageClient->send(
+            Argument::that(
+                function (RequestInterface $request) {
+                    $this->assertRequestJsonBodyContains('request_id', '44a5279b27dd4a638d614d265ad57a77', $request);
+                    $this->assertRequestJsonBodyContains('cmd', 'trigger_next_event', $request);
+                    $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/control/json', $request);
+
+                    return true;
+                }
+            )
+        )->willReturn($this->getResponse('trigger'))
+            ->shouldBeCalledTimes(1);
+
+        $result = $this->client->triggerNextEvent('44a5279b27dd4a638d614d265ad57a77');
+
+        $this->assertTrue($result);
+    }
+
     protected function setupClientForStart($response): Response
     {
         $response = $this->getResponse($response);

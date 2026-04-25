@@ -16,7 +16,6 @@ use Vonage\Client\ClientAwareTrait;
 use Vonage\Client\Exception as ClientException;
 
 use function is_array;
-use function is_null;
 use function is_string;
 use function serialize;
 use function trigger_error;
@@ -26,24 +25,36 @@ class Client implements ClientAwareInterface, APIClient
 {
     use ClientAwareTrait;
 
-    public function __construct(protected ?APIResource $api = null)
+    protected APIResource $api;
+
+    public function __construct(?APIResource $api = null, ?\Vonage\Client $client = null)
     {
+        if ($api === null) {
+            $this->api = (new APIResource())
+                ->setIsHAL(false)
+                ->setBaseUri('/verify');
+        } else {
+            $this->api = $api;
+        }
+
+        if ($client !== null) {
+            $this->client = $client;
+            $this->api->setClient($client);
+        }
     }
 
     /**
      * Shim to handle older instantiations of this class
      * Will change in v3 to just return the required API object
+     *
+     * @deprecated This method will be removed in the next major version.
      */
     public function getApiResource(): APIResource
     {
-        if (is_null($this->api)) {
-            $api = new APIResource();
-            $api->setClient($this->getClient())
-                ->setIsHAL(false)
-                ->setBaseUri('/verify');
-            $this->api = $api;
-        }
-
+        trigger_error(
+            'Vonage\\Verify\\Client::getApiResource() is deprecated and will be removed in the next major version.',
+            E_USER_DEPRECATED
+        );
         return $this->api;
     }
 
@@ -52,6 +63,8 @@ class Client implements ClientAwareInterface, APIClient
      * @throws ClientException\Exception
      * @throws ClientException\RequestException
      * @throws ClientException\ServerException
+     *
+     * @deprecated Use startVerification() with a StartVerification object instead.
      */
     public function start(Request|Verification|array|string $verification): Verification
     {
@@ -74,11 +87,10 @@ class Client implements ClientAwareInterface, APIClient
             $verification = $verification->toArray();
         }
 
-        $api = $this->getApiResource();
         $verification = $this->createVerification($verification);
-        $response = $api->create($verification->toArray(), '/json');
+        $response = $this->api->create($verification->toArray(), '/json');
 
-        $this->processReqRes($verification, $api->getLastRequest(), $api->getLastResponse(), true);
+        $this->processReqRes($verification, $this->api->getLastRequest(), $this->api->getLastResponse(), true);
 
         return $this->checkError($verification, $response);
     }
@@ -90,11 +102,12 @@ class Client implements ClientAwareInterface, APIClient
      * @throws ClientException\ServerException
      *
      * @return array{request_id: string, status: string}
+     *
+     * @deprecated Use startPsd2Verification() with a StartPSD2 object instead.
      */
     public function requestPSD2(RequestPSD2 $request): array
     {
-        $api = $this->getApiResource();
-        $response = $api->create($request->toArray(), '/psd2/json');
+        $response = $this->api->create($request->toArray(), '/psd2/json');
 
         $this->checkError($request, $response);
 
@@ -117,15 +130,14 @@ class Client implements ClientAwareInterface, APIClient
             );
         }
 
-        $api = $this->getApiResource();
         $verification = $this->createVerification($verification);
 
         $params = [
             'request_id' => $verification->getRequestId()
         ];
 
-        $data = $api->create($params, '/search/json');
-        $this->processReqRes($verification, $api->getLastRequest(), $api->getLastResponse(), true);
+        $data = $this->api->create($params, '/search/json');
+        $this->processReqRes($verification, $this->api->getLastRequest(), $this->api->getLastResponse(), true);
 
         return $this->checkError($verification, $data);
     }
@@ -158,6 +170,8 @@ class Client implements ClientAwareInterface, APIClient
      * @throws ClientException\Exception
      * @throws ClientException\RequestException
      * @throws ClientException\ServerException
+     *
+     * @deprecated Use triggerNextEvent() with a request ID string instead.
      */
     public function trigger($verification): Verification
     {
@@ -194,22 +208,63 @@ class Client implements ClientAwareInterface, APIClient
             );
         }
 
-        $api = $this->getApiResource();
         $verification = $this->createVerification($verification);
         $params = [
             'request_id' => $verification->getRequestId(),
             'code' => $code
         ];
 
-        if (!is_null($ip)) {
+        if ($ip !== null) {
             $params['ip'] = $ip;
         }
 
-        $data = $api->create($params, '/check/json');
+        $data = $this->api->create($params, '/check/json');
 
-        $this->processReqRes($verification, $api->getLastRequest(), $api->getLastResponse(), false);
+        $this->processReqRes($verification, $this->api->getLastRequest(), $this->api->getLastResponse(), false);
 
         return $this->checkError($verification, $data);
+    }
+
+    /**
+     * @throws ClientExceptionInterface
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
+     */
+    public function startVerification(StartVerification $request): string
+    {
+        $response = $this->api->create($request->toArray(), '/json');
+
+        return $response['request_id'];
+    }
+
+    /**
+     * @throws ClientExceptionInterface
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
+     */
+    public function startPsd2Verification(StartPSD2 $request): string
+    {
+        $response = $this->api->create($request->toArray(), '/psd2/json');
+
+        return $response['request_id'];
+    }
+
+    /**
+     * @throws ClientExceptionInterface
+     * @throws ClientException\Exception
+     * @throws ClientException\Request
+     * @throws ClientException\Server
+     */
+    public function triggerNextEvent(string $requestId): bool
+    {
+        $data = $this->api->create(
+            ['request_id' => $requestId, 'cmd' => 'trigger_next_event'],
+            '/control/json'
+        );
+
+        return ($data['status'] ?? '') === '0';
     }
 
     /**
@@ -271,7 +326,6 @@ class Client implements ClientAwareInterface, APIClient
             );
         }
 
-        $api = $this->getApiResource();
         $verification = $this->createVerification($verification);
 
         $params = [
@@ -279,8 +333,8 @@ class Client implements ClientAwareInterface, APIClient
             'cmd' => $cmd
         ];
 
-        $data = $api->create($params, '/control/json');
-        $this->processReqRes($verification, $api->getLastRequest(), $api->getLastResponse(), false);
+        $data = $this->api->create($params, '/control/json');
+        $this->processReqRes($verification, $this->api->getLastRequest(), $this->api->getLastResponse(), false);
 
         return $this->checkError($verification, $data);
     }

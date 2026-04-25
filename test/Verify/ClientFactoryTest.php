@@ -15,21 +15,27 @@ class ClientFactoryTest extends TestCase
 {
     public function testInvokeCreatesClientWithConfiguredApiResource(): void
     {
+        $mockClient = $this->createMock(Client::class);
+
         $mockServices = [
             'verify' => ClientFactory::class,
             APIResource::class => APIResource::class,
         ];
 
-        $mockClient = $this->createMock(Client::class);
         $container = new MapFactory($mockServices, $mockClient);
         $factory = new ClientFactory();
 
         $result = $factory($container);
         $this->assertInstanceOf(\Vonage\Verify\Client::class, $result);
-        $this->assertInstanceOf(Client\Credentials\Handler\TokenBodyHandler::class, $result->getAPIResource()
-            ->getAuthHandlers()[0]);
-        $this->assertEquals('/verify', $result->getAPIResource()->getBaseUri());
-        $this->assertTrue($result->getApiResource()->errorsOn200());
-        $this->assertInstanceOf(ExceptionErrorHandler::class, $result->getAPIResource()->getExceptionErrorHandler());
+
+        $reflection = new \ReflectionClass($result);
+        $apiProperty = $reflection->getProperty('api');
+        $apiResource = $apiProperty->getValue($result);
+
+        $this->assertInstanceOf(Client\Credentials\Handler\TokenBodyHandler::class, $apiResource->getAuthHandlers()[0]);
+        $this->assertEquals('/verify', $apiResource->getBaseUri());
+        $this->assertTrue($apiResource->errorsOn200());
+        $this->assertInstanceOf(ExceptionErrorHandler::class, $apiResource->getExceptionErrorHandler());
     }
 }
+
