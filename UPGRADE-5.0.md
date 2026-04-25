@@ -234,8 +234,59 @@ The following breaking changes apply to the legacy Verify v1 client if you still
 | `Check::getDate()` | `CheckAttempt::$date` |
 | `Check::getStatus()` | `CheckAttempt::$status` |
 | `Check::getIpAddress()` | `CheckAttempt::$ipAddress` |
-| `Check::VALID` | `CheckAttempt::STATUS_VALID` |
-| `Check::INVALID` | `CheckAttempt::STATUS_INVALID` |
+| `Check::VALID` | `CheckAttempt::VALID` |
+| `Check::INVALID` | `CheckAttempt::INVALID` |
+
+### `Vonage\Verify\Client` method changes
+
+The following client methods have been renamed or replaced:
+
+| Deprecated (4.x) | Replacement (5.0) |
+|---|---|
+| `start(Request $request)` | `startVerification(StartVerification $request): string` |
+| `requestPSD2(RequestPSD2 $request)` | `startPsd2Verification(StartPSD2 $request): string` |
+| `trigger($verification)` | `triggerNextEvent(string $requestId): bool` |
+
+The new methods accept dedicated value objects and return simpler types. `startVerification()` and
+`startPsd2Verification()` return the request ID string directly instead of a `Verification` entity.
+`triggerNextEvent()` accepts a plain request ID string instead of a `Verification` object.
+
+> **Note:** The new `startVerification()`, `startPsd2Verification()`, and `triggerNextEvent()`
+> methods are also available in the final 4.x release (4.99) to allow you to adopt the new API
+> before upgrading.
+
+```php
+// Before
+$request = new \Vonage\Verify\Request('14845551212', 'My App');
+$verification = $client->verify()->start($request);
+$requestId = $verification->getRequestId();
+
+// After
+$request = new \Vonage\Verify\StartVerification('14845551212', 'My App');
+$requestId = $client->verify()->startVerification($request);
+```
+
+```php
+// Before
+$client->verify()->trigger($verificationObject);
+
+// After
+$client->verify()->triggerNextEvent($requestId);
+```
+
+### `Vonage\Verify\Client` constructor
+
+The constructor now accepts an optional `Vonage\Client` as a second parameter, allowing full
+initialization at construction time:
+
+```php
+// Fully initialized at construction (new in 5.0)
+$verifyClient = new \Vonage\Verify\Client($apiResource, $vonageClient);
+
+// Legacy pattern still works
+$verifyClient = new \Vonage\Verify\Client($apiResource);
+$verifyClient->setClient($vonageClient);
+```
 
 ### `Vonage\Verify\Verification` gutted
 
