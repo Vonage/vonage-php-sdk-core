@@ -231,7 +231,7 @@ The following breaking changes apply to the legacy Verify v1 client if you still
 | Old | New |
 |---|---|
 | `Check::getCode()` | `CheckAttempt::$code` |
-| `Check::getDate()` | `CheckAttempt::$date` |
+| `Check::getDate()` | `CheckAttempt::$dateReceived` |
 | `Check::getStatus()` | `CheckAttempt::$status` |
 | `Check::getIpAddress()` | `CheckAttempt::$ipAddress` |
 | `Check::VALID` | `CheckAttempt::VALID` |

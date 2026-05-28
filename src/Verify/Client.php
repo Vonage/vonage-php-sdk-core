@@ -228,8 +228,8 @@ class Client implements ClientAwareInterface, APIClient
     /**
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      */
     public function startVerification(StartVerification $request): string
     {
@@ -241,8 +241,8 @@ class Client implements ClientAwareInterface, APIClient
     /**
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      */
     public function startPsd2Verification(StartPSD2 $request): string
     {
@@ -254,8 +254,8 @@ class Client implements ClientAwareInterface, APIClient
     /**
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      */
     public function triggerNextEvent(string $requestId): bool
     {

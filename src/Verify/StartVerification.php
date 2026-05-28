@@ -129,7 +129,7 @@ class StartVerification
     public function setNextEventWait(int $nextEventWait): static
     {
         if ($nextEventWait < 60 || $nextEventWait > 3600) {
-            throw new InvalidArgumentException('Next Event time must be between 60 and 900 seconds');
+            throw new InvalidArgumentException('Next Event time must be between 60 and 3600 seconds');
         }
 
         $this->nextEventWait = $nextEventWait;
