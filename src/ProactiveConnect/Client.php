@@ -22,6 +22,9 @@ class Client implements APIClient
         );
     }
 
+    /**
+     * @deprecated The ProactiveConnect API is being sunset and this will be removed in the next major version.
+     */
     public function getAPIResource(): APIResource
     {
         return $this->api;
@@ -29,8 +32,9 @@ class Client implements APIClient
 
     public function getLists(?int $page = null, ?int $pageSize = null): IterableAPICollection
     {
-        $this->api->setCollectionName('lists');
-        $lists = $this->api->search(null, '/lists');
+        $api = clone $this->api;
+        $api->setCollectionName('lists');
+        $lists = $api->search(null, '/lists');
         $lists->setPageIndexKey('page');
 
         if ($page) {

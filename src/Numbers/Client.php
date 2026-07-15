@@ -28,8 +28,16 @@ class Client implements APIClient
     {
     }
 
+    /**
+     * @deprecated This method will be removed in the next major version.
+     *             The APIResource is injected and should not be accessed directly from outside the client.
+     */
     public function getApiResource(): APIResource
     {
+        trigger_error(
+            'Vonage\\Numbers\\Client::getApiResource() is deprecated and will be removed in the next major version.',
+            E_USER_DEPRECATED
+        );
         return $this->api;
     }
 
@@ -59,7 +67,7 @@ class Client implements APIClient
 
         unset($body['features'], $body['type']);
 
-        $api = $this->getApiResource();
+        $api = $this->api;
         $api->submit($body, '/number/update');
 
         if (isset($update)) {
@@ -114,7 +122,7 @@ class Client implements APIClient
             ]);
         }
 
-        $api = $this->getApiResource();
+        $api = $this->api;
         $api->setCollectionName('numbers');
 
         $response = $api->search(
@@ -146,7 +154,7 @@ class Client implements APIClient
             }
         }
 
-        $api = $this->getApiResource();
+        $api = $this->api;
         $api->setCollectionName('numbers');
 
         $response = $api->search($options, '/account/numbers');
@@ -212,7 +220,7 @@ class Client implements APIClient
             ];
         }
 
-        $api = $this->getApiResource();
+        $api = $this->api;
         $api->setBaseUri('/number/buy');
         $api->submit($body);
     }
@@ -232,7 +240,7 @@ class Client implements APIClient
             'country' => $number->getCountry()
         ];
 
-        $api = $this->getApiResource();
+        $api = $this->api;
         $api->setBaseUri('/number/cancel');
         $api->submit($body);
     }

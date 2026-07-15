@@ -26,8 +26,16 @@ class Client implements APIClient
     {
     }
 
+    /**
+     * @deprecated This method will be removed in the next major version.
+     *             The APIResource is injected and should not be accessed directly from outside the client.
+     */
     public function getAPIResource(): APIResource
     {
+        trigger_error(
+            'Vonage\\Voice\\Client::getAPIResource() is deprecated and will be removed in the next major version.',
+            E_USER_DEPRECATED
+        );
         return $this->api;
     }
 
@@ -283,6 +291,6 @@ class Client implements APIClient
 
     public function getRecording(string $url): StreamInterface
     {
-        return $this->getAPIResource()->get($url, [], [], false, true);
+        return $this->api->get($url, [], [], false, true);
     }
 }

@@ -312,9 +312,16 @@ class Client implements LoggerAwareInterface
 
     /**
      * @throws ClientException
+     *
+     * @deprecated Use the vonage/jwt library (Vonage\JWT\TokenGenerator) directly to generate JWTs.
+     *             This method will be removed in the next major version.
      */
     public function generateJwt($claims = []): Token
     {
+        trigger_error(
+            'Vonage\\Client::generateJwt() is deprecated, use Vonage\\JWT\\TokenGenerator directly.',
+            E_USER_DEPRECATED
+        );
         if (method_exists($this->credentials, "generateJwt")) {
             return $this->credentials->generateJwt($claims);
         }
@@ -409,9 +416,16 @@ class Client implements LoggerAwareInterface
      * Wraps the HTTP Client, creates a new PSR-7 request adding authentication, signatures, etc.
      *
      * @throws ClientExceptionInterface
+     *
+     * @deprecated Use APIResource to make HTTP requests. This method will be removed in the next major version.
      */
     public function send(RequestInterface $request): ResponseInterface
     {
+        trigger_error(
+            'Vonage\\Client::send() is deprecated. Use APIResource to dispatch HTTP requests.',
+            E_USER_DEPRECATED
+        );
+
         // Allow any part of the URI to be replaced with a simple search
         if (isset($this->options['url'])) {
             foreach ($this->options['url'] as $search => $replace) {
@@ -535,6 +549,12 @@ class Client implements LoggerAwareInterface
      */
     public function serialize(EntityInterface $entity): string
     {
+        trigger_error(
+            'Vonage\\Client::serialize() is deprecated and will be removed in the next major version. '
+            . 'Use Vonage\\Verify\\Client::serialize() instead.',
+            E_USER_DEPRECATED
+        );
+
         if ($entity instanceof Verification) {
             return $this->verify()->serialize($entity);
         }

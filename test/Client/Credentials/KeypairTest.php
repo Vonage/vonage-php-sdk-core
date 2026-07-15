@@ -39,7 +39,7 @@ class KeypairTest extends VonageTestCase
     {
         $credentials = new Keypair($this->key, $this->application);
 
-        $key = $credentials->getKey();
+        $key = @$credentials->getKey();
         $this->assertInstanceOf(InMemory::class, $key);
     }
 

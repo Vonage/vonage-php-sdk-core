@@ -8,6 +8,10 @@ use Lcobucci\JWT\Encoding\JoseEncoder;
 use Lcobucci\JWT\Token;
 use Vonage\JWT\TokenGenerator;
 
+/**
+ * @deprecated GNP credential support is being removed in the next major version.
+ *             The SimSwap and NumberVerification APIs that used this credential are sunset.
+ */
 class Gnp extends AbstractCredentials
 {
     protected ?string $code = null;
@@ -19,6 +23,11 @@ class Gnp extends AbstractCredentials
         protected string $key,
         protected $application = null
     ) {
+        trigger_error(
+            'Vonage\\Client\\Credentials\\Gnp is deprecated and will be removed in the next major version. ' .
+            'The GNP credential APIs are sunset.',
+            E_USER_DEPRECATED
+        );
     }
 
     public function getKeyRaw(): string

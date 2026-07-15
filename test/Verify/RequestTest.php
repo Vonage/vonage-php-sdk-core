@@ -52,13 +52,13 @@ class RequestTest extends VonageTestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage($expectedMessage);
 
-        (new Request('14845551212', $brand))
+        (@new Request('14845551212', $brand))
             ->$method($data);
     }
 
     public function testCanSetCodeLength()
     {
-        $request = new Request(14845551212, 'Vonage');
+        $request = @new Request(14845551212, 'Vonage');
 
         $request->setCodeLength(4);
         $this->assertSame(4, $request->getCodeLength());

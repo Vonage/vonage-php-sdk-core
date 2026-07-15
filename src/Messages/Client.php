@@ -15,8 +15,16 @@ class Client implements APIClient
 
     public function __construct(protected APIResource $api) {}
 
+    /**
+     * @deprecated This method will be removed in the next major version.
+     *             The APIResource is injected and should not be accessed directly from outside the client.
+     */
     public function getAPIResource(): APIResource
     {
+        trigger_error(
+            'Vonage\\Messages\\Client::getAPIResource() is deprecated and will be removed in the next major version.',
+            E_USER_DEPRECATED
+        );
         return $this->api;
     }
 
@@ -27,13 +35,13 @@ class Client implements APIClient
         if ($message->validatesE164()) {
             if ($this->isValidE164($messageArray['to'])) {
                 $messageArray['to'] = $this->stripLeadingPlus($messageArray['to']);
-                return $this->getAPIResource()->create($messageArray);
+                return $this->api->create($messageArray);
             } else {
                 throw new \InvalidArgumentException('Number provided is not a valid E164 number');
             }
         }
 
-        return $this->getAPIResource()->create($messageArray);
+        return $this->api->create($messageArray);
     }
 
     public function updateRcsStatus(string $messageUuid, string $status): bool

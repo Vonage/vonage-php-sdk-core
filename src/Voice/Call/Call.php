@@ -14,12 +14,19 @@ use function is_null;
 class Call extends AbstractRequest
 {
     /**
+     * @deprecated Use Vonage\Voice\OutboundCall instead. This class will be removed in the next major version.
+     *
      * @param $url
      * @param $to
      * @param $from
      */
     public function __construct($url, $to, $from = null)
     {
+        trigger_error(
+            'Vonage\\Voice\\Call\\Call is deprecated and will be removed in the next major version. ' .
+            'Use Vonage\\Voice\\OutboundCall instead.',
+            E_USER_DEPRECATED
+        );
         $this->params['answer_url'] = $url;
         $this->params['to'] = $to;
 

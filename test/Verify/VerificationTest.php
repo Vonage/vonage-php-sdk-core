@@ -192,18 +192,18 @@ class VerificationTest extends VonageTestCase
             $this->assertInstanceOf(Check::class, $check);
         }
 
-        $this->assertEquals('123456', $checks[0]->getCode());
-        $this->assertEquals('1234', $checks[1]->getCode());
-        $this->assertEquals('1234', $checks[2]->getCode());
-        $this->assertEquals(new DateTime('2016-05-15 03:58:11'), $checks[0]->getDate());
-        $this->assertEquals(new DateTime('2016-05-15 03:55:50'), $checks[1]->getDate());
-        $this->assertEquals(new DateTime('2016-05-15 03:59:18'), $checks[2]->getDate());
-        $this->assertEquals(Check::INVALID, $checks[0]->getStatus());
-        $this->assertEquals(Check::INVALID, $checks[1]->getStatus());
-        $this->assertEquals(Check::INVALID, $checks[2]->getStatus());
-        $this->assertEquals(null, $checks[0]->getIpAddress());
-        $this->assertEquals(null, $checks[1]->getIpAddress());
-        $this->assertEquals('8.8.4.4', $checks[2]->getIpAddress());
+        $this->assertEquals('123456', @$checks[0]->getCode());
+        $this->assertEquals('1234', @$checks[1]->getCode());
+        $this->assertEquals('1234', @$checks[2]->getCode());
+        $this->assertEquals(new DateTime('2016-05-15 03:58:11'), @$checks[0]->getDate());
+        $this->assertEquals(new DateTime('2016-05-15 03:55:50'), @$checks[1]->getDate());
+        $this->assertEquals(new DateTime('2016-05-15 03:59:18'), @$checks[2]->getDate());
+        $this->assertEquals(Check::INVALID, @$checks[0]->getStatus());
+        $this->assertEquals(Check::INVALID, @$checks[1]->getStatus());
+        $this->assertEquals(Check::INVALID, @$checks[2]->getStatus());
+        $this->assertEquals(null, @$checks[0]->getIpAddress());
+        $this->assertEquals(null, @$checks[1]->getIpAddress());
+        $this->assertEquals('8.8.4.4', @$checks[2]->getIpAddress());
     }
 
     /**

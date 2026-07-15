@@ -30,7 +30,7 @@ class GnpHandlerTest extends TestCase
 
         $this->handlerClient = $this->prophesize(Client::class);
         $this->handlerClient->getCredentials()->willReturn(
-            new Client\Credentials\Container(new Client\Credentials\Gnp(
+            new Client\Credentials\Container(@new Client\Credentials\Gnp(
                 'tel:+447700900000',
                 $this->key,
                 $this->application
@@ -99,7 +99,7 @@ class GnpHandlerTest extends TestCase
             }
         }))->willReturn($this->getResponse('gnp-be-success'), $this->getResponse('gnp-token-success'));
 
-        $credentials = new Gnp($this->msisdn, $this->key, $this->application);
+        $credentials = @new Gnp($this->msisdn, $this->key, $this->application);
         $handler = new Client\Credentials\Handler\SimSwapGnpHandler();
         $handler->setBaseUrl('https://api-eu.vonage.com/oauth2/bc-authorize');
         $handler->setTokenUrl('https://api-eu.vonage.com/oauth2/token');
@@ -177,7 +177,7 @@ class GnpHandlerTest extends TestCase
             }
         }))->willReturn($this->getResponse('gnp-be-success'), $this->getResponse('gnp-token-success'));
 
-        $credentials = new Gnp($this->msisdn, $this->key, $this->application);
+        $credentials = @new Gnp($this->msisdn, $this->key, $this->application);
         $handler = new SimSwapGnpHandler();
         $handler->setBaseUrl('https://api-eu.vonage.com/oauth2/bc-authorize');
         $handler->setTokenUrl('https://api-eu.vonage.com/oauth2/token');

@@ -25,8 +25,12 @@ class ClientFactoryTest extends TestCase
 
         $result = $factory($container);
         $this->assertInstanceOf(\Vonage\Conversion\Client::class, $result);
-        $this->assertEquals('/conversions/', $result->getAPIResource()->getBaseUri());
-        $this->assertInstanceOf(Client\Credentials\Handler\BasicHandler::class, $result->getAPIResource()
-            ->getAuthHandlers()[0]);
+
+        $reflection = new \ReflectionClass($result);
+        $apiProperty = $reflection->getProperty('api');
+        $apiResource = $apiProperty->getValue($result);
+
+        $this->assertEquals('/conversions/', $apiResource->getBaseUri());
+        $this->assertInstanceOf(Client\Credentials\Handler\BasicHandler::class, $apiResource->getAuthHandlers()[0]);
     }
 }

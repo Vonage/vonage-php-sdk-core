@@ -7,6 +7,10 @@ namespace Vonage\Client;
 use RuntimeException;
 use Vonage\Client;
 
+/**
+ * @deprecated Use constructor injection instead. This trait and setClient() / getClient() will be
+ *             removed in the next major version.
+ */
 trait ClientAwareTrait
 {
     /**

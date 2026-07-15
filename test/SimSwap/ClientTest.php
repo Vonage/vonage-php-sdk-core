@@ -51,7 +51,7 @@ class ClientTest extends VonageTestCase
             ->setAuthHandlers($handler)
             ->setBaseUrl('https://api-eu.vonage.com/camara/sim-swap/v040/');
 
-        $this->simSwapClient = new SimSwapClient($this->api);
+        $this->simSwapClient = @new SimSwapClient($this->api);
     }
 
     public function testHasSetupClientCorrectly(): void

@@ -24,8 +24,16 @@ class Client implements ClientAwareInterface, APIClient
     {
     }
 
+    /**
+     * @deprecated This method will be removed in the next major version.
+     *             The APIResource is injected and should not be accessed directly from outside the client.
+     */
     public function getApiResource(): APIResource
     {
+        trigger_error(
+            'Vonage\\Users\\Client::getApiResource() is deprecated and will be removed in the next major version.',
+            E_USER_DEPRECATED
+        );
         return $this->api;
     }
 

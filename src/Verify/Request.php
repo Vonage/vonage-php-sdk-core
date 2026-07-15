@@ -10,6 +10,10 @@ use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 use function array_key_exists;
 use function strlen;
 
+/**
+ * @deprecated Use Vonage\Verify\StartVerification instead.
+ *             This class will be removed in the next major version.
+ */
 class Request implements ArrayHydrateInterface
 {
     public const PIN_LENGTH_4 = 4;
@@ -33,6 +37,10 @@ class Request implements ArrayHydrateInterface
 
     public function __construct(protected string $number, protected string $brand, int $workflowId = 1)
     {
+        trigger_error(
+            'Vonage\\Verify\\Request is deprecated. Use Vonage\\Verify\\StartVerification instead.',
+            E_USER_DEPRECATED
+        );
         $this->setWorkflowId($workflowId);
     }
 

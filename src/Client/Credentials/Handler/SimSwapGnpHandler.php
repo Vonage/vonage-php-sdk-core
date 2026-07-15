@@ -10,6 +10,8 @@ use Vonage\Client\Credentials\Gnp;
 
 /**
  * This handler is for Vonage GNP APIs that require the CAMARA standard OAuth Flow
+ *
+ * @deprecated The SimSwap API and its GNP credential flow are being removed in the next major version.
  */
 class SimSwapGnpHandler extends AbstractHandler
 {
