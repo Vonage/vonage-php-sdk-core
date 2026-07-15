@@ -1,3 +1,38 @@
+# 4.14.0
+
+This is the final planned `4.x` release. It introduces no breaking changes, but marks a large
+number of APIs, classes, and methods as deprecated ahead of the `5.0.0` release. Every deprecated
+path now emits an `E_USER_DEPRECATED` runtime warning in addition to a `@deprecated` docblock, so
+you can identify and update affected code before upgrading.
+
+### Added
+
+* `UPGRADE-5.0.md` — a full upgrade guide documenting every breaking change planned for `5.0.0`
+
+### Deprecated
+
+* **APIs being sunset/removed in `5.0`**: `Vonage\Meetings\Client`, `Vonage\ProactiveConnect\Client`,
+  `Vonage\SimSwap\Client`, and `Vonage\NumberVerification\Client`
+* **Credentials**: `Vonage\Client\Credentials\Gnp` and its GNP auth handlers
+  (`GnpKeypairHandler`, `SimSwapGnpHandler`, `NumberVerificationGnpHandler`), plus the previously
+  deprecated `BasicQueryHandler`, `TokenBodyHandler`, and `TokenQueryHandler`
+* `Vonage\Client\Credentials\Keypair::getKey()` — use `getKeyRaw()` instead
+* **`Vonage\Client` methods**: `send()`, `generateJwt()` (use `Vonage\JWT\TokenGenerator`),
+  `get()`, `post()`, `put()`, `delete()`, `postUrlEncoded()`, `signRequest()`, `authRequest()`,
+  `serialize()`, and `unserialize()` — use `APIResource` directly for HTTP requests
+* **`getAPIResource()` / `getApiResource()`** on all module clients (Account, Application,
+  Conversation, Conversion, Insights, Messages, Numbers, Redact, Secrets, SMS, Subaccount, Users,
+  Verify, Verify2, Voice) and on `Vonage\Entity\IterableAPICollection`
+* `Vonage\Client\APIClient` interface
+* `Vonage\Client\ClientAwareInterface` and `Vonage\Client\ClientAwareTrait` — use constructor
+  injection instead
+* `Vonage\Client\Factory\MapFactory::hasApi()` and `getApi()`
+* `Vonage\Entity\EntityInterface` and `Vonage\Entity\HasEntityTrait`
+* `Vonage\Application\ApplicationInterface`
+* `Vonage\Verify\Request`, `Vonage\Verify\RequestPSD2`, and `Vonage\Verify\VerificationInterface`
+* `Vonage\Voice\Call\Call` and `Vonage\Voice\Call\Inbound` — use `Vonage\Voice\OutboundCall`
+* `Vonage\Voice\NCCO\Action\Pay` — being removed from the API
+
 # 3.0.1
 
 ### Changed
