@@ -22,20 +22,10 @@ class Keypair extends AbstractCredentials
         }
     }
 
-    /**
-     * @deprecated Old public signature using Lcobucci/Jwt directly
-     */
     public function getKey(): Key
     {
-        trigger_error(
-            'Vonage\\Client\\Credentials\\Keypair::getKey() is deprecated and will be removed in the next major version. '
-            . 'Use getKeyRaw() instead.',
-            E_USER_DEPRECATED
-        );
-
         return InMemory::plainText($this->key);
     }
-
     public function getKeyRaw(): string
     {
         return $this->key;

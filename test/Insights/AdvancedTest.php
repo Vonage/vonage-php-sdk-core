@@ -8,7 +8,7 @@ use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
 use Vonage\Client;
 use Vonage\Client\APIResource;
-use Vonage\Client\Credentials\Handler\BasicQueryHandler;
+use Vonage\Client\Credentials\Handler\BasicHandler;
 use Vonage\Client\Exception\RequestException;
 use Vonage\Insights\Advanced;
 use Vonage\Insights\Client as InsightClient;
@@ -38,7 +38,7 @@ class AdvancedTest extends VonageTestCase
         $this->api = (new APIResource())
             ->setClient($this->vonageClient->reveal())
             ->setIsHAL(false)
-            ->setAuthHandlers(new BasicQueryHandler())
+            ->setAuthHandlers(new BasicHandler())
             ->setBaseUrl('https://api.nexmo.com/ni/advanced');
 
         $this->insightClient = new InsightClient($this->api);

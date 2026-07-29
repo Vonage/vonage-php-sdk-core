@@ -54,7 +54,7 @@ class ClientTest extends VonageTestCase
         $this->api = new APIResource();
         $this->api->setBaseUrl('https://rest.nexmo.com')
             ->setIsHAL(false)
-            ->setAuthHandlers(new Client\Credentials\Handler\BasicQueryHandler())
+            ->setAuthHandlers(new Client\Credentials\Handler\BasicHandler())
             ->setBaseUri('/account');
 
         $this->api->setClient($this->vonageClient->reveal());

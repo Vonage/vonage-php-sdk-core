@@ -32,7 +32,7 @@ class ClientFactoryTest extends TestCase
         $apiProperty = $reflection->getProperty('api');
         $apiResource = $apiProperty->getValue($result);
 
-        $this->assertInstanceOf(Client\Credentials\Handler\TokenBodyHandler::class, $apiResource->getAuthHandlers()[0]);
+        $this->assertInstanceOf(Client\Credentials\Handler\BasicHandler::class, $apiResource->getAuthHandlers()[0]);
         $this->assertEquals('/verify', $apiResource->getBaseUri());
         $this->assertTrue($apiResource->errorsOn200());
         $this->assertInstanceOf(ExceptionErrorHandler::class, $apiResource->getExceptionErrorHandler());
