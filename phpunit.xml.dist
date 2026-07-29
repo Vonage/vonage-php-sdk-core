@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit 
+<phpunit
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
   bootstrap="vendor/autoload.php"
@@ -43,22 +43,13 @@
     </testsuite>
     <testsuite name="client">
       <directory>test/Client</directory>
-    </testsuite>
-    <testsuite name="sim_swap">
-      <directory>test/SimSwap</directory>
-    </testsuite>
-    <testsuite name="number_verification">
-      <directory>test/NumberVerification</directory>
-    </testsuite>
+</testsuite>
     <testsuite name="conversations">
       <directory>test/Conversation</directory>
     </testsuite>
     <testsuite name="client">
       <directory>test/Client</directory>
-    </testsuite>
-    <testsuite name="proactive_connect">
-      <directory>test/ProactiveConnect</directory>
-    </testsuite>
+</testsuite>
     <testsuite name="voice">
       <directory>test/Voice</directory>
     </testsuite>
@@ -70,16 +61,10 @@
     </testsuite>
     <testsuite name="sms">
       <directory>test/SMS</directory>
-    </testsuite>
-    <testsuite name="simswap">
-      <directory>test/SimSwap</directory>
-    </testsuite>
+</testsuite>
     <testsuite name="subaccount">
       <directory>test/Subaccount</directory>
-    </testsuite>
-    <testsuite name="meetings">
-      <directory>test/Meetings</directory>
-    </testsuite>
+</testsuite>
     <testsuite name="application">
       <directory>test/Application</directory>
     </testsuite>
