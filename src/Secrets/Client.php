@@ -7,23 +7,10 @@ use Vonage\Client\APIResource;
 use Vonage\Entity\Hydrator\ArrayHydrator;
 use Vonage\Entity\IterableAPICollection;
 
-class Client implements APIClient
+class Client
 {
     public function __construct(protected APIResource $api)
     {
-    }
-
-    /**
-     * @deprecated This method will be removed in the next major version.
-     *             The APIResource is injected and should not be accessed directly from outside the client.
-     */
-    public function getAPIResource(): APIResource
-    {
-        trigger_error(
-            'Vonage\\Secrets\\Client::getAPIResource() is deprecated and will be removed in the next major version.',
-            E_USER_DEPRECATED
-        );
-        return $this->api;
     }
 
     public function get(string $accountId, string $id): Secret

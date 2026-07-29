@@ -51,13 +51,12 @@ class ClientTest extends VonageTestCase
             new Client\Credentials\Container($this->credentials)
         );
 
-        $this->api = new APIResource();
+        $this->api = new APIResource($this->vonageClient->reveal());
         $this->api->setBaseUrl('https://rest.nexmo.com')
             ->setIsHAL(false)
             ->setAuthHandlers(new Client\Credentials\Handler\BasicHandler())
             ->setBaseUri('/account');
 
-        $this->api->setClient($this->vonageClient->reveal());
         $this->accountClient = new AccountClient($this->api);
     }
 

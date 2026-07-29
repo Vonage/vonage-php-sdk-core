@@ -9,10 +9,7 @@ use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
-use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
-use Vonage\Client\ClientAwareInterface;
-use Vonage\Client\ClientAwareTrait;
 use Vonage\Client\Exception as ClientException;
 
 use function is_array;
@@ -21,41 +18,9 @@ use function serialize;
 use function trigger_error;
 use function unserialize;
 
-class Client implements ClientAwareInterface, APIClient
+class Client
 {
-    use ClientAwareTrait;
-
-    protected APIResource $api;
-
-    public function __construct(?APIResource $api = null, ?\Vonage\Client $client = null)
-    {
-        if ($api === null) {
-            $this->api = (new APIResource())
-                ->setIsHAL(false)
-                ->setBaseUri('/verify');
-        } else {
-            $this->api = $api;
-        }
-
-        if ($client !== null) {
-            $this->client = $client;
-            $this->api->setClient($client);
-        }
-    }
-
-    /**
-     * Shim to handle older instantiations of this class
-     * Will change in v3 to just return the required API object
-     *
-     * @deprecated This method will be removed in the next major version.
-     */
-    public function getApiResource(): APIResource
-    {
-        trigger_error(
-            'Vonage\\Verify\\Client::getApiResource() is deprecated and will be removed in the next major version.',
-            E_USER_DEPRECATED
-        );
-        return $this->api;
+    public function __construct(protected APIResource $api) {
     }
 
     /**

@@ -55,11 +55,11 @@ class ClientTest extends VonageTestCase
             new Client\Credentials\Basic('abc', 'def'),
         );
 
-        $this->apiResource = new APIResource();
+        $this->apiResource = new APIResource($this->vonageClient->reveal());
         $this->apiResource
             ->setBaseUri('/conversions/')
             ->setAuthHandlers(new Client\Credentials\Handler\BasicHandler())
-            ->setClient($this->vonageClient->reveal());
+        ;
 
         $this->conversionClient = new ConversionClient($this->apiResource);
     }

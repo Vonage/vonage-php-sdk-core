@@ -32,9 +32,8 @@ use function md5;
 /**
  * Common code for iterating over a collection, and using the collection class to discover the API path.
  */
-class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
+class IterableAPICollection implements Iterator, Countable
 {
-    use ClientAwareTrait;
 
     protected APIResource $api;
 
@@ -123,6 +122,8 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
      * but differs from noQueryParameters when you want to use other filters
      */
     protected bool $hasPagination = true;
+
+    public function __construct(protected Client $client) {}
 
     public function isHalNoCollection(): bool
     {

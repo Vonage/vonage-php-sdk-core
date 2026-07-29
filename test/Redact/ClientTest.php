@@ -42,9 +42,7 @@ class ClientTest extends VonageTestCase
             new Client\Credentials\Container(new Client\Credentials\Basic('abc', 'def'))
         );
 
-        $this->redact = new RedactClient();
-        /** @noinspection PhpParamsInspection */
-        $this->redact->setClient($this->vonageClient->reveal());
+        $this->redact = new RedactClient(new APIResource($this->vonageClient->reveal()));
     }
 
     /**

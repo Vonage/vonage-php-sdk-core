@@ -48,13 +48,12 @@ class ClientTest extends VonageTestCase
             new Client\Credentials\Basic('abc', 'def'),
         );
 
-        $api = new Client\APIResource();
+        $api = new Client\APIResource($this->vonageClient->reveal());
         $api
             ->setIsHAL(false)
             ->setBaseUri('/verify')
             ->setErrorsOn200(true)
             ->setAuthHandlers(new Client\Credentials\Handler\BasicHandler())
-            ->setClient($this->vonageClient->reveal())
             ->setExceptionErrorHandler(new ExceptionErrorHandler());
 
         $this->client = new VerifyClient($api);

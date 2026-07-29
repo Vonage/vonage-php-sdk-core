@@ -56,15 +56,11 @@ class ClientTest extends VonageTestCase
             new Client\Credentials\Container(new Client\Credentials\Basic('abc', 'def'))
         );
 
-        $apiResource = new APIResource();
-        $apiResource->setClient($this->vonageClient->reveal())
-            ->setBaseUri('/v2/applications')
+        $apiResource = new APIResource($this->vonageClient->reveal());
+        $apiResource->setBaseUri('/v2/applications')
             ->setCollectionName('applications');
 
         $this->applicationClient = new ApplicationClient($apiResource, new Hydrator());
-
-        /** @noinspection PhpParamsInspection */
-        $this->applicationClient->setClient($this->vonageClient->reveal());
     }
 
     public function testCannotCreateApplicationClientWithId(): void

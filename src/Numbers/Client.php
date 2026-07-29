@@ -22,23 +22,10 @@ use function is_null;
 use function sleep;
 use function trigger_error;
 
-class Client implements APIClient
+class Client
 {
     public function __construct(protected ?APIResource $api = null)
     {
-    }
-
-    /**
-     * @deprecated This method will be removed in the next major version.
-     *             The APIResource is injected and should not be accessed directly from outside the client.
-     */
-    public function getApiResource(): APIResource
-    {
-        trigger_error(
-            'Vonage\\Numbers\\Client::getApiResource() is deprecated and will be removed in the next major version.',
-            E_USER_DEPRECATED
-        );
-        return $this->api;
     }
 
     /**

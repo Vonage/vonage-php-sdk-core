@@ -16,25 +16,10 @@ use Vonage\Entity\Filter\FilterInterface;
 
 use function is_null;
 
-class Client implements ClientAwareInterface, APIClient
+class Client
 {
-    use ClientAwareTrait;
-
     public function __construct(protected APIResource $api, protected ?HydratorInterface $hydrator = null)
     {
-    }
-
-    /**
-     * @deprecated This method will be removed in the next major version.
-     *             The APIResource is injected and should not be accessed directly from outside the client.
-     */
-    public function getApiResource(): APIResource
-    {
-        trigger_error(
-            'Vonage\\Users\\Client::getApiResource() is deprecated and will be removed in the next major version.',
-            E_USER_DEPRECATED
-        );
-        return $this->api;
     }
 
     public function listUsers(?FilterInterface $filter = null): IterableAPICollection

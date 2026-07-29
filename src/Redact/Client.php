@@ -5,64 +5,33 @@ declare(strict_types=1);
 namespace Vonage\Redact;
 
 use Psr\Http\Client\ClientExceptionInterface;
-use Vonage\Client\APIClient;
 use Vonage\Client\APIExceptionHandler;
 use Vonage\Client\APIResource;
-use Vonage\Client\ClientAwareInterface;
 use Vonage\Client\ClientAwareTrait;
 use Vonage\Client\Exception\Exception as ClientException;
 
-use function is_null;
-
-class Client implements ClientAwareInterface, APIClient
+class Client
 {
-    /**
-     * @deprecated This object no longer needs to be client aware
-     */
-    use ClientAwareTrait;
-
     /**
      * @todo Stop having this use its own formatting for exceptions
      */
-    public function __construct(protected ?APIResource $api = null)
+    public function __construct(protected APIResource $api)
     {
-    }
-
-    /**
-     * Shim to handle older instantiations of this class
-     * Will change in v3 to just return the required API object
-     *
-     * @deprecated This method will be removed in the next major version.
-     */
-    public function getApiResource(): APIResource
-    {
-        trigger_error(
-            'Vonage\\Redact\\Client::getApiResource() is deprecated and will be removed in the next major version.',
-            E_USER_DEPRECATED
-        );
-        return $this->resolveApi();
     }
 
     private function resolveApi(): APIResource
     {
-        if (is_null($this->api)) {
-            $api = new APIResource();
-            $api->setClient($this->getClient())
-                ->setBaseUri('/v1/redact')
-                ->setCollectionName('');
-            $this->api = $api;
+        // This API has been using a different exception response format, so reset it if we can
+        // @todo Move this somewhere more appropriate, current has to be here,
+        // because we can't otherwise guarantee there is an API object
+        $exceptionHandler = $this->api->getExceptionErrorHandler();
 
-            // This API has been using a different exception response format, so reset it if we can
-            // @todo Move this somewhere more appropriate, current has to be here,
-            // because we can't otherwise guarantee there is an API object
-            $exceptionHandler = $this->api->getExceptionErrorHandler();
-
-            if ($exceptionHandler instanceof APIExceptionHandler) {
-                $exceptionHandler->setRfc7807Format("%s - %s. See %s for more information");
-            }
-
-            $this->api->setExceptionErrorHandler($exceptionHandler);
+        if ($exceptionHandler instanceof APIExceptionHandler) {
+            $exceptionHandler->setRfc7807Format("%s - %s. See %s for more information");
         }
+
+        $this->api->setExceptionErrorHandler($exceptionHandler);
+
         return $this->api;
     }
 

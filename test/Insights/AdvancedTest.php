@@ -35,8 +35,7 @@ class AdvancedTest extends VonageTestCase
             )
         );
 
-        $this->api = (new APIResource())
-            ->setClient($this->vonageClient->reveal())
+        $this->api = (new APIResource($this->vonageClient->reveal()))
             ->setIsHAL(false)
             ->setAuthHandlers(new BasicHandler())
             ->setBaseUrl('https://api.nexmo.com/ni/advanced');

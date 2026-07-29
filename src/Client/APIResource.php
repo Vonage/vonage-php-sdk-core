@@ -13,6 +13,7 @@ use Psr\Http\Message\ResponseInterface;
 use Vonage\Entity\IterableAPICollection;
 use Vonage\Entity\Filter\FilterInterface;
 use Psr\Http\Client\ClientExceptionInterface;
+use Vonage\Client;
 use Vonage\Client\Credentials\Handler\HandlerInterface;
 use Vonage\Logger\LoggerTrait;
 
@@ -21,9 +22,8 @@ use function json_decode;
 use function json_encode;
 use function http_build_query;
 
-class APIResource implements ClientAwareInterface
+class APIResource
 {
-    use ClientAwareTrait;
     use LoggerTrait;
 
     /**
@@ -61,13 +61,20 @@ class APIResource implements ClientAwareInterface
 
     protected ?ResponseInterface $lastResponse = null;
 
+    public function __construct(protected Client $client) {}
+
+    public function getClient(): Client
+    {
+        return $this->client;
+    }
+
     /**
      * Adds authentication to a request
      *
      */
     public function addAuth(RequestInterface $request): RequestInterface
     {
-        $credentials = $this->getClient()->getCredentials();
+        $credentials = $this->client->getCredentials();
 
         if (is_array($this->getAuthHandlers())) {
             foreach ($this->getAuthHandlers() as $handler) {
@@ -79,7 +86,7 @@ class APIResource implements ClientAwareInterface
                     // This has a really nasty side effect for complex handlers where we never see the error
                 }
                 throw new \RuntimeException(
-                    'Unable to set credentials, please check configuration and 
+                    'Unable to set credentials, please check configuration and
                     supplied authentication'
                 );
             }
@@ -114,7 +121,7 @@ class APIResource implements ClientAwareInterface
 
         $this->lastRequest = $request;
 
-        $response = $this->getClient()->send($request);
+        $response = $this->client->send($request);
         $status = (int)$response->getStatusCode();
 
         $this->setLastResponse($response);
@@ -160,7 +167,7 @@ class APIResource implements ClientAwareInterface
             $request = $this->addAuth($request);
         }
 
-        $response = $this->getClient()->send($request);
+        $response = $this->client->send($request);
         $status = (int)$response->getStatusCode();
 
         $this->lastRequest = $request;
@@ -218,7 +225,7 @@ class APIResource implements ClientAwareInterface
             $request = $this->addAuth($request);
         }
 
-        $response = $this->getClient()->send($request);
+        $response = $this->client->send($request);
         $status = (int)$response->getStatusCode();
 
         $this->lastRequest = $request;
@@ -260,7 +267,7 @@ class APIResource implements ClientAwareInterface
             $this->baseUrl = $this->client->getApiUrl();
         }
 
-        return $this->baseUrl;
+        return $this->baseUrl ?? '';
     }
 
     public function getBaseUri(): ?string
@@ -276,7 +283,7 @@ class APIResource implements ClientAwareInterface
     public function getCollectionPrototype(): IterableAPICollection
     {
         if (is_null($this->collectionPrototype)) {
-            $this->collectionPrototype = new IterableAPICollection();
+            $this->collectionPrototype = new IterableAPICollection($this->client);
         }
 
         return clone $this->collectionPrototype;
@@ -346,7 +353,6 @@ class APIResource implements ClientAwareInterface
         $collection
             ->setApiResource($api)
             ->setFilter($filter);
-        $collection->setClient($this->client);
 
         return $collection;
     }
@@ -442,7 +448,7 @@ class APIResource implements ClientAwareInterface
         }
 
         $request->getBody()->write(http_build_query($formData));
-        $response = $this->getClient()->send($request);
+        $response = $this->client->send($request);
         $status = $response->getStatusCode();
 
         $this->lastRequest = $request;
@@ -485,7 +491,7 @@ class APIResource implements ClientAwareInterface
         }
 
         $request->getBody()->write(json_encode($body));
-        $response = $this->getClient()->send($request);
+        $response = $this->client->send($request);
 
         $this->lastRequest = $request;
         $this->setLastResponse($response);

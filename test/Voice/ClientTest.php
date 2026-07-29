@@ -59,11 +59,10 @@ class ClientTest extends VonageTestCase
         );
 
         /** @noinspection PhpParamsInspection */
-        $this->api = (new APIResource())
+        $this->api = (new APIResource($this->vonageClient->reveal()))
             ->setBaseUri('/v1/calls')
             ->setCollectionName('calls')
-            ->setAuthHandlers(new Client\Credentials\Handler\KeypairHandler())
-            ->setClient($this->vonageClient->reveal());
+            ->setAuthHandlers(new Client\Credentials\Handler\KeypairHandler());
 
         $this->voiceClient = new VoiceClient($this->api);
     }

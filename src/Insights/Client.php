@@ -18,25 +18,12 @@ use Vonage\Numbers\Number;
 /**
  * Class Client
  */
-class Client implements APIClient
+class Client
 {
     protected array $chargeableCodes = [0, 43, 44, 45];
 
-    public function __construct(protected ?APIResource $api = null)
+    public function __construct(protected APIResource $api)
     {
-    }
-
-    /**
-     * @deprecated This method will be removed in the next major version.
-     *             The APIResource is injected and should not be accessed directly from outside the client.
-     */
-    public function getApiResource(): APIResource
-    {
-        trigger_error(
-            'Vonage\\Insights\\Client::getApiResource() is deprecated and will be removed in the next major version.',
-            E_USER_DEPRECATED
-        );
-        return clone $this->api;
     }
 
     /**
@@ -140,7 +127,7 @@ class Client implements APIClient
     {
         $api = clone $this->api;
         $api->setBaseUri($path);
-        $collectionPrototype = new IterableAPICollection();
+        $collectionPrototype = new IterableAPICollection($api->getClient());
         $collectionPrototype->setHasPagination(false);
         $api->setCollectionPrototype($collectionPrototype);
 

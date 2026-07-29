@@ -53,11 +53,10 @@ class ClientTest extends VonageTestCase
         );
 
         /** @noinspection PhpParamsInspection */
-        $this->api = (new APIResource())
+        $this->api = (new APIResource($this->vonageClient->reveal()))
             ->setCollectionName('messages')
             ->setIsHAL(false)
             ->setErrorsOn200(true)
-            ->setClient($this->vonageClient->reveal())
             ->setExceptionErrorHandler(new ExceptionErrorHandler())
             ->setBaseUrl('https://rest.nexmo.com');
         $this->smsClient = new SMSClient($this->api);
@@ -437,9 +436,9 @@ class ClientTest extends VonageTestCase
                 return true;
             }),
             Argument::that(function ($message) {
-                $this->assertEquals('You are sending a message as `text` which contains non-GSM7 
-            characters. This could result in encoding problems with the target device - See 
-            https://developer.vonage.com/messaging/sms for details, or email support@vonage.com if you have any 
+                $this->assertEquals('You are sending a message as `text` which contains non-GSM7
+            characters. This could result in encoding problems with the target device - See
+            https://developer.vonage.com/messaging/sms for details, or email support@vonage.com if you have any
             questions.', $message);
                 return true;
             }),
