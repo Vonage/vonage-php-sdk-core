@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Vonage\Messages\Channel\Messenger;
 
 use Vonage\Messages\MessageObjects\VideoObject;

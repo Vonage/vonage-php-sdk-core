@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Vonage\Messages\Channel\SMS;
 
 use Vonage\Messages\MessageTraits\TextTrait;

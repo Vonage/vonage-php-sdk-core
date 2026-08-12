@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Vonage\Verify2;
 
 use Psr\Container\ContainerInterface;

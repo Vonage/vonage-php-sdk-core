@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Vonage\Client\Credentials\Handler;
 
 use Psr\Http\Message\RequestInterface;

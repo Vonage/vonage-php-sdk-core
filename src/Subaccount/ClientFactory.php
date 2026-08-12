@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Vonage\Subaccount;
 
 use Psr\Container\ContainerInterface;

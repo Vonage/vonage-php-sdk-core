@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Vonage\Messages\Channel\MMS;
 
 use Vonage\Messages\MessageObjects\ImageObject;

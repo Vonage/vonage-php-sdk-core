@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Vonage\Users;
 
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
