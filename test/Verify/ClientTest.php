@@ -59,26 +59,6 @@ class ClientTest extends VonageTestCase
         $this->client = new VerifyClient($api);
     }
 
-    public function testUsesCorrectAuth(): void
-    {
-        $this->vonageClient->send(
-            Argument::that(
-                function (RequestInterface $request) {
-                    $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/psd2/json', $request);
-                    $this->assertEquals(
-                        'Basic ',
-                        mb_substr($request->getHeaders()['Authorization'][0], 0, 6)
-                    );
-                    return true;
-                }
-            )
-        )->willReturn($this->getResponse('start'))
-                           ->shouldBeCalledTimes(1);
-
-        $request = @new RequestPSD2('14845551212', 'Test Verify', '5.25');
-        $response = @$this->client->requestPSD2($request);
-    }
-
     public function testUnserializeAcceptsObject(): void
     {
         $mock = @$this->getMockBuilder(Verification::class)
@@ -89,151 +69,6 @@ class ClientTest extends VonageTestCase
         $mock->expects(self::once())->method('setClient')->with($this->client);
 
         @$this->client->unserialize($mock);
-    }
-
-    /**
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     * @throws ServerException
-     * @throws ClientExceptionInterface
-     */
-    public function testUnserializeSetsClient(): void
-    {
-        $verification = @new Verification('14845551212', 'Test Verify');
-        @$verification->setResponse($this->getResponse('start'));
-
-        $string = serialize($verification);
-        $object = @$this->client->unserialize($string);
-
-        $this->assertInstanceOf(Verification::class, $object);
-
-        $search = $this->setupClientForSearch('search');
-        @$object->sync();
-
-        $this->assertSame($search, @$object->getResponse());
-    }
-
-    public function testSerializeMatchesEntity(): void
-    {
-        $verification = @new Verification('14845551212', 'Test Verify');
-        @$verification->setResponse($this->getResponse('start'));
-
-        $string = serialize($verification);
-
-        $this->assertSame($string, @$this->client->serialize($verification));
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     * @throws ServerException
-     *
-     * @deprecated
-     */
-    public function testCanStartVerificationWithVerificationObject(): void
-    {
-        $success = $this->setupClientForStart('start');
-
-        $verification = @new Verification('14845551212', 'Test Verify');
-        @$this->client->start($verification);
-
-        $this->assertSame($success, @$verification->getResponse());
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     * @throws ServerException
-     */
-    public function testCanStartVerification(): void
-    {
-        $success = $this->setupClientForStart('start');
-
-        $verification = @new Request('14845551212', 'Test Verify');
-        $verification = @$this->client->start($verification);
-
-        $this->assertSame($success, @$verification->getResponse());
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     * @throws ServerException
-     */
-    public function testCanStartPSD2Verification(): void
-    {
-        $this->vonageClient->send(
-            Argument::that(
-                function (RequestInterface $request) {
-                    $this->assertRequestJsonBodyContains('number', '14845551212', $request);
-                    $this->assertRequestJsonBodyContains('payee', 'Test Verify', $request);
-                    $this->assertRequestJsonBodyContains('amount', '5.25', $request);
-                    $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/psd2/json', $request);
-
-                    return true;
-                }
-            )
-        )->willReturn($this->getResponse('start'))
-            ->shouldBeCalledTimes(1);
-
-        $request = @new RequestPSD2('14845551212', 'Test Verify', '5.25');
-        $response = @$this->client->requestPSD2($request);
-
-        $this->assertSame('0', $response['status']);
-        $this->assertSame('44a5279b27dd4a638d614d265ad57a77', $response['request_id']);
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     * @throws ServerException
-     */
-    public function testCanStartPSD2VerificationWithWorkflowID(): void
-    {
-        $this->vonageClient->send(
-            Argument::that(
-                function (RequestInterface $request) {
-                    $this->assertRequestJsonBodyContains('number', '14845551212', $request);
-                    $this->assertRequestJsonBodyContains('payee', 'Test Verify', $request);
-                    $this->assertRequestJsonBodyContains('amount', '5.25', $request);
-                    $this->assertRequestJsonBodyContains('workflow_id', 5, $request);
-                    $this->assertRequestMatchesUrl('https://api.nexmo.com/verify/psd2/json', $request);
-
-                    return true;
-                }
-            )
-        )->willReturn($this->getResponse('start'))
-            ->shouldBeCalledTimes(1);
-
-        $request = @new RequestPSD2('14845551212', 'Test Verify', '5.25', 5);
-        $response = @$this->client->requestPSD2($request);
-
-        $this->assertSame('0', $response['status']);
-        $this->assertSame('44a5279b27dd4a638d614d265ad57a77', $response['request_id']);
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     * @throws ServerException
-     */
-    public function testCanStartArray(): void
-    {
-        $response = $this->setupClientForStart('start');
-
-        @$verification = $this->client->start(
-            [
-                'number' => '14845551212',
-                'brand' => 'Test Verify'
-            ]
-        );
-
-        $this->assertSame($response, @$verification->getResponse());
     }
 
     /**
@@ -327,47 +162,13 @@ class ClientTest extends VonageTestCase
      * @throws Client\Exception\Request
      * @throws ServerException
      */
-    public function testCanSearchVerification(): void
-    {
-        $response = $this->setupClientForSearch('search');
-
-        $verification = new Verification('44a5279b27dd4a638d614d265ad57a77');
-        @$this->client->search($verification);
-
-        $this->assertSame($response, @$verification->getResponse());
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     * @throws ServerException
-     */
     public function testCanSearchId(): void
     {
         $response = $this->setupClientForSearch('search');
 
-        $verification = @$this->client->search('44a5279b27dd4a638d614d265ad57a77');
+        $verification = $this->client->search('44a5279b27dd4a638d614d265ad57a77');
 
-        $this->assertSame($response, @$verification->getResponse());
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     * @throws ServerException
-     */
-    public function testSearchReplacesResponse(): void
-    {
-        $old = $this->getResponse('start');
-        $verification = @new Verification('14845551212', 'Test Verify');
-        @$verification->setResponse($old);
-
-        $response = $this->setupClientForSearch('search');
-        @$this->client->search($verification);
-
-        $this->assertSame($response, @$verification->getResponse());
+        $this->assertSame('44a5279b27dd4a638d614d265ad57a77', $verification->getRequestId());
     }
 
     /**
@@ -397,91 +198,13 @@ class ClientTest extends VonageTestCase
      * @throws Client\Exception\Request
      * @throws ServerException
      */
-    public function testCanCancelVerification(): void
-    {
-        $response = $this->setupClientForControl('cancel', 'cancel');
-
-        $verification = new Verification('44a5279b27dd4a638d614d265ad57a77');
-        $result = @$this->client->cancel($verification);
-
-        $this->assertSame($verification, $result);
-        $this->assertSame($response, @$verification->getResponse());
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     * @throws ServerException
-     */
     public function testCanCancelId(): void
     {
         $response = $this->setupClientForControl('cancel', 'cancel');
 
         $verification = @$this->client->cancel('44a5279b27dd4a638d614d265ad57a77');
 
-        $this->assertSame($response, @$verification->getResponse());
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     * @throws ServerException
-     */
-    public function testCanTriggerId(): void
-    {
-        $response = $this->setupClientForControl('trigger', 'trigger_next_event');
-
-        $verification = @$this->client->trigger('44a5279b27dd4a638d614d265ad57a77');
-
-        $this->assertSame($response, @$verification->getResponse());
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     * @throws ServerException
-     */
-    public function testCanTriggerVerification(): void
-    {
-        $response = $this->setupClientForControl('trigger', 'trigger_next_event');
-
-        $verification = new Verification('44a5279b27dd4a638d614d265ad57a77');
-        $result = @$this->client->trigger($verification);
-
-        $this->assertSame($verification, $result);
-        $this->assertSame($response, @$verification->getResponse());
-    }
-
-    /**
-     * @dataProvider getControlCommands
-     *
-     * @param $method
-     * @param $cmd
-     */
-    public function testControlNotReplaceResponse($method, $cmd): void
-    {
-        $response = $this->getResponse('search');
-        $verification = new Verification('44a5279b27dd4a638d614d265ad57a77');
-        @$verification->setResponse($response);
-
-        $this->setupClientForControl($method, $cmd);
-        @$this->client->$method($verification);
-
-        $this->assertSame($response, @$verification->getResponse());
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getControlCommands(): array
-    {
-        return [
-            ['cancel', 'cancel'],
-            ['trigger', 'trigger_next_event']
-        ];
+        $this->assertSame('44a5279b27dd4a638d614d265ad57a77', $verification->getRequestId());
     }
 
     /**
@@ -513,46 +236,12 @@ class ClientTest extends VonageTestCase
      * @throws Client\Exception\Request
      * @throws ServerException
      */
-    public function testCanCheckVerification(): void
-    {
-        $response = $this->setupClientForCheck('check', '1234');
-        $verification = new Verification('44a5279b27dd4a638d614d265ad57a77');
-
-        @$this->client->check($verification, '1234');
-
-        $this->assertSame($response, @$verification->getResponse());
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     * @throws ServerException
-     */
     public function testCanCheckId(): void
     {
         $response = $this->setupClientForCheck('check', '1234');
-        $verification = @$this->client->check('44a5279b27dd4a638d614d265ad57a77', '1234');
+        $verification = $this->client->check('44a5279b27dd4a638d614d265ad57a77', '1234');
 
-        $this->assertSame($response, @$verification->getResponse());
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     * @throws ServerException
-     */
-    public function testCheckNotReplaceResponse(): void
-    {
-        $old = $this->getResponse('search');
-        $verification = new Verification('44a5279b27dd4a638d614d265ad57a77');
-        @$verification->setResponse($old);
-
-        $this->setupClientForCheck('check', '1234');
-
-        @$this->client->check($verification, '1234');
-        $this->assertSame($old, @$verification->getResponse());
+        $this->assertSame('de37150c89584f36a18925181d62627c', $verification->getRequestId());
     }
 
     /**

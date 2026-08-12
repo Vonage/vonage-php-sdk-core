@@ -263,7 +263,7 @@ class APIResource
 
     public function getBaseUrl(): ?string
     {
-        if (!$this->baseUrl && $this->client) {
+        if (!$this->baseUrl) {
             $this->baseUrl = $this->client->getApiUrl();
         }
 

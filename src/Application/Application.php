@@ -4,24 +4,15 @@ declare(strict_types=1);
 
 namespace Vonage\Application;
 
-use Exception;
 use JsonSerializable;
 use StdClass;
-use Vonage\Entity\EntityInterface;
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
-use Vonage\Entity\JsonResponseTrait;
-use Vonage\Entity\JsonSerializableTrait;
-use Vonage\Entity\Psr7Trait;
 
 use function count;
 use function ucfirst;
 
-class Application implements EntityInterface, JsonSerializable, ArrayHydrateInterface, \Stringable
+class Application implements JsonSerializable, ArrayHydrateInterface, \Stringable
 {
-    use JsonSerializableTrait;
-    use Psr7Trait;
-    use JsonResponseTrait;
-
     protected VoiceConfig $voiceConfig;
 
     protected MessagesConfig $messagesConfig;
@@ -34,8 +25,12 @@ class Application implements EntityInterface, JsonSerializable, ArrayHydrateInte
 
     protected array $keys = [];
 
-    public function __construct(protected ?string $id = null)
+    public function __construct(protected ?string $id = null, array $data = [])
     {
+        if (!empty($data)) {
+            $data['id'] = $id;
+            $this->fromArray($data);
+        }
     }
 
     public function getId(): ?string
@@ -70,70 +65,28 @@ class Application implements EntityInterface, JsonSerializable, ArrayHydrateInte
         return $this;
     }
 
-    /**
-     * @throws Exception
-     */
     public function getVoiceConfig(): VoiceConfig
     {
         if (!isset($this->voiceConfig)) {
             $this->setVoiceConfig(new VoiceConfig());
-            $data = $this->getResponseData();
-
-            if (isset($data['voice']['webhooks'])) {
-                foreach ($data['voice']['webhooks'] as $webhook) {
-                    $this->voiceConfig->setWebhook(
-                        $webhook['endpoint_type'],
-                        $webhook['endpoint'],
-                        $webhook['http_method']
-                    );
-                }
-            }
         }
 
         return $this->voiceConfig;
     }
 
-    /**
-     * @throws Exception
-     */
     public function getMessagesConfig(): MessagesConfig
     {
         if (!isset($this->messagesConfig)) {
             $this->setMessagesConfig(new MessagesConfig());
-            $data = $this->getResponseData();
-
-            if (isset($data['messages']['webhooks'])) {
-                foreach ($data['messages']['webhooks'] as $webhook) {
-                    $this->getMessagesConfig()->setWebhook(
-                        $webhook['endpoint_type'],
-                        $webhook['endpoint'],
-                        $webhook['http_method']
-                    );
-                }
-            }
         }
 
         return $this->messagesConfig;
     }
 
-    /**
-     * @throws Exception
-     */
     public function getRtcConfig(): RtcConfig
     {
         if (!isset($this->rtcConfig)) {
             $this->setRtcConfig(new RtcConfig());
-            $data = $this->getResponseData();
-
-            if (isset($data['rtc']['webhooks'])) {
-                foreach ($data['rtc']['webhooks'] as $webhook) {
-                    $this->getRtcConfig()->setWebhook(
-                        $webhook['endpoint_type'],
-                        $webhook['endpoint'],
-                        $webhook['http_method']
-                    );
-                }
-            }
         }
 
         return $this->rtcConfig;
