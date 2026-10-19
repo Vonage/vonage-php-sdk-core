@@ -127,7 +127,7 @@ class Client implements LoggerAwareInterface
     ) {
         if (is_null($client)) {
             // Since the user did not pass a client, try and make a client
-            // using the Guzzle 6 adapter or Guzzle 7 (depending on availability)
+            // using the Guzzle 6 adapter or Guzzle 7+ (depending on availability)
             [$guzzleVersion] = explode('@', (string) InstalledVersions::getVersion('guzzlehttp/guzzle'), 1);
             $guzzleVersion = (float) $guzzleVersion;
 
@@ -138,7 +138,7 @@ class Client implements LoggerAwareInterface
                 $client = new \Http\Adapter\Guzzle6\Client();
             }
 
-            if ($guzzleVersion >= 7.0 && $guzzleVersion < 8.0) {
+            if ($guzzleVersion >= 7.0) {
                 $client = new \GuzzleHttp\Client();
             }
         }
