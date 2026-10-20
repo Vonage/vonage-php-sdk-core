@@ -2,8 +2,11 @@
 
 namespace VonageTest\Messages;
 
+use Vonage\Client\Credentials\Handler\BasicHandler;
+use Vonage\Client\Credentials\Handler\KeypairHandler;
 use Laminas\Diactoros\Request;
 use Prophecy\Argument;
+use Vonage\Client\APIResource;
 use Vonage\Messages\Channel\RCS\RcsBase;
 use Vonage\Messages\Channel\RCS\RcsCard;
 use Vonage\Messages\Channel\RCS\RCSCardAlignment;
@@ -27,6 +30,7 @@ use Vonage\Messages\Channel\RCS\Suggestions\ShareLocation;
 use Vonage\Messages\Channel\RCS\Suggestions\Suggestion;
 use Vonage\Messages\Channel\RCS\Suggestions\ViewLocation;
 use Vonage\Messages\Client as MessagesClient;
+use Vonage\Messages\ExceptionErrorHandler;
 use Vonage\Messages\MessageObjects\FileObject;
 use Vonage\Messages\MessageObjects\ImageObject;
 use Vonage\Messages\MessageObjects\VideoObject;
@@ -845,8 +849,15 @@ class RCSClientTest extends MessagesClientTest
 
     public function testCanUpdateWhatsAppStatus(): void
     {
-        $geoSpecificClient = clone $this->messageClient;
-        $geoSpecificClient->getAPIResource()->setBaseUrl('https://api-us.nexmo.com/v1');
+        $this->api = (new APIResource($this->vonageClient->reveal()))
+            ->setCollectionName('messages')
+            ->setIsHAL(false)
+            ->setErrorsOn200(false)
+            ->setAuthHandlers([new KeypairHandler(), new BasicHandler()])
+            ->setExceptionErrorHandler(new ExceptionErrorHandler())
+            ->setBaseUrl('https://api-us.nexmo.com/v1');
+
+        $geoSpecificClient = new MessagesClient($this->api);
 
         $this->vonageClient->send(Argument::that(function (Request $request) {
             $this->assertEquals(

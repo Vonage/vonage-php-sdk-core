@@ -20,23 +20,10 @@ use Vonage\Voice\Webhook\Event;
 
 use function is_null;
 
-class Client implements APIClient
+class Client
 {
     public function __construct(protected APIResource $api)
     {
-    }
-
-    /**
-     * @deprecated This method will be removed in the next major version.
-     *             The APIResource is injected and should not be accessed directly from outside the client.
-     */
-    public function getAPIResource(): APIResource
-    {
-        trigger_error(
-            'Vonage\\Voice\\Client::getAPIResource() is deprecated and will be removed in the next major version.',
-            E_USER_DEPRECATED
-        );
-        return $this->api;
     }
 
     /**

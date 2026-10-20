@@ -18,7 +18,9 @@ class ClientFactoryTest extends TestCase
 
         $mockServices = [
             'verify2' => ClientFactory::class,
-            APIResource::class => APIResource::class,
+            APIResource::class => function () use ($mockClient) {
+                return new APIResource($mockClient);
+            }
         ];
 
         $container = new MapFactory($mockServices, $mockClient);

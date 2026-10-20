@@ -50,10 +50,9 @@ class ClientTest extends VonageTestCase
         );
 
         /** @noinspection PhpParamsInspection */
-        $this->api = (new APIResource())
+        $this->api = (new APIResource($this->vonageClient->reveal()))
             ->setIsHAL(true)
             ->setErrorsOn200(false)
-            ->setClient($this->vonageClient->reveal())
             ->setAuthHandlers([new Client\Credentials\Handler\BasicHandler(),
                 new Client\Credentials\Handler\KeypairHandler()])
             ->setBaseUrl('https://api.nexmo.com/v2/verify');

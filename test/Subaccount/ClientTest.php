@@ -41,10 +41,9 @@ class ClientTest extends VonageTestCase
         );
 
         /** @noinspection PhpParamsInspection */
-        $this->api = (new APIResource())
+        $this->api = (new APIResource($this->vonageClient->reveal()))
             ->setIsHAL(true)
             ->setErrorsOn200(false)
-            ->setClient($this->vonageClient->reveal())
             ->setBaseUrl('https://api.nexmo.com/accounts');
 
         $this->subaccountClient = new SubaccountClient($this->api);

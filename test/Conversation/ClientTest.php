@@ -53,11 +53,10 @@ class ClientTest extends VonageTestCase
         );
 
         /** @noinspection PhpParamsInspection */
-        $this->api = (new APIResource())
+        $this->api = (new APIResource($this->vonageClient->reveal()))
             ->setIsHAL(true)
             ->setCollectionName('conversations')
             ->setErrorsOn200(false)
-            ->setClient($this->vonageClient->reveal())
             ->setAuthHandlers(new Client\Credentials\Handler\KeypairHandler())
             ->setBaseUrl('https://api.nexmo.com/v1/conversations');
 

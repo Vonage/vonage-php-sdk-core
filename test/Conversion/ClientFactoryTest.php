@@ -14,9 +14,13 @@ class ClientFactoryTest extends TestCase
 {
     public function testInvokeCreatesClientWithConfiguredApiResource(): void
     {
+        $mockClient = $this->createMock(Client::class);
+
         $mockServices = [
             'conversion' => ClientFactory::class,
-            APIResource::class => APIResource::class,
+            APIResource::class => function () use ($mockClient) {
+                return new APIResource($mockClient);
+            }
         ];
 
         $mockClient = $this->createMock(Client::class);

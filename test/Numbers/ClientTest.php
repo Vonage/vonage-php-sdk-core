@@ -48,11 +48,9 @@ class ClientTest extends VonageTestCase
             new Container(new Basic('abc', 'def'))
         );
 
-        $this->api = new APIResource();
+        $this->api = new APIResource($this->vonageClient->reveal());
         $this->api->setBaseUrl('https://rest.nexmo.com')
             ->setIsHAL(false);
-
-        $this->api->setClient($this->vonageClient->reveal());
 
         /** @noinspection PhpParamsInspection */
         $this->numberClient = (new NumbersClient($this->api));

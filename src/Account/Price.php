@@ -5,11 +5,7 @@ declare(strict_types=1);
 namespace Vonage\Account;
 
 use RuntimeException;
-use Vonage\Entity\EntityInterface;
 use Vonage\Entity\Hydrator\ArrayHydrateInterface;
-use Vonage\Entity\JsonResponseTrait;
-use Vonage\Entity\JsonSerializableTrait;
-use Vonage\Entity\NoRequestResponseTrait;
 
 use function array_key_exists;
 use function ltrim;
@@ -17,13 +13,8 @@ use function preg_replace;
 use function strtolower;
 
 abstract class Price implements
-    EntityInterface,
     ArrayHydrateInterface
 {
-    use JsonSerializableTrait;
-    use NoRequestResponseTrait;
-    use JsonResponseTrait;
-
     protected array $data = [];
 
     public function getCountryCode(): mixed

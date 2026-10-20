@@ -19,7 +19,9 @@ class ClientFactoryTest extends TestCase
 
         $mockServices = [
             'verify' => ClientFactory::class,
-            APIResource::class => APIResource::class,
+            APIResource::class => function () use ($mockClient) {
+                return new APIResource($mockClient);
+            }
         ];
 
         $container = new MapFactory($mockServices, $mockClient);
@@ -32,7 +34,7 @@ class ClientFactoryTest extends TestCase
         $apiProperty = $reflection->getProperty('api');
         $apiResource = $apiProperty->getValue($result);
 
-        $this->assertInstanceOf(Client\Credentials\Handler\TokenBodyHandler::class, $apiResource->getAuthHandlers()[0]);
+        $this->assertInstanceOf(Client\Credentials\Handler\BasicHandler::class, $apiResource->getAuthHandlers()[0]);
         $this->assertEquals('/verify', $apiResource->getBaseUri());
         $this->assertTrue($apiResource->errorsOn200());
         $this->assertInstanceOf(ExceptionErrorHandler::class, $apiResource->getExceptionErrorHandler());

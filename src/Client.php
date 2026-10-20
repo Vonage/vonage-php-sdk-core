@@ -149,8 +149,7 @@ class Client implements LoggerAwareInterface
             !($credentials instanceof Container) &&
             !($credentials instanceof Basic) &&
             !($credentials instanceof SignatureSecret) &&
-            !($credentials instanceof Keypair) &&
-            !($credentials instanceof Gnp)
+            !($credentials instanceof Keypair)
         ) {
             throw new RuntimeException('unknown credentials type: ' . $credentials::class);
         }
@@ -205,7 +204,9 @@ class Client implements LoggerAwareInterface
             'voice' => VoiceClientFactory::class,
 
             // Additional utility classes
-            APIResource::class => APIResource::class,
+            APIResource::class => function (): APIResource {
+                return new APIResource($this);
+            },
             Client::class => fn() => $this
         ];
 
@@ -241,12 +242,12 @@ class Client implements LoggerAwareInterface
 
     public function getRestUrl(): string
     {
-        return $this->restUrl;
+        return $this->restUrl ?? '';
     }
 
     public function getApiUrl(): string
     {
-        return $this->apiUrl;
+        return $this->apiUrl ?? '';
     }
 
     /**

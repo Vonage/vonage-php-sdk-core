@@ -17,33 +17,10 @@ use Vonage\Entity\IterableAPICollection;
 
 use function is_null;
 
-class Client implements ClientAwareInterface, APIClient
+class Client
 {
-    use ClientAwareTrait;
-
     public function __construct(protected APIResource $api, protected ?HydratorInterface $hydrator = null)
     {
-    }
-
-    /**
-     * @deprecated This method will be removed in the next major version.
-     *             The APIResource is injected and should not be accessed directly from outside the client.
-     */
-    public function getApiResource(): APIResource
-    {
-        trigger_error(
-            'Vonage\\Application\\Client::getApiResource() is deprecated and will be removed in the next major version.',
-            E_USER_DEPRECATED
-        );
-        if (is_null($this->api)) {
-            $api = new APIResource();
-            $api->setClient($this->getClient())
-                ->setBaseUri('/v2/applications')
-                ->setCollectionName('applications');
-            $this->api = $api;
-        }
-
-        return $this->api;
     }
 
     /**

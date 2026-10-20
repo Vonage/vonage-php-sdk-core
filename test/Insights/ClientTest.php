@@ -49,9 +49,8 @@ class ClientTest extends VonageTestCase
             )
         );
 
-        $this->api = new APIResource();
+        $this->api = new APIResource($this->vonageClient->reveal());
         $this->api->setIsHAL(false);
-        $this->api->setClient($this->vonageClient->reveal());
         $this->api->setAuthHandlers(new Client\Credentials\Handler\BasicHandler());
 
         $this->insightsClient = new InsightsClient($this->api);

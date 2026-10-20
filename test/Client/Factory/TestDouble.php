@@ -6,15 +6,8 @@ namespace VonageTest\Client\Factory;
 
 use Vonage\Client;
 
-class TestDouble implements Client\ClientAwareInterface
+class TestDouble
 {
-    /**
-     * @var Client
-     */
-    public $client;
-
-    public function setClient(Client $client): void
-    {
-        $this->client = $client;
+    public function __construct(public Client $client) {
     }
 }

@@ -17,23 +17,10 @@ use Vonage\Verify2\VerifyObjects\Template;
 use Vonage\Verify2\VerifyObjects\TemplateFragment;
 use Vonage\Verify2\VerifyObjects\VerificationWorkflow;
 
-class Client implements APIClient
+class Client
 {
     public function __construct(protected APIResource $api)
     {
-    }
-
-    /**
-     * @deprecated This method will be removed in the next major version.
-     *             The APIResource is injected and should not be accessed directly from outside the client.
-     */
-    public function getAPIResource(): APIResource
-    {
-        trigger_error(
-            'Vonage\\Verify2\\Client::getAPIResource() is deprecated and will be removed in the next major version.',
-            E_USER_DEPRECATED
-        );
-        return $this->api;
     }
 
     public function startVerification(BaseVerifyRequest $request): ?array

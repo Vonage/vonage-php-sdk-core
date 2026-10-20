@@ -43,9 +43,8 @@ class ClientTest extends VonageTestCase
             ))
         );
 
-        $apiResource = new APIResource();
-        $apiResource->setClient($this->vonageClient->reveal())
-            ->setBaseUri('/v1/users')
+        $apiResource = new APIResource($this->vonageClient->reveal());
+        $apiResource->setBaseUri('/v1/users')
             ->setCollectionName('users')
             ->setAuthHandlers(new Client\Credentials\Handler\KeypairHandler());
 
@@ -53,9 +52,6 @@ class ClientTest extends VonageTestCase
         $hydrator->setPrototype(new User());
 
         $this->usersClient = new UsersClient($apiResource, $hydrator);
-
-        /** @noinspection PhpParamsInspection */
-        $this->usersClient->setClient($this->vonageClient->reveal());
     }
 
     public function testClientWillUseJwtAuth(): void

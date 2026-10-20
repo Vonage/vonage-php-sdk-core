@@ -15,25 +15,10 @@ use Vonage\Client\Exception as ClientException;
 use function http_build_query;
 use function json_decode;
 
-class Client implements ClientAwareInterface, APIClient
+class Client
 {
-    use ClientAwareTrait;
-
     public function __construct(protected ?APIResource $api = null)
     {
-    }
-
-    /**
-     * @deprecated This method will be removed in the next major version.
-     *             The APIResource is injected and should not be accessed directly from outside the client.
-     */
-    public function getAPIResource(): APIResource
-    {
-        trigger_error(
-            'Vonage\\Conversion\\Client::getAPIResource() is deprecated and will be removed in the next major version.',
-            E_USER_DEPRECATED
-        );
-        return $this->api;
     }
 
     /**

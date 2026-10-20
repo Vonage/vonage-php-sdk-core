@@ -26,34 +26,8 @@ class MapFactoryTest extends VonageTestCase
         $this->client = new Client(new Client\Credentials\Basic('key', 'secret'));
 
         $this->factory = new MapFactory([
-            'test' => TestDouble::class
+            'test' => fn($container) => new TestDouble($container->getClient())
         ], $this->client);
-    }
-
-    public function testClientInjection(): void
-    {
-        $api = @$this->factory->getApi('test');
-        $this->assertSame($this->client, $api->client);
-    }
-
-    public function testCache(): void
-    {
-        $api = @$this->factory->getApi('test');
-        $cache = @$this->factory->getApi('test');
-
-        $this->assertSame($api, $cache);
-    }
-
-    public function testClassMap(): void
-    {
-        $this->assertTrue(@$this->factory->hasApi('test'));
-        $this->assertFalse(@$this->factory->hasApi('not'));
-
-        $api = @$this->factory->getApi('test');
-        $this->assertInstanceOf(TestDouble::class, $api);
-
-        $this->expectException(RuntimeException::class);
-        @$this->factory->getApi('not');
     }
 
     public function testMakeCreatesNewInstance(): void

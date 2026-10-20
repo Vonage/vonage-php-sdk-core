@@ -18,23 +18,10 @@ use function json_decode;
 /**
  * @todo Unify the exception handling to avoid duplicated code and logic (ie: getPrefixPricing())
  */
-class Client implements APIClient
+class Client
 {
-    public function __construct(protected ?APIResource $accountAPI = null)
+    public function __construct(protected APIResource $accountAPI)
     {
-    }
-
-    /**
-     * @deprecated This method will be removed in the next major version.
-     *             The APIResource is injected and should not be accessed directly from outside the client.
-     */
-    public function getAPIResource(): APIResource
-    {
-        trigger_error(
-            'Vonage\\Account\\Client::getAPIResource() is deprecated and will be removed in the next major version.',
-            E_USER_DEPRECATED
-        );
-        return clone $this->accountAPI;
     }
 
     /**

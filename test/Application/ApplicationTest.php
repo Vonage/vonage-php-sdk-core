@@ -4,30 +4,35 @@ declare(strict_types=1);
 
 namespace VonageTest\Application;
 
-use Exception;
 use Vonage\Application\Application;
 use Vonage\Application\MessagesConfig;
 use Vonage\Application\RtcConfig;
 use Vonage\Application\VoiceConfig;
 use Vonage\Application\Webhook;
-use Vonage\Client\Exception\Exception as ClientException;
-use VonageTest\Traits\HTTPTestTrait;
 use VonageTest\VonageTestCase;
+
+use function json_decode;
+use function file_get_contents;
 
 class ApplicationTest extends VonageTestCase
 {
-    use HTTPTestTrait;
+    protected Application $app;
 
-    /**
-     * @var Application
-     */
-    protected $app;
+    protected string $responsesDirectory;
 
     public function setUp(): void
     {
         $this->responsesDirectory = __DIR__ . '/responses';
 
         $this->app = (new Application())->setName('test');
+    }
+
+    protected function getResponseData(string $type = 'success'): array
+    {
+        return json_decode(
+            file_get_contents($this->responsesDirectory . '/' . $type . '.json'),
+            true
+        );
     }
 
     public function testConstructWithId(): void
@@ -37,34 +42,35 @@ class ApplicationTest extends VonageTestCase
         $this->assertEquals('1a20a124-1775-412b-b623-e6985f4aace0', $app->getId());
     }
 
-    /**
-     * @throws ClientException
-     */
+    public function testConstructWithIdAndData(): void
+    {
+        $data = $this->getResponseData();
+        $app = new Application($data['id'], $data);
+
+        $this->assertEquals('78d335fa323d01149c3dd6f0d48968cf', $app->getId());
+        $this->assertEquals('My Application', $app->getName());
+    }
+
     public function testNameIsSet(): void
     {
-        $this->assertEquals('test', @$this->app->getRequestData()['name']);
+        $this->assertEquals('test', $this->app->getName());
     }
 
-    /**
-     * @throws Exception
-     */
     public function testVoiceWebhookParams(): void
     {
-        @$this->app->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'http://example.com/event');
-        @$this->app->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'http://example.com/answer');
+        $this->app->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, new Webhook('http://example.com/event', 'POST'));
+        $this->app->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, new Webhook('http://example.com/answer', 'GET'));
 
-        $params = @$this->app->getRequestData();
-        $capabilities = $params['capabilities'];
+        $webhook = $this->app->getVoiceConfig()->getWebhook(VoiceConfig::EVENT);
+        $this->assertEquals('http://example.com/event', $webhook->getUrl());
 
-        $this->assertArrayHasKey('event_url', $capabilities['voice']['webhooks']);
-        $this->assertArrayHasKey('answer_url', $capabilities['voice']['webhooks']);
-        $this->assertEquals('http://example.com/event', $capabilities['voice']['webhooks']['event_url']['address']);
-        $this->assertEquals('http://example.com/answer', $capabilities['voice']['webhooks']['answer_url']['address']);
+        $webhook = $this->app->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER);
+        $this->assertEquals('http://example.com/answer', $webhook->getUrl());
     }
 
-    public function testResponseSetsProperties(): void
+    public function testFromArraySetsProperties(): void
     {
-        @$this->app->setResponse($this->getResponse());
+        $this->app->fromArray($this->getResponseData());
 
         $this->assertEquals('My Application', $this->app->getName());
         $this->assertEquals(
@@ -76,12 +82,9 @@ class ApplicationTest extends VonageTestCase
         $this->assertEquals('private_key', $this->app->getPrivateKey());
     }
 
-    /**
-     * @throws Exception
-     */
-    public function testResponseSetsVoiceConfigs(): void
+    public function testFromArraySetsVoiceConfigs(): void
     {
-        @$this->app->setResponse($this->getResponse());
+        $this->app->fromArray($this->getResponseData());
 
         $webhook = $this->app->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER);
         $method = $this->app->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER)->getMethod();
@@ -94,12 +97,9 @@ class ApplicationTest extends VonageTestCase
         $this->assertEquals('POST', $method);
     }
 
-    /**
-     * @throws Exception
-     */
-    public function testResponseSetsMessagesConfigs(): void
+    public function testFromArraySetsMessagesConfigs(): void
     {
-        @$this->app->setResponse($this->getResponse());
+        $this->app->fromArray($this->getResponseData());
 
         $webhook = $this->app->getMessagesConfig()->getWebhook(MessagesConfig::INBOUND);
         $method = $this->app->getMessagesConfig()->getWebhook(MessagesConfig::INBOUND)->getMethod();
@@ -112,12 +112,9 @@ class ApplicationTest extends VonageTestCase
         $this->assertEquals('POST', $method);
     }
 
-    /**
-     * @throws Exception
-     */
-    public function testResponseSetsRtcConfigs(): void
+    public function testFromArraySetsRtcConfigs(): void
     {
-        @$this->app->setResponse($this->getResponse());
+        $this->app->fromArray($this->getResponseData());
 
         $webhook = $this->app->getRtcConfig()->getWebhook(RtcConfig::EVENT);
         $method = $this->app->getRtcConfig()->getWebhook(RtcConfig::EVENT)->getMethod();
@@ -125,18 +122,15 @@ class ApplicationTest extends VonageTestCase
         $this->assertEquals('POST', $method);
     }
 
-    public function testResponseSetsVbcConfigs(): void
+    public function testFromArraySetsVbcConfigs(): void
     {
-        @$this->app->setResponse($this->getResponse());
+        $this->app->fromArray($this->getResponseData());
         $this->assertEquals(true, $this->app->getVbcConfig()->isEnabled());
     }
 
-    /**
-     * @throws Exception
-     */
     public function testCanGetDirtyValues(): void
     {
-        @$this->app->setResponse($this->getResponse());
+        $this->app->fromArray($this->getResponseData());
         $this->assertEquals('My Application', $this->app->getName());
 
         $this->app->setName('new');
@@ -145,17 +139,14 @@ class ApplicationTest extends VonageTestCase
         $webhook = $this->app->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER);
         $this->assertEquals('https://example.com/webhooks/answer', $webhook);
 
-        @$this->app->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'http://example.com');
+        $this->app->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, new Webhook('http://example.com', 'GET'));
         $webhook = $this->app->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER);
         $this->assertEquals('http://example.com', (string)$webhook);
     }
 
-    /**
-     * @throws Exception
-     */
     public function testConfigCanBeCopied(): void
     {
-        @$this->app->setResponse($this->getResponse());
+        $this->app->fromArray($this->getResponseData());
 
         $otherapp = new Application();
         $otherapp->setName('new app');

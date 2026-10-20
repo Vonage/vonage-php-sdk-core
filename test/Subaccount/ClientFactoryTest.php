@@ -45,9 +45,13 @@ class ClientFactoryTest extends VonageTestCase
      */
     public function testFactoryMakeCorrectClient(): void
     {
+        $mockClient = $this->createMock(Client::class);
+
         $container = new MapFactory(
             [
-                APIResource::class => APIResource::class,
+                APIResource::class => function () use ($mockClient) {
+                    return new APIResource($mockClient);
+                }
             ],
             $this->vonageClient
         );
