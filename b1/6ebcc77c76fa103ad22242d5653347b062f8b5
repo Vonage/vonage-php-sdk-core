@@ -1,0 +1,14 @@
+.github/workflows/build.yml
+  h_b0b759f4c5cf9e 12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "b16ebcc77c76fa103ad22242d5653347b062f8b5",
+  "prompts": {},
+  "humans": {
+    "h_b0b759f4c5cf9e": {
+      "author": "Chris Tankersley <chris@ctankersley.com>"
+    }
+  }
+}
